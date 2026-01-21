@@ -121,11 +121,11 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         $counter = 0;
         $this->expectExceptionMessage('Fail attempt 1');
         $testClass->call(
-            function () use (&$counter) {
+            function () use (&$counter): void {
                 ++$counter;
                 throw new \Exception("Fail attempt $counter");
             },
-            function ($attempt, $exception) use (&$counter) {
+            function ($attempt, $exception) use (&$counter): void {
                 $this->assertEquals($counter + 1, $attempt);
                 $this->assertInstanceOf(\Exception::class, $exception);
             },
@@ -149,11 +149,11 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         $retries = 0;
         try {
             $testClass->call(
-                function () use (&$counter) {
+                function () use (&$counter): void {
                     ++$counter;
                     throw new \Exception("Fail attempt $counter");
                 },
-                function ($attempt, $exception) use (&$counter, &$retries) {
+                function ($attempt, $exception) use (&$counter, &$retries): void {
                     $this->assertEquals($counter + 1, $attempt);
                     $this->assertInstanceOf(\Exception::class, $exception);
                     ++$retries;
@@ -170,31 +170,29 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         } catch (\Exception $e) {
             // Do nothing
         }
-        $this->assertEquals(2, $retries);
+        $this->assertSame(2, $retries);
     }
 
     /**
      * Data provider for testBackoff
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function backoffDataProvider(): array
+    public static function backoffDataProvider(): \Iterator
     {
-        return [
-            [0, 0],
-            [0, 1],
-            [0, 2],
-            [200, 3],
-            [400, 4],
-            [800, 5],
-            [1000, 6],
-            [1000, 7],
-            [1600, 6, ['maximumBackoff' => 2000]],
-            [1500, 6, ['maximumBackoff' => 1500]],
-            [200, 2, ['firstBackoff' => 200]],
-            [300, 3, ['subsequentBackoff' => 300]],
-            [200, 7, ['exponentialBackoff' => false]],
-        ];
+        yield [0, 0];
+        yield [0, 1];
+        yield [0, 2];
+        yield [200, 3];
+        yield [400, 4];
+        yield [800, 5];
+        yield [1000, 6];
+        yield [1000, 7];
+        yield [1600, 6, ['maximumBackoff' => 2000]];
+        yield [1500, 6, ['maximumBackoff' => 1500]];
+        yield [200, 2, ['firstBackoff' => 200]];
+        yield [300, 3, ['subsequentBackoff' => 300]];
+        yield [200, 7, ['exponentialBackoff' => false]];
     }
 
     /**
@@ -204,10 +202,9 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      * @param int   $attempt  Attempt number
      * @param array $options  Current options
      *
-     * @dataProvider backoffDataProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('backoffDataProvider')]
     public function testBackoff(int $expected, int $attempt, array $options = [])
     {
         $testClass = $this->getMockRetryTestClass();

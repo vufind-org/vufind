@@ -38,6 +38,7 @@ use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Controller\Feature\RequestHelperTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
@@ -47,6 +48,7 @@ use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Service\GetServiceTrait;
+use VuFind\Session\Helper\FollowupHelper;
 
 use function intval;
 use function is_object;
@@ -63,14 +65,9 @@ use function is_object;
  *
  * @method Plugin\Captcha captcha() Captcha plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
- * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
- * @method Plugin\IlsRecords ilsRecords() IlsRecords plugin
- * @method Plugin\NewItems newItems() NewItems plugin
  * @method Plugin\Permission permission() Permission plugin
- * @method Plugin\Renewals renewals() Renewals plugin
- * @method Plugin\Reserves reserves() Reserves plugin
  * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
@@ -82,6 +79,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     use EmailSettingsTrait;
     use GetServiceTrait;
     use TranslatorAwareTrait;
+    use RequestHelperTrait;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -236,13 +234,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $view = $this->createViewModel($params);
 
         // Load configuration and current user for convenience:
-        $config = $this->getConfig();
-        $view->disableFrom
-            = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
-        $view->editableSubject = isset($config->Mail->user_editable_subjects)
-            && $config->Mail->user_editable_subjects;
-        $view->maxRecipients = isset($config->Mail->maximum_recipients)
-            ? intval($config->Mail->maximum_recipients) : 1;
+        $config = $this->getConfigArray();
+        $view->disableFrom = (bool)($config['Mail']['disable_from'] ?? false);
+        $view->editableSubject = (bool)($config['Mail']['user_editable_subjects'] ?? false);
+        $view->maxRecipients = intval($config['Mail']['maximum_recipients'] ?? 1);
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:
@@ -258,15 +253,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Set default values if applicable:
-        if (empty($view->to) && $user && ($config->Mail->user_email_in_to ?? false)) {
+        if (empty($view->to) && $user && ($config['Mail']['user_email_in_to'] ?? false)) {
             $view->to = $user->getEmail();
         }
         if (empty($view->from)) {
-            if ($user && ($config->Mail->user_email_in_from ?? false)) {
+            if ($user && ($config['Mail']['user_email_in_from'] ?? false)) {
                 $view->userEmailInFrom = true;
                 $view->from = $user->getEmail();
-            } elseif ($config->Mail->default_from ?? false) {
-                $view->from = $config->Mail->default_from;
+            } elseif ($config['Mail']['default_from'] ?? false) {
+                $view->from = $config['Mail']['default_from'];
             }
         }
         if (empty($view->subject)) {
@@ -358,7 +353,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras);
+        $this->getService(FollowupHelper::class)->store($extras);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -459,10 +454,24 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @param string $id Configuration identifier (default = main VuFind config)
      *
      * @return \VuFind\Config\Config
+     *
+     * @deprecated Use AbstractBase::getConfigArray
      */
     public function getConfig($id = 'config')
     {
         return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
+    }
+
+    /**
+     * Get a VuFind configuration as an associative array.
+     *
+     * @param string $id Configuration identifier (default = config)
+     *
+     * @return array
+     */
+    public function getConfigArray(string $id = 'config'): array
+    {
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($id);
     }
 
     /**
@@ -734,10 +743,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Clear previously stored lightboxParent.
-        $this->followup()->clear('lightboxParent');
+        $followupHelper = $this->getService(FollowupHelper::class);
+        $followupHelper->clear('lightboxParent');
 
         // If we got this far, we want to store the referer:
-        $this->followup()->store($extras, $referer);
+        $followupHelper->store($extras, $referer);
     }
 
     /**
@@ -761,7 +771,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function hasFollowupUrl()
     {
-        return null !== $this->followup()->retrieve('url');
+        return null !== $this->getService(FollowupHelper::class)->retrieve('url');
     }
 
     /**
@@ -775,8 +785,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        if ($url = $this->followup()->retrieveAndClear('url')) {
-            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+        if ($url = $this->getService(FollowupHelper::class)->retrieveAndClear('url')) {
+            $lightboxParent = $this->getService(FollowupHelper::class)->retrieveAndClear('lightboxParent');
             // If a user clicks on the "Your Account" link, we want to be sure
             // they get to their account rather than being redirected to an old
             // followup URL. We'll use a redirect=0 GET flag to indicate this:
@@ -801,9 +811,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function clearFollowupUrl()
     {
-        $this->followup()->clear('isReferrer');
-        $this->followup()->clear('lightboxParent');
-        $this->followup()->clear('url');
+        $followupHelper = $this->getService(FollowupHelper::class);
+        $followupHelper->clear('isReferrer');
+        $followupHelper->clear('lightboxParent');
+        $followupHelper->clear('url');
     }
 
     /**

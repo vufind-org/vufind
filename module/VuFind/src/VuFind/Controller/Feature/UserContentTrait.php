@@ -100,11 +100,9 @@ trait UserContentTrait
         $page = (int)$params->fromQuery('page', 1);
         $result['page'] = $page < 1 ? 1 : $page;
         $sort = $params->fromQuery('sort', '');
-        if (in_array($sort, array_keys($this->sortList))) {
-            $result['sort'] = $sort;
-        } else {
-            $result['sort'] = array_keys($this->sortList)[0];
-        }
+        $result['sort'] = in_array($sort, array_keys($this->sortList))
+            ? $sort
+            : array_keys($this->sortList)[0];
         return $result;
     }
 }

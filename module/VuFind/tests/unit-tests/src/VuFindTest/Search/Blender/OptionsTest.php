@@ -48,37 +48,34 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testOptions
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function optionsProvider(): array
+    public static function optionsProvider(): \Iterator
     {
-        return [
+        yield [
+            [],
+            null,
+        ];
+        yield [
             [
-                [],
-                false,
-            ],
-            [
-                [
-                    'Advanced_Searches' => [
-                        'foo' => 'bar',
-                    ],
+                'Advanced_Searches' => [
+                    'foo' => 'bar',
                 ],
-                'blender-advanced',
             ],
+            'blender-advanced',
         ];
     }
 
     /**
      * Test that the Options object returns correct data .
      *
-     * @param array        $config    Blender configuration
-     * @param string|false $advAction Expected advanced search action
+     * @param array   $config    Blender configuration
+     * @param ?string $advAction Expected advanced search action
      *
      * @return void
-     *
-     * @dataProvider optionsProvider
      */
-    public function testOptions(array $config, $advAction): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('optionsProvider')]
+    public function testOptions(array $config, ?string $advAction): void
     {
         $mockConfigManager = $this->getMockConfigManager(
             [
@@ -86,8 +83,8 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($mockConfigManager);
-        $this->assertEquals('blender-results', $options->getSearchAction());
+        $this->assertSame('blender-results', $options->getSearchAction());
         $this->assertEquals($advAction, $options->getAdvancedSearchAction());
-        $this->assertFalse($options->getFacetListAction());
+        $this->assertNull($options->getFacetListAction());
     }
 }

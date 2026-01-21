@@ -31,16 +31,17 @@
 
 namespace VuFind\Search\Base;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
-use VuFind\I18n\TranslatableString;
+use VuFind\I18n\TranslatableStringInterface;
 use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;
 use VuFind\Search\QueryAdapterInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\QueryInterface;
 
 use function call_user_func;
 use function count;
@@ -69,86 +70,86 @@ class Params
     /**
      * Internal representation of user query.
      *
-     * @var Query
+     * @var QueryInterface
      */
-    protected $query;
+    protected QueryInterface $query;
 
     /**
      * Page number
      *
      * @var int
      */
-    protected $page = 1;
+    protected int $page = 1;
 
     /**
      * Sort setting
      *
-     * @var string
+     * @var ?string
      */
-    protected $sort = null;
+    protected ?string $sort = null;
 
     /**
      * Override special RSS sort feature?
      *
      * @var bool
      */
-    protected $skipRssSort = false;
+    protected bool $skipRssSort = false;
 
     /**
      * Result limit
      *
      * @var int
      */
-    protected $limit = 20;
+    protected int $limit = 20;
 
     /**
      * Search type (basic or advanced)
      *
      * @var string
      */
-    protected $searchType  = 'basic';
+    protected string $searchType  = 'basic';
 
     /**
      * Shards
      *
      * @var array
      */
-    protected $selectedShards = [];
+    protected array $selectedShards = [];
 
     /**
      * View
      *
-     * @var string
+     * @var ?string
      */
-    protected $view = null;
+    protected ?string $view = null;
 
     /**
      * Previously-used view (loaded in from session)
      *
-     * @var string
+     * @var ?string
      */
-    protected $lastView = null;
+    protected ?string $lastView = null;
 
     /**
      * Search options
      *
-     * @var Options
+     * @var \VuFind\Search\Base\Options
      */
-    protected $options;
+    protected \VuFind\Search\Base\Options $options;
 
     /**
      * Main facet configuration
      *
      * @var array
      */
-    protected $facetConfig = [];
+    protected array $facetConfig = [];
 
     /**
      * Extra facet labels
      *
      * @var array
      */
-    protected $extraFacetLabels = [];
+    protected array $extraFacetLabels = [];
 
     /**
      * Config sections to search for facet labels if no override configuration
@@ -156,7 +157,7 @@ class Params
      *
      * @var array
      */
-    protected $defaultFacetLabelSections = ['ExtraFacetLabels'];
+    protected array $defaultFacetLabelSections = ['ExtraFacetLabels'];
 
     /**
      * Config sections to search for checkbox facet labels if no override
@@ -164,82 +165,84 @@ class Params
      *
      * @var array
      */
-    protected $defaultFacetLabelCheckboxSections = [];
+    protected array $defaultFacetLabelCheckboxSections = [];
 
     /**
      * Checkbox facet configuration
      *
      * @var array
      */
-    protected $checkboxFacets = [];
+    protected array $checkboxFacets = [];
 
     /**
      * Whether to fetch result counts for checkbox facets
      *
      * @var bool
      */
-    protected $fetchCheckboxFacetCounts = false;
+    protected bool $fetchCheckboxFacetCounts = false;
 
     /**
      * Applied filters
      *
      * @var array
      */
-    protected $filterList = [];
+    protected array $filterList = [];
 
     /**
      * Pre-assigned filters
      *
      * @var array
      */
-    protected $hiddenFilters = [];
+    protected array $hiddenFilters = [];
 
     /**
      * Facets in "OR" mode
      *
      * @var array
      */
-    protected $orFacets = [];
+    protected array $orFacets = [];
 
     /**
      * Override Query
+     *
+     * @var ?string
      */
-    protected $overrideQuery = false;
+    protected ?string $overrideQuery = null;
 
     /**
      * Are default filters applied?
      *
      * @var bool
      */
-    protected $defaultsApplied = false;
+    protected bool $defaultsApplied = false;
 
     /**
      * Map of facet field aliases.
      *
      * @var array
      */
-    protected $facetAliases = [];
+    protected array $facetAliases = [];
 
     /**
      * Search context parameters.
      *
      * @var array
      */
-    protected $searchContextParameters = [];
+    protected array $searchContextParameters = [];
 
     /**
      * Query adapter
      *
      * @var ?QueryAdapterInterface
      */
-    protected $queryAdapter = null;
+    protected ?QueryAdapterInterface $queryAdapter = null;
 
     /**
      * Default query adapter class
      *
      * @var string
      */
-    protected $queryAdapterClass = QueryAdapter::class;
+    protected string $queryAdapterClass = QueryAdapter::class;
 
     /**
      * Is this a specialized search (i.e. a customized scenario like new items,
@@ -247,7 +250,7 @@ class Params
      *
      * @var bool
      */
-    protected $isSpecializedSearch = false;
+    protected bool $isSpecializedSearch = false;
 
     /**
      * Constructor
@@ -255,7 +258,7 @@ class Params
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, protected ConfigManagerInterface $configManager)
+    public function __construct(\VuFind\Search\Base\Options $options, protected ConfigManagerInterface $configManager)
     {
         $this->setOptions($options);
 
@@ -264,8 +267,7 @@ class Params
 
         // Set up facet label settings, to be used as fallbacks if specific facets
         // are not already configured:
-        $facetConfigName = $options->getFacetsIni();
-        $config = ($facetConfigName !== null) ? $configManager->getConfigArray($facetConfigName) : [];
+        $config = $configManager->getConfigArray($options->getFacetsIni());
         $sections = $config['FacetLabels']['labelSections']
             ?? $this->defaultFacetLabelSections;
         foreach ($sections as $section) {
@@ -287,7 +289,7 @@ class Params
      *
      * @return \VuFind\Search\Base\Options
      */
-    public function getOptions()
+    public function getOptions(): \VuFind\Search\Base\Options
     {
         return $this->options;
     }
@@ -299,7 +301,7 @@ class Params
      *
      * @return void
      */
-    public function setOptions(Options $options)
+    public function setOptions(\VuFind\Search\Base\Options $options): void
     {
         $this->options = $options;
     }
@@ -324,7 +326,7 @@ class Params
      *
      * @return void
      */
-    public function setQueryAdapter(QueryAdapterInterface $queryAdapter)
+    public function setQueryAdapter(QueryAdapterInterface $queryAdapter): void
     {
         $this->queryAdapter = $queryAdapter;
     }
@@ -334,7 +336,7 @@ class Params
      *
      * @return void
      */
-    public function __clone()
+    public function __clone(): void
     {
         if (is_object($this->options)) {
             $this->options = clone $this->options;
@@ -349,7 +351,7 @@ class Params
      *
      * @return string
      */
-    public function getSearchClassId()
+    public function getSearchClassId(): string
     {
         return $this->getOptions()->getSearchClassId();
     }
@@ -357,12 +359,12 @@ class Params
     /**
      * Pull the search parameters
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest($request)
+    public function initFromRequest(Parameters $request): void
     {
         // We should init view first, since RSS view may cause certain variant
         // behaviors:
@@ -382,12 +384,12 @@ class Params
     /**
      * Pull shard parameters from the request or set defaults
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initShards($request)
+    protected function initShards(Parameters $request): void
     {
         $legalShards = array_keys($this->getOptions()->getShards());
         $requestShards = $request->get('shard', []);
@@ -413,12 +415,12 @@ class Params
     /**
      * Pull the page size parameter or set to default
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initLimit($request)
+    protected function initLimit(Parameters $request): void
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
@@ -451,12 +453,12 @@ class Params
     /**
      * Pull the page parameter
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initPage($request)
+    protected function initPage(Parameters $request): void
     {
         $this->page = intval($request->get('page'));
         if ($this->page < 1) {
@@ -467,12 +469,12 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch($request)
+    protected function initSearch(Parameters $request): void
     {
         // Try to initialize a basic search; if that fails, try for an advanced
         // search next!
@@ -484,12 +486,12 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch($request)
+    protected function initBasicSearch(Parameters $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
@@ -522,12 +524,12 @@ class Params
     /**
      * Set a basic search query:
      *
-     * @param string $lookfor The search query
-     * @param string $handler The search handler (null for default)
+     * @param string  $lookfor The search query
+     * @param ?string $handler The search handler (null for default)
      *
      * @return void
      */
-    public function setBasicSearch($lookfor, $handler = null)
+    public function setBasicSearch(string $lookfor, ?string $handler = null): void
     {
         $this->searchType = 'basic';
 
@@ -543,7 +545,7 @@ class Params
      *
      * @return void
      */
-    public function convertToAdvancedSearch()
+    public function convertToAdvancedSearch(): void
     {
         if ($this->searchType === 'basic') {
             $this->query = new QueryGroup(
@@ -564,12 +566,12 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initAdvancedSearch($request)
+    protected function initAdvancedSearch(Parameters $request): void
     {
         $this->query = $this->getQueryAdapter()->fromRequest(
             $request,
@@ -596,12 +598,12 @@ class Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSort($request)
+    protected function initSort(Parameters $request): void
     {
         // Check for special parameter only relevant in RSS mode:
         if ($request->get('skip_rss_sort', 'unset') != 'unset') {
@@ -613,11 +615,11 @@ class Params
     /**
      * Set the last value of the view parameter (if available in session).
      *
-     * @param string $view Last valid view parameter value
+     * @param ?string $view Last valid view parameter value (null to clear)
      *
      * @return void
      */
-    public function setLastView($view)
+    public function setLastView(?string $view): void
     {
         $this->lastView = $view;
     }
@@ -625,12 +627,12 @@ class Params
     /**
      * Get the value for which results view to use
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initView($request)
+    protected function initView(Parameters $request): void
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
@@ -659,7 +661,7 @@ class Params
      *
      * @return string
      */
-    public function getDefaultSort()
+    public function getDefaultSort(): string
     {
         return $this->getOptions()
             ->getDefaultSortByHandler($this->getSearchHandler());
@@ -670,7 +672,7 @@ class Params
      *
      * @return int
      */
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
@@ -682,7 +684,7 @@ class Params
      *
      * @return void
      */
-    public function setLimit($l)
+    public function setLimit(int $l): void
     {
         $this->limit = $l;
     }
@@ -694,7 +696,7 @@ class Params
      *
      * @return void
      */
-    public function setPage($p)
+    public function setPage(int $p): void
     {
         $this->page = $p;
     }
@@ -704,7 +706,7 @@ class Params
      *
      * @return int
      */
-    public function getPage()
+    public function getPage(): int
     {
         return $this->page;
     }
@@ -712,9 +714,9 @@ class Params
     /**
      * Return the sorting value
      *
-     * @return string
+     * @return ?string
      */
-    public function getSort()
+    public function getSort(): ?string
     {
         return $this->sort;
     }
@@ -741,12 +743,12 @@ class Params
      * Set the sorting value (note: sort will be set to default if an illegal
      * or empty value is passed in).
      *
-     * @param string $sort  New sort value (null for default)
-     * @param bool   $force Set sort value without validating it?
+     * @param ?string $sort  New sort value (null for default)
+     * @param bool    $force Set sort value without validating it?
      *
      * @return void
      */
-    public function setSort($sort, $force = false)
+    public function setSort(?string $sort, bool $force = false): void
     {
         // Skip validation if requested:
         if ($force) {
@@ -755,11 +757,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        if ($this->isValidSort($sort)) {
-            $this->sort = $sort;
-        } else {
-            $this->sort = $this->getDefaultSort();
-        }
+        $this->sort = $this->isValidSort($sort) ? $sort : $this->getDefaultSort();
 
         // In RSS mode, we may want to adjust sort settings:
         if (!$this->skipRssSort && $this->getView() == 'rss') {
@@ -771,9 +769,9 @@ class Params
      * Return the selected search handler (null for complex searches which have no
      * single handler)
      *
-     * @return string|null
+     * @return ?string
      */
-    public function getSearchHandler()
+    public function getSearchHandler(): ?string
     {
         // We can only definitively name a handler if we have a basic search:
         $q = $this->getQuery();
@@ -785,7 +783,7 @@ class Params
      *
      * @return string
      */
-    public function getSearchType()
+    public function getSearchType(): string
     {
         return $this->searchType;
     }
@@ -795,7 +793,7 @@ class Params
      *
      * @return string
      */
-    public function getView()
+    public function getView(): string
     {
         return $this->view ?? $this->getOptions()->getDefaultView();
     }
@@ -803,11 +801,11 @@ class Params
     /**
      * Set the value for which search view we use
      *
-     * @param String $v New view setting
+     * @param string $v New view setting
      *
      * @return void
      */
-    public function setView($v)
+    public function setView(string $v): void
     {
         $this->view = $v;
     }
@@ -818,7 +816,7 @@ class Params
      *
      * @return string user friendly version of 'query'
      */
-    public function getDisplayQuery()
+    public function getDisplayQuery(): string
     {
         // Set up callbacks:
         $translate = [$this, 'translate'];
@@ -835,7 +833,7 @@ class Params
      *
      * @return array         Array with elements 0 = field, 1 = value.
      */
-    public function parseFilter($filter)
+    public function parseFilter(string $filter): array
     {
         // Special case: complex filters cannot be split into field/value
         // since they have multiple parts (e.g. field1:a OR field2:b). Use
@@ -870,7 +868,7 @@ class Params
      *
      * @return array         Array with elements 0 = prefix, 1 = field, 2 = value.
      */
-    public function parseFilterAndPrefix($filter)
+    public function parseFilterAndPrefix(string $filter): array
     {
         [$field, $value] = $this->parseFilter($filter);
         $prefix = substr($field, 0, 1);
@@ -890,7 +888,7 @@ class Params
      *
      * @return array
      */
-    public function getAliasesForFacetField($field)
+    public function getAliasesForFacetField(string $field): array
     {
         // Account for field prefixes used for Boolean logic:
         $prefix = substr($field, 0, 1);
@@ -916,7 +914,7 @@ class Params
      *
      * @return bool
      */
-    public function hasFilter($filter)
+    public function hasFilter(string $filter): bool
     {
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
@@ -941,7 +939,7 @@ class Params
      *
      * @return void
      */
-    public function addFilter($newFilter)
+    public function addFilter(string $newFilter): void
     {
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasFilter($newFilter)) {
@@ -963,7 +961,7 @@ class Params
      *
      * @return bool
      */
-    public function isAdvancedFilter($filter)
+    public function isAdvancedFilter(string $filter): bool
     {
         return str_starts_with($filter, '(') || str_starts_with($filter, '-(');
     }
@@ -975,7 +973,7 @@ class Params
      *
      * @return void
      */
-    public function removeFilter($oldFilter)
+    public function removeFilter(string $oldFilter): void
     {
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($oldFilter);
@@ -1010,12 +1008,12 @@ class Params
     /**
      * Remove all filters from the list.
      *
-     * @param string $field Name of field to remove filters from (null to remove
+     * @param ?string $field Name of field to remove filters from (null to remove
      * all filters from all fields)
      *
      * @return void
      */
-    public function removeAllFilters($field = null)
+    public function removeAllFilters(?string $field = null): void
     {
         if ($field == null) {
             $this->filterList = [];
@@ -1031,13 +1029,13 @@ class Params
     /**
      * Add a field to facet on.
      *
-     * @param string $newField Field name
-     * @param string $newAlias Optional on-screen display label
-     * @param bool   $ored     Should we treat this as an ORed facet?
+     * @param string  $newField Field name
+     * @param ?string $newAlias Optional on-screen display label
+     * @param bool    $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null, $ored = false)
+    public function addFacet(string $newField, ?string $newAlias = null, bool $ored = false): void
     {
         if ($newAlias == null) {
             $newAlias = $newField;
@@ -1055,7 +1053,7 @@ class Params
      *
      * @return string
      */
-    public function getFacetOperator($field)
+    public function getFacetOperator(string $field): string
     {
         return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
@@ -1072,7 +1070,7 @@ class Params
      *
      * @return void
      */
-    public function addCheckboxFacet($filter, $desc, $dynamic = false)
+    public function addCheckboxFacet(string $filter, string $desc, bool $dynamic = false): void
     {
         // Extract the facet field name from the filter, then add the
         // relevant information to the array.
@@ -1096,15 +1094,19 @@ class Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field               Facet field name.
-     * @param string $value               Facet value.
-     * @param string $default             Default field name (null for default behavior).
-     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
+     * @param string  $field               Facet field name.
+     * @param ?string $value               Facet value.
+     * @param ?string $default             Default field name (null for default behavior).
+     * @param bool    $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
      * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
-    {
+    public function getFacetLabel(
+        string $field,
+        ?string $value = null,
+        ?string $default = null,
+        bool $allowCheckboxFacets = true
+    ): string {
         if (
             !isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
@@ -1128,7 +1130,7 @@ class Params
      *
      * @return array
      */
-    public function getFacetConfig()
+    public function getFacetConfig(): array
     {
         return $this->facetConfig;
     }
@@ -1138,7 +1140,7 @@ class Params
      *
      * @return void
      */
-    public function resetFacetConfig()
+    public function resetFacetConfig(): void
     {
         $this->facetConfig = [];
     }
@@ -1148,7 +1150,7 @@ class Params
      *
      * @return array
      */
-    public function getRawFilters()
+    public function getRawFilters(): array
     {
         return $this->filterList;
     }
@@ -1161,7 +1163,7 @@ class Params
      *
      * @return array                       Field, values and translation status
      */
-    public function getFilterList($excludeCheckboxFilters = false)
+    public function getFilterList(bool $excludeCheckboxFilters = false): array
     {
         // If we don't have any filters, return right away to avoid further
         // processing:
@@ -1200,6 +1202,23 @@ class Params
     }
 
     /**
+     * Returns only the exclude filters (field starting with '-').
+     *
+     * @return array an array field => value without the '-' for the field
+     */
+    public function getExcludeFilters(): array
+    {
+        $result = [];
+        foreach ($this->filterList as $field => $values) {
+            [$operator, $fieldName] = $this->parseOperatorAndFieldName($field);
+            if ('NOT' === $operator) {
+                $result[$fieldName] = $values;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get the filter list as a query parameter array.
      *
      * Returns an array of strings that parseFilter can parse.
@@ -1235,13 +1254,13 @@ class Params
     /**
      * Translate a facet value.
      *
-     * @param string                    $field Field name
-     * @param string|TranslatableString $text  Field value (processed by
+     * @param string                             $field Field name
+     * @param string|TranslatableStringInterface $text  Field value (processed by
      * getFacetValueRawDisplayText)
      *
      * @return string
      */
-    public function translateFacetValue(string $field, $text): string
+    public function translateFacetValue(string $field, string|TranslatableStringInterface $text): string
     {
         $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
         $translateFormat = $this->getOptions()->getFormatForTranslatedFacet($field);
@@ -1266,7 +1285,7 @@ class Params
      *
      * @return array
      */
-    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    protected function formatFilterListEntry(string $field, string $value, string $operator, bool $translate): array
     {
         $rawDisplayText = $this->getFacetValueRawDisplayText($field, $value);
         $displayText = $translate
@@ -1283,7 +1302,7 @@ class Params
      *
      * @return array (0 = operator, 1 = field name)
      */
-    protected function parseOperatorAndFieldName($field)
+    protected function parseOperatorAndFieldName(string $field): array
     {
         $firstChar = substr($field, 0, 1);
         if ($firstChar == '-') {
@@ -1303,7 +1322,7 @@ class Params
      *
      * @return array
      */
-    protected function getCheckboxFacetValues()
+    protected function getCheckboxFacetValues(): array
     {
         $list = [];
         foreach ($this->getRawCheckboxFacets() as $facets) {
@@ -1330,7 +1349,7 @@ class Params
     public function getCheckboxFacets(
         ?array $include = null,
         bool $includeDynamic = true
-    ) {
+    ): array {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
@@ -1388,12 +1407,12 @@ class Params
     /**
      * Initialize all range filters.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initRangeFilters($request)
+    protected function initRangeFilters(Parameters $request): void
     {
         $this->initDateFilters($request);
         $this->initFullDateFilters($request);
@@ -1412,7 +1431,7 @@ class Params
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function formatYearForDateRange($year, $rangeEnd = false)
+    protected function formatYearForDateRange(?string $year, bool $rangeEnd = false): string
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
         return preg_match('/^-?\d+$/', $year ?? '') ? $year : '*';
@@ -1427,7 +1446,7 @@ class Params
      *
      * @return string      Formatted date.
      */
-    protected function formatDateForFullDateRange($date, $rangeEnd = false)
+    protected function formatDateForFullDateRange(?string $date, bool $rangeEnd = false): string
     {
         // Make sure date is valid; default to wildcard otherwise:
         $date = $date ? SolrUtils::sanitizeDate($date, $rangeEnd) : null;
@@ -1445,10 +1464,10 @@ class Params
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function formatValueForNumericRange($num, $rangeEnd = false)
+    protected function formatValueForNumericRange(?string $num, bool $rangeEnd = false): string
     {
         // empty strings, null values and non-numeric values are treated as wildcards:
-        if ($num === '' || $num === null || !is_numeric($num)) {
+        if ($num === '' || !is_numeric($num)) {
             return '*';
         }
         // If we got this far, it's a number!
@@ -1466,7 +1485,7 @@ class Params
      *
      * @return string       filter query.
      */
-    protected function buildGenericRangeFilter($field, $from, $to, $cs = true)
+    protected function buildGenericRangeFilter(string $field, string $from, string $to, bool $cs = true): string
     {
         // Assume Solr syntax -- this should be overridden in child classes where
         // other indexing methodologies are used.
@@ -1487,23 +1506,20 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request         Parameter object
+     * @param Parameters $request         Parameter object
      * representing user request.
-     * @param string                     $requestParam    Name of parameter
-     * containing names of range filter fields.
-     * @param callable                   $valueFilter     Optional callback to
-     * process values in the range.
-     * @param callable                   $filterGenerator Optional callback to create
-     * a filter query from the range values.
+     * @param string     $requestParam    Name of parameter containing names of range filter fields.
+     * @param ?callable  $valueFilter     Optional callback to process values in the range.
+     * @param ?callable  $filterGenerator Optional callback to create a filter query from the range values.
      *
      * @return void
      */
     protected function initGenericRangeFilters(
-        $request,
-        $requestParam = 'genericrange',
-        $valueFilter = null,
-        $filterGenerator = null
-    ) {
+        Parameters $request,
+        string $requestParam = 'genericrange',
+        ?callable $valueFilter = null,
+        ?callable $filterGenerator = null
+    ): void {
         $rangeFacets = $request->get($requestParam);
         if (!empty($rangeFacets)) {
             $ranges = is_array($rangeFacets) ? $rangeFacets : [$rangeFacets];
@@ -1539,7 +1555,7 @@ class Params
      *
      * @return string       filter query.
      */
-    protected function buildNumericRangeFilter($field, $from, $to)
+    protected function buildNumericRangeFilter(string $field, string $from, string $to): string
     {
         // Make sure that $to is less than $from:
         if ($to != '*' && $from != '*' && $to < $from) {
@@ -1561,7 +1577,7 @@ class Params
      *
      * @return string       filter query.
      */
-    protected function buildDateRangeFilter($field, $from, $to)
+    protected function buildDateRangeFilter(string $field, string $from, string $to): string
     {
         // Dates work just like numbers:
         return $this->buildNumericRangeFilter($field, $from, $to);
@@ -1577,7 +1593,7 @@ class Params
      *
      * @return string       filter query.
      */
-    protected function buildFullDateRangeFilter($field, $from, $to)
+    protected function buildFullDateRangeFilter(string $field, string $from, string $to): string
     {
         // Make sure that $to is less than $from:
         if ($to != '*' && $from != '*' && strtotime($to) < strtotime($from)) {
@@ -1594,12 +1610,12 @@ class Params
      * Factored out as a separate method so that it can be more easily overridden
      * by child classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initDateFilters($request)
+    protected function initDateFilters(Parameters $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1614,12 +1630,12 @@ class Params
      * filters. Factored out as a separate method so that it can be more easily
      * overridden by child classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initFullDateFilters($request)
+    protected function initFullDateFilters(Parameters $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1634,12 +1650,12 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initNumericRangeFilters($request)
+    protected function initNumericRangeFilters(Parameters $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1652,12 +1668,12 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters($request)
+    protected function initFilters(Parameters $request): void
     {
         // Handle standard filters:
         $filter = $request->get('filter');
@@ -1692,12 +1708,12 @@ class Params
     /**
      * Add hidden filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initHiddenFilters($request)
+    protected function initHiddenFilters(Parameters $request): void
     {
         $hiddenFilters = $request->get('hiddenFilters');
         if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
@@ -1712,7 +1728,7 @@ class Params
      *
      * @return array
      */
-    public function getHiddenFilters()
+    public function getHiddenFilters(): array
     {
         return $this->hiddenFilters;
     }
@@ -1736,18 +1752,11 @@ class Params
      *
      * @return bool
      */
-    public function hasHiddenFilter($filter)
+    public function hasHiddenFilter(string $filter): bool
     {
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
-
-        if (
-            isset($this->hiddenFilters[$field])
-            && in_array($value, $this->hiddenFilters[$field])
-        ) {
-            return true;
-        }
-        return false;
+        return in_array($value, $this->hiddenFilters[$field] ?? []);
     }
 
     /**
@@ -1758,7 +1767,7 @@ class Params
      *
      * @return void
      */
-    public function addHiddenFilter($newFilter)
+    public function addHiddenFilter(string $newFilter): void
     {
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasHiddenFilter($newFilter)) {
@@ -1792,7 +1801,7 @@ class Params
      *
      * @return string         query string
      */
-    public function getDisplayQueryWithReplacedTerm($oldTerm, $newTerm)
+    public function getDisplayQueryWithReplacedTerm(string $oldTerm, string $newTerm): string
     {
         // Stash our old data for a minute
         $oldTerms = clone $this->query;
@@ -1811,7 +1820,7 @@ class Params
      *
      * @return array
      */
-    public function getViewList()
+    public function getViewList(): array
     {
         $list = [];
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
@@ -1829,7 +1838,7 @@ class Params
      *
      * @return array Limit urls, descriptions and selected flags
      */
-    public function getLimitList()
+    public function getLimitList(): array
     {
         // Loop through all the current limits
         $valid = $this->getOptions()->getLimitOptions();
@@ -1851,7 +1860,7 @@ class Params
      *
      * @return array Sort urls, descriptions and selected flags
      */
-    public function getSortList()
+    public function getSortList(): array
     {
         // Loop through all the current filter fields
         $valid = $this->getOptions()->getSortOptions();
@@ -1911,7 +1920,7 @@ class Params
      *
      * @return void
      */
-    public function deminify($minified)
+    public function deminify(\VuFind\Search\Minified $minified): void
     {
         // Some values will transfer without changes
         $this->filterList = $minified->f;
@@ -1953,7 +1962,7 @@ class Params
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function setQueryIDs($ids)
+    public function setQueryIDs(array $ids): void
     {
         // This needs to be defined in child classes:
         throw new \Exception(get_class($this) . ' does not support setQueryIDs().');
@@ -1965,7 +1974,7 @@ class Params
      *
      * @return int
      */
-    public function getQueryIDLimit()
+    public function getQueryIDLimit(): int
     {
         return -1;
     }
@@ -1976,7 +1985,7 @@ class Params
      *
      * @return array
      */
-    public function getSelectedShards()
+    public function getSelectedShards(): array
     {
         return $this->selectedShards;
     }
@@ -1988,12 +1997,12 @@ class Params
      * domain and string to translate
      * @param array               $tokens  Tokens to inject into the translated
      * string
-     * @param string              $default Default value to use if no translation is
+     * @param ?string             $default Default value to use if no translation is
      * found (null for no default).
      *
      * @return string
      */
-    public function translate($target, $tokens = [], $default = null)
+    public function translate(string|object|array $target, array $tokens = [], ?string $default = null): string
     {
         return $this->getOptions()->translate($target, $tokens, $default);
     }
@@ -2001,11 +2010,11 @@ class Params
     /**
      * Set the override query
      *
-     * @param string $q Override query
+     * @param ?string $q Override query (null to clear)
      *
      * @return void
      */
-    public function setOverrideQuery($q)
+    public function setOverrideQuery(?string $q): void
     {
         $this->overrideQuery = $q;
     }
@@ -2013,9 +2022,9 @@ class Params
     /**
      * Get the override query
      *
-     * @return string
+     * @return ?string
      */
-    public function getOverrideQuery()
+    public function getOverrideQuery(): ?string
     {
         return $this->overrideQuery;
     }
@@ -2023,9 +2032,9 @@ class Params
     /**
      * Return search query object.
      *
-     * @return AbstractQuery
+     * @return QueryInterface
      */
-    public function getQuery()
+    public function getQuery(): QueryInterface
     {
         if ($this->overrideQuery) {
             return new Query($this->overrideQuery);
@@ -2036,14 +2045,14 @@ class Params
     /**
      * Set search query object.
      *
-     * @param AbstractQuery $query Query
+     * @param QueryInterface $query Query
      *
      * @return void
      */
-    public function setQuery(AbstractQuery $query): void
+    public function setQuery(QueryInterface $query): void
     {
         if ($this->overrideQuery) {
-            $this->overrideQuery = false;
+            $this->overrideQuery = null;
         }
         $this->query = $query;
     }
@@ -2051,14 +2060,14 @@ class Params
     /**
      * Initialize facet settings for the specified configuration sections.
      *
-     * @param string $facetList     Config section containing fields to activate
-     * @param string $facetSettings Config section containing related settings
-     * @param string $cfgFile       Name of configuration to load (null to load
+     * @param string  $facetList     Config section containing fields to activate
+     * @param string  $facetSettings Config section containing related settings
+     * @param ?string $cfgFile       Name of configuration to load (null to load
      * default facets configuration).
      *
      * @return bool                 True if facets set, false if no settings found
      */
-    protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
+    protected function initFacetList(string $facetList, string $facetSettings, ?string $cfgFile = null): bool
     {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
         $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
@@ -2085,7 +2094,7 @@ class Params
      *
      * @return bool
      */
-    public function hasDefaultsApplied()
+    public function hasDefaultsApplied(): bool
     {
         return $this->defaultsApplied;
     }
@@ -2093,16 +2102,16 @@ class Params
     /**
      * Initialize checkbox facet settings for the specified configuration sections.
      *
-     * @param string $facetList Config section containing fields to activate
-     * @param string $cfgFile   Name of configuration to load (null to load
+     * @param string  $facetList Config section containing fields to activate
+     * @param ?string $cfgFile   Name of configuration to load (null to load
      * default facets configuration).
      *
      * @return bool             True if facets set, false if no settings found
      */
     protected function initCheckboxFacets(
-        $facetList = 'CheckboxFacets',
-        $cfgFile = null
-    ) {
+        string $facetList = 'CheckboxFacets',
+        ?string $cfgFile = null
+    ): bool {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
         $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
         $retVal = false;
@@ -2128,7 +2137,7 @@ class Params
      *
      * @return bool
      */
-    public function supportsFacetFiltering($facet)
+    public function supportsFacetFiltering(string $facet): bool
     {
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         return method_exists($this, 'setFacetContains') && !in_array($facet, $translatedFacets);

@@ -118,31 +118,29 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for menu configuration tests
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function menuConfigurationProvider(): array
+    public static function menuConfigurationProvider(): \Iterator
     {
-        return [
-            'no ajax, no dropdown' => [
-                false,
-                false,
-                0,
-            ],
-            'ajax, no dropdown' => [
-                true,
-                false,
-                1,
-            ],
-            'no ajax, dropdown' => [
-                false,
-                true,
-                0,
-            ],
-            'ajax, dropdown' => [
-                true,
-                true,
-                2,
-            ],
+        yield 'no ajax, no dropdown' => [
+            false,
+            false,
+            0,
+        ];
+        yield 'ajax, no dropdown' => [
+            true,
+            false,
+            1,
+        ];
+        yield 'no ajax, dropdown' => [
+            false,
+            true,
+            0,
+        ];
+        yield 'ajax, dropdown' => [
+            true,
+            true,
+            2,
         ];
     }
 
@@ -153,10 +151,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $dropdown            Enable navbar dropdown menu?
      * @param int  $expectedStatusCount How many instances of status badge to expect
      *
-     * @dataProvider menuConfigurationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('menuConfigurationProvider')]
     public function testMenuConfiguration(bool $ajax, bool $dropdown, int $expectedStatusCount)
     {
         $this->changeConfigs(
@@ -240,81 +237,79 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testAccountIcon
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function accountIconProvider(): array
+    public static function accountIconProvider(): \Iterator
     {
-        return [
-            'no icon' => [
+        yield 'no icon' => [
+            [
+                // No fines
+                ['fines' => ['total' => 0, 'display' => 'ZILTCH']],
+                // Holds in transit only
+                ['holds' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                // ILL Requests in transit only
+                ['illRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                // Storage Retrievals in transit only
+                ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+            ],
+            '.account-status-none',
+        ];
+        yield 'good' => [
+            [
+                // Holds available
+                ['holds' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                // ILL Requests available
+                ['illRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                // Storage Retrievals available
+                ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+            ],
+            '.account-status-good',
+        ];
+        yield 'warning' => [
+            [
+                ['checkedOut' => ['warn' => 1, 'level' => 2]],
+            ],
+            '.account-status-warning',
+        ];
+        yield 'danger' => [
+            [
+                // User has fines
+                ['fines' => ['value' => 1000000, 'display' => '$...yikes', 'level' => 3]],
+                // Checkedout overdue
+                ['checkedOut' => ['overdue' => 1, 'level' => 3]],
+            ],
+            '.account-status-danger',
+        ];
+        yield 'danger overrides warning' => [
+            [['checkedOut' => ['warn' => 2, 'overdue' => 1, 'level' => 3]]],
+            '.account-status-danger',
+        ];
+        yield 'danger overrides good' => [
+            [
                 [
-                    // No fines
-                    ['fines' => ['total' => 0, 'display' => 'ZILTCH']],
-                    // Holds in transit only
-                    ['holds' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
-                    // ILL Requests in transit only
-                    ['illRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
-                    // Storage Retrievals in transit only
-                    ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                    'checkedOut' => ['overdue' => 1, 'level' => 3],
+                    'holds' => ['available' => 1, 'level' => 1],
                 ],
-                '.account-status-none',
             ],
-            'good' => [
+            '.account-status-danger',
+        ];
+        yield 'warning overrides good' => [
+            [
                 [
-                    // Holds available
-                    ['holds' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
-                    // ILL Requests available
-                    ['illRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
-                    // Storage Retrievals available
-                    ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                    'checkedOut' => ['warn' => 1, 'level' => 2],
+                    'holds' => ['available' => 1, 'level' => 1],
                 ],
-                '.account-status-good',
             ],
-            'warning' => [
+            '.account-status-warning',
+        ];
+        yield 'good overrides none' => [
+            [
                 [
-                    ['checkedOut' => ['warn' => 1, 'level' => 2]],
+                    'holds' => ['available' => 1, 'level' => 1],
+                    'fines' => ['total' => 0, 'display' => 'none', 'level' => 0],
                 ],
-                '.account-status-warning',
             ],
-            'danger' => [
-                [
-                    // User has fines
-                    ['fines' => ['value' => 1000000, 'display' => '$...yikes', 'level' => 3]],
-                    // Checkedout overdue
-                    ['checkedOut' => ['overdue' => 1, 'level' => 3]],
-                ],
-                '.account-status-danger',
-            ],
-            'danger overrides warning' => [
-                [['checkedOut' => ['warn' => 2, 'overdue' => 1, 'level' => 3]]],
-                '.account-status-danger',
-            ],
-            'danger overrides good' => [
-                [
-                    [
-                        'checkedOut' => ['overdue' => 1, 'level' => 3],
-                        'holds' => ['available' => 1, 'level' => 1],
-                    ],
-                ],
-                '.account-status-danger',
-            ],
-            'warning overrides good' => [
-                [
-                    [
-                        'checkedOut' => ['warn' => 1, 'level' => 2],
-                        'holds' => ['available' => 1, 'level' => 1],
-                    ],
-                ],
-                '.account-status-warning',
-            ],
-            'good overrides none' => [
-                [
-                    [
-                        'holds' => ['available' => 1, 'level' => 1],
-                        'fines' => ['total' => 0, 'display' => 'none', 'level' => 0],
-                    ],
-                ],
-                '.account-status-good',
-            ],
+            '.account-status-good',
         ];
     }
 
@@ -324,10 +319,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $storage    Array of storage values to test
      * @param string $checkClass Icon class to check
      *
-     * @dataProvider accountIconProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('accountIconProvider')]
     public function testAccountIcon(array $storage, string $checkClass): void
     {
         $this->changeConfigs(
@@ -382,7 +376,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             '1',
             $this->findCssAndGetText($checkoutsStatus, '.badge.account-info')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Items due later: 1 ,',
             $this->findCssAndGetText($checkoutsStatus, '.visually-hidden')
         );
@@ -391,7 +385,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             '2',
             $this->findCssAndGetText($checkoutsStatus, ' .badge.account-warning')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Items due soon: 2 ,',
             $this->findCssAndGetText($checkoutsStatus, '.visually-hidden', null, 1)
         );
@@ -400,7 +394,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             '3',
             $this->findCssAndGetText($checkoutsStatus, '.badge.account-alert')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Items overdue: 3 ,',
             $this->findCssAndGetText($checkoutsStatus, '.visually-hidden', null, 2)
         );
@@ -411,7 +405,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             '1',
             $this->findCssAndGetText($holdsStatus, '.badge.account-info')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Available for Pickup: 1 ,',
             $this->findCssAndGetText($holdsStatus, '.visually-hidden')
         );
@@ -420,7 +414,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             '2',
             $this->findCssAndGetText($holdsStatus, '.badge.account-warning')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'In Transit: 2 ,',
             $this->findCssAndGetText($holdsStatus, '.visually-hidden', null, 1)
         );
@@ -429,13 +423,13 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             '3',
             $this->findCssAndGetText($holdsStatus, '.badge.account-none')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Other Status: 3 ,',
             $this->findCssAndGetText($holdsStatus, '.visually-hidden', null, 2)
         );
 
         // Fines
-        $this->assertEquals(
+        $this->assertSame(
             '$1.23',
             $this->findCssAndGetText($page, '.myresearch-menu .fines-status .badge.account-alert')
         );

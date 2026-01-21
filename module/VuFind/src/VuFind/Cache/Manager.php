@@ -36,7 +36,7 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -354,6 +354,36 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
+     * Ensure that a cache directory exists.
+     *
+     * @param string $dirName      Directory to use for storage
+     * @param array  $overrideOpts Options to override default values.
+     *
+     * @return void
+     */
+    public function ensureCacheDirectoryExists($dirName, $overrideOpts = [])
+    {
+        $opts = array_merge($this->defaults, $overrideOpts);
+
+        if (!is_dir($dirName)) {
+            if (isset($opts['dir_permission'])) {
+                $dir_perm = octdec($opts['dir_permission']);
+            } else {
+                // 0777 is chmod default, use if dir_permission is not explicitly set
+                $dir_perm = 0o777;
+            }
+            // Make sure cache parent directory and directory itself exist:
+            $parentDir = dirname($dirName);
+            if (!is_dir($parentDir) && !@mkdir($parentDir, $dir_perm)) {
+                $this->directoryCreationError = true;
+            }
+            if (!@mkdir($dirName, $dir_perm)) {
+                $this->directoryCreationError = true;
+            }
+        }
+    }
+
+    /**
      * Add a file cache to the manager and ensure that necessary directory exists.
      *
      * @param string $cacheName    Name of new cache to create
@@ -373,34 +403,8 @@ class Manager implements LoggerAwareInterface
             unset($opts['disabled']);
         }
 
-        if (!is_dir($dirName)) {
-            if (isset($opts['umask'])) {
-                // convert umask from string
-                $umask = octdec($opts['umask']);
-                // validate
-                if ($umask & 0o700) {
-                    throw new \Exception(
-                        'Invalid umask: ' . $opts['umask']
-                        . '; need permission to execute, read and write by owner'
-                    );
-                }
-                umask($umask);
-            }
-            if (isset($opts['dir_permission'])) {
-                $dir_perm = octdec($opts['dir_permission']);
-            } else {
-                // 0777 is chmod default, use if dir_permission is not explicitly set
-                $dir_perm = 0o777;
-            }
-            // Make sure cache parent directory and directory itself exist:
-            $parentDir = dirname($dirName);
-            if (!is_dir($parentDir) && !@mkdir($parentDir, $dir_perm)) {
-                $this->directoryCreationError = true;
-            }
-            if (!@mkdir($dirName, $dir_perm)) {
-                $this->directoryCreationError = true;
-            }
-        }
+        $this->ensureCacheDirectoryExists($dirName, $opts);
+
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];
         } elseif (is_array($opts)) {
@@ -441,7 +445,7 @@ class Manager implements LoggerAwareInterface
             $eventManager = $laminasCache->getEventManager();
             $eventManager->attach(
                 'getCapabilities.post',
-                function ($event) use ($laminasCache) {
+                function ($event) use ($laminasCache): void {
                     $oldCapacities = $event->getResult();
                     $newCapacities = new Capabilities(
                         $laminasCache,

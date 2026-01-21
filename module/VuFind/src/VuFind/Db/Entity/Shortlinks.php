@@ -31,9 +31,10 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Shortlinks
+ * Entity model for shortlinks table
  *
  * @category VuFind
  * @package  Database
@@ -46,6 +47,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Shortlinks implements ShortlinksEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -153,7 +156,8 @@ class Shortlinks implements ShortlinksEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

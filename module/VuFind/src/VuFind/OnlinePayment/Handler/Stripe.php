@@ -24,7 +24,7 @@
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 
@@ -33,7 +33,7 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment\Handler;
 
 use Laminas\Http\PhpEnvironment\Response;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe as StripeStripe;
@@ -49,7 +49,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 class Stripe extends AbstractBase implements

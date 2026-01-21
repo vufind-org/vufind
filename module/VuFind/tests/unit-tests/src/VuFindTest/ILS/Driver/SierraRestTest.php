@@ -196,9 +196,9 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(array $patron, string $fixture, array $expected): void
     {
         $requestMap = [
@@ -269,9 +269,9 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $patron, string $fixture, array $expected): void
     {
         $request = [
@@ -315,7 +315,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         $sessionFactory ??= fn ($namespace) => $this->createMock(Container::class);
         $driver = $this->getMockBuilder(SierraRest::class)->setConstructorArgs([$dateConverter, $sessionFactory])
             ->onlyMethods(['makeRequest'])->getMock();
-        $driver->expects($this->any())->method('makeRequest')->willReturnMap($requestMap);
+        $driver->method('makeRequest')->willReturnMap($requestMap);
         return $driver;
     }
 }

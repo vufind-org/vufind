@@ -67,39 +67,33 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')
-            ->with($this->equalTo('tags'), $this->equalTo('Your Tags'), $this->equalTo(false));
+            ->with('tags', 'Your Tags', false);
         $this->getFavoriteFacets($results);
     }
 
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Search\Solr\Results  $results      results object
-     * @param string                       $tagSetting   Are tags enabled?
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
-     * @param \VuFind\Config\PluginManager $configLoader config loader
+     * @param ?\VuFind\Search\Solr\Results $results    results object
+     * @param string                       $tagSetting Are tags enabled?
      *
      * @return FavoriteFacets
      */
     protected function getFavoriteFacets(
-        $results = null,
-        $tagSetting = 'enabled',
-        $settings = '',
-        $request = null,
-        $configLoader = null
-    ) {
+        ?\VuFind\Search\Solr\Results $results = null,
+        string $tagSetting = 'enabled',
+    ): FavoriteFacets {
         if (null === $results) {
             $results = $this->getMockResults();
         }
         $sf = new FavoriteFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
+            $this->getMockConfigManager(),
             $tagSetting
         );
-        $sf->setConfig($settings);
+        $sf->setConfig('');
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            new \Laminas\Stdlib\Parameters([])
         );
         $sf->process($results);
         return $sf;
@@ -117,10 +111,8 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -136,10 +128,8 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

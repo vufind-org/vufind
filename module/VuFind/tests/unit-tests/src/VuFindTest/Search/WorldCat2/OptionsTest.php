@@ -52,7 +52,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     public function testGetTermsLimitWithConfiguration(): void
     {
         $config = ['General' => ['terms_limit' => 5]];
-        $this->assertEquals(5, $this->getOptions($config)->getQueryTermsLimit());
+        $this->assertSame(5, $this->getOptions($config)->getQueryTermsLimit());
     }
 
     /**
@@ -62,7 +62,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetTermsLimitWithDefault(): void
     {
-        $this->assertEquals(30, $this->getOptions()->getQueryTermsLimit());
+        $this->assertSame(30, $this->getOptions()->getQueryTermsLimit());
     }
 
     /**
@@ -72,7 +72,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchAction(): void
     {
-        $this->assertEquals('worldcat2-search', $this->getOptions()->getSearchAction());
+        $this->assertSame('worldcat2-search', $this->getOptions()->getSearchAction());
     }
 
     /**
@@ -82,7 +82,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetAdvancedSearchAction(): void
     {
-        $this->assertEquals('worldcat2-advanced', $this->getOptions()->getAdvancedSearchAction());
+        $this->assertSame('worldcat2-advanced', $this->getOptions()->getAdvancedSearchAction());
     }
 
     /**

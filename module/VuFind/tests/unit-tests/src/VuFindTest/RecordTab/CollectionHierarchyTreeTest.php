@@ -49,24 +49,16 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecord(): void
     {
-        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request = $this->getMockBuilder(\Laminas\Http\Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $conf = $this->createMock(\VuFind\Config\Config::class);
+        $load = $this->createMock(\VuFind\Record\Loader::class);
+        $request = $this->createMock(\Laminas\Http\Request::class);
         $request->expects($this->once())->method('getQuery')
-            ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue('foo'));
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+            ->with('recordID', false)
+            ->willReturn('foo');
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $load->expects($this->once())->method('load')
-            ->with($this->equalTo('foo'))
-            ->will($this->returnValue($recordDriver));
+            ->with('foo')
+            ->willReturn($recordDriver);
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);
         $this->assertSame($recordDriver, $obj->getActiveRecord());
@@ -79,18 +71,12 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecordWithEmptyId(): void
     {
-        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request = $this->getMockBuilder(\Laminas\Http\Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $conf = $this->createMock(\VuFind\Config\Config::class);
+        $load = $this->createMock(\VuFind\Record\Loader::class);
+        $request = $this->createMock(\Laminas\Http\Request::class);
         $request->expects($this->once())->method('getQuery')
-            ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue(null));
+            ->with('recordID', false)
+            ->willReturn(null);
         $load->expects($this->never())->method('load');
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);

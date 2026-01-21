@@ -70,22 +70,20 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLogin()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function loginConfigProvider(): array
+    public static function loginConfigProvider(): \Iterator
     {
-        return [
-            'with cat_username mapping' => [ // test for regression of #3992
-                [
-                    'General' => [
-                        'attributes' => [
-                            'cat_username' => 'foo',
-                        ],
+        yield 'with cat_username mapping' => [ // test for regression of #3992
+            [
+                'General' => [
+                    'attributes' => [
+                        'cat_username' => 'foo',
                     ],
                 ],
             ],
-            'defaults' => [],
         ];
+        yield 'defaults' => [];
     }
 
     /**
@@ -94,9 +92,8 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
      * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
      *
      * @return void
-     *
-     * @dataProvider loginConfigProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginConfigProvider')]
     public function testLogin(array $extraSsoConfigs = []): void
     {
         // Set up configs
@@ -131,7 +128,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-nav .save-record');
 
         // Login in lightbox
-        $this->assertEquals('Institutional Login', $this->findCssAndGetText($page, '.modal-body .btn.btn-link'));
+        $this->assertSame('Institutional Login', $this->findCssAndGetText($page, '.modal-body .btn.btn-link'));
         $this->clickCss($page, '.modal-body .btn.btn-link');
 
         // Check if save form is in lightbox
@@ -142,7 +139,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
 
         // Check that we are still on the record page
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, '.record .media-body h1')
         );
@@ -190,12 +187,11 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
             $this->getFixture('shibboleth/logout_notification.xml'),
             'application/xml'
         );
-        $this->assertTrue($result->isSuccess());
-        $this->assertEquals(200, $result->getStatusCode());
+        $this->assertSame(200, $result->getStatusCode());
 
         // Check that login link is back:
         $session->reload();
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
     }
 
     /**
@@ -212,7 +208,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Check that login link is back
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
     }
 
     /**

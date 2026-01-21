@@ -93,15 +93,13 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider that offers various author controller paths for testing.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function authorPathsProvider(): array
+    public static function authorPathsProvider(): \Iterator
     {
-        return [
-            'home page' => ['/Author/Home'],
-            'results page' => ['/Author/Search?lookfor=shakespeare'],
-            'author page' => ['/Author/Home?author=Shakespeare%2C+William+1564+-+1616'],
-        ];
+        yield 'home page' => ['/Author/Home'];
+        yield 'results page' => ['/Author/Search?lookfor=shakespeare'];
+        yield 'author page' => ['/Author/Home?author=Shakespeare%2C+William+1564+-+1616'];
     }
 
     /**
@@ -110,9 +108,8 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path Starting URL path to test
      *
      * @return void
-     *
-     * @dataProvider authorPathsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authorPathsProvider')]
     public function testAuthorSearchDoesNotBreakSearchBox(string $path): void
     {
         $session = $this->getMinkSession();

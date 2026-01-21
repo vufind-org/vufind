@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * UserCard
+ * Entity model for user_card table
  *
  * @category VuFind
  * @package  Database
@@ -280,7 +280,8 @@ class UserCard implements UserCardEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**
@@ -303,7 +304,8 @@ class UserCard implements UserCardEntityInterface
      */
     public function getSaved(): DateTime
     {
-        return $this->saved;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->saved);
     }
 
     /**

@@ -118,7 +118,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->addTagsToRecord($page, 'foo foO fOo');
         // Count tags
         $this->waitForPageLoad($page);
-        $this->assertEquals(['fOo', 'foO', 'foo'], $this->getTagsFromPage($page));
+        $this->assertSame(['fOo', 'foO', 'foo'], $this->getTagsFromPage($page));
         // Now switch to case-insensitive tags:
         $this->changeConfigs(
             [
@@ -131,18 +131,17 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Verify that there are duplicates on the page:
         $page = $this->gotoRecord();
-        $this->assertEquals(['foo', 'foo', 'foo'], $this->getTagsFromPage($page));
+        $this->assertSame(['foo', 'foo', 'foo'], $this->getTagsFromPage($page));
         // Now go to the upgrade page:
         $this->getMinkSession()->visit($this->getVuFindUrl('/Upgrade'));
         // Upgrade the database only:
         $this->clickCss($page, '#skip-config');
-        $this->clickCss($page, '#skip-metadata');
         $this->clickCss($page, '.main input.btn-primary');
         $this->waitForPageLoad($page);
         // Skip the security warning:
-        $this->assertEquals('Critical Issue: Insecure database settings', $this->findCssAndGetText($page, 'h2'));
+        $this->assertSame('Critical Issue: Insecure database settings', $this->findCssAndGetText($page, 'h2'));
         $ignoreSelector = '.main a.btn-default';
-        $this->assertEquals('ignore the problem', $this->findCssAndGetText($page, $ignoreSelector));
+        $this->assertSame('ignore the problem', $this->findCssAndGetText($page, $ignoreSelector));
         $this->clickCss($page, $ignoreSelector);
         $this->waitForPageLoad($page);
         // Now we should be on the duplicate tag screen; let's submit it:
@@ -152,7 +151,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsString('Upgrade complete.', $this->findCssAndGetText($page, 'p'));
         // Upgrade should now be complete; verify that deduplication worked.
         $page = $this->gotoRecord();
-        $this->assertEquals(['foo'], $this->getTagsFromPage($page));
+        $this->assertSame(['foo'], $this->getTagsFromPage($page));
         // Clean up the tag now that we're done by deleting in tag admin:
         $page = $this->goToTagAdmin('/Manage');
         $this->findCss($page, '#type')->setValue('tag');

@@ -27,7 +27,7 @@
 <?php
 $script = <<<JS
     $('.tag-submit').click(function(e) {
-        ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));
+        VuFind.record.ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));
         return false;
     });
     JS;

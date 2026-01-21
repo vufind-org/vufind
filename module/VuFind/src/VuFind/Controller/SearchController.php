@@ -29,12 +29,17 @@
 
 namespace VuFind\Controller;
 
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
+use VuFind\Search\NewItemsHelper;
+use VuFind\Search\ReservesHelper;
+use VuFind\Session\Helper\FollowupHelper;
 
 use function array_slice;
 use function count;
+use function intval;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -134,8 +139,8 @@ class SearchController extends AbstractSolrSearch
         $view->url = $this->params()->fromPost('url')
             ?? $this->params()->fromQuery('url')
             ?? $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (!$this->isLocalUrl($view->url)) {
-            throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
+        if (!$view->url || !$this->isLocalUrl($view->url)) {
+            throw new \Exception('Unexpected value passed to emailAction: ' . ($view->url ?? '<null>'));
         }
 
         $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
@@ -152,7 +157,7 @@ class SearchController extends AbstractSolrSearch
 
         // Check if we have a URL in login followup data -- this should override
         // any existing referer to avoid emailing a login-related URL!
-        $followupUrl = $this->followup()->retrieveAndClear('emailurl');
+        $followupUrl = $this->getService(FollowupHelper::class)->retrieveAndClear('emailurl');
         if (!empty($followupUrl)) {
             $view->url = $followupUrl;
         }
@@ -239,19 +244,125 @@ class SearchController extends AbstractSolrSearch
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
+        $newItemsHelper = $this->getService(NewItemsHelper::class);
         $view = $this->createViewModel(
             [
-                'defaultSort' => $this->newItems()->getDefaultSort(),
-                'fundList' => $this->newItems()->getFundList(),
-                'ranges' => $this->newItems()->getRanges(),
+                'defaultSort' => $newItemsHelper->getDefaultSort(),
+                'fundList' => $newItemsHelper->getFundList(),
+                'ranges' => $newItemsHelper->getRanges(),
             ]
         );
-        if ($this->newItems()->includeFacets()) {
+        if ($newItemsHelper->includeFacets()) {
             $view->options = $this->getService(\VuFind\Search\Options\PluginManager::class)
                 ->get($this->searchClassId);
             $this->addFacetDetailsToView($view, 'NewItems');
         }
         return $view;
+    }
+
+    /**
+     * Get new item parameters from the query and configuration.
+     *
+     * @return array
+     */
+    protected function getNewItemParameters(): array
+    {
+        // Retrieve new item list:
+        $range = intval($this->params()->fromQuery('range', 0));
+        $dept = $this->params()->fromQuery('department');
+
+        // Validate the range parameter -- it should not exceed the greatest
+        // configured value:
+        $newItemsHelper = $this->getService(NewItemsHelper::class);
+        $maxAge = $newItemsHelper->getMaxAge();
+        if ($maxAge > 0 && $range > $maxAge) {
+            $range = $maxAge;
+        }
+
+        // Are there "new item" filter queries specified in the config file?
+        // If so, load them now; we may add more values. These will be applied
+        // later after the whole list is collected.
+        $hiddenFilters = $newItemsHelper->getHiddenFilters();
+
+        return compact('range', 'dept', 'hiddenFilters');
+    }
+
+    /**
+     * Modify the current query parameters to reflect a new item search.
+     *
+     * @param array $newItemParams Parameters retrieved from getNewItemParameters()
+     *
+     * @return void
+     */
+    protected function setUpNewItemRequestParams(array $newItemParams): void
+    {
+        // Depending on whether we're in ILS or Solr mode, we need to do some
+        // different processing here to retrieve the correct items:
+        $newItemsHelper = $this->getService(NewItemsHelper::class);
+        if ($newItemsHelper->getMethod() == 'ils') {
+            // Use standard search action with override parameter to show results:
+            $bibIDs = $newItemsHelper->getBibIDsFromCatalog(
+                $this->getResultsManager()->get('Solr')->getParams(),
+                $newItemParams['range'],
+                $newItemParams['dept'],
+                $this->flashMessenger()
+            );
+            $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
+        } else {
+            // Use a Solr filter to show results:
+            $newItemParams['hiddenFilters'][] = $newItemsHelper->getSolrFilter($newItemParams['range']);
+        }
+        // If we found hidden filters above, apply them now:
+        if (!empty($newItemParams['hiddenFilters'])) {
+            $this->getRequest()->getQuery()->set('hiddenFilters', $newItemParams['hiddenFilters']);
+        }
+
+        // Flag this as a specialized search to avoid bleeding defaults into the
+        // standard search box:
+        $this->getRequest()->getQuery()->set('specializedSearch', true);
+    }
+
+    /**
+     * Modify the provided view model to reflect a new item search, then return it.
+     *
+     * @param ViewModel $view          View model to modify
+     * @param array     $newItemParams Parameters retrieved from getNewItemParameters()
+     *
+     * @return ViewModel
+     */
+    protected function setUpNewItemView(ViewModel $view, array $newItemParams): ViewModel
+    {
+        // Customize the URL helper to make sure it builds proper new item URLs
+        // (check it's set first -- RSS feed will return a response model rather
+        // than a view model):
+        if (isset($view->results)) {
+            $view->results->getOptions()->setFacetListAction('search-newitemfacetlist');
+            $view->results->getUrlQuery()
+                ->setDefaultParameter('range', $newItemParams['range'])
+                ->setDefaultParameter('department', $newItemParams['dept'])
+                ->disableHiddenFilters()
+                ->setSuppressQuery(true);
+        }
+
+        // We don't want new items hidden filters to propagate to other searches:
+        $this->serviceLocator->get('ViewHelperManager')->get('searchTabs')->disableCurrentHiddenFilterParams();
+        $view->ignoreHiddenFiltersInRequest = true;
+        return $view;
+    }
+
+    /**
+     * New item facet list
+     *
+     * @return mixed
+     */
+    public function newitemfacetlistAction()
+    {
+        $newItemParams = $this->getNewItemParameters();
+        $this->setUpNewItemRequestParams($newItemParams);
+        // The facet list needs one extra parameter to generate appropriate links:
+        $this->getRequest()->getQuery()->set('searchAction', $this->url()->fromRoute('search-newitem'));
+        $view = $this->facetListAction();
+        return $this->setUpNewItemView($view, $newItemParams);
     }
 
     /**
@@ -261,47 +372,8 @@ class SearchController extends AbstractSolrSearch
      */
     public function newitemresultsAction()
     {
-        // Retrieve new item list:
-        $range = $this->params()->fromQuery('range');
-        $dept = $this->params()->fromQuery('department');
-
-        // Validate the range parameter -- it should not exceed the greatest
-        // configured value:
-        $maxAge = $this->newItems()->getMaxAge();
-        if ($maxAge > 0 && $range > $maxAge) {
-            $range = $maxAge;
-        }
-
-        // Are there "new item" filter queries specified in the config file?
-        // If so, load them now; we may add more values. These will be applied
-        // later after the whole list is collected.
-        $hiddenFilters = $this->newItems()->getHiddenFilters();
-
-        // Depending on whether we're in ILS or Solr mode, we need to do some
-        // different processing here to retrieve the correct items:
-        if ($this->newItems()->getMethod() == 'ils') {
-            // Use standard search action with override parameter to show results:
-            $bibIDs = $this->newItems()->getBibIDsFromCatalog(
-                $this->getILS(),
-                $this->getResultsManager()->get('Solr')->getParams(),
-                $range,
-                $dept,
-                $this->flashMessenger()
-            );
-            $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
-        } else {
-            // Use a Solr filter to show results:
-            $hiddenFilters[] = $this->newItems()->getSolrFilter($range);
-        }
-
-        // If we found hidden filters above, apply them now:
-        if (!empty($hiddenFilters)) {
-            $this->getRequest()->getQuery()->set('hiddenFilters', $hiddenFilters);
-        }
-
-        // Flag this as a specialized search to avoid bleeding defaults into the
-        // standard search box:
-        $this->getRequest()->getQuery()->set('specializedSearch', true);
+        $newItemParams = $this->getNewItemParameters();
+        $this->setUpNewItemRequestParams($newItemParams);
 
         // Don't save to history or memory -- history page doesn't handle correctly
         // and we don't want hidden filters bleeding to weird places:
@@ -310,23 +382,7 @@ class SearchController extends AbstractSolrSearch
 
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
-
-        // Customize the URL helper to make sure it builds proper new item URLs
-        // (check it's set first -- RSS feed will return a response model rather
-        // than a view model):
-        if (isset($view->results)) {
-            $view->results->getUrlQuery()
-                ->setDefaultParameter('range', $range)
-                ->setDefaultParameter('department', $dept)
-                ->disableHiddenFilters()
-                ->setSuppressQuery(true);
-        }
-
-        // We don't want new items hidden filters to propagate to other searches:
-        $this->serviceLocator->get('ViewHelperManager')->get('searchTabs')->disableCurrentHiddenFilterParams();
-        $view->ignoreHiddenFiltersInRequest = true;
-
-        return $view;
+        return $this->setUpNewItemView($view, $newItemParams);
     }
 
     /**
@@ -347,20 +403,30 @@ class SearchController extends AbstractSolrSearch
 
         // No params?  Show appropriate form (varies depending on whether we're
         // using driver-based or Solr-based reserves searching).
-        if ($this->reserves()->useIndex()) {
+        if ($this->getService(ReservesHelper::class)->useIndex()) {
             return $this->forwardTo('Search', 'ReservesSearch');
         }
 
         // If we got this far, we're using driver-based searching and need to
-        // send options to the view:
+        // send options to the view (but we should tolerate drivers that do not
+        // define all of the department/instructor/courses getters):
         $catalog = $this->getILS();
-        return $this->createViewModel(
-            [
-                'deptList' => $catalog->getDepartments(),
-                'instList' => $catalog->getInstructors(),
-                'courseList' =>  $catalog->getCourses(),
-            ]
-        );
+        try {
+            $deptList = $catalog->getDepartments();
+        } catch (\VuFind\Exception\ILS $e) {
+            $deptList = [];
+        }
+        try {
+            $instList = $catalog->getInstructors();
+        } catch (\VuFind\Exception\ILS $e) {
+            $instList = [];
+        }
+        try {
+            $courseList =  $catalog->getCourses();
+        } catch (\VuFind\Exception\ILS $e) {
+            $courseList = [];
+        }
+        return $this->createViewModel(compact('deptList', 'instList', 'courseList'));
     }
 
     /**
@@ -407,7 +473,7 @@ class SearchController extends AbstractSolrSearch
         $course = $this->params()->fromQuery('course');
         $inst = $this->params()->fromQuery('inst');
         $dept = $this->params()->fromQuery('dept');
-        $result = $this->reserves()->findReserves($course, $inst, $dept);
+        $result = $this->getService(ReservesHelper::class)->findReserves($course, $inst, $dept);
 
         // Build a list of unique IDs
         $callback = function ($i) {
@@ -492,10 +558,10 @@ class SearchController extends AbstractSolrSearch
     {
         switch ($this->params()->fromQuery('method')) {
             case 'describe':
-                $config = $this->getConfig();
+                $config = $this->getConfigArray();
                 $xml = $this->getViewRenderer()->render(
                     'search/opensearch-describe.phtml',
-                    ['site' => $config->Site]
+                    ['site' => $config['Site']]
                 );
                 break;
             default:

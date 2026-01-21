@@ -45,7 +45,7 @@ use function count;
  */
 class User implements
     PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

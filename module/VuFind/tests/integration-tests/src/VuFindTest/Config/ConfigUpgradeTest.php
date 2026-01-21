@@ -98,19 +98,17 @@ class ConfigUpgradeTest extends ConfigTestCase
     /**
      * Upgrade test provider.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function upgradeTestProvider(): array
+    public static function upgradeTestProvider(): \Iterator
     {
-        return [
-            'changing-upgrade' => [
-                'defaultgenerator',
-                'VuFind ' . self::$targetVersion,
-            ],
-            'unchanging-upgrade' => [
-                'customgenerator',
-                'Custom Generator',
-            ],
+        yield 'changing-upgrade' => [
+            'defaultgenerator',
+            'VuFind ' . self::$targetVersion,
+        ];
+        yield 'unchanging-upgrade' => [
+            'customgenerator',
+            'Custom Generator',
         ];
     }
 
@@ -121,9 +119,8 @@ class ConfigUpgradeTest extends ConfigTestCase
      * @param string $expectedGenerator Expected Generator
      *
      * @return void
-     *
-     * @dataProvider upgradeTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('upgradeTestProvider')]
     public function testUpgrade($fixture, $expectedGenerator): void
     {
         $baseConfig = $this->readConfig('config', $this->baseDirPath);

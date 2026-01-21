@@ -31,9 +31,10 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * AuthHash
+ * Entity model for auth_hash table
  *
  * @category VuFind
  * @package  Database
@@ -48,6 +49,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class AuthHash implements AuthHashEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -104,7 +107,7 @@ class AuthHash implements AuthHashEntityInterface
     public function __construct()
     {
         // Set the default value as a DateTime object
-        $this->created = new Datetime();
+        $this->created = new DateTime();
     }
 
     /**
@@ -216,7 +219,8 @@ class AuthHash implements AuthHashEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

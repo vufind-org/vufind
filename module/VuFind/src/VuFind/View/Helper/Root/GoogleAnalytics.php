@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use function is_array;
-
 /**
  * GoogleAnalytics view helper
  *
@@ -43,36 +41,20 @@ use function is_array;
 class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * API key (false if disabled)
-     *
-     * @var string|bool
-     */
-    protected $key;
-
-    /**
      * Options to pass to the ga() create command.
      *
      * @var string
      */
-    protected $createOptions;
+    protected string $createOptions;
 
     /**
      * Constructor
      *
-     * @param string|bool $key     API key (false if disabled)
-     * @param bool|array  $options Configuration options (supported options:
-     * 'universal' and 'create_options_js'). If a boolean is provided instead of
-     * an array, that value is used as the 'universal' setting and no other options
-     * are set (for backward compatibility).
+     * @param ?string $key     API key (null if disabled)
+     * @param array   $options Configuration options (supported option: 'create_options_js').
      */
-    public function __construct($key, $options = [])
+    public function __construct(protected ?string $key, array $options = [])
     {
-        // The second constructor parameter used to be a boolean representing
-        // the "universal" setting, so convert to an array for legacy compatibility:
-        if (!is_array($options)) {
-            $options = ['universal' => (bool)$options];
-        }
-        $this->key = $key;
         $this->createOptions = $options['create_options_js'] ?? "'auto'";
     }
 

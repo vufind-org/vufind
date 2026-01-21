@@ -32,8 +32,8 @@ namespace VuFindTest\Backend\Blender;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
-use Laminas\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use VuFind\Config\Config;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
@@ -478,10 +478,9 @@ class BackendTest extends TestCase
      * @param int    $expectedEDS     Expected EDS count
      * @param Query  $query           Override query
      *
-     * @dataProvider getSearchTestData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSearchTestData')]
     public function testSearch(
         $start,
         $limit,
@@ -602,9 +601,7 @@ class BackendTest extends TestCase
         $edsParams = new ParamBag();
         $collection = new \VuFindSearch\Backend\EDS\Response\RecordCollection([]);
 
-        $eds = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $eds = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $this->expectConsecutiveCalls(
             $eds,
             'search',
@@ -708,9 +705,7 @@ class BackendTest extends TestCase
         $records = $result->getRecords();
         $this->assertIsArray($records);
         $this->assertCount(20, $records);
-        foreach ($records as $record) {
-            $this->assertInstanceOf(SolrRecord::class, $record);
-        }
+        $this->assertContainsOnlyInstancesOf(SolrRecord::class, $records);
     }
 
     /**
@@ -816,13 +811,13 @@ class BackendTest extends TestCase
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
-            ->method('warn')
+            ->method('log')
             ->with(
+                \Psr\Log\LogLevel::WARNING,
                 'VuFindSearch\Backend\Blender\Backend:'
                 . ' Invalid blender_backend filter: Backend Foo not enabled',
                 []
-            )
-            ->willReturn(null);
+            );
         $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }
@@ -852,10 +847,9 @@ class BackendTest extends TestCase
      *
      * @param array $blockSizes Adaptive block size configuration
      *
-     * @dataProvider getInvalidBlockSizes
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getInvalidBlockSizes')]
     public function testInvalidAdaptiveBlockSize($blockSizes): void
     {
         $config = static::$config;
@@ -879,7 +873,7 @@ class BackendTest extends TestCase
         $preEventParams = [];
         $postEventParams = [];
 
-        $onSearchPre = function (EventInterface $event) use (&$preEventParams) {
+        $onSearchPre = function (EventInterface $event) use (&$preEventParams): void {
             $command = $event->getParam('command');
             $params = $command->getSearchParameters();
             $backend = $event->getParam('backend');
@@ -899,7 +893,7 @@ class BackendTest extends TestCase
             ];
         };
 
-        $onSearchPost = function (EventInterface $event) use (&$postEventParams) {
+        $onSearchPost = function (EventInterface $event) use (&$postEventParams): void {
             $command = $event->getParam('command');
             $postEventParams[$command->getTargetIdentifier()] = [
                 'target' => $event->getTarget(),
@@ -1018,24 +1012,18 @@ class BackendTest extends TestCase
      */
     protected function getBackendForFacetsAndErrors($facets, $errors)
     {
-        $collection = $this->getMockBuilder(SolrRecordCollection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $collection = $this->createMock(SolrRecordCollection::class);
         $collection->expects($this->once())
             ->method('getErrors')
-            ->will($this->returnValue($errors));
+            ->willReturn($errors);
         $collection->expects($this->once())
             ->method('getRecords')
-            ->will($this->returnValue([]));
-        $collection->expects($this->any())
-            ->method('getFacets')
-            ->will($this->returnValue($facets));
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+            ->willReturn([]);
+        $collection->method('getFacets')->willReturn($facets);
+        $backend = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $backend->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         return $backend;
     }
@@ -1147,9 +1135,7 @@ class BackendTest extends TestCase
                 ]
             )
             ->getMock();
-        $connector->expects($this->any())
-            ->method('query')
-            ->will($this->returnCallback($callback));
+        $connector->method('query')->willReturnCallback($callback);
 
         return $connector;
     }
@@ -1239,13 +1225,10 @@ class BackendTest extends TestCase
             ->onlyMethods(['call'])
             ->setConstructorArgs([[], $client])
             ->getMock();
-        $connector->expects($this->any())
-            ->method('call')
-            ->will($this->returnCallback($callback));
+        $connector->method('call')->willReturnCallback($callback);
 
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
-        $container = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->disableOriginalConstructor()->getMock();
+        $container = $this->createMock(\Laminas\Session\Container::class);
         $params = [
             $connector,
             $this->getEDSRecordCollectionFactory(),
@@ -1258,12 +1241,8 @@ class BackendTest extends TestCase
             ->setConstructorArgs($params)
             ->getMock();
 
-        $backend->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->will($this->returnValue('auth1234'));
-        $backend->expects($this->any())
-            ->method('getSessionToken')
-            ->will($this->returnValue('sess1234'));
+        $backend->method('getAuthenticationToken')->willReturn('auth1234');
+        $backend->method('getSessionToken')->willReturn('sess1234');
 
         $backend->setIdentifier('EDS');
         return $backend;

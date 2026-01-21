@@ -45,8 +45,10 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Laminas\View\Helper\AbstractHelper
+class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Cache for configurations
      *
@@ -118,7 +120,20 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Is autocomplete enabled for the current context?
+     * Is autocomplete configured to apply active filters for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters(string $activeSearchClass): bool
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return $options->autocompleteApplyActiveFilters();
+    }
+
+    /**
+     * Is autocomplete configured to autosubmit for the current context?
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -143,10 +158,30 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $settings = $this->getCombinedHandlerConfig($activeSearchClass);
             foreach ($settings['target'] ?? [] as $i => $target) {
                 if (($settings['type'][$i] ?? null) === 'VuFind') {
-                    $options = $this->getOptionsForTarget($target);
-                    $handlerRules = $options->getAutocompleteFormattingRules();
-                    foreach ($handlerRules as $key => $val) {
-                        $rules["VuFind:$target|$key"] = $val;
+                    try {
+                        $options = $this->getOptionsForTarget($target);
+                        $handlerRules = $options->getAutocompleteFormattingRules() ?? [];
+                        foreach ($handlerRules as $key => $val) {
+                            $rules["VuFind:$target|$key"] = $val;
+                        }
+                    } catch (\Exception $e) {
+                        // Log a warning and ignore when we can't add the autocomplete rules for
+                        // any of the handlers
+                        $baseMsg = "Could not determine autocomplete formatting rules for {$target}.";
+                        $shortDetails = $e->getMessage();
+                        $fullDetails = (string)$e;
+                        $this->logWarning(
+                            $baseMsg,
+                            [
+                                'details' => [
+                                    1 => "$baseMsg $shortDetails",
+                                    2 => "$baseMsg $shortDetails",
+                                    3 => "$baseMsg $shortDetails",
+                                    4 => "$baseMsg $fullDetails",
+                                    5 => "$baseMsg $fullDetails",
+                                ],
+                            ]
+                        );
                     }
                 }
             }
@@ -478,9 +513,30 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $label = $settings['label'][$i];
 
             if ($type == 'VuFind') {
-                $options = $this->getOptionsForTarget($target);
                 $j = 0;
-                $basic = $options->getBasicHandlers();
+                try {
+                    $options = $this->getOptionsForTarget($target);
+                    $basic = $options->getBasicHandlers();
+                } catch (\Exception $e) {
+                    // If we can't get the options or basic handlers for the search
+                    // target, then log it and don't add it to the search box
+                    $baseMsg = "Missing required data for {$target}. Could not add to search box.";
+                    $shortDetails = $e->getMessage();
+                    $fullDetails = (string)$e;
+                    $this->logError(
+                        $baseMsg,
+                        [
+                            'details' => [
+                                1 => "$baseMsg $shortDetails",
+                                2 => "$baseMsg $shortDetails",
+                                3 => "$baseMsg $shortDetails",
+                                4 => "$baseMsg $fullDetails",
+                                5 => "$baseMsg $fullDetails",
+                            ],
+                        ]
+                    );
+                    continue;
+                }
                 if (empty($basic)) {
                     $basic = ['' => ''];
                 }
@@ -504,7 +560,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                         $indent = false;
                     } else {
                         $finalLabel = $j == 1 ? $label : $searchDesc;
-                        $indent = $j == 1 ? false : true;
+                        $indent = $j != 1;
                     }
                     $handlers[] = [
                         'value' => $type . ':' . $target . '|' . $searchVal,

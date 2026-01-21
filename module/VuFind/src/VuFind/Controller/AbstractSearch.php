@@ -102,7 +102,7 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->options = $this->getOptionsForClass();
-        if ($view->options->getAdvancedSearchAction() === false) {
+        if ($view->options->getAdvancedSearchAction() === null) {
             throw new \Exception('Advanced search not supported.');
         }
 
@@ -195,15 +195,9 @@ class AbstractSearch extends AbstractBase
         // Enable recommendations unless explicitly told to disable them:
         $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
-        if (
-            $noRecommend === 1 || $noRecommend === '1'
-            || $noRecommend === 'true' || $noRecommend === true
-        ) {
+        if (in_array($noRecommend, [1, '1', 'true', true], true)) {
             return [];
-        } elseif (
-            $noRecommend === 0 || $noRecommend === '0'
-            || $noRecommend === 'false' || $noRecommend === false
-        ) {
+        } elseif (in_array($noRecommend, [0, '0', 'false', false], true)) {
             return $all;
         }
         return array_diff(
@@ -230,7 +224,7 @@ class AbstractSearch extends AbstractBase
         $override = $this->params()->fromQuery('recommendOverride');
 
         // Retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override) {
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override): void {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()
@@ -339,13 +333,13 @@ class AbstractSearch extends AbstractBase
     /**
      * Get the value multiFacetsSelection from the config
      *
-     * @param Config $config The config containing multiFacetsSelection
+     * @param array $config The config containing multiFacetsSelection
      *
      * @return string
      */
-    protected static function getMultiSelectionValueFromConfig(Config $config)
+    protected static function getMultiSelectionValueFromConfig(array $config): string
     {
-        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
+        $multiFacetsSelection = $config['Results_Settings']['multiFacetsSelection'] ?? 'false';
         return match ($multiFacetsSelection) {
             true, '1' => 'true',
             false, '', '0' => 'false',
@@ -364,7 +358,7 @@ class AbstractSearch extends AbstractBase
     protected function getSearchResultsView($setupCallback = null)
     {
         $view = $this->createViewModel();
-        $config = $this->getConfig($this->getOptionsForClass()->getFacetsIni());
+        $config = $this->getConfigArray($this->getOptionsForClass()->getFacetsIni());
         $view->multiFacetsSelection = static::getMultiSelectionValueFromConfig($config);
         $extraErrors = [];
 
@@ -503,7 +497,7 @@ class AbstractSearch extends AbstractBase
         $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
             $jumpto
-            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            && ($this->getConfigArray()['Record']['jump_to_single_search_result'] ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {
@@ -913,9 +907,8 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($options->getFacetsIni());
-        $limit = $config->Results_Settings->lightboxLimit ?? 50;
+        $config = $this->getConfigArray($options->getFacetsIni());
+        $limit = $config['Results_Settings']['lightboxLimit'] ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         if (!empty($contains)) {
             $params->setFacetContains($contains);

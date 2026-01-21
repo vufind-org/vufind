@@ -82,6 +82,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('https://guides.tricolib.brynmawr.edu/testprep', $rec->getUniqueID());
         $recs = $coll->getRecords();
@@ -114,7 +115,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnector(), $this->getRCFactory());
-        $this->assertTrue($back->getQueryBuilder() instanceof QueryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**
@@ -139,7 +140,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultRecordCollectionFactory()
     {
         $back = new Backend($this->getConnector());
-        $this->assertTrue($back->getRecordCollectionFactory() instanceof RecordCollectionFactory);
+        $this->assertInstanceOf(RecordCollectionFactory::class, $back->getRecordCollectionFactory());
     }
 
     /**
@@ -154,7 +155,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->throwException(new \Exception()));
+            ->willThrowException(new \Exception());
         $back = new Backend($conn);
         $back->search(new Query(), 1, 1);
     }
@@ -171,8 +172,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->with($this->equalTo($expectedParams), $this->equalTo(0), $this->equalTo(10))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->with($expectedParams, 0, 10)
+            ->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
     }

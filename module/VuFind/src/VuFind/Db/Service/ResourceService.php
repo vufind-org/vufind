@@ -30,16 +30,14 @@
 
 namespace VuFind\Db\Service;
 
-use Doctrine\ORM\EntityManager;
+use DateTime;
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
-use VuFind\Db\PersistenceManager;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -61,31 +59,6 @@ class ResourceService extends AbstractDbService implements
     use LoggerAwareTrait;
 
     /**
-     * Callback to load the resource populator.
-     *
-     * @var callable
-     */
-    protected $resourcePopulatorLoader;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManager       $entityManager           Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager     VuFind entity plugin manager
-     * @param PersistenceManager  $persistenceManager      Entity persistence manager
-     * @param callable            $resourcePopulatorLoader Resource populator
-     */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        PersistenceManager $persistenceManager,
-        callable $resourcePopulatorLoader
-    ) {
-        $this->resourcePopulatorLoader = $resourcePopulatorLoader;
-        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
-    }
-
-    /**
      * Lookup and return a resource.
      *
      * @param int $id Identifier value
@@ -94,8 +67,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function getResourceById(int $id): ?ResourceEntityInterface
     {
-        $resource = $this->entityManager->find(ResourceEntityInterface::class, $id);
-        return $resource;
+        return $this->entityManager->find(ResourceEntityInterface::class, $id);
     }
 
     /**
@@ -109,18 +81,42 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
-     * Get a set of records that do not have metadata stored in the resource
-     * table.
+     * Get a set of records that are missing metadata in the resource table. If maxAge is specified, this includes also
+     * records that need to be updated.
+     *
+     * @param ?int     $lastId  ID of last checked record, or null to start from beginning
+     * @param int      $limit   Limit for results
+     * @param ?int     $minAge  Minimum age (in days) for metadata before it needs to be updated, or null to search for
+     * records that are missing metadata
+     * @param string[] $sources Record source filter
      *
      * @return ResourceEntityInterface[]
      */
-    public function findMissingMetadata(): array
+    public function findMetadataToUpdate(?int $lastId, int $limit, ?int $minAge = null, array $sources = []): array
     {
-        $dql = 'SELECT r '
-            . 'FROM ' . ResourceEntityInterface::class . ' r '
-            . "WHERE r.title = '' OR r.author IS NULL OR r.year IS NULL";
+        $dql = 'SELECT r FROM ' . ResourceEntityInterface::class . ' r';
+        $params = [];
+        if (null !== $minAge) {
+            $date = new DateTime("now - $minAge days");
+            $dql .= ' WHERE (r.updated <= :dateThreshold)';
+            $params['dateThreshold'] = $date->format(VUFIND_DATABASE_DATETIME_FORMAT);
+        } else {
+            $dql .= ' WHERE (r.displayTitle IS NULL OR r.author IS NULL)';
+        }
+        if ($sources) {
+            $dql .= ' AND r.source IN (:sources)';
+            $params['sources'] = $sources;
+        }
+        if (null !== $lastId) {
+            $dql .= ' AND r.id > :lastId';
+            $params['lastId'] = $lastId;
+        }
+        $dql .= ' ORDER BY r.id';
 
         $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($params);
+        $query->setMaxResults($limit);
+
         $result = $query->getResult();
         return $result;
     }

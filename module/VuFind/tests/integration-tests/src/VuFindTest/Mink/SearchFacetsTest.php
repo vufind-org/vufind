@@ -104,7 +104,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $resultCount = $facet['resultCount'];
             // Apply the facet (after making sure we picked the right link):
             $facetSelector = '#side-collapse-genre_facet a[data-title="' . $title . '"]';
-            $this->assertEquals(
+            $this->assertSame(
                 "$title $count results $count",
                 $this->getFacetTextByLinkSelector($page, $facetSelector)
             );
@@ -146,25 +146,50 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Assert whether or not multi-facet select is expected in the facet list.
+     *
+     * @param Element $element Element containing facet list
+     * @param bool    $active  Do we expect multi-select controls?
+     *
+     * @throws \Exception
+     * @return void
+     */
+    protected function assertMultiSelectActiveInFacetList(Element $element, bool $active): void
+    {
+        $this->unfindCss($element, '.loading-spinner');
+        $checkMethod = $active ? 'findCss' : 'unfindCss';
+        $this->$checkMethod($element, '.multi-filters-selection');
+        $this->$checkMethod($element, '.js-full-facet-list.multi-facet-selection-active');
+        $this->$checkMethod($element, '.js-apply-multi-facets-selection');
+    }
+
+    /**
      * Helper function for facets lists
      *
-     * @param Element $page            Mink page object
-     * @param int     $limit           Configured lightbox length
-     * @param bool    $exclusionActive Is facet exclusion on?
+     * @param Element $page              Mink page object
+     * @param int     $limit             Configured lightbox length
+     * @param bool    $exclusionActive   Is facet exclusion on?
+     * @param bool    $expectMultiSelect Do we expect multi-facet select controls to be active?
      *
      * @return void
      */
-    protected function facetListProcedure(Element $page, int $limit, bool $exclusionActive = false): void
-    {
+    protected function facetListProcedure(
+        Element $page,
+        int $limit,
+        bool $exclusionActive = false,
+        bool $expectMultiSelect = false
+    ): void {
         $this->waitForPageLoad($page);
         $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
+        // Verify whether multi-select facet controls are visible/invisible as expected:
+        $this->assertMultiSelectActiveInFacetList($page, $expectMultiSelect);
         $this->assertFullListFacetCount($page, 'count', $limit * 2, $exclusionActive);
 
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
-        $this->assertEquals(
+        $this->assertSame(
             'Weird IDs 9 results 9 ' . $excludeControl
             . 'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
@@ -200,7 +225,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal #facet-list-index .js-facet-next-page');
         $this->waitForPageLoad($page);
         $this->assertFullListFacetCount($page, 'index', $limit * 2, $exclusionActive);
-        $this->assertEquals(
+        $this->assertSame(
             'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 ' . $excludeControl
@@ -339,10 +364,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $facets      Facets to apply
      * @param string $multiselect Use multiselection?
      *
-     * @dataProvider applyFacetProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('applyFacetProvider')]
     public function testApplyFacet(bool $deferred, bool $orFacets, array $facets, string $multiselect): void
     {
         $this->changeConfigs(
@@ -458,7 +482,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // now clear the filter
         $this->clickCss($page, '#modal button[type="reset"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Weird IDs 9 results 9 '
             . 'Fiction 7 results 7 '
             . 'The Study Of P|pes 1 results 1 '
@@ -665,7 +689,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertCount($limit * 2 - 1, $items);
-        $this->assertEquals(
+        $this->assertSame(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -707,14 +731,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#modal .js-user-selection-multi-filters');
         // Check for multi-filter controls:
         $this->activateMultiFilterSelection($modal);
-        $this->unfindCss($modal, '.loading-spinner');
-        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
-        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        $this->assertMultiSelectActiveInFacetList($modal, true);
         // Change order and check for multi-filter controls:
         $this->clickCss($modal, '[data-sort="index"]');
-        $this->unfindCss($modal, '.loading-spinner');
-        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
-        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        $this->assertMultiSelectActiveInFacetList($modal, true);
         // Load more:
         $this->clickCss($modal, '.js-facet-next-page');
         $this->waitForPageLoad($page);
@@ -813,7 +833,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             return $parts[0];
         };
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        $this->assertEquals(
+        $this->assertSame(
             'Showing 1 - 10 results of 10',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))
         );
@@ -830,7 +850,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             );
             $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
         }
-        $this->assertEquals(
+        $this->assertSame(
             'Showing 1 - 7 results of 7',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))
         );
@@ -869,10 +889,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $sort         Sort option
      * @param string  $expectedSort Expected sort order of facet hierarchy
      *
-     * @dataProvider hierarchicalFacetSortProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetSortProvider')]
     public function testHierarchicalFacetSort(?string $sort, string $expectedSort): void
     {
         $facetConfig = [
@@ -1143,8 +1162,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Facets should be ordered in descending order by count, and should have
         // non-zero counts...
-        $this->assertTrue($firstFacetCount >= $secondFacetCount);
-        $this->assertTrue($secondFacetCount > 0);
+        $this->assertGreaterThanOrEqual($secondFacetCount, $firstFacetCount);
+        $this->assertGreaterThan(0, $secondFacetCount);
 
         // Clicking the second facet should restrict the result list:
         $this->clickCss(
@@ -1205,10 +1224,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $selectMulti   Select multiple?
      * @param bool  $unselectMulti Unselect multiple?
      *
-     * @return       void
-     * @throws       \Exception
-     * @dataProvider checkboxFacetSelectionProvider
+     * @return void
+     * @throws \Exception
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetSelectionProvider')]
     public function testCheckboxFacetSelection(
         array $checkFacets,
         int $expectedCount,
@@ -1299,10 +1318,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $deferred Are deferred facets enabled?
      * @param bool $counts   Are checkbox facet counts enabled?
      *
-     * @dataProvider checkboxFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetsProvider')]
     public function testCheckboxFacets(bool $deferred, bool $counts): void
     {
         $this->changeConfigs(
@@ -1330,8 +1348,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // format:Book is also a normal facet, but count should still be empty unless enabled:
         $filter = $this->findCss($page, '.checkbox-filter');
-        $this->assertNotNull($filter);
-        $this->assertEquals('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
+        $this->assertSame('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
         $this->assertEqualsWithTimeout(
             $counts ? '9' : '',
             function () use ($filter) {
@@ -1341,8 +1358,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // illustrated:Illustrated is only a checkbox facet:
         $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);
-        $this->assertNotNull($filter2);
-        $this->assertEquals('Illustrated', $this->findCssAndGetText($filter2->getParent(), '.icon-link__label'));
+        $this->assertSame('Illustrated', $this->findCssAndGetText($filter2->getParent(), '.icon-link__label'));
         $illustratedCount = $this->findCssAndGetText($filter2->getParent(), '.avail-count');
         $this->assertEquals($counts ? '2' : '', $illustratedCount);
 
@@ -1378,10 +1394,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $multiselection Use multi-facet selection?
      *
-     * @dataProvider rangeFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rangeFacetsProvider')]
     public function testRangeFacets(string $multiselection): void
     {
         $this->changeConfigs(
@@ -1487,11 +1502,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert that the "reset filters" button is present.
      *
-     * @param \Behat\Mink\Element\Element $page Mink page object
+     * @param Element $page Mink page object
      *
      * @return void
      */
-    protected function assertResetFiltersButton($page)
+    protected function assertResetFiltersButton(Element $page): void
     {
         $reset = $page->findAll('css', '.reset-filters-btn');
         // The toggle bar has its own reset button, so we should have 2:
@@ -1533,10 +1548,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $changeLanguage  Should we change the language before applying the facets?
      * @param bool $includeCheckbox Should we apply a checkbox prior to multi-selection?
      *
-     * @dataProvider multiSelectOnAdvancedSearchProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('multiSelectOnAdvancedSearchProvider')]
     public function testMultiSelectOnAdvancedSearch(bool $changeLanguage, bool $includeCheckbox): void
     {
         $facets = [
@@ -1577,7 +1591,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // A past bug would cause search terms to get duplicated after facets
         // were applied; make sure the search remains as expected!
-        $this->assertEquals(
+        $this->assertSame(
             '(All Fields:test AND All Fields:history)',
             $this->findCssAndGetText($page, '.adv_search_terms strong')
         );
@@ -1653,7 +1667,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
-        $this->assertStringContainsString($checkbox->isChecked(), true);
+        $this->assertTrue($checkbox->isChecked());
     }
 
     /**
@@ -1676,7 +1690,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $this->assertFalse($this->findCss($sidebar, '.js-user-selection-multi-filters')->isVisible());
-        $this->assertNotNull($sidebar->find('css', '.js-apply-multi-facets-selection'));
+        $this->findCss($sidebar, '.js-apply-multi-facets-selection');
     }
 
     /**

@@ -56,7 +56,7 @@ trait RecordVersionsSearchTrait
         $this->saveToHistory = false;
 
         $id = null;
-        $callback = function ($runner, $params, $searchId) use (&$id) {
+        $callback = function ($runner, $params, $searchId) use (&$id): void {
             $query = $params->getQuery();
             if ($query instanceof WorkKeysQuery) {
                 $id = $query->getId();

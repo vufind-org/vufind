@@ -43,17 +43,15 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testTitleSearchNormalization
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleSearchNormalizationProvider(): array
+    public static function titleSearchNormalizationProvider(): \Iterator
     {
-        return [
-            'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'],
-            'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'],
-            'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'],
-            'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'],
-            'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'],
-        ];
+        yield 'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'];
+        yield 'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'];
+        yield 'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'];
+        yield 'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'];
+        yield 'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'];
     }
 
     /**
@@ -63,9 +61,8 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedFirstTitle Expected first title in result list
      *
      * @return void
-     *
-     * @dataProvider titleSearchNormalizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSearchNormalizationProvider')]
     public function testTitleSearchNormalization($query, $expectedFirstTitle): void
     {
         $session = $this->getMinkSession();

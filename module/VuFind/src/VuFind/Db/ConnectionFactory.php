@@ -114,6 +114,11 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
+        $doctrineCacheDir = $container
+            ->get('config')['caches']['doctrinemodule.cache.filesystem']['options']['cache_dir'];
+        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
+        $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
+
         $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject($this->configName);
         $this->container = $container;

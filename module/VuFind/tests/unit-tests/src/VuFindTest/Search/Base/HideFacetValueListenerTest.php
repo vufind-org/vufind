@@ -56,11 +56,8 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockBackend(string $id = 'Solr'): Backend
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')->will(
-            $this->returnValue($id)
-        );
+        $backend = $this->createMock(Backend::class);
+        $backend->method('getIdentifier')->willReturn($id);
         return $backend;
     }
 
@@ -88,28 +85,21 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     protected function getMockResult(): RecordCollection
     {
         $facets = $this->getFacets();
-        $result = $this->getMockBuilder(RecordCollection::class)
-            ->disableOriginalConstructor()->getMock();
-        $result->expects($this->any())->method('getFacets')
-            ->will(
-                $this->returnCallback(
-                    function () use (&$facets) {
-                        return $facets;
-                    }
-                )
+        $result = $this->createMock(RecordCollection::class);
+        $result->method('getFacets')
+            ->willReturnCallback(
+                function () use (&$facets) {
+                    return $facets;
+                }
             );
-        $result->expects($this->any())->method('setFacets')
-            ->will(
-                $this->returnCallback(
-                    function ($new) use (&$facets) {
-                        $facets = $new;
-                    }
-                )
+        $result->method('setFacets')
+            ->willReturnCallback(
+                function (array $new) use (&$facets): void {
+                    $facets = $new;
+                }
             );
-        $result->expects($this->any())->method('getQueryFacets')
-            ->will($this->returnValue([]));
-        $result->expects($this->any())->method('getPivotFacets')
-            ->will($this->returnValue([]));
+        $result->method('getQueryFacets')->willReturn([]);
+        $result->method('getPivotFacets')->willReturn([]);
         return $result;
     }
 
@@ -144,9 +134,9 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('post'),
-            $this->equalTo([$listener, 'onSearchPost'])
+            \VuFindSearch\Service::class,
+            'post',
+            [$listener, 'onSearchPost']
         );
         $listener->attach($mock);
     }

@@ -226,7 +226,7 @@ trait ConfigRelatedServicesTrait
         $manager->expects($this->any())
             ->method('getConfig')
             ->with($this->isType('string'))
-            ->will($this->throwException($exception));
+            ->willThrowException($exception);
         return $manager;
     }
 
@@ -245,6 +245,9 @@ trait ConfigRelatedServicesTrait
      * method (null for any)
      *
      * @return MockObject&ConfigPluginManager
+     *
+     * @deprecated \VuFind\Config\PluginManager was deprecated and replaced by \VuFind\Config\ConfigManager.
+     * Use that and getMockConfigManager instead.
      */
     protected function getMockConfigPluginManager(
         array $configs,
@@ -278,6 +281,9 @@ trait ConfigRelatedServicesTrait
      * @param \Throwable $exception Exception to throw
      *
      * @return MockObject&ConfigPluginManager
+     *
+     * @deprecated \VuFind\Config\PluginManager was deprecated and replaced by \VuFind\Config\ConfigManager.
+     * Use that and getMockFailingConfigManager instead.
      */
     protected function getMockFailingConfigPluginManager(
         \Throwable $exception
@@ -286,7 +292,7 @@ trait ConfigRelatedServicesTrait
         $manager->expects($this->any())
             ->method('get')
             ->with($this->isType('string'))
-            ->will($this->throwException($exception));
+            ->willThrowException($exception);
         return $manager;
     }
 }

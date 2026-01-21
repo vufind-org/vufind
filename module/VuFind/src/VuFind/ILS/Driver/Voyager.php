@@ -58,7 +58,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
+class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -1732,7 +1732,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function processMyHoldsData($sqlRow)
     {
-        $available = ($sqlRow['HOLD_RECALL_STATUS'] == 2) ? true : false;
+        $available = $sqlRow['HOLD_RECALL_STATUS'] == 2;
         $expireDate = $this->translate('Unknown');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
@@ -1925,7 +1925,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function processMyStorageRetrievalRequestsData($sqlRow)
     {
-        $available = ($sqlRow['STATUS'] == 4) ? true : false;
+        $available = $sqlRow['STATUS'] == 4;
         $expireDate = '';
         $processedDate = '';
         $statusDate = '';
@@ -2123,10 +2123,10 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The

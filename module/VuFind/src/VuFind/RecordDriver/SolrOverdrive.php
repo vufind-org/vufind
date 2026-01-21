@@ -31,7 +31,7 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Config;
 use VuFind\DigitalContent\OverdriveConnector;
 
@@ -270,7 +270,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isLoggedIn()
     {
-        return $this->connector->getUser() ? true : false;
+        return (bool)$this->connector->getUser();
     }
 
     /**

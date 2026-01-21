@@ -34,6 +34,7 @@ use VuFind\Content\Covers\PluginManager as ApiManager;
 use VuFindCode\ISBN;
 use VuFindCode\ISMN;
 
+use function dirname;
 use function func_get_args;
 use function in_array;
 use function is_array;
@@ -519,8 +520,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Return a path to the image cache for the given size and ID; ensure that
-     * directories are created as needed.
+     * Return a path to the image cache for the given size and ID.
      *
      * @param string $size      Size category
      * @param string $id        Unique identifier (ISBN / ISSN)
@@ -530,15 +530,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function getCachePath($size, $id, $extension = 'jpg')
     {
-        $base = $this->baseDir;
-        if (!is_dir($base)) {
-            mkdir($base);
-        }
-        $base .= '/' . $size;
-        if (!is_dir($base)) {
-            mkdir($base);
-        }
-        return $base . '/' . $id . '.' . $extension;
+        return $this->baseDir . '/' . $size . '/' . $id . '.' . $extension;
     }
 
     /**
@@ -593,11 +585,7 @@ class Loader extends \VuFind\ImageLoader
         if (!($imageGD = @imagecreatefromstring($imageData))) {
             return false;
         }
-        if (!@imagejpeg($imageGD, $jpeg)) {
-            return false;
-        }
-
-        return true;
+        return @imagejpeg($imageGD, $jpeg);
     }
 
     /**
@@ -649,12 +637,9 @@ class Loader extends \VuFind\ImageLoader
             // All other services cache based on configuration:
             $conf = isset($this->config->Content->coverimagesCache)
                 ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
-            if ($conf === true || $conf === 1 || $conf === '1' || $conf === 'true') {
+            if (in_array($conf, [true, 1, '1', 'true'], true)) {
                 $cache = true;
-            } elseif (
-                $conf === false || $conf === 0 || $conf === '0'
-                || $conf === 'false'
-            ) {
+            } elseif (in_array($conf, [false, 0, '0', 'false'], true)) {
                 $cache = false;
             } else {
                 $conf = array_map('trim', explode(',', $conf));
@@ -701,8 +686,14 @@ class Loader extends \VuFind\ImageLoader
             // Figure out file paths -- $tempFile will be used to store the
             // image for analysis. $finalFile will be used for long-term storage if
             // $cache is true or for temporary display purposes if $cache is false.
-            $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
+            $directory = dirname($this->localFile);
+            $tempFile = $directory . DIRECTORY_SEPARATOR . uniqid();
             $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
+
+            // Make sure that the cache directory exists.
+            if (!is_dir($directory)) {
+                mkdir($directory, 0o755, true);
+            }
 
             // Write image data to disk:
             if (!@file_put_contents($tempFile, $image)) {

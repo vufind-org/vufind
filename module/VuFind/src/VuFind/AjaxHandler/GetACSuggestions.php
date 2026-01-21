@@ -46,22 +46,14 @@ use VuFind\Session\Settings as SessionSettings;
 class GetACSuggestions extends AbstractBase
 {
     /**
-     * Autocomplete suggester
-     *
-     * @var Suggester
-     */
-    protected $suggester;
-
-    /**
      * Constructor
      *
      * @param SessionSettings $ss        Session settings
      * @param Suggester       $suggester Autocomplete suggester
      */
-    public function __construct(SessionSettings $ss, Suggester $suggester)
+    public function __construct(SessionSettings $ss, protected Suggester $suggester)
     {
         $this->sessionSettings = $ss;
-        $this->suggester = $suggester;
     }
 
     /**

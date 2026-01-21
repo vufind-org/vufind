@@ -79,7 +79,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $solrOptions = $this->createMock(Options::class);
         $solrOptions->expects($this->once())->method('getSearchAction')->willReturn($this->searchRoute);
         $solrParams = $this->createMock(Params::class);
-        $solrParams->expects($this->any())->method('getOptions')->willReturn($solrOptions);
+        $solrParams->method('getOptions')->willReturn($solrOptions);
         return $solrParams;
     }
 
@@ -94,11 +94,11 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $solrOptions = $solrParams->getOptions();
         $solrOptions->expects($this->once())->method('getSearchAction')->willReturn($this->searchRoute);
         $mockQueryHelper = $this->createMock(UrlQueryHelper::class);
-        $mockQueryHelper->expects($this->any())->method('setJumpto')->willReturn($mockQueryHelper);
+        $mockQueryHelper->method('setJumpto')->willReturn($mockQueryHelper);
         $results = $this->createMock(Results::class);
-        $results->expects($this->any())->method('getOptions')->willReturn($solrOptions);
-        $results->expects($this->any())->method('getParams')->willReturn($solrParams);
-        $results->expects($this->any())->method('getUrlQuery')->willReturn($mockQueryHelper);
+        $results->method('getOptions')->willReturn($solrOptions);
+        $results->method('getParams')->willReturn($solrParams);
+        $results->method('getUrlQuery')->willReturn($mockQueryHelper);
         return $results;
     }
 
@@ -112,12 +112,11 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     protected function getConfiguredView(Params $solrParams): PhpRenderer
     {
         $url = $this->createMock(Url::class);
-        $url->expects($this->any())->method('__invoke')
-            ->with($this->equalTo($this->searchRoute))
+        $url->method('__invoke')
+            ->with($this->searchRoute)
             ->willReturn($this->searchBasePath);
         $searchParams = $this->createMock(SearchParams::class);
-        $searchParams->expects($this->any())->method('__invoke')
-            ->with($this->equalTo('Solr'))->willReturn($solrParams);
+        $searchParams->method('__invoke')->with('Solr')->willReturn($solrParams);
         $plugins = compact('searchParams', 'url');
         return $this->getPhpRenderer($plugins);
     }
@@ -129,9 +128,8 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedRequestArray Expected request parameters to parse
      *
      * @return void
-     *
-     * @dataProvider getLastSearchParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getLastSearchParamsProvider')]
     public function testGetLastSearchParams(
         string $query,
         array $expectedRequestArray
@@ -142,7 +140,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $solrParams = $this->getMockSolrParams($expectedRequestArray);
         $expectedRequest = new Parameters($expectedRequestArray);
         $solrParams->expects($this->once())->method('initFromRequest')
-            ->with($this->equalTo($expectedRequest));
+            ->with($expectedRequest);
         $helper->setView($this->getConfiguredView($solrParams));
         $this->assertEquals($solrParams, $helper->getLastSearchParams('Solr'));
     }
@@ -159,7 +157,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory->expects($this->once())->method('getLastSearch')->willReturn($results);
         $helper = $this->getSearchMemoryViewHelper($memory);
         $helper->setView($this->getConfiguredView($results->getParams()));
-        $this->assertEquals('/foo/bar', $helper->getLastSearchUrl('Solr'));
+        $this->assertSame('/foo/bar', $helper->getLastSearchUrl());
     }
 
     /**
@@ -173,7 +171,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory->expects($this->once())->method('getLastSearch')->willReturn(null);
         $helper = $this->getSearchMemoryViewHelper($memory);
         $helper->setView($this->getConfiguredView($this->createMock(Params::class)));
-        $this->assertNull($helper->getLastSearchUrl('Solr'));
+        $this->assertNull($helper->getLastSearchUrl());
     }
 
     /**
@@ -211,13 +209,11 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetLastSearchParams()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getLastSearchParamsProvider(): array
+    public static function getLastSearchParamsProvider(): \Iterator
     {
-        return [
-            'no parameters' => ['?', []],
-            'lookfor parameter' => ['?lookfor=foo', ['lookfor' => 'foo']],
-        ];
+        yield 'no parameters' => ['?', []];
+        yield 'lookfor parameter' => ['?lookfor=foo', ['lookfor' => 'foo']];
     }
 }

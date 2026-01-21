@@ -867,10 +867,15 @@ class PAIA extends DAIA
     /**
      * This method queries the ILS for new items
      *
-     * @param string $page    page number of results to retrieve (counting starts @1)
-     * @param string $limit   the size of each page of results to retrieve
-     * @param string $daysOld the maximum age of records to retrieve in days (max 30)
-     * @param string $fundID  optional fund ID to use for limiting results
+     * @param string  $page    page number of results to retrieve (counting starts @1)
+     * @param string  $limit   the size of each page of results to retrieve
+     * @param string  $daysOld the maximum age of records to retrieve in days (max 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
      *
      * @return array An associative array with two keys: 'count' (the number of items
      * in the 'results' array) and 'results' (an array of associative arrays, each
@@ -878,7 +883,7 @@ class PAIA extends DAIA
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getNewItems($page, $limit, $daysOld, $fundID)
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         return [];
     }
@@ -1491,7 +1496,7 @@ class PAIA extends DAIA
             && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
             ? $result['item_id'] : '';
 
-        // edition (0..1) URI of a the document (no particular copy)
+        // edition (0..1) URI of the document (no particular copy)
         // hook for retrieving alternative ItemId in case PAIA does not
         // the needed id
         $result['id'] = (isset($doc['edition'])
@@ -1576,7 +1581,7 @@ class PAIA extends DAIA
             }
 
             // status: provided (the document is ready to be used by the patron)
-            $result['available'] = $doc['status'] == 4 ? true : false;
+            $result['available'] = $doc['status'] == 4;
 
             $results[] = $result;
         }
@@ -1954,7 +1959,7 @@ class PAIA extends DAIA
      *
      * @param string $scope The scope to test for with the current session scopes.
      *
-     * @return boolean
+     * @return bool
      */
     protected function paiaCheckScope($scope)
     {
@@ -1996,14 +2001,9 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (
-            isset($patron['status']) && $patron['status'] == 0
+        return isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
-        ) {
-            return true;
-        }
-        return false;
+            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
     }
 
     /**

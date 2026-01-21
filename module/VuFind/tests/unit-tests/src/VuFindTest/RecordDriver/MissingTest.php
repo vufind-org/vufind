@@ -65,14 +65,12 @@ class MissingTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDetermineMissingTitleWithoutDetails
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleProvider(): array
+    public static function titleProvider(): \Iterator
     {
-        return [
-            'non-empty title' => ['fake title', 'fake title'],
-            'empty title' => ['', 'Title not available'],
-        ];
+        yield 'non-empty title' => ['fake title', 'fake title'];
+        yield 'empty title' => ['', 'Title not available'];
     }
 
     /**
@@ -82,9 +80,8 @@ class MissingTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedTitle Expected title returned by driver
      *
      * @return void
-     *
-     * @dataProvider titleProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleProvider')]
     public function testDetermineMissingTitleWithoutDetails(string $resourceTitle, string $expectedTitle): void
     {
         $resource = $this->createMock(ResourceEntityInterface::class);

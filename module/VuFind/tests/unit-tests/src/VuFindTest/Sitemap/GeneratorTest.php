@@ -153,9 +153,9 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      */
     protected function setRelativeFileIndexExpectations(MockObject&SitemapIndex $mockIndex): void
     {
-        $mockIndex->expects($this->once())->method('addUrl')->with($this->equalTo('http://foo/staticIndex.xml'));
+        $mockIndex->expects($this->once())->method('addUrl')->with('http://foo/staticIndex.xml');
         $mockIndex->expects($this->once())->method('write')
-            ->with($this->equalTo($this->getFixturePath('sitemap') . '/sitemapIndex.xml'));
+            ->with($this->getFixturePath('sitemap') . '/sitemapIndex.xml');
     }
 
     /**
@@ -167,9 +167,9 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      */
     protected function setAbsoluteUrlIndexExpectations(MockObject&SitemapIndex $mockIndex): void
     {
-        $mockIndex->expects($this->once())->method('addUrl')->with($this->equalTo('http://foo/my-url.xml'));
+        $mockIndex->expects($this->once())->method('addUrl')->with('http://foo/my-url.xml');
         $mockIndex->expects($this->once())->method('write')
-            ->with($this->equalTo($this->getFixturePath('sitemap') . '/sitemapIndex.xml'));
+            ->with($this->getFixturePath('sitemap') . '/sitemapIndex.xml');
     }
 
     /**
@@ -192,7 +192,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         };
         $mockIndex->expects($this->exactly(2))->method('addUrl')->with($this->callback($checkCallback));
         $mockIndex->expects($this->once())->method('write')
-            ->with($this->equalTo($this->getFixturePath('sitemap') . '/sitemapIndex.xml'));
+            ->with($this->getFixturePath('sitemap') . '/sitemapIndex.xml');
     }
 
     /**
@@ -202,9 +202,8 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      * @param callable $expectationMethod Name of method to set up expectations for mock index object
      *
      * @return void
-     *
-     * @dataProvider buildIndexProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('buildIndexProvider')]
     public function testBuildIndex(array $config, string $expectationMethod): void
     {
         if (!empty($config)) {

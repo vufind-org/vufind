@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for access_token table
+ * Entity model for login_token table
  *
  * PHP version 8
  *
@@ -233,7 +233,8 @@ class LoginToken implements LoginTokenEntityInterface
      */
     public function getLastLogin(): DateTime
     {
-        return $this->lastLogin;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->lastLogin);
     }
 
     /**

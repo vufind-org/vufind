@@ -55,10 +55,10 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $mock = $this->createMock(Url::class);
         $mock->expects($this->once())->method('__invoke')
             ->with(
-                $this->equalTo('search-results'),
-                $this->equalTo([]),
-                $this->equalTo(['query' => $expectedQuery])
-            )->will($this->returnValue('foo'));
+                'search-results',
+                [],
+                ['query' => $expectedQuery]
+            )->willReturn('foo');
         return $mock;
     }
 

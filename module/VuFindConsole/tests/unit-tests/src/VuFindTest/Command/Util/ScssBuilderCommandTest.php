@@ -53,10 +53,10 @@ class ScssBuilderCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ScssBuilderCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
+        $this->assertSame(
             "This utility is no longer supported. Please use `npm run build:css` instead.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 }

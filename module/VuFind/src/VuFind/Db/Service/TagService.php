@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\Query\ResultSetMapping;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
@@ -71,9 +71,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             . 'COUNT(rt.id) AS total '
             . 'FROM ' . ResourceTagsEntityInterface::class . ' rt';
         $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
+        $stats = $query->getSingleResult();
         if ($extended) {
+            $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
             $stats['unique'] = count($resourceTagsService->getUniqueTags(caseSensitive: $caseSensitiveTags));
             $stats['anonymous'] = $resourceTagsService->getAnonymousCount();
         }

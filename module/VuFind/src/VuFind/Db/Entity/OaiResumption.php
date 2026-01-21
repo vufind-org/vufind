@@ -35,7 +35,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * OaiResumption
+ * Entity model for oai_resumption table
  *
  * @category VuFind
  * @package  Database
@@ -171,6 +171,7 @@ class OaiResumption implements OaiResumptionEntityInterface
      */
     public function getExpiry(): DateTime
     {
-        return $this->expires;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->expires);
     }
 }

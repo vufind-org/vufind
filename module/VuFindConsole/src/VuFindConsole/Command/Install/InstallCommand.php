@@ -170,7 +170,7 @@ class InstallCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'What base path should be used in VuFind®\'s URL?'
-                . " (defaults to {$this->baseDir} when --non-interactive is set)"
+                . " (defaults to {$this->basePath} when --non-interactive is set)"
             )->addOption(
                 'multisite',
                 null,
@@ -891,7 +891,7 @@ class InstallCommand extends Command
         if (!is_array($json)) {
             return "Unable to parse $localComposer.";
         }
-        $json['autoload']['psr-4'][$module . '\\'] = "module/$module/src/$module";
+        $json['autoload']['psr-4'][$module . '\\'] = ["module/$module/src/$module", "module/$module"];
         if (!file_put_contents($localComposer, json_encode($json, JSON_PRETTY_PRINT))) {
             return "Cannot write to $localComposer.";
         }
@@ -1033,7 +1033,7 @@ class InstallCommand extends Command
                 $this->multisiteMode = self::MULTISITE_DIR_BASED;
             } elseif ($mode === 'host') {
                 $this->multisiteMode = self::MULTISITE_HOST_BASED;
-            } elseif ($mode !== true && $mode !== null && $mode !== false) {
+            } elseif (!in_array($mode, [true, null, false], true)) {
                 return $this->failWithError(
                     $output,
                     'Unexpected multisite mode: ' . $mode
@@ -1078,7 +1078,7 @@ class InstallCommand extends Command
 
         // Should we display Apache help messages?
         $this->showApacheHelp = !$input->getOption('no-apache-help');
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -1126,7 +1126,7 @@ class InstallCommand extends Command
         if (($result = $this->buildApacheConfig($output)) !== true) {
             return $this->failWithError($output, $result);
         }
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -1137,7 +1137,7 @@ class InstallCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln("VuFind® has been found in {$this->baseDir}.");
 
@@ -1147,11 +1147,11 @@ class InstallCommand extends Command
             $this->collectParameters($input, $output) !== 0
             || $this->processParameters($output) !== 0
         ) {
-            return 1;
+            return self::FAILURE;
         }
 
         // Report success:
         $this->displaySuccessMessage($output);
-        return 0;
+        return self::SUCCESS;
     }
 }

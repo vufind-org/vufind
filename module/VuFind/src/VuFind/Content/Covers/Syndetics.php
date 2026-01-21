@@ -45,13 +45,6 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
     use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
-     * Use SSL URLs?
-     *
-     * @var bool
-     */
-    protected $useSSL;
-
-    /**
      * Use Syndetics image fallback ?
      *
      * @var bool
@@ -65,7 +58,6 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      */
     public function __construct(?\VuFind\Config\Config $config = null)
     {
-        $this->useSSL = $config->use_ssl ?? false;
         $this->useSyndeticsCoverImageFallback = $config->use_syndetics_cover_image_fallback ?? false;
         $this->supportsIsbn = $this->supportsIssn = $this->supportsOclc
             = $this->supportsUpc = $this->cacheAllowed = true;
@@ -116,9 +108,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      */
     protected function getBaseUrl($key, $ids)
     {
-        $url = $this->useSSL
-            ? 'https://secure.syndetics.com' : 'http://syndetics.com';
-        $url .= "/index.aspx?client={$key}";
+        $url = "https://secure.syndetics.com/index.aspx?client={$key}";
         $ident = '';
         if (isset($ids['isbn']) && $ids['isbn']->isValid()) {
             $isbn = $ids['isbn']->get13();

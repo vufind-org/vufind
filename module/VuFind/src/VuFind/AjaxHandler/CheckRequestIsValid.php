@@ -89,15 +89,18 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
     public function handleRequest(Params $params)
     {
         $this->disableSessionWrites();  // avoid session write timing bug
+
+        // process and validate input:
         $id = $params->fromQuery('id');
-        $data = $params->fromQuery('data');
+        $jsonData = $params->fromQuery('data');
         $requestType = $params->fromQuery('requestType');
-        if (empty($id) || empty($data)) {
+        if (empty($id) || empty($jsonData) || !($data = json_decode($jsonData, true))) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
+
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(

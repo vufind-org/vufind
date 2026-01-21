@@ -177,8 +177,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver();
         $driver->expects($this->once())
             ->method('tryMethod')
-            ->with($this->equalTo('isCollection'))
-            ->will($this->returnValue(true));
+            ->with('isCollection')
+            ->willReturn(true);
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
             [
@@ -244,10 +244,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($id = 'test', $source = 'Solr')
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->any())->method('getUniqueId')
-            ->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue($source));
+        $driver->method('getUniqueId')->willReturn($id);
+        $driver->method('getSourceIdentifier')->willReturn($source);
         return $driver;
     }
 

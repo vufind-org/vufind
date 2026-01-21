@@ -30,8 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
 use PDO;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;
@@ -642,7 +642,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     {
         if ($row['STATUS'] != 6) {
             $position  = ($row['STATUS'] != 1) ? $row['POSITION'] : false;
-            $available = ($row['STATUS'] == 1) ? true : false;
+            $available = $row['STATUS'] == 1;
             $expire    = false;
             $create    = false;
             // Convert Horizon Format to display format
@@ -1034,11 +1034,11 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * Guide". The minimum setup is to set the "Track First Availability" flag for
      * each appropriate item status.
      *
-     * @param int $page    Not implemented in this driver - Sybase does not have SQL
-     *                     query paging functionality.
-     * @param int $limit   The maximum number of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  Not implemented in this driver - The contributing library
+     * @param int     $page    Not implemented in this driver - Sybase does not have SQL
+     *                         query paging functionality.
+     * @param int     $limit   The maximum number of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  Not implemented in this driver - The contributing library
      *                     does not use acquisitions.
      *
      * @return array       Associative array with 'count' and 'results' keys

@@ -55,9 +55,7 @@ class SummonResultsTest extends \PHPUnit\Framework\TestCase
         $class = new \ReflectionClass(SummonResults::class);
         $method = $class->getMethod('getSearchClassId');
         $method->setAccessible(true);
-        $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $runner = $this->createMock(\VuFind\Search\SearchRunner::class);
         $obj = new SummonResults($runner, $this->getMockConfigManager());
         $this->assertSame('Summon', $method->invoke($obj));
     }

@@ -43,14 +43,33 @@ class AdminMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param array $config                 Menu configuration
+     * @param array $sectionConfig          Menu configuration
      * @param bool  $showOverdriveAdminMenu Show Overdrive admin menu item?
      */
     public function __construct(
-        array $config,
+        array $sectionConfig,
         protected bool $showOverdriveAdminMenu
     ) {
-        parent::__construct($config);
+        $this->addRequiredSettings(
+            [
+                'label',
+                'route',
+            ],
+            self::ITEM_CONTEXT
+        );
+        parent::__construct($sectionConfig);
+    }
+
+    /**
+     * Return context variables that can be used to render the section.
+     *
+     * @return array
+     */
+    public function getSectionContext(): array
+    {
+        $context = parent::getSectionContext();
+        $context['items'] = $this->getMenu()['Admin']['MenuItems'] ?? [];
+        return $context;
     }
 
     /**

@@ -71,7 +71,7 @@ class TabManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         }
         return new $requestedName(
             $container->get(PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get('config')
         );
     }

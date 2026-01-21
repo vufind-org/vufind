@@ -64,13 +64,12 @@ class ThemeInjectTemplateListenerFactoryTest extends TestCase
         ];
         $container->set('config', $testConfig);
         $modules = ['Laminas\Foo', 'LaminasBar', 'VuFind\Foo', 'VuFind'];
-        $mockModuleManager = $this->getMockBuilder(ModuleManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockModuleManager = $this->createMock(ModuleManager::class);
         $mockModuleManager->expects($this->once())->method('getModules')
-            ->will($this->returnValue($modules));
+            ->willReturn($modules);
         $container->set('ModuleManager', $mockModuleManager);
         $listener = $factory($container, InjectTemplateListener::class);
-        $this->assertEquals(
+        $this->assertSame(
             ['Extra/', 'VuFind/Foo/', 'VuFind/'],
             array_values($listener->getPrefixes())
         );

@@ -57,7 +57,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
+class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
@@ -621,7 +621,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
      *
      * @return void
      */
-    protected function processHighlighting(array &$record, array $params, \StdClass $highlight): void
+    protected function processHighlighting(array &$record, array $params, \stdClass $highlight): void
     {
         if (empty($params['highlight'])) {
             return;

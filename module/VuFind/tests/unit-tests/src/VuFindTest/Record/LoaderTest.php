@@ -121,7 +121,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $missing = $this->getDriver('missing', 'Missing');
         $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         $factory->expects($this->once())->method('get')
-            ->with($this->equalTo('Missing'))
+            ->with('Missing')
             ->willReturn($missing);
         $loader = $this->getLoader($service, $factory);
         $record = $loader->load('test', 'Solr', true);
@@ -197,7 +197,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $factory = $this->createMock(\VuFind\RecordDriver\PluginManager::class);
         $factory->expects($this->once())->method('get')
-            ->with($this->equalTo('Missing'))
+            ->with('Missing')
             ->willReturn($missing);
 
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
@@ -321,8 +321,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     protected function getDriver(string $id = 'test', string $source = 'Solr'): MockObject&RecordDriver
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->any())->method('getUniqueId')->willReturn($id);
-        $driver->expects($this->any())->method('getSourceIdentifier')->willReturn($source);
+        $driver->method('getUniqueId')->willReturn($id);
+        $driver->method('getSourceIdentifier')->willReturn($source);
         return $driver;
     }
 
@@ -367,17 +367,17 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         };
         $expectedIds = array_map($callback, $records);
         $fallbackPlugin->expects($this->once())->method('load')
-            ->with($this->equalTo($expectedIds))
+            ->with($expectedIds)
             ->willReturn($records);
         $fallbackLoader = $this->getMockBuilder(FallbackLoader::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['get', 'has'])
             ->getMock();
         $fallbackLoader->expects($this->once())->method('has')
-            ->with($this->equalTo('Summon'))
+            ->with('Summon')
             ->willReturn(true);
         $fallbackLoader->expects($this->once())->method('get')
-            ->with($this->equalTo('Summon'))
+            ->with('Summon')
             ->willReturn($fallbackPlugin);
         return $fallbackLoader;
     }
@@ -392,8 +392,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     protected function getCollection(array $records): MockObject&RecordCollectionInterface
     {
         $collection = $this->createMock(RecordCollectionInterface::class);
-        $collection->expects($this->any())->method('getRecords')->willReturn($records);
-        $collection->expects($this->any())->method('count')->willReturn(count($records));
+        $collection->method('getRecords')->willReturn($records);
+        $collection->method('count')->willReturn(count($records));
         return $collection;
     }
 }

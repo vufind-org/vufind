@@ -82,7 +82,7 @@ class NormalizeCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $target = $input->getArgument('target');
         $filter = $input->getOption('filter');
@@ -93,8 +93,8 @@ class NormalizeCommand extends AbstractCommand
             $this->normalizer->normalizeFile($target);
         } else {
             $output->writeln("{$target} does not exist.");
-            return 1;
+            return self::FAILURE;
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Related;
 
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\Bookplate;
 use VuFind\Related\BookplateFactory;
 use VuFindTest\Container\MockContainer;
@@ -172,8 +172,8 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
     ): MockContainer {
         $container = new MockContainer($this);
         $container->set(
-            ConfigPluginManager::class,
-            $this->getMockConfigPluginManager([$expectedConfig => $config])
+            ConfigManagerInterface::class,
+            $this->getMockConfigManager([$expectedConfig => $config])
         );
         return $container;
     }

@@ -56,13 +56,13 @@ class TranslatableStringTest extends \PHPUnit\Framework\TestCase
     public function testWithoutTranslate()
     {
         $s = new TranslatableString('foo', 'bar');
-        $this->assertEquals('foo', (string)$s);
+        $this->assertSame('foo', (string)$s);
         $this->assertEquals('bar', $s->getDisplayString());
         $this->assertTrue($s->isTranslatable());
 
         $s = new TranslatableString('foo', new TranslatableString('bar', 'baz'));
-        $this->assertEquals('foo', (string)$s);
-        $this->assertEquals('bar', (string)$s->getDisplayString());
+        $this->assertSame('foo', (string)$s);
+        $this->assertSame('bar', (string)$s->getDisplayString());
         $this->assertEquals('baz', $s->getDisplayString()->getDisplayString());
         $this->assertTrue($s->isTranslatable());
 

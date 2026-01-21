@@ -112,7 +112,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/Blender/Results');
         $page = $session->getPage();
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred',
             $this->findCssAndGetText($page, '.alert-danger p')
         );
@@ -121,41 +121,48 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testSearch
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getSearchData(): array
+    public static function getSearchData(): \Iterator
     {
-        return [
-            [
-                ['page' => 1],
-                'Blender/Results',
-            ],
-            [
-                ['page' => 2],
-                'Blender/Results',
-            ],
-            [
-                ['page' => 1],
-                'Search/Blended', // legacy path
-            ],
-            [
-                ['page' => 2],
-                'Search/Blended', // legacy path
-            ],
+        yield [
+            ['page' => 1],
+            'Blender/Results',
+            'Blended',
+        ];
+        yield [
+            ['page' => 2],
+            'Blender/Results',
+            'Blended',
+        ];
+        yield [
+            ['page' => 1],
+            'Search/Blended', // legacy path
+            'Blended',
+        ];
+        yield [
+            ['page' => 2],
+            'Search/Blended', // legacy path
+            'Blended',
+        ];
+        yield [
+            ['page' => 1],
+            'Blender2/Results',
+            'Also Blended',
         ];
     }
 
     /**
      * Test blended search
      *
-     * @param array  $queryParams Query parameters
-     * @param string $path        URL path
-     *
-     * @dataProvider getSearchData
+     * @param array  $queryParams    Query parameters
+     * @param string $path           URL path
+     * @param string $searchBoxLabel Label of the active search box
      *
      * @return void
      */
-    public function testSearch(array $queryParams, string $path): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSearchData')]
+    public function testSearch(array $queryParams, string $path, string $searchBoxLabel): void
     {
         $expectedLabels = $this->getExpectedLabels($queryParams['page']);
         $this->changeConfigs(
@@ -164,9 +171,11 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                     'SearchTabs' => [
                         'Solr' => 'Catalog',
                         'Blender' => 'Blended',
+                        'Blender2' => 'Also Blended',
                     ],
                 ],
                 'Blender' => $this->getBlenderIniOverrides(),
+                'Blender2' => $this->getBlenderIniOverrides(),
             ],
             ['Blender']
         );
@@ -195,8 +204,8 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Go to record screen and check active tab:
         $this->clickCss($page, '#result0 .title');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
-            'Blended',
+        $this->assertSame(
+            $searchBoxLabel,
             $this->findCssAndGetText($page, '.searchbox li a.active')
         );
 
@@ -335,7 +344,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#search_type0_1', 'Author');
         $this->clickCss($page, '.adv-submit .btn-primary');
 
-        $this->assertEquals(
+        $this->assertSame(
             'Your search - (All Fields:Dublin AND Author:Award) - did not match any resources.',
             $this->findCssAndGetText($page, '.mainbody p')
         );

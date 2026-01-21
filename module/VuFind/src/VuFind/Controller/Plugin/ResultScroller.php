@@ -306,7 +306,7 @@ class ResultScroller extends AbstractPlugin
         // decrease the page in the session because
         // we're now sliding into the previous page
         // (-- doesn't work on ArrayObjects)
-        $this->data->page = $this->data->page - 1;
+        $this->data->page -= 1;
 
         // shift pages to the right
         $tmp = $this->data->currIds;
@@ -350,7 +350,7 @@ class ResultScroller extends AbstractPlugin
         // increase the page in the session because
         // we're now sliding into the next page
         // (++ doesn't work on ArrayObjects)
-        $this->data->page = $this->data->page + 1;
+        $this->data->page += 1;
 
         // shift pages to the left
         $tmp = $this->data->currIds;
@@ -380,7 +380,7 @@ class ResultScroller extends AbstractPlugin
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the the first page of results
+     * from the first page of results
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -417,7 +417,7 @@ class ResultScroller extends AbstractPlugin
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the the last page of results
+     * from the last page of results
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search

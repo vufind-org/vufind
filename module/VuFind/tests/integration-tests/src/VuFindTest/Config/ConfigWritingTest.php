@@ -47,23 +47,21 @@ class ConfigWritingTest extends ConfigTestCase
     /**
      * Upgrade test provider.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function upgradeTestProvider(): array
+    public static function upgradeTestProvider(): \Iterator
     {
-        return [
-            'generic file handler' => [
-                'generic-file',
-                'config',
-            ],
-            'ini handler' => [
-                'ini',
-                'config',
-            ],
-            'dir handler' => [
-                'dir',
-                'baseDir',
-            ],
+        yield 'generic file handler' => [
+            'generic-file',
+            'config',
+        ];
+        yield 'ini handler' => [
+            'ini',
+            'config',
+        ];
+        yield 'dir handler' => [
+            'dir',
+            'baseDir',
         ];
     }
 
@@ -74,9 +72,8 @@ class ConfigWritingTest extends ConfigTestCase
      * @param string $configName Config name
      *
      * @return void
-     *
-     * @dataProvider upgradeTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('upgradeTestProvider')]
     public function testWriting(string $fixture, string $configName): void
     {
         $container = $this->getContainerWithConfigRelatedServices(
@@ -124,7 +121,7 @@ class ConfigWritingTest extends ConfigTestCase
             } else {
                 $expectedFileContent = $this->readFileAndNormalizeWhitespace($expected . '/' . $item);
                 $actualFileContent = $this->readFileAndNormalizeWhitespace($actual . '/' . $item);
-                $this->assertEquals($expectedFileContent, $actualFileContent);
+                $this->assertSame($expectedFileContent, $actualFileContent);
             }
         }
     }

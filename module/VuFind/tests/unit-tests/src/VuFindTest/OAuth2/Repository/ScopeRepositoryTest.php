@@ -29,6 +29,7 @@
 
 namespace VuFindTest\OAuth2\Repository;
 
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use VuFind\OAuth2\Repository\ScopeRepository;
 
 /**
@@ -45,15 +46,13 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Data provider for testScopeRepository
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestScopeRepositoryData(): array
+    public static function getTestScopeRepositoryData(): \Iterator
     {
-        return [
-            ['openid', 'OpenID', false, false],
-            ['id', 'Unique ID', false, false],
-            ['phone', 'Phone', false, true],
-        ];
+        yield ['openid', 'OpenID', false, false];
+        yield ['id', 'Unique ID', false, false];
+        yield ['phone', 'Phone', false, true];
     }
 
     /**
@@ -64,10 +63,9 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
      * @param bool   $hidden  Expected hidden value
      * @param bool   $ils     Expected "ILS Needed" value
      *
-     * @dataProvider getTestScopeRepositoryData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestScopeRepositoryData')]
     public function testScopeRepository(
         string $scopeId,
         string $desc,
@@ -91,12 +89,13 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         $repo = new ScopeRepository($config);
 
         $scope = $repo->getScopeEntityByIdentifier($scopeId);
+        $this->assertInstanceOf(ScopeEntityInterface::class, $scope);
         $this->assertEquals($desc, $scope->getDescription());
         $this->assertEquals($hidden, $scope->gethidden());
         $this->assertEquals($ils, $scope->getILSNeeded());
 
         $scopes = ['openid', 'id', 'phone'];
-        $this->assertEquals(
+        $this->assertSame(
             $scopes,
             $repo->finalizeScopes($scopes, 'AuthCode', $this->createClientEntity())
         );
@@ -118,7 +117,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         ];
         $repo = new ScopeRepository($config);
 
-        $this->assertNull($repo->getScopeEntityByIdentifier('foo'));
+        $this->assertNotInstanceOf(ScopeEntityInterface::class, $repo->getScopeEntityByIdentifier('foo'));
     }
 
     /**

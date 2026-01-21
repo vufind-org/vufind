@@ -45,7 +45,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @var string
      */
-    protected $backendId = 'Blender';
+    protected string $backendId = 'Blender';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -53,7 +53,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         if (null !== $this->getCursorMark()) {
             throw new \Exception('Blender does not support cursorMark');

@@ -81,10 +81,10 @@ class Memcache extends AbstractBase
         $host = $config->memcache_host ?? 'localhost';
         $port = $config->memcache_port ?? 11211;
         $timeout = $config->memcache_connection_timeout ?? 1;
-        $clientClass = $config->memcache_client ?? 'Memcache';
+        $clientClass = $config->memcache_client ?? \Memcache::class;
 
         // Create/validate client object:
-        if (!in_array($clientClass, ['Memcache', 'Memcached'])) {
+        if (!in_array($clientClass, [\Memcache::class, \Memcached::class])) {
             throw new \Exception("Unsupported Memcache client: $clientClass");
         }
         $this->connection = $client ?? new $clientClass();
@@ -100,19 +100,16 @@ class Memcache extends AbstractBase
         );
 
         // Establish connection:
-        switch ($clientClass) {
-            case 'Memcache':
-                if (!$this->connection->connect($host, $port, $timeout)) {
-                    throw $connectionException;
-                }
-                break;
-            case 'Memcached':
-                $this->connection
-                    ->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
-                if (!$this->connection->addServer($host, $port)) {
-                    throw $connectionException;
-                }
-                break;
+        if ($clientClass === \Memcache::class) {
+            trigger_error('Memcache support is deprecated; use Memcached instead', E_USER_DEPRECATED);
+            if (!$this->connection->connect($host, $port, $timeout)) {
+                throw $connectionException;
+            }
+        } else {
+            $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+            if (!$this->connection->addServer($host, $port)) {
+                throw $connectionException;
+            }
         }
     }
 

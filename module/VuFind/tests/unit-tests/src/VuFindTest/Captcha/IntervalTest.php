@@ -32,16 +32,15 @@ namespace VuFindTest\Captcha;
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *
- * @requires extension gd
- * @requires function imagepng
- * @requires function imageftbbox
- *
  * @category VuFind
  * @package  Tests
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+#[\PHPUnit\Framework\Attributes\RequiresPhpExtension('gd')]
+#[\PHPUnit\Framework\Attributes\RequiresFunction('imagepng')]
+#[\PHPUnit\Framework\Attributes\RequiresFunction('imageftbbox')]
 class IntervalTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -66,7 +65,7 @@ class IntervalTest extends \PHPUnit\Framework\TestCase
         // Check that first check passes if session data has not been initialized:
         $this->assertTrue($interval->verify($params));
         $this->assertFalse($interval->verify($params));
-        $this->assertEquals(
+        $this->assertSame(
             'interval_captcha_not_passed',
             $interval->getErrorMessage()
         );

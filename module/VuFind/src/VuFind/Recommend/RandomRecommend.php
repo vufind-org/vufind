@@ -176,11 +176,9 @@ class RandomRecommend implements RecommendInterface
      */
     public function init($params, $request)
     {
-        if ('retain' !== $this->mode) {
-            $randomParams = $this->paramManager->get($params->getSearchClassId());
-        } else {
-            $randomParams = clone $params;
-        }
+        $randomParams = 'retain' !== $this->mode
+            ? $this->paramManager->get($params->getSearchClassId())
+            : clone $params;
         foreach ($this->filters as $filter) {
             $randomParams->addFilter($filter);
         }

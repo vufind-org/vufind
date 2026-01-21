@@ -91,14 +91,12 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testDefaultTopPagination
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function topPaginationProvider(): array
+    public static function topPaginationProvider(): \Iterator
     {
-        return [
-            [false],
-            [true],
-        ];
+        yield [false];
+        yield [true];
     }
 
     /**
@@ -106,10 +104,9 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param bool $jsResults Whether to update search results with JS
      *
-     * @dataProvider topPaginationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topPaginationProvider')]
     public function testDefaultTopPagination(bool $jsResults): void
     {
         // Change configuration:
@@ -144,10 +141,9 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param bool $jsResults Whether to update search results with JS
      *
-     * @dataProvider topPaginationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topPaginationProvider')]
     public function testSimpleTopPagination(bool $jsResults): void
     {
         $config = [

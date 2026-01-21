@@ -38,7 +38,7 @@ use function is_object;
 use function is_resource;
 
 /**
- * Search
+ * Entity model for search table
  *
  * @category VuFind
  * @package  Database
@@ -244,7 +244,8 @@ class Search implements SearchEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**
@@ -321,11 +322,9 @@ class Search implements SearchEntityInterface
                 $this->searchObject = stream_get_contents($this->searchObject);
             }
             $unserialized = @unserialize($this->searchObject);
-            if ($unserialized && is_object($unserialized)) {
-                $this->deserializedSearchObject = $unserialized;
-            } else {
-                $this->deserializedSearchObject = null;
-            }
+            $this->deserializedSearchObject = $unserialized && is_object($unserialized)
+                ? $unserialized
+                : null;
         }
     }
 
@@ -410,7 +409,8 @@ class Search implements SearchEntityInterface
      */
     public function getLastNotificationSent(): DateTime
     {
-        return $this->lastNotificationSent;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->lastNotificationSent);
     }
 
     /**
@@ -420,7 +420,7 @@ class Search implements SearchEntityInterface
      *
      * @return static
      */
-    public function setLastNotificationSent(Datetime $lastNotificationSent): static
+    public function setLastNotificationSent(DateTime $lastNotificationSent): static
     {
         $this->lastNotificationSent = $lastNotificationSent;
         return $this;

@@ -53,6 +53,18 @@ interface DbServiceInterface
     public function persistEntity(EntityInterface $entity): void;
 
     /**
+     * Detach an entity.
+     *
+     * Makes the Entity Manager stop tracking the entity. This can save memory and work, but also helps when the target
+     * entity of this entity with "ON DELETE SET NULL" is going to be deleted.
+     *
+     * @param EntityInterface $entity Entity to detach.
+     *
+     * @return void
+     */
+    public function detachEntity(EntityInterface $entity): void;
+
+    /**
      * Begin a database transaction.
      *
      * @return void

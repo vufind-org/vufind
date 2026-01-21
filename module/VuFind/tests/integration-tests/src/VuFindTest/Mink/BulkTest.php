@@ -103,7 +103,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForNonSelectedMessage(Element $page): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
@@ -122,7 +122,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForLimitExceededMessage(Element $page, $count, $limit): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'Selection of ' . $count . ' items exceeds the limit of '
             . $limit . ' for this action. Please select fewer items.',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
@@ -181,7 +181,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -190,10 +190,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the save control works.
      *
-     * @depends testBulkEmail
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
@@ -216,7 +215,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -235,9 +234,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can bulk-delete records from a favorites list.
      *
      * @return void
-     *
-     * @depends testBulkSave
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkSave')]
     public function testBulkDeleteFromList(): void
     {
         // Log in to account that owns the list:
@@ -263,7 +261,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm contents of confirmation box:
-        $this->assertEquals(
+        $this->assertSame(
             'Title: Journal of rational emotive therapy : Title: Rational living.',
             $this->findCssAndGetText($page, '#modal ul.record-list')
         );
@@ -273,7 +271,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // If all records were deleted, success message should be visible, and delete button should be gone after
         // lightbox is closed.
         $this->waitForLightboxHidden();
-        $this->assertEquals(
+        $this->assertSame(
             'Your saved item(s) were deleted.',
             $this->findCssAndGetText($page, '.alert-success')
         );
@@ -283,14 +281,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to allow testing of top or bottom controls.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function topOrBottomProvider(): array
+    public static function topOrBottomProvider(): \Iterator
     {
-        return [
-            'top button' => [''],
-            'bottom button' => ['bottom_'],
-        ];
+        yield 'top button' => [''];
+        yield 'bottom button' => ['bottom_'];
     }
 
     /**
@@ -299,9 +295,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkExport(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -334,7 +329,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $this->clickCss($page, '.form-cart-export input[name=submitButton]');
         $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
-        $this->assertEquals('Download File', $buttonText);
+        $this->assertSame('Download File', $buttonText);
     }
 
     /**
@@ -343,9 +338,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkPrint(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -366,7 +360,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             [, $params] = explode('?', $session->getCurrentUrl());
         }
-        $this->assertEquals(
+        $this->assertSame(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
@@ -376,9 +370,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the print control works.
      *
      * @return void
-     *
-     * @depends testBulkEmail
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkActionLimits(): void
     {
         $session = $this->getMinkSession();
@@ -436,7 +429,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -459,7 +452,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('MARC');
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
-        $this->assertEquals(
+        $this->assertSame(
             'Download File',
             $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn')
         );

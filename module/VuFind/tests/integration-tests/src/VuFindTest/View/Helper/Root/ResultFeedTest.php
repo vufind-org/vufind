@@ -69,7 +69,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     protected function getPlugins(): array
     {
         $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
-        $currentPath->expects($this->any())->method('__invoke')->willReturn('/test/path');
+        $currentPath->method('__invoke')->willReturn('/test/path');
 
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
@@ -83,10 +83,10 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                     ),
                 ]
             )->getMock();
-        $recordLinker->expects($this->any())->method('getUrl')->willReturn('test/url');
+        $recordLinker->method('getUrl')->willReturn('test/url');
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $serverUrl->expects($this->any())->method('__invoke')->willReturn('http://server/url');
+        $serverUrl->method('__invoke')->willReturn('http://server/url');
 
         return compact('currentPath', 'record', 'recordLinker') + ['serverurl' => $serverUrl];
     }
@@ -94,17 +94,15 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testRSS.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function rssProvider(): array
+    public static function rssProvider(): \Iterator
     {
         $routeLink = 'http://server/url';
         $driverLink = 'http://driver-url';
-        return [
-            'default options' => [[], $routeLink],
-            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink],
-            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink],
-        ];
+        yield 'default options' => [[], $routeLink];
+        yield 'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink];
+        yield 'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink];
     }
 
     /**
@@ -114,9 +112,8 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedLink The link URL we expect to find in the first result in the feed.
      *
      * @return void
-     *
-     * @dataProvider rssProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rssProvider')]
     public function testRSS(array $options, string $expectedLink): void
     {
         // Set up a request -- we'll sort by title to ensure a predictable order
@@ -149,13 +146,13 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $rss = $feed->export('rss');
 
         // Make sure it's really an RSS feed:
-        $this->assertTrue(strstr($rss, '<rss') !== false);
+        $this->assertNotFalse(strstr($rss, '<rss'));
 
         // Make sure custom Dublin Core elements are present:
-        $this->assertTrue(strstr($rss, 'dc:format') !== false);
+        $this->assertNotFalse(strstr($rss, 'dc:format'));
 
         // Make sure custom Atom link elements are present:
-        $this->assertTrue(strstr($rss, 'atom:link') !== false);
+        $this->assertNotFalse(strstr($rss, 'atom:link'));
 
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);

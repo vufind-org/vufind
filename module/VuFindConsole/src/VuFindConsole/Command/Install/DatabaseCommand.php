@@ -139,9 +139,9 @@ class DatabaseCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $sqlOnly = $input->getOption('sql-only') ? true : false;
+        $sqlOnly = (bool)$input->getOption('sql-only');
         $driver = $input->getOption('driver');
         $dbHost = $input->getOption('dbHost');
         $vufindHost = $input->getOption('vufindHost');
@@ -176,11 +176,11 @@ class DatabaseCommand extends Command
                     $e = $e->getPrevious();
                 }
             }
-            return 1;
+            return self::FAILURE;
         }
         if (!$sqlOnly) {
             $output->writeln('Successfully created database.');
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

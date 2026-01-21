@@ -29,10 +29,12 @@
 
 namespace VuFindTest\Http;
 
-use Laminas\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use VuFind\Exception\HttpDownloadException;
 use VuFind\Http\CachingDownloader;
-use VuFindHttp\HttpService;
+use VuFind\Http\GuzzleService;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * CachingDownloader Test Class
@@ -45,17 +47,17 @@ use VuFindHttp\HttpService;
  */
 class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Data provider for testDownload
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function downloadProvider(): array
+    public static function downloadProvider(): \Iterator
     {
-        return [
-            'cache enabled' => [true],
-            'cache disabled' => [false],
-        ];
+        yield 'cache enabled' => [true];
+        yield 'cache disabled' => [false];
     }
 
     /**
@@ -64,9 +66,8 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
      * @param bool $cacheEnabled Is the cache enabled?
      *
      * @return void
-     *
-     * @dataProvider downloadProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('downloadProvider')]
     public function testDownload(bool $cacheEnabled): void
     {
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -75,11 +76,16 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $testBody = '{"id":1,"title":"iPhone 9"}';
         $testCacheKey = md5($testUrl);
 
-        // httpService
-        $service = $this->createMock(HttpService::class);
-        $response = $this->createMock(Response::class);
-        $response->expects($this->once())->method('isOk')->willReturn(true);
-        $response->expects($this->once())->method('getBody')->willReturn($testBody);
+        // GuzzleService
+        $service = $this->createMock(GuzzleService::class);
+
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->method('getContents')->willReturn($testBody);
+        $stream->expects($this->once())->method('rewind');
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->expects($this->exactly(2))->method('getBody')->willReturn($stream);
 
         $service->expects($this->once())->method('get')->with($testUrl)->willReturn($response);
 
@@ -114,11 +120,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         }
 
         // configManager
-        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManagerMock = $this->getMockConfigManager();
 
         // downloader
         $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock, $cacheEnabled);
-        $downloader->setHttpService($service);
+        $downloader->setGuzzleService($service);
 
         $body = $downloader->download(
             $testUrl
@@ -140,8 +146,8 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $testUrl = 'https://mock.codes/404';
         $testCacheKey = md5($testUrl);
 
-        // httpService
-        $service = $this->createMock(HttpService::class);
+        // GuzzleService
+        $service = $this->createMock(GuzzleService::class);
         $service->expects($this->once())
             ->method('get')
             ->with($testUrl)
@@ -163,11 +169,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->willReturn($storage);
 
         // configManager
-        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManagerMock = $this->getMockConfigManager();
 
         // downloader
         $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock, true);
-        $downloader->setHttpService($service);
+        $downloader->setGuzzleService($service);
 
         $downloader->download(
             $testUrl

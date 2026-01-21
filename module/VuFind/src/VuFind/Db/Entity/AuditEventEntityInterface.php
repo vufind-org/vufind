@@ -49,7 +49,7 @@ interface AuditEventEntityInterface extends EntityInterface
      *
      * @return DateTime
      */
-    public function getDate(): Datetime;
+    public function getDate(): DateTime;
 
     /**
      * Set date.
@@ -214,16 +214,16 @@ interface AuditEventEntityInterface extends EntityInterface
     /**
      * Get additional data.
      *
-     * @return ?string
+     * @return ?array
      */
-    public function getData(): ?string;
+    public function getData(): ?array;
 
     /**
      * Set additional data.
      *
-     * @param ?string $data Data
+     * @param ?array $data Data
      *
      * @return static
      */
-    public function setData(?string $data): static;
+    public function setData(?array $data): static;
 }

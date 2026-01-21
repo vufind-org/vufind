@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * ExternalSession
+ * Entity model for external_session table
  *
  * @category VuFind
  * @package  Database
@@ -156,7 +156,8 @@ class ExternalSession implements ExternalSessionEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

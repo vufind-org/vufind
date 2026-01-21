@@ -158,10 +158,10 @@ class Loader extends \VuFind\ImageLoader
     /**
      * Generate a QR code image
      *
-     * @param string                        $text   The QR code text
-     * @param int                           $size   QR code width/height (in pixels)
-     * @param int                           $margin QR code margin (in pixels)
-     * @param ErrorCorrectionLevelInterface $level  Error correction level object
+     * @param string               $text   The QR code text
+     * @param int                  $size   QR code width/height (in pixels)
+     * @param int                  $margin QR code margin (in pixels)
+     * @param ErrorCorrectionLevel $level  Error correction level object
      *
      * @return bool True if image displayed, false on failure.
      */
@@ -173,12 +173,14 @@ class Loader extends \VuFind\ImageLoader
 
         // Build the code:
         try {
-            $code = new QrCode($text);
-            $code->setMargin($margin);
-            $code->setErrorCorrectionLevel($level);
-            $code->setSize($size);
-            $code->setEncoding(new \Endroid\QrCode\Encoding\Encoding('UTF-8'));
-            $code->setRoundBlockSizeMode(\Endroid\QrCode\RoundBlockSizeMode::None);
+            $code = new QrCode(
+                data: $text,
+                margin: $margin,
+                errorCorrectionLevel: $level,
+                size: $size,
+                encoding: new \Endroid\QrCode\Encoding\Encoding('UTF-8'),
+                roundBlockSizeMode: \Endroid\QrCode\RoundBlockSizeMode::None
+            );
 
             // Save the values.
             $writer = new PngWriter();

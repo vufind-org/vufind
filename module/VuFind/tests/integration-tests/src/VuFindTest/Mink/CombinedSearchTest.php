@@ -104,11 +104,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             // only appear after AJAX returns):
             $this->unFindCss($page, '.callnumber.ajax-availability');
             $this->unFindCss($page, '.location.ajax-availability');
-            $this->assertEquals(
+            $this->assertSame(
                 'A1234.567',
                 $this->findCssAndGetText($page, "$container .callnumber")
             );
-            $this->assertEquals(
+            $this->assertSame(
                 '3rd Floor Main Library',
                 $this->findCssAndGetText($page, "$container .location")
             );
@@ -132,18 +132,53 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that combined results work with an invalid search heandler.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsInvalidHandler(): void
+    {
+        $combined = $this->getCombinedIniOverrides();
+        $combined['INVALID:one'] = [
+            'label' => 'Invalid handler',
+        ];
+
+        // Include an invalid combined search handler, and disable logging
+        $this->changeConfigs(
+            [
+                'combined' => $combined,
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertResultsForDefaultQuery($page);
+        $this->assertStringContainsString(
+            'Solr One',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
+        $this->assertStringNotContainsString(
+            'Invalid handler',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
+    }
+
+    /**
      * Data provider for different combinations of AJAX columns
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function ajaxCombinationsProvider(): array
+    public static function ajaxCombinationsProvider(): \Iterator
     {
-        return [
-            'no ajax' => [false, false],
-            'left ajax' => [true, false],
-            'right ajax' => [false, true],
-            'all ajax' => [true, true],
-        ];
+        yield 'no ajax' => [false, false];
+        yield 'left ajax' => [true, false];
+        yield 'right ajax' => [false, true];
+        yield 'all ajax' => [true, true];
     }
 
     /**
@@ -153,9 +188,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $rightAjax Should right column load via AJAX?
      *
      * @return void
-     *
-     * @dataProvider ajaxCombinationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ajaxCombinationsProvider')]
     public function testCombinedSearchResultsAuthorLinks(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();
@@ -179,11 +213,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // The author link in each column should have an appropriate hidden filter applied:
         $this->assertStringContainsString(
             'hiddenFilters%5B%5D=building%3A%22author_relators.mrc%22',
-            $this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
+            (string)$this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
         );
         $this->assertStringContainsString(
             'hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22',
-            $this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
+            (string)$this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
         );
     }
 
@@ -242,14 +276,12 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testJumpMenu()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function jumpMenuProvider(): array
+    public static function jumpMenuProvider(): \Iterator
     {
-        return [
-            'anchor mode' => ['anchor'],
-            'link mode' => ['link'],
-        ];
+        yield 'anchor mode' => ['anchor'];
+        yield 'link mode' => ['link'];
     }
 
     /**
@@ -258,9 +290,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $linkMode Linking mode to activate
      *
      * @return void
-     *
-     * @dataProvider jumpMenuProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('jumpMenuProvider')]
     public function testJumpMenu(string $linkMode): void
     {
         $config = $this->getCombinedIniOverrides();
@@ -276,7 +307,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // The AJAX count may not load right away, so wait to be sure we assert on the final value:
         $getText = "document.getElementsByClassName('combined-jump-links')[0].textContent.replace(/\s+/g, ' ').trim()";
         $this->waitStatement("$getText === '$expectedContent'");
-        $this->assertEquals(
+        $this->assertSame(
             $expectedContent,
             $this->findCssAndGetText($page, '.combined-jump-links')
         );
@@ -301,9 +332,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $rightAjax Should right column load via AJAX?
      *
      * @return void
-     *
-     * @dataProvider ajaxCombinationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ajaxCombinationsProvider')]
     public function testCombinedSearchResultsMixedAjaxDOIs(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();

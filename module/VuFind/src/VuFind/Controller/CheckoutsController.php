@@ -33,6 +33,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\SessionManager;
+use VuFind\ILS\Logic\RecordsHelper;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Validator\CsrfInterface;
 
@@ -128,11 +129,11 @@ class CheckoutsController extends AbstractBase
         $purgeAllAllowed = !empty($functionConfig['purge_all']);
 
         // Get paging setup:
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $pageOptions = $this->paginationHelper->getOptions(
             (int)$this->params()->fromQuery('page', 1),
             $this->params()->fromQuery('sort'),
-            $config->Catalog->historic_loan_page_size ?? 50,
+            $config['Catalog']['historic_loan_page_size'] ?? 50,
             $functionConfig
         );
 
@@ -171,7 +172,7 @@ class CheckoutsController extends AbstractBase
             }
         }
 
-        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
+        $transactions = $this->getService(RecordsHelper::class)->getDrivers($driversNeeded);
         $sortList = $pageOptions['sortList'];
         $params = $pageOptions['ilsParams'];
         return $this->createViewModel(

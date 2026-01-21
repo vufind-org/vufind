@@ -45,14 +45,12 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDetection.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function detectionProvider(): array
+    public static function detectionProvider(): \Iterator
     {
-        return [
-            'mobile detected' => [true],
-            'mobile not detected' => [false],
-        ];
+        yield 'mobile detected' => [true];
+        yield 'mobile not detected' => [false];
     }
 
     /**
@@ -61,9 +59,8 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
      * @param bool $active Result of mobile detection
      *
      * @return void
-     *
-     * @dataProvider detectionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('detectionProvider')]
     public function testDetection(bool $active): void
     {
         $detector = $this->createMock(\uagent_info::class);
