@@ -99,9 +99,17 @@ class AutowiringFactory implements FactoryInterface
         // Map constructor parameters:
         $params = [];
         foreach ($reflectionParameters as $reflectionParameter) {
-            $attributes = $reflectionParameter->getAttributes(Autowire::class);
-            $autowireArgs = ($attributes[0] ?? null)?->getArguments();
-            $params[] = $this->resolveParameter($container, $reflectionParameter, $autowireArgs);
+            try {
+                $attributes = $reflectionParameter->getAttributes(Autowire::class);
+                $autowireArgs = ($attributes[0] ?? null)?->getArguments();
+                $params[] = $this->resolveParameter($container, $reflectionParameter, $autowireArgs);
+            } catch (\Exception $e) {
+                $paramName = $reflectionParameter->getName();
+                throw new \Exception(
+                    "Problem resolving parameter $paramName when building $requestedName: " . $e->getMessage(),
+                    previous: $e
+                );
+            }
         }
         return new $requestedName(...$params);
     }
