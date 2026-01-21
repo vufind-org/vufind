@@ -241,7 +241,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
             }
         }
         $coverageDates = implode($this->translate('openurl_coverage_daterange_joiner', default: ', '), $allDateRanges);
-        $statement = $link['packageInfo']['coverage']['coverageStatement'] ?? '';
+        $statement = trim($link['packageInfo']['coverage']['coverageStatement'] ?? '');
 
         return $statement
             ? $this->translate(
