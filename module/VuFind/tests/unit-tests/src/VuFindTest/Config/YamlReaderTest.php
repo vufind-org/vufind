@@ -177,6 +177,28 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test @parent_yaml set to false
+     *
+     * @return void
+     */
+    public function testParentYamlFalse(): void
+    {
+        $reader = new YamlReader(
+            $this->getPathResolver(
+                baseDir: $this->getFixtureDir() . 'configs/yaml',
+                localDir: $this->getFixtureDir() . 'configs/yaml/localDir',
+            )
+        );
+        $config = $reader->get('yamlreader-parent-yaml-false.yaml');
+        $this->assertEquals(
+            [
+                'Child' => 'Will exist',
+            ],
+            $config
+        );
+    }
+
+    /**
      * Data provider for testParentConfigName.
      *
      * @return array
@@ -216,6 +238,28 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
                 'All' => $childLocation . '-child',
                 'ChildOnly' => $childLocation . '-child',
                 'ParentOnly' => $parentLocation . '-parent',
+            ],
+            $config
+        );
+    }
+
+    /**
+     * Test @parent_config_name set to false
+     *
+     * @return void
+     */
+    public function testParentConfigNameFalse(): void
+    {
+        $reader = new YamlReader(
+            $this->getPathResolver(
+                baseDir: $this->getFixtureDir() . 'configs/yaml',
+                localDir: $this->getFixtureDir() . 'configs/yaml/localDir',
+            )
+        );
+        $config = $reader->get('yamlreader-parent-config-name-false.yaml');
+        $this->assertEquals(
+            [
+                'Child' => 'Will exist',
             ],
             $config
         );
