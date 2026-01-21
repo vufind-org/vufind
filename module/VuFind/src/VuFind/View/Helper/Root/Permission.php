@@ -58,9 +58,9 @@ class Permission
     public function __construct(
         protected PermissionManager $permissionManager,
         protected PermissionDeniedManager $permissionDeniedManager,
-        #[Autowire(service: TransEsc::class)]
+        #[Autowire(container: 'ViewHelperManager', service: TransEsc::class)]
         protected TransEsc $transEsc,
-        #[Autowire(service: Context::class)]
+        #[Autowire(container: 'ViewHelperManager', service: Context::class)]
         protected Context $context
     ) {
     }
