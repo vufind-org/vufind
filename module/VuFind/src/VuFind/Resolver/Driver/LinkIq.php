@@ -148,7 +148,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      *
      * @param array $link Link
      *
-     * @return string
+     * @return ?array
      */
     protected function parseTargetLink(array $link): ?array
     {
