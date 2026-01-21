@@ -68,6 +68,7 @@ abstract class AbstractSearch extends AbstractCapabilities
      * @param Loader          $recordLoader    Record loader
      * @param RecordFormatter $recordFormatter Record formatter
      * @param SearchRunner    $searchRunner    Search runner
+     * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
     public function __construct(
         protected YamlReader $yamlReader,
