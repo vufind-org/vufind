@@ -29,7 +29,12 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use VuFind\Config\Config;
 use VuFindSearch\Backend\Pazpar2\Backend;
 use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\QueryBuilder;
@@ -49,31 +54,37 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * VuFind configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
-    protected $config;
+    protected Config $config;
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Backend
+     * @return object
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->setup($sm);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->setup($container);
         $this->config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject('Pazpar2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
@@ -91,7 +102,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -112,7 +123,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         $connector = new Connector(
             $this->config->General->base_url,
@@ -127,7 +138,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
         return new QueryBuilder();
     }
@@ -137,7 +148,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {

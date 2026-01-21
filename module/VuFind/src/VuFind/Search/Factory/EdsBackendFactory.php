@@ -29,7 +29,12 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use VuFind\Config\Config;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
@@ -51,56 +56,55 @@ class EdsBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var ?LoggerInterface
      */
-    protected $logger = null;
+    protected ?LoggerInterface $logger = null;
 
     /**
      * EDS configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
-    protected $edsConfig;
-
-    /**
-     * EDS Account data
-     *
-     * @var array
-     */
-    protected $accountData;
+    protected Config $edsConfig;
 
     /**
      * Default URL for the EDS Backend.  Set here for the EDS API.
      *
-     * @var str
+     * @var string
      */
-    protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
+    protected string $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * Get the service name. This is used for both configuration
      * and record driver retrieval.
      *
-     * @return str
+     * @return string
      */
-    protected function getServiceName()
+    protected function getServiceName(): string
     {
         return 'EDS';
     }
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Backend
+     * @return object
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->setup($sm);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->setup($container);
         $this->edsConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
@@ -119,7 +123,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
@@ -150,7 +154,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         $options = $this->createConnectorOptions();
         $httpOptions = [
@@ -176,7 +180,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return array
      */
-    protected function createConnectorOptions()
+    protected function createConnectorOptions(): array
     {
         $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $options = [
@@ -215,10 +219,9 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder();
-        return $builder;
+        return new QueryBuilder();
     }
 
     /**
@@ -226,7 +229,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
@@ -244,7 +247,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return void
      */
-    protected function createListeners(Backend $backend)
+    protected function createListeners(Backend $backend): void
     {
         $events = $this->getService('SharedEventManager');
 

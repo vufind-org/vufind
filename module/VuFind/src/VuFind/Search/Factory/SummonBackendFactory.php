@@ -29,7 +29,12 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use VuFind\Config\Config;
 use VuFind\Http\GuzzleService;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Backend;
@@ -51,38 +56,44 @@ class SummonBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * VuFind configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
-    protected $config;
+    protected Config $config;
 
     /**
      * Summon configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
-    protected $summonConfig;
+    protected Config $summonConfig;
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Backend
+     * @return object
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->setup($sm);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
         $this->config = $configManager->getConfigObject('config');
         $this->summonConfig = $configManager->getConfigObject('Summon');
@@ -101,7 +112,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -114,7 +125,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         // Load credentials:
         $id = $this->config->Summon->apiId ?? null;
@@ -137,7 +148,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return bool
      */
-    protected function isAuthed()
+    protected function isAuthed(): bool
     {
         return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
             ->isGranted('access.SummonExtendedResults');
@@ -148,7 +159,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
         $builder = new QueryBuilder();
         $caseSensitiveBooleans
@@ -163,7 +174,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $stripSnippets = !($this->summonConfig->General->snippets ?? false);
