@@ -132,7 +132,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
         }
 
         $results = [];
-        foreach ($json['contextObjects'] as $contextObject) {
+        foreach ($json['contextObjects'] ?? [] as $contextObject) {
             foreach ($contextObject['targetLinks'] ?? [] as $link) {
                 if ($result = $this->parseTargetLink($link)) {
                     $results[] = $result;
