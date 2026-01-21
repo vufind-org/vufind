@@ -175,4 +175,76 @@ class SectionServiceTest extends AbstractSectionTestCase
             $localizedConfig['Account']['MenuItems'][0]['url']
         );
     }
+
+    /**
+     * Data provider for testAlwaysFailCheckMethod.
+     *
+     * @return \Iterator<string, array>
+     */
+    public static function alwaysFailCheckMethodProvider(): \Iterator
+    {
+        yield 'Hide section' => [
+            [
+                'Header' => [
+                    'checkMethod' => 'alwaysFail',
+                    'MenuItems' => [
+                        [
+                            'label' => 'Item 1 label',
+                            'url' => '#',
+                        ],
+                        [
+                            'label' => 'Item 2 label',
+                            'url' => '#',
+                        ],
+                    ],
+                ],
+            ],
+            [],
+        ];
+        yield 'Hide item' => [
+            [
+                'Header' => [
+                    'MenuItems' => [
+                        [
+                            'label' => 'Item 1 label',
+                            'url' => '#',
+                        ],
+                        [
+                            'label' => 'Item 2 label',
+                            'url' => '#',
+                            'checkMethod' => 'alwaysFail',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'Header' => [
+                    'MenuItems' => [
+                        [
+                            'label' => 'Item 1 label',
+                            'url' => '#',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test alwaysFail check method.
+     *
+     * @param array $config       Configuration
+     * @param array $expectedMenu Expected menu
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('alwaysFailCheckMethodProvider')]
+    public function testAlwaysFailCheckMethod(array $config, array $expectedMenu): void
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getHeaderBar($container, $config)->getMenu(),
+            $expectedMenu
+        );
+    }
 }
