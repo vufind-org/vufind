@@ -121,7 +121,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      *
      * @param string $response Raw JSON returned by resolver
      *
-     * @return array         Array of values
+     * @return array Array of values
      */
     public function parseLinks($response)
     {
