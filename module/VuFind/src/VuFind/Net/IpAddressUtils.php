@@ -77,11 +77,11 @@ class IpAddressUtils
             // IPv6 address
 
             // Expand :: with '0:' as many times as necessary for a complete address
-            $count = substr_count($ip, ':');
+            $count = substr_count($ip, ':') - (substr($ip, -2) === '::' ? 1 : 0);
             if ($count < 8) {
                 $ip = str_replace(
                     '::',
-                    ':' . str_repeat('0:', 8 - $count),
+                    str_repeat(':0', 8 - $count) . (substr($ip, -2) === '::' ? '' : ':'),
                     $ip
                 );
             }
