@@ -443,7 +443,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Get the full Solr URL(s) (including index path part).
      *
-     * @return string|array
+     * @return string[]|string
      */
     protected function getSolrUrl(): array|string
     {
