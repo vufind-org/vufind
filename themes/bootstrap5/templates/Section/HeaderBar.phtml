@@ -12,11 +12,8 @@
               <?php if (isset($item['template'])): ?>
                 <?php
                   // Pass section context to template.
-                  $item = array_merge(
-                      $this->{\VuFind\View\Helper\Root\Section::SECTION_CONTEXT_KEY},
-                      $item
-                  );
-               ?>
+                  $item = array_merge($this->{\VuFind\View\Helper\Root\Section::SECTION_CONTEXT_KEY}, $item);
+                ?>
                 <?= $this->render($item['template'], $item) ?>
               <?php else: ?>
                 <?php
