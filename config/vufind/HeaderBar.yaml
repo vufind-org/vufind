@@ -25,9 +25,8 @@
 #
 # You can use checkMethod: alwaysFail to disable specific inherited groups or items
 # in local configuration. If you wish to completely override the default
-# configuration with your local configuration you can disable configuration
-# inheritance by adding a "@parent_yaml": false entry at the very top of your local
-# configuration file.
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
 
 Header:
   MenuItems:
