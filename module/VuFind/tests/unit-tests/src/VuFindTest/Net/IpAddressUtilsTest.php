@@ -109,6 +109,12 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
                 ['2001:0db8']
             )
         );
+        $this->assertTrue(
+            $utils->isInRange(
+                '2001:db8:ef90:1:0:0:0:0',
+                ['2001:db8:ef90:1::']
+            )
+        );
         $this->assertFalse(
             $utils->isInRange(
                 '2001:db8::ef90:1',
