@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Formatter;
 
+use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -85,9 +86,21 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
         $mockRecordLinker
             = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
-        $mockRecordLinker->method('getUrl')->willReturn('http://record');
+        $mockRecordLinker->method('getUrl')->willReturn('/vufind/Record/12345');
         $hm->setService('recordLinker', $mockRecordLinker);
         return $hm;
+    }
+
+    /**
+     * Get a mock ServerUrlHelper
+     *
+     * @return ServerUrlHelper
+     */
+    protected function getServerUrlHelper(): ServerUrlHelper
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $mockServerUrlHelper = $container->get(\VuFind\Http\ServerUrlHelper::class);
+        return $mockServerUrlHelper;
     }
 
     /**
@@ -97,11 +110,12 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return RecordFormatter
      */
-    protected function getFormatter($defs = null)
+    protected function getFormatter(?array $defs = null): RecordFormatter
     {
         return new RecordFormatter(
             $defs ?: $this->getDefaultDefs(),
-            $this->getHelperPluginManager()
+            $this->getHelperPluginManager(),
+            $this->getServerUrlHelper()
         );
     }
 
@@ -161,7 +175,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
                 'fullRecord' => 'xyzzy',
                 'rawData' => $expectedRaw,
                 'buildings' => ['foo', ['value' => 'bar', 'translated' => 'xyzzy']],
-                'recordPage' => 'http://record',
+                'recordPage' => '/vufind/Record/12345',
                 'subjectsExtended' => [['heading' => 'subject']],
                 'authors' => [
                     'primary' => ['Ms. A' => ['role' => ['Editor']]],
