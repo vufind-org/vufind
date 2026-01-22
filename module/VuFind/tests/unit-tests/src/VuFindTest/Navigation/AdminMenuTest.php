@@ -66,11 +66,15 @@ class AdminMenuTest extends AbstractSectionTestCase
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $menu = $this->getAdminMenu(
+        $plugin = $this->getAdminMenu(
             $container,
             AdminMenu::getDefaultMenuConfig(),
             $this->getAdminMenuCheckMethods(false)
-        )->getMenu();
+        );
+        foreach (array_keys($this->getAdminMenuCheckMethods()) as $method) {
+            $this->assertEquals(false, $plugin->{$method}());
+        }
+        $menu = $plugin->getMenu();
         $this->assertCount(7, $menu['Admin']['MenuItems']);
     }
 

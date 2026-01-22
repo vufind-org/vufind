@@ -33,6 +33,8 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Config\YamlReader;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\ILS\Connection;
 use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
@@ -163,22 +165,52 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         array $config = [],
         array $checkMethods = [],
     ): AccountMenu {
-        $accountMenu = $this->getMockBuilder(AccountMenu::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    $this->createMock(AccountCapabilities::class),
-                    $this->createMock(Manager::class),
-                    $this->createMock(Connection::class),
-                    $this->createMock(ILSAuthenticator::class),
-                    null,
-                ]
-            )
-            ->onlyMethods(array_keys($this->getAccountMenuCheckMethods()))
-            ->getMock();
-        foreach ($this->getAccountMenuCheckMethods() as $checkMethod => $default) {
-            $accountMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
+        $mockAccountCapabilities = $this->createMock(AccountCapabilities::class);
+        $mockAccountCapabilities->method('getListSetting')
+            ->willReturn($checkMethods['checkFavorites'] ?? true);
+        $mockAccountCapabilities->method('libraryCardsEnabled')
+            ->willReturn($checkMethods['checkLibraryCards'] ?? true);
+        $mockAccountCapabilities->method('getSavedSearchSetting')
+            ->willReturn(($checkMethods['checkHistory'] ?? true) ? 'enabled' : 'disabled');
+        $mockAccountCapabilities->method('getListSetting')
+            ->willReturn(($checkMethods['checkUserlistMode'] ?? true) ? 'enabled' : 'disabled');
+        $mockAccountCapabilities->method('getCommentSetting')
+            ->willReturn(($checkMethods['checkUserContent'] ?? true) ? 'enabled' : 'disabled');
+
+        $mockManager = $this->createMock(Manager::class);
+        $mockManager->method('getUserObject')
+            ->willReturn(($checkMethods['checkLogout'] ?? true) ? $this->createMock(UserEntityInterface::class) : null);
+
+        $mockConnection = $this->createMock(Connection::class);
+        $mockConnection->method('checkCapability')
+            ->willReturnCallback(function ($method) use ($checkMethods) {
+                return match ($method) {
+                    'getMyTransactions' => $checkMethods['checkCheckedout'] ?? true,
+                    'getMyHolds' => $checkMethods['checkHolds'] ?? true,
+                    'getMyFines' => $checkMethods['checkFines'] ?? true,
+                };
+            });
+        $mockConnection->method('checkFunction')
+            ->willReturnCallback(function (string $function) use ($checkMethods) {
+                return match ($function) {
+                    'getMyTransactionHistory' => $checkMethods['checkHistoricloans'] ?? true,
+                    'StorageRetrievalRequests' => $checkMethods['checkStorageRetrievalRequests'] ?? true,
+                    'ILLRequests' => $checkMethods['checkILLRequests'] ?? true,
+                };
+            });
+
+        $mockOverdriveConnector = $this->createMock(OverdriveConnector::class);
+        $mockOverdriveConnector->method('isContentActive')
+            ->willReturn($checkMethods['checkOverdrive'] ?? true);
+
+        $accountMenu = new AccountMenu(
+            $config,
+            $mockAccountCapabilities,
+            $mockManager,
+            $mockConnection,
+            $this->createMock(ILSAuthenticator::class),
+            $mockOverdriveConnector
+        );
         $this->setSectionPlugin($container, $accountMenu, 'accountMenu');
         return $accountMenu;
     }
@@ -205,6 +237,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             'checkHistory' => $value,
             'checkLogout' => $value,
             'checkUserlistMode' => $value,
+            'checkUserContent' => $value,
         ];
     }
 
@@ -222,18 +255,10 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         array $config = [],
         array $checkMethods = [],
     ): AdminMenu {
-        $adminMenu = $this->getMockBuilder(AdminMenu::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    false,
-                ]
-            )
-            ->onlyMethods(array_keys($this->getAdminMenuCheckMethods()))
-            ->getMock();
-        foreach ($this->getAdminMenuCheckMethods() as $checkMethod => $default) {
-            $adminMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
+        $adminMenu = new AdminMenu(
+            $config,
+            $checkMethods['checkShowOverdrive'] ?? true,
+        );
         $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
     }

@@ -23,8 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
- *           License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
@@ -40,8 +39,7 @@ use VuFindTest\Unit\AbstractSectionTestCase;
  * @category VuFind
  * @package  Tests
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
- *           License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class AccountMenuTest extends AbstractSectionTestCase
@@ -68,11 +66,15 @@ class AccountMenuTest extends AbstractSectionTestCase
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $menu = $this->getAccountMenu(
+        $plugin = $this->getAccountMenu(
             $container,
             AccountMenu::getDefaultMenuConfig(),
             $this->getAccountMenuCheckMethods(false)
-        )->getMenu();
+        );
+        foreach (array_keys($this->getAccountMenuCheckMethods()) as $method) {
+            $this->assertEquals(false, $plugin->{$method}());
+        }
+        $menu = $plugin->getMenu();
         $this->assertCount(1, $menu['Account']['MenuItems']);
         $this->assertEquals('Profile', reset($menu['Account']['MenuItems'])['label']);
     }
