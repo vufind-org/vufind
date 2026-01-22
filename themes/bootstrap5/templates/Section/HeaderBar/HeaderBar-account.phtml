@@ -1,0 +1,38 @@
+<?php $account = $this->auth()->getManager(); ?>
+<?php if ($account->getIdentity()): ?>
+  <li id="account-home-nav" class="nav-item logoutOptions<?php if ($account->dropdownEnabled()): ?> dropdown<?php endif ?>">
+    <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" class="nav-link icon-link">
+      <span id="account-icon" class="icon-link__icon" role="link"><?=$this->icon('my-account') ?></span>
+      <span class="icon-link__label"><?=$this->transEsc('Your Account')?></span>
+    </a>
+    <?php if ($account->dropdownEnabled()): ?>
+      <a class="nav-link account-dropdown-toggle" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
+      <div class="dropdown-menu">
+        <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => '', 'idPrefix' => 'header_'])?>
+      </div>
+    <?php endif; ?>
+  </li>
+  <li class="nav-item logoutOptions">
+    <a href="<?=$this->url('myresearch-logout')?>" class="nav-link logout icon-link">
+      <?=$this->icon('sign-out', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc('Log Out')?></span>
+    </a>
+  </li>
+<?php else: ?>
+  <li class="nav-item" id="loginOptions">
+    <?php
+      $hasSessionInitiator = $this->auth()->hasSessionInitiator();
+      $loginLinkAttributes = [
+        'href' => $this->url('myresearch-userlogin'),
+        'class' => 'nav-link icon-link',
+      ];
+      if (!$hasSessionInitiator) {
+        $loginLinkAttributes['data-lightbox'] = true;
+      }
+    ?>
+    <a<?=$this->htmlAttributes($loginLinkAttributes)?>>
+      <?=$this->icon('sign-in', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc($hasSessionInitiator ? 'Institutional Login' : 'Login')?></span>
+    </a>
+  </li>
+<?php endif; ?>

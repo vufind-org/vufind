@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for navigation plugin tests.
+ * Abstract base class for section plugin tests.
  *
  * PHP version 8
  *
@@ -29,14 +29,20 @@
 
 namespace VuFindTest\Unit;
 
+use Laminas\Http\Request;
+use Laminas\View\Model\ViewModel;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
+use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Config\YamlReader;
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\ILS\Connection;
 use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
+use VuFind\Navigation\FooterMenu;
+use VuFind\Navigation\HeaderBar;
 use VuFind\Navigation\NavigationInterface;
 use VuFind\Navigation\PluginManager as NavigationManager;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
@@ -47,7 +53,7 @@ use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Abstract base class for navigation plugin tests.
+ * Abstract base class for section plugin tests.
  *
  * @category VuFind
  * @package  Tests
@@ -104,6 +110,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(SectionServiceInterface::class, $service);
         $this->getAccountMenu($container);
         $this->getAdminMenu($container);
+        $this->getFooterMenu($container);
+        $this->getHeaderBar($container);
     }
 
     /**
@@ -249,6 +257,107 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     {
         return [
             'checkShowOverdrive' => $value,
+        ];
+    }
+
+    /**
+     * Get a mock FooterMenu.
+     *
+     * @param MockContainer $container    Mock container
+     * @param array         $config       Configuration to use
+     * @param array         $checkMethods Values to return for specific check methods
+     *
+     * @return FooterMenu
+     */
+    protected function getFooterMenu(
+        MockContainer $container,
+        array $config = [],
+        array $checkMethods = []
+    ): FooterMenu {
+        $checkCookieSettings = $checkMethods['checkCookieSettings'] ?? true;
+
+        $footer = new FooterMenu(
+            $config,
+            ['Cookies' => ['consent' => $checkCookieSettings]],
+        );
+        $this->setSectionPlugin($container, $footer, 'footer');
+        return $footer;
+    }
+
+    /**
+     * Get all FooterMenu check methods.
+     *
+     * @param bool $value Value for the check methods to return
+     *
+     * @return array
+     */
+    protected function getFooterMenuCheckMethods(bool $value = true): array
+    {
+        return [
+            'checkCookieSettings' => $value,
+        ];
+    }
+
+    /**
+     * Get a mock HeaderBar.
+     *
+     * @param MockContainer $container    Mock container
+     * @param array         $config       Configuration to use
+     * @param array         $checkMethods Values to return for specific check methods
+     *
+     * @return HeaderBar
+     */
+    protected function getHeaderBar(
+        MockContainer $container,
+        array $config = [],
+        array $checkMethods = []
+    ): HeaderBar {
+        $mockCart = $this->createMock(Cart::class);
+        $mockCart->method('isActive')
+            ->willReturn($checkMethods['checkCart'] ?? true);
+
+        $mockAuthManager = $this->createMock(Manager::class);
+        $mockAuthManager->method('loginEnabled')
+            ->willReturn($checkMethods['checkAccount'] ?? true);
+
+        $checkThemeOptions = $checkMethods['checkThemeOptions'] ?? true;
+        $mockViewModel = $this->createMock(ViewModel::class);
+        $mockViewModel->method('getVariable')->with('themeOptions')
+            ->willReturn($checkThemeOptions ? [[], []] : []);
+
+        $checkAllLangs = $checkMethods['checkAllLangs'] ?? true;
+        $mockLocaleSettings = $this->createMock(LocaleSettings::class);
+        $mockLocaleSettings->method('getEnabledLocales')
+            ->willReturn($checkAllLangs ? [[], []] : []);
+
+        $header = new HeaderBar(
+            $config,
+            ['Feedback' => ['tab_enabled' => $checkMethods['checkFeedback'] ?? true]],
+            $mockCart,
+            $mockAuthManager,
+            $mockViewModel,
+            $mockLocaleSettings,
+            $this->createMock(Request::class),
+        );
+        $this->setSectionPlugin($container, $header, 'header');
+        return $header;
+    }
+
+    /**
+     * Get all HeaderBar check methods.
+     *
+     * @param bool $value Value for the check methods to return
+     *
+     * @return array
+     */
+    protected function getHeaderBarCheckMethods(bool $value = true): array
+    {
+        return [
+            'checkFeedback' => $value,
+            'checkCart' => $value,
+            'checkAccount' => $value,
+            'checkThemeOptions' => $value,
+            'checkAllLangs' => $value,
         ];
     }
 }

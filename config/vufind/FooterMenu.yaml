@@ -1,0 +1,80 @@
+# This file configures the FooterMenu section plugin, which renders menus at the
+# bottom of every page. If this file is empty or missing, default settings will be
+# used, matching the examples provided below.
+#
+# The format of this configuration is as follows:
+#
+# Array keys for every group are:
+#   - label: text shown as group header, will be translated - required
+#   - MenuItems: items shown in the menu - required
+#   - checkMethod: the name of a FooterMenu section plugin method to perform
+#     a check whether to show the group. If omitted, group will always display.
+#
+# Array keys for every menu item could be:
+#   - label: the text shown as link, will be translated - required
+#   - route: route name used to generate link target - required unless url is set
+#   - routeParams: parameters for dynamic routes
+#   - url: target url, alternative to route - required unless route is set
+#   - checkMethod: the name of a FooterMenu section plugin method to perform
+#     a check whether to show the item. If omitted, item will always display.
+#   - attributes: additional attributes for the menu item's <a> tag
+#
+# You can use checkMethod: alwaysFail to disable specific inherited groups or items
+# in local configuration. If you wish to completely override the default
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
+
+FooterFirst:
+  label: footer_header_search_options
+  MenuItems:
+    - label: 'Search History'
+      route: search-history
+
+    - label: 'Advanced Search'
+      route: search-advanced
+
+FooterSecond:
+  label: footer_header_find_more
+  MenuItems:
+    - label: 'Browse the Catalog'
+      route: browse-home
+
+    - label: 'Browse Alphabetically'
+      route: alphabrowse-home
+
+    - label: channel_explore
+      route: channels-home
+
+    - label: 'Course Reserves'
+      route: search-reserves
+
+    - label: 'New Items'
+      route: search-newitem
+
+FooterThird:
+  label: footer_header_need_help
+  MenuItems:
+    - label: 'Search Tips'
+      route: help
+      routeParams:
+        topic: search
+      attributes:
+        data-lightbox: data-lightbox
+        class: help-link
+
+    - label: 'Ask a Librarian'
+      route: content-page
+      routeParams:
+        page: askLibrary
+
+    - label: 'FAQs'
+      route: content-page
+      routeParams:
+        page: faq
+
+    - label: 'Cookie Settings'
+      url: '#'
+      checkMethod: checkCookieSettings
+      attributes:
+        data-cc: show-preferencesModal
+        aria-haspopup: dialog
