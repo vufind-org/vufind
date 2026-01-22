@@ -66,11 +66,15 @@ class HeaderBarTest extends AbstractSectionTestCase
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $menu = $this->getHeaderBar(
+        $plugin = $this->getHeaderBar(
             $container,
             HeaderBar::getDefaultMenuConfig(),
             $this->getHeaderBarCheckMethods(false)
-        )->getMenu();
+        );
+        foreach (array_keys($this->getHeaderBarCheckMethods()) as $method) {
+            $this->assertEquals(false, $plugin->{$method}());
+        }
+        $menu = $plugin->getMenu();
         $this->assertCount(0, $menu);
     }
 
