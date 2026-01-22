@@ -63,6 +63,10 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
             hex2bin('20010db80a0b12f00000000000000001'),
             $utils->normalizeIp('2001:db8:a0b:12f0::1')
         );
+        $this->assertEquals(
+            hex2bin('20010db80a0b12f00000000000000000'),
+            $utils->normalizeIp('2001:db8:a0b:12f0::')
+        );
     }
 
     /**
