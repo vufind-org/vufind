@@ -93,7 +93,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $holdingsTab = $this->findCss($page, '.record-tabs #tab-button-holdings');
         $this->assertEquals('Holdings', $holdingsTab->getText());
         $holdingsTab->click();
-        $this->assertEquals(
+        $this->assertSame(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.record-tabs .holdings-tab h2')
         );

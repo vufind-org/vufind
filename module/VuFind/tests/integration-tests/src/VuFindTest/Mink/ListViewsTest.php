@@ -114,7 +114,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         // Save comment
         $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
         $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->assertEquals('one', $this->findCssAndGetText($page, '.comment-text'));
+        $this->assertSame('one', $this->findCssAndGetText($page, '.comment-text'));
     }
 
     /**
@@ -146,8 +146,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'two');
         $this->clickCss($page, 'form.comment-form .btn-primary');
         // Confirm comments exist:
-        $this->assertEquals('one', $this->findCssAndGetText($page, '.comment-text'));
-        $this->assertEquals('two', $this->findCssAndGetText($page, '.comment-text', index: 1));
+        $this->assertSame('one', $this->findCssAndGetText($page, '.comment-text'));
+        $this->assertSame('two', $this->findCssAndGetText($page, '.comment-text', index: 1));
     }
 
     /**

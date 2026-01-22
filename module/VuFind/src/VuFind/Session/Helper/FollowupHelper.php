@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Action Helper - Followup
+ * VuFind Session Helper - Followup
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,45 +21,38 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Session_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Session\Helper;
 
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
 use Laminas\Uri\Http;
+use VuFind\Http\ServerUrlHelper;
 
 /**
- * Action helper to deal with login followup; responsible for remembering URLs
+ * Session helper to deal with login followup; responsible for remembering URLs
  * before login and then redirecting the user to the appropriate place afterwards.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Session_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Followup extends AbstractPlugin
+class FollowupHelper
 {
-    /**
-     * Session container
-     *
-     * @var Container
-     */
-    protected $session;
-
     /**
      * Constructor
      *
-     * @param Container $session Session container
+     * @param Container       $session         Session container
+     * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
-    public function __construct(Container $session)
+    public function __construct(protected Container $session, protected ServerUrlHelper $serverUrlHelper)
     {
-        $this->session = $session;
     }
 
     /**
@@ -69,7 +62,7 @@ class Followup extends AbstractPlugin
      *
      * @return bool       True if cleared, false if never set.
      */
-    public function clear($key)
+    public function clear(string $key): bool
     {
         if (isset($this->session->$key)) {
             unset($this->session->$key);
@@ -88,7 +81,7 @@ class Followup extends AbstractPlugin
      *
      * @return mixed
      */
-    public function retrieve($key = null, $default = null)
+    public function retrieve(?string $key = null, $default = null)
     {
         if (null === $key) {
             return $this->session;
@@ -104,7 +97,7 @@ class Followup extends AbstractPlugin
      *
      * @return mixed
      */
-    public function retrieveAndClear($key, $default = null)
+    public function retrieveAndClear(string $key, $default = null)
     {
         $value = $this->retrieve($key, $default);
         $this->clear($key);
@@ -121,12 +114,12 @@ class Followup extends AbstractPlugin
      *
      * @return void
      */
-    public function store($extras = [], $overrideUrl = null)
+    public function store(array $extras = [], ?string $overrideUrl = null): void
     {
         // Store the current URL:
         $url = new Http(
             !empty($overrideUrl)
-            ? $overrideUrl : $this->getController()->getServerUrl()
+            ? $overrideUrl : $this->serverUrlHelper->getCurrentUrl()
         );
         $query = $url->getQueryAsArray();
         unset($query['lightboxParent']);

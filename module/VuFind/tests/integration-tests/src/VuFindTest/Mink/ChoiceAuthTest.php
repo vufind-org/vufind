@@ -244,7 +244,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
 
         // Login with SSO
-        $this->assertEquals(
+        $this->assertSame(
             'Institutional Login',
             $this->findCssAndGetText($page, '.modal-body .authmethod1 .btn.btn-link')
         );
@@ -280,7 +280,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->findCssAndSetValue($page, '#login_Email_username', 'username1@ignore.com');
         $this->clickCss($page, '.authmethod1 input[type="submit"]');
-        $this->assertEquals(
+        $this->assertSame(
             'We have sent a login link to your email address. It may take a few moments for the link to arrive. '
             . "If you don't receive the link shortly, please check also your spam filter.",
             $this->findCssAndGetText($page, '.modal .alert-success')

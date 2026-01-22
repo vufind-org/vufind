@@ -34,8 +34,6 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindTest\RecordDriver\TestHarness;
 
-use function in_array;
-
 /**
  * Unit tests for simple JSON-based record collection.
  *
@@ -207,9 +205,9 @@ class RecordCollectionTest extends TestCase
         $coll->shuffle();
         $final = $coll->getRecords();
         $this->assertCount(3, $final);
-        $this->assertTrue(in_array($r1, $final));
-        $this->assertTrue(in_array($r2, $final));
-        $this->assertTrue(in_array($r3, $final));
+        $this->assertContains($r1, $final);
+        $this->assertContains($r2, $final);
+        $this->assertContains($r3, $final);
     }
 
     /**

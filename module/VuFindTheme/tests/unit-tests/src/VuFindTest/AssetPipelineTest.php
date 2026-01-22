@@ -282,7 +282,7 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
             methods: ['getKeyForFile', 'isPipelineAvailable', 'processGroupedAssets']
         );
         $pipeline->method('isPipelineAvailable')->willReturn(true);
-        $pipeline->method('getKeyForFile')->willReturnCallback(fn ($file) => $file);
+        $pipeline->method('getKeyForFile')->willReturnCallback(fn (string $file): string => $file);
         $pipeline->expects($this->once())->method('processGroupedAssets')->with($expectedGroupedAssets, $type)
             ->willReturn([]);
         $pipeline->process($assets, $type);
@@ -397,7 +397,7 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
         );
         $pipeline->method('isPipelineAvailable')->willReturn(true);
         $pipeline->method('getConcatenatedFilePath')->willReturnCallback(
-            function ($group, $type) {
+            function (array $group, string $type): string {
                 return count($group['items'] ?? []) . '-' . $type;
             }
         );

@@ -51,8 +51,9 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     public function testEmptyInput(): void
     {
         $server = $this->getServer();
-        $this->assertTrue(
-            str_contains($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
+        $this->assertStringContainsString(
+            '<error code="badVerb">Missing Verb Argument</error>',
+            $server->getResponse()
         );
     }
 

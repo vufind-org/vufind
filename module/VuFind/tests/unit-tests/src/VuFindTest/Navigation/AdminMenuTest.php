@@ -29,7 +29,9 @@
 
 namespace VuFindTest\Navigation;
 
+use VuFind\Exception\BadConfig;
 use VuFind\Navigation\AdminMenu;
+use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
  * Admin menu tests.
@@ -40,7 +42,7 @@ use VuFind\Navigation\AdminMenu;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AdminMenuTest extends \PHPUnit\Framework\TestCase
+class AdminMenuTest extends AbstractSectionTestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.
@@ -49,9 +51,10 @@ class AdminMenuTest extends \PHPUnit\Framework\TestCase
      */
     public function testMissingConfiguration()
     {
+        $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAdminMenu()->getMenu(),
-            $this->getAdminMenu(AdminMenu::getDefaultMenuConfig())->getMenu()
+            $this->getAdminMenu($container)->getMenu(),
+            $this->getAdminMenu($container, AdminMenu::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -62,51 +65,53 @@ class AdminMenuTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
+        $container = $this->getContainerWithSectionRelatedServices();
         $menu = $this->getAdminMenu(
+            $container,
             AdminMenu::getDefaultMenuConfig(),
-            $this->getCheckMethods(false)
+            $this->getAdminMenuCheckMethods(false)
         )->getMenu();
         $this->assertCount(7, $menu['Admin']['MenuItems']);
     }
 
     /**
-     * Get mock AdminMenu.
+     * Data provider for testRequiredConfiguration
      *
-     * @param array $config       Configuration to use
-     * @param array $checkMethods Values to return for specific check methods
-     *
-     * @return AdminMenu
+     * @return \Iterator<string, array>
      */
-    protected function getAdminMenu(
-        array $config = [],
-        array $checkMethods = [],
-    ): AdminMenu {
-        $adminMenu = $this->getMockBuilder(AdminMenu::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    false,
-                ]
-            )
-            ->onlyMethods(array_keys($this->getCheckMethods()))
-            ->getMock();
-        foreach ($this->getCheckMethods() as $checkMethod => $default) {
-            $adminMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
-        return $adminMenu;
+    public static function requiredConfigurationProvider(): \Iterator
+    {
+        yield 'Missing menu item settings' => [
+            [
+                'Admin' => [
+                    'MenuItems' => [[]],
+                ],
+            ],
+            BadConfig::class,
+            'Missing required setting: label',
+        ];
     }
 
     /**
-     * Get all check methods.
+     * Test required configuration.
      *
-     * @param bool $value Value for the check methods to return
+     * @param array   $config                 Account menu configuration
+     * @param string  $expectedExceptionClass Expected exception class
+     * @param ?string $expectedExceptionMsg   Expected exception message
      *
-     * @return array
+     * @return void
      */
-    protected function getCheckMethods(bool $value = true): array
-    {
-        return [
-            'checkShowOverdrive' => $value,
-        ];
+    #[\PHPUnit\Framework\Attributes\DataProvider('requiredConfigurationProvider')]
+    public function testRequiredConfiguration(
+        array $config,
+        string $expectedExceptionClass,
+        ?string $expectedExceptionMsg = null
+    ): void {
+        $this->expectException($expectedExceptionClass);
+        if ($expectedExceptionMsg) {
+            $this->expectExceptionMessage($expectedExceptionMsg);
+        }
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->getAdminMenu($container, $config);
     }
 }
