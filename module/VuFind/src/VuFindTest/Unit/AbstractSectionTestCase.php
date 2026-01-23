@@ -178,10 +178,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             ->willReturn(($checkMethods['checkUserlistMode'] ?? true) ? 'enabled' : 'disabled');
         $mockAccountCapabilities->method('getCommentSetting')
             ->willReturn(($checkMethods['checkUserContent'] ?? true) ? 'enabled' : 'disabled');
+        $container->set(AccountCapabilities::class, $mockAccountCapabilities);
 
         $mockManager = $this->createMock(Manager::class);
         $mockManager->method('getUserObject')
             ->willReturn(($checkMethods['checkLogout'] ?? true) ? $this->createMock(UserEntityInterface::class) : null);
+        $container->set(Manager::class, $mockManager);
 
         $mockConnection = $this->createMock(Connection::class);
         $mockConnection->method('checkCapability')
@@ -200,10 +202,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
                     'ILLRequests' => $checkMethods['checkILLRequests'] ?? true,
                 };
             });
+        $container->set(Connection::class, $mockConnection);
 
         $mockOverdriveConnector = $this->createMock(OverdriveConnector::class);
         $mockOverdriveConnector->method('isContentActive')
             ->willReturn($checkMethods['checkOverdrive'] ?? true);
+        $container->set(OverdriveConnector::class, $mockOverdriveConnector);
 
         $accountMenu = new AccountMenu(
             $config,
