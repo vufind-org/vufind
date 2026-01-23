@@ -58,6 +58,10 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
             hex2bin('0000000000000000000000007f000001'),
             $utils->normalizeIp('127.0.0.1')
         );
+        $this->assertEquals(
+            hex2bin('0000000000000000000000007f0000ff'),
+            $utils->normalizeIp('127.0.0', true)
+        );
         // Example from http://www.gestioip.net/docu/ipv6_address_examples.html
         $this->assertEquals(
             hex2bin('20010db80a0b12f00000000000000001'),
@@ -66,6 +70,10 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             hex2bin('20010db80a0b12f00000000000000000'),
             $utils->normalizeIp('2001:db8:a0b:12f0::')
+        );
+        $this->assertEquals(
+            hex2bin('20010db80a0b12f00000000000000000'),
+            $utils->normalizeIp('2001:db8:a0b:12f0::', true)
         );
     }
 
