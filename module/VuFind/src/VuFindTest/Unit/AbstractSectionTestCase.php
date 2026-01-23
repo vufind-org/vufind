@@ -40,11 +40,11 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\ILS\Connection;
+use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\FooterMenu;
 use VuFind\Navigation\HeaderBar;
-use VuFind\Navigation\NavigationInterface;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
@@ -138,7 +138,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         string $alias,
     ): MockContainer {
         $pluginManager = $container->get(SectionManager::class);
-        if ($plugin instanceof NavigationInterface) {
+        if ($plugin instanceof AbstractMenu) {
             // These will be added to the constructor in VuFind version 12.
             $sectionService = $container->get(SectionServiceInterface::class);
             $plugin->setSectionService($sectionService);
