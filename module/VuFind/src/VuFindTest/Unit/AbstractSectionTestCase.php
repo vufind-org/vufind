@@ -40,13 +40,11 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\ILS\Connection;
-use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\FooterMenu;
 use VuFind\Navigation\HeaderBar;
 use VuFind\Navigation\NavigationInterface;
-use VuFind\Navigation\PluginManager as NavigationManager;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
@@ -101,8 +99,6 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(YamlReader::class, new YamlReader($this->getPathResolver()));
         $sectionManager = new SectionManager($container);
         $container->set(SectionManager::class, $sectionManager);
-        $navigationManager = new NavigationManager($container);
-        $container->set(NavigationManager::class, $navigationManager);
         $service = new SectionService(
             $container->get(YamlReader::class),
             $container->get(SectionManager::class),
@@ -141,10 +137,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         SectionInterface $plugin,
         string $alias,
     ): MockContainer {
-        $pluginManager = $plugin instanceof NavigationInterface
-            ? $container->get(NavigationManager::class)
-            : $container->get(SectionManager::class);
-        if ($plugin instanceof AbstractMenu) {
+        $pluginManager = $container->get(SectionManager::class);
+        if ($plugin instanceof NavigationInterface) {
             // These will be added to the constructor in VuFind version 12.
             $sectionService = $container->get(SectionServiceInterface::class);
             $plugin->setSectionService($sectionService);
