@@ -31,9 +31,9 @@ namespace VuFind\Action\ShortLink;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\ActionInterface;
-use VuFind\Action\Helper\HttpResponseHelper;
+use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\UrlShortener\UrlShortenerInterface;
+use VuFind\View\Renderer\LaminasViewRenderer;
 
 use function is_callable;
 use function strlen;
@@ -47,7 +47,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RedirectAction implements ActionInterface
+class RedirectAction extends AbstractTemplateRenderingAction
 {
     /**
      * Amount of seconds after which HTML redirect is performed.
@@ -59,15 +59,16 @@ class RedirectAction implements ActionInterface
     /**
      * Constructor
      *
-     * @param HttpResponseHelper    $responseHelper HTTP response helper
+     * @param LaminasViewRenderer   $viewRenderer   View renderer
      * @param UrLShortenerInterface $shortener      URL shortener
      * @param string                $redirectMethod Which redirect mechanism to use (html, http, threshold:<urlLength>)
      */
     public function __construct(
-        protected HttpResponseHelper $responseHelper,
+        LaminasViewRenderer $viewRenderer,
         protected UrlShortenerInterface $shortener,
         protected string $redirectMethod
     ) {
+        parent::__construct($viewRenderer);
     }
 
     /**
@@ -75,11 +76,15 @@ class RedirectAction implements ActionInterface
      *
      * @param string $url Redirect target
      *
-     * @return array
+     * @return ResponseInterface
      */
-    protected function redirectViaHtml(string $url): array
+    protected function redirectViaHtml(string $url): ResponseInterface
     {
-        return ['redirectTarget' => $url, 'redirectDelay' => $this->redirectDelayHtml];
+        return $this->viewRenderer->renderTemplate(
+            $this->request,
+            $this->response,
+            ['redirectTarget' => $url, 'redirectDelay' => $this->redirectDelayHtml]
+        );
     }
 
     /**
@@ -91,18 +96,22 @@ class RedirectAction implements ActionInterface
      */
     protected function redirectViaHttp($url): ResponseInterface
     {
-        return $this->responseHelper->redirectToUrl($url);
+        return $this->response->withStatus(302)
+            ->withHeader('Location', $url);
     }
 
     /**
      * Resolve full version of shortlink & redirect to target.
      *
-     * @param ServerRequestInterface $request Server request
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
      *
-     * @return array|ResponseInterface
+     * @return ResponseInterface
      */
-    public function redirectAction(ServerRequestInterface $request): array|ResponseInterface
-    {
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
         if ($id = $request->getAttribute('id')) {
             if ($url = $this->shortener->resolve($id)) {
                 $threshRegEx = '"^threshold:(\d+)$"i';
@@ -120,7 +129,6 @@ class RedirectAction implements ActionInterface
                 return $this->{'redirectVia' . $method}($url);
             }
         }
-
-        return $this->responseHelper->getNotFoundResponse();
+        return $this->viewRenderer->renderNotFoundPage($request, $response);
     }
 }

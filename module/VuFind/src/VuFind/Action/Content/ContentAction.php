@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Content Controller
+ * Content Action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2014-2024.
+ * Copyright (C) The National Library of Finland 2014-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,32 +22,49 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Content;
 
-use Laminas\View\Model\ViewModel;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\Content\PageLocator;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\LaminasViewRenderer;
 
 use function is_callable;
 
 /**
- * Controller for mostly static pages that doesn't fall under any particular
- * function.
+ * Action for mostly static pages that doesn't fall under any particular function.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ContentController extends AbstractBase
+class ContentAction extends AbstractTemplateRenderingAction
 {
+    /**
+     * Constructor.
+     *
+     * @param LaminasViewRenderer $viewRenderer View renderer
+     * @param PageLocator         $pageLocator  Page locator
+     */
+    public function __construct(
+        #[Autowire()] LaminasViewRenderer $viewRenderer,
+        #[Autowire()] protected PageLocator $pageLocator,
+    ) {
+        parent::__construct($viewRenderer);
+    }
+
     /**
      * Types/formats of content
      *
@@ -59,17 +76,22 @@ class ContentController extends AbstractBase
     ];
 
     /**
-     * Default action if none provided
+     * Resolve full version of shortlink & redirect to target.
      *
-     * @return ViewModel
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function contentAction()
-    {
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
         $pathPrefix = 'templates/content/';
-        $page = $this->params()->fromRoute('page');
+        $page = $request->getAttribute('page');
         // Path regex should prevent dots, but double-check to make sure:
         if (str_contains($page, '..')) {
-            return $this->notFoundAction();
+            return $this->viewRenderer->renderNotFoundPage($request, $response);
         }
         // Find last slash and add preceding part to path if found:
         if (false !== ($p = strrpos($page, '/'))) {
@@ -77,36 +99,38 @@ class ContentController extends AbstractBase
             $pathPrefix .= $subPath;
             // Ensure the path prefix does not contain extra slashes:
             if (str_ends_with($pathPrefix, '//')) {
-                return $this->notFoundAction();
+                return $this->viewRenderer->renderNotFoundPage($request, $response);
             }
             $page = substr($page, $p + 1);
         }
-        $pageLocator = $this->getService(\VuFind\Content\PageLocator::class);
-        $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
+        $data = $this->pageLocator->determineTemplateAndRenderer($pathPrefix, $page);
 
         $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;
 
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['relativePath'], $data['path'])
-            : $this->notFoundAction();
+            : $this->viewRenderer->renderNotFoundPage($request, $response);
     }
 
     /**
-     * Get ViewModel for markdown based page
+     * Get response for markdown based page
      *
      * @param string $page    Page name/route (if applicable)
      * @param string $relPath Relative path to file with content (if applicable)
      * @param string $path    Full path to file with content (if applicable)
      *
-     * @return ViewModel
+     * @return ResponseInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getViewForMd(string $page, string $relPath, string $path): ViewModel
+    protected function getViewForMd(string $page, string $relPath, string $path): ResponseInterface
     {
-        $view = $this->createViewModel(['data' => file_get_contents($path)]);
-        $view->setTemplate('content/markdown');
-        return $view;
+        return $this->viewRenderer->renderTemplate(
+            $this->request,
+            $this->response,
+            ['data' => file_get_contents($path)],
+            'content/markdown'
+        );
     }
 
     /**
@@ -116,11 +140,11 @@ class ContentController extends AbstractBase
      * @param string $relPath Relative path to file with content (if applicable)
      * @param string $path    Full path to file with content (if applicable)
      *
-     * @return ViewModel
+     * @return ResponseInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getViewForPhtml(string $page, string $relPath, string $path): ViewModel
+    protected function getViewForPhtml(string $page, string $relPath, string $path): ResponseInterface
     {
         // Convert relative path to a relative page name:
         $relPage = $relPath;
@@ -132,8 +156,12 @@ class ContentController extends AbstractBase
         }
         // Prevent circular inclusion:
         if ('content' === $relPage) {
-            return $this->notFoundAction();
+            return $this->viewRenderer->renderNotFoundPage($this->request, $this->response);
         }
-        return $this->createViewModel(['page' => $relPage]);
+        return $this->viewRenderer->renderTemplate(
+            $this->request,
+            $this->response,
+            ['page' => $relPage]
+        );
     }
 }

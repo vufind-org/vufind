@@ -29,6 +29,8 @@
 
 namespace VuFind\Action;
 
+use VuFind\ServiceManager\Factory\AutowiringFactory;
+
 /**
  * Action plugin manager
  *
@@ -46,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'content/content' => Content\ContentAction::class,
         'shortlink/redirect' => ShortLink\RedirectAction::class,
     ];
 
@@ -55,6 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        Content\ContentAction::class => AutowiringFactory::class,
         ShortLink\RedirectAction::class => ShortLink\RedirectActionFactory::class,
     ];
 

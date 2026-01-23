@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Short link redirect action factory
+ * Factory for ActionDispatchListener.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2025.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,33 +21,30 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Action\ShortLink;
+namespace VuFind\Action;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManagerInterface;
-use VuFind\UrlShortener\UrlShortenerInterface;
-use VuFind\View\Renderer\LaminasViewRenderer;
 
 /**
- * Short link redirect action factory
+ * Factory for ActionDispatchListener.
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RedirectActionFactory implements FactoryInterface
+class ActionDispatchListenerFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,15 +65,8 @@ class RedirectActionFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        // Load redirect method config:
-        $config = $container->get(ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
-            $container->get(LaminasViewRenderer::class),
-            $container->get(UrlShortenerInterface::class),
-            strtolower(trim($config['Mail']['url_shortener_redirect_method'] ?? 'threshold:1000'))
+            $container->get(PluginManager::class),
         );
     }
 }
