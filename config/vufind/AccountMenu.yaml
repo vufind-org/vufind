@@ -14,17 +14,20 @@
 #     a check whether to show the group. If omitted, group will always display.
 #
 # Array keys for every menu item could be:
-#   - name: name of an item
-#   - label: the text shown as link, will be translated - required
-#   - route: route name used to generate link target - route, url or template required
-#   - routeParams: parameters for dynamic routes
-#   - url: target url, alternative to route - route, url or template required
-#   - template: template to render the item with
-#   - icon: icon used for the item, has to be defined in theme config
-#   - iconMethod: method to dynamically create the icon name; ignored when
-#     icon is explicitly set.
 #   - checkMethod: the name of an AccountMenu section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
+#   - icon: icon used for the item, has to be defined in theme config
+#   - template: template to render the item with. Templates do not support the keys
+#     documented below.
+#   - name: name of an item
+#   - label: the text shown as link, will be translated - required
+#   - route: route name used to generate link target - required unless url or
+#     template is set
+#   - routeParams: parameters for dynamic routes
+#   - url: target url, alternative to route - required unless route or template
+#     is set
+#   - iconMethod: method to dynamically create the icon name; ignored when
+#     icon is explicitly set.
 #   - status: whether to show status label, defaults to false
 #
 # You can use checkMethod: alwaysFail to disable specific inherited groups or items
