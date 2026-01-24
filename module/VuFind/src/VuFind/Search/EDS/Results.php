@@ -80,7 +80,7 @@ class Results extends \VuFind\Search\Base\Results
     protected function performSearch()
     {
         $query  = $this->getParams()->getQuery();
-        $allTerms = $query->getAllTerms();
+        $allTerms = trim($query->getAllTerms());
         if ($allTerms === '') {
             $this->storeErrorResponse('empty_search_disallowed');
             return;
