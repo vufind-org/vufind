@@ -29,9 +29,9 @@
 
 namespace VuFind\View\Renderer;
 
-use Closure;
 use Exception;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\ServerUrlHelper;
 use VuFindTheme\InjectTemplateListener;
 
 /**
@@ -63,11 +63,8 @@ class LaminasTemplateRendererFactory
             throw new Exception('Unexpected options passed to factory.');
         }
         $config = $container->get('config');
-        $serverUrlFactory = function () use ($container) {
-            return $container->get('ViewRenderer')->plugin('serverurl');
-        };
         return new $requestedName(
-            Closure::fromCallable($serverUrlFactory),
+            $container->get(ServerUrlHelper::class),
             $container->get('ViewRenderer'),
             $container->get('ViewManager'),
             $container->get(InjectTemplateListener::class),
