@@ -30,6 +30,7 @@
 namespace VuFindTest\Unit;
 
 use Laminas\Http\Request;
+use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\View\Model\ViewModel;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
