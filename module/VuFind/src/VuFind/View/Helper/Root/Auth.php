@@ -31,11 +31,14 @@ namespace VuFind\View\Helper\Root;
 
 use Lmc\Rbac\Identity\IdentityInterface;
 use RuntimeException;
+use VuFind\Auth\ILSAuthenticator;
+use VuFind\Auth\Manager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Authentication view helper
@@ -46,37 +49,23 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
+class Auth implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
     use DbServiceAwareTrait;
 
     /**
-     * Authentication manager
-     *
-     * @var \VuFind\Auth\Manager
-     */
-    protected $manager;
-
-    /**
-     * ILS Authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuthenticator;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Auth\Manager          $manager          Authentication manager
-     * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
+     * @param Manager          $manager          Authentication manager
+     * @param ILSAuthenticator $ilsAuthenticator ILS Authenticator
      */
     public function __construct(
-        \VuFind\Auth\Manager $manager,
-        \VuFind\Auth\ILSAuthenticator $ilsAuthenticator
+        #[Autowire]
+        protected Manager $manager,
+        #[Autowire]
+        protected ILSAuthenticator $ilsAuthenticator
     ) {
-        $this->manager = $manager;
-        $this->ilsAuthenticator = $ilsAuthenticator;
     }
 
     /**
@@ -99,7 +88,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     /**
      * Get manager
      *
-     * @return \VuFind\Auth\Manager
+     * @return Manager
      */
     public function getManager()
     {
@@ -275,5 +264,15 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
             );
         }
         return $classTemplate;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

@@ -40,32 +40,20 @@ use Laminas\View\Helper\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
+class AlphaBrowse
 {
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
-     * Additional configuration options.
-     *
-     * @var array
-     */
-    protected $options;
-
     /**
      * Constructor
      *
-     * @param Url   $helper  URL helper
+     * @param Url   $url     URL helper
      * @param array $options Additional configuration options
      */
-    public function __construct(Url $helper, array $options = [])
-    {
-        $this->url = $helper;
-        $this->options = $options;
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(service: 'config')]
+        protected array $options = []
+    ) {
     }
 
     /**
@@ -105,5 +93,15 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
     protected function escapeForSolr($str)
     {
         return '"' . addcslashes($str, '"') . '"';
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }
