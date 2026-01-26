@@ -50,13 +50,6 @@ class UserList implements UserListEntityInterface
     use DateTimeTrait;
 
     /**
-     * Constant for default type of user list.
-     *
-     * @var string
-     */
-    public const TYPE_DEFAULT = 'default';
-
-    /**
      * Unique ID.
      *
      * @var int
@@ -229,7 +222,8 @@ class UserList implements UserListEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

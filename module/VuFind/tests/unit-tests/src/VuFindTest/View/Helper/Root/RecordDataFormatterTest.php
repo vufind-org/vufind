@@ -40,7 +40,6 @@ use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 use VuFind\View\Helper\Root\SchemaOrg;
 
 use function count;
-use function func_get_args;
 
 /**
  * RecordDataFormatter Test Class
@@ -68,8 +67,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['getActionRouteDetails'])
             ->getMock();
-        $mock->expects($this->any())->method('getActionRouteDetails')
-            ->willReturn(['route' => 'home', 'params' => []]);
+        $mock->method('getActionRouteDetails')->willReturn(['route' => 'home', 'params' => []]);
         return $mock;
     }
 
@@ -119,8 +117,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
                 new \VuFind\Search\Options\PluginManager($container)
             ),
-            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)
-                ->disableOriginalConstructor()->getMock(),
+            'searchTabs' => $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
@@ -136,63 +133,94 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver($overrides = [])
     {
-        // "Mock out" tag functionality to avoid database access:
-        $onlyMethods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getSummary', 'getNewerTitles',
-        ];
-        $addMethods = [
-            'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
-            'getNotExistingAltScript', 'getSummaryAltScript', 'getNewerTitlesAltScript',
-            'getPublicationDetailsAltScript', 'getFunctionWithParams',
-        ];
-        $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->onlyMethods($onlyMethods)
-            ->addMethods($addMethods)
-            ->getMock();
-        // Force a return value of zero so we can test this edge case value (even
-        // though in the context of "building"/"container title" it makes no sense):
-        $record->expects($this->any())->method('getBuildings')
-            ->will($this->returnValue(['0']));
-        $record->expects($this->any())->method('getContainerTitle')
-            ->will($this->returnValue('0'));
-        // Expect only one call to getDeduplicatedAuthors to confirm that caching
-        // works correctly (we need this data more than once, but should only pull
-        // it from the driver once).
-        $authors = [
-            'primary' => ['Vico, Giambattista, 1668-1744.' => []],
-            'secondary' => ['Pandolfi, Claudia.' => []],
-        ];
-        $record->expects($this->once())->method('getDeduplicatedAuthors')
-            ->will($this->returnValue($authors));
+        $record = new class () extends \VuFind\RecordDriver\SolrDefault {
+            /**
+             * Override getBuildings to force a return value of zero so we can test this edge case value (even
+             * though in the context of "building" it makes no sense).
+             *
+             * @return array
+             */
+            public function getBuildings()
+            {
+                return ['0'];
+            }
 
-        // Functions for testing combine alt
-        $record->expects($this->any())->method('getFullTitle')
-            ->will($this->returnValue(['Standard Title']));
-        $record->expects($this->any())->method('getFullTitleAltScript')
-            ->will($this->returnValue('Alternative Title'));
-        $record->expects($this->any())->method('getAltFullTitle')
-            ->will($this->returnValue('Other Alternative Title'));
-        $record->expects($this->any())->method('getBuildingsAltScript')
-            ->will($this->returnValue(null));
-        $record->expects($this->any())->method('getNotExistingAltScript')
-            ->will($this->returnValue('Alternative Value'));
-        $record->expects($this->any())->method('getSummary')
-        ->will($this->returnValue(null));
-        $record->expects($this->any())->method('getSummaryAltScript')
-            ->will($this->returnValue('Alternative Summary'));
-        $record->expects($this->any())->method('getPublicationDetailsAltScript')
-            ->will($this->returnValue([
-                new PublicationDetails('Alt Place', 'Alt Name', 'Alt Date'),
-            ]));
-        $record->expects($this->any())->method('getNewerTitles')
-            ->will($this->returnValue(['New Title', 'Second New Title']));
-        $record->expects($this->any())->method('getNewerTitlesAltScript')
-            ->will($this->returnValue(['Alt New Title', 'Second Alt New Title']));
-        $record->expects($this->any())->method('getFunctionWithParams')
-            ->will($this->returnCallback(function () {
-                $args = func_get_args();
-                return implode(' ', $args);
-            }));
+            /**
+             * Override getContainerTitle to force a return value of zero so we can test this edge case value (even
+             * though in the context of "container title" it makes no sense).
+             *
+             * @return array
+             */
+            public function getContainerTitle()
+            {
+                return '0';
+            }
+
+            /**
+             * Override getDeduplicatedAuthors to return test data.
+             *
+             * @param array $dataFields An array of extra data fields to retrieve (see
+             * getAuthorDataFields)
+             *
+             * @return array
+             *
+             * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+             */
+            public function getDeduplicatedAuthors($dataFields = [])
+            {
+                return [
+                    'primary' => ['Vico, Giambattista, 1668-1744.' => []],
+                    'secondary' => ['Pandolfi, Claudia.' => []],
+                ];
+            }
+
+            /**
+             * Override getNewerTitles to return test data.
+             *
+             * @return array
+             */
+            public function getNewerTitles()
+            {
+                return ['New Title', 'Second New Title'];
+            }
+
+            /**
+             * Magic method for undefined methods; use this to define some test methods that
+             * otherwise would not exist.
+             *
+             * @param mixed $method Method being called
+             * @param mixed $args   Method arguments
+             *
+             * @return mixed
+             */
+            public function __call($method, $args)
+            {
+                switch ($method) {
+                    case 'getFullTitle':
+                        return ['Standard Title'];
+                    case 'getFullTitleAltScript':
+                        return 'Alternative Title';
+                    case 'getAltFullTitle':
+                        return 'Other Alternative Title';
+                    case 'getBuildingsAltScript':
+                        return null;
+                    case 'getNotExistingAltScript':
+                        return 'Alternative Value';
+                    case 'getSummary':
+                        return null;
+                    case 'getSummaryAltScript':
+                        return 'Alternative Summary';
+                    case 'getPublicationDetailsAltScript':
+                        return [
+                            new PublicationDetails('Alt Place', 'Alt Name', 'Alt Date'),
+                        ];
+                    case 'getNewerTitlesAltScript':
+                        return ['Alt New Title', 'Second Alt New Title'];
+                    case 'getFunctionWithParams':
+                        return implode(' ', $args);
+                }
+            }
+        };
 
         // Load record data from fixture file:
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -247,10 +275,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $contextSpec = $specs->getDefaults($context);
             $specs->setDefaults($context, array_merge($additionalContextSpec, $contextSpec));
         }
-        $specManager->expects($this->any())
-            ->method('get')
-            ->with($this->isType('string'))
-            ->willReturn($specs);
+        $specManager->method('get')->with($this->isType('string'))->willReturn($specs);
         $container->set(
             \VuFind\RecordDataFormatter\Specs\PluginManager::class,
             $specManager

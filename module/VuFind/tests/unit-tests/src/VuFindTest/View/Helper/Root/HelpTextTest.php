@@ -60,20 +60,19 @@ class HelpTextTest extends \PHPUnit\Framework\TestCase
         string $topic = 'foo',
         array $context = []
     ): Content {
-        $helper = $this->getMockBuilder(Content::class)
-            ->disableOriginalConstructor()->getMock();
+        $helper = $this->createMock(Content::class);
         $callback = function ($unused1, $unused2, $unused3, &$pageDetails) use ($mockPageDetails, $mockReturnValue) {
             $pageDetails = $mockPageDetails;
             return $mockReturnValue;
         };
         $helper->expects($this->once())->method('renderTranslated')
             ->with(
-                $this->equalTo($topic),
-                $this->equalTo('HelpTranslations'),
-                $this->equalTo($context),
-                $this->equalTo(null),
-                $this->equalTo('%pathPrefix%/%language%/%pageName%')
-            )->will($this->returnCallback($callback));
+                $topic,
+                'HelpTranslations',
+                $context,
+                null,
+                '%pathPrefix%/%language%/%pageName%'
+            )->willReturnCallback($callback);
         return $helper;
     }
 

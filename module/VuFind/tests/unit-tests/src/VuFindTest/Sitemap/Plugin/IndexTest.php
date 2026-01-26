@@ -68,9 +68,9 @@ class IndexTest extends \PHPUnit\Framework\TestCase
         $fq = ['format:Book'];
         $fetcher = $this->getMockIdFetcher();
         $fetcher->expects($this->once())->method('getInitialOffset')
-            ->will($this->returnValue('*'));
+            ->willReturn('*');
         $fetcher->expects($this->once())->method('setupBackend')
-            ->with($this->equalTo($backendId));
+            ->with($backendId);
         $this->expectConsecutiveCalls(
             $fetcher,
             'getIdsFromBackend',
@@ -87,7 +87,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
             ['url' => 'http://foo/', 'id' => $backendId],
         ];
         $plugin = new Index($config, $fetcher, $countPerPage, $fq);
-        $this->assertEquals(
+        $this->assertSame(
             ['http://foo/1', 'http://foo/2', 'http://foo/3'],
             iterator_to_array($plugin->getUrls())
         );
@@ -100,7 +100,6 @@ class IndexTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockIdFetcher(): AbstractIdFetcher
     {
-        return $this->getMockBuilder(AbstractIdFetcher::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(AbstractIdFetcher::class);
     }
 }

@@ -63,10 +63,8 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 
@@ -82,10 +80,8 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+        $results = $this->createMock(Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -104,8 +100,8 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // Set up recommend plugin manager:
         $mockPlugin = $this->container->createMock(RecommendInterface::class);
         $rm = $this->container->createMock(PluginManager::class, ['get']);
-        $rm->expects($this->once())->method('get')->with($this->equalTo('foo'))
-            ->will($this->returnValue($mockPlugin));
+        $rm->expects($this->once())->method('get')->with('foo')
+            ->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
         // Set up results object, including expectation to confirm that
@@ -124,8 +120,8 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $resultsManager = $this->container
             ->createMock(ResultsManager::class, ['get']);
         $resultsManager->expects($this->once())->method('get')
-            ->with($this->equalTo('Solr'))
-            ->will($this->returnValue($results));
+            ->with('Solr')
+            ->willReturn($results);
         $this->container->set(ResultsManager::class, $resultsManager);
 
         // Set up view helper and renderer:

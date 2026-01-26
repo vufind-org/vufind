@@ -1,4 +1,4 @@
-/*global registerAjaxCommentRecord, syn_get_widget, VuFind */
+/*global registerAjaxCommentRecord, VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPARATOR = ':::';
@@ -58,13 +58,9 @@ VuFind.register('embedded', function embedded() {
     var id = $result.find('.hiddenId')[0].value;
     var source = $result.find('.hiddenSource')[0].value;
     if ($tab.parent().hasClass('noajax')) {
-      if ($tab.is('a')) {
-        // tab case:
-        window.location.href = $tab.attr('href');
-      } else {
-        // accordion case:
-        window.location.href = $tab.find('a').attr('data-href');
-      }
+      window.location.href = $tab.is('a')
+        ? $tab.attr('href') // tab case
+        : $tab.find('a').attr('data-href'); // accordion case
       return false;
     }
     var urlroot;
@@ -88,9 +84,6 @@ VuFind.register('embedded', function embedded() {
             VuFind.emit('record-tab-init', {container: document.querySelector('#' + tabid + '-content')});
           } else {
             $('#' + tabid + '-content').html(VuFind.translate('collection_empty'));
-          }
-          if (typeof syn_get_widget === 'function') {
-            syn_get_widget();
           }
           $('#' + tabid).addClass('loaded');
         }
@@ -166,6 +159,7 @@ VuFind.register('embedded', function embedded() {
             longNode.collapse('show');
             // Load first tab
             if (tabid) {
+              document.getElementById(tabid).click();
               ajaxLoadTab(tabid, true);
             } else {
               var $firstTab = $(longNode).find('.list-tab-toggle.active');

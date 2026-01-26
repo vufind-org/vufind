@@ -56,7 +56,7 @@
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
     $retainFilters = $this->retainFilters ?? $options->getRetainFilterSetting();
-    $showFilters = $filterDetails && ($results || $retainFilters);
+    $showFilters = $filterDetails && ($results && !$fromSearchMemory || $retainFilters);
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
@@ -109,6 +109,9 @@
           $searchboxAttributes['class'] .= " autocomplete searcher:{$this->searchClassId}"
             . ($this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '');
           $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($this->searchClassId);
+          if ($this->searchbox()->autocompleteApplyActiveFilters($this->searchClassId)) {
+            $searchboxAttributes['data-autocomplete-apply-active-filters'] = 'true';
+          }
           $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($this->searchClassId);
         }
         if (!empty($keyboardLayouts)) {

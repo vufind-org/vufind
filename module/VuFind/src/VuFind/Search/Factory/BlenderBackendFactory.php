@@ -24,7 +24,7 @@
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 
 namespace VuFind\Search\Factory;
@@ -42,7 +42,7 @@ use VuFindSearch\Backend\Blender\Backend;
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 class BlenderBackendFactory implements FactoryInterface
 {
@@ -79,7 +79,7 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @var string
      */
-    protected $mappingsConfig = 'BlenderMappings.yaml';
+    protected $mappingsConfig = 'BlenderMappings';
 
     /**
      * Create service
@@ -108,7 +108,10 @@ class BlenderBackendFactory implements FactoryInterface
         foreach (array_keys($backendConfig) as $backendId) {
             $backends[$backendId] = $backendManager->get($backendId);
         }
-        $blenderMappings = $yamlReader->get($this->mappingsConfig);
+        // Legacy code may already include the '.yaml' extension; ignore it for safety:
+        $blenderMappings = $yamlReader->get(str_ends_with($this->mappingsConfig, '.yaml')
+            ? $this->mappingsConfig
+            : $this->mappingsConfig . '.yaml');
         $backend = new Backend(
             $backends,
             $blenderConfig,

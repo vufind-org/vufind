@@ -67,8 +67,7 @@ class ResourceService extends AbstractDbService implements
      */
     public function getResourceById(int $id): ?ResourceEntityInterface
     {
-        $resource = $this->entityManager->find(ResourceEntityInterface::class, $id);
-        return $resource;
+        return $this->entityManager->find(ResourceEntityInterface::class, $id);
     }
 
     /**

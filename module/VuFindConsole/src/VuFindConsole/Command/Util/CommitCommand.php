@@ -85,7 +85,7 @@ class CommitCommand extends AbstractSolrCommand
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Check time limit; increase if necessary:
         if (ini_get('max_execution_time') < 3600) {
@@ -97,6 +97,6 @@ class CommitCommand extends AbstractSolrCommand
 
         // Commit to the Solr Index
         $this->solr->commit($core);
-        return 0;
+        return self::SUCCESS;
     }
 }

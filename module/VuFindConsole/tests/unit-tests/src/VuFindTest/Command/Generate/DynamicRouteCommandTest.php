@@ -83,22 +83,22 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
         );
         $tools->expects($this->once())->method('getModuleConfigPath')
-            ->with($this->equalTo('xyzzy'))
-            ->will($this->returnValue($configFixturePath));
+            ->with('xyzzy')
+            ->willReturn($configFixturePath);
         $tools->expects($this->once())->method('backUpFile')
-            ->with($this->equalTo($configFixturePath));
+            ->with($configFixturePath);
         $tools->expects($this->once())->method('writeModuleConfig')
             ->with(
-                $this->equalTo($configFixturePath),
-                $this->equalTo($expectedConfig)
+                $configFixturePath,
+                $expectedConfig
             );
         $generator = $this->getMockRouteGenerator(['addDynamicRoute']);
         $generator->expects($this->once())->method('addDynamicRoute')
             ->with(
-                $this->equalTo($expectedConfig),
-                $this->equalTo('foo'),
-                $this->equalTo('bar'),
-                $this->equalTo('baz')
+                $expectedConfig,
+                'foo',
+                'bar',
+                'baz'
             );
         $command = new DynamicRouteCommand($tools, $generator);
         $commandTester = new CommandTester($command);
@@ -110,7 +110,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'xyzzy',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

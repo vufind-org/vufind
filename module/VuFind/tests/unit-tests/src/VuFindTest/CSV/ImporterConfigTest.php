@@ -50,8 +50,8 @@ class ImporterConfigTest extends \PHPUnit\Framework\TestCase
     public function testConstructorOptions(): void
     {
         $config = new ImporterConfig(['batchSize' => 7, 'encoding' => 'foo']);
-        $this->assertEquals(7, $config->getBatchSize());
-        $this->assertEquals('foo', $config->getEncoding());
+        $this->assertSame(7, $config->getBatchSize());
+        $this->assertSame('foo', $config->getEncoding());
     }
 
     /**
@@ -62,8 +62,8 @@ class ImporterConfigTest extends \PHPUnit\Framework\TestCase
     public function testConstructorDefaults(): void
     {
         $config = new ImporterConfig();
-        $this->assertEquals(100, $config->getBatchSize());
-        $this->assertEquals('UTF-8', $config->getEncoding());
+        $this->assertSame(100, $config->getBatchSize());
+        $this->assertSame('UTF-8', $config->getEncoding());
     }
 
     /**
@@ -80,7 +80,7 @@ class ImporterConfigTest extends \PHPUnit\Framework\TestCase
         $config->configureColumn(0, ['bar' => 'baz']);
         // Override the first value:
         $config->configureColumn(0, ['foo' => 'bar2']);
-        $this->assertEquals(
+        $this->assertSame(
             ['foo' => 'bar2', 'bar' => 'baz'],
             $config->getColumn(0)
         );
@@ -100,7 +100,7 @@ class ImporterConfigTest extends \PHPUnit\Framework\TestCase
         $config->configureField('test', ['bar' => 'baz']);
         // Override the first value:
         $config->configureField('test', ['foo' => 'bar2']);
-        $this->assertEquals(
+        $this->assertSame(
             ['foo' => 'bar2', 'bar' => 'baz'],
             $config->getField('test')
         );
@@ -119,7 +119,7 @@ class ImporterConfigTest extends \PHPUnit\Framework\TestCase
         $config->configureColumn(0, ['field' => 'foo']);
         // Test array of values
         $config->configureColumn(1, ['field' => ['bar', 'baz']]);
-        $this->assertEquals(['foo', 'bar', 'baz'], $config->getAllFields());
+        $this->assertSame(['foo', 'bar', 'baz'], $config->getAllFields());
     }
 
     /**
@@ -151,7 +151,7 @@ class ImporterConfigTest extends \PHPUnit\Framework\TestCase
         $config->configureField('baz', []);
         // If foo has already been called, bar is the only other value with
         // callbacks, so that is the only value returned.
-        $this->assertEquals(
+        $this->assertSame(
             ['bar'],
             array_values($config->getOutstandingCallbacks(['foo']))
         );

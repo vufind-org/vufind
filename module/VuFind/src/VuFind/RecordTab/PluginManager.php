@@ -62,13 +62,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'preview' => Preview::class,
         'reviews' => Reviews::class,
         'search2collectionlist' => Search2CollectionList::class,
-        'similaritemscarousel' => SimilarItemsCarousel::class,
         'staffviewarray' => StaffViewArray::class,
         'staffviewmarc' => StaffViewMARC::class,
         'staffviewoverdrive' => StaffViewOverdrive::class,
         'toc' => TOC::class,
         'usercomments' => UserComments::class,
         'versions' => Versions::class,
+        // Legacy backward compatibility:
+        'similaritemscarousel' => Channels::class,
     ];
 
     /**
@@ -92,7 +93,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Preview::class => PreviewFactory::class,
         Reviews::class => ReviewsFactory::class,
         Search2CollectionList::class => CollectionListFactory::class,
-        SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
         StaffViewArray::class => InvokableFactory::class,
         StaffViewMARC::class => InvokableFactory::class,
         StaffViewOverdrive::class => InvokableFactory::class,

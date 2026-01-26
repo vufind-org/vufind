@@ -155,7 +155,6 @@ return [
             'overdrive-help' => 'fa-solid fa-circle-question',
             'overdrive-place-hold' => 'Alias:place-hold',
             'overdrive-return' => 'fa-solid fa-backward',
-            'overdrive-return-rtl' => 'fa-solid fa-forward',
             'overdrive-sign-in' => 'fa-solid fa-user',
             'overdrive-success' => 'fa-solid fa-circle-check',
             'overdrive-suspend-hold' => 'fa-solid fa-hourglass',

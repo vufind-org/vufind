@@ -834,7 +834,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array  $functionConfig Function configuration values
      * @param ?array $params         An array of function-specific params (or null)
      *
-     * @return bool
+     * @return mixed On success, an associative array with the function name; on failure, false.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -1357,7 +1357,12 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 $endTime = $end ? new \DateTime($end) : null;
                 if ($startTime && $endTime) {
                     if ($endTime <= $startTime) {
-                        $endTime->modify('+1 day');
+                        $now = new \DateTime();
+                        if ($now < $endTime) {
+                            $startTime->modify('-1 day');
+                        } else {
+                            $endTime->modify('+1 day');
+                        }
                     }
                     $blocks[] = [
                         'start' => $startTime,

@@ -48,27 +48,25 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testOptions
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function optionsProvider(): array
+    public static function optionsProvider(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    'General' => [
-                        'default_view' => 'brief',
-                    ],
+                'General' => [
+                    'default_view' => 'brief',
                 ],
-                'brief',
             ],
+            'brief',
+        ];
+        yield [
             [
-                [
-                    'General' => [
-                        'default_view' => 'full',
-                    ],
+                'General' => [
+                    'default_view' => 'full',
                 ],
-                'full',
             ],
+            'full',
         ];
     }
 

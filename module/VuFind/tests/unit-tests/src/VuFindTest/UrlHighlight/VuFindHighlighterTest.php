@@ -92,43 +92,41 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     public function testGetHighlight(string $url, string $expected): void
     {
         $this->proxyUrl
-            ->expects(self::atLeastOnce())
+            ->expects($this->atLeastOnce())
             ->method('__invoke')
-            ->willReturnOnConsecutiveCalls('URL_WITH_PROXY');
+            ->willReturn('URL_WITH_PROXY');
 
         $replacer = ReplacerFactory::createReplacer();
         $actual = $this->vuFindHighlighter->highlight($url, $replacer);
-        self::assertSame($expected, $actual);
+        $this->assertSame($expected, $actual);
     }
 
     /**
      * Data provider for testGetHighlight()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getHighlightDataProvider(): array
+    public static function getHighlightDataProvider(): \Iterator
     {
-        return [
-            'http' => [
-                'http://vufind.org',
-                '<a href="URL_WITH_PROXY">http://vufind.org</a>',
-            ],
-            'complex link' => [
-                'https://vufind.org?foo=1&bar=2#xyzzy',
-                '<a href="URL_WITH_PROXY">https://vufind.org?foo=1&bar=2#xyzzy</a>',
-            ],
-            'quotes' => [
-                'http://vufind.org/path/with"quotes"/?q=search',
-                '<a href="URL_WITH_PROXY">http://vufind.org/path/with"quotes"/?q=search</a>',
-            ],
-            'no scheme' => [
-                'vufind.org',
-                '<a href="URL_WITH_PROXY">vufind.org</a>',
-            ],
-            'email' => [
-                'user@vufind.org',
-                '<a href="URL_WITH_PROXY">user@vufind.org</a>',
-            ],
+        yield 'http' => [
+            'https://vufind.org',
+            '<a href="URL_WITH_PROXY">https://vufind.org</a>',
+        ];
+        yield 'complex link' => [
+            'https://vufind.org?foo=1&bar=2#xyzzy',
+            '<a href="URL_WITH_PROXY">https://vufind.org?foo=1&bar=2#xyzzy</a>',
+        ];
+        yield 'quotes' => [
+            'https://vufind.org/path/with"quotes"/?q=search',
+            '<a href="URL_WITH_PROXY">https://vufind.org/path/with"quotes"/?q=search</a>',
+        ];
+        yield 'no scheme' => [
+            'vufind.org',
+            '<a href="URL_WITH_PROXY">vufind.org</a>',
+        ];
+        yield 'email' => [
+            'user@vufind.org',
+            '<a href="URL_WITH_PROXY">user@vufind.org</a>',
         ];
     }
 }

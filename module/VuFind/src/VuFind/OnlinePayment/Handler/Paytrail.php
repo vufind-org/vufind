@@ -24,7 +24,7 @@
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 
@@ -52,7 +52,7 @@ use VuFind\Exception\PaymentException;
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 class Paytrail extends AbstractBase
@@ -184,16 +184,16 @@ class Paytrail extends AbstractBase
 
             $items[] = $item;
         }
-        if ($serviceFee = $this->getServiceFee()) {
+        if (($serviceFee = $this->getServiceFee()) && ($serviceFeeProductCode = $this->getServiceFeeProductCode())) {
             $item = (new Item())
                 ->setDescription($this->translator->translate('Payment::Service Fee'))
-                ->setProductCode($this->getServiceFeeProductCode())
+                ->setProductCode($serviceFeeProductCode)
                 ->setUnitPrice($serviceFee)
                 ->setUnits(1)
                 ->setVatPercentage((float)($this->getServiceFeeTaxRate() ?? 0) / 100.0);
             $items[] = $item;
         }
-        $paymentRequest->setItems($items);
+        $paymentRequest->setItems($items ?: null);
 
         try {
             $paymentResponse = $this->initClient()->createPayment($paymentRequest);
@@ -327,7 +327,7 @@ class Paytrail extends AbstractBase
         }
 
         return new Client(
-            $this->paymentConfig['merchantId'],
+            (int)$this->paymentConfig['merchantId'],
             $this->paymentConfig['secret'],
             $this->config['Site']['generator'] ?? 'VuFind'
         );

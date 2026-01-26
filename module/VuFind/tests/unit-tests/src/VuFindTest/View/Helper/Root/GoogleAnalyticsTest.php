@@ -63,7 +63,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey'));
+        $this->assertSame($expected, $this->renderGA('myfakekey'));
     }
 
     /**
@@ -75,7 +75,6 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $createJs = "{cookie_flags: 'max-age=7200;secure;samesite=none'}";
         $options = [
-            'universal' => true,
             'create_options_js' => $createJs,
         ];
         $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
@@ -90,7 +89,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey', $options));
+        $this->assertSame($expected, $this->renderGA('myfakekey', $options));
     }
 
     /**
@@ -100,7 +99,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGA(false));
+        $this->assertSame('', $this->renderGA(false));
     }
 
     /**

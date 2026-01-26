@@ -196,8 +196,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $response = [];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->with('testuser', 'testpass')
+            ->willReturn($response);
         $this->getAuth($driver)->authenticate($this->getLoginRequest());
     }
 
@@ -214,8 +214,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->with('testuser', 'testpass')
+            ->willReturn($response);
         $user = $this->getAuth($driver)->authenticate($this->getLoginRequest());
         $this->assertEquals('testuser', $user->getUsername());
         $this->assertEquals('user@test.com', $user->getEmail());
@@ -237,8 +237,8 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->with('testuser', 'testpass')
+            ->willReturn($response);
         $auth = $this->getAuth($driver);
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
@@ -325,7 +325,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         );
         $driver = $this->getMockDriver('Demo', ['changePassword']);
         $driver->expects($this->once())->method('changePassword')
-            ->will($this->returnValue(['success' => true]));
+            ->willReturn(['success' => true]);
         $patron = ['cat_username' => 'testuser'];
         $user = $this->getAuth($driver, $patron)->updatePassword($request);
         $this->assertEquals('testuser', $user->getUsername());
@@ -348,7 +348,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         );
         $driver = $this->getMockDriver('Demo', ['changePassword']);
         $driver->expects($this->once())->method('changePassword')
-            ->will($this->returnValue(['success' => true]));
+            ->willReturn(['success' => true]);
         $patron = ['cat_username' => 'testuser', 'cat_id' => '1234'];
         $auth = $this->getAuth($driver, $patron);
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
@@ -381,7 +381,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')->willReturn($patron);
+        $mock->method('storedCatalogLogin')->willReturn($patron);
         $mock->setDbServiceManager($this->getLiveDbServiceManager());
         return $mock;
     }

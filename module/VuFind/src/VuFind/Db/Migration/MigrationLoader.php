@@ -72,6 +72,8 @@ class MigrationLoader
     /**
      * Give an array of migration subdirectories appropriate for the requested old version.
      *
+     * The subdirectories are returned in the order they should be processed.
+     *
      * @param string $oldVersion Version we are migrating from
      * @param string $basePath   Migration file base path
      *
@@ -85,16 +87,29 @@ class MigrationLoader
         }
 
         // Find version-appropriate subdirectories in the migration directory:
-        return array_values(
-            array_filter(
-                glob("$basePath/*"),
-                function ($path) use ($oldVersion) {
-                    $parts = explode('/', $path);
-                    $version = array_pop($parts);
-                    return preg_match('/^\d/', $version) && Comparator::greaterThanOrEqualTo($version, $oldVersion);
-                }
-            )
+        $directories = array_filter(
+            glob("$basePath/*"),
+            function ($path) use ($oldVersion) {
+                $parts = explode(DIRECTORY_SEPARATOR, $path);
+                $version = array_pop($parts);
+                return preg_match('/^\d/', $version) && Comparator::greaterThanOrEqualTo($version, $oldVersion);
+            }
         );
+
+        usort(
+            $directories,
+            function ($a, $b): int {
+                $aParts = explode(DIRECTORY_SEPARATOR, $a);
+                $bParts = explode(DIRECTORY_SEPARATOR, $b);
+                $aVersion = end($aParts);
+                $bVersion = end($bParts);
+                return $aVersion === $bVersion
+                    ? $a <=> $b
+                    : (Comparator::greaterThan($aVersion, $bVersion) ? 1 : -1);
+            }
+        );
+
+        return $directories;
     }
 
     /**

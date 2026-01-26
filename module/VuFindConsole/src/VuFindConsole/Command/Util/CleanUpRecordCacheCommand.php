@@ -84,10 +84,10 @@ class CleanUpRecordCacheCommand extends Command
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $count = $this->recordService->cleanup();
         $output->writeln("$count records deleted.");
-        return 0;
+        return self::SUCCESS;
     }
 }

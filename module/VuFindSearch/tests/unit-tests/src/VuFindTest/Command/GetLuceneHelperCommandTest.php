@@ -51,11 +51,9 @@ class GetLuceneHelperCommandTest extends TestCase
     public function testUnsupportedBackend(): void
     {
         $command = new GetLuceneHelperCommand('foo');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $this->assertFalse($command->execute($backend)->getResult());
     }
 
@@ -69,11 +67,9 @@ class GetLuceneHelperCommandTest extends TestCase
         $command = new GetLuceneHelperCommand('foo');
         $this
             ->expectExceptionMessage('Expected backend instance foo instead of bar');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $command->execute($backend);
     }
 
@@ -84,21 +80,15 @@ class GetLuceneHelperCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $helper = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\LuceneSyntaxHelper::class)
-            ->disableOriginalConstructor()->getMock();
-        $qb = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
-            ->disableOriginalConstructor()->getMock();
+        $helper = $this->createMock(\VuFindSearch\Backend\Solr\LuceneSyntaxHelper::class);
+        $qb = $this->createMock(\VuFindSearch\Backend\Solr\QueryBuilder::class);
         $qb->expects($this->once())->method('GetLuceneHelper')
-            ->will($this->returnValue($helper));
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+            ->willReturn($helper);
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $backend->expects($this->once())->method('getQueryBuilder')
-            ->will($this->returnValue($qb));
+            ->willReturn($qb);
         $command = new GetLuceneHelperCommand('bar');
         $this->assertEquals($helper, $command->execute($backend)->getResult());
     }

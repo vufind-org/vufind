@@ -57,7 +57,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
-            ->will($this->returnValue($this->loadResponse('retrieve')));
+            ->willReturn($this->loadResponse('retrieve'));
 
         $back = new Backend($conn, $this->getRCFactory());
         $back->setIdentifier('test');
@@ -66,6 +66,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('90238824', $rec->getUniqueID());
     }
@@ -80,7 +81,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
-            ->will($this->returnValue($this->loadResponse('search')));
+            ->willReturn($this->loadResponse('search'));
 
         $back = new Backend($conn, $this->getRCFactory());
         $back->setIdentifier('test');
@@ -89,6 +90,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('90238824', $rec->getUniqueID());
         $recs = $coll->getRecords();
@@ -121,7 +123,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnectorMock(), $this->getRCFactory());
-        $this->assertTrue($back->getQueryBuilder() instanceof QueryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**

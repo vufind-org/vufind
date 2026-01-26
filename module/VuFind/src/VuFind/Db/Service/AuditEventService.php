@@ -126,17 +126,22 @@ class AuditEventService extends AbstractDbService implements
             ->setServerIp($this->serverIp)
             ->setServerName($this->serverName)
             ->setMessage($message)
-            ->setData(json_encode($data));
+            ->setData($data);
+        // Persist and forget about this entity (this ensures that the user could be deleted without it causing issues
+        // with tracked event entities):
         $this->persistEntity($event);
+        $this->detachEntity($event);
     }
 
     /**
      * Add a payment event.
      *
-     * @param PaymentEntityInterface   $payment Payment
-     * @param AuditEventSubtype|string $subtype Event subtype
-     * @param string                   $message Status message
-     * @param array                    $data    Additional data
+     * @param PaymentEntityInterface   $payment             Payment
+     * @param AuditEventSubtype|string $subtype             Event subtype
+     * @param string                   $message             Status message
+     * @param array                    $data                Additional data
+     * @param int                      $intermediateMethods Number of intermediate methods between the actual method
+     * adding the event and this method
      *
      * @return void
      */
@@ -144,14 +149,15 @@ class AuditEventService extends AbstractDbService implements
         PaymentEntityInterface $payment,
         AuditEventSubtype|string $subtype,
         string $message = '',
-        array $data = []
+        array $data = [],
+        int $intermediateMethods = 0
     ): void {
         $type = AuditEventType::Payment->value;
         if (!in_array($type, $this->enabledEventTypes)) {
             return;
         }
         $data = $this->scrubSecrets($data);
-        $data['__method'] = $this->getCallerOfParentMethod();
+        $data['__method'] = $this->getCallerOfParentMethod($intermediateMethods);
         $data['__request_uri'] = $this->requestUri;
         $event = $this->createEntity();
         $event
@@ -164,7 +170,7 @@ class AuditEventService extends AbstractDbService implements
             ->setServerIp($this->serverIp)
             ->setServerName($this->serverName)
             ->setMessage($message)
-            ->setData(json_encode($data));
+            ->setData($data);
         $this->persistEntity($event);
     }
 
@@ -306,12 +312,16 @@ class AuditEventService extends AbstractDbService implements
     /**
      * Get the method that called the parent method here.
      *
+     * @param int $intermediateMethods Number of intermediate methods between the actual method adding the event and the
+     * parent method (used for determining the caller name)
+     *
      * @return string
      */
-    protected function getCallerOfParentMethod(): string
+    protected function getCallerOfParentMethod(int $intermediateMethods = 0): string
     {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-        $methodParts = [$backtrace[2]['class'] ?? '', $backtrace[2]['function'] ?? ''];
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3 + $intermediateMethods);
+        $caller = $backtrace[2 + $intermediateMethods];
+        $methodParts = [$caller['class'] ?? '', $caller['function'] ?? ''];
         return implode('::', array_filter($methodParts));
     }
 

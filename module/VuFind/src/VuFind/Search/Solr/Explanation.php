@@ -252,10 +252,8 @@ class Explanation extends \VuFind\Search\Base\Explanation
         $params->set('spellcheck', 'false');
         $explainParams = new ParamBag([
             'fl' => 'id,score',
-            'facet' => 'true',
             'debug' => 'true',
             'indent' => 'true',
-            'param' => 'q',
             'echoParams' => 'all',
             'explainOther' => 'id:"' . addcslashes($recordId, '"') . '"',
         ]);
@@ -441,11 +439,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         ) {
             // parse explaining element
             $currentValue = $value * $modifier;
-            if ($this->baseScore > 0) {
-                $percentage = 100 * $currentValue / $this->baseScore;
-            } else {
-                $percentage = 0;
-            }
+            $percentage = $this->baseScore > 0 ? 100 * $currentValue / $this->baseScore : 0;
 
             // get fieldModifier and remove unused higher level lines
             $fieldModifier = null;

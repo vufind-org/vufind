@@ -30,6 +30,7 @@
 namespace VuFind\RecordDriver;
 
 use function count;
+use function floatval;
 use function in_array;
 use function is_array;
 use function is_callable;
@@ -134,7 +135,24 @@ class EDS extends DefaultRecord
     public function pubTypeRtacEnabled()
     {
         $pubTypeId = $this->fields['Header']['PubTypeId'];
-        return !($pubTypeId === 'ebook');
+        return $pubTypeId !== 'ebook';
+    }
+
+    /**
+     * Return the relevancy score for this record.
+     *
+     * @return ?float
+     */
+    public function getScore()
+    {
+        $score =
+            $this->fields['Header']['PreciseRelevancyScore']
+            ?? $this->fields['Header']['RelevancyScore']
+            ?? null;
+        if ($score) {
+            return floatval($score);
+        }
+        return $score;
     }
 
     /**
@@ -584,13 +602,15 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Return a URL to a thumbnail preview of the record, if available; false
-     * otherwise.
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
      *
      * @param string $size Size of thumbnail (small, medium or large -- small is
      * default).
      *
-     * @return string
+     * @return string|array|bool
      */
     public function getThumbnail($size = 'small')
     {
@@ -616,7 +636,25 @@ class EDS extends DefaultRecord
                 }
             }
         }
-        return $closestMatch;
+
+        // If EDS actually returned cover image data, use it.  EDS only provides this data
+        // for certain ebook packages.
+        if ($closestMatch) {
+            return $closestMatch;
+        }
+
+        // Optionally use VuFind's default cover loader
+        $fallBackToCoverLoader = $this->recordConfig?->Cover?->fallBackToCoverLoader?->toArray() ?? [];
+        if ($fallBackToCoverLoader) {
+            $parentThumbnail = parent::getThumbnail($size);
+
+            // Only use the default cover loader if the record contained at least one configured field
+            if (array_intersect(array_keys($parentThumbnail), $fallBackToCoverLoader)) {
+                return $parentThumbnail;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -1051,6 +1089,8 @@ class EDS extends DefaultRecord
         $pubType = $this->getPubType();
         switch (strtolower($pubType)) {
             case 'academic journal':
+            case 'conference':
+            case 'news':
             case 'periodical':
             case 'report':
                 // Add "article" format for better OpenURL generation

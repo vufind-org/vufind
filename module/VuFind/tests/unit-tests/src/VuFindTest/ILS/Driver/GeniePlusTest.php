@@ -118,15 +118,9 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function getMockResponse($body, $status = 200): Response
     {
-        $response = $this->getMockBuilder(Response::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $response->expects($this->any())
-            ->method('getBody')
-            ->will($this->returnValue($body));
-        $response->expects($this->any())
-            ->method('getStatusCode')
-            ->will($this->returnValue($status));
+        $response = $this->createMock(Response::class);
+        $response->method('getBody')->willReturn($body);
+        $response->method('getStatusCode')->willReturn($status);
         return $response;
     }
 
@@ -142,9 +136,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             true
         );
         $sessionFactory = function ($i) {
-            return $this->getMockBuilder(Container::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            return $this->createMock(Container::class);
         };
         $this->driver = $this->getMockBuilder(GeniePlus::class)
             ->setConstructorArgs([$sessionFactory])

@@ -96,7 +96,7 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
             'Unexpected validation error'
             . (($firstError = reset($errorList)) ? "; first error: $firstError" : '')
         );
-        $this->assertEquals(
+        $this->assertSame(
             [],
             $schemaList,
             'Unexpected schema updates pending'

@@ -45,13 +45,12 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetNewHandlerName.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function newHandlerNameProvider(): array
+    public static function newHandlerNameProvider(): \Iterator
     {
-        return ['Test1' => ['foo:bar', 'bar'],
-                'Test2' => ['foo', 'All Fields'],
-            ];
+        yield 'Test1' => ['foo:bar', 'bar'];
+        yield 'Test2' => ['foo', 'All Fields'];
     }
 
     /**
@@ -73,14 +72,13 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetNewHandler.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function newHandlerProvider(): array
+    public static function newHandlerProvider(): \Iterator
     {
-        return ['Test1' => ['foo:bar', 'foo', false],
-                'Test2' => ['', 'foo', 'AllFields'],
-                'Test3' => ['foo:bar', 'abc', 'foo'],
-            ];
+        yield 'Test1' => ['foo:bar', 'foo', false];
+        yield 'Test2' => ['', 'foo', 'AllFields'];
+        yield 'Test3' => ['foo:bar', 'abc', 'foo'];
     }
 
     /**
@@ -98,16 +96,12 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
         $obj = new SwitchType();
         $obj->setConfig($settings);
 
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchHandler')
-            ->will($this->returnValue($searchHandler));
+            ->willReturn($searchHandler);
         $obj->process($results);
         $this->assertSame($expectedResult, $obj->getNewHandler());
     }
@@ -121,16 +115,12 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     {
         $obj = new SwitchType();
         $obj->setConfig('foo');
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchHandler')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $obj->process($results);
         $this->assertSame($results, $obj->getResults());
     }

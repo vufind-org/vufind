@@ -87,17 +87,17 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // Set up resolver plugin manager:
         $mockPlugin = $this->container->createMock(DriverInterface::class);
         $mockPlugin->expects($this->once())
-            ->method('fetchLinks')->with($this->equalTo('foo'))
-            ->will($this->returnValue('bar'));
+            ->method('fetchLinks')->with('foo')
+            ->willReturn('bar');
         $mockPlugin->expects($this->once())
-            ->method('parseLinks')->with($this->equalTo('bar'))
-            ->will($this->returnValue($fixtureData));
+            ->method('parseLinks')->with('bar')
+            ->willReturn($fixtureData);
         $mockPlugin->expects($this->once())
             ->method('supportsMoreOptionsLink')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $rm = $this->container->createMock(PluginManager::class, ['get']);
-        $rm->expects($this->once())->method('get')->with($this->equalTo('generic'))
-            ->will($this->returnValue($mockPlugin));
+        $rm->expects($this->once())->method('get')->with('generic')
+            ->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
         // Set up view helper and renderer:
@@ -133,9 +133,9 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         ];
         $view->expects($this->once())->method('render')
             ->with(
-                $this->equalTo('ajax/resolverLinks.phtml'),
-                $this->equalTo($expectedViewParams)
-            )->will($this->returnValue('html'));
+                'ajax/resolverLinks.phtml',
+                $expectedViewParams
+            )->willReturn('html');
         $this->container->set('ViewRenderer', $view);
 
         // Set up configuration:

@@ -188,9 +188,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $cache = new \Laminas\Cache\Storage\Adapter\Memory();
         $cache->setOptions(['memory_limit' => -1]);
         $this->driver->setCacheStorage($cache);
-        $this->driver->expects($this->any())
-            ->method('makeRequest')
-            ->will($this->returnCallback([$this, 'mockMakeRequest']));
+        $this->driver->method('makeRequest')->willReturnCallback([$this, 'mockMakeRequest']);
         $this->driver->init();
     }
 
@@ -313,7 +311,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $result = $this->driver->getMyProfile(['id' => '1111']);
         $this->assertArrayHasKey('group', $result);
         // Alma uses Translatable strings in group field; make sure that passed through correctly.
-        $this->assertTrue($result['group'] instanceof TranslatableString);
+        $this->assertInstanceOf(TranslatableString::class, $result['group']);
         $this->assertEquals($expected, $result);
     }
 

@@ -101,7 +101,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->createMock(PluginManager::class);
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
-                ->with($this->equalTo(OaiResumptionEntityInterface::class))
+                ->with(OaiResumptionEntityInterface::class)
                 ->willReturn(new OaiResumption());
         }
         return $pluginManager;
@@ -181,7 +181,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $oaiResumption = $this->createMock(\VuFind\Db\Entity\OaiResumption::class);
         $query->expects($this->once())->method('getOneOrNullResult')
@@ -195,17 +195,15 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provide for testEncodeParams()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function encodeParamsProvider(): array
+    public static function encodeParamsProvider(): \Iterator
     {
         // The expected result is encoded in the test below; both data sets represent the
         // same values, but in different orders. We want to be sure the result is the same
         // regardless of order.
-        return [
-            'sorted keys' => [['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar']],
-            'unsorted keys' => [['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20]],
-        ];
+        yield 'sorted keys' => [['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar']];
+        yield 'unsorted keys' => [['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20]];
     }
 
     /**
@@ -300,12 +298,12 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $previousToken = '';
         $container = new \VuFindTest\Container\MockContainer($this);
         $row = $container->createMock(OaiResumption::class, ['getToken', 'setToken']);
-        $row->expects($this->any())->method('getToken')->willReturnCallback(
+        $row->method('getToken')->willReturnCallback(
             function () use (&$previousToken) {
                 return $previousToken;
             }
         );
-        $row->expects($this->any())->method('setToken')->willReturnCallback(
+        $row->method('setToken')->willReturnCallback(
             function ($t) use (&$previousToken, $row) {
                 $previousToken = $t;
                 return $row;
@@ -315,7 +313,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
             OaiResumptionService::class,
             ['createRandomToken', 'createEntity', 'persistEntity']
         );
-        $oaiResumptionService->expects($this->any())->method('createRandomToken')->willReturnCallback(
+        $oaiResumptionService->method('createRandomToken')->willReturnCallback(
             function () use (&$randomTokenSequence, $row) {
                 $newToken = array_shift($randomTokenSequence);
                 if ($newToken === $row->getToken()) {
@@ -324,7 +322,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
                 return $newToken;
             }
         );
-        $oaiResumptionService->expects($this->any())->method('createEntity')->willReturn($row);
+        $oaiResumptionService->method('createEntity')->willReturn($row);
 
         // Create first token as baseline
         $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['expiry']);
@@ -393,10 +391,10 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $mockDb = [];
         foreach ($this->mockEntities as $entity) {
             $rowClone = clone $mockRow;
-            $rowClone->expects($this->any())->method('getId')->willReturn($entity['id']);
+            $rowClone->method('getId')->willReturn($entity['id']);
             $rowClone->setExpiry(\DateTime::createFromFormat('U', $entity['expires']));
-            $rowClone->expects($this->any())->method('getResumptionParameters')->willReturn($entity['params']);
-            $rowClone->expects($this->any())->method('getToken')->willReturn($entity['token']);
+            $rowClone->method('getResumptionParameters')->willReturn($entity['params']);
+            $rowClone->method('getToken')->willReturn($entity['token']);
             $mockDb[] = $rowClone;
         }
         $mockService = $container->createMock(OaiResumptionService::class, ['findWithToken', 'findWithLegacyIdToken']);
@@ -412,12 +410,12 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
             }
             return null;
         };
-        $mockService->expects($this->any())->method('findWithToken')->willReturnCallback(
+        $mockService->method('findWithToken')->willReturnCallback(
             function ($token) use ($lookupFunction) {
                 return $lookupFunction(compact('token'));
             }
         );
-        $mockService->expects($this->any())->method('findWithLegacyIdToken')->willReturnCallback(
+        $mockService->method('findWithLegacyIdToken')->willReturnCallback(
             function ($id) use ($lookupFunction) {
                 return $lookupFunction(compact('id'));
             }

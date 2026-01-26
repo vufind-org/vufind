@@ -55,7 +55,7 @@ function setUpHoldRequestForm(recordId) {
             $emptyOption.removeAttr('hidden');
           }
           $select.show();
-          $('#pickUpLocationLabel').text($self.find(':selected').data('locations-label'));
+          $('#pickUpLocationLabel .pick-up-location-label-text').text($self.find(':selected').data('locations-label'));
         } else {
           $select.hide();
           $noResults.show();

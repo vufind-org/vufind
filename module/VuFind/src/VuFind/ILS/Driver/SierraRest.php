@@ -302,6 +302,10 @@ class SierraRest extends AbstractBase implements
      *   - last pickup date for holds
      * v5.1 (technically still v5 but added in a later revision):
      *   - summary holdings information (especially for serials)
+     * v6:
+     *   - patron authentication with global patron data access using a method other than "native"
+     * v6.4 (technically still v6 but added in a later revision):
+     *   - return date included in new entries of checkout history (no change in API request needed)
      *
      * Note that API version 3 is deprecated in Sierra 5.1 and will be removed later
      * on (reported March 2020).
@@ -508,7 +512,7 @@ class SierraRest extends AbstractBase implements
         $this->patronBlockMappings = $this->config['PatronBlockMappings'] ?? [];
         $this->fineTypeMappings = (array)($this->config['FineTypeMappings'] ?? []);
         if ($types = $this->config['OnlinePayment']['fineTypes'] ?? '') {
-            $this->onlinePayableFineTypes = $this->explodeSetting(',', $types);
+            $this->onlinePayableFineTypes = $this->explodeSetting($types, true, ',');
         }
         if ($mappings = $this->config['OnlinePayment']['driverProductCodeMappings'] ?? []) {
             foreach ($mappings as $mapping) {
@@ -650,10 +654,10 @@ class SierraRest extends AbstractBase implements
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -1011,6 +1015,9 @@ class SierraRest extends AbstractBase implements
         $items = $this->getItemsWithBibsForTransactions($result['entries'], $patron);
         $transactions = [];
         foreach ($result['entries'] as $entry) {
+            $returnDate = ($date = $entry['returnDate'] ?? null)
+                ? $this->dateConverter->convertToDisplayDate('Y-m-d', $date)
+                : false;
             $transaction = [
                 'id' => '',
                 'row_id' => $this->extractId($entry['id']),
@@ -1019,6 +1026,7 @@ class SierraRest extends AbstractBase implements
                     'Y-m-d',
                     $entry['outDate']
                 ),
+                'returnDate' => $returnDate,
             ];
             $item = $items[$transaction['item_id']] ?? null;
             $transaction['volume'] = $item ? $this->extractVolume($item) : '';
@@ -3963,8 +3971,8 @@ WHERE
             return false;
         }
         $code = $sierraFine['chargeType']['code'] ?? 0;
-        if (!in_array($code, $this->onlinePayableFineTypes)) {
-            return false;
+        if (in_array($code, $this->onlinePayableFineTypes)) {
+            return true;
         }
         $desc = $fine['description'] ?? '';
         foreach ((array)($this->config['OnlinePayment']['manualFineDescriptions'] ?? []) as $pattern) {

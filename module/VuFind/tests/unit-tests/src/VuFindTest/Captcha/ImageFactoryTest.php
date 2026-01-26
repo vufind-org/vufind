@@ -61,20 +61,20 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $storage = $container->get(\Laminas\Cache\Storage\StorageInterface::class);
         $storage->expects($this->once())->method('getOptions')
-            ->will($this->returnValue($options));
+            ->willReturn($options);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $cacheManager->expects($this->once())->method('getCache')
-            ->with($this->equalTo('public'))
-            ->will($this->returnValue($storage));
+            ->with('public')
+            ->willReturn($storage);
 
         $url = $container->get(\VuFind\View\Helper\Root\Url::class);
         $url->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('home'))
-            ->will($this->returnValue($homeUrl));
+            ->with('home')
+            ->willReturn($homeUrl);
 
         $manager = $container->get('ViewHelperManager');
         $manager->expects($this->once())->method('get')
-            ->with($this->equalTo('url'))->will($this->returnValue($url));
+            ->with('url')->willReturn($url);
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class () {
@@ -108,15 +108,13 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Provide data for testFactory()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function factoryDataProvider(): array
+    public static function factoryDataProvider(): \Iterator
     {
-        return [
-            'Empty base path' => [],
-            'Slash as base path' => ['/'],
-            'Directory with trailing slash' => ['/foo/', '/foo/cache/'],
-            'Directory without trailing slash' => ['/foo', '/foo/cache/'],
-        ];
+        yield 'Empty base path' => [];
+        yield 'Slash as base path' => ['/'];
+        yield 'Directory with trailing slash' => ['/foo/', '/foo/cache/'];
+        yield 'Directory without trailing slash' => ['/foo', '/foo/cache/'];
     }
 }

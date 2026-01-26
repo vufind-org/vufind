@@ -29,6 +29,7 @@
 
 namespace VuFindTest\OAuth2\Repository;
 
+use League\OAuth2\Server\Entities\ClientEntityInterface;
 use VuFind\OAuth2\Entity\ClientEntity;
 use VuFind\OAuth2\Repository\ClientRepository;
 
@@ -110,18 +111,18 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
             )
         );
 
-        $this->assertNull($repo->getClientEntity('foo'));
+        $this->assertNotInstanceOf(ClientEntityInterface::class, $repo->getClientEntity('foo'));
 
         $client = $repo->getClientEntity('openid_test');
         $this->assertInstanceOf(ClientEntity::class, $client);
-        $this->assertEquals('OpenID Tester', $client->getName());
-        $this->assertEquals('http://localhost/callback', $client->getRedirectUri());
+        $this->assertSame('OpenID Tester', $client->getName());
+        $this->assertSame('http://localhost/callback', $client->getRedirectUri());
         $this->assertFalse($client->isConfidential());
 
         $client = $repo->getClientEntity('confidential');
         $this->assertInstanceOf(ClientEntity::class, $client);
-        $this->assertEquals('Confidential Client', $client->getName());
-        $this->assertEquals('http://localhost/secure', $client->getRedirectUri());
+        $this->assertSame('Confidential Client', $client->getName());
+        $this->assertSame('http://localhost/secure', $client->getRedirectUri());
         $this->assertTrue($client->isConfidential());
     }
 

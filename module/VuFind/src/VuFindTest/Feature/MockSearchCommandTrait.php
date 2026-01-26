@@ -63,19 +63,15 @@ trait MockSearchCommandTrait
             ->disableOriginalConstructor()
             ->getMock();
         if ($params) {
-            $command->expects($this->any())->method('getSearchParameters')
-                ->will($this->returnValue($params));
+            $command->expects($this->any())->method('getSearchParameters')->willReturn($params);
         }
         if ($context) {
-            $command->expects($this->any())->method('getContext')
-                ->will($this->returnValue($context));
+            $command->expects($this->any())->method('getContext')->willReturn($context);
         }
         if ($result) {
-            $command->expects($this->any())->method('getResult')
-                ->will($this->returnValue($result));
+            $command->expects($this->any())->method('getResult')->willReturn($result);
         }
-        $command->expects($this->any())->method('getTargetIdentifier')
-            ->will($this->returnValue($backendId));
+        $command->expects($this->any())->method('getTargetIdentifier')->willReturn($backendId);
         return $command;
     }
 }

@@ -79,7 +79,7 @@ class AddUsingTemplateCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $target = $input->getArgument('target');
         $template = $input->getArgument('template');
@@ -87,7 +87,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         // Make sure a valid target has been specified:
         [$targetDomain, $targetKey] = $this->extractTextDomain($target);
         if (!($targetDir = $this->getLangDir($output, $targetDomain, true))) {
-            return 1;
+            return self::FAILURE;
         }
 
         // Extract required source values from template:
@@ -106,7 +106,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         foreach ($lookups as $domain => & $tokens) {
             $sourceDir = $this->getLangDir($output, $domain, false);
             if (!$sourceDir) {
-                return 1;
+                return self::FAILURE;
             }
             $sourceCallback = function ($full) use (&$tokens): void {
                 $strings = $this->reader->getTextDomain($full, false);
@@ -148,6 +148,6 @@ class AddUsingTemplateCommand extends AbstractCommand
             $this->normalizer->normalizeFile($full);
         };
         $this->processDirectory($targetDir, $targetCallback, [$output, 'writeln']);
-        return 0;
+        return self::SUCCESS;
     }
 }

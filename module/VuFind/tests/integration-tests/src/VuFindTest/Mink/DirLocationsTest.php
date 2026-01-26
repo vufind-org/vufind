@@ -45,6 +45,13 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Path of DirLocations.ini.
+     *
+     * @var string
+     */
+    protected string $dirLocationsIni;
+
+    /**
      * Test that the ini configs of the local dir stack are processed.
      *
      * @return void
@@ -213,21 +220,10 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkTranslation(DocumentElement $page, string $expected, string $field): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             $this->findCssAndGetText($page, '#searchForm_type option[value="' . $field . '"]')
         );
-    }
-
-    /**
-     * Get DirLocations.ini path.
-     *
-     * @return string
-     */
-    protected function getDirLocationsIni(): string
-    {
-        $localDir = $this->pathResolver->getLocalConfigDirStack()[0]['directory'];
-        return $localDir . '/DirLocations.ini';
     }
 
     /**
@@ -237,7 +233,9 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function setupDirLocationsIni(): void
     {
-        $dirLocationsIni = $this->getDirLocationsIni();
+        $localDir = $this->pathResolver->getLocalConfigDirStack()[0]['directory'];
+        $dirLocationsIni = $localDir . '/DirLocations.ini';
+        $this->dirLocationsIni = $dirLocationsIni;
         if (file_exists($dirLocationsIni)) {
             rename($dirLocationsIni, $dirLocationsIni . '.bak');
         }
@@ -268,12 +266,14 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function resetDirLocationsIni(): void
     {
-        $dirLocationsIni = $this->getDirLocationsIni();
-        if (file_exists($dirLocationsIni)) {
-            unlink($dirLocationsIni);
-        }
-        if (file_exists($dirLocationsIni . '.bak')) {
-            rename($dirLocationsIni . '.bak', $dirLocationsIni);
+        if (isset($this->dirLocationsIni)) {
+            $dirLocationsIni = $this->dirLocationsIni;
+            if (file_exists($dirLocationsIni)) {
+                unlink($dirLocationsIni);
+            }
+            if (file_exists($dirLocationsIni . '.bak')) {
+                rename($dirLocationsIni . '.bak', $dirLocationsIni);
+            }
         }
     }
 

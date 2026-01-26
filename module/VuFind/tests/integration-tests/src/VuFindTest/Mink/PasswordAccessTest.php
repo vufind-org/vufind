@@ -49,33 +49,54 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get config.ini override settings for testing SSO login.
      *
+     * @param bool $hashedPassword If password is hashed in configuration
+     *
      * @return array
      */
-    public function getConfigIniOverrides(): array
+    public function getConfigIniOverrides(bool $hashedPassword = false): array
     {
+        $passwordAccessConfig = $hashedPassword ? [
+            'access_user_hashed' => [
+                'username' => password_hash('password', PASSWORD_DEFAULT),
+            ],
+        ] : [
+            'access_user' => [
+                'username' => 'password',
+            ],
+        ];
         return [
             'config' => [
                 'Authentication' => [
                     'method' => 'PasswordAccess',
                 ],
-                'PasswordAccess' => [
-                    'access_user' => [
-                        'username' => 'password',
-                    ],
-                ],
+                'PasswordAccess' => $passwordAccessConfig,
             ],
         ];
     }
 
     /**
+     * Data provider for testLogin.
+     *
+     * @return \Iterator
+     */
+    public static function loginProvider(): \Iterator
+    {
+        yield 'unhashed password' => [false];
+        yield 'hashed password' => [true];
+    }
+
+    /**
      * Test logging in with a password.
+     *
+     * @param bool $hashedPassword If password is hashed in configuration
      *
      * @return void
      */
-    public function testLogin(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginProvider')]
+    public function testLogin(bool $hashedPassword): void
     {
         // Set up configs
-        $this->changeConfigs($this->getConfigIniOverrides());
+        $this->changeConfigs($this->getConfigIniOverrides($hashedPassword));
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
@@ -88,7 +109,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#login_PasswordAccess_password', 'bad');
         $this->clickCss($page, '.modal-content input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.modal-content .alert-danger')
         );
@@ -125,7 +146,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#login_PasswordAccess_password', 'bad');
         $this->clickCss($page, '.modal-content input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.modal-content .alert-danger')
         );
@@ -134,7 +155,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#login_PasswordAccess_password', 'password');
         $this->clickCss($page, '.modal-content input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.modal-content .alert-danger')
         );
@@ -153,7 +174,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Check that login link is back
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
     }
 
     /**

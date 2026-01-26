@@ -336,9 +336,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getBookOpenUrlParams'])
             ->getMock();
         $mock->setRawData($fields);
-        $mock->expects($this->any())
-            ->method('getBookOpenUrlParams')
-            ->will($this->returnValue($openUrlParams));
+        $mock->method('getBookOpenUrlParams')->willReturn($openUrlParams);
 
         $this->assertEquals($openUrl, $mock->getOpenUrl());
     }
@@ -497,41 +495,39 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCleanISBNs
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getCleanISBNsProvider(): array
+    public static function getCleanISBNsProvider(): \Iterator
     {
-        return [
-            [
-                ['8820737493', '8072815563'],
-                'only10',
-                true,
-            ],
-            [
-                ['8820737493', '8072815563', 'invalid-isbn'],
-                'only10',
-                false,
-            ],
-            [
-                ['8820737493', '8072815563', '9798644293513'],
-                'prefer10',
-                true,
-            ],
-            [
-                ['8820737493', '8072815563', '9798644293513', 'invalid-isbn'],
-                'prefer10',
-                false,
-            ],
-            [
-                ['9798644293513', '9788820737498', '9788072815562'],
-                'normalize13',
-                true,
-            ],
-            [
-                ['9798644293513', '9788820737498', '9788072815562', 'invalid-isbn'],
-                'normalize13',
-                false,
-            ],
+        yield [
+            ['8820737493', '8072815563'],
+            'only10',
+            true,
+        ];
+        yield [
+            ['8820737493', '8072815563', 'invalid-isbn'],
+            'only10',
+            false,
+        ];
+        yield [
+            ['8820737493', '8072815563', '9798644293513'],
+            'prefer10',
+            true,
+        ];
+        yield [
+            ['8820737493', '8072815563', '9798644293513', 'invalid-isbn'],
+            'prefer10',
+            false,
+        ];
+        yield [
+            ['9798644293513', '9788820737498', '9788072815562'],
+            'normalize13',
+            true,
+        ];
+        yield [
+            ['9798644293513', '9788820737498', '9788072815562', 'invalid-isbn'],
+            'normalize13',
+            false,
         ];
     }
 

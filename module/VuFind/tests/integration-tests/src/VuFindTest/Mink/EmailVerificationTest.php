@@ -89,7 +89,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Email address verification instructions have been sent to the email address registered with this account.',
             $this->findCssAndGetText($page, '.alert-info')
         );
@@ -105,7 +105,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Follow the verification link:
         $session->visit($verifyLink);
-        $this->assertEquals(
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );
@@ -159,7 +159,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Request the email change:
         $this->clickCss($page, '.fa-envelope');
-        $this->assertEquals(
+        $this->assertSame(
             'Submitting this form will send an email to the new address; '
             . 'you will have to click on a link in the email before the change will take effect.',
             $this->findCssAndGetText($page, '.alert-info')
@@ -176,7 +176,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that messages went to both new and old email addresses, and extract the verify link:
         $email = $this->getLoggedEmail(0);
-        $this->assertEquals('To: changed@example.com', $email->getHeaders()->get('to')->toString());
+        $this->assertSame('To: changed@example.com', $email->getHeaders()->get('to')->toString());
         preg_match(
             '/You can verify your email address with this link: <(http.*)>/',
             $email->getBody()->getBody(),
@@ -185,15 +185,15 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $verifyLink = $matches[1];
 
         $notifyEmail = $this->getLoggedEmail(1);
-        $this->assertEquals('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
+        $this->assertSame('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
         $this->assertStringContainsString(
             'A request was just made to change your email address at Library Catalog.',
-            $notifyEmail->getBody()->getBody()
+            (string)$notifyEmail->getBody()->getBody()
         );
 
         // Follow the verification link:
         $session->visit($verifyLink);
-        $this->assertEquals(
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );

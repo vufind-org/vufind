@@ -104,11 +104,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockImageLink(string $expected): ImageLink
     {
-        $mock = $this->getMockBuilder(ImageLink::class)
-            ->disableOriginalConstructor()->getMock();
+        $mock = $this->createMock(ImageLink::class);
         $mock->expects($this->once())->method('__invoke')
-            ->with($this->equalTo($expected))
-            ->will($this->returnValue(basename($expected)));
+            ->with($expected)
+            ->willReturn(basename($expected));
         return $mock;
     }
 
@@ -155,7 +154,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper();
         $expected = '<span class="icon icon--font fa fa-foo" '
             . 'role="img" aria-hidden="true"></span>';
-        $this->assertEquals($expected, trim($helper('foo')));
+        $this->assertSame($expected, trim($helper('foo')));
     }
 
     /**
@@ -168,7 +167,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper();
         $expected = '<span class="icon icon--font fa fa-spinner extraClass" '
             . 'role="img" aria-hidden="true"></span>';
-        $this->assertEquals($expected, trim($helper('classy')));
+        $this->assertSame($expected, trim($helper('classy')));
     }
 
     /**
@@ -181,79 +180,77 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper();
         $expected = '<span class="icon icon--font fa fa-foo" '
             . 'bar="baz" role="img" aria-hidden="true"></span>';
-        $this->assertEquals($expected, trim($helper('foo', ['bar' => 'baz'])));
+        $this->assertSame($expected, trim($helper('foo', ['bar' => 'baz'])));
 
         // Add class to class
         $expected = '<span class="icon icon--font fa fa-foo foo-bar" '
             . 'role="img" aria-hidden="true"></span>';
-        $this->assertEquals($expected, trim($helper('foo', ['class' => 'foo-bar'])));
+        $this->assertSame($expected, trim($helper('foo', ['class' => 'foo-bar'])));
 
         // Shortcut
-        $this->assertEquals($expected, trim($helper('foo', 'foo-bar')));
+        $this->assertSame($expected, trim($helper('foo', 'foo-bar')));
     }
 
     /**
      * Data provider for testUnicodeIcons
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function unicodeIconProvider(): array
+    public static function unicodeIconProvider(): \Iterator
     {
-        return [
+        yield [
+            '',
+            '',
+            '1F600',
+            'smile',
+            '',
+        ];
+        yield [
+            'wry',
+            '',
+            '1F600',
+            'wrySmile',
+            '',
+        ];
+        yield [
+            'super wry',
+            '',
+            '1F600',
+            'wrySmile',
+            'super',
+        ];
+        yield [
+            'super wry',
+            '',
+            '1F600',
+            'wrySmile',
+            ['class' => 'super'],
+        ];
+        yield [
+            'wry',
+            'foo="b+r"',
+            '1F600',
+            'wrySmile',
             [
-                '',
-                '',
-                '1F600',
-                'smile',
-                '',
+                'foo' => 'b+r',
             ],
+        ];
+        yield [
+            'super wry',
+            'foo="b+r"',
+            '1F600',
+            'wrySmile',
             [
-                'wry',
-                '',
-                '1F600',
-                'wrySmile',
-                '',
+                'class' => 'super',
+                'foo' => 'b+r',
             ],
-            [
-                'super wry',
-                '',
-                '1F600',
-                'wrySmile',
-                'super',
-            ],
-            [
-                'super wry',
-                '',
-                '1F600',
-                'wrySmile',
-                ['class' => 'super'],
-            ],
-            [
-                'wry',
-                'foo="b+r"',
-                '1F600',
-                'wrySmile',
-                [
-                    'foo' => 'b+r',
-                ],
-            ],
-            [
-                'super wry',
-                'foo="b+r"',
-                '1F600',
-                'wrySmile',
-                [
-                    'class' => 'super',
-                    'foo' => 'b+r',
-                ],
-            ],
-            [
-                '',
-                '',
-                'c&lt;de',
-                'oddGlyph',
-                '',
-            ],
+        ];
+        yield [
+            '',
+            '',
+            'c&lt;de',
+            'oddGlyph',
+            '',
         ];
     }
 
@@ -281,7 +278,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
             . ($expectedClasses ? " $expectedClasses" : '') . '"'
             . ($expectedAttrs ? " $expectedAttrs" : '')
             . ' role="img" aria-hidden="true">&#x' . $expectedIcon . ';</span>';
-        $this->assertEquals($expected, trim($helper($icon, $attrs)));
+        $this->assertSame($expected, trim($helper($icon, $attrs)));
     }
 
     /**
@@ -299,12 +296,12 @@ class IconTest extends \PHPUnit\Framework\TestCase
         // the first call to getItem returns null, then it expects a call
         // to setItem, and then the second call to getItem will return an
         // expected value.
-        $cache = $this->getMockBuilder(StorageInterface::class)->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
-            ->with($this->equalTo($key))
+            ->with($key)
             ->willReturnOnConsecutiveCalls(null, $expected);
         $cache->expects($this->once())->method('setItem')
-            ->with($this->equalTo($key), $this->equalTo($expected));
+            ->with($key, $expected);
 
         // Invoke the helper twice to meet the expectations of the cache mock:
         $helper = $this->getIconHelper(null, $cache);
@@ -322,7 +319,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true" alt="">';
-        $this->assertEquals($expected, $helper('bar'));
+        $this->assertSame($expected, $helper('bar'));
     }
 
     /**
@@ -336,7 +333,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = '<img class="icon icon--img" src="&quot;quoted&quot;.png" aria-hidden="true"'
             . ' alt="">';
-        $this->assertEquals($expected, $helper('quoted'));
+        $this->assertSame($expected, $helper('quoted'));
     }
 
     /**
@@ -351,7 +348,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = '<img class="icon icon--img weird:class foo" src="zzz.png"'
             . ' aria-hidden="true" alt="">';
-        $this->assertEquals($expected, $helper('extraClassy'));
+        $this->assertSame($expected, $helper('extraClassy'));
     }
 
     /**
@@ -367,7 +364,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
             . ' aria-hidden="true" alt="">';
         // Send a string, validating the shortcut where strings are treated as
         // classes, in addition to confirming that extras work for image icons.
-        $this->assertEquals($expected, $helper('bar', 'myclass'));
+        $this->assertSame($expected, $helper('bar', 'myclass'));
     }
 
     /**
@@ -382,14 +379,14 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $helper = $this->getIconHelper(null, null, $plugins, true);
         $expected = '<img class="icon icon--img" src="zab.png" aria-hidden="true"'
             . ' alt="">';
-        $this->assertEquals($expected, $helper('bar'));
+        $this->assertSame($expected, $helper('bar'));
 
         // RTL does not exist
         $plugins = ['imageLink' => $this->getMockImageLink('icons/ltronly.png')];
         $helper = $this->getIconHelper(null, null, $plugins, true);
         $expected = '<img class="icon icon--img" src="ltronly.png"'
             . ' aria-hidden="true" alt="">';
-        $this->assertEquals($expected, $helper('ltronly'));
+        $this->assertSame($expected, $helper('ltronly'));
     }
 
     /**
@@ -403,7 +400,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $expected = '<span class="icon icon--font fa fa-foo" '
             . 'role="img" aria-hidden="true"></span>';
         // same is an alias for foo!
-        $this->assertEquals($expected, $helper('same'));
+        $this->assertSame($expected, $helper('same'));
     }
 
     /**
@@ -442,7 +439,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 <use xlink:href="mysprites.svg#sprite"></use>
             </svg>
             EXPECTED;
-        $this->assertEquals($expected, $helper('xyzzy'));
+        $this->assertSame($expected, $helper('xyzzy'));
     }
 
     /**
