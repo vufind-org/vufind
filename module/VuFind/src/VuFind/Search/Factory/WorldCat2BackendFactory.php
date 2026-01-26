@@ -30,10 +30,15 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\Session\Container;
 use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use VuFind\Config\Config;
 use VuFind\Http\GuzzleService;
 use VuFindSearch\Backend\WorldCat2\Backend;
 use VuFindSearch\Backend\WorldCat2\Connector;
@@ -55,38 +60,46 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected \Psr\Log\LoggerInterface $logger;
+    protected LoggerInterface $logger;
 
     /**
      * VuFind configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
-    protected \VuFind\Config\Config $config;
+    protected Config $config;
 
     /**
      * WorldCat v2 configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
-    protected \VuFind\Config\Config $wcConfig;
+    protected Config $wcConfig;
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Backend
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->setup($sm);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->setup($container);
         $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
         $this->config = $configManager->getConfigObject('config');
         $this->wcConfig = $configManager->getConfigObject('WorldCat2');

@@ -30,7 +30,10 @@
 namespace VuFind\Search\Factory;
 
 use Laminas\EventManager\EventManager;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\Backend\Blender\Backend;
@@ -82,21 +85,29 @@ class BlenderBackendFactory implements FactoryInterface
     protected string $mappingsConfig = 'BlenderMappings';
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Backend
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->container = $sm;
-        $this->configManager = $sm->get(ConfigManagerInterface::class);
-        $yamlReader = $sm->get(\VuFind\Config\YamlReader::class);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->container = $container;
+        $this->configManager = $container->get(ConfigManagerInterface::class);
+        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         $blenderConfig = $this->configManager->getConfigObject($this->searchConfig);
         $backendConfig = $blenderConfig->Backends
             ? $blenderConfig->Backends->toArray() : [];
@@ -104,7 +115,7 @@ class BlenderBackendFactory implements FactoryInterface
             throw new \Exception("No backends enabled in {$this->searchConfig}.ini");
         }
         $backends = [];
-        $backendManager = $sm->get(\VuFind\Search\BackendManager::class);
+        $backendManager = $container->get(\VuFind\Search\BackendManager::class);
         foreach (array_keys($backendConfig) as $backendId) {
             $backends[$backendId] = $backendManager->get($backendId);
         }
@@ -116,7 +127,7 @@ class BlenderBackendFactory implements FactoryInterface
             $backends,
             $blenderConfig,
             $blenderMappings,
-            new EventManager($sm->get('SharedEventManager'))
+            new EventManager($container->get('SharedEventManager'))
         );
         $this->attachEvents($backend);
         return $backend;

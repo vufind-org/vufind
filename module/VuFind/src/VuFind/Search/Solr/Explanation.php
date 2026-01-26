@@ -252,10 +252,8 @@ class Explanation extends \VuFind\Search\Base\Explanation
         $params->set('spellcheck', 'false');
         $explainParams = new ParamBag([
             'fl' => 'id,score',
-            'facet' => 'true',
             'debug' => 'true',
             'indent' => 'true',
-            'param' => 'q',
             'echoParams' => 'all',
             'explainOther' => 'id:"' . addcslashes($recordId, '"') . '"',
         ]);

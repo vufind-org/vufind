@@ -30,6 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Http\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
@@ -47,13 +48,6 @@ use VuFind\Service\GetServiceTrait;
 abstract class AbstractBackendFactory implements FactoryInterface
 {
     use GetServiceTrait;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-    }
 
     /**
      * Initialize the factory
@@ -75,13 +69,13 @@ abstract class AbstractBackendFactory implements FactoryInterface
      * @param ?string $url     Request URL (needed for proper local address check when
      * the client is being proxified)
      *
-     * @return \Laminas\Http\Client
+     * @return Client
      */
     protected function createHttpClient(
         ?int $timeout = null,
         array $options = [],
         ?string $url = null
-    ): \Laminas\Http\Client {
+    ): Client {
         $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($url);
         if (null !== $timeout) {
             $options['timeout'] = $timeout;

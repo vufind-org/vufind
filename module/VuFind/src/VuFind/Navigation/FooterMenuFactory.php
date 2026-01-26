@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Record Formatter factory.
+ * FooterMenu section plugin factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,38 +21,30 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Navigation
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindApi\Formatter;
+namespace VuFind\Navigation;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Record Formatter factory.
+ * FooterMenu section plugin factory
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Navigation
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordFormatterFactory implements FactoryInterface
+class FooterMenuFactory extends AbstractMenuFactory
 {
-    /**
-     * Record fields configuration file name
-     *
-     * @var string
-     */
-    protected $configFile = 'SearchApiRecordFields.yaml';
-
     /**
      * Create an object
      *
@@ -72,14 +64,15 @@ class RecordFormatterFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-
-        $recordFields = $container->get(\VuFind\Config\YamlReader::class)
-            ->get($this->configFile);
-        $helperManager = $container->get('ViewHelperManager');
-        $serverUrlHelper = $container->get(\VuFind\Http\ServerUrlHelper::class);
-        return new $requestedName($recordFields, $helperManager, $serverUrlHelper);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                'FooterMenu.yaml',
+                $config,
+                ...($options ?? []),
+            ]
+        );
     }
 }

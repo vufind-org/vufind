@@ -65,13 +65,18 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * Get filtered search
      *
      * @param string $building Building filter to use
+     * @param string $format   Optional format filter to use
      *
      * @return Element
      */
-    protected function getFilteredSearch(string $building = 'weird_ids.mrc'): Element
+    protected function getFilteredSearch(string $building = 'weird_ids.mrc', string $format = ''): Element
     {
+        $url = $this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"' . $building . '"';
+        if ($format) {
+            $url .= '&filter%5B%5D=format%3A"' . $format . '"';
+        }
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"' . $building . '"');
+        $session->visit($url);
         return $session->getPage();
     }
 
@@ -164,25 +169,39 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function for facets lists
+     * Helper function for testing facets lists in lightbox
      *
-     * @param Element $page              Mink page object
-     * @param int     $limit             Configured lightbox length
-     * @param bool    $exclusionActive   Is facet exclusion on?
-     * @param bool    $expectMultiSelect Do we expect multi-facet select controls to be active?
+     * @param Element $page                 Mink page object
+     * @param string  $openLightboxSelector CSS selector for control to open lightbox
+     * @param int     $limit                Configured lightbox length
+     * @param bool    $exclusionActive      Is facet exclusion on?
+     * @param bool    $expectMultiSelect    Do we expect multi-facet select controls to be active?
      *
      * @return void
      */
-    protected function facetListProcedure(
+    protected function facetLightboxListProcedure(
         Element $page,
+        string $openLightboxSelector,
         int $limit,
         bool $exclusionActive = false,
         bool $expectMultiSelect = false
     ): void {
+        $this->clickCss($page, $openLightboxSelector);
         $this->waitForPageLoad($page);
+        // This test has been known to intermittently fail due to the lightbox failing to open,
+        // possibly due to a click failing to register via Mink. This try/catch retry seems to
+        // solve the problem.
+        try {
+            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
+        } catch (\Exception $e) {
+            $this->logWarning('Lightbox failed to open; trying again...');
+            $this->clickCss($page, $openLightboxSelector);
+            $this->waitForPageLoad($page);
+            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
+        }
         $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
-        $this->clickCss($page, '#modal .js-facet-next-page');
+        $nextPageButton->click();
         $this->waitForPageLoad($page);
         // Verify whether multi-select facet controls are visible/invisible as expected:
         $this->assertMultiSelectActiveInFacetList($page, $expectMultiSelect);
@@ -430,8 +449,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->facetListProcedure($page, $limit);
+        $this->facetLightboxListProcedure($page, $this->genreMoreSelector, $limit);
         $this->clickCss($page, $this->genreMoreSelector);
         $this->clickCss($page, '#modal .js-facet-item.active');
         // facet removed
@@ -620,8 +638,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
-        $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
-        $this->facetListProcedure($page, $limit);
+        $this->facetLightboxListProcedure($page, '#side-collapse-genre_facet .all-facets', $limit);
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
         $this->clickCss($page, '#modal .js-facet-item.active');
@@ -650,8 +667,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->facetListProcedure($page, $limit, true);
+        $this->facetLightboxListProcedure($page, $this->genreMoreSelector, $limit, true);
         $this->assertFilterCount($page, 1);
     }
 
@@ -1038,6 +1054,35 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Re-click the search button and confirm that filters go away
         $this->clickCss($page, '#searchForm .btn.btn-primary');
         $this->assertNoFilters($page);
+
+        // Test with two filters:
+        $page = $this->getFilteredSearch(format: 'Book');
+        $this->assertAppliedFilters(
+            $page,
+            [
+                'Library:weird_ids.mrc',
+                'Format:Book',
+            ]
+        );
+        // Remove one filter:
+        $this->clickCss($page, '.active-filters .filter-value');
+        $this->waitForPageLoad($page);
+        $this->assertFilterCount($page, 1);
+
+        // Test with two filters and removal from record page:
+        $page = $this->getFilteredSearch(format: 'Book');
+        $this->assertAppliedFilters(
+            $page,
+            [
+                'Library:weird_ids.mrc',
+                'Format:Book',
+            ]
+        );
+        // Now click the first result:
+        $this->clickCss($page, '.result-body a.title');
+        $this->waitForPageLoad($page);
+        // In this mode, we do not expect there to be any filters on the record page:
+        $this->assertFilterCount($page, 0);
     }
 
     /**

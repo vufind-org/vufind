@@ -45,7 +45,6 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
      */
     public function __construct()
     {
-        parent::__construct();
         $this->searchConfig = 'website';
         $this->searchYaml = 'websearchspecs.yaml';
         $this->facetConfig = 'website';

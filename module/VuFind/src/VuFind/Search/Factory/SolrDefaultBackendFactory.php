@@ -45,7 +45,6 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
      */
     public function __construct()
     {
-        parent::__construct();
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
         $this->facetConfig = 'facets';

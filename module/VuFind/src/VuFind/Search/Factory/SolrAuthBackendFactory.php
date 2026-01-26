@@ -45,7 +45,6 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
      */
     public function __construct()
     {
-        parent::__construct();
         $this->searchConfig = 'authority';
         $this->searchYaml = 'authsearchspecs.yaml';
         $this->facetConfig = 'authority';
