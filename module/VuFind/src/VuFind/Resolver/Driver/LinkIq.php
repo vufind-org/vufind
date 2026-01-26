@@ -107,7 +107,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      */
     public function fetchLinks($openURL)
     {
-        // Make the call to SFX and load results
+        // Make the call to resolver and load results
         $url = $this->getResolverUrl($openURL);
         $response = $this->httpService->get($url, headers: ['password' => $this->password]);
         return $response->getBody()->getContents();
