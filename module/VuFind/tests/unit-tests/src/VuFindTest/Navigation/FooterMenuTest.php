@@ -75,7 +75,7 @@ class FooterMenuTest extends AbstractSectionTestCase
             $this->assertEquals(false, $plugin->{$method}());
         }
         $menu = $plugin->getMenu();
-        $this->assertCount(3, $menu['FooterThird']['MenuItems']);
+        $this->assertCount(3, $menu['footer-right']['MenuItems']);
     }
 
     /**
