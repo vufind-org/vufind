@@ -338,20 +338,30 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockCart = $this->createMock(Cart::class);
         $mockCart->method('isActive')
             ->willReturn($checkMethods['checkCart'] ?? true);
+        $container->set(Cart::class, $mockCart);
 
         $mockAuthManager = $this->createMock(Manager::class);
         $mockAuthManager->method('loginEnabled')
             ->willReturn($checkMethods['checkAccount'] ?? true);
+        $container->set(Manager::class, $mockAuthManager);
 
         $checkThemeOptions = $checkMethods['checkThemeOptions'] ?? true;
         $mockViewModel = $this->createMock(ViewModel::class);
         $mockViewModel->method('getVariable')->with('themeOptions')
             ->willReturn($checkThemeOptions ? [[], []] : []);
+        $mockViewManager = $this->createMock(ViewManager::class);
+        $mockViewManager->method('getViewModel')
+            ->willReturn($mockViewModel);
+        $container->set('ViewManager', $mockViewManager);
 
         $checkAllLangs = $checkMethods['checkAllLangs'] ?? true;
         $mockLocaleSettings = $this->createMock(LocaleSettings::class);
         $mockLocaleSettings->method('getEnabledLocales')
             ->willReturn($checkAllLangs ? [[], []] : []);
+        $container->set(LocaleSettings::class, $mockLocaleSettings);
+
+        $mockRequest = $this->createMock(Request::class);
+        $container->set('Request', $mockRequest);
 
         $header = new HeaderBar(
             $config,
@@ -360,7 +370,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             $mockAuthManager,
             $mockViewModel,
             $mockLocaleSettings,
-            $this->createMock(Request::class),
+            $mockRequest,
         );
         $this->setSectionPlugin($container, $header, 'header');
         return $header;
