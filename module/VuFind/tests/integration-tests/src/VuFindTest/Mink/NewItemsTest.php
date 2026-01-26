@@ -63,7 +63,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '.form-search-newitem .btn-group')
         );
         // Now perform a search:
-        $this->clickCss($page, '.form-search-newitem .btn-group .btn-primary', index: $buttonIndex);
+        $this->clickCss($page, '.form-search-newitem .btn-group .btn-outline-primary', index: $buttonIndex);
         $this->clickCss($page, '.form-search-newitem input[type="submit"]');
         $this->waitForPageLoad($page);
         return $page;
