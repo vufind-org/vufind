@@ -31,7 +31,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 use function is_string;
@@ -46,15 +48,8 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordLinker extends \Laminas\View\Helper\AbstractHelper
+class RecordLinker
 {
-    /**
-     * Record router
-     *
-     * @var \VuFind\Record\Router
-     */
-    protected $router;
-
     /**
      * Search results (optional)
      *
@@ -72,11 +67,29 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Router $router Record router
+     * @param Router        $router        Record router
+     * @param Url           $url           Url helper
+     * @param SearchOptions $searchOptions SearchOptions helper
+     * @param SearchMemory  $searchMemory  SearchMemory helper
+     * @param Translate     $translate     Translate helper
+     * @param Truncate      $truncate      Truncate helper
+     * @param EscapeHtml    $escapeHtml    EscapeHtml helper
      */
-    public function __construct(\VuFind\Record\Router $router)
-    {
-        $this->router = $router;
+    public function __construct(
+        protected Router $router,
+        #[Autowire(container: 'ViewHelperManager', service: 'url')]
+        protected Url $url,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected SearchOptions $searchOptions,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected SearchMemory $searchMemory,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Truncate $truncate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
     }
 
     /**
@@ -117,8 +130,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function related($link, $source = DEFAULT_SEARCH_BACKEND)
     {
-        $urlHelper = $this->getView()->plugin('url');
-        $baseUrl = $urlHelper($this->getSearchActionForSource($source));
+        $baseUrl = ($this->url)($this->getSearchActionForSource($source));
         switch ($link['type']) {
             case 'bib':
                 return $baseUrl
@@ -167,15 +179,14 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         $options = []
     ) {
         // Build the URL:
-        $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getActionRouteDetails($driver, $action);
-        return $urlHelper(
+        return ($this->url)(
             $details['route'],
             $details['params'] ?: [],
             [
                 'query' => $this->getRecordUrlParams($options) + $query,
                 'fragment' => $anchor ? ltrim($anchor, '#') : '',
-                'normalize_path' => false, // required to keep slashes encoded
+                'normalize_path' => false,
             ]
         );
     }
@@ -235,9 +246,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         );
         if (!isset($this->cachedDriverUrls[$cacheKey])) {
             // Build the URL:
-            $urlHelper = $this->getView()->plugin('url');
             $details = $this->router->getTabRouteDetails($driver, $tab, $query);
-            $this->cachedDriverUrls[$cacheKey] = $urlHelper(
+            $this->cachedDriverUrls[$cacheKey] = ($this->url)(
                 $details['route'],
                 $details['params'],
                 array_merge_recursive(
@@ -275,9 +285,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function getBreadcrumbHtml($driver)
     {
-        $escapeHelper = $this->getView()->plugin('escapeHtml');
         [$text, $url] = $this->getBreadcrumbParams($driver);
-        return '<a href="' . $url . '">' . $escapeHelper($text) . '</a>';
+        return '<a href="' . $url . '">' . ($this->escapeHtml)($text) . '</a>';
     }
 
     /**
@@ -292,8 +301,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     {
         $breadcrumb = $driver->getBreadcrumb();
         $breadcrumbText = empty($breadcrumb)
-            ? ($this->getView()->plugin('translate'))('Title not available')
-            : ($this->getView()->plugin('truncate'))($breadcrumb, 30);
+            ? ($this->translate)('Title not available')
+            : ($this->truncate)($breadcrumb, 30);
         return [$breadcrumbText, $this->getUrl($driver)];
     }
 
@@ -306,9 +315,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function getChildRecordSearchUrl($driver)
     {
-        $urlHelper = $this->getView()->plugin('url');
         $route = $this->getSearchActionForSource($driver->getSourceIdentifier());
-        return $urlHelper($route)
+        return ($this->url)($route)
             . '?lookfor='
             . urlencode(addcslashes($driver->getUniqueID(), '"'))
             . '&type=ParentID';
@@ -333,8 +341,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             'search' => 'versions',
         ];
 
-        $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper($route, [], ['query' => $urlParams]);
+        return ($this->url)($route, [], ['query' => $urlParams]);
     }
 
     /**
@@ -346,8 +353,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getSearchActionForSource($source)
     {
-        $optionsHelper = $this->getView()->plugin('searchOptions');
-        return $optionsHelper($source)->getSearchAction();
+        return ($this->searchOptions)($source)->getSearchAction();
     }
 
     /**
@@ -360,8 +366,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getVersionsActionForSource($source): ?string
     {
-        $optionsHelper = $this->getView()->plugin('searchOptions');
-        return $optionsHelper($source)->getVersionsAction();
+        return ($this->searchOptions)($source)->getVersionsAction();
     }
 
     /**
@@ -378,7 +383,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             return [];
         }
         $sid = ($this->results ? $this->results->getSearchId() : null)
-            ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
+            ?? $this->searchMemory->getLastSearchId();
         return $sid ? compact('sid') : [];
     }
 }

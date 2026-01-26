@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\Url;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * AlphaBrowse view helper

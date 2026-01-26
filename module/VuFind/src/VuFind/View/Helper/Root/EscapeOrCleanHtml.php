@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Escaper\Escaper;
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\String\PropertyStringInterface;
 
 /**
@@ -42,7 +42,7 @@ use VuFind\String\PropertyStringInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EscapeOrCleanHtml extends AbstractHelper
+class EscapeOrCleanHtml
 {
     /**
      * Contexts that allow HTML
@@ -58,8 +58,12 @@ class EscapeOrCleanHtml extends AbstractHelper
      * @param CleanHtml $cleanHtml Clean HTML helper
      * @param array     $config    VuFind configuration
      */
-    public function __construct(protected Escaper $escaper, protected CleanHtml $cleanHtml, array $config)
-    {
+    public function __construct(
+        protected Escaper $escaper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected CleanHtml $cleanHtml,
+        array $config
+    ) {
         $this->htmlContexts = (array)($config['Allowed_HTML_Contexts'] ?? []);
     }
 

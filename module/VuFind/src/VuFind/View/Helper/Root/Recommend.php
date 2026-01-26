@@ -29,7 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Recommend\RecommendInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Recommendation module view helper
@@ -40,9 +43,25 @@ use VuFind\Recommend\RecommendInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Recommend extends \Laminas\View\Helper\AbstractHelper
+class Recommend
 {
     use ClassBasedTemplateRendererTrait;
+
+    /**
+     * Constructor
+     *
+     * @param RendererInterface $viewRenderer View renderer
+     * @param ResolverInterface $viewResolver View resolver
+     */
+    public function __construct(
+        #[Autowire(service: 'ViewRenderer')]
+        RendererInterface $viewRenderer,
+        #[Autowire(service: 'ViewResolver')]
+        ResolverInterface $viewResolver
+    ) {
+        $this->viewRenderer = $viewRenderer;
+        $this->viewResolver = $viewResolver;
+    }
 
     /**
      * Render the output of a recommendation module.

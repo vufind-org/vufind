@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use Lmc\Rbac\Identity\IdentityInterface;
 use RuntimeException;
 use VuFind\Auth\ILSAuthenticator;
@@ -64,8 +66,14 @@ class Auth implements DbServiceAwareInterface
         #[Autowire]
         protected Manager $manager,
         #[Autowire]
-        protected ILSAuthenticator $ilsAuthenticator
+        protected ILSAuthenticator $ilsAuthenticator,
+        #[Autowire(service: 'ViewRenderer')]
+        RendererInterface $viewRenderer,
+        #[Autowire(service: 'ViewResolver')]
+        ResolverInterface $viewResolver
     ) {
+        $this->viewRenderer = $viewRenderer;
+        $this->viewResolver = $viewResolver;
     }
 
     /**

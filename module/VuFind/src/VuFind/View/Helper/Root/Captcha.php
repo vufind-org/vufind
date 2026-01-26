@@ -30,6 +30,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function count;
 
 /**
@@ -42,36 +46,29 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Captcha extends \Laminas\View\Helper\AbstractHelper
+class Captcha
 {
     use ClassBasedTemplateRendererTrait;
 
     /**
-     * Captcha services
-     *
-     * @var array
-     */
-    protected $captchas = [];
-
-    /**
-     * Config
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\Config $config   Config
-     * @param array                 $captchas Captchas
+     * @param \VuFind\Config\Config $config       Config
+     * @param array                 $captchas     Captchas
+     * @param RendererInterface     $viewRenderer View renderer
+     * @param ResolverInterface     $viewResolver View resolver
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        array $captchas = []
+        #[Autowire(service: 'VuFind\Config\PluginManager')]
+        protected \VuFind\Config\Config $config,
+        protected array $captchas,
+        #[Autowire(service: 'ViewRenderer')]
+        RendererInterface $viewRenderer,
+        #[Autowire(service: 'ViewResolver')]
+        ResolverInterface $viewResolver
     ) {
-        $this->config = $config;
-        $this->captchas = $captchas;
+        $this->viewRenderer = $viewRenderer;
+        $this->viewResolver = $viewResolver;
     }
 
     /**
@@ -114,10 +111,12 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
             return '';
         }
 
-        return $this->getView()->render(
+        return $this->viewRenderer->render(
             'Helpers/captcha',
-            ['wrapHtml' => $wrapHtml,
-                                'captchas' => $this->captchas]
+            [
+                'wrapHtml' => $wrapHtml,
+                'captchas' => $this->captchas,
+            ]
         );
     }
 

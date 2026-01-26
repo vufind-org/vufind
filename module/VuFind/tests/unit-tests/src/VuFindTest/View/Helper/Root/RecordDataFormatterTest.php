@@ -86,6 +86,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         ?\Laminas\View\Renderer\PhpRenderer $view = null
     ): array {
         $mockView = $view ?? $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $mockResolver = $this->createMock(\Laminas\View\Resolver\ResolverInterface::class);
+        $mockView->method('getResolver')->willReturn($mockResolver);
 
         $context = new \VuFind\View\Helper\Root\Context($mockView);
         $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
@@ -100,7 +102,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $this->createMock(\VuFind\Auth\Manager::class),
-                $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
+                $this->createMock(\VuFind\Auth\ILSAuthenticator::class),
+                $mockView,
+                $mockResolver
             ),
             'context' => $context,
             'config' => new \VuFind\View\Helper\Root\Config(

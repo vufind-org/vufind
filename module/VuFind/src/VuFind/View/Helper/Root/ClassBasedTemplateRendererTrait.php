@@ -35,6 +35,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
+use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 
 use function sprintf;
@@ -57,6 +58,20 @@ trait ClassBasedTemplateRendererTrait
      * @var array
      */
     protected $templateCache = [];
+
+    /**
+     * View renderer
+     *
+     * @var RendererInterface
+     */
+    protected $viewRenderer;
+
+    /**
+     * View resolver
+     *
+     * @var ResolverInterface
+     */
+    protected $viewResolver;
 
     /**
      * Recursively locate a template that matches the provided class name
@@ -118,10 +133,9 @@ trait ClassBasedTemplateRendererTrait
         $context = [],
         $throw = true
     ) {
-        // Set up the needed context in the view:
-        $view = $this->getView();
-        $contextHelper = $view->plugin('context');
-        $oldContext = $contextHelper($view)->apply($context);
+        // Pull the context helper from the renderer's plugin manager
+        $contextHelper = $this->viewRenderer->getHelperPluginManager()->get('context');
+        $oldContext = $contextHelper($this->viewRenderer)->apply($context);
 
         // Find and render the template:
         $classTemplate = $this->getCachedClassTemplate($template, $className);
@@ -133,10 +147,10 @@ trait ClassBasedTemplateRendererTrait
             );
         }
 
-        $html = $classTemplate ? $view->render($classTemplate) : '';
+        $html = $classTemplate ? $this->viewRenderer->render($classTemplate) : '';
 
         // Restore the original context before returning the result:
-        $contextHelper($view)->restore($oldContext);
+        $contextHelper($this->viewRenderer)->restore($oldContext);
         return $html;
     }
 
@@ -156,7 +170,7 @@ trait ClassBasedTemplateRendererTrait
                 = $this->resolveClassTemplate(
                     $template,
                     $className,
-                    $this->getView()->resolver()
+                    $this->viewResolver
                 );
         }
         return $this->templateCache[$className][$template];

@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use VuFind\String\PropertyStringInterface;
 
 /**
@@ -41,7 +40,7 @@ use VuFind\String\PropertyStringInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Truncate extends AbstractHelper
+class Truncate
 {
     /**
      * Truncate a string

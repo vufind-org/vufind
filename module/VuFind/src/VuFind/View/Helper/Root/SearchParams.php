@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Params\PluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * "Retrieve search params" view helper
@@ -40,23 +41,17 @@ use VuFind\Search\Params\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchParams extends \Laminas\View\Helper\AbstractHelper
+class SearchParams
 {
-    /**
-     * Search manager
-     *
-     * @var PluginManager
-     */
-    protected $manager;
-
     /**
      * Constructor
      *
      * @param PluginManager $manager Search manager
      */
-    public function __construct(PluginManager $manager)
-    {
-        $this->manager = $manager;
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager', service: PluginManager::class)]
+        protected PluginManager $manager
+    ) {
     }
 
     /**
