@@ -97,8 +97,9 @@ class ActionDispatchListener
         if ($actionName = $route->getParam('action')) {
             $idParts[] = $actionName;
         }
-        $id = strtolower(implode('/', $idParts));
-        if (!$this->actionPluginManager->has($id)) {
+        $id = $this->actionPluginManager
+            ->getActionHandlerName($route->getParam('controller'), $route->getParam('action'));
+        if (!$id) {
             return;
         }
         $action = $this->actionPluginManager->get($id);

@@ -74,19 +74,27 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
-     * Given a category and action name, return the most appropriate action handler class.
+     * Given a category and action name, return the most appropriate action handler class name, or null if not
+     * available.
      *
-     * @param string $category Category name
-     * @param string $action   Action name
+     * @param ?string $category Category name
+     * @param ?string $action   Action name
      *
-     * @return ActionInterface
+     * @return ?string
      */
-    public function getActionHandler(string $category, string $action): ActionInterface
+    public function getActionHandlerName(?string $category, ?string $action): ?string
     {
-        $normalizedCategory = strtolower($category);
-        $normalizedAction = strtolower($action);
-        return $this->has("$normalizedCategory/$normalizedAction")
-            ? $this->get("$normalizedCategory/$normalizedAction")
-            : $this->get($normalizedCategory);
+        if (!$category && !$action) {
+            return null;
+        }
+        $normalizedCategory = $category ? strtolower($category) : '';
+        $normalizedAction = $action ? strtolower($action) : '';
+
+        if ($normalizedCategory && $normalizedAction && $this->has("$normalizedCategory/$normalizedAction")) {
+            return "$normalizedCategory/$normalizedAction";
+        } elseif ($this->has("$normalizedCategory$normalizedAction")) {
+            return "$normalizedCategory$normalizedAction";
+        }
+        return null;
     }
 }
