@@ -49,42 +49,21 @@ class InjectOnCampusListener
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Primo Permission Handler.
-     *
-     * @var PrimoPermissionHandler
-     */
-    protected $permissionHandler;
-
-    /**
      * Is user on campus or not?
      *
-     * @var bool
+     * @var ?bool
      */
-    protected $isOnCampus;
+    protected ?bool $isOnCampus = null;
 
     /**
      * Constructor.
      *
-     * @param PrimoPermissionHandler $pph Primo Permission Handler
+     * @param ?PrimoPermissionHandler $permissionHandler Primo Permission Handler
      *
      * @return void
      */
-    public function __construct($pph = null)
+    public function __construct(protected ?PrimoPermissionHandler $permissionHandler = null)
     {
-        $this->setPermissionHandler($pph);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param PrimoPermissionHandler $pph Primo Permission Handler
-     *
-     * @return void
-     */
-    public function setPermissionHandler($pph)
-    {
-        $this->permissionHandler = $pph;
-        $this->isOnCampus = null; // clear cache
     }
 
     /**
@@ -94,7 +73,7 @@ class InjectOnCampusListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
             Service::class,
@@ -108,7 +87,7 @@ class InjectOnCampusListener
      *
      * @return bool
      */
-    protected function getOnCampus()
+    protected function getOnCampus(): bool
     {
         if (null === $this->isOnCampus) {
             $this->isOnCampus = $this->permissionHandler
@@ -124,7 +103,7 @@ class InjectOnCampusListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $params = $event->getParam('command')->getSearchParameters();
         $params->set('onCampus', $this->getOnCampus());

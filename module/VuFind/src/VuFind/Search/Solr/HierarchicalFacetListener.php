@@ -34,6 +34,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFind\I18n\TranslatableString;
 use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\BackendInterface;
@@ -57,73 +58,65 @@ class HierarchicalFacetListener
     use GetServiceTrait;
 
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
      * Facet configuration.
      *
      * @var Config
      */
-    protected $facetConfig;
+    protected Config $facetConfig;
 
     /**
      * Facet helper.
      *
      * @var HierarchicalFacetHelper
      */
-    protected $facetHelper;
+    protected HierarchicalFacetHelper $facetHelper;
 
     /**
      * Facet display styles.
      *
      * @var array
      */
-    protected $displayStyles;
+    protected array $displayStyles;
 
     /**
      * Hierarchy level separators
      *
      * @var array
      */
-    protected $separators;
+    protected array $separators;
 
     /**
      * Facet settings
      *
      * @var array
      */
-    protected $translatedFacets = [];
+    protected array $translatedFacets = [];
 
     /**
      * Text domains for translated facets
      *
      * @var array
      */
-    protected $translatedFacetsTextDomains = [];
+    protected array $translatedFacetsTextDomains = [];
 
     /**
      * Constructor.
      *
-     * @param BackendInterface        $backend        Search backend
-     * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param string                  $facetConfig    Facet config file id
+     * @param BackendInterface        $backend         Search backend
+     * @param ServiceLocatorInterface $serviceLocator  Service locator
+     * @param string                  $facetConfigName Facet config name
      *
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
+        protected BackendInterface $backend,
         ServiceLocatorInterface $serviceLocator,
-        $facetConfig
+        string $facetConfigName
     ) {
-        $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
 
         $this->facetConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($facetConfig);
+            ->getConfigObject($facetConfigName);
         $this->facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $specialFacets = $this->facetConfig->SpecialFacets;
@@ -156,7 +149,7 @@ class HierarchicalFacetListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
+    ): void {
         $manager->attach(
             Service::class,
             Service::EVENT_POST,
@@ -171,7 +164,7 @@ class HierarchicalFacetListener
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
 
@@ -192,7 +185,7 @@ class HierarchicalFacetListener
      *
      * @return void
      */
-    protected function processHierarchicalFacets($event)
+    protected function processHierarchicalFacets(EventInterface $event): void
     {
         if (empty($this->facetConfig->SpecialFacets->hierarchical)) {
             return;
@@ -244,7 +237,7 @@ class HierarchicalFacetListener
      *
      * @return string Formatted field
      */
-    protected function formatFacetField($facet, $value)
+    protected function formatFacetField(string $facet, string $value): string
     {
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'
