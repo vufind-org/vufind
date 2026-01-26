@@ -48,6 +48,24 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
     use TranslatorAwareTrait;
 
     /**
+     * Service type map.
+     *
+     * @var array
+     */
+    protected array $serviceTypeMap = [
+        'FullText' => 'getFullTxt',
+        'LibraryCatalog' => 'getHolding',
+        'DocumentDelivery' => 'getWebService',
+        'AbstractIndexDatabases' => 'getWebService',
+        'ILL' => 'getWebService',
+        'SearchEngines' => 'getWebService',
+        'Other' => 'getWebService',
+        'NoveListBIR' => 'getWebService',
+        'SmartLinks' => 'getWebService',
+        'SectionLabel' => null,
+    ];
+
+    /**
      * Constructor
      *
      * @param string        $baseUrl            Base URL for link resolver
@@ -173,19 +191,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      */
     protected function getServiceType(array $link): ?string
     {
-        $map = [
-            'FullText' => 'getFullTxt',
-            'LibraryCatalog' => 'getHolding',
-            'DocumentDelivery' => 'getWebService',
-            'AbstractIndexDatabases' => 'getWebService',
-            'ILL' => 'getWebService',
-            'SearchEngines' => 'getWebService',
-            'Other' => 'getWebService',
-            'NoveListBIR' => 'getWebService',
-            'SmartLinks' => 'getWebService',
-            'SectionLabel' => null,
-        ];
-        return $map[$link['category']] ?? null;
+        return $this->serviceTypeMap[$link['category']] ?? null;
     }
 
     /**

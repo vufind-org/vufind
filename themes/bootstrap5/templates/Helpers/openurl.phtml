@@ -11,10 +11,8 @@
   } else {
     $class = $class_ib = '';
   }
-  // If embedding is disabled, use More Options URL in the link, if available:
-  $linkUrl = (!$this->openUrlEmbed && $this->moreOptionsUrl)
-    ? $this->moreOptionsUrl
-    : $this->resolverUrl;
+  // Use More Options URL in the link, if available:
+  $linkUrl = $this->moreOptionsUrl ? $this->moreOptionsUrl : $this->resolverUrl;
 ?>
 
 <span class="openUrlControls<?php if ($this->openUrlEmbed): ?> openUrlEmbed<?php if ($this->openUrlEmbedAutoLoad): ?> openUrlEmbedAutoLoad<?php endif; ?><?php endif; ?>">
