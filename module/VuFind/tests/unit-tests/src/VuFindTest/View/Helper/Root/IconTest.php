@@ -274,10 +274,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
         string|array $attrs
     ): void {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon icon--font icon--unicode'
+        $expected = '<span class="icon icon--text icon--unicode'
             . ($expectedClasses ? " $expectedClasses" : '') . '"'
             . ($expectedAttrs ? " $expectedAttrs" : '')
-            . ' role="img" aria-hidden="true" data-icon="&#x' . $expectedIcon . ';"></span>';
+            . ' role="img" aria-hidden="true">&#x' . $expectedIcon . ';</span>';
         $this->assertSame($expected, trim($helper($icon, $attrs)));
     }
 
@@ -318,8 +318,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true"'
-            . ' alt="">';
+        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true" alt="">';
         $this->assertSame($expected, $helper('bar'));
     }
 

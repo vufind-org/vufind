@@ -28,6 +28,8 @@ node_modules
 public/swagger-ui
 tests/phpcs.cache.json
 themes/bootstrap5/scss/vendor/bootstrap
+themes/mixin-icons-fontawesome-6/css/vendor
+themes/mixin-icons-fontawesome-7/css/vendor
 local/DirLocations.ini
 local/config/vufind.bak
 local/config/vufind/*

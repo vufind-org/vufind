@@ -1,0 +1,4 @@
+<?php
+    $class = trim('icon icon--text ' . ($this->extra['class'] ?? ''));
+?>
+<span class="<?=$this->escapeHtmlAttr($class) ?>"<?=$this->attrs ?> role="img" aria-hidden="true"><?=$this->escapeHtmlAttr($this->icon)?></span>

@@ -140,14 +140,20 @@ class Icon extends AbstractHelper
         $rtl = $this->rtl ? '-rtl' : '';
         $icon = $this->iconMap[$name . $rtl] ?? $this->iconMap[$name] ?? $name;
         $set = $this->defaultSet;
-        $class = null;
 
         // Override set from config (ie. FontAwesome:icon)
         if (str_contains($icon, ':')) {
-            $parts = explode(':', $icon, 3);
+            $parts = explode(':', $icon, 2);
             $set = $parts[0];
             $icon = $parts[1];
-            $class = $parts[2] ?? null;
+        }
+
+        // Special case classes
+        $class = null;
+        if (str_contains($icon, ':')) {
+            $parts = explode(':', $icon, 2);
+            $icon = $parts[0];
+            $class = str_replace('.', ' ', $parts[1]);
         }
 
         // Special case: aliases:
