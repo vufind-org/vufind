@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laminas view renderer.
+ * Laminas template renderer.
  *
  * PHP version 8
  *
@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Renderer;
 
-use Closure;
 use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ModelInterface;
@@ -37,12 +36,13 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\RendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\ServerUrlHelper;
 use VuFindTheme\InjectTemplateListener;
 
 use function strlen;
 
 /**
- * Laminas view renderer.
+ * Laminas template renderer.
  *
  * @category VuFind
  * @package  View
@@ -50,24 +50,48 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class LaminasViewRenderer
+class LaminasTemplateRenderer implements TemplateRendererInterface
 {
+    /**
+     * Display exceptions?
+     *
+     * @var bool
+     */
+    protected bool $displayExceptions;
+
+    /**
+     * Template for 404 errors
+     *
+     * @var string
+     */
+    protected string $notFoundTemplate;
+
+    /**
+     * Template for errors
+     *
+     * @var string
+     */
+    protected string $errorTemplate;
+
     /**
      * Constructor.
      *
-     * @param Closure                $serverUrlHelperFactory ServerUrl helper factory callback
+     * @param ServerUrlHelper        $serverUrlHelper        Server URL helper
      * @param RendererInterface      $viewRenderer           View renderer
      * @param ViewManager            $viewManager            View manager
      * @param InjectTemplateListener $injectTemplateListener Template injection listener (for prefixes)
-     * @param bool                   $displayExceptions      Display exceptions?
+     * @param array                  $viewManagerConfig      View manager configuration
      */
     public function __construct(
-        protected Closure $serverUrlHelperFactory,
+        protected ServerUrlHelper $serverUrlHelper,
         protected RendererInterface $viewRenderer,
         protected ViewManager $viewManager,
         protected InjectTemplateListener $injectTemplateListener,
-        protected bool $displayExceptions,
+        protected array $viewManagerConfig,
     ) {
+        $this->displayExceptions = $viewManagerConfig['display_exceptions'] ?? false;
+        $this->notFoundTemplate = $viewManagerConfig['not_found_template'] ?? 'error/404';
+        $this->errorTemplate = $viewManagerConfig['exception_template'] ?? 'error/index';
     }
 
     /**
@@ -91,7 +115,30 @@ class LaminasViewRenderer
     }
 
     /**
-     * Render a template and return the result in the response object.
+     * Render an error template and return the result in the response object.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response object
+     * @param array                  $params   Template parameters
+     *
+     * @return ResponseInterface
+     */
+    public function renderErrorPage(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $params
+    ): ResponseInterface {
+        $params['display_exceptions'] = $this->displayExceptions;
+        return $this->renderTemplate(
+            $request,
+            $response->withStatus(500),
+            $params,
+            $this->errorTemplate
+        );
+    }
+
+    /**
+     * Render a "not found" template and return the result in the response object.
      *
      * @param ServerRequestInterface $request  Request
      * @param ResponseInterface      $response Response object
@@ -106,7 +153,7 @@ class LaminasViewRenderer
             $request,
             $response->withStatus(404),
             ['message' => 'Page not found.'],
-            'error/404.phtml'
+            $this->notFoundTemplate
         );
     }
 
@@ -139,16 +186,6 @@ class LaminasViewRenderer
     }
 
     /**
-     * Get view renderer.
-     *
-     * @return RendererInterface
-     */
-    protected function getViewRenderer(): RendererInterface
-    {
-        return $this->viewRenderer;
-    }
-
-    /**
      * Create a new ViewModel.
      *
      * @param ServerRequestInterface $request Request
@@ -163,8 +200,7 @@ class LaminasViewRenderer
             $layout->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
         }
-        $serverUrl = ($this->serverUrlHelperFactory)();
-        $lightboxParentUrl = new Http($serverUrl(true));
+        $lightboxParentUrl = new Http($this->serverUrlHelper->getCurrentUrl());
         $query = $lightboxParentUrl->getQueryAsArray();
         unset($query['lightboxChild']);
         $lightboxParentUrl->setQuery($query);
@@ -201,13 +237,13 @@ class LaminasViewRenderer
     }
 
     /**
-     * Should exceptions be displayed?
+     * Get view renderer.
      *
-     * @return bool
+     * @return RendererInterface
      */
-    public function getDisplayExceptions(): bool
+    protected function getViewRenderer(): RendererInterface
     {
-        return $this->displayExceptions;
+        return $this->viewRenderer;
     }
 
     /**

@@ -36,7 +36,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Content\PageLocator;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Renderer\LaminasViewRenderer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function is_callable;
 
@@ -55,14 +55,15 @@ class ContentAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param LaminasViewRenderer $viewRenderer View renderer
-     * @param PageLocator         $pageLocator  Page locator
+     * @param TemplateRendererInterface $templateRenderer Template renderer
+     * @param PageLocator               $pageLocator      Page locator
      */
+    #[Autowire()]
     public function __construct(
-        #[Autowire()] LaminasViewRenderer $viewRenderer,
-        #[Autowire()] protected PageLocator $pageLocator,
+        TemplateRendererInterface $templateRenderer,
+        protected PageLocator $pageLocator,
     ) {
-        parent::__construct($viewRenderer);
+        parent::__construct($templateRenderer);
     }
 
     /**
@@ -91,7 +92,7 @@ class ContentAction extends AbstractTemplateRenderingAction
         $page = $request->getAttribute('page');
         // Path regex should prevent dots, but double-check to make sure:
         if (str_contains($page, '..')) {
-            return $this->viewRenderer->renderNotFoundPage($request, $response);
+            return $this->templateRenderer->renderNotFoundPage($request, $response);
         }
         // Find last slash and add preceding part to path if found:
         if (false !== ($p = strrpos($page, '/'))) {
@@ -99,7 +100,7 @@ class ContentAction extends AbstractTemplateRenderingAction
             $pathPrefix .= $subPath;
             // Ensure the path prefix does not contain extra slashes:
             if (str_ends_with($pathPrefix, '//')) {
-                return $this->viewRenderer->renderNotFoundPage($request, $response);
+                return $this->templateRenderer->renderNotFoundPage($request, $response);
             }
             $page = substr($page, $p + 1);
         }
@@ -109,7 +110,7 @@ class ContentAction extends AbstractTemplateRenderingAction
 
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['relativePath'], $data['path'])
-            : $this->viewRenderer->renderNotFoundPage($request, $response);
+            : $this->templateRenderer->renderNotFoundPage($request, $response);
     }
 
     /**
@@ -125,7 +126,7 @@ class ContentAction extends AbstractTemplateRenderingAction
      */
     protected function getViewForMd(string $page, string $relPath, string $path): ResponseInterface
     {
-        return $this->viewRenderer->renderTemplate(
+        return $this->templateRenderer->renderTemplate(
             $this->request,
             $this->response,
             ['data' => file_get_contents($path)],
@@ -156,9 +157,9 @@ class ContentAction extends AbstractTemplateRenderingAction
         }
         // Prevent circular inclusion:
         if ('content' === $relPage) {
-            return $this->viewRenderer->renderNotFoundPage($this->request, $this->response);
+            return $this->templateRenderer->renderNotFoundPage($this->request, $this->response);
         }
-        return $this->viewRenderer->renderTemplate(
+        return $this->templateRenderer->renderTemplate(
             $this->request,
             $this->response,
             ['page' => $relPage]

@@ -29,12 +29,11 @@
 
 namespace VuFind\Action;
 
-use Laminas\Uri\Http;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Renderer\LaminasViewRenderer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Abstract base class for actions that render templates.
@@ -50,10 +49,11 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
     /**
      * Constructor.
      *
-     * @param LaminasViewRenderer $viewRenderer View renderer
+     * @param TemplateRendererInterface $templateRenderer Template renderer
      */
+    #[Autowire()]
     public function __construct(
-        #[Autowire()] protected LaminasViewRenderer $viewRenderer,
+        protected TemplateRendererInterface $templateRenderer,
     ) {
     }
 
@@ -75,12 +75,10 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             $message = 'An error occurred during execution; please try again later.';
-            $displayExceptions = $this->viewRenderer->getDisplayExceptions();
-            return $this->viewRenderer->renderTemplate(
+            return $this->templateRenderer->renderErrorPage(
                 $request,
                 $response,
-                compact('exception', 'message'),
-                'error/index.phtml'
+                compact('exception', 'message')
             );
         }
     }

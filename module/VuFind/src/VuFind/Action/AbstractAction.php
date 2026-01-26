@@ -43,8 +43,18 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 abstract class AbstractAction implements ActionInterface
 {
+    /**
+     * Current request
+     *
+     * @var ?ServerRequestInterface $request
+     */
     protected ?ServerRequestInterface $request = null;
 
+    /**
+     * Current response
+     *
+     * @var ?ResponseInterface $response
+     */
     protected ?ResponseInterface $response = null;
 
     /**

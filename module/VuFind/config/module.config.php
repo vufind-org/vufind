@@ -414,7 +414,7 @@ $config = [
         'factories' => [
             'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
-            'VuFind\Action\ActionDispatchListener' => 'VuFind\Action\ActionDispatchListenerFactory',
+            'VuFind\Action\ActionDispatchListener' => 'VuFind\ServiceManager\Factory\AutowiringFactory',
             'VuFind\Action\Helper\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Action\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -571,7 +571,7 @@ $config = [
             'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
             'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
-            'VuFind\View\Renderer\LaminasViewRenderer' => 'VuFind\View\Renderer\LaminasViewRendererFactory',
+            'VuFind\View\Renderer\LaminasTemplateRenderer' => 'VuFind\View\Renderer\LaminasTemplateRendererFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
@@ -649,6 +649,7 @@ $config = [
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
             'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\View\Renderer\TemplateRendererInterface' => 'VuFind\View\Renderer\LaminasTemplateRenderer',
 
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',

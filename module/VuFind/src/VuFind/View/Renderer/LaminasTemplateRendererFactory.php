@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laminas view renderer factory.
+ * Laminas template renderer factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerInterface;
 use VuFindTheme\InjectTemplateListener;
 
 /**
- * Laminas view renderer factory.
+ * Laminas template renderer factory.
  *
  * @category VuFind
  * @package  View
@@ -43,7 +43,7 @@ use VuFindTheme\InjectTemplateListener;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class LaminasViewRendererFactory
+class LaminasTemplateRendererFactory
 {
     /**
      * Create an object
@@ -71,7 +71,7 @@ class LaminasViewRendererFactory
             $container->get('ViewRenderer'),
             $container->get('ViewManager'),
             $container->get(InjectTemplateListener::class),
-            $config['display_exceptions'] ?? false,
+            $config['view_manager'] ?? [],
         );
     }
 }

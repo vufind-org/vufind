@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\UrlShortener\UrlShortenerInterface;
-use VuFind\View\Renderer\LaminasViewRenderer;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Short link redirect action factory
@@ -74,7 +74,7 @@ class RedirectActionFactory implements FactoryInterface
         // Load redirect method config:
         $config = $container->get(ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
-            $container->get(LaminasViewRenderer::class),
+            $container->get(TemplateRendererInterface::class),
             $container->get(UrlShortenerInterface::class),
             strtolower(trim($config['Mail']['url_shortener_redirect_method'] ?? 'threshold:1000'))
         );

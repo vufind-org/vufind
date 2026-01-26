@@ -38,6 +38,7 @@ use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Uri\Http;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Copyright (C) The National Library of Finland 2026.
@@ -55,6 +56,7 @@ class ActionDispatchListener
      *
      * @param PluginManager $actionPluginManager Action plugin manager
      */
+    #[Autowire()]
     public function __construct(
         protected PluginManager $actionPluginManager,
     ) {
