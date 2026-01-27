@@ -163,12 +163,12 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
                 $command = new LookupDoiCommand('BrowZine', $ids['doi']);
                 $result = $this->searchService->invoke($command)->getResult();
                 $data = $result['data'] ?? [];
-                $response = array_merge($response, $this->getLinksByType($data, $idKey, $doiServices));
+                $response = $response + $this->getLinksByType($data, $idKey, $doiServices);
             } elseif (isset($ids['issn']) && ($issnServices = $this->getIssnServices())) {
                 $command = new LookupIssnsCommand('BrowZine', $ids['issn']);
                 $result = $this->searchService->invoke($command)->getResult();
                 $data = $result['data'][0] ?? [];
-                $response = array_merge($response, $this->getLinksByType($data, $idKey, $issnServices));
+                $response = $response + $this->getLinksByType($data, $idKey, $issnServices);
             }
         }
         return $response;
