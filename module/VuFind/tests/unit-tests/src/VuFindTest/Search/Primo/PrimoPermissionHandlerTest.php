@@ -142,8 +142,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function testWithoutConfig()
     {
-        $this->expectException(\TypeError::class);
-        $this->expectExceptionMessageMatches('/ Argument #1 \(.*\) must be of type .*, null given/');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('No institutionCode found.');
 
         new PrimoPermissionHandler(null);
     }
@@ -189,7 +189,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(true);
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('MEMBER', $handler->getInstCode());
+        $this->assertEquals('MEMBER', $handler->getInstCode());
     }
 
     /**
@@ -216,7 +216,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('DEFAULT', $handler->getInstCode());
+        $this->assertEquals('DEFAULT', $handler->getInstCode());
     }
 
     /**
@@ -228,7 +228,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     {
         $handler = new PrimoPermissionHandler($this->primoConfig);
         $handler->setInstCode('MEMBER');
-        $this->assertSame('MEMBER', $handler->getInstCode());
+        $this->assertEquals('MEMBER', $handler->getInstCode());
     }
 
     /**
@@ -416,7 +416,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(true);
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('MEMBER', $handler->getInstCode());
+        $this->assertEquals('MEMBER', $handler->getInstCode());
     }
 
     /**
@@ -541,7 +541,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('DEFAULT', $handler->getInstCode());
+        $this->assertEquals('DEFAULT', $handler->getInstCode());
     }
 
     /**
@@ -621,7 +621,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('MEMBER', $handler->getInstCode());
+        $this->assertEquals('MEMBER', $handler->getInstCode());
         $this->assertEquals(true, $handler->hasPermission());
     }
 
@@ -650,7 +650,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('MEMBER', $handler->getInstCode());
+        $this->assertEquals('MEMBER', $handler->getInstCode());
         $this->assertEquals(false, $handler->hasPermission());
     }
 
@@ -677,7 +677,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('DEFAULT', $handler->getInstCode());
+        $this->assertEquals('DEFAULT', $handler->getInstCode());
         $this->assertEquals(false, $handler->hasPermission());
     }
 
@@ -704,7 +704,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('DEFAULT', $handler->getInstCode());
+        $this->assertEquals('DEFAULT', $handler->getInstCode());
         $this->assertEquals(true, $handler->hasPermission());
     }
 
@@ -736,7 +736,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('MEMBER', $handler->getInstCode());
+        $this->assertEquals('MEMBER', $handler->getInstCode());
         $this->assertEquals(true, $handler->hasPermission());
     }
 
@@ -766,7 +766,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             );
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('MEMBER', $handler->getInstCode());
+        $this->assertEquals('MEMBER', $handler->getInstCode());
         $this->assertEquals(false, $handler->hasPermission());
     }
 
@@ -833,7 +833,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(false);
         $handler->setAuthorizationService($mockAuth);
 
-        $this->assertSame('DEFAULT', $handler->getInstCode());
+        $this->assertEquals('DEFAULT', $handler->getInstCode());
     }
 
     /*****************

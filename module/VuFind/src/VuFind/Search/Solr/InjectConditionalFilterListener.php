@@ -55,18 +55,27 @@ class InjectConditionalFilterListener
      *
      * @var array
      */
-    protected array $filterList = [];
+    protected $filterList;
+
+    /**
+     * Filters from configuration.
+     *
+     * @var array
+     */
+    protected $filters;
 
     /**
      * Constructor.
      *
-     * @param BackendInterface $backend Backend
-     * @param array            $filters Filters from configuration
+     * @param BackendInterface $backend    Backend
+     * @param array            $searchConf Search configuration parameters
      *
      * @return void
      */
-    public function __construct(protected BackendInterface $backend, protected array $filters)
+    public function __construct(protected BackendInterface $backend, $searchConf)
     {
+        $this->filters = $searchConf;
+        $this->filterList = [];
     }
 
     /**
@@ -76,7 +85,7 @@ class InjectConditionalFilterListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager): void
+    public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
             Service::class,
@@ -92,7 +101,7 @@ class InjectConditionalFilterListener
      *
      * @return void
      */
-    protected function addConditionalFilter(string $configOption): void
+    protected function addConditionalFilter($configOption)
     {
         $filterArr = explode('|', $configOption);
         $filterCondition = $filterArr[0];
@@ -125,7 +134,7 @@ class InjectConditionalFilterListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event): EventInterface
+    public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
         if ($command->getTargetIdentifier() !== $this->backend->getIdentifier()) {

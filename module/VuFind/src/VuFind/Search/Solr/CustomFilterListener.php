@@ -49,26 +49,51 @@ use VuFindSearch\Service;
 class CustomFilterListener
 {
     /**
+     * Backend.
+     *
+     * @var BackendInterface
+     */
+    protected $backend;
+
+    /**
+     * Normal filters
+     *
+     * @var array
+     */
+    protected $normalFilters;
+
+    /**
+     * Inverted filters
+     *
+     * @var array
+     */
+    protected $invertedFilters;
+
+    /**
      * Name of parameter used to store filters
      *
      * @var string
      */
-    protected string $filterParam = 'fq';
+    protected $filterParam = 'fq';
 
     /**
      * Constructor.
      *
-     * @param BackendInterface $backend         Backend
-     * @param array            $normalFilters   Normal custom filters (placeholder => full filter)
-     * @param array            $invertedFilters Inverted custom filters (applied unless set)
+     * @param BackendInterface $backend  Backend
+     * @param array            $normal   Normal custom filters (placeholder => full
+     * filter)
+     * @param array            $inverted Inverted custom filters (applied unless set)
      *
      * @return void
      */
     public function __construct(
-        protected BackendInterface $backend,
-        protected array $normalFilters,
-        protected array $invertedFilters
+        BackendInterface $backend,
+        array $normal,
+        array $inverted
     ) {
+        $this->backend = $backend;
+        $this->normalFilters = $normal;
+        $this->invertedFilters = $inverted;
     }
 
     /**
@@ -78,7 +103,7 @@ class CustomFilterListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager): void
+    public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
             Service::class,
@@ -94,7 +119,7 @@ class CustomFilterListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event): EventInterface
+    public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
         if (

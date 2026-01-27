@@ -52,24 +52,24 @@ class PrimoPermissionHandler
      *
      * @var array
      */
-    protected array $primoConfig;
+    protected $primoConfig;
 
     /**
      * Institution code applicable for the user
      *
-     * @var string|bool|null
+     * @var string
      */
-    protected string|bool|null $instCode = null;
+    protected $instCode = null;
 
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config|array $primoPermConfig Primo-Config for
+     * @param VuFind\Config\Config|array $primoPermConfig Primo-Config for
      * Institutions
      *
      * @return void
      */
-    public function __construct(\VuFind\Config\Config|array $primoPermConfig)
+    public function __construct($primoPermConfig)
     {
         if ($primoPermConfig instanceof \VuFind\Config\Config) {
             $primoPermConfig = $primoPermConfig->toArray();
@@ -86,7 +86,7 @@ class PrimoPermissionHandler
      *
      * @return void
      */
-    public function setInstCode(string $code): void
+    public function setInstCode($code)
     {
         // If the code is valid, we'll set it; otherwise, we'll use "false" to
         // clear instCode's null status and indicate that the setter has been used.
@@ -100,7 +100,7 @@ class PrimoPermissionHandler
      *
      * @return bool
      */
-    public function instCodeExists(string $code): bool
+    public function instCodeExists($code)
     {
         return in_array($code, $this->getInstCodes()) === true;
     }
@@ -111,7 +111,7 @@ class PrimoPermissionHandler
      *
      * @return string|bool
      */
-    public function getInstCode(): string|bool
+    public function getInstCode()
     {
         if ($this->instCode === null) {
             $this->autodetectCode();
@@ -124,7 +124,7 @@ class PrimoPermissionHandler
      *
      * @return bool
      */
-    public function hasPermission(): bool
+    public function hasPermission()
     {
         $code = $this->getInstCode();
         return false !== $code && $this->checkPermission($code) === true;
@@ -135,7 +135,7 @@ class PrimoPermissionHandler
      *
      * @return void
      */
-    protected function checkConfig(): void
+    protected function checkConfig()
     {
         if (
             isset($this->primoConfig['institutionCode'])
@@ -159,7 +159,7 @@ class PrimoPermissionHandler
      *
      * @return void
      */
-    protected function checkLegacySettings(): void
+    protected function checkLegacySettings()
     {
         // if we already have settings, ignore the legacy ones
         if (
@@ -186,7 +186,7 @@ class PrimoPermissionHandler
      *
      * @return array Array with valid Primo institution codes
      */
-    protected function getInstCodes(): array
+    protected function getInstCodes()
     {
         // Start with default code (if any):
         $defaultCode = $this->getDefaultCode();
@@ -213,7 +213,7 @@ class PrimoPermissionHandler
      *
      * @return void
      */
-    protected function autodetectCode(): void
+    protected function autodetectCode()
     {
         $authService = $this->getAuthorizationService();
 
@@ -257,7 +257,7 @@ class PrimoPermissionHandler
      *
      * @return string|bool
      */
-    protected function getDefaultCode(): string|bool
+    protected function getDefaultCode()
     {
         return $this->primoConfig['defaultCode'] ?? false;
     }
@@ -265,9 +265,9 @@ class PrimoPermissionHandler
     /**
      * Determine the default onCampus Rule
      *
-     * @return ?string
+     * @return string
      */
-    protected function getDefaultOnCampusRule(): ?string
+    protected function getDefaultOnCampusRule()
     {
         $defaultCode = $this->getDefaultCode();
         return ($defaultCode !== false)
@@ -277,11 +277,11 @@ class PrimoPermissionHandler
     /**
      * Determine a onCampus Rule for a certain code
      *
-     * @param ?string $code Code to determine the rule name for
+     * @param string $code Code to determine the rule name for
      *
-     * @return ?string
+     * @return string
      */
-    protected function getOnCampusRule(?string $code): ?string
+    protected function getOnCampusRule($code)
     {
         if ($code === null) {
             return null;
@@ -307,7 +307,7 @@ class PrimoPermissionHandler
      *
      * @return bool
      */
-    protected function checkPermission(string $code): bool
+    protected function checkPermission($code)
     {
         $onCampusRule = $this->getOnCampusRule($code);
         $authService = $this->getAuthorizationService();

@@ -49,6 +49,34 @@ use function is_array;
 class MultiIndexListener
 {
     /**
+     * Backend.
+     *
+     * @var BackendInterface
+     */
+    protected $backend;
+
+    /**
+     * Available shards, indexed by name.
+     *
+     * @var array
+     */
+    protected $shards;
+
+    /**
+     * Fields to strip, indexed by shard name.
+     *
+     * @var array
+     */
+    protected $stripfields;
+
+    /**
+     * Base search specs.
+     *
+     * @var array
+     */
+    protected $specs;
+
+    /**
      * Constructor.
      *
      * @param BackendInterface $backend     Backend
@@ -59,11 +87,15 @@ class MultiIndexListener
      * @return void
      */
     public function __construct(
-        protected BackendInterface $backend,
-        protected array $shards,
-        protected array $stripfields,
-        protected array $specs
+        BackendInterface $backend,
+        array $shards,
+        array $stripfields,
+        array $specs
     ) {
+        $this->specs       = $specs;
+        $this->backend     = $backend;
+        $this->shards      = $shards;
+        $this->stripfields = $stripfields;
     }
 
     /**
@@ -73,7 +105,7 @@ class MultiIndexListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager): void
+    public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
             Service::class,
@@ -89,7 +121,7 @@ class MultiIndexListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event): EventInterface
+    public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
@@ -130,7 +162,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function getFields(array $shards): array
+    protected function getFields(array $shards)
     {
         $fields = [];
         foreach ($this->stripfields as $name => $strip) {
@@ -151,7 +183,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function getSearchSpecs(array $fields): array
+    protected function getSearchSpecs(array $fields)
     {
         $specs  = [];
         $fields = array_merge(
@@ -188,7 +220,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function stripSpecsQueryFields(array $settings, array $fields): array
+    protected function stripSpecsQueryFields(array $settings, array $fields)
     {
         $stripped = [];
         foreach ($settings as $field => $rule) {
