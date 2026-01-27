@@ -31,7 +31,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager;

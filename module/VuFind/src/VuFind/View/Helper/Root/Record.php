@@ -106,7 +106,8 @@ class Record implements DbServiceAwareInterface
      */
     public function __construct(
         protected TagsService $tagsService,
-        protected RendererInterface $viewRenderer,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
         #[Autowire(container: 'ViewHelperManager')]
         protected Context $context,
         #[Autowire(container: 'ViewHelperManager')]
@@ -131,6 +132,7 @@ class Record implements DbServiceAwareInterface
         protected \Laminas\View\Helper\ServerUrl $serverUrl,
         protected ?Config $config = null
     ) {
+        $this->viewRenderer = $viewRenderer;
     }
 
     /**

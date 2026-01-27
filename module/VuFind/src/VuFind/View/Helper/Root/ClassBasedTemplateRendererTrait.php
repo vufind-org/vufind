@@ -133,9 +133,8 @@ trait ClassBasedTemplateRendererTrait
         $context = [],
         $throw = true
     ) {
-        // Pull the context helper from the renderer's plugin manager
-        $contextHelper = $this->viewRenderer->getHelperPluginManager()->get('context');
-        $oldContext = $contextHelper($this->viewRenderer)->apply($context);
+        $contextHelper = new Context($this->viewRenderer);
+        $oldContext = $contextHelper->apply($context);
 
         // Find and render the template:
         $classTemplate = $this->getCachedClassTemplate($template, $className);

@@ -31,6 +31,10 @@ namespace VuFindTest\Formatter;
 
 use VuFind\I18n\TranslatableString;
 use VuFindApi\Formatter\RecordFormatter;
+use VuFind\View\Helper\Root\Record;
+use VuFind\View\Helper\Root\RecordLinker;
+use VuFind\View\Helper\Root\Translate;
+use VuFind\View\Helper\Root\Method;
 
 /**
  * Unit tests for record formatter.
@@ -82,11 +86,20 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $hm = new \Laminas\View\HelperPluginManager($container);
-        $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
-        $mockRecordLinker
-            = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
+        $hm->setService('translate', new Translate());
+        $mockRecordLinker = $this->createMock(RecordLinker::class);
         $mockRecordLinker->method('getUrl')->willReturn('http://record');
         $hm->setService('recordLinker', $mockRecordLinker);
+        $mockMethod = $this->createMock(Method::class);
+        $mockMethod->method('__invoke')->willReturnCallback(
+            function ($driver, $method, $params = []) {
+                return $driver->$method(...$params);
+            }
+        );
+        $hm->setService('method', $mockMethod);
+        $mockRecord = $this->createMock(Record::class);
+        $mockRecord->method('getUrl')->willReturn('http://record');
+        $hm->setService('record', $mockRecord);
         return $hm;
     }
 

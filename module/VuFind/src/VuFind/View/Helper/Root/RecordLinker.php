@@ -31,6 +31,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 use VuFind\ServiceManager\Factory\Autowire;
