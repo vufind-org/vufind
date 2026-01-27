@@ -309,7 +309,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     public function testISSNApiSuccess(): void
     {
         $rawData = $this->getJsonFixture('browzine/issn.json');
-        $idKey = 3;
+        $idKey = 3; // test with an arbitrary integer to confirm that results retain key values
         $ids = [$idKey => ['issn' => '0006-2952']];
         $browzine = $this->getBrowZineHandler($ids, $rawData);
         $this->assertEquals(
