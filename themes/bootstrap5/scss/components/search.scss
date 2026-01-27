@@ -1001,6 +1001,11 @@ table.search-history-table {
   border-bottom-width: 0;
 }
 
+/* Between recommendation modules */
+.betweenRecommendationItem {
+  margin: 0 2rem;
+}
+
 /* OpenLibrarySubjects recommendation module */
 .olSubjectCover {
  display: inline-block;

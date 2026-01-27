@@ -69,7 +69,7 @@ return [
             'VuFind\View\Helper\Root\Printms' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\ProxyUrl' => 'VuFind\View\Helper\Root\ProxyUrlFactory',
             'VuFind\View\Helper\Root\Ratings' => 'VuFind\View\Helper\Root\RatingsFactory',
-            'VuFind\View\Helper\Root\Recommend' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Root\Recommend' => 'VuFind\View\Helper\Root\RecommendFactory',
             'VuFind\View\Helper\Root\Record' => 'VuFind\View\Helper\Root\RecordFactory',
             'VuFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
             'VuFind\View\Helper\Root\RecordLinker' => 'VuFind\View\Helper\Root\RecordLinkerFactory',

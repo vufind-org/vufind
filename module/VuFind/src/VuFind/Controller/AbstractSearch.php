@@ -193,7 +193,7 @@ class AbstractSearch extends AbstractBase
     protected function getActiveRecommendationSettings()
     {
         // Enable recommendations unless explicitly told to disable them:
-        $all = ['top', 'side', 'noresults', 'bottom'];
+        $all = ['top', 'between', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
         if (in_array($noRecommend, [1, '1', 'true', true], true)) {
             return [];

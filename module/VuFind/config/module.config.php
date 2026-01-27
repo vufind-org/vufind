@@ -534,6 +534,7 @@ $config = [
             'VuFind\RateLimiter\Turnstile\Turnstile' => 'VuFind\RateLimiter\Turnstile\TurnstileFactory',
             'VuFind\Ratings\RatingsService' => 'VuFind\Ratings\RatingsServiceFactory',
             'VuFind\Recommend\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Recommend\Helper\Between' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Record\Cache' => 'VuFind\Record\CacheFactory',
             'VuFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Loader' => 'VuFind\Record\LoaderFactory',

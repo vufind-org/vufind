@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Recommend\Helper\Between;
 use VuFind\Recommend\RecommendInterface;
 
 /**
@@ -45,19 +46,33 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
     use ClassBasedTemplateRendererTrait;
 
     /**
+     * Constructor
+     *
+     * @param Between $between Between helper
+     */
+    public function __construct(protected Between $between)
+    {
+    }
+
+    /**
      * Render the output of a recommendation module.
      *
-     * @param RecommendInterface $recommend The recommendation object to render
-     * @param string             $location  Recommendation location (side, top)
-     * @param int                $index     Index of the recommendation configuration
+     * @param ?RecommendInterface $recommend The recommendation object to render
+     * @param ?string             $location  Recommendation location (side, top)
+     * @param ?int                $index     Index of the recommendation configuration
      *
-     * @return string
+     * @return string|Recommend The recommend module output if $recommend is non-null;
+     * otherwise returns this object itself.
      */
     public function __invoke(
-        RecommendInterface $recommend,
-        $location = null,
-        $index = null
+        ?RecommendInterface $recommend = null,
+        ?string $location = null,
+        ?int $index = null
     ) {
+        if (!$recommend) {
+            return $this;
+        }
+
         $template = 'Recommend/%s.phtml';
         $className = $recommend::class;
         $context = [
@@ -66,5 +81,15 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
             'configIndex' => $index,
         ];
         return $this->renderClassTemplate($template, $className, $context);
+    }
+
+    /**
+     * Return an instance of the Between placement helper for recommendation modules.
+     *
+     * @return Between
+     */
+    public function getBetweenHelper(): Between
+    {
+        return $this->between;
     }
 }

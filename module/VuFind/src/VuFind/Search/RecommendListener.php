@@ -140,7 +140,7 @@ class RecommendListener
 
         // Process recommendations for each location:
         $this->objects = [
-            'top' => [], 'side' => [], 'noresults' => [],
+            'top' => [], 'between' => [], 'side' => [], 'noresults' => [],
             'bottom' => [],
         ];
         foreach ($this->config as $location => $currentSet) {

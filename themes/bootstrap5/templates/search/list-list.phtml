@@ -5,6 +5,8 @@
   $i = $this->indexStart;
   $listStart = $this->results->getStartRecord() + $i - $this->indexStart;
   $showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxesEnabled();
+  $between = isset($combined) && $combined ? [] : $this->results->getRecommendations('between');
+  $betweenPlacements = $this->recommend()->getBetweenHelper()->getPlacements($between, $this->results);
 ?>
 <ol class="<?=$this->escapeHtmlAttr(trim('record-list ' . ($this->resultsClass ?? '')))?>" start="<?=$listStart?>"<?=isset($this->resultsAttrs) ? ' ' . $this->resultsAttrs : ''?>>
   <?php foreach ($this->results->getResults() as $current): ?>
@@ -20,5 +22,14 @@
       // First record is 0, so increment the counter after each record:
       $i++;
     ?>
+    <?php foreach ($between as $index => $current): ?>
+      <?php if (($betweenPlacements[$index] ?? null) == $recordNumber) : ?>
+        <li>
+          <div class="betweenRecommendationItem">
+            <?=$this->recommend($current, 'between', $index)?>
+          </div>
+        </li>
+      <?php endif; ?>
+    <?php endforeach; ?>
   <?php endforeach; ?>
 </ol>
