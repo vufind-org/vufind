@@ -282,7 +282,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         array $expectedResponse
     ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
-        $idKey = 4;
+        $idKey = 4; // test with an arbitrary integer to confirm that results retain key values
         $ids = [$idKey => ['doi' => '10.1155/2020/8690540']];
         $browzine = $this->getBrowZineHandler(
             $ids,
