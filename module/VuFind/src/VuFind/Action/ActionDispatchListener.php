@@ -90,13 +90,6 @@ class ActionDispatchListener
         }
 
         $route = $e->getRouteMatch();
-        $idParts = [];
-        if ($controllerName = $route->getParam('controller')) {
-            $idParts[] = $controllerName;
-        }
-        if ($actionName = $route->getParam('action')) {
-            $idParts[] = $actionName;
-        }
         $id = $this->actionPluginManager
             ->getActionHandlerName($route->getParam('controller'), $route->getParam('action'));
         if (!$id) {
