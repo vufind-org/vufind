@@ -80,6 +80,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('3264', $rec->getUniqueID());
         $recs = $coll->getRecords();
@@ -112,7 +113,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnector(), $this->getRCFactory());
-        $this->assertTrue($back->getQueryBuilder() instanceof QueryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**
@@ -137,7 +138,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultRecordCollectionFactory()
     {
         $back = new Backend($this->getConnector());
-        $this->assertTrue($back->getRecordCollectionFactory() instanceof RecordCollectionFactory);
+        $this->assertInstanceOf(RecordCollectionFactory::class, $back->getRecordCollectionFactory());
     }
 
     /// Internal API

@@ -1,0 +1,17 @@
+<?=$this->component('menu-button', [
+  'toggleLabel' => 'Theme',
+  'toggleAttrs' => [
+    'class' => 'nav-link dropdown-toggle',
+  ],
+  'wrapperClass' => 'nav-item theme-selector',
+  'wrapperTag' => 'li',
+  'menuItems' => array_map(
+      function ($item) {
+          $item['label'] = $item['desc'];
+          $item['url'] = $this->url()->addQueryParameters(['ui' => $item['name']]);
+
+          return $item;
+      },
+      $this->layout()->themeOptions
+  ),
+]);

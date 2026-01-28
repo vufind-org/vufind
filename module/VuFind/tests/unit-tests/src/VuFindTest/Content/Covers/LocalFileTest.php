@@ -65,25 +65,27 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testValidCoverLoading().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function validCoverProvider(): array
+    public static function validCoverProvider(): \Iterator
     {
-        return [
-            'source gif in size folder' => ['small/x.gif', '%size%/%source%.gif', ['source' => 'x']],
-            'hard-coded path in vufind-home' => [
-                'invalidsize/x.gif',
-                '%vufind-home%/module/VuFind/tests/fixtures/content/covers/localfile/invalidsize/x.gif',
-                [],
-                'small',
-                false,
-            ],
-            'isbn10 gif via anyimage' => ['0739313126.gif', '%isbn10%.%anyimage%', ['isbn' => new ISBN('0739313126')]],
-            'isbn13 jpg via anyimage' => [
-                '9780739313121.jpg',
-                '%isbn13%.%anyimage%',
-                ['isbn' => new ISBN('0739313126')],
-            ],
+        yield 'source gif in size folder' => ['small/x.gif', '%size%/%source%.gif', ['source' => 'x']];
+        yield 'hard-coded path in vufind-home' => [
+            'invalidsize/x.gif',
+            '%vufind-home%/module/VuFind/tests/fixtures/content/covers/localfile/invalidsize/x.gif',
+            [],
+            'small',
+            false,
+        ];
+        yield 'isbn10 gif via anyimage' => [
+            '0739313126.gif',
+            '%isbn10%.%anyimage%',
+            ['isbn' => new ISBN('0739313126')],
+        ];
+        yield 'isbn13 jpg via anyimage' => [
+            '9780739313121.jpg',
+            '%isbn13%.%anyimage%',
+            ['isbn' => new ISBN('0739313126')],
         ];
     }
 
@@ -139,15 +141,13 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testInvalidCover()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function invalidCoverProvider(): array
+    public static function invalidCoverProvider(): \Iterator
     {
-        return [
-            'missing ISBN' => ['%isbn10%.%anyimage%'],
-            'invalid size' => ['%size%/%source%.gif', ['source' => 'x'], 'invalidsize'],
-            'non-image file' => ['%vufind-home%/README.md'],
-        ];
+        yield 'missing ISBN' => ['%isbn10%.%anyimage%'];
+        yield 'invalid size' => ['%size%/%source%.gif', ['source' => 'x'], 'invalidsize'];
+        yield 'non-image file' => ['%vufind-home%/README.md'];
     }
 
     /**

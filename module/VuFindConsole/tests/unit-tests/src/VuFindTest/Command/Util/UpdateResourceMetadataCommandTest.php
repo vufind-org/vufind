@@ -30,11 +30,14 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
+use VuFind\RecordDriver\DefaultRecord;
 use VuFindConsole\Command\Util\UpdateResourceMetadataCommand;
+use VuFindTest\Feature\WithConsecutiveTrait;
 
 /**
  * UpdateResourceMetadataCommand test.
@@ -47,22 +50,22 @@ use VuFindConsole\Command\Util\UpdateResourceMetadataCommand;
  */
 class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use WithConsecutiveTrait;
+
     /**
      * Data provider for testUpdate
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function updateProvider(): array
+    public static function updateProvider(): \Iterator
     {
-        return [
-            [
-                [],
-                [null, 100, null, []],
-            ],
-            [
-                ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '10'],
-                [null, 10, 30, ['solr']],
-            ],
+        yield [
+            [],
+            [null, 100, null, []],
+        ];
+        yield [
+            ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '10'],
+            [null, 10, 30, ['solr']],
         ];
     }
 
@@ -77,22 +80,61 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('updateProvider')]
     public function testUpdate(array $commandParams, array $expectedFindParams)
     {
+        $resource = $this->createMock(ResourceEntityInterface::class);
+        $resource->expects($this->once())
+            ->method('getId')
+            ->willReturn(123);
+        $resource->expects($this->exactly(2))
+            ->method('getRecordId')
+            ->willReturn('foo');
+        $resource->expects($this->exactly(2))
+            ->method('getSource')
+            ->willReturn('src');
         $resourceService = $this->createMock(ResourceServiceInterface::class);
-        $resourceService->expects($this->once())
-            ->method('findMetadataToUpdate')
-            ->with(...$expectedFindParams)
-            ->willReturn([]);
+
+        $secondFindParams = $expectedFindParams;
+        $secondFindParams[0] = 123;
+        $this->expectConsecutiveCalls(
+            $resourceService,
+            'findMetadataToUpdate',
+            [
+                $expectedFindParams,
+                $secondFindParams,
+            ],
+            [
+                [$resource],
+                [],
+            ]
+        );
+
+        $driver = $this->createMock(DefaultRecord::class);
+        $driver->expects($this->once())
+            ->method('getUniqueID')
+            ->willReturn('foo');
+        $loader = $this->createMock(Loader::class);
+        $loader->expects($this->once())
+            ->method('loadBatch')
+            ->with([['id' => 'foo', 'source' => 'src']])
+            ->willReturn([$driver]);
+
+        $persistenceManager = $this->createMock(PersistenceManager::class);
+        $persistenceManager->expects($this->once())
+            ->method('flushEntities');
+        $persistenceManager->expects($this->once())
+            ->method('clearAllEntities');
+
         $command = new UpdateResourceMetadataCommand(
             $resourceService,
-            $this->createMock(Loader::class),
+            $loader,
             $this->createMock(ResourcePopulator::class),
-            $this->createMock(PersistenceManager::class)
+            $persistenceManager
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute($commandParams);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
-            "Updating resource metadata\nResource metadata update completed\n",
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
+            "Updating resource metadata\n1 records updated (0 redirects), 0 records missing\n"
+            . "Resource metadata update completed\n",
             $commandTester->getDisplay()
         );
     }

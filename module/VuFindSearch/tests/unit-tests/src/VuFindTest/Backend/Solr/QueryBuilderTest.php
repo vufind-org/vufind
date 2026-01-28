@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Backend\Solr;
 
+use Iterator;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
@@ -46,61 +47,66 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Data provider for testNormalization().
+     *
+     * @return Iterator<string, array>
+     */
+    public static function normalizationProvider(): Iterator
+    {
+        yield 'empty query' => ['', '*:*'];
+        yield 'empty parens' => ['()', '*:*'];
+        yield 'nested empty parens' => ['((()))', '*:*'];
+        yield 'mismatched parens' => ['((())', '*:*'];
+        yield 'text mixed w/ empty parens' => ['this that ()', 'this that'];
+        yield 'empty parens in quotes' => ['"()"', '"()"'];
+        yield 'freestanding hyphen' => ['title - sub', 'title sub'];
+        yield 'freestanding hyphen in quotes' => ['"title - sub"', '"title - sub"'];
+        yield 'meaningless proximity' => ['test~1', 'test'];
+        yield 'meaningless proximity w/decimal' => ['test~1.', 'test'];
+        yield 'meaningless proximity w/decimal and zeroes' => ['test~1.000', 'test'];
+        yield 'meaningless proximity w/following keyword' => ['test~1 fish', 'test fish'];
+        yield 'meaningless proximity w/decimal and following keyword' => ['test~1. fish', 'test fish'];
+        yield 'meaningless proximity w/decimal and zeroes and following keyword' => ['test~1.000 fish', 'test fish'];
+        yield 'meaningless prox. in quotes' => ['"test~1"', '"test~1"'];
+        yield 'valid proximity' => ['test~0.9', 'test~0.9'];
+        yield 'illegal prox. (leave alone)' => ['test~10', 'test~10'];
+        yield 'illegal prox. (leave alone) w/ following keyword' => ['test~10 fish', 'test~10 fish'];
+        yield 'invalid boosts 1' => ['^10 test^10', '10 test10'];
+        yield 'invalid boosts 2' => ['^10', '10'];
+        yield 'invalid boosts 3' => ['test^ test^6', 'test test6'];
+        yield 'valid boosts' => ['test^1 test^2', 'test^1 test^2'];
+        yield 'freestanding slash' => ['this / that', 'this "/" that'];
+        yield 'leading slash' => ['/ this', 'this'];
+        yield 'trailing slash' => ['title /', 'title'];
+        yield 'leading hyphen' => ['- this', 'this'];
+        yield 'trailing hyphen' => ['title -', 'title'];
+        yield 'freestanding AND operator' => ['AND', 'and'];
+        yield 'freestanding OR operator' => ['OR', 'or'];
+        yield 'freestanding NOT operator' => ['NOT', 'not'];
+        yield 'leading * wildcard' => ['*bad', 'bad'];
+        yield 'leading ? wildcard' => ['?bad', 'bad'];
+        yield 'no fancy quotes normalization, see VUFIND-1808' =>
+            ["\xE2\x80\x9Ca\xE2\x80\x9D", "\xE2\x80\x9Ca\xE2\x80\x9D"];
+        yield 'improperly escaped floating braces/brackets' =>  ['a:{a TO b} [ }', 'a:{a TO b} \[ \}'];
+        yield 'properly escaped floating braces/brackets' => ['a:{a TO b} \[ \}', 'a:{a TO b} \[ \}'];
+    }
+
+    /**
      * Test normalization of unusual queries.
+     *
+     * @param string $input  Query input
+     * @param string $output Expected builder output
      *
      * @return void
      */
-    public function testNormalization()
+    #[\PHPUnit\Framework\Attributes\DataProvider('normalizationProvider')]
+    public function testNormalization(string $input, string $output): void
     {
-        // Set up an array of expected inputs and outputs:
-        $tests = [
-            ['', '*:*'],                         // empty query
-            ['()', '*:*'],                       // empty parens
-            ['((()))', '*:*'],                   // nested empty parens
-            ['((())', '*:*'],                    // mismatched parens
-            ['this that ()', 'this that'],       // text mixed w/ empty parens
-            ['"()"', '"()"'],                    // empty parens in quotes
-            ['title - sub', 'title sub'],        // freestanding hyphen
-            ['"title - sub"', '"title - sub"'],  // freestanding hyphen in quotes
-            ['test~1', 'test'],                  // meaningless proximity
-            ['test~1.', 'test'],                 // meaningless proximity w/dec.
-            ['test~1.000', 'test'],              // meaningless proximity w/dec.
-            ['test~1 fish', 'test fish'],        // meaningless proximity
-            ['test~1. fish', 'test fish'],       // meaningless proximity w/dec.
-            ['test~1.000 fish', 'test fish'],    // meaningless proximity w/dec.
-            ['"test~1"', '"test~1"'],            // meaningless prox. in quotes
-            ['test~0.9', 'test~0.9'],            // valid proximity
-            ['test~10', 'test~10'],              // illegal prox. (leave alone)
-            ['test~10 fish', 'test~10 fish'],    // illegal prox. (leave alone)
-            ['^10 test^10', '10 test10'],        // invalid boosts
-            ['^10', '10'],                       // invalid boosts
-            ['test^ test^6', 'test test6'],      // invalid boosts
-            ['test^1 test^2', 'test^1 test^2'],  // valid boosts
-            ['this / that', 'this "/" that'],    // freestanding slash
-            ['/ this', 'this'],                  // leading slash
-            ['title /', 'title'],                // trailing slash
-            ['- this', 'this'],                  // leading hyphen
-            ['title -', 'title'],                // trailing hyphen
-            ['AND', 'and'],                      // freestanding operator
-            ['OR', 'or'],                        // freestanding operator
-            ['NOT', 'not'],                      // freestanding operator
-            ['*bad', 'bad'],                     // leading wildcard
-            ['?bad', 'bad'],                     // leading wildcard
-            ["\xE2\x80\x9Ca\xE2\x80\x9D", '"a"'],// fancy quotes
-            // improperly escaped floating braces/brackets:
-            ['a:{a TO b} [ }', 'a:{a TO b} \[ \}'],
-            // properly escaped floating braces/brackets:
-            ['a:{a TO b} \[ \}', 'a:{a TO b} \[ \}'],
-        ];
-
         $qb = new QueryBuilder();
-        foreach ($tests as $test) {
-            [$input, $output] = $test;
-            $q = new Query($input);
-            $response = $qb->build($q);
-            $processedQ = $response->get('q');
-            $this->assertEquals($output, $processedQ[0]);
-        }
+        $q = new Query($input);
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals($output, $processedQ[0]);
     }
 
     /**
@@ -593,175 +599,173 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIndividualQueryHandlerWithGlobalExtraParams().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function globalExtraParamsIndividualQueryDataProvider(): array
+    public static function globalExtraParamsIndividualQueryDataProvider(): \Iterator
     {
-        return [
-            'Single value, no extra params' => [
-                'globalExtraParams' => null,
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => null,
+        yield 'Single value, no extra params' => [
+            'globalExtraParams' => null,
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => null,
+            ],
+        ];
+        yield 'Single value' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
                 ],
             ],
-            'Single value' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => ['a:foo'],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
-                ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => ['a:foo'],
             ],
-            'Two values' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => [
-                            'a:foo',
-                            'a:bar',
-                        ],
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => [
-                        'a:foo',
-                        'a:bar',
-                    ],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => [
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'Two values' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => [
                         'a:foo',
                         'a:bar',
                     ],
                 ],
             ],
-            'Value with SearchTypeIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SearchTypeIn' => [
-                                    'test',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => ['a:foo'],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => null,
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => [
+                    'a:foo',
+                    'a:bar',
                 ],
             ],
-            'Value with SearchTypeNotIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SearchTypeNotIn' => [
-                                    'test',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
+            'expected2' => [
+                'bf' => null,
+                'bq' => [
+                    'a:foo',
+                    'a:bar',
                 ],
             ],
-            'Value with NoDisMaxParams = [bf] condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'NoDismaxParams' => ['bf'],
+        ];
+        yield 'Value with SearchTypeIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SearchTypeIn' => [
+                                'test',
                             ],
                         ],
                     ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
                 ],
             ],
-            'Value with SortIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SortIn' => [
-                                    'score desc',
-                                ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => ['a:foo'],
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => null,
+            ],
+        ];
+        yield 'Value with SearchTypeNotIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SearchTypeNotIn' => [
+                                'test',
                             ],
                         ],
                     ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => ['a:foo'],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => null,
                 ],
             ],
-            'Value with SortNotIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SortNotIn' => [
-                                    'score desc',
-                                ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'Value with NoDisMaxParams = [bf] condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'NoDismaxParams' => ['bf'],
+                        ],
+                    ],
+                ],
+            ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'Value with SortIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SortIn' => [
+                                'score desc',
                             ],
                         ],
                     ],
                 ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
+            ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => ['a:foo'],
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => null,
+            ],
+        ];
+        yield 'Value with SortNotIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SortNotIn' => [
+                                'score desc',
+                            ],
+                        ],
+                    ],
                 ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
-                ],
+            ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
             ],
         ];
     }
@@ -822,74 +826,72 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGroupedQueryHandlerWithGlobalExtraParams().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function globalExtraParamsGroupedQueryDataProvider(): array
+    public static function globalExtraParamsGroupedQueryDataProvider(): \Iterator
     {
-        return [
-            'Search type in [test]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SearchTypeIn' => ['test'],
-                            ],
+        yield 'Search type in [test]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SearchTypeIn' => ['test'],
                         ],
                     ],
-                ],
-                'expectedFields' => [
-                    'bq' => ['a:foo'],
                 ],
             ],
-            'All search types in [test, test2]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'AllSearchTypesIn' => ['test', 'test2'],
-                            ],
+            'expectedFields' => [
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'All search types in [test, test2]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'AllSearchTypesIn' => ['test', 'test2'],
                         ],
                     ],
-                ],
-                'expectedFields' => [
-                    'bq' => ['a:foo'],
                 ],
             ],
-            'All search types in [test, no]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'AllSearchTypesIn' => ['test', 'no'],
-                            ],
+            'expectedFields' => [
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'All search types in [test, no]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'AllSearchTypesIn' => ['test', 'no'],
                         ],
                     ],
-                ],
-                'expectedFields' => [
-                    'bq' => null,
                 ],
             ],
-            'All search types in [test, test2, no]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'AllSearchTypesIn' => ['test', 'test2', 'no'],
-                            ],
+            'expectedFields' => [
+                'bq' => null,
+            ],
+        ];
+        yield 'All search types in [test, test2, no]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'AllSearchTypesIn' => ['test', 'test2', 'no'],
                         ],
                     ],
                 ],
-                'expectedFields' => [
-                    'bq' => ['a:foo'],
-                ],
+            ],
+            'expectedFields' => [
+                'bq' => ['a:foo'],
             ],
         ];
     }

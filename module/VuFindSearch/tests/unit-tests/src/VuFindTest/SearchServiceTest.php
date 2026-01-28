@@ -65,7 +65,7 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $command = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $command->expects($this->once())->method('execute')
-            ->with($this->equalTo($backend));
+            ->with($backend);
         $em = $service->getEventManager();
         $this->expectConsecutiveCalls(
             $em,
@@ -89,7 +89,7 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $command = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $command->expects($this->once())->method('execute')
-            ->with($this->equalTo($backend))
+            ->with($backend)
             ->willThrowException(new BackendException('test'));
         $em = $service->getEventManager();
         $this->expectConsecutiveCalls(
@@ -111,14 +111,14 @@ class SearchServiceTest extends TestCase
         $this->expectExceptionMessage('Unable to resolve backend: getInfo, EDS');
 
         $mockResponse = $this->createMock(\Laminas\EventManager\ResponseCollection::class);
-        $mockResponse->expects($this->any())->method('stopped')->willReturn(false);
+        $mockResponse->method('stopped')->willReturn(false);
         $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $service = new Service();
-        $em->expects($this->any())->method('triggerUntil')
+        $em->method('triggerUntil')
             ->with(
                 $this->anything(),
-                $this->equalTo('resolve'),
-                $this->equalTo($service)
+                'resolve',
+                $service
             )->willReturn($mockResponse);
         $service->setEventManager($em);
         $service->invoke(new \VuFindSearch\Backend\EDS\Command\GetInfoCommand());
@@ -168,8 +168,7 @@ class SearchServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['resolve'])
             ->getMock();
-        $service->expects($this->any())->method('resolve')
-            ->willReturn($this->getBackend());
+        $service->method('resolve')->willReturn($this->getBackend());
         $service->setEventManager($em);
         return $service;
     }

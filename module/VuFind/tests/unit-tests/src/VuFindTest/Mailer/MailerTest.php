@@ -396,7 +396,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         try {
             $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
         } catch (\VuFind\Exception\Mail $e) {
-            $this->assertEquals('email_failure', $e->getDisplayMessage());
+            $this->assertSame('email_failure', $e->getDisplayMessage());
         }
     }
 

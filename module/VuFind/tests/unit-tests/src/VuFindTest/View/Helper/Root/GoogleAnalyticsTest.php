@@ -63,7 +63,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey'));
+        $this->assertSame($expected, $this->renderGA('myfakekey'));
     }
 
     /**
@@ -89,7 +89,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey', $options));
+        $this->assertSame($expected, $this->renderGA('myfakekey', $options));
     }
 
     /**
@@ -99,7 +99,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGA(false));
+        $this->assertSame('', $this->renderGA(false));
     }
 
     /**

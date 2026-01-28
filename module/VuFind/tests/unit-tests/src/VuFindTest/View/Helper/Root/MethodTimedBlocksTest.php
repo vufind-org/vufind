@@ -55,46 +55,44 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMethodTimedBlocks
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function methodTimedBlocksProvider()
+    public static function methodTimedBlocksProvider(): \Iterator
     {
-        return [
-            'end defined' => [
-                [
-                    'start' => new \DateTime(),
-                    'end' => new \DateTime('31-12-2025 23:59:59'),
-                    'recurring' => false,
-                ],
-                'This feature is unavailable until 12-31-2025',
+        yield 'end defined' => [
+            [
+                'start' => new \DateTime(),
+                'end' => new \DateTime('31-12-2025 23:59:59'),
+                'recurring' => false,
             ],
-            'service defined' => [
-                [
-                    'start' => new \DateTime(),
-                    'end' => new \DateTime('31-12-2025 23:59:59'),
-                    'recurring' => false,
-                ],
-                'TestFeature is unavailable until 12-31-2025',
-                'TestFeature',
+            'This feature is unavailable until 12-31-2025',
+        ];
+        yield 'service defined' => [
+            [
+                'start' => new \DateTime(),
+                'end' => new \DateTime('31-12-2025 23:59:59'),
+                'recurring' => false,
             ],
-            'only start' => [
-                [
-                    'start' => new \DateTime('now'),
-                    'end' => '',
-                    'recurring' => false,
-                ],
-                'This feature is unavailable',
+            'TestFeature is unavailable until 12-31-2025',
+            'TestFeature',
+        ];
+        yield 'only start' => [
+            [
+                'start' => new \DateTime('now'),
+                'end' => '',
+                'recurring' => false,
             ],
-            'not currently blocked' => [
-                [
-                    'start' => new \DateTime('01-01-2025'),
-                    'end' => new \DateTime('02-02-2025'),
-                    'recurring' => false,
-                ],
-                '',
-                'test',
-                false,
+            'This feature is unavailable',
+        ];
+        yield 'not currently blocked' => [
+            [
+                'start' => new \DateTime('01-01-2025'),
+                'end' => new \DateTime('02-02-2025'),
+                'recurring' => false,
             ],
+            '',
+            'test',
+            false,
         ];
     }
 
@@ -113,7 +111,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     {
         $helper = new MethodTimedBlocks();
         $helper->setView($this->getPhpRenderer($this->getViewHelpers($timedBlocks, $blocked)));
-        $this->assertEquals($expected, $helper('Renewals', $service));
+        $this->assertSame($expected, $helper('Renewals', $service));
     }
 
     /**
@@ -147,12 +145,8 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         );
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->any())
-            ->method('getMethodTimedBlocks')
-            ->willReturn($timedBlocks);
-        $connection->expects($this->any())
-            ->method('getMethodBlock')
-            ->willReturn($blocked ? $timedBlocks : []);
+        $connection->method('getMethodTimedBlocks')->willReturn($timedBlocks);
+        $connection->method('getMethodBlock')->willReturn($blocked ? $timedBlocks : []);
         $ils = new Ils($connection);
         $dateTime = new DateTime(new Converter());
         return compact('transEsc', 'translate', 'ils', 'dateTime');

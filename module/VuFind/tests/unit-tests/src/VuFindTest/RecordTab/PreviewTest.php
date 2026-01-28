@@ -57,11 +57,12 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Active' => [false, false], 'InActive' => [true, true]];
+        yield 'Active' => [false, false];
+        yield 'InActive' => [true, true];
     }
 
     /**

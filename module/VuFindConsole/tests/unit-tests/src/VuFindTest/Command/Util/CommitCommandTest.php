@@ -50,15 +50,13 @@ class CommitCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithOptions()
     {
-        $writer = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $writer = $this->createMock(\VuFind\Solr\Writer::class);
         $writer->expects($this->once())->method('commit')
-            ->with($this->equalTo('foo'));
+            ->with('foo');
         $command = new CommitCommand($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['core' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 }

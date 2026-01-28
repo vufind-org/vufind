@@ -227,9 +227,9 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
         $mockRequest = $xserver_enabled ? 'doXRequest' : 'doRestDLFRequest';
         $driver = $this->getMockBuilder(Aleph::class)->disableOriginalConstructor()
             ->onlyMethods([$mockRequest, 'parseDate'])->getMock();
-        $driver->expects($this->any())->method('parseDate')->willReturnCallback(fn ($date) => $date);
+        $driver->method('parseDate')->willReturnCallback(fn ($date) => $date);
         $fixture = $this->getFixture('aleph/' . $fixture);
-        $driver->expects($this->any())->method($mockRequest)->willReturn(simplexml_load_string($fixture));
+        $driver->method($mockRequest)->willReturn(simplexml_load_string($fixture));
         $config = [
             'Catalog' => [
                 'host' => 'test.test',

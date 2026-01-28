@@ -1,0 +1,48 @@
+<nav class="banner navbar navbar-expand-md">
+  <div class="container">
+    <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
+    <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
+      <?=$this->icon('ui-menu') ?>
+    </button>
+    <?php if (!isset($this->layout()->renderingError)): ?>
+      <div class="collapse navbar-collapse justify-content-end" id="header-collapse">
+        <?php foreach ($this->menu ?? [] as $group): ?>
+          <ul class="nav navbar-nav">
+            <?php foreach ($group['MenuItems'] as $item): ?>
+              <?php if (isset($item['template'])): ?>
+                <?php
+                  // Pass section context to template.
+                  $item = array_merge($this->{\VuFind\View\Helper\Root\Section::SECTION_CONTEXT_KEY}, $item);
+                ?>
+                <?= $this->render($item['template'], $item) ?>
+              <?php else: ?>
+                <?php
+                  $attributes = $this->htmlAttributes($item['attributes'] ?? []);
+                  $attributes['href'] = isset($item['route'])
+                    ? $this->url($item['route'], $item['routeParams'] ?? [])
+                    : $item['url'];
+                  $attributes->add('class', 'nav-link');
+                  if (isset($item['icon'])) {
+                    $attributes->add('class', 'icon-link');
+                  }
+                ?>
+                <li class="nav-item">
+                  <a<?=$attributes?>>
+                    <?php if ($icon = $item['icon'] ?? false): ?>
+                      <?=$this->icon($icon, 'icon-link__icon') ?>
+                      <span class="icon-link__label">
+                    <?php endif; ?>
+                      <?=$this->transEsc($item['label']) ?>
+                    <?php if ($icon): ?>
+                      </span>
+                    <?php endif; ?>
+                  </a>
+                </li>
+              <?php endif; ?>
+            <?php endforeach; ?>
+          </ul>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+</nav>

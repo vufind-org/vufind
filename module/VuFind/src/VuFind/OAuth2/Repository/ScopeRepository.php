@@ -33,6 +33,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use VuFind\OAuth2\Entity\ScopeEntity;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
@@ -48,20 +49,14 @@ use function in_array;
 class ScopeRepository implements ScopeRepositoryInterface
 {
     /**
-     * OAuth2 server configuration
-     *
-     * @var array
-     */
-    protected $oauth2Config = [];
-
-    /**
      * Constructor
      *
-     * @param array $config OAuth2 configuration
+     * @param array $oauth2Config OAuth2 configuration
      */
-    public function __construct(array $config)
-    {
-        $this->oauth2Config = $config;
+    public function __construct(
+        #[Autowire(container: \VuFind\Config\YamlReader::class, service: 'OAuth2Server.yaml')]
+        protected array $oauth2Config
+    ) {
     }
 
     /**

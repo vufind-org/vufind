@@ -90,8 +90,8 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
             </marc:collection>
 
             EXPECTED;
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -123,7 +123,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
         $directory = $this->getFixtureDir('VuFindConsole') . 'does-not-exist';
         $commandTester->execute(compact('directory'));
         $expected = "Cannot open directory: $directory\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 }

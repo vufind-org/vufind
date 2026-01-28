@@ -104,7 +104,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
             $this->waitForPageLoad($page);
             $this->findCssAndSetValue($page, '#list_title', $newListName);
             $this->clickCss($page, '.modal-body .btn.btn-primary');
-            $this->assertEquals(
+            $this->assertSame(
                 $newListName,
                 trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
             );
@@ -141,7 +141,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
         } catch (\Exception $e) {
             $this->retryClickWithResizedWindow($this->getMinkSession(), $page, $buttonSelector);
         }
-        $this->assertEquals($comment, $this->findCssAndGetText($page, $commentSelector));
+        $this->assertSame($comment, $this->findCssAndGetText($page, $commentSelector));
     }
 
     /**
@@ -155,11 +155,11 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function assertMergedResults(Element $page): void
     {
-        $this->assertEquals('new_tag 1 old_tag 1', $this->findCssAndGetText($page, '.tagList'));
-        $this->assertEquals('old_list new_list', $this->findCssAndGetText($page, '.savedLists.loaded ul'));
+        $this->assertSame('new_tag 1 old_tag 1', $this->findCssAndGetText($page, '.tagList'));
+        $this->assertSame('old_list new_list', $this->findCssAndGetText($page, '.savedLists.loaded ul'));
         $this->clickCss($page, '.record-tabs .usercomments a');
-        $this->assertEquals('old comment', $this->findCssAndGetText($page, '.comment-text', index: 0));
-        $this->assertEquals('new comment', $this->findCssAndGetText($page, '.comment-text', index: 1));
+        $this->assertSame('old comment', $this->findCssAndGetText($page, '.comment-text', index: 0));
+        $this->assertSame('new comment', $this->findCssAndGetText($page, '.comment-text', index: 1));
     }
 
     /**
