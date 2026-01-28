@@ -523,6 +523,61 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful place hold when the first method
+     * of getting the mod-circulation version fails with an error
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    public function testSuccessfulPlaceHoldFallbackModuleVersion(): void
+    {
+        $this->createConnector('successful-place-hold-fallback-module-version');
+        $details = [
+            'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'id' => 'instanceid',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful place hold when the first method
+     * of getting the mod-circulation version returns
+     * invalid JSON
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    public function testSuccessfulPlaceHoldInvalidModuleVersion(): void
+    {
+        $this->createConnector('successful-place-hold-invalid-module-version');
+        $details = [
+            'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'id' => 'instanceid',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test successful renewal
      *
      * @return void

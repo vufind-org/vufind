@@ -45,11 +45,12 @@ use VuFindTest\Unit\AbstractSectionTestCase;
 class AdminMenuTest extends AbstractSectionTestCase
 {
     /**
-     * Test that the menu is the default menu if configuration is missing.
+     * Test that the default configuration file matches the configuration
+     * returned by section class.
      *
      * @return void
      */
-    public function testMissingConfiguration()
+    public function testDefaultConfiguration(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
@@ -59,18 +60,36 @@ class AdminMenuTest extends AbstractSectionTestCase
     }
 
     /**
+     * Test that the menu is the default menu if configuration is missing.
+     *
+     * @return void
+     */
+    public function testMissingConfiguration(): void
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getAdminMenu($container, [])->getMenu(),
+            $this->getAdminMenu($container, AdminMenu::getDefaultMenuConfig())->getMenu()
+        );
+    }
+
+    /**
      * Test the default menu when all check methods return false.
      *
      * @return void
      */
-    public function testDefaultMenuAllCheckMethodsReturnFalse()
+    public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $menu = $this->getAdminMenu(
+        $plugin = $this->getAdminMenu(
             $container,
             AdminMenu::getDefaultMenuConfig(),
             $this->getAdminMenuCheckMethods(false)
-        )->getMenu();
+        );
+        foreach (array_keys($this->getAdminMenuCheckMethods()) as $method) {
+            $this->assertEquals(false, $plugin->{$method}());
+        }
+        $menu = $plugin->getMenu();
         $this->assertCount(7, $menu['Admin']['MenuItems']);
     }
 
