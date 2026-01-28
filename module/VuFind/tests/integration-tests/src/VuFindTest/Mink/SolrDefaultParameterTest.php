@@ -49,12 +49,19 @@ class SolrDefaultParameterTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testDefaultParameter(): void
     {
-        $this->changeConfigs(['searches' => ['General' => ['default_parameters[search]' => 'fq=id:0001732009-3']]]);
+        $id = '0001732009-3';
+        $this->changeConfigs(
+            ['searches' => ['General' => ['default_parameters' => ['search' => 'fq=' . urlencode("id:$id")]]]]
+        );
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $page = $session->getPage();
         $text = $this->findCssAndGetText($page, '.search-stats strong');
         [, $actualSize] = explode(' - ', $text);
         $this->assertSame(1, intval($actualSize));
+        $this->assertStringContainsString(
+            "/Record/$id?sid=",
+            $this->findCss($page, '.result a.title')->getAttribute('href')
+        );
     }
 }
