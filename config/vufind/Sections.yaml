@@ -25,3 +25,6 @@ Sections:
 
   FooterMenu:
     plugin: footerMenu
+
+  SiteMap:
+    plugin: siteMap

@@ -1,0 +1,20 @@
+<h1><?= $this->transEsc('Site map') ?></h1>
+<?php foreach ($this->siteMap->getMenu() as $groupName => $group) : ?>
+  <?php if ($groupHasLabel = isset($group['label'])): ?>
+    <h2><?= $this->transEsc($group['label']) ?></h2>
+    <ul>
+  <?php endif; ?>
+  <?php foreach ($group['MenuItems'] as $item): ?>
+    <?php if (isset($item['label']) && (isset($item['route']) || isset($item['url']))): ?>
+      <?php
+        $tag = $groupHasLabel ? 'li' : 'h2';
+        $attributes = $this->htmlAttributes($item['attributes'] ?? []);
+      ?>
+      <?php $attributes['href'] = isset($item['route']) ? $this->url($item['route']) : $item['url']; ?>
+      <<?= $tag ?>><a<?= $attributes ?>><?= $this->transEsc($item['label']) ?></a></<?= $tag ?>>
+    <?php endif; ?>
+  <?php endforeach; ?>
+  <?php if ($groupHasLabel): ?>
+    </ul>
+  <?php endif; ?>
+<?php endforeach; ?>
