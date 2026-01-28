@@ -45,11 +45,12 @@ use VuFindTest\Unit\AbstractSectionTestCase;
 class AccountMenuTest extends AbstractSectionTestCase
 {
     /**
-     * Test that the menu is the default menu if configuration is missing.
+     * Test that the default configuration file matches the configuration
+     * returned by section class.
      *
      * @return void
      */
-    public function testMissingConfiguration()
+    public function testDefaultConfiguration(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
@@ -59,11 +60,25 @@ class AccountMenuTest extends AbstractSectionTestCase
     }
 
     /**
+     * Test that the menu is the default menu if configuration is missing.
+     *
+     * @return void
+     */
+    public function testMissingConfiguration(): void
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getAccountMenu($container, [])->getMenu(),
+            $this->getAccountMenu($container, AccountMenu::getDefaultMenuConfig())->getMenu()
+        );
+    }
+
+    /**
      * Test the default menu when all check methods return false.
      *
      * @return void
      */
-    public function testDefaultMenuAllCheckMethodsReturnFalse()
+    public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $plugin = $this->getAccountMenu(
@@ -84,7 +99,7 @@ class AccountMenuTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testBackwardCompatibilityForOldConfigurations()
+    public function testBackwardCompatibilityForOldConfigurations(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $menu = $this->getAccountMenu($container, $this->getOldDefaultMenuConfig())->getMenu();

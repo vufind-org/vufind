@@ -32,10 +32,10 @@ namespace VuFindTest\Unit;
 use Laminas\Http\Request;
 use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\View\Model\ViewModel;
-use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\YamlReader;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
@@ -43,9 +43,13 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\ILS\Connection;
 use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
+use VuFind\Navigation\AccountMenuFactory;
 use VuFind\Navigation\AdminMenu;
+use VuFind\Navigation\AdminMenuFactory;
 use VuFind\Navigation\FooterMenu;
+use VuFind\Navigation\FooterMenuFactory;
 use VuFind\Navigation\HeaderBar;
+use VuFind\Navigation\HeaderBarFactory;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
@@ -65,6 +69,20 @@ use VuFindTest\Feature\ConfigRelatedServicesTrait;
 abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
 {
     use ConfigRelatedServicesTrait;
+
+    /**
+     * YamlReader for the default configuration.
+     *
+     * @var YamlReader
+     */
+    protected YamlReader $defaultConfigYamlReader;
+
+    /**
+     * Contents of "files" returned by the mock YamlReader, keyed by file name.
+     *
+     * @var array<string, array>
+     */
+    protected array $mockYamlReaderFiles = [];
 
     /**
      * Get a container with section related services.
@@ -97,7 +115,16 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         string $userLocale = 'en',
         array $fallbackLocales = ['en', 'fi']
     ): void {
-        $container->set(YamlReader::class, new YamlReader($this->getPathResolver()));
+        $this->defaultConfigYamlReader = new YamlReader($this->getPathResolver());
+        $this->mockYamlReaderFiles['Sections.yaml']
+            = $this->defaultConfigYamlReader->get('Sections.yaml');
+        $mockYamlReader = $this->createMock(YamlReader::class);
+        $mockYamlReader->method('get')->willReturnCallback(
+            function (string $filename) {
+                return $this->mockYamlReaderFiles[$filename] ?? [];
+            }
+        );
+        $container->set(YamlReader::class, $mockYamlReader);
         $sectionManager = new SectionManager($container);
         $container->set(SectionManager::class, $sectionManager);
         $service = new SectionService(
@@ -158,16 +185,19 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      * Get a mock AccountMenu.
      *
      * @param MockContainer $container    Mock container
-     * @param array         $config       Configuration to use
+     * @param ?array        $config       Configuration to use, null for default configuration
      * @param array         $checkMethods Values to return for specific check methods
      *
      * @return AccountMenu
      */
     protected function getAccountMenu(
         MockContainer $container,
-        array $config = [],
+        ?array $config = null,
         array $checkMethods = [],
     ): AccountMenu {
+        $config ??= $this->defaultConfigYamlReader->get('AccountMenu.yaml');
+        $this->mockYamlReaderFiles['AccountMenu.yaml'] = $config;
+
         $mockAccountCapabilities = $this->createMock(AccountCapabilities::class);
         $mockAccountCapabilities->method('getListSetting')
             ->willReturn($checkMethods['checkFavorites'] ?? true);
@@ -210,14 +240,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             ->willReturn($checkMethods['checkOverdrive'] ?? true);
         $container->set(OverdriveConnector::class, $mockOverdriveConnector);
 
-        $accountMenu = new AccountMenu(
-            $config,
-            $mockAccountCapabilities,
-            $mockManager,
-            $mockConnection,
-            $this->createMock(ILSAuthenticator::class),
-            $mockOverdriveConnector
-        );
+        $accountMenu = (new AccountMenuFactory())($container, AccountMenu::class);
         $this->setSectionPlugin($container, $accountMenu, 'accountMenu');
         return $accountMenu;
     }
@@ -252,20 +275,25 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      * Get a mock AdminMenu.
      *
      * @param MockContainer $container    Mock container
-     * @param array         $config       Configuration to use
+     * @param ?array        $config       Configuration to use, null for default configuration
      * @param array         $checkMethods Values to return for specific check methods
      *
      * @return AdminMenu
      */
     protected function getAdminMenu(
         MockContainer $container,
-        array $config = [],
+        ?array $config = null,
         array $checkMethods = [],
     ): AdminMenu {
-        $adminMenu = new AdminMenu(
-            $config,
-            $checkMethods['checkShowOverdrive'] ?? true,
+        $config ??= $this->defaultConfigYamlReader->get('AdminMenu.yaml');
+        $this->mockYamlReaderFiles['AdminMenu.yaml'] = $config;
+
+        $configManager = $this->getMockConfigManager(
+            ['Overdrive' => ['showOverdriveAdminMenu' => $checkMethods['checkCookieSettings'] ?? true]]
         );
+        $container->set(ConfigManagerInterface::class, $configManager);
+
+        $adminMenu = (new AdminMenuFactory())($container, AdminMenu::class);
         $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
     }
@@ -288,22 +316,25 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      * Get a mock FooterMenu.
      *
      * @param MockContainer $container    Mock container
-     * @param array         $config       Configuration to use
+     * @param ?array        $config       Configuration to use, null for default configuration
      * @param array         $checkMethods Values to return for specific check methods
      *
      * @return FooterMenu
      */
     protected function getFooterMenu(
         MockContainer $container,
-        array $config = [],
+        ?array $config = null,
         array $checkMethods = []
     ): FooterMenu {
-        $checkCookieSettings = $checkMethods['checkCookieSettings'] ?? true;
+        $config ??= $this->defaultConfigYamlReader->get('FooterMenu.yaml');
+        $this->mockYamlReaderFiles['FooterMenu.yaml'] = $config;
 
-        $footer = new FooterMenu(
-            $config,
-            ['Cookies' => ['consent' => $checkCookieSettings]],
+        $configManager = $this->getMockConfigManager(
+            ['config' => ['Cookies' => ['consent' => $checkMethods['checkCookieSettings'] ?? true]]]
         );
+        $container->set(ConfigManagerInterface::class, $configManager);
+
+        $footer = (new FooterMenuFactory())($container, FooterMenu::class);
         $this->setSectionPlugin($container, $footer, 'footer');
         return $footer;
     }
@@ -326,16 +357,24 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      * Get a mock HeaderBar.
      *
      * @param MockContainer $container    Mock container
-     * @param array         $config       Configuration to use
+     * @param ?array        $config       Configuration to use, null for default configuration
      * @param array         $checkMethods Values to return for specific check methods
      *
      * @return HeaderBar
      */
     protected function getHeaderBar(
         MockContainer $container,
-        array $config = [],
+        ?array $config = null,
         array $checkMethods = []
     ): HeaderBar {
+        $config ??= $this->defaultConfigYamlReader->get('HeaderBar.yaml');
+        $this->mockYamlReaderFiles['HeaderBar.yaml'] = $config;
+
+        $configManager = $this->getMockConfigManager(
+            ['config' => ['Feedback' => ['tab_enabled' => $checkMethods['checkFeedback'] ?? true]]]
+        );
+        $container->set(ConfigManagerInterface::class, $configManager);
+
         $mockCart = $this->createMock(Cart::class);
         $mockCart->method('isActive')
             ->willReturn($checkMethods['checkCart'] ?? true);
@@ -364,15 +403,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockRequest = $this->createMock(Request::class);
         $container->set('Request', $mockRequest);
 
-        $header = new HeaderBar(
-            $config,
-            ['Feedback' => ['tab_enabled' => $checkMethods['checkFeedback'] ?? true]],
-            $mockCart,
-            $mockAuthManager,
-            $mockViewModel,
-            $mockLocaleSettings,
-            $mockRequest,
-        );
+        $header = (new HeaderBarFactory())($container, HeaderBar::class);
         $this->setSectionPlugin($container, $header, 'header');
         return $header;
     }

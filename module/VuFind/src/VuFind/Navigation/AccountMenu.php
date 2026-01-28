@@ -159,7 +159,6 @@ class AccountMenu extends AbstractMenu
     {
         return [
             'Account' => [
-                'name' => 'acc',
                 'label' => 'Your Account',
                 'id' => 'acc-menu-acc-header',
                 'class' => 'account-menu',
