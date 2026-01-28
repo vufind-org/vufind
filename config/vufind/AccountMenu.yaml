@@ -1,26 +1,39 @@
-# If this file is empty or missing, default settings will be used, matching
-# the examples provided below. The format of this configuration is as follows:
-# array keys for every group are:
+# This file configures the AccountMenu section plugin, which renders the account
+# menu. If this file is empty or missing, default settings will be used, matching
+# the examples provided below.
+#
+# The format of this configuration is as follows:
+#
+# Array keys for every group are:
 #   - name: name of a group
-#   - label: text shown as group header - required
+#   - label: text shown as group header, will be translated - required
 #   - id: html id for the group - required
 #   - class: class for the list of items
 #   - MenuItems: items shown in the menu - required
-#   - checkMethod: the name of an AccountMenu view helper method to perform
+#   - checkMethod: the name of an AccountMenu section plugin method to perform
 #     a check whether to show the group. If omitted, group will always display.
-# array keys for every menu item could be:
+#
+# Array keys for every menu item could be:
+#   - checkMethod: the name of an AccountMenu section plugin method to perform
+#     a check whether to show the item. If omitted, item will always display.
+#   - icon: icon used for the item, has to be defined in theme config
+#   - template: template to render the item with. Templates do not support the keys
+#     documented below.
 #   - name: name of an item
 #   - label: the text shown as link, will be translated - required
-#   - route: route name used to generate link target - route, url or template required
+#   - route: route name used to generate link target - required unless url or
+#     template is set
 #   - routeParams: parameters for dynamic routes
-#   - url: target url, alternative to route - route, url or template required
-#   - template: template to render the item with
-#   - icon: icon used for the item, has to be defined in theme config
+#   - url: target url, alternative to route - required unless route or template
+#     is set
 #   - iconMethod: method to dynamically create the icon name; ignored when
 #     icon is explicitly set.
-#   - checkMethod: the name of an AccountMenu navigation plugin method to perform
-#     a check whether to show the item. If omitted, item will always display.
 #   - status: whether to show status label, defaults to false
+#
+# You can use checkMethod: alwaysFail to disable specific inherited groups or items
+# in local configuration. If you wish to completely override the default
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
 
 Account:
   label: Your Account

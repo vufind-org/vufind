@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Admin menu tests.
+ * Header bar tests.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,11 +30,11 @@
 namespace VuFindTest\Navigation;
 
 use VuFind\Exception\BadConfig;
-use VuFind\Navigation\AdminMenu;
+use VuFind\Navigation\HeaderBar;
 use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
- * Admin menu tests.
+ * Header bar tests.
  *
  * @category VuFind
  * @package  Tests
@@ -42,7 +42,7 @@ use VuFindTest\Unit\AbstractSectionTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AdminMenuTest extends AbstractSectionTestCase
+class HeaderBarTest extends AbstractSectionTestCase
 {
     /**
      * Test that the default configuration file matches the configuration
@@ -54,8 +54,8 @@ class AdminMenuTest extends AbstractSectionTestCase
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAdminMenu($container)->getMenu(),
-            $this->getAdminMenu($container, AdminMenu::getDefaultMenuConfig())->getMenu()
+            $this->getHeaderBar($container)->getMenu(),
+            $this->getHeaderBar($container, HeaderBar::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -68,8 +68,8 @@ class AdminMenuTest extends AbstractSectionTestCase
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAdminMenu($container, [])->getMenu(),
-            $this->getAdminMenu($container, AdminMenu::getDefaultMenuConfig())->getMenu()
+            $this->getHeaderBar($container, [])->getMenu(),
+            $this->getHeaderBar($container, HeaderBar::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -81,16 +81,16 @@ class AdminMenuTest extends AbstractSectionTestCase
     public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $plugin = $this->getAdminMenu(
+        $plugin = $this->getHeaderBar(
             $container,
-            AdminMenu::getDefaultMenuConfig(),
-            $this->getAdminMenuCheckMethods(false)
+            HeaderBar::getDefaultMenuConfig(),
+            $this->getHeaderBarCheckMethods(false)
         );
-        foreach (array_keys($this->getAdminMenuCheckMethods()) as $method) {
+        foreach (array_keys($this->getHeaderBarCheckMethods()) as $method) {
             $this->assertEquals(false, $plugin->{$method}());
         }
         $menu = $plugin->getMenu();
-        $this->assertCount(7, $menu['Admin']['MenuItems']);
+        $this->assertCount(0, $menu);
     }
 
     /**
@@ -100,14 +100,23 @@ class AdminMenuTest extends AbstractSectionTestCase
      */
     public static function requiredConfigurationProvider(): \Iterator
     {
+        yield 'Missing group settings' => [
+            ['Header' => []],
+            BadConfig::class,
+            'Missing required setting: MenuItems',
+        ];
         yield 'Missing menu item settings' => [
             [
-                'Admin' => [
-                    'MenuItems' => [[]],
+                'Header' => [
+                    'MenuItems' => [
+                        [
+                            'label' => 'Test item label',
+                        ],
+                    ],
                 ],
             ],
             BadConfig::class,
-            'Missing required setting: label',
+            'Missing required setting: route',
         ];
     }
 
@@ -131,6 +140,6 @@ class AdminMenuTest extends AbstractSectionTestCase
             $this->expectExceptionMessage($expectedExceptionMsg);
         }
         $container = $this->getContainerWithSectionRelatedServices();
-        $this->getAdminMenu($container, $config);
+        $this->getHeaderBar($container, $config);
     }
 }
