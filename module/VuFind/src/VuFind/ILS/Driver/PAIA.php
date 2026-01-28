@@ -37,7 +37,6 @@ use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 
-use function constant;
 use function count;
 use function in_array;
 use function is_array;
@@ -1880,8 +1879,8 @@ class PAIA extends DAIA
                 self::SCOPE_CHANGE_PASSWORD;
 
         // append additional scopes via config
-        foreach ((array)($this->config['PAIA']['additionalScopes'] ?? []) as $scope) {
-            $post_data['scope'] .= ' ' . constant("self::$scope");
+        if ($scopes = (array)($this->config['PAIA']['additionalScopes'] ?? [])) {
+            $post_data['scope'] .= ' ' . implode(' ', $scopes);
         }
 
         // perform full PAIA auth and get patron info
