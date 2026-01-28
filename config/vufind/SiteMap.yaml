@@ -1,4 +1,6 @@
-# This file configures the SiteMap section plugin, which renders the site map page.
+# This file configures the SiteMap section plugin, which renders the site map page
+# as specified in WCAG 2.2 Technique G63
+# (https://www.w3.org/WAI/WCAG22/Techniques/general/G63).
 # If this file is empty or missing, default settings will be used, matching the
 # examples provided below.
 #

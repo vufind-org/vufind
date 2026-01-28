@@ -134,7 +134,7 @@ class SiteMap extends AbstractMenu
                     continue;
                 }
                 if (isset($processedGroups[$pluginGroupName])) {
-                    throw new BadConfig('Group key clash in configuration');
+                    throw new BadConfig('Group key clash in configuration: ' . $pluginGroupName);
                 }
                 $processedGroups[$pluginGroupName] = $pluginGroup;
             }
