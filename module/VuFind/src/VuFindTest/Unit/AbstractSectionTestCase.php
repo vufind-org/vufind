@@ -87,6 +87,31 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     protected array $mockYamlReaderFiles = [];
 
     /**
+     * Get YamlReader for the default configuration.
+     *
+     * @return YamlReader
+     */
+    protected function getDefaultConfigYamlReader(): YamlReader
+    {
+        if (!isset($this->defaultConfigYamlReader)) {
+            $this->defaultConfigYamlReader = new YamlReader($this->getPathResolver());
+        }
+        return $this->defaultConfigYamlReader;
+    }
+
+    /**
+     * Get default YAML configuration file.
+     *
+     * @param string $filename Filename
+     *
+     * @return array
+     */
+    protected function getDefaultYamlConfig(string $filename): array
+    {
+        return $this->getDefaultConfigYamlReader()->get($filename);
+    }
+
+    /**
      * Get a container with section related services.
      *
      * @param string $userLocale      User locale (optional)
@@ -117,9 +142,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         string $userLocale = 'en',
         array $fallbackLocales = ['en', 'fi']
     ): void {
-        $this->defaultConfigYamlReader = new YamlReader($this->getPathResolver());
         $this->mockYamlReaderFiles['Sections.yaml']
-            = $this->defaultConfigYamlReader->get('Sections.yaml');
+            = $this->getDefaultYamlConfig('Sections.yaml');
         $mockYamlReader = $this->createMock(YamlReader::class);
         $mockYamlReader->method('get')->willReturnCallback(
             function (string $filename) {
@@ -198,7 +222,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = [],
     ): AccountMenu {
-        $config ??= $this->defaultConfigYamlReader->get('AccountMenu.yaml');
+        $config ??= $this->getDefaultYamlConfig('AccountMenu.yaml');
         $this->mockYamlReaderFiles['AccountMenu.yaml'] = $config;
 
         $mockAccountCapabilities = $this->createMock(AccountCapabilities::class);
@@ -288,7 +312,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = [],
     ): AdminMenu {
-        $config ??= $this->defaultConfigYamlReader->get('AdminMenu.yaml');
+        $config ??= $this->getDefaultYamlConfig('AdminMenu.yaml');
         $this->mockYamlReaderFiles['AdminMenu.yaml'] = $config;
 
         $configManager = $this->getMockConfigManager(
@@ -329,7 +353,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = []
     ): FooterMenu {
-        $config ??= $this->defaultConfigYamlReader->get('FooterMenu.yaml');
+        $config ??= $this->getDefaultYamlConfig('FooterMenu.yaml');
         $this->mockYamlReaderFiles['FooterMenu.yaml'] = $config;
 
         $configManager = $this->getMockConfigManager(
@@ -370,7 +394,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = []
     ): HeaderBar {
-        $config ??= $this->defaultConfigYamlReader->get('HeaderBar.yaml');
+        $config ??= $this->getDefaultYamlConfig('HeaderBar.yaml');
         $this->mockYamlReaderFiles['HeaderBar.yaml'] = $config;
 
         $configManager = $this->getMockConfigManager(
@@ -441,7 +465,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         MockContainer $container,
         ?array $config = null
     ): SiteMap {
-        $config ??= $this->defaultConfigYamlReader->get('SiteMap.yaml');
+        $config ??= $this->getDefaultYamlConfig('SiteMap.yaml');
         $this->mockYamlReaderFiles['SiteMap.yaml'] = $config;
 
         $siteMap = (new SiteMapFactory())($container, SiteMap::class);

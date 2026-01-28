@@ -1,8 +1,8 @@
+# This file configures the AdminMenu section plugin, which renders the admin menu.
 # If this file is empty or missing, default settings will be used, matching
 # the examples provided below.
 #
-# Please note that the current implementation of AdminMenu only supports a subset of
-# the options supported by AccountMenu.
+# The format of this configuration is as follows:
 #
 # Array keys for every menu item could be:
 #   - name: name of an item
@@ -11,9 +11,14 @@
 #   - icon: icon used for the item, has to be defined in theme config
 #   - iconMethod: method to dynamically create the icon name; ignored when
 #     icon is explicitly set.
-#   - checkMethod: the name of an AdminMenu navigation plugin method to perform
+#   - checkMethod: the name of an AdminMenu section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
 #   - status: whether to show status label, defaults to false
+#
+# You can use checkMethod: alwaysFail to disable specific inherited groups or items
+# in local configuration. If you wish to completely override the default
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
 
 Admin:
   MenuItems:
