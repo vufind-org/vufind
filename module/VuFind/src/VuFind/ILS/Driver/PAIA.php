@@ -1879,8 +1879,8 @@ class PAIA extends DAIA
                 self::SCOPE_CHANGE_PASSWORD;
 
         // append additional scopes via config
-        if ($scopes = (array)($this->config['PAIA']['additionalScopes'] ?? [])) {
-            $post_data['scope'] .= ' ' . implode(' ', $scopes);
+        if ($additionalScopes = (array)($this->config['PAIA']['additionalScopes'] ?? [])) {
+            $post_data['scope'] .= ' ' . implode(' ', $additionalScopes);
         }
 
         // perform full PAIA auth and get patron info
