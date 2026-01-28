@@ -1878,7 +1878,7 @@ class PAIA extends DAIA
                 self::SCOPE_READ_FEES,
                 self::SCOPE_READ_ITEMS,
                 self::SCOPE_WRITE_ITEMS,
-                self::SCOPE_CHANGE_PASSWORD
+                self::SCOPE_CHANGE_PASSWORD,
             ],
             (array)($this->config['PAIA']['additionalScopes'] ?? [])
         );
