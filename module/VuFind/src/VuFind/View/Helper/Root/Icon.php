@@ -30,8 +30,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\Renderer\RendererInterface;
 
 use function in_array;
 use function is_string;
@@ -45,7 +45,7 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Icon extends AbstractHelper
+class Icon
 {
     /**
      * Icon config from theme.config.php
@@ -90,6 +90,13 @@ class Icon extends AbstractHelper
     protected $esc;
 
     /**
+     * View renderer
+     *
+     * @var RendererInterface
+     */
+    protected $viewRenderer;
+
+    /**
      * Are we in right to left text mode?
      *
      * @var bool
@@ -106,15 +113,17 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param array            $config  Icon configuration
-     * @param StorageInterface $cache   Cache instance
-     * @param EscapeHtmlAttr   $escAttr EscapeHtmlAttr view helper
-     * @param bool             $rtl     Are we in right to left text mode?
+     * @param array             $config       Icon configuration
+     * @param StorageInterface  $cache        Cache instance
+     * @param EscapeHtmlAttr    $escAttr      EscapeHtmlAttr view helper
+     * @param RendererInterface $viewRenderer View renderer
+     * @param bool              $rtl          Are we in right to left text mode?
      */
     public function __construct(
         array $config,
         StorageInterface $cache,
         EscapeHtmlAttr $escAttr,
+        RendererInterface $viewRenderer,
         bool $rtl = false
     ) {
         $this->config = $config;
@@ -123,6 +132,7 @@ class Icon extends AbstractHelper
         $this->iconMap = $this->config['aliases'] ?? [];
         $this->cache = $cache;
         $this->esc = $escAttr;
+        $this->viewRenderer = $viewRenderer;
         $this->rtl = $rtl;
     }
 
@@ -229,7 +239,7 @@ class Icon extends AbstractHelper
 
             // Surface set config and add icon and attrs
             $cached = trim(
-                $this->getView()->render(
+                $this->viewRenderer->render(
                     'Helpers/icons/' . $template,
                     array_merge(
                         $this->config['sets'][$set] ?? [],

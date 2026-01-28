@@ -783,7 +783,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['render', 'resolver'])
             ->getMock();
-        
+
         $view->method('resolver')->willReturn($resolver);
 
         $serverUrlHelper = $serverurl ? $this->getMockServerUrl() : $this->createMock(ServerUrl::class);
@@ -792,7 +792,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $config = is_array($config) ? new Config($config) : $config;
         $smvh = $this->getSearchMemoryViewHelper();
-        
+
         $record = new Record(
             $this->createMock(TagsService::class),
             $view,
@@ -809,9 +809,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $serverUrlHelper,
             $config
         );
-        
+
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
-        
+
         return $record($driver);
     }
 
@@ -851,13 +851,13 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->method('__invoke')
             ->with($expectedRoute)
             ->willReturn('http://foo/bar');
-        
+
         $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
         $url->method('__invoke')
             ->willReturnCallback(function (...$args) use ($laminasUrl) {
                 return ($laminasUrl)(...$args);
             });
-        
+
         return $url;
     }
 

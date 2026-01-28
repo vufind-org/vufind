@@ -467,7 +467,7 @@ class RecordDataFormatter
 
         // get alternative value
         $altDataMethod = $options['altDataMethod'] ?? $options['dataMethod'] . 'AltScript';
-        
+
         $altOptions = $options;
         $altOptions['dataMethod'] = $altDataMethod;
         $altData = $this->extractData($altOptions);

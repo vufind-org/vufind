@@ -32,7 +32,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtmlAttr;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * HTML-safe JSON encoding.
@@ -43,14 +44,23 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HtmlSafeJsonEncode extends AbstractHelper
+class HtmlSafeJsonEncode
 {
+    /**
+     * Constructor
+     *
+     * @param EscapeHtmlAttr $escapeHtmlAttr Escape HTML attribute helper
+     */
+    public function __construct(
+        #[Autowire(service: EscapeHtmlAttr::class)]
+        protected EscapeHtmlAttr $escapeHtmlAttr
+    ) {
+    }
+
     /**
      * JSON-encode $value in an HTML-safe manner.
      *
-     * @param mixed   $value        Data to encode
-     * @param ?string $outerEscaper Name of a view helper to use to escape the JSON
-     * (null/empty value for no extra escaping). Defaults to escapeHtmlAttr.
+     * @param mixed $value Data to encode
      *
      * @return string
      */
@@ -60,8 +70,8 @@ class HtmlSafeJsonEncode extends AbstractHelper
             $value,
             JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
         );
-        return $outerEscaper
-            ? ($this->getView()->plugin($outerEscaper))($json)
+        return $outerEscaper === 'escapeHtmlAttr'
+            ? ($this->escapeHtmlAttr)($json)
             : $json;
     }
 }

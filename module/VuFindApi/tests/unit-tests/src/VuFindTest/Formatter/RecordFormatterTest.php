@@ -30,11 +30,11 @@
 namespace VuFindTest\Formatter;
 
 use VuFind\I18n\TranslatableString;
-use VuFindApi\Formatter\RecordFormatter;
+use VuFind\View\Helper\Root\Method;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\View\Helper\Root\Translate;
-use VuFind\View\Helper\Root\Method;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * Unit tests for record formatter.

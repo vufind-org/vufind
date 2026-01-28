@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Config\Config;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -133,6 +134,7 @@ class Record implements DbServiceAwareInterface
         protected ?Config $config = null
     ) {
         $this->viewRenderer = $viewRenderer;
+        $this->viewResolver = $viewResolver;
     }
 
     /**
