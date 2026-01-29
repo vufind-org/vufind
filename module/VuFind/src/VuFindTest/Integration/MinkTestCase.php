@@ -1385,6 +1385,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Clear the browser's local storage.
+     *
+     * @return void
+     */
+    protected function clearBrowserLocalStorage(): void
+    {
+        $this->getMinkSession()->evaluateScript('window.localStorage.clear();');
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -1463,6 +1473,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             }
         }
 
+        $this->clearBrowserLocalStorage();  // don't carry data from one test to another!
         $this->stopMinkSession();
         $this->restoreConfigs();
 
