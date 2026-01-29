@@ -45,7 +45,7 @@ class SearchSolr extends AbstractSearch
      *
      * @return string
      */
-    protected function getSearchClassId()
+    protected function getSearchClassId(): string
     {
         return 'Solr';
     }

@@ -86,14 +86,14 @@ abstract class AbstractSearch extends AbstractCapabilities
      *
      * @return string
      */
-    abstract protected function getSearchClassId();
+    abstract protected function getSearchClassId(): string;
 
     /**
      * Return the request parameter name.
      *
      * @return string
      */
-    protected function getRequestParam()
+    protected function getRequestParam(): string
     {
         return 'lookfor';
     }
