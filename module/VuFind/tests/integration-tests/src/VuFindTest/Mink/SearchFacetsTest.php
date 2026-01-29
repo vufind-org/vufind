@@ -463,11 +463,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
-        // from the list:
-        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $inputSelector = '#modal input[data-name="contains"]';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
+        $this->findCssAndSetValue($page, $inputSelector, 'd');
         $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
@@ -523,11 +522,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
-        // from the list:
-        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $inputSelector = '#modal input[data-name="contains"]';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
+        $this->findCssAndSetValue($page, $inputSelector, 'd');
         $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
@@ -628,8 +626,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->facetLightboxListProcedure($page, '#side-collapse-genre_facet .all-facets', $limit);
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
-        $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
-        $this->clickCss($page, '#modal .js-facet-item.active');
+        $activeFacet = $this->openLightboxAndFindCss(
+            $page,
+            '#side-collapse-genre_facet .all-facets',
+            '#modal .js-facet-item.active'
+        );
+        $activeFacet->click();
         // facet removed
         $this->unFindCss($page, $this->activeFilterSelector);
     }
