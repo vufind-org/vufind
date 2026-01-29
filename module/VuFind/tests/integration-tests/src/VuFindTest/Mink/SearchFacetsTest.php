@@ -684,14 +684,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $lightboxFacetSelector = '#modal #facet-list-count .js-facet-item';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $lightboxFacetSelector);
+        $items = $page->findAll('css', $lightboxFacetSelector);
         $this->assertCount($limit - 1, $items); // (-1 is for the filtered value)
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $items = $page->findAll('css', $lightboxFacetSelector);
         $this->assertCount($limit * 2 - 1, $items);
         $this->assertSame(
             'Weird IDs 9 results 9 '
@@ -727,9 +727,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $modal = $this->findCss($page, '#modal');
-        $this->assertIsObject($modal);
+        $modal = $this->openLightboxAndFindCss($page, $this->genreMoreSelector, '#modal');
         // Make sure the filter control is available in the modal before proceeding; otherwise,
         // timing issues in activateMultiFilterSelection can break the test.
         $this->findCss($page, '#modal .js-user-selection-multi-filters');
