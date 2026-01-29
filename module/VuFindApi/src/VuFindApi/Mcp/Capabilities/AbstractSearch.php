@@ -54,7 +54,7 @@ abstract class AbstractSearch extends AbstractCapabilities
     /**
      * Record fields to return
      */
-    protected array $responseFields = ['recordPageFullUrl', 'title', 'authors'];
+    protected array $responseFields = ['recordPageAbsoluteLink', 'title', 'authors'];
 
     /**
      * Limit for searches

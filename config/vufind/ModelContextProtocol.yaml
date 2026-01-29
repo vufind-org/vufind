@@ -86,6 +86,6 @@ ContentTypes:
 # Response fields for capabilities that return records. For valid field names and format functions,
 # see SearchApiRecordFields.yaml. Default is below.
 # ResponseFields:
-#   - recordPageFullUrl
+#   - recordPageAbsoluteLink
 #   - title
 #   - authors
