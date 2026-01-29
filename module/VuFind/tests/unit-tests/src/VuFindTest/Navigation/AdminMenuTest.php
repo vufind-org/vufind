@@ -45,8 +45,8 @@ use VuFindTest\Unit\AbstractSectionTestCase;
 class AdminMenuTest extends AbstractSectionTestCase
 {
     /**
-     * Test that the default configuration file matches the configuration
-     * returned by section class.
+     * Test that the default configuration file matches the default
+     * configuration returned by the section class.
      *
      * @return void
      */
@@ -54,8 +54,8 @@ class AdminMenuTest extends AbstractSectionTestCase
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAdminMenu($container)->getMenu(),
-            $this->getAdminMenu($container, AdminMenu::getDefaultMenuConfig())->getMenu()
+            $this->getAdminMenu($container)->getSectionConfig(),
+            $this->getAdminMenu($container, AdminMenu::getDefaultMenuConfig())->getSectionConfig()
         );
     }
 
