@@ -107,6 +107,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
         yield 'catch all, search, wrong backend' => [true, 'search', 'secondary', null, null];
         yield 'catch all, search, matching backend' => [true, 'search', 'primary', ['1', '2'], null];
         yield 'catch all, retrieve, matching backend' => [true, 'retrieve', 'primary', null, ['3']];
+        yield 'no catch all, search, wrong backend' => [false, 'search', 'secondary', null, null];
         yield 'no catch all, search, matching backend' => [false, 'search', 'primary', ['1', '2'], null];
         yield 'no catch all, retrieve, matching backend' => [false, 'retrieve', 'primary', null, null];
     }
