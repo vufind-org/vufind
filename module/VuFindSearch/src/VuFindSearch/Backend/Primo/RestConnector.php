@@ -475,7 +475,14 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
             $display = $pnx->display;
             $search = $pnx->search ?? null;
             $recordId = $control->recordid[0];
-            $recordId = str_starts_with($recordId, 'dedupmrg') ? $search->recordid[0] : $recordId;
+            if (str_starts_with($recordId, 'dedupmrg')) {
+                $recordId = $control->almaid[0] ?? false;
+                if (!$recordId) {
+                    $recordId = $control->sourcerecordid[0];
+                }
+                $parts = explode('$', $recordId);
+                $recordId = substr(end($parts), 1);
+            }
             $item['recordid'] = $this->getRecordId($recordId);
             $item['title'] = $display->title[0] ?? '';
             $item['format'] = $display->type ?? [];
