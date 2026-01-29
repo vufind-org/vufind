@@ -17,12 +17,16 @@
 #
 # Array keys for every menu item could be:
 #   - label: the text shown as link, will be translated - required
-#   - route: route name used to generate link target - required unless url is set
+#   - route: route name used to generate link target - required unless url or
+#     submenuItems is set
 #   - routeParams: parameters for dynamic routes
-#   - url: target url, alternative to route - required unless route is set
+#   - url: target url, alternative to route - required unless route or submenuItems
+#     is set
 #   - checkMethod: the name of a SiteMap section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
-#   - attributes: additional attributes for the menu item's tag
+#   - submenuItems: items to be shown in an indented list after the parent item.
+#     Submenu items support the same keys as regular menu items. This includes nested
+#     submenuItems keys.
 #
 # You can use checkMethod: alwaysFail to disable specific inherited groups or items
 # in local configuration. If you wish to completely override the default

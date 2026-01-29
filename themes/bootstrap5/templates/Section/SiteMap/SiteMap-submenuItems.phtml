@@ -1,0 +1,15 @@
+<ul>
+<?php foreach ($submenuItems as $item): ?>
+  <?php $href = isset($item['route']) ? $this->url($item['route']) : ($item['url'] ?? false) ?>
+  <?php if (isset($item['label']) && ($href || isset($item['submenuItems']))): ?>
+    <li>
+    <?php if ($href): ?><a<?= $this->htmlAttributes(['href' => $href]) ?>><?php endif; ?>
+    <?= $this->transEsc($item['label']) ?>
+    <?php if ($href): ?></a><?php endif; ?>
+    <?php if (isset($item['submenuItems'])): ?>
+      <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
+    <?php endif; ?>
+    </li>
+  <?php endif; ?>
+<?php endforeach; ?>
+</ul>
