@@ -105,6 +105,7 @@ class SiteMapTest extends AbstractSectionTestCase
                 'MenuItems' => [
                     [
                         'label' => 'Dummy item',
+                        'url' => '#',
                     ],
                 ],
             ],

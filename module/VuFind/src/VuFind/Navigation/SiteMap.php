@@ -32,6 +32,7 @@ namespace VuFind\Navigation;
 use VuFind\Exception\BadConfig;
 
 use function array_key_exists;
+use function count;
 use function in_array;
 use function is_array;
 
@@ -46,6 +47,38 @@ use function is_array;
  */
 class SiteMap extends AbstractMenu
 {
+    /**
+     * Constructor
+     *
+     * @param array $sectionConfig Site map configuration
+     */
+    public function __construct(
+        array $sectionConfig
+    ) {
+        $this->addRequiredSettings(
+            [
+                'MenuItems',
+            ],
+            self::GROUP_CONTEXT
+        );
+        $this->addRequiredSettings(
+            [
+                'label',
+                'route',
+                'url',
+                'submenuItems',
+            ],
+            self::ITEM_CONTEXT
+        );
+        $this->addLocalizableSettings(
+            [
+                'url',
+            ],
+            self::ITEM_CONTEXT
+        );
+        parent::__construct($sectionConfig);
+    }
+
     /**
      * Is the setting required?
      *
@@ -70,6 +103,15 @@ class SiteMap extends AbstractMenu
         ) {
             // If a section setting exists, no other settings are required.
             return false;
+        }
+        if ($contextKey === self::ITEM_CONTEXT) {
+            // Conditional requirement checks.
+            $diff = array_diff(['route', 'url', 'submenuItems'], [$setting]);
+            if (count($diff) === 2) {
+                // Setting is one of the three. If one of the two other settings
+                // exists then this setting is optional.
+                return count(array_intersect($diff, array_keys($context))) === 0;
+            }
         }
         return parent::isRequiredSetting($setting, $context, $contextKey);
     }
