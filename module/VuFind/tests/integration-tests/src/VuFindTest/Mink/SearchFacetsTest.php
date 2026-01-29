@@ -186,19 +186,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         bool $exclusionActive = false,
         bool $expectMultiSelect = false
     ): void {
-        $this->clickCss($page, $openLightboxSelector);
-        $this->waitForPageLoad($page);
-        // This test has been known to intermittently fail due to the lightbox failing to open,
-        // possibly due to a click failing to register via Mink. This try/catch retry seems to
-        // solve the problem.
-        try {
-            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
-        } catch (\Exception $e) {
-            $this->logWarning('Lightbox failed to open; trying again...');
-            $this->clickCss($page, $openLightboxSelector);
-            $this->waitForPageLoad($page);
-            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
-        }
+        $nextPageButton = $this->openLightboxAndFindCss($page, $openLightboxSelector, '#modal .js-facet-next-page');
         $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
         $nextPageButton->click();
