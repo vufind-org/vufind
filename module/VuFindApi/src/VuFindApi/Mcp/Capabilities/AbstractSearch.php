@@ -36,6 +36,7 @@ use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
 use VuFind\Config\YamlReader;
 use VuFind\Http\ServerUrlHelper;
+use VuFind\Http\UrlHelper;
 use VuFind\Record\Loader;
 use VuFind\Search\SearchRunner;
 use VuFindApi\Formatter\RecordFormatter;
@@ -69,13 +70,15 @@ abstract class AbstractSearch extends AbstractCapabilities
      * @param RecordFormatter $recordFormatter Record formatter
      * @param SearchRunner    $searchRunner    Search runner
      * @param ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param UrlHelper       $urlHelper       Server URL helper
      */
     public function __construct(
         protected YamlReader $yamlReader,
         protected Loader $recordLoader,
         protected RecordFormatter $recordFormatter,
         protected SearchRunner $searchRunner,
-        protected ServerUrlHelper $serverUrlHelper
+        protected ServerUrlHelper $serverUrlHelper,
+        protected UrlHelper $urlHelper
     ) {
         parent::__construct($yamlReader, $recordLoader, $recordFormatter, $searchRunner);
         $this->responseFields = $this->config['ResponseFields'] ?? $this->responseFields;
@@ -141,7 +144,11 @@ abstract class AbstractSearch extends AbstractCapabilities
         );
         // TODO how to do this correctly, with real base path, route mapping to path, and filters.
         $resultsPage = $this->serverUrlHelper->getBaseUrl() .
-            '/vufind/Search/Results?' . $this->getRequestParam() . '=' . urlencode($keywords);
+            $this->urlHelper->generateUrl(
+                'search-results',
+                [],
+                ['query' => [$this->getRequestParam() => urlencode($keywords)]]
+            );
         return [
             'search_results' => $records,
             'search_results_page' => $resultsPage,

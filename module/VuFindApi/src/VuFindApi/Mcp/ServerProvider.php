@@ -84,6 +84,7 @@ class ServerProvider
                 \VuFindApi\Formatter\RecordFormatter::class,
                 \VuFind\Search\SearchRunner::class,
                 \VuFind\Http\ServerUrlHelper::class,
+                \VuFind\Http\UrlHelper::class,
             ] as $class
         ) {
             // Provide these services to each capability class constructor

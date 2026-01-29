@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * URL Helper class.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2025.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Http
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org
+ */
+
+namespace VuFind\Http;
+
+use Closure;
+
+/**
+ * URL Helper class.  Wrapper around Laminas UrlHelper.
+ *
+ * @category VuFind
+ * @package  Http
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org
+ */
+class UrlHelper
+{
+    /**
+     * Constructor.
+     *
+     * @param Closure $urlHelper URL helper function
+     *
+     * @return void
+     */
+    public function __construct(protected Closure $urlHelper)
+    {
+    }
+
+    /**
+     * Generates a url given the name of a route.
+     *
+     * @param string             $name               Name of the route
+     * @param array              $params             Parameters for the link
+     * @param array|\Traversable $options            Options for the route
+     * @param bool               $reuseMatchedParams Whether to reuse matched
+     * parameters
+     *
+     * @see \Laminas\Router\RouteInterface::assemble()
+     *
+     * @throws \Laminas\View\Exception\RuntimeException If no RouteStackInterface was provided
+     * @throws \Laminas\View\Exception\RuntimeException If no RouteMatch was provided
+     * @throws \Laminas\View\Exception\RuntimeException If RouteMatch didn't contain a matched
+     * route name
+     * @throws \Laminas\View\Exception\InvalidArgumentException If the params object was not an
+     * array or Traversable object.
+     *
+     * @return self|string Url For the link href attribute
+     */
+    public function generateUrl(
+        $name = null,
+        $params = [],
+        $options = [],
+        $reuseMatchedParams = false
+    ): string {
+        return ($this->urlHelper)($name, $params, $options, $reuseMatchedParams);
+    }
+}
