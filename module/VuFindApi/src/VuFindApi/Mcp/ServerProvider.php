@@ -91,7 +91,7 @@ class ServerProvider
         }
 
         $builder = Server::builder()
-            ->setServerInfo(name: 'VuFind Server', version: '0.0.1', description: 'The library catalog')
+            ->setServerInfo(name: 'VuFind® Server', version: '0.0.1', description: 'The library catalog')
             ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
             ->setContainer($container);
         $this->addResourceTemplates($builder);
