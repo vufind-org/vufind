@@ -97,7 +97,7 @@ class SiteMapTest extends AbstractSectionTestCase
      */
     public function testClashingGroupKeysFromUsingSectionKey()
     {
-        $this->expectExceptionMessage('Group key clash in configuration');
+        $this->expectExceptionMessage('Group key clash in configuration: Header');
         $container = $this->getContainerWithSectionRelatedServices();
         $config = [
             'Header' => [
