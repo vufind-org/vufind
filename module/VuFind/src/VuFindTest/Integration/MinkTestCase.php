@@ -579,6 +579,34 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Open the lightbox and return the requested element; retry as needed.
+     *
+     * @param Element $page                 Page containing open lightbox selector
+     * @param string  $openLightboxSelector CSS selector for element to click for lightbox access
+     * @param string  $targetSelector       Element to select from open lightbox
+     * @param int     $maxAttempts          Maximum number of attempts to open lightbox (in case initial click fails)
+     *
+     * @return NodeElement
+     */
+    protected function openLightboxAndFindCss(
+        Element $page,
+        string $openLightboxSelector,
+        string $targetSelector,
+        int $maxAttempts = 5
+    ): NodeElement {
+        for ($try = 0; $try < $maxAttempts; $try++) {
+            $this->clickCss($page, $openLightboxSelector);
+            $this->waitForPageLoad($page);
+            try {
+                return $this->findCss($page, $targetSelector);
+            } catch (\Exception $e) {
+                $this->logWarning('Lightbox failed to open on attempt #' . ($try + 1));
+            }
+        }
+        throw new \Exception("Ran out of retries looking for $targetSelector in lightbox using $openLightboxSelector");
+    }
+
+    /**
      * Wait for a JavaScript statement to result in true.
      *
      * Includes a check for $ to be available to make sure jQuery has been loaded.
