@@ -1473,7 +1473,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             }
         }
 
-        $this->clearBrowserLocalStorage();  // don't carry data from one test to another!
+        if ($this->continuousIntegrationRunning()) {
+            $this->clearBrowserLocalStorage();  // don't carry data from one test to another!
+        }
         $this->stopMinkSession();
         $this->restoreConfigs();
 
