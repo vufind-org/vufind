@@ -59,13 +59,6 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
     protected $backends;
 
     /**
-     * Params
-     *
-     * @var ParamBag
-     */
-    protected ParamBag $params;
-
-    /**
      * Setup.
      *
      * @return void
