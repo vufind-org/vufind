@@ -50,12 +50,12 @@ class ServerProvider
     /**
      * MCP Server
      */
-    private Server $server;
+    protected Server $server;
 
     /**
      * Config name
      */
-    private string $configName = 'ModelContextProtocol';
+    protected string $configName = 'ModelContextProtocol';
 
     /**
      * Config array
