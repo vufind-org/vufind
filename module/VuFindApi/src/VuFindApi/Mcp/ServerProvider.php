@@ -34,6 +34,7 @@ use Mcp\Capability\Registry\Container;
 use Mcp\Server;
 use Mcp\Server\Builder;
 use Mcp\Server\Session\FileSessionStore;
+use VuFind\Config\Config;
 use VuFind\Config\YamlReader;
 
 /**
@@ -60,19 +61,22 @@ class ServerProvider
     /**
      * Config array
      */
-    protected array $config;
+    protected array $mcpConfig;
 
     /**
      * Constructor
      *
+     * @param Config                  $topConfig      config.ini
      * @param ServiceLocatorInterface $serviceLocator Service locator
      */
-    public function __construct(protected ServiceLocatorInterface $serviceLocator)
-    {
+    public function __construct(
+        protected Config $topConfig,
+        protected ServiceLocatorInterface $serviceLocator
+    ) {
         $yamlReader = $serviceLocator->get(YamlReader::class);
-        $this->config = $yamlReader->get($this->configName . '.yaml');
+        $this->mcpConfig = $yamlReader->get($this->configName . '.yaml');
 
-        if (!($this->config['General']['enabled'] ?? false)) {
+        if (!($this->mcpConfig['General']['enabled'] ?? false)) {
             return;
         }
 
@@ -92,13 +96,33 @@ class ServerProvider
         }
 
         $builder = Server::builder()
-            ->setServerInfo(name: 'VuFind® Server', version: '0.0.1', description: 'The library catalog')
             ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
             ->setContainer($container);
+        $this->setServerInfo($builder);
         $this->addResourceTemplates($builder);
         $this->addTools($builder);
         $this->addAutoDiscovery($builder);
         $this->server = $builder->build();
+    }
+
+    /**
+     * Add server info metadata to the Server Builder.
+     *
+     * @param Builder $builder The server builder
+     *
+     * @return void
+     */
+    protected function setServerInfo(Builder $builder): void
+    {
+        $name = $this->mcpConfig['General']['name'] ?? 'VuFind® Server';
+
+        $baseVersion = $this->topConfig['Site']['generator'];
+        $baseVersion = str_replace('VuFind ', '', $baseVersion);
+        $version = $baseVersion . ($this->mcpConfig['General']['versionSuffix'] ?? '');
+
+        $description = $this->mcpConfig['General']['description'] ?? $this->topConfig['Site']['title'];
+
+        $builder->setServerInfo(name: $name, version: $version, description: $description);
     }
 
     /**
@@ -110,7 +134,7 @@ class ServerProvider
      */
     protected function addResourceTemplates(Builder $builder): void
     {
-        foreach (($this->config['ResourceTemplates'] ?? []) as $resourceTemplate) {
+        foreach (($this->mcpConfig['ResourceTemplates'] ?? []) as $resourceTemplate) {
             $className = $resourceTemplate['class'];
             $functionName = $resourceTemplate['function'];
             $uriTemplate = $resourceTemplate['uriTemplate'];
@@ -130,7 +154,7 @@ class ServerProvider
      */
     protected function addTools(Builder $builder): void
     {
-        foreach (($this->config['Tools'] ?? []) as $name => $tool) {
+        foreach (($this->mcpConfig['Tools'] ?? []) as $name => $tool) {
             $description = $tool['description'];
             $className = $tool['class'];
             $functionName = $tool['function'];
@@ -153,7 +177,7 @@ class ServerProvider
      */
     protected function addAutoDiscovery(Builder $builder): void
     {
-        if ($discovery = ($this->config['AutoDiscovery'] ?? [])) {
+        if ($discovery = ($this->mcpConfig['AutoDiscovery'] ?? [])) {
             $params = [$discovery['basePath'] ?? __DIR__];
             if ($scanDirs = $discovery['scanDirs'] ?? []) {
                 $params['scanDirs'] = $scanDirs;

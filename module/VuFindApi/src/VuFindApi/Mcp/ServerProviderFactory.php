@@ -68,7 +68,12 @@ class ServerProviderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $topConfig = $configManager->getConfigObject('config');
+
         return new $requestedName(
+            $topConfig,
             $container,
         );
     }
