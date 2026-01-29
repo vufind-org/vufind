@@ -109,7 +109,7 @@ abstract class AbstractSearch extends AbstractCapabilities
      */
     public function searchRecords(string $keywords, ?string $contentType = null): array
     {
-        $rawRequest = [$this->getRequestParam() => urldecode($keywords)];
+        $rawRequest = [$this->getRequestParam() => $keywords];
         if ($contentType) {
             if ($filter = $this->config['ContentTypes'][$contentType]['filter'] ?? null) {
                 $rawRequest['filter'] = $filter;
