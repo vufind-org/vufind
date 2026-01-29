@@ -442,11 +442,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Shut down the Mink session.
      *
+     * @param bool $clearLocalStorage Should we clear out local storage as part of shutdown?
+     *
      * @return void
      */
-    protected function stopMinkSession(): void
+    protected function stopMinkSession(bool $clearLocalStorage = true): void
     {
         if (!empty($this->session)) {
+            // If requested, make sure we don't carry local storage forward to the next test:
+            if ($clearLocalStorage) {
+                $this->clearBrowserLocalStorage();
+            }
             $this->session->stop();
             $this->session = null;
         }
@@ -1473,10 +1479,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             }
         }
 
-        // If a session is active, make sure we don't carry local storage forward to the next test:
-        if ($this->session) {
-            $this->clearBrowserLocalStorage();
-        }
         $this->stopMinkSession();
         $this->restoreConfigs();
 
