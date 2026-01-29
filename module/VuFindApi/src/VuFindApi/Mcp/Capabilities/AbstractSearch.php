@@ -92,6 +92,13 @@ abstract class AbstractSearch extends AbstractCapabilities
     abstract protected function getSearchClassId(): string;
 
     /**
+     * Get the route name to perform a search.
+     *
+     * @return string
+     */
+    abstract protected function getSearchActionRoute(): string;
+
+    /**
      * Return the request parameter name.
      *
      * @return string
@@ -145,7 +152,7 @@ abstract class AbstractSearch extends AbstractCapabilities
         // TODO how to do this correctly, with real base path, route mapping to path, and filters.
         $resultsPage = $this->serverUrlHelper->getBaseUrl() .
             $this->urlHelper->generateUrl(
-                'search-results',
+                $this->getSearchActionRoute(),
                 [],
                 ['query' => [$this->getRequestParam() => urlencode($keywords)]]
             );

@@ -49,4 +49,14 @@ class SearchSolr extends AbstractSearch
     {
         return 'Solr';
     }
+
+    /**
+     * Get the route name to perform a search.
+     *
+     * @return string
+     */
+    protected function getSearchActionRoute(): string
+    {
+        return 'search-results';
+    }
 }
