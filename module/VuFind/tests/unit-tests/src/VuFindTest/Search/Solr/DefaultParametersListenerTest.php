@@ -124,7 +124,13 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('searchProvider')]
-    public function testSearch($catchAllConfig, $searchContext, $searchBackendId, $expectFoo, $expectBar)
+    public function testSearch(
+        bool $catchAllConfig,
+        string $searchContext,
+        string $searchBackendId,
+        ?array $expectFoo,
+        ?array $expectBar
+    ): void
     {
         // Set up search
         $params =  new ParamBag(
