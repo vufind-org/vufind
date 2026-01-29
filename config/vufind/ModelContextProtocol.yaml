@@ -5,7 +5,7 @@
 General:
   # Enable the MCP Server and register all capabilities defined below. Disabled by default.
   # Access must also be granted in permissions.ini.
-  # enabled: true
+  #enabled: false
 
 # Capabilities may be auto-discovered in the defined directories, if they are properly
 # defined with the appropriate PHP attributes #[McpTool], #[McpResource], etc.
