@@ -130,8 +130,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
         string $searchBackendId,
         ?array $expectFoo,
         ?array $expectBar
-    ): void
-    {
+    ): void {
         // Set up search
         $params =  new ParamBag(
             [
