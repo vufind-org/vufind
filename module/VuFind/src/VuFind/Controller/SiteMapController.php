@@ -64,6 +64,12 @@ class SiteMapController extends AbstractBase
      */
     public function homeAction()
     {
+        // Block access to everyone when page is disabled.
+        $config = $this->getConfigArray();
+        if (!($config['Site']['siteMapPageEnabled'] ?? false)) {
+            return $this->redirect()->toRoute('home');
+        }
+
         $viewModel = $this->createViewModel([
             'siteMap' => $this->siteMap,
         ]);

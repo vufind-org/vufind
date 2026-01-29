@@ -73,9 +73,12 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      * Constructor.
      *
      * @param array $sectionConfig Section configuration
+     * @param array $config        Main configuration
      */
-    public function __construct(array $sectionConfig)
-    {
+    public function __construct(
+        array $sectionConfig,
+        protected array $config = []
+    ) {
         $this->requiredSettings[self::GROUP_CONTEXT] ??= [];
         $this->requiredSettings[self::ITEM_CONTEXT] ??= [];
         $this->localizableSettings[self::GROUP_CONTEXT] ??= [];
@@ -294,4 +297,14 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      * @return array
      */
     abstract public static function getDefaultMenuConfig(): array;
+
+    /**
+     * Check whether to show site map page item
+     *
+     * @return bool
+     */
+    public function checkSiteMapPage(): bool
+    {
+        return $this->config['Site']['siteMapPageEnabled'] ?? false;
+    }
 }

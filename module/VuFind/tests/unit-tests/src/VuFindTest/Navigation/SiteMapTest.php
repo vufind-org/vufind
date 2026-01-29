@@ -44,8 +44,8 @@ use VuFindTest\Unit\AbstractSectionTestCase;
 class SiteMapTest extends AbstractSectionTestCase
 {
     /**
-     * Test that the default configuration file matches the configuration
-     * returned by section class.
+     * Test that the default configuration file matches the default
+     * configuration returned by the section class.
      *
      * @return void
      */
@@ -53,8 +53,8 @@ class SiteMapTest extends AbstractSectionTestCase
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getSiteMap($container)->getMenu(),
-            $this->getSiteMap($container, SiteMap::getDefaultMenuConfig())->getMenu()
+            $this->getSiteMap($container)->getSectionConfig(),
+            $this->getSiteMap($container, SiteMap::getDefaultMenuConfig())->getSectionConfig()
         );
     }
 
