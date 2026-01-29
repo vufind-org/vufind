@@ -59,7 +59,7 @@ abstract class AbstractSearch extends AbstractCapabilities
     /**
      * Limit for searches
      */
-    protected int $limit = 50;
+    protected int $limit = 20;
 
     /**
      * Constructor
@@ -109,7 +109,6 @@ abstract class AbstractSearch extends AbstractCapabilities
      */
     public function searchRecords(string $keywords, ?string $contentType = null): array
     {
-        $limit = $this->limit;
         $rawRequest = [$this->getRequestParam() => urldecode($keywords)];
         if ($contentType) {
             if ($filter = $this->config['ContentTypes'][$contentType]['filter'] ?? null) {
@@ -127,11 +126,9 @@ abstract class AbstractSearch extends AbstractCapabilities
                 $params,
                 $searchId,
                 $results
-            ) use (
-                $limit
             ): void {
                 $results->overrideStartRecord(1);
-                $params->setLimit($limit);
+                $params->setLimit($this->limit);
             }
         );
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
