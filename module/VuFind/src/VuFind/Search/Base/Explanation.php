@@ -78,7 +78,7 @@ abstract class Explanation
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params        Search Parameter
+     * @param \VuFind\Search\Base\Params $params        Search parameters object
      * @param SearchService              $searchService Search Service
      * @param ConfigManagerInterface     $configManager Config manager
      */
