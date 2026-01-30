@@ -636,11 +636,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getDeduplicationListener(Backend $backend, bool $enabled): DeduplicationListener
     {
+        $configManager = $this->serviceLocator->get(ConfigManagerInterface::class);
         return new DeduplicationListener(
             $backend,
-            $this->serviceLocator->get(ConfigManagerInterface::class),
-            $this->searchConfig,
-            'datasources',
+            $configManager->getConfigArray($this->searchConfig),
+            $configManager->getConfigArray('datasources'),
             $enabled
         );
     }

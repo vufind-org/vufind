@@ -36,7 +36,6 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-use VuFind\Config\ConfigManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -58,19 +57,17 @@ class DeduplicationListener
     /**
      * Constructor.
      *
-     * @param Backend       $backend          Search backend
-     * @param ConfigManager $configManager    Config manager
-     * @param string        $searchConfig     Search configuration file identifier
-     * @param string        $dataSourceConfig Data source configuration file identifier
-     * @param bool          $enabled          Whether deduplication is enabled
+     * @param Backend $backend          Search backend
+     * @param array   $searchConfig     Search configuration
+     * @param array   $dataSourceConfig Data source configuration
+     * @param bool    $enabled          Whether deduplication is enabled
      *
      * @return void
      */
     public function __construct(
         protected Backend $backend,
-        protected ConfigManager $configManager,
-        protected string $searchConfig,
-        protected string $dataSourceConfig = 'datasources',
+        protected array $searchConfig,
+        protected array $dataSourceConfig,
         protected bool $enabled = true
     ) {
     }
@@ -177,7 +174,6 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords(EventInterface $event): void
     {
-        $dataSourceConfig = $this->configManager->getConfigArray($this->dataSourceConfig);
         $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $command = $event->getParam('command');
@@ -209,8 +205,8 @@ class DeduplicationListener
                 if (!empty($buildingPriority)) {
                     if (isset($buildingPriority[$source])) {
                         $localPriority = -$buildingPriority[$source];
-                    } elseif (isset($dataSourceConfig[$source]['institution'])) {
-                        $institution = $dataSourceConfig[$source]['institution'];
+                    } elseif (isset($this->dataSourceConfig[$source]['institution'])) {
+                        $institution = $this->dataSourceConfig[$source]['institution'];
                         if (isset($buildingPriority[$institution])) {
                             $localPriority = -$buildingPriority[$institution];
                         }
@@ -298,9 +294,8 @@ class DeduplicationListener
      */
     protected function getActiveRecordSources(EventInterface $event): array
     {
-        $searchConfig = $this->configManager->getConfigArray($this->searchConfig);
-        return !empty($searchConfig['Records']['sources'])
-            ? explode(',', $searchConfig['Records']['sources'])
+        return !empty($this->searchConfig['Records']['sources'])
+            ? explode(',', $this->searchConfig['Records']['sources'])
             : [];
     }
 
