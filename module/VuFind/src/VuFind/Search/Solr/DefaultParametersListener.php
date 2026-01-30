@@ -127,7 +127,7 @@ class DefaultParametersListener
             if ($defaultParamsText && $params = ParamBagBag::from($command->getSearchParameters())) {
                 $command->setSearchParameters($params);
                 try {
-                    $defaultParams = json_decode($defaultParamsText, true, 512, JSON_THROW_ON_ERROR);
+                    $defaultParams = json_decode($defaultParamsText, true, flags: JSON_THROW_ON_ERROR);
                 } catch (JsonException $e) {
                     throw new \Exception(
                         'Default parameters must be expressed in JSON, using Solr\'s JSON Request API '
