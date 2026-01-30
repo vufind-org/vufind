@@ -85,21 +85,20 @@
         "status": 200
     },
     {
-        "comment": "Version check",
+        "comment": "Version check with invalid response",
         "expectedMethod": "GET",
         "expectedPath": "\/modules\/discovery?query=(name==mod-circulation)",
         "expectedParams": [],
-        "body": {
-            "discovery": [
-                {
-                    "location": "http://mod-circulation-b:8051/mod-circulation",
-                    "id": "mod-circulation-24.4.11",
-                    "name": "mod-circulation",
-                    "version": "24.4.11"
-                }
-            ],
-            "totalRecords": 1
-        },
+        "body": "not-valid-json",
+        "bodyType": "string",
+        "status": 200
+    },
+    {
+        "comment": "Version check fallback method",
+        "expectedMethod": "GET",
+        "expectedPath": "\/_\/proxy\/tenants\/config_tenant\/modules?filter=mod-circulation&latest=1",
+        "expectedParams": [],
+        "body": [ {"id":"mod-circulation-24.0.0"} ],
         "bodyType": "json",
         "status": 200
     },

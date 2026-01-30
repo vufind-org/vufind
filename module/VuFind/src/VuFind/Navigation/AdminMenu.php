@@ -104,7 +104,7 @@ class AdminMenu extends AbstractMenu
                     ],
                     [
                         'name' => 'tags',
-                        'label' => 'Tag Maintenance ',
+                        'label' => 'Tag Maintenance',
                         'route' => 'admin/tags',
                     ],
                     [

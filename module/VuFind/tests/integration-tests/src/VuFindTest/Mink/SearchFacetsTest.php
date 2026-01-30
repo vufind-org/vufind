@@ -186,19 +186,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         bool $exclusionActive = false,
         bool $expectMultiSelect = false
     ): void {
-        $this->clickCss($page, $openLightboxSelector);
-        $this->waitForPageLoad($page);
-        // This test has been known to intermittently fail due to the lightbox failing to open,
-        // possibly due to a click failing to register via Mink. This try/catch retry seems to
-        // solve the problem.
-        try {
-            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
-        } catch (\Exception $e) {
-            $this->logWarning('Lightbox failed to open; trying again...');
-            $this->clickCss($page, $openLightboxSelector);
-            $this->waitForPageLoad($page);
-            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
-        }
+        $nextPageButton = $this->openLightboxAndFindCss($page, $openLightboxSelector, '#modal .js-facet-next-page');
         $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
         $nextPageButton->click();
@@ -475,11 +463,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
-        // from the list:
-        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $inputSelector = '#modal input[data-name="contains"]';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
+        $this->findCssAndSetValue($page, $inputSelector, 'd');
         $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
@@ -535,11 +522,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
-        // from the list:
-        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $inputSelector = '#modal input[data-name="contains"]';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
+        $this->findCssAndSetValue($page, $inputSelector, 'd');
         $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
@@ -640,8 +626,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->facetLightboxListProcedure($page, '#side-collapse-genre_facet .all-facets', $limit);
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
-        $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
-        $this->clickCss($page, '#modal .js-facet-item.active');
+        $activeFacet = $this->openLightboxAndFindCss(
+            $page,
+            '#side-collapse-genre_facet .all-facets',
+            '#modal .js-facet-item.active'
+        );
+        $activeFacet->click();
         // facet removed
         $this->unFindCss($page, $this->activeFilterSelector);
     }
@@ -696,14 +686,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $lightboxFacetSelector = '#modal #facet-list-count .js-facet-item';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $lightboxFacetSelector);
+        $items = $page->findAll('css', $lightboxFacetSelector);
         $this->assertCount($limit - 1, $items); // (-1 is for the filtered value)
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $items = $page->findAll('css', $lightboxFacetSelector);
         $this->assertCount($limit * 2 - 1, $items);
         $this->assertSame(
             'Weird IDs 9 results 9 '
@@ -739,9 +729,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $modal = $this->findCss($page, '#modal');
-        $this->assertIsObject($modal);
+        $modal = $this->openLightboxAndFindCss($page, $this->genreMoreSelector, '#modal');
         // Make sure the filter control is available in the modal before proceeding; otherwise,
         // timing issues in activateMultiFilterSelection can break the test.
         $this->findCss($page, '#modal .js-user-selection-multi-filters');

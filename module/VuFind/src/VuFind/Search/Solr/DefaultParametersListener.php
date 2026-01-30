@@ -32,6 +32,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Service;
 
 /**
  * Solr default parameters listener.
@@ -79,7 +80,11 @@ class DefaultParametersListener
     public function attach(
         SharedEventManagerInterface $manager
     ): void {
-        $manager->attach(\VuFindSearch\Service::class, 'pre', [$this, 'onSearchPre']);
+        $manager->attach(
+            Service::class,
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
     }
 
     /**
@@ -91,14 +96,17 @@ class DefaultParametersListener
      */
     public function onSearchPre(EventInterface $event): EventInterface
     {
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $context = $event->getParam('context');
+        $command = $event->getParam('command');
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            $context = $command->getContext();
+            if (empty($context)) {
+                $context = null;
+            }
             $context = $this->contextMap[$context] ?? $context;
             $defaultParams = $this->defaultParams[$context]
                 ?? $this->defaultParams['*']
                 ?? '';
-            if ($defaultParams && $params = $event->getParam('params')) {
+            if ($defaultParams && $params = $command->getSearchParameters()) {
                 foreach (explode('&', $defaultParams) as $keyVal) {
                     $parts = explode('=', $keyVal, 2);
                     if (!isset($parts[1])) {

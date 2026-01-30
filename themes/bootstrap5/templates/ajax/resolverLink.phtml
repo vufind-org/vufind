@@ -1,13 +1,23 @@
 <?php if (!empty($link['href'])): ?>
-  <a href="<?=$this->escapeHtmlAttr($link['href'])?>" aria-label="<?=!empty($link['service_type']) ? $this->transEscAttr('ServiceType::' . $link['service_type']) : ''?>"<?=!empty($link['access']) ? ' class="access-' . $link['access'] . '"' : ''?>>
-    <?=$this->escapeHtml($link['title'] ?? '')?>
-  </a>
+  <?php
+    $linkAttrs = [
+      'href' => $link['href'],
+      'aria-label' => !empty($link['service_type']) ? $this->transEscAttr('ServiceType::' . $link['service_type']) : '',
+      'class' => !empty($link['access']) ? 'access-' . $link['access'] : '',
+    ];
+  ?>
+  <a<?=$this->htmlAttributes($linkAttrs)?>><?=$this->escapeHtml($link['title'] ?? '')?></a>
 <?php else: ?>
   <?=$this->escapeHtml($link['title'] ?? '')?>
 <?php endif; ?>
 <?php if (!empty($link['coverage'])): ?>
   <span class="openurl-coverage">
      <?=$this->escapeHtml($link['coverage'])?>
+  </span>
+<?php endif; ?>
+<?php if (!empty($link['embargo'])): ?>
+  <span class="openurl-embargo">
+     <?=$this->escapeHtml($link['embargo'])?>
   </span>
 <?php endif; ?>
 <?php if (!empty($link['notes'])): ?>
