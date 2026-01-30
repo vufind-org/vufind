@@ -165,13 +165,22 @@ class ParamBagBag extends ParamBag implements JsonSerializable
     public function addMultiNested($name, $value): void
     {
         if (is_array($value)) {
-            $nestedBag = $this->items[$name] ?? null;
-            if (!$nestedBag) {
-                $nestedBag = new ParamBagBag();
-                $this->set($name, $nestedBag);
-            }
-            foreach ($value as $nestedName => $nestedValue) {
-                $nestedBag->addMultiNested($nestedName, $nestedValue);
+            if (array_is_list($value)) {
+                foreach ($value as $valueItem) {
+                    $this->add($name, $valueItem);
+                }
+            } else {
+                $nestedBag = $this->items[$name][0] ?? null;
+                if (!$nestedBag) {
+                    $nestedBag = new ParamBagBag();
+                    $this->set($name, $nestedBag);
+                } elseif (!$nestedBag instanceof ParamBagBag) {
+                    $nestedBag = ParamBagBag::from($nestedBag);
+                    $this->set($name, $nestedBag);
+                }
+                foreach ($value as $nestedName => $nestedValue) {
+                    $nestedBag->addMultiNested($nestedName, $nestedValue);
+                }
             }
         } else {
             $this->add($name, $value);

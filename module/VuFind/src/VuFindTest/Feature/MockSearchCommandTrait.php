@@ -59,12 +59,20 @@ trait MockSearchCommandTrait
         string $backendId = 'foo',
         $result = null
     ): Command {
+        $storedParams = $params;
         $command = $this->getMockBuilder(Command::class)
             ->disableOriginalConstructor()
             ->getMock();
-        if ($params) {
-            $command->expects($this->any())->method('getSearchParameters')->willReturn($params);
-        }
+        $command->expects($this->any())->method('getSearchParameters')->willReturnCallback(
+            function () use (&$storedParams) {
+                return $storedParams;
+            }
+        );
+        $command->expects($this->any())->method('setSearchParameters')->willReturnCallback(
+            function ($params) use (&$storedParams): void {
+                $storedParams = $params;
+            }
+        );
         if ($context) {
             $command->expects($this->any())->method('getContext')->willReturn($context);
         }

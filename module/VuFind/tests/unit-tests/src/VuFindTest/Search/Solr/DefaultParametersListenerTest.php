@@ -141,10 +141,10 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
 
         // Set up listener
         $listenerConfig = [
-            'search' => 'foo=1&foo=2',
+            'search' => '{"foo": ["1", "2"]}',
         ];
         if ($catchAllConfig) {
-            $listenerConfig['*'] = 'bar=3&bar';
+            $listenerConfig['*'] = '{"bar": ["3"]}';
         }
         $listener = new DefaultParametersListener($this->backends['primary'], $listenerConfig);
 
@@ -164,6 +164,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPre($event);
 
+        $params = $command->getSearchParameters();
         $this->assertEquals($expectFoo, $params->get('foo'));
         $this->assertEquals($expectBar, $params->get('bar'));
     }
