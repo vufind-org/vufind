@@ -35,7 +35,6 @@ use Mcp\Server;
 use Mcp\Server\Builder;
 use Mcp\Server\Session\FileSessionStore;
 use VuFind\Config\Config;
-use VuFind\Config\YamlReader;
 
 /**
  * ServerProvider for Model Context Protocol (MCP)
@@ -54,28 +53,17 @@ class ServerProvider
     protected Server $server;
 
     /**
-     * Config name
-     */
-    protected string $configName = 'ModelContextProtocol';
-
-    /**
-     * Config array
-     */
-    protected array $mcpConfig;
-
-    /**
      * Constructor
      *
+     * @param array                   $mcpConfig      MCP configuration
      * @param Config                  $topConfig      config.ini
      * @param ServiceLocatorInterface $serviceLocator Service locator
      */
     public function __construct(
+        protected array $mcpConfig,
         protected Config $topConfig,
         protected ServiceLocatorInterface $serviceLocator
     ) {
-        $yamlReader = $serviceLocator->get(YamlReader::class);
-        $this->mcpConfig = $yamlReader->get($this->configName . '.yaml');
-
         if (!($this->mcpConfig['General']['enabled'] ?? false)) {
             return;
         }

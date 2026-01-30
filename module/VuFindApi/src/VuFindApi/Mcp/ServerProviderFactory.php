@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\YamlReader;
 
 /**
  * ServerProviderFactory for Model Context Protocol (MCP)
@@ -46,6 +47,11 @@ use Psr\Container\ContainerInterface;
  */
 class ServerProviderFactory implements FactoryInterface
 {
+    /**
+     * MCP Config name
+     */
+    protected string $mcpConfigName = 'ModelContextProtocol';
+
     /**
      * Create an object
      *
@@ -69,10 +75,14 @@ class ServerProviderFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
+        $yamlReader = $container->get(YamlReader::class);
+        $mcpConfig = $yamlReader->get($this->mcpConfigName . '.yaml');
+
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $topConfig = $configManager->getConfigObject('config');
 
         return new $requestedName(
+            $mcpConfig,
             $topConfig,
             $container,
         );
