@@ -161,7 +161,7 @@ class ErrorListener
     /// Internal API
 
     /**
-     * Analyze JSON-encoded error response and return appropriate tags.
+     * Analyze JSON-decoded error response and return appropriate tags.
      *
      * @param mixed $body Deserialize JSON body
      *

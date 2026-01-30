@@ -49,7 +49,7 @@ class InjectOnCampusListener
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Is user on campus or not?
+     * Is user on campus or not? (null will trigger a lookup to determine status)
      *
      * @var ?bool
      */

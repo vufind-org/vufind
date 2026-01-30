@@ -56,7 +56,8 @@ class PrimoPermissionHandler
     protected array $primoConfig;
 
     /**
-     * Institution code applicable for the user
+     * Institution code applicable for the user (null = not set yet -- attempt autodetection;
+     * false = invalid value provided, or autodetection failed)
      *
      * @var string|bool|null
      */

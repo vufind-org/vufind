@@ -65,8 +65,7 @@ class DeduplicationListener
      * @param ContainerInterface $serviceLocator   Service locator
      * @param string             $searchConfig     Search configuration file identifier
      * @param string             $dataSourceConfig Data source configuration file identifier
-     * @param bool               $enabled          Whether deduplication is
-     * enabled
+     * @param bool               $enabled          Whether deduplication is enabled
      *
      * @return void
      */
