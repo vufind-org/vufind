@@ -15,7 +15,7 @@
         "process-timeout": 0,
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
-            "php-http/discovery": true,
+            "php-http/discovery": false,
             "wikimedia/composer-merge-plugin": true
         }
     },
