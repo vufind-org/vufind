@@ -442,11 +442,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Shut down the Mink session.
      *
+     * @param bool $clearLocalStorage Should we clear out local storage as part of shutdown?
+     *
      * @return void
      */
-    protected function stopMinkSession(): void
+    protected function stopMinkSession(bool $clearLocalStorage = true): void
     {
         if (!empty($this->session)) {
+            // If requested, make sure we don't carry local storage forward to the next test:
+            if ($clearLocalStorage) {
+                $this->clearBrowserLocalStorage();
+            }
             $this->session->stop();
             $this->session = null;
         }
@@ -576,6 +582,34 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             "Element not found: $selector index $index"
         );
         return $result;
+    }
+
+    /**
+     * Open the lightbox and return the requested element; retry as needed.
+     *
+     * @param Element $page                 Page containing open lightbox selector
+     * @param string  $openLightboxSelector CSS selector for element to click for lightbox access
+     * @param string  $targetSelector       Element to select from open lightbox
+     * @param int     $maxAttempts          Maximum number of attempts to open lightbox (in case initial click fails)
+     *
+     * @return NodeElement
+     */
+    protected function openLightboxAndFindCss(
+        Element $page,
+        string $openLightboxSelector,
+        string $targetSelector,
+        int $maxAttempts = 5
+    ): NodeElement {
+        for ($try = 0; $try < $maxAttempts; $try++) {
+            $this->clickCss($page, $openLightboxSelector);
+            $this->waitForPageLoad($page);
+            try {
+                return $this->findCss($page, $targetSelector);
+            } catch (\Exception $e) {
+                $this->logWarning('Lightbox failed to open on attempt #' . ($try + 1));
+            }
+        }
+        throw new \Exception("Ran out of retries looking for $targetSelector in lightbox using $openLightboxSelector");
     }
 
     /**
@@ -1354,6 +1388,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 . " for $logMessage"
             );
         }
+    }
+
+    /**
+     * Clear the browser's local storage.
+     *
+     * @return void
+     */
+    protected function clearBrowserLocalStorage(): void
+    {
+        $this->getMinkSession()->evaluateScript('window.localStorage.clear();');
     }
 
     /**

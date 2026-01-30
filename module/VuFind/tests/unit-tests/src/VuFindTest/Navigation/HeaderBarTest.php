@@ -45,8 +45,8 @@ use VuFindTest\Unit\AbstractSectionTestCase;
 class HeaderBarTest extends AbstractSectionTestCase
 {
     /**
-     * Test that the default configuration file matches the configuration
-     * returned by section class.
+     * Test that the default configuration file matches the default
+     * configuration returned by the section class.
      *
      * @return void
      */
@@ -54,8 +54,8 @@ class HeaderBarTest extends AbstractSectionTestCase
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getHeaderBar($container)->getMenu(),
-            $this->getHeaderBar($container, HeaderBar::getDefaultMenuConfig())->getMenu()
+            $this->getHeaderBar($container)->getSectionConfig(),
+            $this->getHeaderBar($container, HeaderBar::getDefaultMenuConfig())->getSectionConfig()
         );
     }
 
