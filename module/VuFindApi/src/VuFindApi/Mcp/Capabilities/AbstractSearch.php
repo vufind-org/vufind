@@ -169,12 +169,6 @@ abstract class AbstractSearch extends AbstractCapabilities
      *
      * @return array The record
      */
-    #[McpResourceTemplate(
-        uriTemplate: 'catalog://record/{recordId}',
-        name: 'getRecord',
-        description: 'Get a catalog record by its ID.',
-        mimeType: 'application/json'
-    )]
     public function getRecord(string $recordId): array
     {
         if (!$recordId) {
