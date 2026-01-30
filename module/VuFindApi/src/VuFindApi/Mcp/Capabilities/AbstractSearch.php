@@ -30,7 +30,6 @@
 namespace VuFindApi\Mcp\Capabilities;
 
 use Exception;
-use Mcp\Capability\Attribute\McpResourceTemplate;
 use Mcp\Exception\InvalidArgumentException;
 use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
