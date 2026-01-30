@@ -4,7 +4,7 @@
 
 General:
   # Enable the MCP Server and register all capabilities defined below. Disabled by default.
-  # Access must also be granted in permissions.ini.
+  # See also "Model Context Protocol permissions" in permissions.ini.
   #enabled: false
   # name: Default is "VuFind® Server"
   #name: MyLibrary VuFind® Server
