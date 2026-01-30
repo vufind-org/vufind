@@ -56,7 +56,7 @@ class InjectHighlightingListener
      * Constructor.
      *
      * @param BackendInterface $backend                     Backend
-     * @param string           $fieldList                   Field(s) to highlight (hl.fl param)
+     * @param string           $fieldList                   Field(s) to highlight when active (hl.fl param)
      * @param array            $extraHighlightingParameters Extra Solr highlighting parameters
      *
      * @return void
