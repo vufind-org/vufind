@@ -86,7 +86,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
     protected ?array $coord = null;
 
     /**
-    * The main result of the explain class, an array with every match and its values.
+     * The main result of the explain class, an array with every match and its values.
      *
      * @var array
      */

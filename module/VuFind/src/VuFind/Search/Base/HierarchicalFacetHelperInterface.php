@@ -61,10 +61,10 @@ interface HierarchicalFacetHelperInterface
      * Helper method for building hierarchical facets:
      * Convert facet list to a hierarchical array
      *
-     * @param string              $facet     Facet name
-     * @param array               $facetList Facet list
-     * @param UrlQueryHelper|bool $urlHelper Query URL helper for building facet URLs
-     * @param bool                $escape    Whether to escape URLs
+     * @param string          $facet     Facet name
+     * @param array           $facetList Facet list
+     * @param ?UrlQueryHelper $urlHelper Query URL helper for building facet URLs
+     * @param bool            $escape    Whether to escape URLs
      *
      * @return array Facet hierarchy
      *
@@ -75,7 +75,7 @@ interface HierarchicalFacetHelperInterface
     public function buildFacetArray(
         string $facet,
         array $facetList,
-        UrlQueryHelper|bool $urlHelper = false,
+        ?UrlQueryHelper $urlHelper = null,
         bool $escape = true
     ): array;
 

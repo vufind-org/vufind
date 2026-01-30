@@ -194,10 +194,10 @@ class HierarchicalFacetHelper implements
      * Helper method for building hierarchical facets:
      * Convert facet list to a hierarchical array
      *
-     * @param string              $facet     Facet name
-     * @param array               $facetList Facet list
-     * @param UrlQueryHelper|bool $urlHelper Query URL helper for building facet URLs
-     * @param bool                $escape    Whether to escape URLs
+     * @param string          $facet     Facet name
+     * @param array           $facetList Facet list
+     * @param ?UrlQueryHelper $urlHelper Query URL helper for building facet URLs
+     * @param bool            $escape    Whether to escape URLs
      *
      * @return array Facet hierarchy
      *
@@ -208,7 +208,7 @@ class HierarchicalFacetHelper implements
     public function buildFacetArray(
         string $facet,
         array $facetList,
-        UrlQueryHelper|bool $urlHelper = false,
+        ?UrlQueryHelper $urlHelper = null,
         bool $escape = true
     ): array {
         // Create a keyed (for conversion to hierarchical) array of facet data
@@ -365,23 +365,23 @@ class HierarchicalFacetHelper implements
     /**
      * Create an item for the hierarchical facet array
      *
-     * @param string              $facet     Facet name
-     * @param array               $item      Facet item received from Solr
-     * @param UrlQueryHelper|bool $urlHelper UrlQueryHelper for creating facet URLs
-     * @param bool                $escape    Whether to escape URLs
+     * @param string          $facet     Facet name
+     * @param array           $item      Facet item received from Solr
+     * @param ?UrlQueryHelper $urlHelper UrlQueryHelper for creating facet URLs
+     * @param bool            $escape    Whether to escape URLs
      *
      * @return array Facet item
      */
     protected function createFacetItem(
         string $facet,
         array $item,
-        UrlQueryHelper|bool $urlHelper,
+        ?UrlQueryHelper $urlHelper,
         bool $escape = true
     ): array {
         $href = '';
         $exclude = '';
         // Build URLs only if we were given an URL helper
-        if ($urlHelper !== false) {
+        if ($urlHelper !== null) {
             if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
                     $facet,
