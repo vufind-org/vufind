@@ -159,7 +159,6 @@ class AccountMenu extends AbstractMenu
     {
         return [
             'Account' => [
-                'name' => 'acc',
                 'label' => 'Your Account',
                 'id' => 'acc-menu-acc-header',
                 'class' => 'account-menu',
@@ -407,6 +406,24 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
+     * Check whether to show user content (comments, ratings, tags)
+     *
+     * @return bool
+     */
+    public function checkUserContent(): bool
+    {
+        return in_array(
+            'enabled',
+            [
+                $this->accountCapabilities->getCommentSetting(),
+                $this->accountCapabilities->getRatingSetting(),
+                $this->accountCapabilities->getTagSetting(),
+            ],
+            true
+        );
+    }
+
+    /**
      * Check ILS connection capability
      *
      * @param string $capability Name of then ILS method to check
@@ -430,24 +447,6 @@ class AccountMenu extends AbstractMenu
     {
         return $this->isIlsOnline()
             && $this->ilsConnection->checkFunction($function, $this->getCapabilityParams());
-    }
-
-    /**
-     * Check whether to show user content (comments, ratings, tags)
-     *
-     * @return bool
-     */
-    protected function checkUserContent(): bool
-    {
-        return in_array(
-            'enabled',
-            [
-                $this->accountCapabilities->getCommentSetting(),
-                $this->accountCapabilities->getRatingSetting(),
-                $this->accountCapabilities->getTagSetting(),
-            ],
-            true
-        );
     }
 
     /**

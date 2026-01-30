@@ -23,7 +23,7 @@ VuFind.register('embedded', function embedded() {
 
   /**
    * Add a record and its active tab to the storage status.
-   * @param {string} id  The record ID.
+   * @param {string} id The record ID.
    * @param {string} tab The ID of the active tab.
    * @private
    */
@@ -65,13 +65,9 @@ VuFind.register('embedded', function embedded() {
     const id = idElement.value;
     const source = sourceElement.value;
     if (tab.parentElement.classList.contains('noajax')) {
-      if (tab.tagName.toLowerCase() === 'a') {
-        window.location.href = tab.href;
-      } else {
-        const link = tab.querySelector('a');
-        if (link) {
-          window.location.href = link.dataset.href;
-        }
+      const link = tab.querySelector('a');
+      if (link) {
+        window.location.href = link.dataset.href;
       }
       return false;
     }
@@ -185,27 +181,43 @@ VuFind.register('embedded', function embedded() {
             longNodeCollapse.show();
             // Load first tab
             if (tabId) {
-              document.getElementById(tabId).click();
-              ajaxLoadTab(tabId, true);
-            } else {
-              let firstTab = longNode.querySelector('.list-tab-toggle.active');
-              if (!firstTab) {
-                firstTab = longNode.querySelector('.list-tab-toggle');
-              }
-              if (firstTab) {
-                ajaxLoadTab(firstTab.id, true);
+              const tabElement = longNode.querySelector('#' + tabId);
+              tabElement.click();
+              if (tabElement && !tabElement.classList.contains('active')) {
+                bootstrap.Tab.getOrCreateInstance(tabElement).show();
               }
             }
 
-            longNode.querySelectorAll('.list-tab-toggle').forEach((toggle) => toggle.addEventListener('click', function embeddedTabLoad() {
-              if (!toggle.parentElement.classList.contains('noajax')) {
-                addToStorage(divID, toggle.id);
+            if (viewType === 'tabs') {
+              longNode.querySelectorAll('.nav-link').forEach((tabButton) => tabButton.addEventListener(
+                'show.bs.tab',
+                () => addToStorage(divID, tabButton.id)
+              ));
+            } else {
+              if (tabId) {
+                document.getElementById(tabId).click();
+                ajaxLoadTab(tabId, true);
+              } else {
+                let firstTab = longNode.querySelector('.list-tab-toggle.active');
+                if (!firstTab) {
+                  firstTab = longNode.querySelector('.list-tab-toggle');
+                }
+                if (firstTab) {
+                  ajaxLoadTab(firstTab.id, true);
+                }
               }
-              return ajaxLoadTab(toggle.id);
-            }));
-            longNode.querySelectorAll('[data-background]').forEach(function setupEmbeddedBackgroundTabs(el) {
-              ajaxLoadTab(el.id, false);
-            });
+
+              longNode.querySelectorAll('.list-tab-toggle').forEach((toggle) => toggle.addEventListener('click', function embeddedTabLoad() {
+                if (!toggle.parentElement.classList.contains('noajax')) {
+                  addToStorage(divID, toggle.id);
+                }
+                return ajaxLoadTab(toggle.id);
+              }));
+              longNode.querySelectorAll('[data-background]').forEach(function setupEmbeddedBackgroundTabs(el) {
+                ajaxLoadTab(el.id, false);
+              });
+            }
+
             // Add events to record toolbar
             VuFind.lightbox.bind(longNode);
             if (typeof VuFind.saveStatuses.init === 'function') {

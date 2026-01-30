@@ -45,15 +45,30 @@ use VuFindTest\Unit\AbstractSectionTestCase;
 class HeaderBarTest extends AbstractSectionTestCase
 {
     /**
+     * Test that the default configuration file matches the default
+     * configuration returned by the section class.
+     *
+     * @return void
+     */
+    public function testDefaultConfiguration(): void
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getHeaderBar($container)->getSectionConfig(),
+            $this->getHeaderBar($container, HeaderBar::getDefaultMenuConfig())->getSectionConfig()
+        );
+    }
+
+    /**
      * Test that the menu is the default menu if configuration is missing.
      *
      * @return void
      */
-    public function testMissingConfiguration()
+    public function testMissingConfiguration(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getHeaderBar($container)->getMenu(),
+            $this->getHeaderBar($container, [])->getMenu(),
             $this->getHeaderBar($container, HeaderBar::getDefaultMenuConfig())->getMenu()
         );
     }
@@ -63,7 +78,7 @@ class HeaderBarTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testDefaultMenuAllCheckMethodsReturnFalse()
+    public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $plugin = $this->getHeaderBar(

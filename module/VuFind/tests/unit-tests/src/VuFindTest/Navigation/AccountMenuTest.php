@@ -23,8 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
- *           License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
@@ -40,22 +39,36 @@ use VuFindTest\Unit\AbstractSectionTestCase;
  * @category VuFind
  * @package  Tests
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public
- *           License
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class AccountMenuTest extends AbstractSectionTestCase
 {
     /**
+     * Test that the default configuration file matches the default
+     * configuration returned by the section class.
+     *
+     * @return void
+     */
+    public function testDefaultConfiguration(): void
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getAccountMenu($container)->getSectionConfig(),
+            $this->getAccountMenu($container, AccountMenu::getDefaultMenuConfig())->getSectionConfig()
+        );
+    }
+
+    /**
      * Test that the menu is the default menu if configuration is missing.
      *
      * @return void
      */
-    public function testMissingConfiguration()
+    public function testMissingConfiguration(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAccountMenu($container)->getMenu(),
+            $this->getAccountMenu($container, [])->getMenu(),
             $this->getAccountMenu($container, AccountMenu::getDefaultMenuConfig())->getMenu()
         );
     }
@@ -65,14 +78,18 @@ class AccountMenuTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testDefaultMenuAllCheckMethodsReturnFalse()
+    public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $menu = $this->getAccountMenu(
+        $plugin = $this->getAccountMenu(
             $container,
             AccountMenu::getDefaultMenuConfig(),
             $this->getAccountMenuCheckMethods(false)
-        )->getMenu();
+        );
+        foreach (array_keys($this->getAccountMenuCheckMethods()) as $method) {
+            $this->assertEquals(false, $plugin->{$method}());
+        }
+        $menu = $plugin->getMenu();
         $this->assertCount(1, $menu['Account']['MenuItems']);
         $this->assertEquals('Profile', reset($menu['Account']['MenuItems'])['label']);
     }
@@ -82,7 +99,7 @@ class AccountMenuTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testBackwardCompatibilityForOldConfigurations()
+    public function testBackwardCompatibilityForOldConfigurations(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $menu = $this->getAccountMenu($container, $this->getOldDefaultMenuConfig())->getMenu();

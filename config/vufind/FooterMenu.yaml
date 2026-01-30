@@ -24,7 +24,7 @@
 # configuration you can disable configuration inheritance by adding a
 # "@parent_yaml": false entry at the very top of your local configuration file.
 
-FooterFirst:
+footer-left:
   label: footer_header_search_options
   MenuItems:
     - label: 'Search History'
@@ -33,7 +33,7 @@ FooterFirst:
     - label: 'Advanced Search'
       route: search-advanced
 
-FooterSecond:
+footer-center:
   label: footer_header_find_more
   MenuItems:
     - label: 'Browse the Catalog'
@@ -51,7 +51,7 @@ FooterSecond:
     - label: 'New Items'
       route: search-newitem
 
-FooterThird:
+footer-right:
   label: footer_header_need_help
   MenuItems:
     - label: 'Search Tips'
