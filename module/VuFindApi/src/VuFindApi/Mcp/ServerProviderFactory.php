@@ -81,10 +81,22 @@ class ServerProviderFactory implements FactoryInterface
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $topConfig = $configManager->getConfigObject('config');
 
+        $services = array_map(
+            fn ($className) => $container->get($className),
+            [
+                \VuFind\Config\YamlReader::class,
+                \VuFind\Record\Loader::class,
+                \VuFindApi\Formatter\RecordFormatter::class,
+                \VuFind\Search\SearchRunner::class,
+                \VuFind\Http\ServerUrlHelper::class,
+                \VuFind\Http\UrlHelper::class,
+            ]
+        );
+
         return new $requestedName(
             $mcpConfig,
             $topConfig,
-            $container,
+            $services,
         );
     }
 }

@@ -29,7 +29,6 @@
 
 namespace VuFindApi\Mcp;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Mcp\Capability\Registry\Container;
 use Mcp\Server;
 use Mcp\Server\Builder;
@@ -55,32 +54,23 @@ class ServerProvider
     /**
      * Constructor
      *
-     * @param array                   $mcpConfig      MCP configuration
-     * @param Config                  $topConfig      config.ini
-     * @param ServiceLocatorInterface $serviceLocator Service locator
+     * @param array  $mcpConfig MCP configuration
+     * @param Config $topConfig config.ini
+     * @param array  $services  Services to register with the MCP container
      */
     public function __construct(
         protected array $mcpConfig,
         protected Config $topConfig,
-        protected ServiceLocatorInterface $serviceLocator
+        array $services
     ) {
         if (!($this->mcpConfig['General']['enabled'] ?? false)) {
             return;
         }
 
         $container = new Container();
-        foreach (
-            [
-                \VuFind\Config\YamlReader::class,
-                \VuFind\Record\Loader::class,
-                \VuFindApi\Formatter\RecordFormatter::class,
-                \VuFind\Search\SearchRunner::class,
-                \VuFind\Http\ServerUrlHelper::class,
-                \VuFind\Http\UrlHelper::class,
-            ] as $class
-        ) {
+        foreach ($services as $service) {
             // Provide these services to each capability class constructor
-            $container->set($class, $serviceLocator->get($class));
+            $container->set($service::class, $service);
         }
 
         $builder = Server::builder()
