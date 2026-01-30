@@ -1905,6 +1905,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         return $result->getBody();
     }
 
+    /**
+     * Get Offline Mode
+     *
+     * This is responsible for returning the offline mode
+     *
+     * @return string|false "ils-offline" for systems where the main ILS is offline,
+     * "ils-none" for systems which do not use an ILS, false when online
+     */
+    public function getOfflineMode()
+    {
+        try {
+            $this->getDb();
+        } catch (\Exception $e) {
+            return 'ils-offline';
+        }
+        return false;
+    }
+
     /* Methods yet to be implemented -- see Voyager driver for examples
 
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
