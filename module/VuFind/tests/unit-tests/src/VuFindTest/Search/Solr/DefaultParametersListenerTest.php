@@ -79,7 +79,8 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAttach()
     {
-        $listener = new DefaultParametersListener($this->backends['primary'], ['foo' => 'bar']);
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
+        $listener = new DefaultParametersListener($backend, ['foo' => 'bar']);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
             Service::class,
