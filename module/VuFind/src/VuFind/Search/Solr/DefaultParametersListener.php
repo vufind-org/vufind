@@ -48,25 +48,11 @@ use VuFindSearch\Service;
 class DefaultParametersListener
 {
     /**
-     * Backend.
-     *
-     * @var Backend
-     */
-    protected $backend;
-
-    /**
-     * Default parameters
-     *
-     * @var array
-     */
-    protected $defaultParams;
-
-    /**
      * Mapping from search methods to contexts
      *
      * @var array
      */
-    protected $contextMap = [
+    protected array $contextMap = [
         'getIds' => 'search',
         'random' => 'retrieve',
         'retrieveBatch' => 'retrieve',
@@ -75,15 +61,13 @@ class DefaultParametersListener
     /**
      * Constructor.
      *
-     * @param Backend $backend Search backend
-     * @param array   $params  Default parameters
+     * @param Backend $backend       Search backend
+     * @param array   $defaultParams Default parameters
      *
      * @return void
      */
-    public function __construct(Backend $backend, array $params)
+    public function __construct(protected Backend $backend, protected array $defaultParams)
     {
-        $this->backend = $backend;
-        $this->defaultParams = $params;
     }
 
     /**
