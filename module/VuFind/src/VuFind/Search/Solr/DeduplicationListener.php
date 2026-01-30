@@ -36,8 +36,7 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Psr\Container\ContainerInterface;
-use VuFind\Service\GetServiceTrait;
+use VuFind\Config\ConfigManager;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -56,27 +55,24 @@ use function in_array;
  */
 class DeduplicationListener
 {
-    use GetServiceTrait;
-
     /**
      * Constructor.
      *
-     * @param Backend            $backend          Search backend
-     * @param ContainerInterface $serviceLocator   Service locator
-     * @param string             $searchConfig     Search configuration file identifier
-     * @param string             $dataSourceConfig Data source configuration file identifier
-     * @param bool               $enabled          Whether deduplication is enabled
+     * @param Backend       $backend          Search backend
+     * @param ConfigManager $configManager    Config manager
+     * @param string        $searchConfig     Search configuration file identifier
+     * @param string        $dataSourceConfig Data source configuration file identifier
+     * @param bool          $enabled          Whether deduplication is enabled
      *
      * @return void
      */
     public function __construct(
         protected Backend $backend,
-        ContainerInterface $serviceLocator,
+        protected ConfigManager $configManager,
         protected string $searchConfig,
         protected string $dataSourceConfig = 'datasources',
         protected bool $enabled = true
     ) {
-        $this->serviceLocator = $serviceLocator;
     }
 
     /**
@@ -181,8 +177,7 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords(EventInterface $event): void
     {
-        $dataSourceConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigArray($this->dataSourceConfig);
+        $dataSourceConfig = $this->configManager->getConfigArray($this->dataSourceConfig);
         $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $command = $event->getParam('command');
@@ -303,10 +298,9 @@ class DeduplicationListener
      */
     protected function getActiveRecordSources(EventInterface $event): array
     {
-        $searchConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->searchConfig);
-        return !empty($searchConfig->Records->sources)
-            ? explode(',', $searchConfig->Records->sources)
+        $searchConfig = $this->configManager->getConfigArray($this->searchConfig);
+        return !empty($searchConfig['Records']['sources'])
+            ? explode(',', $searchConfig['Records']['sources'])
             : [];
     }
 
