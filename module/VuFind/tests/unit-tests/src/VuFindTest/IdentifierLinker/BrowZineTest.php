@@ -35,6 +35,8 @@ use VuFind\IdentifierLinker\BrowZineFactory;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
 
+use function is_array;
+
 /**
  * BrowZine Test Class
  *
@@ -102,7 +104,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             [],
             [],
             [
-                0 => [
+                4 => [
                     [
                         'link' => 'https://weblink',
                         'label' => 'View Complete Issue',
@@ -123,7 +125,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             [],
             [],
             [
-                0 => [
+                4 => [
                     [
                         'link' => 'https://fulltext',
                         'label' => 'PDF Full Text',
@@ -138,7 +140,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             [],
             [],
             [
-                0 => [
+                4 => [
                     [
                         'link' => 'https://weblink',
                         'label' => 'View Complete Issue',
@@ -153,7 +155,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             ['bestIntegratorLink' => 'Get full text|browzine-best'],
             null,
             [
-                0 => [
+                4 => [
                     [
                         'link' => 'https://fulltext',
                         'label' => 'PDF Full Text',
@@ -168,7 +170,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             ['bestIntegratorLink' => 'Get full text|browzine-best'],
             [],
             [
-                0 => [
+                4 => [
                     [
                         'link' => 'https://fulltext',
                         'label' => 'Get full text',
@@ -185,7 +187,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                 'Fancy Full Text|browzine-pdf|' .
                 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
             [
-                0 => [
+                4 => [
                     [
                         'link' => 'https://fulltext',
                         'label' => 'Fancy Full Text',
@@ -202,7 +204,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                 'PDF Full Text|browzine-pdf|' .
                 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
             [
-                0 => [
+                4 => [
                     [
                         'link' => 'https://fulltext',
                         'label' => 'Download Best PDF Ever',
@@ -211,6 +213,12 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+        ];
+        yield 'best integrator link with full text disabled' => [
+            ['useBrowzineLabel' => true],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            ['fullTextFile' => false],
+            [],
         ];
     }
 
@@ -232,7 +240,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         ?array $doiServicesConfig = null,
         ?array $bestIntegratorLinksConfig = null
     ): BrowZine {
-        $connector = $this->getMockConnector($ids[0], $rawData);
+        $connector = $this->getMockConnector($ids[array_key_first($ids)], $rawData);
         $ss = $this->getSearchService($this->getBackendManager($connector));
 
         // Use the factory to build the test object so that the correct default configs are
@@ -259,10 +267,10 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Test a DOI API response.
      *
-     * @param array $identifierLinksConfig     BrowZine configuration for identifier links
-     * @param array $doiServicesConfig         BrowZine configuration for DOI services
-     * @param array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
-     * @param array $expectedResponse          Expected response
+     * @param array  $identifierLinksConfig     BrowZine configuration for identifier links
+     * @param array  $doiServicesConfig         BrowZine configuration for DOI services
+     * @param ?array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
+     * @param ?array $expectedResponse          Expected response
      *
      * @return void
      */
@@ -274,7 +282,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         array $expectedResponse
     ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
-        $ids = [['doi' => '10.1155/2020/8690540']];
+        $idKey = 4; // test with an arbitrary integer to confirm that results retain key values
+        $ids = [$idKey => ['doi' => '10.1155/2020/8690540']];
         $browzine = $this->getBrowZineHandler(
             $ids,
             $rawData,
@@ -282,10 +291,13 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             $doiServicesConfig,
             $bestIntegratorLinksConfig
         );
-        foreach ($expectedResponse[0] as & $current) {
-            $current['data'] = $rawData['data'];
+
+        if (is_array($expectedResponse[$idKey] ?? null)) {
+            foreach ($expectedResponse[$idKey] as & $current) {
+                $current['data'] = $rawData['data'];
+            }
+            unset($current);
         }
-        unset($current);
         $this->assertEquals($expectedResponse, $browzine->getLinks($ids));
     }
 
@@ -297,11 +309,12 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     public function testISSNApiSuccess(): void
     {
         $rawData = $this->getJsonFixture('browzine/issn.json');
-        $ids = [['issn' => '0006-2952']];
+        $idKey = 3; // test with an arbitrary integer to confirm that results retain key values
+        $ids = [$idKey => ['issn' => '0006-2952']];
         $browzine = $this->getBrowZineHandler($ids, $rawData);
         $this->assertEquals(
             [
-                0 => [
+                $idKey => [
                     [
                         'link' => 'https://weblink',
                         'label' => 'Browse Available Issues',

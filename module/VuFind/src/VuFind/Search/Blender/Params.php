@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015-2022.
+ * Copyright (C) The National Library of Finland 2015-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -484,12 +484,14 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function addDefaultFilters(BaseParams $params, string $backendId): void
     {
+        // Get the initial filter list before applying any defaults so that we can compare against it and apply multiple
+        // defaults as required:
+        $filterList = $params->getFilterList();
         foreach ($this->mappings['Facets']['Fields'] ?? [] as $fieldConfig) {
             $mappings = $fieldConfig['Mappings'][$backendId] ?? [];
             $defaultValue = $mappings['DefaultValue'] ?? null;
             if (null !== $defaultValue) {
                 $translatedField = $mappings['Field'];
-                $filterList = $params->getFilterList();
                 $found = false;
                 foreach ($filterList as $filters) {
                     foreach ($filters as $filter) {

@@ -32,9 +32,11 @@
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Search\Solr\DefaultParametersListener;
-use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for DefaultParametersListener.
@@ -47,35 +49,27 @@ use VuFindSearch\ParamBag;
  */
 class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Backend stub
-     *
-     * @var Backend
-     */
-    protected Backend $backend;
+    use \VuFindTest\Feature\MockSearchCommandTrait;
 
     /**
-     * Params
+     * Backends.
      *
-     * @var ParamBag
+     * @var BackendInterface[]|MockObject[]
      */
-    protected ParamBag $params;
+    protected $backends;
 
     /**
-     * Standard setup method.
+     * Setup.
      *
      * @return void
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $this->backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
-        $this->params = new ParamBag(
-            [
-                'fq' => [
-                    'foo:value',
-                ],
-            ]
-        );
+        $this->backends = [];
+        foreach (['primary', 'secondary'] as $name) {
+            $this->backends[$name] = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
+            $this->backends[$name]->method('getIdentifier')->willReturn($name);
+        }
     }
 
     /**
@@ -85,117 +79,91 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAttach()
     {
-        $listener = new DefaultParametersListener($this->backend, ['foo' => 'bar']);
+        $listener = new DefaultParametersListener($this->backends['primary'], ['foo' => 'bar']);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            \VuFindSearch\Service::class,
-            'pre',
+            Service::class,
+            Service::EVENT_PRE,
             [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }
 
     /**
-     * Test the listener with a * catch-all, no backend.
+     * Data provider for testSearch().
+     *
+     * @return \Iterator
+     */
+    public static function searchProvider(): \Iterator
+    {
+        yield 'catch all, search, wrong backend' => [true, 'search', 'secondary', null, null];
+        yield 'catch all, search, matching backend' => [true, 'search', 'primary', ['1', '2'], null];
+        yield 'catch all, retrieve, matching backend' => [true, 'retrieve', 'primary', null, ['3']];
+        yield 'no catch all, search, wrong backend' => [false, 'search', 'secondary', null, null];
+        yield 'no catch all, search, matching backend' => [false, 'search', 'primary', ['1', '2'], null];
+        yield 'no catch all, retrieve, matching backend' => [false, 'retrieve', 'primary', null, null];
+    }
+
+    /**
+     * Test that search behaves as expected.
+     *
+     * @param bool   $catchAllConfig  Whether the config should include the * search context
+     * @param string $searchContext   'search', 'retrieve', etc.
+     * @param string $searchBackendId 'primary' or 'secondary' as defined above
+     * @param ?array $expectFoo       Expected 'foo' params
+     * @param ?array $expectBar       Expected 'bar' params
      *
      * @return void
      */
-    public function testDefaultParametersWithCatchAllNoBackend()
-    {
-        $listener = new DefaultParametersListener(
-            $this->backend,
+    #[\PHPUnit\Framework\Attributes\DataProvider('searchProvider')]
+    public function testSearch(
+        bool $catchAllConfig,
+        string $searchContext,
+        string $searchBackendId,
+        ?array $expectFoo,
+        ?array $expectBar
+    ): void {
+        // Set up search
+        $params =  new ParamBag(
             [
-                'search' => 'foo=1&foo=2',
-                '*' => 'bar=3&bar',
+                'fq' => [
+                    'foo:value',
+                ],
             ]
         );
+        $searchBackend = $this->backends[$searchBackendId];
+        $command = $this->getMockSearchCommand(
+            $params,
+            $searchContext,
+            $searchBackend->getIdentifier()
+        );
+
+        // Set up listener
+        $listenerConfig = [
+            'search' => 'foo=1&foo=2',
+        ];
+        if ($catchAllConfig) {
+            $listenerConfig['*'] = 'bar=3&bar';
+        }
+        $listener = new DefaultParametersListener($this->backends['primary'], $listenerConfig);
 
         // Check that nothing fails if params element is missing:
         $event = new Event(
             'pre',
-            null,
-            ['context' => 'search']
+            $searchBackend,
+            compact('command')
         );
         $listener->onSearchPre($event);
 
+        // Check with params element
         $event = new Event(
             'pre',
-            null,
-            ['params' => $this->params, 'context' => 'search']
+            $searchBackend,
+            compact('params', 'command')
         );
         $listener->onSearchPre($event);
 
-        $this->assertEquals(null, $this->params->get('foo'));
-        $this->assertEquals(null, $this->params->get('bar'));
-    }
-
-    /**
-     * Test the listener with a * catch-all, for a particular backend.
-     *
-     * @return void
-     */
-    public function testDefaultParametersWithCatchAll()
-    {
-        $listener = new DefaultParametersListener(
-            $this->backend,
-            [
-                'search' => 'foo=1&foo=2',
-                '*' => 'bar=3&bar',
-            ]
-        );
-
-        $event = new Event(
-            'pre',
-            $this->backend,
-            ['params' => $this->params, 'context' => 'search']
-        );
-        $listener->onSearchPre($event);
-
-        $this->assertEquals(['1', '2'], $this->params->get('foo'));
-        $this->assertEquals(null, $this->params->get('bar'));
-
-        $event = new Event(
-            'pre',
-            $this->backend,
-            ['params' => $this->params, 'context' => 'retrieve']
-        );
-        $listener->onSearchPre($event);
-
-        $this->assertEquals(['3'], $this->params->get('bar'));
-    }
-
-    /**
-     * Test the listener without a * catch-all.
-     *
-     * @return void
-     */
-    public function testDefaultParametersWithoutCatchAll()
-    {
-        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
-        $listener = new DefaultParametersListener(
-            $backend,
-            [
-                'search' => 'foo=1&foo=2',
-            ]
-        );
-
-        $event = new Event(
-            'pre',
-            $backend,
-            ['params' => $this->params, 'context' => 'search']
-        );
-        $listener->onSearchPre($event);
-
-        $this->assertEquals(['1', '2'], $this->params->get('foo'));
-        $this->assertEquals(null, $this->params->get('bar'));
-
-        $event = new Event(
-            'pre',
-            $backend,
-            ['params' => $this->params, 'context' => 'retrieve']
-        );
-        $listener->onSearchPre($event);
-
-        $this->assertEquals(null, $this->params->get('bar'));
+        $this->assertEquals($expectFoo, $params->get('foo'));
+        $this->assertEquals($expectBar, $params->get('bar'));
     }
 }

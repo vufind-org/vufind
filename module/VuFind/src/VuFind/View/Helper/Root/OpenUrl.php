@@ -220,13 +220,18 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
                 $this->resolverPluginManager->get($resolver)
             );
             $resolverUrl = $resolverObj->getResolverUrl($openurl);
+            $moreOptionsUrl = $resolverObj->supportsMoreOptionsLink()
+                ? $resolverObj->getResolverUrlForMoreOptions($openurl)
+                : null;
         } else {
             $resolverUrl = empty($base) ? '' : $base . '?' . $openurl;
+            $moreOptionsUrl = null;
         }
 
         // Build parameters needed to display the control:
         $params = [
             'resolverUrl' => $resolverUrl,
+            'moreOptionsUrl' => $moreOptionsUrl,
             'openUrl' => $openurl,
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)

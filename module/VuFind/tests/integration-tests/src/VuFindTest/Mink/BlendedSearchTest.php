@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2025.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -376,6 +376,64 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         $this->unFindCss($page, '.advanced-search-link');
+    }
+
+    /**
+     * Test facet default values.
+     *
+     * @return void
+     */
+    public function testFacetDefaultValues(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'Blender' => 'Blended',
+                    ],
+                ],
+                'Blender' => $this->getBlenderIniOverrides(),
+            ],
+            ['Blender']
+        );
+        $this->changeYamlConfigs(
+            [
+                'BlenderMappings' => [
+                    'Facets' => [
+                        'Fields' => [
+                            'def1' => [
+                                'Mappings' => [
+                                    'Solr' => [
+                                        'Field' => 'format',
+                                        'DefaultValue' => 'Book',
+                                    ],
+                                ],
+                            ],
+                            'def2' => [
+                                'Mappings' => [
+                                    'Solr' => [
+                                        'Field' => 'format',
+                                        'DefaultValue' => 'Manuscript',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Blender/Results?filter%5B%5D=blender_backend%3ASolr'));
+        $page = $session->getPage();
+
+        $text = $this->findCssAndGetText($page, '.search-stats strong');
+        [$start, $limit] = explode(' - ', $text);
+        $this->assertSame(1, intval($start));
+        $this->assertSame(2, intval($limit));
+        $this->assertSame('old1', $this->findCss($page, '#result0 .hiddenId')->getValue());
+        $this->assertSame('old2', $this->findCss($page, '#result1 .hiddenId')->getValue());
     }
 
     /**
