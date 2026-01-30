@@ -53,7 +53,7 @@ class ParamBagBag extends ParamBag implements JsonSerializable
      *
      * @return ?ParamBagBag
      */
-    public static function from(ParamBag $original, bool $createIfNull = true): ?ParamBagBag
+    public static function from(?ParamBag $original, bool $createIfNull = true): ?ParamBagBag
     {
         if (!$original) {
             return $createIfNull ? new ParamBagBag() : null;
