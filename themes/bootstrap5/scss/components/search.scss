@@ -143,13 +143,13 @@ input[type="search"]::-webkit-search-decoration {
   }
 
   // Defines the number of columns of default/normal 'ul.home-facet-list' elements; variables can be overwritten in 'variables.scss':
-  .home-facet:not(.callnumber-first) & {
+  .home-facet:not(.two-columns) & {
     column-count: $home-facet-list-column-count-default; // This is the default
     width: $home-facet-list-column-width-default; // Makes sure single column has same width as double column (required for border)
   }
 
-  // When 'callnumber-first' is used, the first 'home-facet-list' gets a default column-count of 2 on devices >=992px; these values can be overwritten in 'variables.scss':
-  .home-facet.callnumber-first & {
+  // When 'two-columns' is used, the affected 'home-facet-list' gets a default column-count of 2 on devices >=992px; these values can be overwritten in 'variables.scss':
+  .home-facet.two-columns & {
     column-count: $home-facet-list-non-default-column-count; // Defines maximum number of cols to be used on devices >=1200px; see variables.scss
     column-fill: $home-facet-list-column-fill; // Defines, how the columns will be filled: 'auto' fills up to max height and the breaks into new column, 'balance' attempts to distribute available entries evenly across the max. number of columns; value is set in variables.scss
     column-gap: $home-facet-list-column-gap; // Defines the gap between the columns, if more than one

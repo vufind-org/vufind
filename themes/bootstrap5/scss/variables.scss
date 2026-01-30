@@ -31,7 +31,7 @@ $home-facet-list-border-right-style: 1px solid $gray-dark !default; // Defines t
 $home-facet-list-last-of-type-border-right-style: 0 !default; // Defines the border of the last facet list container
 
 $home-facet-list-column-count-default: 1; // Defines the default number of columns into which a default 'ul.home-facet-list' will be split for devices
-$home-facet-list-column-width-default: 100%; // Defines the width of a default 'ul.home-facet-list'; e.g.: 100% makes sure single column has same width as double column (see 'callnumber-first' below)
+$home-facet-list-column-width-default: 100%; // Defines the width of a default 'ul.home-facet-list'; e.g.: 100% makes sure single column has same width as double column, such as e.g.: '.callnumber-first'
 
 $home-facet-list-column-count-md: 2 !default; // Defines the maximum number of columns into which a facet list can be split for MD sized devices
 $home-facet-list-column-rule-md: 1px dotted grey !default;

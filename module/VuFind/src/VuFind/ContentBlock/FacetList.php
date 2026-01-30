@@ -119,7 +119,41 @@ class FacetList implements ContentBlockInterface
         $this->searchClassId = empty($parts[0]) ? $this->searchClassId : $parts[0];
         $this->columnSize = $parts[1] ?? $this->columnSize;
     }
-
+    
+  /**
+   * Get list of facet fields that should be displayed in two columns on the homepage
+   * (configured via facets.ini -> [HomePage_Settings] -> two_column_facets).
+   *
+   * @param Config $facetConfig Facet configuration object.
+   *
+   * @return string[]
+   */
+  protected function getTwoColumnFacets(Config $facetConfig): array
+  {
+    $raw = null;
+    
+    if (isset($facetConfig->HomePage_Settings)
+      && isset($facetConfig->HomePage_Settings['two_column_facets'])
+    ) {
+      $raw = $facetConfig->HomePage_Settings['two_column_facets'];
+    }
+    
+    if (null === $raw) {
+      return [];
+    }
+    
+    // Laminas config may return string or array depending on ini syntax; normalize:
+    if (is_array($raw)) {
+      $items = $raw;
+    } else {
+      $items = preg_split('/\s*,\s*/', (string)$raw) ?: [];
+    }
+    
+    $items = array_map('trim', $items);
+    $items = array_filter($items, fn ($v) => $v !== '');
+    
+    return array_values(array_unique($items));
+  }
     /**
      * Return context variables used for rendering the block's template.
      *
@@ -138,6 +172,7 @@ class FacetList implements ContentBlockInterface
             'hierarchicalFacets' => $this->getHierarchicalFacets($facetConfig),
             'hierarchicalFacetSortOptions' =>
                 $this->getHierarchicalFacetSortSettings($facetConfig),
+            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig),
             'results' => $results,
         ];
     }
