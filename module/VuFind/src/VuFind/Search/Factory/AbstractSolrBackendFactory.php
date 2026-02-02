@@ -636,11 +636,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getDeduplicationListener(Backend $backend, bool $enabled): DeduplicationListener
     {
+        $configManager = $this->serviceLocator->get(ConfigManagerInterface::class);
         return new DeduplicationListener(
             $backend,
-            $this->serviceLocator,
-            $this->searchConfig,
-            'datasources',
+            $configManager->getConfigArray($this->searchConfig),
+            $configManager->getConfigArray('datasources'),
             $enabled
         );
     }
@@ -682,8 +682,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     {
         return new HierarchicalFacetListener(
             $backend,
-            $this->serviceLocator,
-            $this->facetConfig
+            $this->serviceLocator->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
+            $this->serviceLocator->get(ConfigManagerInterface::class)->getConfigArray($this->facetConfig)
         );
     }
 

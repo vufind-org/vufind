@@ -36,8 +36,7 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Psr\Container\ContainerInterface;
-use VuFind\Service\GetServiceTrait;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -56,27 +55,24 @@ use function in_array;
  */
 class DeduplicationListener
 {
-    use GetServiceTrait;
+    use ExplodeSettingTrait;
 
     /**
      * Constructor.
      *
-     * @param Backend            $backend          Search backend
-     * @param ContainerInterface $serviceLocator   Service locator
-     * @param string             $searchConfig     Search configuration file identifier
-     * @param string             $dataSourceConfig Data source configuration file identifier
-     * @param bool               $enabled          Whether deduplication is enabled
+     * @param Backend $backend          Search backend
+     * @param array   $searchConfig     Search configuration
+     * @param array   $dataSourceConfig Data source configuration
+     * @param bool    $enabled          Whether deduplication is enabled
      *
      * @return void
      */
     public function __construct(
         protected Backend $backend,
-        ContainerInterface $serviceLocator,
-        protected string $searchConfig,
-        protected string $dataSourceConfig = 'datasources',
+        protected array $searchConfig,
+        protected array $dataSourceConfig,
         protected bool $enabled = true
     ) {
-        $this->serviceLocator = $serviceLocator;
     }
 
     /**
@@ -181,8 +177,6 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords(EventInterface $event): void
     {
-        $dataSourceConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigArray($this->dataSourceConfig);
         $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $command = $event->getParam('command');
@@ -214,8 +208,8 @@ class DeduplicationListener
                 if (!empty($buildingPriority)) {
                     if (isset($buildingPriority[$source])) {
                         $localPriority = -$buildingPriority[$source];
-                    } elseif (isset($dataSourceConfig[$source]['institution'])) {
-                        $institution = $dataSourceConfig[$source]['institution'];
+                    } elseif (isset($this->dataSourceConfig[$source]['institution'])) {
+                        $institution = $this->dataSourceConfig[$source]['institution'];
                         if (isset($buildingPriority[$institution])) {
                             $localPriority = -$buildingPriority[$institution];
                         }
@@ -303,11 +297,7 @@ class DeduplicationListener
      */
     protected function getActiveRecordSources(EventInterface $event): array
     {
-        $searchConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->searchConfig);
-        return !empty($searchConfig->Records->sources)
-            ? explode(',', $searchConfig->Records->sources)
-            : [];
+        return $this->explodeListSetting($this->searchConfig['Records']['sources'] ?? '');
     }
 
     /**
