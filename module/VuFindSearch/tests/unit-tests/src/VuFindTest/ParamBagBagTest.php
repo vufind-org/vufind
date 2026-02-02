@@ -168,7 +168,260 @@ class ParamBagBagTest extends TestCase
         $this->assertSame($expected, $params->hasNestedParam($name, $nestedName));
     }
 
-    // TODO More methods to test
+    /**
+     * Data provider for setNested method
+     *
+     * @return \Iterator
+     */
+    public static function setNestedProvider(): \Iterator
+    {
+        yield 'add value' => [
+            self::buildInputParams(),
+            'params', 'spellcheck', true,
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1, 'spellcheck' => true]),
+             ]),
+        ];
+        yield 'overwrite value' => [
+            self::buildInputParams(),
+            'params', 'sow', true,
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => true, 'timeAllowed' => -1]),
+             ]),
+        ];
+        yield 'new top-level name' => [
+            self::buildInputParams(),
+            'facet', 'topic_facet', 'foo',
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'facet' => new ParamBag(['topic_facet' => 'foo']),
+             ]),
+        ];
+    }
+
+    /**
+     * Test setNestedParam method.
+     *
+     * @param ParamBagBag $params     Bag of nested parameters
+     * @param string      $name       Parameter name
+     * @param string      $nestedName Nested parameter name
+     * @param mixed       $value      Nested parameter value
+     * @param ParamBagBag $expected   Expected resulting bag of nested parameters
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('setNestedProvider')]
+    public function testSetNested(
+        ParamBagBag $params,
+        string $name,
+        string $nestedName,
+        mixed $value,
+        ParamBagBag $expected
+    ): void {
+        $params->setNested($name, $nestedName, $value);
+        $this->assertEquals($expected, $params);
+    }
+
+    /**
+     * Data provider for addNested method
+     *
+     * @return \Iterator
+     */
+    public static function addNestedProvider(): \Iterator
+    {
+        yield 'existing name' => [
+            self::buildInputParams(),
+            'params', 'sow', true,
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => [false, true], 'timeAllowed' => -1]),
+             ]),
+        ];
+        yield 'new nested name' => [
+            self::buildInputParams(),
+            'params', 'spellcheck', true,
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => [false], 'timeAllowed' => -1, 'spellcheck' => true]),
+             ]),
+        ];
+        yield 'new top-level name' => [
+            self::buildInputParams(),
+            'facet', 'topic_facet', 'foo',
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'facet' => new ParamBag(['topic_facet' => 'foo']),
+             ]),
+        ];
+    }
+
+    /**
+     * Test addNestedParam method.
+     *
+     * @param ParamBagBag $params     Bag of nested parameters
+     * @param string      $name       Parameter name
+     * @param string      $nestedName Nested parameter name
+     * @param mixed       $value      Nested parameter value
+     * @param ParamBagBag $expected   Expected resulting bag of nested parameters
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('addNestedProvider')]
+    public function testAddNested(
+        ParamBagBag $params,
+        string $name,
+        string $nestedName,
+        mixed $value,
+        ParamBagBag $expected
+    ): void {
+        $params->addNested($name, $nestedName, $value);
+        $this->assertEquals($expected, $params);
+    }
+
+    /**
+     * Data provider for addMultiNested method
+     *
+     * @return \Iterator
+     */
+    public static function addMultiNestedProvider(): \Iterator
+    {
+        yield 'second level' => [
+            self::buildInputParams(),
+            'params',
+            ['spellcheck' => true],
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1, 'spellcheck' => true]),
+             ]),
+        ];
+        yield 'deeper' => [
+            self::buildInputParams(),
+            'facet',
+            ['topic_facet' => ['type' => 'terms', 'field' => 'topic_facet', 'limit' => 30,
+                'domain' => ['excludeTags' => 'topic_facet_filter']]],
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'facet' => new ParamBagBag(['topic_facet' => new ParamBagBag(
+                    ['type' => 'terms', 'field' => 'topic_facet', 'limit' => 30, 'domain' => new ParamBagBag(
+                        ['excludeTags' => 'topic_facet_filter']
+                    )]
+                )]),
+             ]),
+        ];
+    }
+
+    /**
+     * Test addMultiNested method.
+     *
+     * @param ParamBagBag $params   Bag of nested parameters
+     * @param string      $name     Parameter name
+     * @param array       $value    Nested array of parameter values
+     * @param ParamBagBag $expected Expected resulting bag of nested parameters
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('addMultiNestedProvider')]
+    public function testAddMultiNested(ParamBagBag $params, string $name, mixed $value, ParamBagBag $expected): void
+    {
+        $params->addMultiNested($name, $value);
+        $this->assertEquals($expected, $params);
+    }
+
+    /**
+     * Data provider for add method
+     *
+     * @return \Iterator
+     */
+    public static function addProvider(): \Iterator
+    {
+        yield 'new name' => [
+            self::buildInputParams(),
+            'sort', 'title', true,
+             new ParamBagBag([
+                'filter' => [ 'format:Book' ],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'sort' => 'title',
+             ]),
+        ];
+        yield 'existing name' => [
+            self::buildInputParams(),
+            'filter', 'location:Main Library', true,
+             new ParamBagBag([
+                'filter' => [ 'format:Book', 'location:Main Library' ],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+             ]),
+        ];
+    }
+
+    /**
+     * Test add method.
+     *
+     * @param ParamBagBag $params      Bag of nested parameters
+     * @param string      $name        Parameter name
+     * @param array       $value       Nested array of parameter values
+     * @param bool        $deduplicate Whether to de-duplicate
+     * @param ParamBagBag $expected    Expected resulting bag of nested parameters
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('addProvider')]
+    public function testAdd(
+        ParamBagBag $params,
+        string $name,
+        mixed $value,
+        bool $deduplicate,
+        ParamBagBag $expected
+    ): void {
+        $params->add($name, $value, $deduplicate);
+        $this->assertEquals($expected, $params);
+    }
+
+    /**
+     * Data provider for testJsonSerialize method
+     *
+     * @return \Iterator
+     */
+    public static function jsonSerializeProvider(): \Iterator
+    {
+        yield 'basic' => [
+            self::buildInputParams(),
+            [
+                'filter' => 'format:Book',
+                'params' => ['sow' => false, 'timeAllowed' => -1],
+            ],
+        ];
+        yield 'multiple values for same name' => [
+            new ParamBagBag([
+                'filter' => [ 'format:Book', 'location:Main Library'],
+                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+            ]),
+            [
+                'filter' => ['format:Book', 'location:Main Library'],
+                'params' => ['sow' => false, 'timeAllowed' => -1],
+            ],
+
+        ];
+    }
+
+    /**
+     * Test add method.
+     *
+     * @param ParamBagBag $params   Bag of nested parameters
+     * @param array       $expected Expected array of JSON-serialized values
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('jsonSerializeProvider')]
+    public function testJsonSerialize(ParamBagBag $params, array $expected): void
+    {
+        $serialized = $params->jsonSerialize();
+        $this->assertEquals($expected, $serialized);
+    }
 
     /**
      * Build a ParamBagBag for testing.

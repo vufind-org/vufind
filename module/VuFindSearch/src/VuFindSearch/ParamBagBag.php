@@ -107,7 +107,7 @@ class ParamBagBag extends ParamBag implements JsonSerializable
      *
      * @return bool
      */
-    public function hasNestedParam($name, $nestedName): bool
+    public function hasNestedParam(string $name, string $nestedName): bool
     {
         $nestedBag = $this->get($name);
         if (!$nestedBag) {
@@ -125,7 +125,7 @@ class ParamBagBag extends ParamBag implements JsonSerializable
      *
      * @return void
      */
-    public function setNested($name, $nestedName, $nestedValue): void
+    public function setNested(string $name, string $nestedName, string $nestedValue): void
     {
         $nestedBag = $this->items[$name] ?? null;
         if (!$nestedBag) {
@@ -144,11 +144,11 @@ class ParamBagBag extends ParamBag implements JsonSerializable
      *
      * @return void
      */
-    public function addNested($name, $nestedName, $nestedValue): void
+    public function addNested(string $name, string $nestedName, string $nestedValue): void
     {
         $nestedBag = $this->items[$name] ?? null;
         if (!$nestedBag) {
-            $nestedBag = new ParamBag();
+            $nestedBag = [new ParamBag()];
             $this->set($name, $nestedBag);
         }
         $nestedBag[0]->add($nestedName, $nestedValue);
@@ -158,11 +158,11 @@ class ParamBagBag extends ParamBag implements JsonSerializable
      * Parse n-deep arrays to add values.
      *
      * @param string $name  Parameter name
-     * @param string $value Some n-deep array of arrays into parameters
+     * @param mixed  $value A scalar value, or some n-deep array of arrays into parameters
      *
      * @return void
      */
-    public function addMultiNested($name, $value): void
+    public function addMultiNested(string $name, mixed $value): void
     {
         if (is_array($value)) {
             if (array_is_list($value)) {
@@ -229,7 +229,7 @@ class ParamBagBag extends ParamBag implements JsonSerializable
      *
      * @return array
      */
-    protected function jsonSerializeItems($items)
+    protected function jsonSerializeItems($items): array
     {
         $jsonObject = [];
         foreach ($items as $name => $values) {
