@@ -47,7 +47,7 @@ class AccountMenu extends AbstractMenuHelper
     /**
      * Constructor
      *
-     * @param Config  $configHelper  Config view helper
+     * @param Config  $config        Config view helper
      * @param Context $contextHelper Context view helper
      */
     public function __construct(

@@ -53,8 +53,8 @@ class AlphaBrowse
     /**
      * Constructor
      *
-     * @param Url   $url     URL helper
-     * @param array $options Additional configuration options
+     * @param Url   $url    URL helper
+     * @param array $config Additional configuration options
      */
     public function __construct(
         #[Autowire(container: 'ViewHelperManager')]

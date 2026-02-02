@@ -106,6 +106,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
      * Get a configured view object with relevant helpers for testing.
      *
      * @param Params $solrParams Configured Solr Params object
+     * @param Memory $memory     Memory helper
      *
      * @return PhpRenderer
      */

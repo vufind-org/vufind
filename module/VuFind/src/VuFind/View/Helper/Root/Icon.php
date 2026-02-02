@@ -80,7 +80,7 @@ class Icon
      *
      * @param array             $config       Icon configuration
      * @param StorageInterface  $cache        Cache instance
-     * @param EscapeHtmlAttr    $escAttr      EscapeHtmlAttr view helper
+     * @param EscapeHtmlAttr    $esc          EscapeHtmlAttr view helper
      * @param RendererInterface $viewRenderer View renderer
      * @param bool              $rtl          Are we in right to left text mode?
      */

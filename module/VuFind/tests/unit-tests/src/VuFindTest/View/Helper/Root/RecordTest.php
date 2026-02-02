@@ -764,6 +764,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * @param bool|string  $url                      Should we add a URL helper? False if no, expected route if yes.
      * @param bool         $serverurl                Should we add a ServerURL helper?
      * @param bool         $setSearchTabExpectations Should we set default search tab expectations?
+     * @param ?SearchTabs  $searchTabs               SearchTabs helper
      *
      * @return Record
      */

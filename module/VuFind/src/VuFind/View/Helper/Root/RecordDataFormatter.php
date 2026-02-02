@@ -67,11 +67,11 @@ class RecordDataFormatter
     /**
      * Constructor
      *
-     * @param SpecsManager        $specsManager Specs Plugin Manager
-     * @param RendererInterface   $viewRenderer View renderer
-     * @param Record              $record       Record view helper
-     * @param TransEsc            $transEsc     TransEsc view helper
-     * @param EscapeHtml          $escapeHtml   EscapeHtml view helper
+     * @param SpecsManager      $specsManager Specs Plugin Manager
+     * @param RendererInterface $viewRenderer View renderer
+     * @param Record            $record       Record view helper
+     * @param TransEsc          $transEsc     TransEsc view helper
+     * @param EscapeHtml        $escapeHtml   EscapeHtml view helper
      */
     public function __construct(
         #[Autowire]

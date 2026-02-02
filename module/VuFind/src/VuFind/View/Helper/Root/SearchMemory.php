@@ -49,9 +49,9 @@ class SearchMemory
     /**
      * Constructor
      *
-     * @param Memory     $memory       Search memory service
-     * @param Url        $url          Url view helper
-     * @param EscapeHtml $escapeHtml   EscapeHtml view helper
+     * @param Memory       $memory       Search memory service
+     * @param Url          $url          Url view helper
+     * @param EscapeHtml   $escapeHtml   EscapeHtml view helper
      * @param SearchParams $searchParams SearchParams view helper
      */
     public function __construct(

@@ -82,7 +82,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @param ContainerInterface $container       Mock service container
      * @param SchemaOrg          $schemaOrgHelper schema.org helper
-     * @param PhpRenderer        $view            View renderer
+     * @param PhpRenderer        $renderer        View renderer
      * @param ResolverInterface  $resolver        View resolver
      * @param LaminasUrl         $laminasUrl      Base Laminas URL helper
      *
@@ -179,7 +179,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'context' => $context,
             'config' => $configHelper,
             'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context),
-            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper())),
+            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(
+                new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper())
+            ),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),

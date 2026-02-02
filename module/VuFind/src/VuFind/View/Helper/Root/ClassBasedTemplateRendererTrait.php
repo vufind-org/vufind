@@ -125,6 +125,7 @@ trait ClassBasedTemplateRendererTrait
      * Set the context helper.
      *
      * @param Context $context Context helper
+     *
      * @return void
      */
     public function setContextHelper(Context $context): void
@@ -183,9 +184,11 @@ trait ClassBasedTemplateRendererTrait
      * @param array  $context   Context for rendering template
      * @param bool   $throw     If true (default), an exception is thrown if the
      * template is not found. Otherwise an empty string is returned.
-     *public
-     * @return string
+     * public
+     *
      * @throws RuntimeException
+     *
+     * @return string
      */
     protected function renderClassTemplate(
         $template,

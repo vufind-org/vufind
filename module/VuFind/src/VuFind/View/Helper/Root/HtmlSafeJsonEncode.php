@@ -60,7 +60,8 @@ class HtmlSafeJsonEncode
     /**
      * JSON-encode $value in an HTML-safe manner.
      *
-     * @param mixed $value Data to encode
+     * @param mixed  $value        Data to encode
+     * @param string $outerEscaper OuterEscaper
      *
      * @return string
      */

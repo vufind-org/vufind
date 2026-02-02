@@ -59,8 +59,10 @@ class Auth implements DbServiceAwareInterface
     /**
      * Constructor
      *
-     * @param Manager          $manager          Authentication manager
-     * @param ILSAuthenticator $ilsAuthenticator ILS Authenticator
+     * @param Manager           $manager          Authentication manager
+     * @param ILSAuthenticator  $ilsAuthenticator ILS Authenticator
+     * @param RendererInterface $viewRenderer     View renderer
+     * @param ResolverInterface $viewResolver     View resolver
      */
     public function __construct(
         #[Autowire]

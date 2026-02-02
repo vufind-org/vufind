@@ -118,7 +118,7 @@ trait ViewTrait
      * Get mock SearchMemory view helper
      *
      * @param ?\VuFind\Search\Memory                 $memory       Optional search memory
-     * @param ?\VuFind\View\Helper\Root\Url              $url          URL helper
+     * @param ?\VuFind\View\Helper\Root\Url          $url          URL helper
      * @param ?\Laminas\View\Helper\EscapeHtml       $escapeHtml   EscapeHtml helper
      * @param ?\VuFind\View\Helper\Root\SearchParams $searchParams SearchParams helper
      *
