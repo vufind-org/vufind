@@ -104,9 +104,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $configHelper = new \VuFind\View\Helper\Root\Config($configManager);
         $configEntity = $configManager->getConfigObject('config');
 
-        $translate = new \VuFind\View\Helper\Root\Translate(
-            $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class)
-        );
+        $translate = new \VuFind\View\Helper\Root\Translate();
 
         $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapeHtml);
         $url = new \VuFind\View\Helper\Root\Url($laminasUrl);

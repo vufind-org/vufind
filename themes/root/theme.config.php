@@ -13,6 +13,7 @@ return [
             'VuFind\View\Helper\Root\Browse' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\BulkAction' => 'VuFind\View\Helper\Root\BulkActionFactory',
             'VuFind\View\Helper\Root\Cart' => 'VuFind\View\Helper\Root\CartFactory',
+            'VuFind\View\Helper\Root\Captcha' => 'VuFind\View\Helper\Root\CaptchaFactory',
             'VuFind\View\Helper\Root\Citation' => 'VuFind\View\Helper\Root\CitationFactory',
             'VuFind\View\Helper\Root\CleanHtml' => 'VuFind\View\Helper\Root\CleanHtmlFactory',
             'VuFind\View\Helper\Root\Component' => 'Laminas\ServiceManager\Factory\InvokableFactory',
