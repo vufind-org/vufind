@@ -628,8 +628,8 @@ class Backend extends AbstractBackend implements
                 )
             );
         }
-        $params->setNested('params', 'wt', ['json']);
-        $params->setNested('params', 'json.nl', ['arrarr']);
+        $params->setNested('params', 'wt', 'json');
+        $params->setNested('params', 'json.nl', 'arrarr');
     }
 
     /**
