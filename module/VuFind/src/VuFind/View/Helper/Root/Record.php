@@ -92,6 +92,7 @@ class Record implements DbServiceAwareInterface
      *
      * @param TagsService       $tagsService   Tags service
      * @param RendererInterface $viewRenderer  View renderer
+     * @param ResolverInterface $viewResolver  View resolver
      * @param Context           $context       Context helper
      * @param RecordLinker      $recordLinker  RecordLinker helper
      * @param SearchTabs        $searchTabs    SearchTabs helper
@@ -135,6 +136,7 @@ class Record implements DbServiceAwareInterface
     ) {
         $this->viewRenderer = $viewRenderer;
         $this->viewResolver = $viewResolver;
+        $this->setContextHelper($context);
     }
 
     /**

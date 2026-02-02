@@ -86,7 +86,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $this->expectConsecutiveCalls(
-            $record->viewRenderer->resolver(),
+            $record->getViewResolver(),
             'resolve',
             [
                 ['RecordDriver/SolrMarc/core.phtml'],
@@ -96,7 +96,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ],
             false
         );
-        $record->viewRenderer->method('render')->willThrowException(new RuntimeException('boom'));
+        $record->getViewRenderer()->method('render')->willThrowException(new RuntimeException('boom'));
         $record->getCoreMetadata();
     }
 
@@ -125,12 +125,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $tpl = 'RecordDriver/SolrDefault/collection-record.phtml';
         $this->expectConsecutiveCalls(
-            $record->viewRenderer->resolver(),
+            $record->getViewResolver(),
             'resolve',
             [['RecordDriver/SolrMarc/collection-record.phtml'], [$tpl]],
             [false, true]
         );
-        $record->viewRenderer->expects($this->once())->method('render')
+        $record->getViewRenderer()->expects($this->once())->method('render')
             ->with($tpl)
             ->willReturn('success');
         $this->assertEquals('success', $record->getCollectionBriefRecord());
@@ -253,12 +253,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         // that one fail so we can load the parent class' template instead:
         $tpl = 'RecordDriver/AbstractBase/list-entry.phtml';
         $this->expectConsecutiveCalls(
-            $record->viewRenderer->resolver(),
+            $record->getViewResolver(),
             'resolve',
             [[/* anything */], [$tpl]],
             [false, true]
         );
-        $record->viewRenderer->expects($this->once())->method('render')
+        $record->getViewRenderer()->expects($this->once())->method('render')
             ->with($tpl)
             ->willReturn('success');
         $this->assertEquals('success', $record->getListEntry(null, $user, $recordNumber));
@@ -302,7 +302,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $context->expects($this->exactly(2))->method('restore')
             ->with(['bar' => 'baz']);
         $record = $this->getRecord($driver, $config, $context);
-        $record->viewRenderer->resolver()->method('resolve')->willReturn(true);
+        $record->getViewResolver()->method('resolve')->willReturn(true);
         $tpl1 = 'RecordDriver/SolrMarc/previewdata.phtml';
         $tpl2 = 'RecordDriver/SolrMarc/previewlink.phtml';
         $callback = function ($tpl) use ($tpl1, $tpl2) {
@@ -314,7 +314,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 return 'fail';
             }
         };
-        $record->viewRenderer->method('render')
+        $record->getViewRenderer()->method('render')
             ->with($this->logicalOr($this->equalTo($tpl1), $this->equalTo($tpl2)))
             ->willReturnCallback($callback);
         $this->assertEquals('success1success2', $record->getPreviews());
@@ -363,19 +363,19 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with(['bar' => 'baz']);
+        $searchTabs = $this->getMockSearchTabs(false);
+        $searchTabs->expects($this->once())->method('getCurrentHiddenFilterParams')
+            ->with('Solr', false, $expectedSeparator)
+            ->willReturn($hiddenFilter);
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
             $context,
             false,
             false,
-            false
+            false,
+            $searchTabs
         );
-        $container = $record->viewRenderer->getHelperPluginManager();
-        $container->get('searchTabs')->expects($this->once())
-            ->method('getCurrentHiddenFilterParams')
-            ->with('Solr', false, $expectedSeparator)
-            ->willReturn($hiddenFilter);
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml', $linkUrl);
         $this->assertEquals($expected, $record->getLink('bar', 'foo'));
     }
@@ -534,7 +534,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $context->expects($this->once())->method('restore')
             ->with(['bar' => 'baz']);
         $record = $this->getRecord($driver, [], $context);
-        $record->viewRenderer->expects($this->once())->method('render')
+        $record->getViewRenderer()->expects($this->once())->method('render')
             ->with('RecordTab/description.phtml')
             ->willReturn('success');
         $this->assertEquals('success', $record->getTab($tab));
@@ -773,7 +773,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         ?Context $context = null,
         bool|string $url = false,
         bool $serverurl = false,
-        bool $setSearchTabExpectations = true
+        bool $setSearchTabExpectations = true,
+        ?SearchTabs $searchTabs = null
     ): Record {
         if (null === $context) {
             $context = $this->getMockContext();
@@ -788,7 +789,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $serverUrlHelper = $serverurl ? $this->getMockServerUrl() : $this->createMock(ServerUrl::class);
         $urlHelper = $url ? $this->getMockUrl($url) : $this->createMock(\VuFind\View\Helper\Root\Url::class);
-        $searchTabs = $this->getMockSearchTabs($setSearchTabExpectations);
+        $searchTabs ??= $this->getMockSearchTabs($setSearchTabExpectations);
 
         $config = is_array($config) ? new Config($config) : $config;
         $smvh = $this->getSearchMemoryViewHelper();
@@ -796,6 +797,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = new Record(
             $this->createMock(TagsService::class),
             $view,
+            $resolver,
             $context,
             $this->createMock(\VuFind\View\Helper\Root\RecordLinker::class),
             $searchTabs,
@@ -920,10 +922,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         string $response = 'success',
         ?object $matcher = null
     ) {
-        $record->viewRenderer->resolver()->expects($matcher ?? $this->once())->method('resolve')
+        $record->getViewResolver()->expects($matcher ?? $this->once())->method('resolve')
             ->with($tpl)
             ->willReturn(true);
-        $record->viewRenderer->expects($matcher ?? $this->once())->method('render')
+        $record->getViewRenderer()->expects($matcher ?? $this->once())->method('render')
             ->with($tpl)
             ->willReturn($response);
     }
