@@ -36,6 +36,7 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -54,6 +55,8 @@ use function in_array;
  */
 class DeduplicationListener
 {
+    use ExplodeSettingTrait;
+
     /**
      * Constructor.
      *
@@ -294,9 +297,7 @@ class DeduplicationListener
      */
     protected function getActiveRecordSources(EventInterface $event): array
     {
-        return !empty($this->searchConfig['Records']['sources'])
-            ? explode(',', $this->searchConfig['Records']['sources'])
-            : [];
+        return $this->explodeListSetting($this->searchConfig['Records']['sources'] ?? '');
     }
 
     /**
