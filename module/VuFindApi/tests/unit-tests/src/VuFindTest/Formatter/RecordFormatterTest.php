@@ -30,7 +30,6 @@
 namespace VuFindTest\Formatter;
 
 use VuFind\I18n\TranslatableString;
-use VuFind\View\Helper\Root\Method;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\View\Helper\Root\Translate;
@@ -90,16 +89,6 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $mockRecordLinker = $this->createMock(RecordLinker::class);
         $mockRecordLinker->method('getUrl')->willReturn('http://record');
         $hm->setService('recordLinker', $mockRecordLinker);
-        $mockMethod = $this->createMock(Method::class);
-        $mockMethod->method('__invoke')->willReturnCallback(
-            function ($driver, $method, $params = []) {
-                return $driver->$method(...$params);
-            }
-        );
-        $hm->setService('method', $mockMethod);
-        $mockRecord = $this->createMock(Record::class);
-        $mockRecord->method('getUrl')->willReturn('http://record');
-        $hm->setService('record', $mockRecord);
         return $hm;
     }
 

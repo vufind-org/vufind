@@ -457,7 +457,9 @@ class RecordDataFormatter
         array $options
     ): ?string {
         // Determine the rendering method to use, and bail out if it's illegal:
-        $method = empty($options['combineAltRenderType']) ? 'renderSimple' : 'render' . $options['combineAltRenderType'];
+        $method = empty($options['combineAltRenderType'])
+            ? 'renderSimple'
+            : 'render' . $options['combineAltRenderType'];
         if (!is_callable([$this, $method])) {
             return null;
         }

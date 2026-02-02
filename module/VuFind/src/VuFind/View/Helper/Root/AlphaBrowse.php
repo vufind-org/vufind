@@ -62,7 +62,7 @@ class AlphaBrowse
         #[Autowire(config: 'config')]
         array $config = []
     ) {
-        $this->options = $config['AlphaBrowse'] ?? [];
+        $this->options = $config['AlphaBrowse'] ?? $config;
     }
 
     /**

@@ -90,21 +90,21 @@ class Record implements DbServiceAwareInterface
     /**
      * Constructor
      *
-     * @param TagsService       $tagsService   Tags service
-     * @param RendererInterface $viewRenderer  View renderer
-     * @param ResolverInterface $viewResolver  View resolver
-     * @param Context           $context       Context helper
-     * @param RecordLinker      $recordLinker  RecordLinker helper
-     * @param SearchTabs        $searchTabs    SearchTabs helper
-     * @param TransEsc          $transEsc      TransEsc helper
+     * @param TagsService       $tagsService        Tags service
+     * @param RendererInterface $viewRenderer       View renderer
+     * @param ResolverInterface $viewResolver       View resolver
+     * @param Context           $context            Context helper
+     * @param RecordLinker      $recordLinker       RecordLinker helper
+     * @param SearchTabs        $searchTabs         SearchTabs helper
+     * @param TransEsc          $transEsc           TransEsc helper
      * @param SearchMemory      $searchMemoryHelper SearchMemory helper
-     * @param Highlight         $highlight     Highlight helper
-     * @param AddEllipsis       $addEllipsis   AddEllipsis helper
-     * @param EscapeOrCleanHtml $escape        EscapeOrCleanHtml helper
-     * @param Truncate          $truncate      Truncate helper
-     * @param Url               $url           Url helper
-     * @param ServerUrl         $serverUrl     ServerUrl helper
-     * @param ?Config           $config        Configuration from config.ini
+     * @param Highlight         $highlight          Highlight helper
+     * @param AddEllipsis       $addEllipsis        AddEllipsis helper
+     * @param EscapeOrCleanHtml $escape             EscapeOrCleanHtml helper
+     * @param Truncate          $truncate           Truncate helper
+     * @param Url               $url                Url helper
+     * @param ServerUrl         $serverUrl          ServerUrl helper
+     * @param ?Config           $config             Configuration from config.ini
      */
     public function __construct(
         protected TagsService $tagsService,

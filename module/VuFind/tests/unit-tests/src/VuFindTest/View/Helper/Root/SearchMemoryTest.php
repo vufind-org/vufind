@@ -31,7 +31,6 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Helper\EscapeHtml;
-use Laminas\View\Helper\Url;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Search\Memory;
 use VuFind\Search\Solr\Options;
@@ -201,7 +200,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory = $this->createMock(Memory::class);
         $memory->expects($this->once())->method('getLastSearch')->willReturn(null);
         $solrParams = $this->createMock(Params::class);
-        $helper = $this->getConfiguredHelper($solrParams, $memory);   
+        $helper = $this->getConfiguredHelper($solrParams, $memory);
         $this->assertEquals('', $helper->getLastSearchLink('Solr', 'prefix', 'suffix'));
     }
 

@@ -80,9 +80,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get view helpers needed by test.
      *
-     * @param ContainerInterface                  $container       Mock service container
-     * @param SchemaOrg                           $schemaOrgHelper schema.org helper
-     * @param ?\Laminas\View\Renderer\PhpRenderer $view            View renderer (optional)
+     * @param ContainerInterface $container       Mock service container
+     * @param SchemaOrg          $schemaOrgHelper schema.org helper
+     * @param PhpRenderer        $view            View renderer
+     * @param ResolverInterface  $resolver        View resolver
+     * @param LaminasUrl         $laminasUrl      Base Laminas URL helper
      *
      * @return array
      */

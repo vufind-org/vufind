@@ -47,7 +47,6 @@ use function is_string;
  */
 class Icon
 {
-
     /**
      * Default icon set
      *

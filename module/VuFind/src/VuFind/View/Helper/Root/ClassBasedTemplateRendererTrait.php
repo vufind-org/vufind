@@ -123,7 +123,7 @@ trait ClassBasedTemplateRendererTrait
 
     /**
      * Set the context helper.
-     * 
+     *
      * @param Context $context Context helper
      * @return void
      */
