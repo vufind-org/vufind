@@ -29,7 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Navigation\AbstractMenu;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -49,13 +50,13 @@ abstract class AbstractMenuHelper
     /**
      * Constructor
      *
-     * @param AbstractMenu $menu     Menu
-     * @param PhpRenderer  $renderer PhpRenderer
+     * @param AbstractMenu      $menu     Menu
+     * @param RendererInterface $renderer View renderer
      */
     public function __construct(
         protected AbstractMenu $menu,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected PhpRenderer $renderer
+        #[Autowire(service: 'ViewRenderer')]
+        protected RendererInterface $renderer
     ) {
     }
 
