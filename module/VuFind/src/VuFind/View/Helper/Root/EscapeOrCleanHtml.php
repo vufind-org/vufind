@@ -62,6 +62,7 @@ class EscapeOrCleanHtml
         protected Escaper $escaper,
         #[Autowire(container: 'ViewHelperManager')]
         protected CleanHtml $cleanHtml,
+        #[Autowire(config: 'config')]
         array $config
     ) {
         $this->htmlContexts = (array)($config['Allowed_HTML_Contexts'] ?? []);

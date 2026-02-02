@@ -156,7 +156,7 @@ trait ViewTrait
     protected function createCleanHtmlHelper(): CleanHtml
     {
         // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
-        $cacheOptions = new class() extends AdapterOptions {
+        $cacheOptions = new class () extends AdapterOptions {
             /**
              * Get cache dir
              *

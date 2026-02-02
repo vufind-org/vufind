@@ -44,6 +44,13 @@ use VuFind\ServiceManager\Factory\Autowire;
 class AlphaBrowse
 {
     /**
+     * Additional configuration options.
+     *
+     * @var array
+     */
+    protected $options;
+
+    /**
      * Constructor
      *
      * @param Url   $url     URL helper
@@ -52,9 +59,10 @@ class AlphaBrowse
     public function __construct(
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
-        #[Autowire(service: 'config')]
-        protected array $options = []
+        #[Autowire(config: 'config')]
+        array $config = []
     ) {
+        $this->options = $config['AlphaBrowse'] ?? [];
     }
 
     /**

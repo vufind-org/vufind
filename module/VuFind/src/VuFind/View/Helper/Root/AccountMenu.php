@@ -51,9 +51,9 @@ class AccountMenu extends AbstractMenuHelper
      * @param Context $contextHelper Context view helper
      */
     public function __construct(
-        #[Autowire(service: Config::class)]
-        protected Config $configHelper,
-        #[Autowire(service: Context::class)]
+        #[Autowire(config: 'config')]
+        protected array $config,
+        #[Autowire(service: Context::class, container: 'ViewHelperManager')]
         protected Context $contextHelper
     ) {
     }
@@ -66,7 +66,7 @@ class AccountMenu extends AbstractMenuHelper
     public function finesIcon(): string
     {
         $icon = 'currency-'
-            . strtolower($this->configHelper->get('config')->Site->defaultCurrency ?? 'usd');
+            . strtolower($this->config['Site']['defaultCurrency'] ?? 'usd');
         return $icon;
     }
 
