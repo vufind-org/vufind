@@ -47,12 +47,6 @@ use function is_string;
  */
 class Icon
 {
-    /**
-     * Icon config from theme.config.php
-     *
-     * @var array
-     */
-    protected $config;
 
     /**
      * Default icon set
@@ -76,34 +70,6 @@ class Icon
     protected $iconMap;
 
     /**
-     * Cache for icons
-     *
-     * @var StorageInterface
-     */
-    protected $cache;
-
-    /**
-     * Escape helper
-     *
-     * @var EscapeHtmlAttr
-     */
-    protected $esc;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $viewRenderer;
-
-    /**
-     * Are we in right to left text mode?
-     *
-     * @var bool
-     */
-    protected $rtl;
-
-    /**
      * Prevent extra work by only appending the stylesheet once
      *
      * @var bool
@@ -120,20 +86,15 @@ class Icon
      * @param bool              $rtl          Are we in right to left text mode?
      */
     public function __construct(
-        array $config,
-        StorageInterface $cache,
-        EscapeHtmlAttr $escAttr,
-        RendererInterface $viewRenderer,
-        bool $rtl = false
+        protected array $config,
+        protected StorageInterface $cache,
+        protected EscapeHtmlAttr $esc,
+        protected RendererInterface $viewRenderer,
+        protected bool $rtl = false
     ) {
-        $this->config = $config;
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->defaultTemplate = $this->config['defaultTemplate'] ?? 'font';
         $this->iconMap = $this->config['aliases'] ?? [];
-        $this->cache = $cache;
-        $this->esc = $escAttr;
-        $this->viewRenderer = $viewRenderer;
-        $this->rtl = $rtl;
     }
 
     /**

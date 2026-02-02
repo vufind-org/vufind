@@ -29,10 +29,13 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\Config\Config;
 use VuFind\Record\Router;
 use VuFind\Search\Base\Results;
 use VuFind\View\Helper\Root\RecordLinker;
+use VuFind\View\Helper\Root\SearchMemory;
+use VuFind\View\Helper\Root\SearchOptions;
 use VuFind\View\Helper\Root\Translate;
 use VuFind\View\Helper\Root\Truncate;
 use VuFind\View\Helper\Root\Url;
@@ -207,15 +210,42 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRecordLinker(array $extraHelpers = []): RecordLinker
     {
-        $view = $this->getPhpRenderer(
-            $extraHelpers + [
-                'searchMemory' => $this->getSearchMemoryViewHelper(),
-                'url' => $this->getUrl(),
-            ]
+        $url = $this->getUrl();
+        
+        $searchMemory = $this->getSearchMemoryViewHelper();
+        $searchOptions = $this->createMock(SearchOptions::class);
+        $searchOptions->method('__invoke')->willReturnCallback(function ($source) {
+            $options = $this->createMock(\VuFind\Search\Options\OptionsInterface::class);
+            $options->method('getSearchAction')->willReturn('search-results');
+            $options->method('getVersionsAction')->willReturn('search-versions');
+            return $options;
+        });
+        
+        $translate = $extraHelpers['translate'] ?? $this->createMock(Translate::class);
+        $translate->method('__invoke')->willReturnCallback(function ($str) {
+            return $str;
+        });
+        
+        $truncate = $extraHelpers['truncate'] ?? $this->createMock(Truncate::class);
+        $truncate->method('__invoke')->willReturnCallback(function ($str, $len) {
+            return $str;
+        });
+        
+        $escapeHtml = $this->createMock(EscapeHtml::class);
+        $escapeHtml->method('__invoke')->willReturnCallback(function ($str) {
+            return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+        });
+
+        $recordLinker = new RecordLinker(
+            new Router(new Config([])),
+            $url,
+            $searchOptions,
+            $searchMemory,
+            $translate,
+            $truncate,
+            $escapeHtml
         );
 
-        $recordLinker = new RecordLinker(new Router(new Config([])));
-        $recordLinker->setView($view);
         return $recordLinker;
     }
 
@@ -227,42 +257,44 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     protected function getUrl(): Url
     {
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->onlyMethods(['getQuery'])->getMock();
+            ->onlyMethods(['getQuery'])
+            ->getMock();
         $request->method('getQuery')->willReturn(new \Laminas\Stdlib\Parameters());
-
-        $url = new \VuFind\View\Helper\Root\Url($request);
-
-        // Create router
+        
+        $laminasUrl = new \Laminas\View\Helper\Url();
+        $url = new \VuFind\View\Helper\Root\Url($laminasUrl, $request);
+        
         $router = new \Laminas\Router\Http\TreeRouteStack();
         $router->setRequestUri(new \Laminas\Uri\Http('http://localhost'));
+        
         $recordRoute = new \Laminas\Router\Http\Segment(
             '/Record/[:id[/[:tab]]]',
             [
                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
             ],
             [
                 'controller' => 'Record',
-                'action'     => 'Home',
+                'action' => 'Home',
             ]
         );
         $router->addRoute('record', $recordRoute);
-
+        
         $actionRoute = new \Laminas\Router\Http\Segment(
             '/Record/[:id]/Description',
             [
                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
             ],
             [
                 'controller' => 'Record',
-                'action'     => 'Description',
+                'action' => 'Description',
             ]
         );
         $router->addRoute('record-description', $actionRoute);
-
-        $url->setRouter($router);
-
+        
+        $laminasUrl->setRouter($router);
+        
         return $url;
     }
 }
