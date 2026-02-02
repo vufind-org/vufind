@@ -480,7 +480,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
                 if (!$recordId) {
                     $recordId = $control->sourcerecordid[0];
                 }
-                $parts = explode('$', $recordId);
+                $parts = explode('$$', $recordId);
                 $recordId = substr(end($parts), 1);
             }
             $item['recordid'] = $this->getRecordId($recordId);
