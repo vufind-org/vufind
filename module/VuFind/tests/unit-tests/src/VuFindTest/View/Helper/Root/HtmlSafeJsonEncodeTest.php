@@ -52,11 +52,10 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      *
      * @return HtmlSafeJsonEncode
      */
-    protected function getHelper(array $plugins = []): HtmlSafeJsonEncode
+    protected function getHelper(?EscapeHtmlAttr $escapeHtmlAttr = null): HtmlSafeJsonEncode
     {
-        $helper = new HtmlSafeJsonEncode();
-        $helper->setView($this->getPhpRenderer($plugins));
-        return $helper;
+        $escapeHtmlAttr ??= $this->createMock(EscapeHtmlAttr::class);
+        return new HtmlSafeJsonEncode($escapeHtmlAttr);
     }
 
     /**
@@ -67,10 +66,8 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     public function testDefaultEscaping(): void
     {
         $escapeHtmlAttr = $this->createMock(EscapeHtmlAttr::class);
-        $escapeHtmlAttr->expects($this->once())->method('__invoke')
-            ->with('1')
-            ->willReturn('1');
-        $this->assertEquals('1', ($this->getHelper(compact('escapeHtmlAttr')))(1));
+        $escapeHtmlAttr->expects($this->once())->method('__invoke')->with('1')->willReturn('1');
+        $this->assertEquals('1', ($this->getHelper($escapeHtmlAttr))(1));
     }
 
     /**
