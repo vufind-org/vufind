@@ -91,7 +91,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                                                 'url' => '#',
                                             ],
                                             [
-                                                'label' => 'Submenu 1.1 Item 2 with checkMethod that fails and is not displayed',
+                                                'label' => 'Submenu 1.1 Item 2 with checkMethod that fails',
                                                 'url' => '#',
                                                 'checkMethod' => 'alwaysFail',
                                             ],
@@ -102,7 +102,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                                         ],
                                     ],
                                     [
-                                        'label' => 'Submenu 1 Item 3 with checkMethod that fails and is not displayed',
+                                        'label' => 'Submenu 1 Item 3 with checkMethod that fails',
                                         'url' => '#',
                                         'checkMethod' => 'alwaysFail',
                                     ],
@@ -180,18 +180,28 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertStringContainsString(
             'Submenu 1 Item 1',
-            $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)')
+            $this->findCssAndGetText(
+                $page,
+                '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)'
+            )
         );
         $this->assertStringNotContainsString(
-            'Submenu 1.1 Item 2 with checkMethod that fails and is not displayed',
-            $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(2) > ul:nth-child(2)')
+            'Submenu 1.1 Item 2 with checkMethod that fails',
+            $this->findCssAndGetText(
+                $page,
+                '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(2) > ul:nth-child(2)'
+            )
         );
         $this->assertStringContainsString(
             'Submenu 1.1 Item 3',
-            $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(2) > ul:nth-child(2) > li:nth-child(2) > a:nth-child(1)')
+            $this->findCssAndGetText(
+                $page,
+                '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(2) > ul:nth-child(2) '
+                    . '> li:nth-child(2) > a:nth-child(1)'
+            )
         );
         $this->assertStringNotContainsString(
-            'Submenu 1 Item 3 with checkMethod that fails and is not displayed',
+            'Submenu 1 Item 3 with checkMethod that fails',
             $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2)')
         );
         $this->assertStringContainsString(
@@ -200,7 +210,10 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertStringContainsString(
             'Submenu 2 Item 1',
-            $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+            $this->findCssAndGetText(
+                $page,
+                '#content > ul:nth-child(4) > li:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)'
+            )
         );
         $this->assertStringContainsString(
             'Regular Item 3',
