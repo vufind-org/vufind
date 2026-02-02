@@ -1,4 +1,4 @@
-<h1><?= $this->transEsc('Site map') ?></h1>
+<h1><?= $this->transEsc('Site Map') ?></h1>
 <?php foreach ($this->siteMap->getMenu() as $groupName => $group) : ?>
   <?php if ($groupHasLabel = isset($group['label'])): ?>
     <h2><?= $this->transEsc($group['label']) ?></h2>
