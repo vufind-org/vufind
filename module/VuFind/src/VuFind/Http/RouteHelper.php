@@ -76,8 +76,9 @@ class RouteHelper
     public function getUrlFromRoute(
         $name = null,
         $linkParams = [],
-        $routeOptions = []
+        $queryParams = []
     ): string {
+        $routeOptions = $queryParams ? ['query' => $queryParams] : [];
         return ($this->urlHelper)($name, $linkParams, $routeOptions);
     }
 }

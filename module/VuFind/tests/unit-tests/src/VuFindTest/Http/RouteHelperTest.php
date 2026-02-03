@@ -51,15 +51,18 @@ class RouteHelperTest extends \PHPUnit\Framework\TestCase
      */
     public function testShallowGetUrlFromRoute(): void
     {
-        $routeName = 'some_route';
+        $routeName = 'some-route';
+        $routeParams = ['record' => 1];
+        $queryParams = ['foo' => 'bar'];
+        $routeResult = '/some/route/1?foo=bar';
 
         $urlHelper = $this->createMock(UrlHelper::class);
-        $urlHelper->expects($this->once())->method('__invoke')->willReturn($routeName);
+        $urlHelper->expects($this->once())->method('__invoke')->with($routeName, $routeParams, ['query' => $queryParams])->willReturn($routeResult);
         $routeHelper = new RouteHelper(
             Closure::fromCallable($urlHelper)
         );
 
-        $url = $routeHelper->getUrlFromRoute('', [], []);
-        $this->assertSame($routeName, $url);
+        $url = $routeHelper->getUrlFromRoute($routeName, $routeParams, $queryParams);
+        $this->assertSame($routeResult, $url);
     }
 }
