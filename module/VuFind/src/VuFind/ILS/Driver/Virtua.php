@@ -1924,11 +1924,6 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /* Methods yet to be implemented -- see Voyager driver for examples
-
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-
-    public function getFunds()
-
     public function getSuppressedRecords()
      */
 }

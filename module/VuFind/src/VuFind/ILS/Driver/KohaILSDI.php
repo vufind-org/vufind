@@ -1052,6 +1052,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * whatever that may mean.
      *
      * @return array provides a count and the results of new items.
+     *
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {

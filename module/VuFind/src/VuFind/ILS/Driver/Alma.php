@@ -2009,6 +2009,8 @@ class Alma extends AbstractBase implements
      * Get list of funds
      *
      * @return array with key = fund ID, value = fund name
+     *
+     * @deprecated
      */
     public function getFunds()
     {
