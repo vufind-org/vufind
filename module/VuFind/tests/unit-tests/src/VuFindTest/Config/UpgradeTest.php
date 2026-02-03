@@ -55,7 +55,17 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected string $targetVersion = '11.0';
+    protected string $targetVersion = '11.1';
+
+    /**
+     * This deprecation warning is expected in many situations as we prepare to remove
+     * ILS-driven new items in release 12.0. This property can be removed after the
+     * transition is completed and the config upgrader's behavior is finalized.
+     *
+     * @var string
+     */
+    protected $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method '
+        . 'setting of "ils" is deprecated; you should switch to "solr" or "disabled".';
 
     /**
      * Get an upgrade object for the specified source version:
@@ -414,7 +424,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEbscoUpgrade(string $backend, string $configName): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($backend);
-        $this->assertSame([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             ['foo' => 'bar'],
@@ -434,7 +444,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeSimple(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-default');
-        $this->assertSame([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
@@ -450,7 +460,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeAdvanced(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-advanced');
-        $this->assertSame([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $edsRecordDataFormatterConfig = $results['RecordDataFormatter/EDS'];
@@ -520,7 +530,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testPrimoUpgrade(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('primo');
-        $this->assertSame([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'http://my-id.hosted.exlibrisgroup.com:1701',
@@ -539,7 +549,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
             . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
             . 'You may need to reimplement your custom theme.';
-        $this->assertSame([$expectedWarning], $upgrader->getWarnings());
+        $this->assertContains($expectedWarning, $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'sandal5',
