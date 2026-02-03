@@ -58,9 +58,9 @@ class RouteHelper
     /**
      * Generates a url given the name of a route.
      *
-     * @param string             $name         Name of the route
-     * @param array              $linkParams   Parameters for the link
-     * @param array|\Traversable $routeOptions Options for the route
+     * @param string             $name        Name of the route
+     * @param array              $linkParams  Parameters for the link
+     * @param array|\Traversable $queryParams Query parameters
      *
      * @see \Laminas\Router\RouteInterface::assemble()
      *

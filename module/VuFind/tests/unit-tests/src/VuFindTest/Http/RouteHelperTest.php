@@ -57,7 +57,10 @@ class RouteHelperTest extends \PHPUnit\Framework\TestCase
         $routeResult = '/some/route/1?foo=bar';
 
         $urlHelper = $this->createMock(UrlHelper::class);
-        $urlHelper->expects($this->once())->method('__invoke')->with($routeName, $routeParams, ['query' => $queryParams])->willReturn($routeResult);
+        $urlHelper->expects($this->once())
+            ->method('__invoke')
+            ->with($routeName, $routeParams, ['query' => $queryParams])
+            ->willReturn($routeResult);
         $routeHelper = new RouteHelper(
             Closure::fromCallable($urlHelper)
         );
