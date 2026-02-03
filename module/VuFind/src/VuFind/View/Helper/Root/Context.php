@@ -31,7 +31,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -54,7 +54,7 @@ class Context
      */
     public function __construct(
         #[Autowire]
-        protected PhpRenderer $view
+        protected RendererInterface $view
     ) {
     }
 

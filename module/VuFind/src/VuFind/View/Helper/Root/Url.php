@@ -53,7 +53,7 @@ class Url
      * @param ?Request   $request    Request object for GET parameters
      */
     public function __construct(
-        #[Autowire(container: 'ViewHelperManager', service: 'url')]
+        #[Autowire(container: 'ViewHelperManager', service: LaminasUrl::class)]
         protected LaminasUrl $laminasUrl,
         protected ?Request $request = null
     ) {
