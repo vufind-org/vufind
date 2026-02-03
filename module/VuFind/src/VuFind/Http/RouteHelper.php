@@ -58,9 +58,9 @@ class RouteHelper
     /**
      * Generates a url given the name of a route.
      *
-     * @param string             $name        Name of the route
-     * @param array              $linkParams  Parameters for the link
-     * @param array|\Traversable $queryParams Query parameters
+     * @param string $name        Name of the route
+     * @param array  $routeParams Path parameters
+     * @param array  $queryParams Query parameters
      *
      * @see \Laminas\Router\RouteInterface::assemble()
      *
@@ -74,11 +74,11 @@ class RouteHelper
      * @return self|string Url For the link href attribute
      */
     public function getUrlFromRoute(
-        $name = null,
-        $linkParams = [],
-        $queryParams = []
+        string $name,
+        array $routeParams = [],
+        array $queryParams = []
     ): string {
         $routeOptions = $queryParams ? ['query' => $queryParams] : [];
-        return ($this->urlHelper)($name, $linkParams, $routeOptions);
+        return ($this->urlHelper)($name, $routeParams, $routeOptions);
     }
 }
