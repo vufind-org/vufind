@@ -62,39 +62,4 @@ class RouteHelperTest extends \PHPUnit\Framework\TestCase
         $url = $routeHelper->getUrlFromRoute('', [], []);
         $this->assertSame($routeName, $url);
     }
-
-    // /**
-    //  * Data provider for testGetUrlFromRoute tests.
-    //  *
-    //  * @return \Iterator<string, array>
-    //  */
-    // public static function getUrlFromRouteProvider(): \Iterator
-    // {
-    //     yield 'Solr results' => [ 'search-results', [], ['query' => ['lookfor' => 'foo']], 'vufind/search/results' ];
-    // }
-
-    // /**
-    //  * Test helper's getUrlFromRoute method
-    //  *
-    //  * @param string             $name         Name of the route
-    //  * @param array              $linkParams   Parameters for the link
-    //  * @param array|\Traversable $routeOptions Options for the route
-    //  * @param string             $expected     Expected route URL
-    //  *
-    //  * @return void
-    //  */
-    // #[\PHPUnit\Framework\Attributes\DataProvider('getUrlFromRouteProvider')]
-    // public function testGetUrlFromRoute(
-    //     string $name,
-    //     array $linkParams,
-    //     array | \Traversable $routeOptions,
-    //     string $expected
-    // ): void {
-    //     $routeHelper = new RouteHelper(
-    //         Closure::fromCallable(new UrlHelper())
-    //     );
-
-    //     $url = $routeHelper->getUrlFromRoute($name, $linkParams, $routeOptions);
-    //     $this->assertSame($expected, $url);
-    // }
 }
