@@ -171,10 +171,7 @@ class ParamBagBag extends ParamBag implements JsonSerializable
                 }
             } else {
                 $nestedBag = $this->items[$name][0] ?? null;
-                if (!$nestedBag) {
-                    $nestedBag = new ParamBagBag();
-                    $this->set($name, $nestedBag);
-                } elseif (!$nestedBag instanceof ParamBagBag) {
+                if (!$nestedBag || !$nestedBag instanceof ParamBagBag) {
                     $nestedBag = ParamBagBag::from($nestedBag);
                     $this->set($name, $nestedBag);
                 }
