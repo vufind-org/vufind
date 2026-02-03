@@ -177,29 +177,41 @@ class YamlReader
 
         // Override default parent with explicitly-defined parent, if present:
         if (isset($results['@parent_yaml'])) {
-            // First try parent as absolute path, then as relative:
-            $defaultParent = file_exists($results['@parent_yaml'])
-                ? $results['@parent_yaml']
-                : dirname($file) . '/' . $results['@parent_yaml'];
-            if (!file_exists($defaultParent)) {
+            if (false === $results['@parent_yaml']) {
+                // Remove parent since value was set to false:
                 $defaultParent = null;
-                error_log('Cannot find parent file: ' . $results['@parent_yaml']);
+            } else {
+                // First try parent as absolute path, then as relative:
+                $defaultParent = file_exists($results['@parent_yaml'])
+                    ? $results['@parent_yaml']
+                    : dirname($file) . '/' . $results['@parent_yaml'];
+                if (!file_exists($defaultParent)) {
+                    $defaultParent = null;
+                    error_log(
+                        'Cannot find parent file: ' . $results['@parent_yaml']
+                    );
+                }
             }
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
         }
         // Override default parent with a named configuration, if present:
         if (isset($results['@parent_config_name'])) {
-            $parentConfigName = $results['@parent_config_name'] . '.yaml';
-            $defaultParent = $useLocalConfig
-                ? $this->pathResolver->getLocalConfigPath($parentConfigName)
-                : null;
-            if ($defaultParent === null || !file_exists($defaultParent)) {
-                $defaultParent = $this->pathResolver->getBaseConfigPath($parentConfigName);
-            }
-            if (!file_exists($defaultParent)) {
+            if (false === $results['@parent_config_name']) {
+                // Remove parent since value was set to false:
                 $defaultParent = null;
-                error_log('Cannot find parent config: ' . $parentConfigName);
+            } else {
+                $parentConfigName = $results['@parent_config_name'] . '.yaml';
+                $defaultParent = $useLocalConfig
+                    ? $this->pathResolver->getLocalConfigPath($parentConfigName)
+                    : null;
+                if ($defaultParent === null || !file_exists($defaultParent)) {
+                    $defaultParent = $this->pathResolver->getBaseConfigPath($parentConfigName);
+                }
+                if (!file_exists($defaultParent)) {
+                    $defaultParent = null;
+                    error_log('Cannot find parent config: ' . $parentConfigName);
+                }
             }
             // Swallow the directive after processing it:
             unset($results['@parent_config_name']);

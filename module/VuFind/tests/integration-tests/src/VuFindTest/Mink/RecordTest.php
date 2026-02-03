@@ -57,11 +57,11 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($url);
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $staffViewTab = $this->findCss($page, '.record-tabs .details a');
+        $staffViewTab = $this->findCss($page, '.record-tabs #tab-button-details');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
         $this->assertEqualsWithTimeout(
-            $url . '#details',
+            $url . '/Details',
             [$session, 'getCurrentUrl']
         );
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
@@ -80,26 +80,24 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     protected function tryLoadingTabHashAndReturningToDefault(string $id, bool $encodeId = true): void
     {
         // special test for going back to default tab from non-default URL
-        $url = $this->getVuFindUrl(
-            '/Record/' . ($encodeId ? rawurlencode($id) : $id) . '/Holdings#details'
-        );
+        $baseUrl  = $this->getVuFindUrl('/Record/' . ($encodeId ? rawurlencode($id) : $id));
+        $url = $baseUrl . '/Holdings#details';
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
+        $this->assertEquals($baseUrl . '/Details', $session->getCurrentUrl());
         $this->assertStringStartsWith(
             'LEADER',
             $this->findCssAndGetText($page, '.record-tabs .details-tab table.staff-view--marc')
         );
-        $page = $session->getPage();
-        $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
-        $this->assertEquals('Holdings', $staffViewTab->getText());
-        $staffViewTab->click();
-        $this->assertEquals(
+        $holdingsTab = $this->findCss($page, '.record-tabs #tab-button-holdings');
+        $this->assertEquals('Holdings', $holdingsTab->getText());
+        $holdingsTab->click();
+        $this->assertSame(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.record-tabs .holdings-tab h2')
         );
-        [$baseUrl] = explode('#', $url);
-        $this->assertEquals($baseUrl, $session->getCurrentUrl());
+        $this->assertEquals($baseUrl . '/Holdings', $session->getCurrentUrl());
     }
 
     /**

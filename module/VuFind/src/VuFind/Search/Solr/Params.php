@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\Solr;
 
-use VuFind\Config\Config;
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
@@ -58,66 +58,66 @@ class Params extends \VuFind\Search\Base\Params
      * Search with facet.contains
      * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
      *
-     * @var string
+     * @var ?string
      */
-    protected $facetContains = null;
+    protected ?string $facetContains = null;
 
     /**
      * Ignore Case when using facet.contains
      * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
      *
-     * @var bool
+     * @var ?bool
      */
-    protected $facetContainsIgnoreCase = null;
+    protected ?bool $facetContainsIgnoreCase = null;
 
     /**
      * Offset for facet results
      *
-     * @var int
+     * @var ?int
      */
-    protected $facetOffset = null;
+    protected ?int $facetOffset = null;
 
     /**
      * Prefix for facet searching
      *
-     * @var string
+     * @var ?string
      */
-    protected $facetPrefix = null;
+    protected ?string $facetPrefix = null;
 
     /**
      * Sorting order for facet search results
      *
-     * @var string
+     * @var ?string
      */
-    protected $facetSort = null;
+    protected ?string $facetSort = null;
 
     /**
      * Sorting order of single facet by index
      *
-     * @var array
+     * @var ?array
      */
-    protected $indexSortedFacets = null;
+    protected ?array $indexSortedFacets = null;
 
     /**
      * Fields for visual faceting
      *
-     * @var string
+     * @var ?string
      */
-    protected $pivotFacets = null;
+    protected ?string $pivotFacets = null;
 
     /**
      * Hierarchical Facet Helper
      *
-     * @var HierarchicalFacetHelper
+     * @var ?HierarchicalFacetHelper
      */
-    protected $facetHelper;
+    protected ?HierarchicalFacetHelper $facetHelper;
 
     /**
      * Are we searching by ID only (instead of a normal query)?
      *
      * @var bool
      */
-    protected $searchingById = false;
+    protected bool $searchingById = false;
 
     /**
      * Config sections to search for facet labels if no override configuration
@@ -125,7 +125,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelSections
+    protected array $defaultFacetLabelSections
         = ['Advanced', 'HomePage', 'ResultsTop', 'Results', 'ExtraFacetLabels'];
 
     /**
@@ -134,14 +134,14 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+    protected array $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
      * Virtual field name used for custom filters
      *
      * @var string
      */
-    protected $customFilterFieldName;
+    protected string $customFilterFieldName;
 
     /**
      * Constructor
@@ -151,7 +151,7 @@ class Params extends \VuFind\Search\Base\Params
      * @param ?HierarchicalFacetHelper    $facetHelper   Hierarchical facet helper
      */
     public function __construct(
-        $options,
+        \VuFind\Search\Base\Options $options,
         ConfigManagerInterface $configManager,
         ?HierarchicalFacetHelper $facetHelper = null
     ) {
@@ -159,10 +159,7 @@ class Params extends \VuFind\Search\Base\Params
         $this->facetHelper = $facetHelper;
 
         // Use basic facet limit by default, if set:
-        $facetConfigName = $options->getFacetsIni();
-        $config = ($facetConfigName !== null)
-            ? $configManager->getConfigObject($facetConfigName)
-            : new Config([]);
+        $config = $configManager->getConfigObject($options->getFacetsIni());
         $this->initFacetLimitsFromConfig($config->Results_Settings ?? null);
         $this->initFacetRestrictionsFromConfig($config->Results_Settings ?? null);
         if (isset($config->LegacyFields)) {
@@ -184,7 +181,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array $filterQuery
      */
-    public function getFilterSettings()
+    public function getFilterSettings(): array
     {
         // Define Filter Query
         $filterQuery = [];
@@ -230,7 +227,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array $facetSet
      */
-    public function getFacetSettings()
+    public function getFacetSettings(): array
     {
         // Build a list of facets we want from the index
         $facetSet = [];
@@ -308,12 +305,12 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch($request)
+    protected function initSearch(Parameters $request): void
     {
         // Special case -- did we get a list of IDs instead of a standard query?
         $ids = $request->get('overrideIds', null);
@@ -332,7 +329,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setFacetContains($p)
+    public function setFacetContains(string $p): void
     {
         $this->facetContains = $p;
     }
@@ -344,7 +341,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setFacetContainsIgnoreCase($val)
+    public function setFacetContainsIgnoreCase(bool $val): void
     {
         $this->facetContainsIgnoreCase = $val;
     }
@@ -356,7 +353,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setFacetOffset($o)
+    public function setFacetOffset(int $o): void
     {
         $this->facetOffset = $o;
     }
@@ -368,7 +365,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setFacetPrefix($p)
+    public function setFacetPrefix(string $p): void
     {
         $this->facetPrefix = $p;
     }
@@ -380,7 +377,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setFacetSort($s)
+    public function setFacetSort(string $s): void
     {
         $this->facetSort = $s;
     }
@@ -392,7 +389,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setIndexSortedFacets(array $s)
+    public function setIndexSortedFacets(array $s): void
     {
         $this->indexSortedFacets = $s;
     }
@@ -400,14 +397,14 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize facet settings for the specified configuration sections.
      *
-     * @param string $facetList     Config section containing fields to activate
-     * @param string $facetSettings Config section containing related settings
-     * @param string $cfgFile       Name of configuration to load (null to load
+     * @param string  $facetList     Config section containing fields to activate
+     * @param string  $facetSettings Config section containing related settings
+     * @param ?string $cfgFile       Name of configuration to load (null to load
      * default facets configuration).
      *
      * @return bool                 True if facets set, false if no settings found
      */
-    protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
+    protected function initFacetList(string $facetList, string $facetSettings, ?string $cfgFile = null): bool
     {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
         $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
@@ -420,7 +417,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function initAdvancedFacets()
+    public function initAdvancedFacets(): void
     {
         $this->initFacetList('Advanced', 'Advanced_Settings');
     }
@@ -430,7 +427,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function initHomePageFacets()
+    public function initHomePageFacets(): void
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
         if (!$this->initFacetList('HomePage', 'HomePage_Settings')) {
@@ -443,7 +440,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function initNewItemsFacets()
+    public function initNewItemsFacets(): void
     {
         // Load Advanced settings if NewItems settings are missing (fallback to defaults):
         if (!$this->initFacetList('NewItems', 'NewItems_Settings')) {
@@ -454,12 +451,12 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters($request)
+    protected function initFilters(Parameters $request): void
     {
         // Use the default behavior of the parent class, but add support for the
         // special illustrations filter.
@@ -482,7 +479,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setQueryIDs($ids)
+    public function setQueryIDs(array $ids): void
     {
         // No need for spell checking or highlighting on an ID query!
         $this->getOptions()->spellcheckEnabled(false);
@@ -508,7 +505,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return int
      */
-    public function getQueryIDLimit()
+    public function getQueryIDLimit(): int
     {
         $config = $this->configManager->getConfigArray($this->getOptions()->getMainIni());
         return $config['Index']['maxBooleanClauses'] ?? 1024;
@@ -521,7 +518,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-    protected function normalizeSort($sort)
+    protected function normalizeSort(string $sort): string
     {
         static $table = [
             'year' => ['field' => 'publishDateSort', 'order' => 'desc'],
@@ -569,7 +566,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 
@@ -653,7 +650,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setPivotFacets($facets)
+    public function setPivotFacets(string $facets): void
     {
         $this->pivotFacets = $facets;
     }
@@ -661,9 +658,9 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get pivot facet information for visual facets
      *
-     * @return string
+     * @return ?string
      */
-    public function getPivotFacets()
+    public function getPivotFacets(): ?string
     {
         return $this->pivotFacets;
     }
@@ -678,7 +675,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    protected function formatFilterListEntry(string $field, string $value, string $operator, bool $translate): array
     {
         $filter = parent::formatFilterListEntry(
             $field,
@@ -754,7 +751,7 @@ class Params extends \VuFind\Search\Base\Params
     public function getCheckboxFacets(
         ?array $include = null,
         bool $includeDynamic = true
-    ) {
+    ): array {
         // Grab checkbox facet details using the standard method:
         $facets = parent::getCheckboxFacets($include, $includeDynamic);
 

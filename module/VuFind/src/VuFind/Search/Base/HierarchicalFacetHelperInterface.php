@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Base;
 
+use VuFind\I18n\TranslatableStringInterface;
+use VuFind\Search\UrlQueryHelper;
+
 /**
  * Hierarchical facet helper interface
  *
@@ -44,24 +47,24 @@ interface HierarchicalFacetHelperInterface
      * Helper method for building hierarchical facets:
      * Sort a facet list according to the given sort order
      *
-     * @param array       $facetList Facet list returned from Solr
-     * @param bool|string $order     Sort order:
-     * - true|top  sort top level alphabetically and the rest by count
-     * - false|all sort all levels alphabetically
-     * - count     sort all levels by count
+     * @param array            $facetList Facet list returned from Solr
+     * @param bool|string|null $order     Sort order:
+     * - true|top   sort top level alphabetically and the rest by count
+     * - false|all  sort all levels alphabetically
+     * - null|count sort all levels by count
      *
      * @return void
      */
-    public function sortFacetList(&$facetList, $order = null);
+    public function sortFacetList(array &$facetList, bool|string|null $order = null): void;
 
     /**
      * Helper method for building hierarchical facets:
      * Convert facet list to a hierarchical array
      *
-     * @param string    $facet     Facet name
-     * @param array     $facetList Facet list
-     * @param UrlHelper $urlHelper Query URL helper for building facet URLs
-     * @param bool      $escape    Whether to escape URLs
+     * @param string          $facet     Facet name
+     * @param array           $facetList Facet list
+     * @param ?UrlQueryHelper $urlHelper Query URL helper for building facet URLs
+     * @param bool            $escape    Whether to escape URLs
      *
      * @return array Facet hierarchy
      *
@@ -70,11 +73,11 @@ interface HierarchicalFacetHelperInterface
      * Based on this example
      */
     public function buildFacetArray(
-        $facet,
-        $facetList,
-        $urlHelper = false,
-        $escape = true
-    );
+        string $facet,
+        array $facetList,
+        ?UrlQueryHelper $urlHelper = null,
+        bool $escape = true
+    ): array;
 
     /**
      * Flatten a hierarchical facet list to a simple array
@@ -83,7 +86,7 @@ interface HierarchicalFacetHelperInterface
      *
      * @return array Simple array of facets
      */
-    public function flattenFacetHierarchy($facetList);
+    public function flattenFacetHierarchy(array $facetList): array;
 
     /**
      * Format a facet display text for displaying
@@ -95,14 +98,14 @@ interface HierarchicalFacetHelperInterface
      * @param string|false $domain      Translation domain for default translations
      * of a multilevel string or false to omit translation
      *
-     * @return TranslatableString Formatted text
+     * @return TranslatableStringInterface Formatted text
      */
     public function formatDisplayText(
-        $displayText,
-        $allLevels = false,
-        $separator = '/',
-        $domain = false
-    );
+        string $displayText,
+        bool $allLevels = false,
+        string $separator = '/',
+        string|false $domain = false
+    ): TranslatableStringInterface;
 
     /**
      * Format a filter string in parts suitable for displaying or translation
@@ -111,7 +114,7 @@ interface HierarchicalFacetHelperInterface
      *
      * @return array
      */
-    public function getFilterStringParts($filter);
+    public function getFilterStringParts(string $filter): array;
 
     /**
      * Check if the given value is the deepest level in the facet list.
@@ -123,5 +126,5 @@ interface HierarchicalFacetHelperInterface
      *
      * @return bool
      */
-    public function isDeepestFacetLevel($facetList, $value);
+    public function isDeepestFacetLevel(array $facetList, string $value): bool;
 }

@@ -155,7 +155,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
                 $this->defaultSelectedShards = array_keys($this->shards);
             }
             // Apply checkbox visibility setting if applicable:
-            if (null !== ($visibleCheckboxes = $this->searchSettings['ShardPreferences']['showCheckboxes'])) {
+            if (null !== ($visibleCheckboxes = $this->searchSettings['ShardPreferences']['showCheckboxes'] ?? null)) {
                 $this->visibleShardCheckboxes = $visibleCheckboxes;
             }
         }

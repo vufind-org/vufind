@@ -60,7 +60,7 @@ class ErrorListener
      *
      * @var array
      */
-    protected $backends;
+    protected array $backends;
 
     /**
      * Normalized media types.
@@ -91,7 +91,7 @@ class ErrorListener
      *
      * @return void
      */
-    public function addBackend(string $backend)
+    public function addBackend(string $backend): void
     {
         if (!$this->listenForBackend($backend)) {
             $this->backends[] = $backend;
@@ -105,7 +105,7 @@ class ErrorListener
      *
      * @return bool
      */
-    public function listenForBackend(string $backend)
+    public function listenForBackend(string $backend): bool
     {
         return in_array($backend, $this->backends);
     }
@@ -117,7 +117,7 @@ class ErrorListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
             Service::class,
@@ -133,7 +133,7 @@ class ErrorListener
      *
      * @return EventInterface
      */
-    public function onSearchError(EventInterface $event)
+    public function onSearchError(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
         if ($this->listenForBackend($command->getTargetIdentifier())) {
@@ -161,13 +161,13 @@ class ErrorListener
     /// Internal API
 
     /**
-     * Analyze JSON-encoded error response and return appropriate tags.
+     * Analyze JSON-decoded error response and return appropriate tags.
      *
-     * @param StdLib $body Deserialize JSON body
+     * @param mixed $body Deserialize JSON body
      *
      * @return array Tags
      */
-    protected function analyzeJsonErrorResponse($body)
+    protected function analyzeJsonErrorResponse(mixed $body): array
     {
         $tags = [];
         if (isset($body->error->msg)) {
@@ -190,7 +190,7 @@ class ErrorListener
      *
      * @return string One of `json', `xml', or `other'
      */
-    protected function getResponseBodyMediaType(Response $response)
+    protected function getResponseBodyMediaType(Response $response): string
     {
         if ($response->getHeaders()->has('content-type')) {
             $type = $response->getHeaders()->get('content-type')->getFieldValue();

@@ -30,7 +30,9 @@
 namespace VuFindApi\Formatter;
 
 use Laminas\View\HelperPluginManager;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
+use VuFindApi\Controller\ApiException;
 
 use function is_object;
 
@@ -46,31 +48,17 @@ use function is_object;
 class RecordFormatter extends BaseFormatter
 {
     /**
-     * Record field definitions
-     *
-     * @var array
-     */
-    protected $recordFields;
-
-    /**
-     * View helper plugin manager
-     *
-     * @var HelperPluginManager
-     */
-    protected $helperManager;
-
-    /**
      * Constructor
      *
-     * @param array               $recordFields  Record field definitions
-     * @param HelperPluginManager $helperManager View helper plugin manager
+     * @param array               $recordFields    Record field definitions
+     * @param HelperPluginManager $helperManager   View helper plugin manager
+     * @param ?ServerUrlHelper    $serverUrlHelper Server URL helper
      */
     public function __construct(
-        $recordFields,
-        HelperPluginManager $helperManager
+        protected array $recordFields,
+        protected HelperPluginManager $helperManager,
+        protected ?ServerUrlHelper $serverUrlHelper = null
     ) {
-        $this->recordFields = $recordFields;
-        $this->helperManager = $helperManager;
     }
 
     /**
@@ -141,16 +129,46 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get (relative) link to record page
+     * Get relative link to record page
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     *
+     * @return string
+     *
+     * @deprecated Use getRecordPageRelativeLink instead
+     */
+    protected function getRecordPage($record)
+    {
+        return $this->getRecordPageRelativeLink($record);
+    }
+
+    /**
+     * Get relative link to record page
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
      * @return string
      */
-    protected function getRecordPage($record)
+    protected function getRecordPageRelativeLink($record)
     {
         $urlHelper = $this->helperManager->get('recordLinker');
         return $urlHelper->getUrl($record);
+    }
+
+    /**
+     * Get absolute link to record page
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     *
+     * @return string
+     */
+    protected function getRecordPageAbsoluteLink($record)
+    {
+        if (!$this->serverUrlHelper) {
+            throw new ApiException('ServerUrlHelper missing: Cannot generate absolute link to record.');
+        }
+        $recordPage = $this->getRecordPageRelativeLink($record);
+        return $this->serverUrlHelper->getUrlForPath($recordPage);
     }
 
     /**
