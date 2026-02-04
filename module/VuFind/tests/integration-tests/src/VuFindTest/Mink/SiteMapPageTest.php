@@ -157,7 +157,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that the page is working.
+     * Test that the page is working with default settings.
      *
      * @return void
      */
@@ -171,6 +171,10 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsString(
             'Home Page',
             $this->findCssAndGetText($page, '#content > h2:nth-child(2) > a:nth-child(1)')
+        );
+        $this->assertStringEndsWith(
+            '/Content/asklibrary',
+            $this->findCss($page, '#content')->findLink('Ask a Librarian')->getAttribute('href')
         );
     }
 
