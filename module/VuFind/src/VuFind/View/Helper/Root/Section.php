@@ -51,9 +51,14 @@ class Section extends AbstractHelper
     use ClassBasedTemplateRendererTrait;
 
     /**
+     * Section context key.
+     */
+    public const SECTION_CONTEXT_KEY = '__sectionContext';
+
+    /**
      * Additional context key.
      */
-    public const ADDITIONAL_CONTEXT_KEY = '__context';
+    public const ADDITIONAL_CONTEXT_KEY = '__additionalContext';
 
     /**
      * Default template directory.
@@ -139,7 +144,9 @@ class Section extends AbstractHelper
      */
     public function render(array $context = []): string
     {
-        $mergedContext = array_merge($this->section->getSectionContext(), $context);
+        $sectionContext = $this->section->getSectionContext();
+        $mergedContext = array_merge($sectionContext, $context);
+        $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
         if ($this->getView()->resolver()->resolve($this->template)) {
             return $this->getView()->render($this->template, $mergedContext);

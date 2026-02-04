@@ -33,6 +33,12 @@ use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AccountMenuFactory;
 use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\AdminMenuFactory;
+use VuFind\Navigation\FooterMenu;
+use VuFind\Navigation\FooterMenuFactory;
+use VuFind\Navigation\HeaderBar;
+use VuFind\Navigation\HeaderBarFactory;
+use VuFind\Navigation\SiteMap;
+use VuFind\Navigation\SiteMapFactory;
 
 /**
  * Section plugin manager.
@@ -53,6 +59,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'accountMenu' => AccountMenu::class,
         'adminMenu' => AdminMenu::class,
+        'footerMenu' => FooterMenu::class,
+        'headerBar' => HeaderBar::class,
+        'siteMap' => SiteMap::class,
         // Reserved for future plugins.
         // 'container' => Container::class,
         // 'tabs' => Tabs::class,
@@ -66,6 +75,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         AccountMenu::class => AccountMenuFactory::class,
         AdminMenu::class => AdminMenuFactory::class,
+        FooterMenu::class => FooterMenuFactory::class,
+        HeaderBar::class => HeaderBarFactory::class,
+        SiteMap::class => SiteMapFactory::class,
         // Reserved for future plugins.
         // Container::class => InvokableFactory::class,
         // Tabs::class => InvokableFactory::class,
