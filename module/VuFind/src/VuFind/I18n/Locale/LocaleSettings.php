@@ -263,4 +263,34 @@ class LocaleSettings
     {
         return in_array($locale, $this->initializedLocales);
     }
+
+    /**
+     * Get translation from array based on the current selected language.
+     *
+     * @param array $translations      Associative array of translations (key = locale, value = translation)
+     * @param bool  $ignoreMissingKeys If translation should fall back to other locale when user locale does not
+     * exist in keys.
+     *
+     * @return ?string
+     */
+    public function getActiveTranslation(array $translations, bool $ignoreMissingKeys = false): ?string
+    {
+        $currentLocale = $this->getUserLocale();
+        // only get a translation if user locale exists in the keys
+        if ($ignoreMissingKeys && !in_array($currentLocale, array_keys($translations))) {
+            return null;
+        }
+        $translations = array_filter($translations);
+        $translation = $translations[$currentLocale] ?? null;
+        if ($translation !== null) {
+            return $translation;
+        }
+        foreach ($this->getFallbackLocales() as $fallbackLanguage) {
+            $translation = $translations[$fallbackLanguage] ?? null;
+            if ($translation !== null) {
+                return $translation;
+            }
+        }
+        return array_values($translations)[0] ?? null;
+    }
 }
