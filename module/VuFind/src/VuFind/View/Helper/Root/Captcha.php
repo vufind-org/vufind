@@ -32,7 +32,6 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
-use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 
