@@ -166,6 +166,35 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that when disabled a 'Page not found' message is shown and status
+     * code 404 is returned.
+     *
+     * @return void
+     */
+    public function testDisabledPage(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'siteMapPageEnabled' => false,
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->getSiteMapPage($session);
+        $this->assertEquals(
+            404,
+            $session->getStatusCode()
+        );
+        $this->assertStringContainsString(
+            'Page not found',
+            $this->findCssAndGetText($page, '#content')
+        );
+    }
+
+    /**
      * Test submenu items and nested submenus with linked and unlinked parents
      * and with failing checkMethods.
      *
