@@ -1,0 +1,45 @@
+# This file configures the SiteMap section plugin, which renders the site map page
+# as specified in WCAG 2.2 Technique G63
+# (https://www.w3.org/WAI/WCAG22/Techniques/general/G63).
+# If this file is empty or missing, default settings will be used, matching the
+# examples provided below.
+#
+# The format of this configuration is as follows:
+#
+# Array keys for every group are:
+#   - label: text shown as group header, will be translated
+#   - section: renders menuItems with a route or url key from the specified section.
+#     Specifying SiteMap plugin sections is not possible. Keys documented below are
+#     not supported if set.
+#   - MenuItems: items shown in the menu - required unless section is set
+#   - checkMethod: the name of a SiteMap section plugin method to perform
+#     a check whether to show the group. If omitted, group will always display.
+#
+# Array keys for every menu item could be:
+#   - label: the text shown as link, will be translated - required
+#   - route: route name used to generate link target - required unless url or
+#     submenuItems is set
+#   - routeParams: parameters for dynamic routes
+#   - url: target url, alternative to route - required unless route or submenuItems
+#     is set
+#   - checkMethod: the name of a SiteMap section plugin method to perform
+#     a check whether to show the item. If omitted, item will always display.
+#   - submenuItems: items to be shown in an indented list after the parent item.
+#     Submenu items support the same keys as regular menu items. This includes nested
+#     submenuItems keys.
+#
+# You can use checkMethod: alwaysFail to disable specific inherited groups or items
+# in local configuration. If you wish to completely override the default
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
+
+HomePage:
+  MenuItems:
+    - label: 'Home Page'
+      route: home
+
+HeaderBar:
+  section: HeaderBar
+
+FooterMenu:
+  section: FooterMenu

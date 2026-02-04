@@ -73,9 +73,12 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      * Constructor.
      *
      * @param array $sectionConfig Section configuration
+     * @param array $config        Main configuration
      */
-    public function __construct(array $sectionConfig)
-    {
+    public function __construct(
+        array $sectionConfig,
+        protected array $config = []
+    ) {
         $this->requiredSettings[self::GROUP_CONTEXT] ??= [];
         $this->requiredSettings[self::ITEM_CONTEXT] ??= [];
         $this->localizableSettings[self::GROUP_CONTEXT] ??= [];
@@ -257,7 +260,33 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      */
     protected function processItems(array $items): array
     {
+        $items = $this->processItemSubmenuItemsKey($items);
         return $this->filterAvailable($items);
+    }
+
+    /**
+     * Process any items with a 'submenuItems' key.
+     *
+     * @param array $items Items to process
+     *
+     * @return array
+     */
+    protected function processItemSubmenuItemsKey(array $items): array
+    {
+        foreach ($items as $i => $item) {
+            if (isset($item['submenuItems'])) {
+                $items[$i]['submenuItems'] = $this->filterAvailable($item['submenuItems']);
+                if (empty($items[$i]['submenuItems'])) {
+                    // Filter items with 'submenuItems' key but without submenu items to display.
+                    unset($items[$i]);
+                } else {
+                    // Recursive check for nested submenuItems.
+                    $items[$i]['submenuItems']
+                        = $this->processItemSubmenuItemsKey($items[$i]['submenuItems']);
+                }
+            }
+        }
+        return $items;
     }
 
     /**
@@ -266,4 +295,14 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      * @return array
      */
     abstract public static function getDefaultMenuConfig(): array;
+
+    /**
+     * Check whether to show site map page item.
+     *
+     * @return bool
+     */
+    public function checkSiteMapPage(): bool
+    {
+        return $this->config['Site']['siteMapPageEnabled'] ?? false;
+    }
 }
