@@ -297,7 +297,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     abstract public static function getDefaultMenuConfig(): array;
 
     /**
-     * Check whether to show site map page item
+     * Check whether to show site map page item.
      *
      * @return bool
      */
