@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * Factory for SolrDefault record drivers.
@@ -66,6 +67,7 @@ class SolrDefaultFactory extends SolrDefaultWithoutSearchServiceFactory
     ) {
         $driver = parent::__invoke($container, $requestedName, $options);
         $driver->attachSearchService($container->get(\VuFindSearch\Service::class));
+        $driver->attachLocaleSettings($container->get(LocaleSettings::class));
         return $driver;
     }
 }

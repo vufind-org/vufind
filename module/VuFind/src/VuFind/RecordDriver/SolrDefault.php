@@ -32,6 +32,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
@@ -128,6 +129,13 @@ class SolrDefault extends DefaultRecord implements
      * @var bool
      */
     protected $explainEnabled = false;
+
+    /**
+     * Locale settings, if available
+     *
+     * @var ?LocaleSettings
+     */
+    protected ?LocaleSettings $localeSettings = null;
 
     /**
      * Constructor
@@ -293,6 +301,18 @@ class SolrDefault extends DefaultRecord implements
     public function attachSearchService(\VuFindSearch\Service $service)
     {
         $this->searchService = $service;
+    }
+
+    /**
+     * Attach locale settings.
+     *
+     * @param LocaleSettings $localeSettings Locale settings
+     *
+     * @return void
+     */
+    public function attachLocaleSettings(LocaleSettings $localeSettings): void
+    {
+        $this->localeSettings = $localeSettings;
     }
 
     /**
