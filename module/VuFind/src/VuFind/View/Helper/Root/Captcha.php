@@ -59,12 +59,9 @@ class Captcha
      * @param ResolverInterface     $viewResolver View resolver
      */
     public function __construct(
-        #[Autowire(service: 'VuFind\Config\PluginManager')]
         protected \VuFind\Config\Config $config,
         protected array $captchas,
-        #[Autowire(service: 'ViewRenderer')]
         RendererInterface $viewRenderer,
-        #[Autowire(service: 'ViewResolver')]
         ResolverInterface $viewResolver
     ) {
         $this->viewRenderer = $viewRenderer;
