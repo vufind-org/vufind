@@ -29,9 +29,7 @@
 
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
-use VuFind\Navigation\SiteMap;
 
 /**
  * Site map controller.
@@ -45,19 +43,6 @@ use VuFind\Navigation\SiteMap;
 class SiteMapController extends AbstractBase
 {
     /**
-     * Constructor.
-     *
-     * @param ServiceLocatorInterface $sm      Service locator
-     * @param SiteMap                 $siteMap Site map navigation plugin
-     */
-    public function __construct(
-        ServiceLocatorInterface $sm,
-        protected SiteMap $siteMap,
-    ) {
-        parent::__construct($sm);
-    }
-
-    /**
      *  Generates a site map page as specified in WCAG 2.2 Technique G63.
      *
      * @return ViewModel
@@ -70,11 +55,6 @@ class SiteMapController extends AbstractBase
             return $this->createHttpNotFoundModel($this->getResponse());
         }
 
-        $viewModel = $this->createViewModel([
-            'siteMap' => $this->siteMap,
-        ]);
-        $viewModel->setTemplate('Section/SiteMap.phtml');
-
-        return $viewModel;
+        return $this->createViewModel();
     }
 }
