@@ -260,9 +260,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      */
     protected function processItems(array $items): array
     {
-        // Skip items with 'submenuItems' key but without submenu items to display.
         $items = $this->processItemSubmenuItemsKey($items);
-        // Process remaining items.
         return $this->filterAvailable($items);
     }
 
@@ -279,7 +277,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
             if (isset($item['submenuItems'])) {
                 $items[$i]['submenuItems'] = $this->filterAvailable($item['submenuItems']);
                 if (empty($items[$i]['submenuItems'])) {
-                    // Skip items with 'submenuItems' key but without submenu items to display.
+                    // Filter items with 'submenuItems' key but without submenu items to display.
                     unset($items[$i]);
                 } else {
                     // Recursive check for nested submenuItems.
