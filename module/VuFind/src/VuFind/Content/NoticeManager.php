@@ -31,7 +31,8 @@
 
 namespace VuFind\Content;
 
-use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
+use VuFind\I18n\Locale\LocalSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -44,8 +45,10 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NoticeManager
+class NoticeManager implements LocaleSettingsAwareInterface
 {
+    use LocalSettingsAwareTrait;
+
     /**
      * Notices cache.
      *
@@ -57,13 +60,10 @@ class NoticeManager
      * Constructor
      *
      * @param array          $config         Config
-     * @param LocaleSettings $localeSettings Locale settings
      */
     public function __construct(
         #[Autowire(config: 'Notices', configType: 'yaml')]
-        protected array $config,
-        #[Autowire(service: LocaleSettings::class)]
-        protected LocaleSettings $localeSettings
+        protected array $config
     ) {
     }
 
@@ -118,7 +118,7 @@ class NoticeManager
         $this->notices = [];
         foreach ($this->config['notices'] ?? [] as $notice) {
             if (!isset($notice['content'])) {
-                $content = $this->localeSettings->getActiveTranslation($notice['translations'] ?? [], true);
+                $content = $this->getActiveTranslation($notice['translations'] ?? [], true);
                 if ($content !== null) {
                     $notice['content'] = $content;
                 }
