@@ -236,7 +236,7 @@ class SearchController extends AbstractSolrSearch
     public function newitemAction()
     {
         if ($this->newItems()->getMethod() === 'disabled') {
-            return $this->redirect()->toRoute('home');
+            return $this->createHttpNotFoundModel($this->getResponse());
         }
 
         // Search parameters set?  Process results.
