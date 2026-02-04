@@ -60,6 +60,15 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+    }
+
+    /**
+     * Apply a non-default SiteMap.yaml configuration that includes submenu items.
+     *
+     * @return void
+     */
+    protected function applySiteMapConfigWithSubmenuItems(): void
+    {
         $this->changeYamlConfigs(
             [
                 'SiteMap' => [
@@ -202,6 +211,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testSubmenuItems(): void
     {
+        $this->applySiteMapConfigWithSubmenuItems();
         $page = $this->getSiteMapPage();
         $this->assertStringContainsString(
             'Submenu Items Test',
