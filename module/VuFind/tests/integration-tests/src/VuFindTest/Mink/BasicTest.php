@@ -80,7 +80,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test language switching by checking a link in the footer
+     * Test language switching by checking a link in the footer.
      *
      * @return void
      */
@@ -104,7 +104,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test theme switching by checking for a phrase from the example theme
+     * Test theme switching by checking for a phrase from the example theme.
      *
      * @return void
      */
@@ -240,7 +240,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test lightbox jump links
+     * Test lightbox jump links.
      *
      * @return void
      */

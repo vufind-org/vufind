@@ -44,7 +44,7 @@ use VuFind\Controller\Plugin\Followup;
 class FollowupTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test clear behavior
+     * Test clear behavior.
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retrieve
+     * Test retrieve.
      *
      * @return void
      */
@@ -77,7 +77,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retrieve and clear
+     * Test retrieve and clear.
      *
      * @return void
      */
@@ -92,7 +92,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock controller
+     * Get a mock controller.
      *
      * @param string $url URL for controller to report.
      *

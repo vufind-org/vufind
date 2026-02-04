@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database authentication class
+ * Database authentication class.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use function in_array;
 use function is_object;
 
 /**
- * Database authentication class
+ * Database authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -57,28 +57,28 @@ use function is_object;
 class Database extends AbstractBase
 {
     /**
-     * Password hasher
+     * Password hasher.
      *
      * @var PasswordHasher
      */
     protected $hasher;
 
     /**
-     * Username
+     * Username.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password
+     * Password.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?PasswordHasher $hasher Password hash service (null to create one)
      */
@@ -356,7 +356,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -366,7 +366,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -429,7 +429,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -444,7 +444,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

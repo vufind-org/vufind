@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Add ellipsis" view helper
+ * "Add ellipsis" view helper.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\Helper\AbstractHelper;
 use function strlen;
 
 /**
- * "Add ellipsis" view helper
+ * "Add ellipsis" view helper.
  *
  * @category VuFind
  * @package  View_Helpers

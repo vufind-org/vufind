@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Search Object Parameters Test
+ * Solr Search Object Parameters Test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 
 /**
- * Solr Search Object Parameters Test
+ * Solr Search Object Parameters Test.
  *
  * @category VuFind
  * @package  Tests
@@ -200,7 +200,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testSortList
+     * Data provider for testSortList.
      *
      * @return \Iterator
      */
@@ -403,7 +403,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sort option list handling
+     * Test sort option list handling.
      *
      * @param array  $searchConfig     Search configuration
      * @param string $sort             Selected sort option
@@ -420,7 +420,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param ?Options                $options           Options object (null to create)
      * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)

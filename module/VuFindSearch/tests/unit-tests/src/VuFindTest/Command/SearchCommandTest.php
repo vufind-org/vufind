@@ -49,7 +49,7 @@ use VuFindSearch\Query\Query;
 class SearchCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */
@@ -158,7 +158,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test that the command throws an exception results are requested before execute
+     * Test that the command throws an exception results are requested before execute.
      *
      * @return void
      */
@@ -170,7 +170,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test extra request details
+     * Test extra request details.
      *
      * @return void
      */
@@ -187,7 +187,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Get test SearchCommand Object
+     * Get test SearchCommand Object.
      *
      * @return SearchCommand
      */

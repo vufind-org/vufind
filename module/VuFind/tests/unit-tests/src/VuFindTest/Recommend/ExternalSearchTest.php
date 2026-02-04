@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExternalSearch recommendation module Test Class
+ * ExternalSearch recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\ExternalSearch;
 
 /**
- * ExternalSearch recommendation module Test Class
+ * ExternalSearch recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Recommend\ExternalSearch;
 class ExternalSearchTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Run a test scenario
+     * Run a test scenario.
      *
      * @param string $label       Link text
      * @param string $template    Link template
@@ -70,7 +70,7 @@ class ExternalSearchTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test concatenation behavior
+     * Test concatenation behavior.
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class ExternalSearchTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test template insertion behavior
+     * Test template insertion behavior.
      *
      * @return void
      */

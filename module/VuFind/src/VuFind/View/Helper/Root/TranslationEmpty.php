@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Helper to check if a translation is empty
+ * Helper to check if a translation is empty.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
- * Helper to check if a translation is empty
+ * Helper to check if a translation is empty.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,7 +46,7 @@ class TranslationEmpty extends AbstractHelper implements TranslatorAwareInterfac
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Check if a translation is empty
+     * Check if a translation is empty.
      *
      * @param string|object $str             String to translate
      * @param string[]      $fallbackDomains Text domains to check if no match is found in

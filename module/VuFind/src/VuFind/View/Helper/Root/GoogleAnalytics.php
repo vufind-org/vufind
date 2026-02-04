@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use function is_array;
 
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use function is_array;
 class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * API key (false if disabled)
+     * API key (false if disabled).
      *
      * @var string|bool
      */
@@ -57,7 +57,7 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     protected $createOptions;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|bool $key     API key (false if disabled)
      * @param bool|array  $options Configuration options (supported option:

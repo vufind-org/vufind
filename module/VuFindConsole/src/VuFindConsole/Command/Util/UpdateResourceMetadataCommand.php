@@ -59,7 +59,7 @@ use VuFind\RecordDriver\Missing as MissingRecord;
 class UpdateResourceMetadataCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourceServiceInterface $resourceService    Resource service
      * @param Loader                   $recordLoader       Record loader

@@ -60,7 +60,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test searching for an author in the author module
+     * Test searching for an author in the author module.
      *
      * @return void
      */
@@ -103,7 +103,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Confirm that the author controller does not interfere with the regular search box
+     * Confirm that the author controller does not interfere with the regular search box.
      *
      * @param string $path Starting URL path to test
      *

@@ -53,14 +53,14 @@ use VuFindTheme\ThemeCompiler;
 class ThemeCommand extends Command
 {
     /**
-     * Theme compiler
+     * Theme compiler.
      *
      * @var ThemeCompiler
      */
     protected $compiler;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeCompiler $compiler Theme compiler
      * @param string|null   $name     The name of the command; passing null means it

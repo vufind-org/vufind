@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ajax Controller Module
+ * Ajax Controller Module.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\AjaxHandler\PluginManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
- * This controller handles global AJAX functionality
+ * This controller handles global AJAX functionality.
  *
  * @category VuFind
  * @package  Controller
@@ -48,7 +48,7 @@ class AjaxController extends AbstractActionController implements TranslatorAware
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager $am AJAX Handler Plugin Manager
      */

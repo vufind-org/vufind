@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Csp View Helper Test Class
+ * Csp View Helper Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 /**
- * Csp View Helper Test Class
+ * Csp View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\View\Helper\Root;
 class CspTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test disablePolicy when the CSP is enabled
+     * Test disablePolicy when the CSP is enabled.
      *
      * @return void
      */
@@ -83,7 +83,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test disablePolicy when the CSP is in "report only" mode
+     * Test disablePolicy when the CSP is in "report only" mode.
      *
      * @return void
      */
@@ -125,7 +125,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test disablePolicy when the CSP is disabled
+     * Test disablePolicy when the CSP is disabled.
      *
      * @return void
      */

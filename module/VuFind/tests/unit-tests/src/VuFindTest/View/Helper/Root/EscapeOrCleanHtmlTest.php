@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EscapeOrCleanHtml view helper Test Class
+ * EscapeOrCleanHtml view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\View\Helper\Root\EscapeOrCleanHtml;
 use VuFindTest\Feature\ViewTrait;
 
 /**
- * EscapeOrCleanHtml view helper Test Class
+ * EscapeOrCleanHtml view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
     use ViewTrait;
 
     /**
-     * Data provider for testEscapeOrCleanHtml
+     * Data provider for testEscapeOrCleanHtml.
      *
      * @return \Iterator
      */
@@ -81,7 +81,7 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test escapeOrCleanHtml
+     * Test escapeOrCleanHtml.
      *
      * @param string|PropertyString $input            Input string
      * @param ?string               $dataContext      Data context

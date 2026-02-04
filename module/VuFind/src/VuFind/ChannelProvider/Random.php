@@ -52,28 +52,28 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     use BatchTrait;
 
     /**
-     * Mode
+     * Mode.
      *
      * @var string
      */
     protected $mode;
 
     /**
-     * Search service
+     * Search service.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService;
 
     /**
-     * Params manager
+     * Params manager.
      *
      * @var \VuFind\Search\Params\PluginManager
      */
     protected $paramManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service               $search       Search service
      * @param \VuFind\Search\Params\PluginManager $paramManager Params manager

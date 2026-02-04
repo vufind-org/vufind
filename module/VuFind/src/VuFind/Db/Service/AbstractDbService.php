@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service abstract base class
+ * Database service abstract base class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function is_callable;
 use function is_int;
 
 /**
- * Database service abstract base class
+ * Database service abstract base class.
  *
  * @category VuFind
  * @package  Database
@@ -58,7 +58,7 @@ abstract class AbstractDbService implements DbServiceInterface
     protected int $retryCount = 5;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager Database entity plugin manager

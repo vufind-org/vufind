@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session view helper
+ * Session view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\Session\Container as SessionContainer;
 
 /**
- * Session view helper
+ * Session view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use Laminas\Session\Container as SessionContainer;
 class Session extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Session container
+     * Session container.
      *
      * @var SessionContainer
      */
@@ -60,7 +60,7 @@ class Session extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Return this object
+     * Return this object.
      *
      * @return Session
      */
@@ -70,7 +70,7 @@ class Session extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get an item from the session container
+     * Get an item from the session container.
      *
      * @param string $name Item name
      *
@@ -82,7 +82,7 @@ class Session extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Put an item to the session container
+     * Put an item to the session container.
      *
      * @param string $name  Item name
      * @param mixed  $value Item value

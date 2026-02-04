@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Export support class
+ * Export support class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * Export support class
+ * Export support class.
  *
  * @category VuFind
  * @package  Export
@@ -48,14 +48,14 @@ class Export
 {
     /**
      * Property to cache active formats
-     * (initialized to empty array , populated later)
+     * (initialized to empty array , populated later).
      *
      * @var array
      */
     protected $activeFormats = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array       $mainConfig   Main VuFind configuration
      * @param array       $exportConfig Export-specific configuration

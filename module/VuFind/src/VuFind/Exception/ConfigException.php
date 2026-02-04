@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Exception
+ * Config Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Config Exception
+ * Config Exception.
  *
  * @category VuFind
  * @package  Exceptions

@@ -59,7 +59,7 @@ class FacetList implements ContentBlockInterface
     protected $searchClassId = 'Solr';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FacetCacheManager      $facetCacheManager Facet cache plugin manager
      * @param ConfigManagerInterface $configManager     Configuration manager
@@ -71,7 +71,7 @@ class FacetList implements ContentBlockInterface
     }
 
     /**
-     * Get an array of hierarchical facets
+     * Get an array of hierarchical facets.
      *
      * @param Config $facetConfig Facet configuration object.
      *
@@ -85,7 +85,7 @@ class FacetList implements ContentBlockInterface
     }
 
     /**
-     * Get hierarchical facet sort settings
+     * Get hierarchical facet sort settings.
      *
      * @param Config $facetConfig Facet configuration object.
      *

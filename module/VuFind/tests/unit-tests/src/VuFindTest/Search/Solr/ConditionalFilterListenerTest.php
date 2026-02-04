@@ -196,7 +196,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener with an empty conditional filter config,
-     * but with given fq parameters
+     * but with given fq parameters.
      *
      * @return void
      */
@@ -224,7 +224,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener without preset fq parameters
-     * if the conditional filter is granted
+     * if the conditional filter is granted.
      *
      * @return void
      */
@@ -256,7 +256,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener without preset fq parameters
-     * if the conditional filter is not granted
+     * if the conditional filter is not granted.
      *
      * @return void
      */
@@ -279,7 +279,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener with preset fq-parameters
-     * if the conditional filter is not granted
+     * if the conditional filter is not granted.
      *
      * @return void
      */
@@ -312,7 +312,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener with preset fq-parameters
-     * if the conditional filter is granted
+     * if the conditional filter is granted.
      *
      * @return void
      */

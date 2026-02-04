@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Net\UserIpReaderFactory;
 use function func_get_args;
 
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -70,7 +70,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Extend UserIpReader to capture constructor parameters
+     * Extend UserIpReader to capture constructor parameters.
      *
      * @return \VuFind\Net\UserIpReader
      */
@@ -85,7 +85,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             public $args;
 
             /**
-             * Constructor
+             * Constructor.
              */
             public function __construct()
             {
@@ -100,7 +100,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the factory's defaults
+     * Test the factory's defaults.
      *
      * @return void
      */
@@ -116,7 +116,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test non-default values, with a single filtered IP
+     * Test non-default values, with a single filtered IP.
      *
      * @return void
      */
@@ -139,7 +139,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test non-default values, with multiple filtered IPs
+     * Test non-default values, with multiple filtered IPs.
      *
      * @return void
      */

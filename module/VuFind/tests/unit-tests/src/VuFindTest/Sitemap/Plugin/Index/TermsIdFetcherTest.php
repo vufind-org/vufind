@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GetIdsWithTermsCommand Test Class
+ * GetIdsWithTermsCommand Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Service;
 use function array_slice;
 
 /**
- * GetIdsWithTermsCommand Test Class
+ * GetIdsWithTermsCommand Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,21 +51,21 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Unique key field to use in tests
+     * Unique key field to use in tests.
      *
      * @var string
      */
     protected $uniqueKey = 'id';
 
     /**
-     * Page size to use in tests
+     * Page size to use in tests.
      *
      * @var int
      */
     protected $countPerPage = 100;
 
     /**
-     * Get a terms response
+     * Get a terms response.
      *
      * @param int[] $expectedIds IDs to return in response
      *
@@ -106,7 +106,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock search service
+     * Get mock search service.
      *
      * @return Service
      */

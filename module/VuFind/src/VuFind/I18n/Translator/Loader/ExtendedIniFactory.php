@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExtendedIni Loader Factory
+ * ExtendedIni Loader Factory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * ExtendedIni Loader Factory
+ * ExtendedIni Loader Factory.
  *
  * @category VuFind
  * @package  Translator
@@ -48,7 +48,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

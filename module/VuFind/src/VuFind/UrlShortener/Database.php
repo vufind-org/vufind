@@ -63,7 +63,7 @@ class Database implements UrlShortenerInterface
     protected $maxHashLength = 32;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string                     $baseUrl       Base URL of current VuFind site
      * @param ShortlinksServiceInterface $service       Shortlinks database service

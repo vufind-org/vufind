@@ -56,14 +56,14 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected $logger = null;
 
     /**
-     * EDS configuration
+     * EDS configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $edsConfig;
 
     /**
-     * EDS Account data
+     * EDS Account data.
      *
      * @var array
      */
@@ -88,7 +88,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -222,7 +222,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

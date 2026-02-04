@@ -49,28 +49,28 @@ use function is_array;
 abstract class AbstractSearchObjectDeferred implements RecommendInterface
 {
     /**
-     * Raw configuration parameters
+     * Raw configuration parameters.
      *
      * @var string
      */
     protected $rawParams;
 
     /**
-     * Current search query
+     * Current search query.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Configuration parameters processed for submission via AJAX
+     * Configuration parameters processed for submission via AJAX.
      *
      * @var string
      */
     protected $processedParams;
 
     /**
-     * Number of expected module parameters (from .ini config)
+     * Number of expected module parameters (from .ini config).
      *
      * @var int
      */

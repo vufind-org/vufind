@@ -43,14 +43,14 @@ use VuFindConsole\Command\Util\ExpireAuthHashesCommand;
 class ExpireAuthHashesCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireAuthHashesCommand::class;
 
     /**
-     * Name of a valid service class (or interface) to test with
+     * Name of a valid service class (or interface) to test with.
      *
      * @var string
      */

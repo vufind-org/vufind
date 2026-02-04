@@ -47,7 +47,7 @@ use VuFindTest\RecordDriver\TestHarness;
 class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testCreateAndPersistResourceForRecordId
+     * Data provider for testCreateAndPersistResourceForRecordId.
      *
      * @return \Iterator
      */

@@ -41,7 +41,7 @@ namespace VuFind\Escaper;
 class Escaper extends \Laminas\Escaper\Escaper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $extendedHtmlAttrEscaping Use Laminas' extended HTML attribute escaping?
      */

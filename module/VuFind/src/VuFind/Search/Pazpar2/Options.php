@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pazpar2 Search Options
+ * Pazpar2 Search Options.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\ConfigManagerInterface;
 use function is_array;
 
 /**
- * Pazpar2 Search Options
+ * Pazpar2 Search Options.
  *
  * @category VuFind
  * @package  Search_Pazpar2
@@ -45,7 +45,7 @@ use function is_array;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

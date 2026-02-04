@@ -566,7 +566,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fixture object
+     * Get a fixture object.
      *
      * @param string $file Name of fixture file
      *

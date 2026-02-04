@@ -96,7 +96,7 @@ class ErrorListenerTest extends TestCase
     /// Internal API
 
     /**
-     * Return response fixture
+     * Return response fixture.
      *
      * @param string $name Name of fixture
      *

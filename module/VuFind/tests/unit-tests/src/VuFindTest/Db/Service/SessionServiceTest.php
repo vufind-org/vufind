@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SessionService Test Class
+ * SessionService Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\SessionService;
 
 /**
- * SessionService Test Class
+ * SessionService Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -82,7 +82,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Mock EntityManager
+     * Mock EntityManager.
      *
      * @param ?MockObject $session Session returned from repository's findBy method
      *

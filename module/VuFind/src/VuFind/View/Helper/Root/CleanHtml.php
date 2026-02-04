@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML Cleaner view helper
+ * HTML Cleaner view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Closure;
 
 /**
- * HTML Cleaner view helper
+ * HTML Cleaner view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ use Closure;
 class CleanHtml extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Purifiers
+     * Purifiers.
      *
      * @var \HTMLPurifier[]
      */
     protected $purifiers = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Closure $purifierFactory Purifier factory callback
      */
@@ -59,7 +59,7 @@ class CleanHtml extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Clean up HTML
+     * Clean up HTML.
      *
      * @param string $html        HTML
      * @param bool   $targetBlank Whether to add target=_blank to outgoing links

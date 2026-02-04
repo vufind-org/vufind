@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Current path view helper
+ * Current path view helper.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\Helper\AbstractHelper;
 use function strlen;
 
 /**
- * Current path view helper
+ * Current path view helper.
  *
  * @category VuFind
  * @package  View_Helpers

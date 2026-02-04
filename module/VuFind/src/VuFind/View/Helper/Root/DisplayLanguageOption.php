@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DisplayLanguageOption view helper
+ * DisplayLanguageOption view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\Translator\TranslatorInterface;
 
 /**
- * DisplayLanguageOption view helper
+ * DisplayLanguageOption view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use Laminas\Translator\TranslatorInterface;
 class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TranslatorInterface $translator Translator
      */
@@ -52,7 +52,7 @@ class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Translate a string
+     * Translate a string.
      *
      * @param string $str String to escape and translate
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Zotero Service Test Class
+ * Zotero Service Test Class.
  *
  * PHP version 8
  *
@@ -47,7 +47,7 @@ use VuFind\Http\GuzzleService;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Zotero Service Test Class
+ * Zotero Service Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -60,7 +60,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     use FixtureTrait;
 
     /**
-     * OAuth params
+     * OAuth params.
      *
      * @var array
      */
@@ -70,21 +70,21 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Zotero export URL
+     * Zotero export URL.
      *
      * @var string
      */
     protected string $zoteroExportUrl = 'https://api.zotero.org/users/zotero_user_id/items';
 
     /**
-     * Cached access token
+     * Cached access token.
      *
      * @var ?AccessToken
      */
     protected ?AccessToken $storedAccessToken = null;
 
     /**
-     * Container id for session storage
+     * Container id for session storage.
      *
      * @var int
      */

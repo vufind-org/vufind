@@ -48,14 +48,14 @@ use function call_user_func;
 abstract class CallMethodCommand extends AbstractBase
 {
     /**
-     * Search backend interface
+     * Search backend interface.
      *
      * @var string
      */
     protected $interface;
 
     /**
-     * Search backend interface method
+     * Search backend interface method.
      *
      * @var string
      */

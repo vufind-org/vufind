@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * PHP version 8
  *
@@ -45,7 +45,7 @@ use function is_array;
 use function strlen;
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * Creates caches based on configuration
  *
@@ -151,7 +151,7 @@ class Manager implements LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                 $config  Main VuFind configuration
      * @param StorageAdapterFactory $factory Cache storage adapter factory
@@ -323,7 +323,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Ensure that a file cache is properly set up
+     * Ensure that a file cache is properly set up.
      *
      * @param string $name Cache name
      *
@@ -437,7 +437,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Create an in-memory cache
+     * Create an in-memory cache.
      *
      * @param array $storageConfig See Storage in RateLimiter.yaml
      *

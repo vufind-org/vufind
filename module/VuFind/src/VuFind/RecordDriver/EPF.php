@@ -68,7 +68,7 @@ class EPF extends EDS
     }
 
     /**
-     * Get ISSNs (of containing record)
+     * Get ISSNs (of containing record).
      *
      * @return array
      */
@@ -78,7 +78,7 @@ class EPF extends EDS
     }
 
     /**
-     * Get an array of ISBNs
+     * Get an array of ISBNs.
      *
      * @return array
      */
@@ -88,7 +88,7 @@ class EPF extends EDS
     }
 
     /**
-     * Get the list of full text holdings for the record
+     * Get the list of full text holdings for the record.
      *
      * @return array
      */

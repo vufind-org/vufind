@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest;
 use VuFindTheme\Mobile;
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * @category VuFind
  * @package  Tests

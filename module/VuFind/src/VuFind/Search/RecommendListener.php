@@ -111,7 +111,7 @@ class RecommendListener
     }
 
     /**
-     * Set configuration
+     * Set configuration.
      *
      * @param array $config Configuration array
      *

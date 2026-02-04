@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CitationBuilder Test Class
+ * CitationBuilder Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\Citation;
 
 /**
- * CitationBuilder Test Class
+ * CitationBuilder Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -362,7 +362,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test citation generation
+     * Test citation generation.
      *
      * @return void
      */

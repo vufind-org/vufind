@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class WebRecordFormatter
+ * Class WebRecordFormatter.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindApi\Formatter;
 
 /**
- * Record formatter for web API responses
+ * Record formatter for web API responses.
  *
  * @category VuFind
  * @package  API_Formatter

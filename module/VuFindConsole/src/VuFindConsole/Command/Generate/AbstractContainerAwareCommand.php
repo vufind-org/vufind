@@ -44,14 +44,14 @@ use VuFindConsole\Generator\GeneratorTools;
 class AbstractContainerAwareCommand extends AbstractCommand
 {
     /**
-     * Top-level service container
+     * Top-level service container.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorTools     $tools     Generator tools
      * @param ContainerInterface $container Top-level service container

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record view helper Test Class
+ * Record view helper Test Class.
  *
  * PHP version 8
  *
@@ -49,7 +49,7 @@ use VuFindTheme\ThemeInfo;
 use function is_array;
 
 /**
- * Record view helper Test Class
+ * Record view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -319,7 +319,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetLink()
+     * Data provider for testGetLink().
      *
      * @return \Iterator
      */
@@ -582,7 +582,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getThumbnail() - no thumbnail case
+     * Test getThumbnail() - no thumbnail case.
      *
      * @return void
      */
@@ -596,7 +596,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getThumbnail() - hardcoded thumbnail case
+     * Test getThumbnail() - hardcoded thumbnail case.
      *
      * @return void
      */
@@ -610,7 +610,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getThumbnail() - dynamic thumbnail case
+     * Test getThumbnail() - dynamic thumbnail case.
      *
      * @return void
      */
@@ -624,7 +624,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLinkDetails with an empty list
+     * Test getLinkDetails with an empty list.
      *
      * @return void
      */
@@ -637,7 +637,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLinkDetails with valid details
+     * Test getLinkDetails with valid details.
      *
      * @return void
      */
@@ -666,7 +666,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLinkDetails with invalid details
+     * Test getLinkDetails with invalid details.
      *
      * @return void
      */
@@ -698,7 +698,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLinkDetails with duplicate URLs
+     * Test getLinkDetails with duplicate URLs.
      *
      * @return void
      */
@@ -732,7 +732,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getUrlList
+     * Test getUrlList.
      *
      * @return void
      */
@@ -795,7 +795,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock resolver object
+     * Get a mock resolver object.
      *
      * @return MockObject&ResolverInterface
      */
@@ -805,7 +805,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock context object
+     * Get a mock context object.
      *
      * @return MockObject&Context
      */
@@ -817,7 +817,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock URL helper
+     * Get a mock URL helper.
      *
      * @param string $expectedRoute Route expected by mock helper
      *
@@ -833,7 +833,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock server URL helper
+     * Get a mock server URL helper.
      *
      * @return MockObject&ServerUrl
      */
@@ -845,7 +845,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock search tabs view helper
+     * Get a mock search tabs view helper.
      *
      * @param bool $setDefaultExpectations Should we set up default expectations?
      *
@@ -876,7 +876,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set up expectations for a template
+     * Set up expectations for a template.
      *
      * @param Record  $record   Record helper
      * @param string  $tpl      Template to expect

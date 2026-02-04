@@ -217,7 +217,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock ILS authenticator
+     * Get mock ILS authenticator.
      *
      * @param ?array $patron Logged in patron to simulate (null for none).
      *

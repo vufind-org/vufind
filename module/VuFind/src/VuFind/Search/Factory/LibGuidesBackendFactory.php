@@ -64,14 +64,14 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     protected $logger;
 
     /**
-     * LibGuides configuration
+     * LibGuides configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $libGuidesConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -157,7 +157,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

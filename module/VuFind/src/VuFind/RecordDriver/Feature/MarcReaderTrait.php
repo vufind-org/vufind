@@ -150,7 +150,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Get the item's publication information
+     * Get the item's publication information.
      *
      * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
      *
@@ -196,7 +196,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return first subfield with the given code in the provided MARC field
+     * Return first subfield with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get
@@ -209,7 +209,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return all subfields with the given code in the provided MARC field
+     * Return all subfields with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get

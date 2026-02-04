@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Missing Exception
+ * Record Missing Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Record Missing Exception
+ * Record Missing Exception.
  *
  * @category VuFind
  * @package  Exceptions

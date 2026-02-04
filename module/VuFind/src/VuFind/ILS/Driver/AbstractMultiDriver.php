@@ -65,21 +65,21 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\Logg
     protected $drivers = [];
 
     /**
-     * The path to the driver configurations relative to the config path
+     * The path to the driver configurations relative to the config path.
      *
      * @var string
      */
     protected $driversConfigPath;
 
     /**
-     * The array of cached drivers
+     * The array of cached drivers.
      *
      * @var object[]
      */
     protected $driverCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      * @param PluginManager                         $driverManager ILS driver manager
@@ -179,7 +179,7 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\Logg
     }
 
     /**
-     * Check whether the given driver supports the given method
+     * Check whether the given driver supports the given method.
      *
      * @param object $driver ILS Driver
      * @param string $method Method name

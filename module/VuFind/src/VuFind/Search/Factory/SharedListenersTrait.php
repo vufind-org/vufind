@@ -45,7 +45,7 @@ use VuFindSearch\Backend\BackendInterface;
 trait SharedListenersTrait
 {
     /**
-     * Get a hide facet value listener for the backend
+     * Get a hide facet value listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $facet   Configuration of facets

@@ -46,7 +46,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 class ThemeMixinCommand extends AbstractThemeCommand
 {
     /**
-     * Type of resource being generated (used in help messages)
+     * Type of resource being generated (used in help messages).
      *
      * @var string
      */

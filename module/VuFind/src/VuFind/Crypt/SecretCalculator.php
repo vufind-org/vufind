@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Secret calculator
+ * Secret calculator.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Crypt;
 use VuFind\Db\Entity\SearchEntityInterface;
 
 /**
- * Secret calculator
+ * Secret calculator.
  *
  * @category VuFind
  * @package  Crypt
@@ -43,7 +43,7 @@ use VuFind\Db\Entity\SearchEntityInterface;
 class SecretCalculator
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HMAC $hmac HMAC generator
      */

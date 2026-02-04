@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration object
+ * Configuration object.
  *
  * This is a lightweight replacement for the deprecated Laminas\Config\Config class.
  * It will eventually be deprecated and removed, but it will help ease the migration
@@ -42,7 +42,7 @@ use function count;
 use function is_array;
 
 /**
- * Configuration object
+ * Configuration object.
  *
  * @category VuFind
  * @package  Config
@@ -53,7 +53,7 @@ use function is_array;
 class Config implements ArrayAccess, Countable, Iterator
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $data Configuration array
      */
@@ -62,7 +62,7 @@ class Config implements ArrayAccess, Countable, Iterator
     }
 
     /**
-     * Get a property of the configuration (which may be a nested Config object)
+     * Get a property of the configuration (which may be a nested Config object).
      *
      * @param string $key     Property name
      * @param mixed  $default Default value to use if $key is unset
@@ -78,7 +78,7 @@ class Config implements ArrayAccess, Countable, Iterator
     }
 
     /**
-     * Get a property of the configuration (which may be a nested Config object)
+     * Get a property of the configuration (which may be a nested Config object).
      *
      * @param string $key Property name
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SimpleXML Test Class
+ * SimpleXML Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest;
 
 /**
- * SimpleXML Test Class
+ * SimpleXML Test Class.
  *
  * @category VuFind
  * @package  Tests

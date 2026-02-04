@@ -123,7 +123,7 @@ class InstallCommand extends Command
     protected $showApacheHelp = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|null $name The name of the command; passing null means it must
      * be set in configure()

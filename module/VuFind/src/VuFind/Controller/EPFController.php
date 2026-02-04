@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPF Controller
+ * EPF Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * EPF Controller
+ * EPF Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -45,7 +45,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class EPFController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -56,7 +56,7 @@ class EPFController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */

@@ -41,7 +41,7 @@ namespace VuFind\Search\Factory;
 class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

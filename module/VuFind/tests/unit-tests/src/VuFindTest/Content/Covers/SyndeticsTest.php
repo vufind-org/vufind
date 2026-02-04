@@ -129,7 +129,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */
@@ -144,7 +144,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unknown size without using metadata
+     * Test unknown size without using metadata.
      *
      * @return void
      */
@@ -159,7 +159,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unknown size when using metadata
+     * Test unknown size when using metadata.
      *
      * @return void
      */

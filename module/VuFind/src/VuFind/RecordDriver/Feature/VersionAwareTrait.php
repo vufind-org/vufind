@@ -46,21 +46,21 @@ use VuFindSearch\Query\WorkKeysQuery;
 trait VersionAwareTrait
 {
     /**
-     * Cached result of other versions (work expressions) count
+     * Cached result of other versions (work expressions) count.
      *
      * @var int
      */
     protected $otherVersionsCount = null;
 
     /**
-     * Cached result of other versions (work expressions)
+     * Cached result of other versions (work expressions).
      *
      * @var \VuFindSearch\Response\RecordCollectionInterface
      */
     protected $otherVersions;
 
     /**
-     * Return count of other versions available
+     * Return count of other versions available.
      *
      * @return int
      */
@@ -93,7 +93,7 @@ trait VersionAwareTrait
     }
 
     /**
-     * Retrieve versions as a search result
+     * Retrieve versions as a search result.
      *
      * @param bool $includeSelf Whether to include this record
      * @param int  $count       Maximum number of records to display

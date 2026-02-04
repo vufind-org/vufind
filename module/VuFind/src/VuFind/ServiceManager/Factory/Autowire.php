@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Autowiring Attribute
+ * VuFind Autowiring Attribute.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Attribute;
 use LogicException;
 
 /**
- * VuFind Autowiring Attribute
+ * VuFind Autowiring Attribute.
  *
  * @category VuFind
  * @package  ServiceManager

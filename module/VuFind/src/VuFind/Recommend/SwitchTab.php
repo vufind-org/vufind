@@ -2,7 +2,7 @@
 
 /**
  * SwitchTab Recommendations Module
- * Recommends to use another SearchTab
+ * Recommends to use another SearchTab.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SwitchType Recommendations Module
+ * SwitchType Recommendations Module.
  *
  * This class recommends switching to a different search type.
  *
@@ -44,7 +44,7 @@ namespace VuFind\Recommend;
 class SwitchTab implements RecommendInterface
 {
     /**
-     * Current tab settings
+     * Current tab settings.
      *
      * @var array
      */

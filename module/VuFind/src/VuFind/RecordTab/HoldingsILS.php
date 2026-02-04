@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holdings (ILS) tab
+ * Holdings (ILS) tab.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\ILS\Connection;
 use function strlen;
 
 /**
- * Holdings (ILS) tab
+ * Holdings (ILS) tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -45,7 +45,7 @@ use function strlen;
 class HoldingsILS extends AbstractBase
 {
     /**
-     * ILS connection (or null if not applicable)
+     * ILS connection (or null if not applicable).
      *
      * @var Connection
      */
@@ -66,7 +66,7 @@ class HoldingsILS extends AbstractBase
     protected $hideWhenEmpty;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Connection $catalog       ILS connection to use to check for holdings before displaying the tab;
      * may be set to null if no check is needed.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holdings (WorldCat2) tab
+ * Holdings (WorldCat2) tab.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
 
 /**
- * Holdings (WorldCat2) tab
+ * Holdings (WorldCat2) tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -45,7 +45,7 @@ use VuFindSearch\Service;
 class HoldingsWorldCat2 extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service $searchService Search service
      * @param array   $defaults      Default parameters to include in API requests

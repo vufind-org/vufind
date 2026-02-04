@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database Builder Test Class
+ * Database Builder Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Migration\MigrationLoader;
 use function count;
 
 /**
- * Database Builder Test Class
+ * Database Builder Test Class.
  *
  * @category VuFind
  * @package  Tests

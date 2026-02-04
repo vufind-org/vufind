@@ -67,7 +67,7 @@ class ConfigLoader
     protected array $configCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param PathResolver         $pathResolver         Path resolver

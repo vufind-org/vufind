@@ -62,7 +62,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRateLimiter
+     * Data provider for testRateLimiter.
      *
      * @return \Iterator
      */
@@ -126,7 +126,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get RateLimiter.yaml overrides
+     * Get RateLimiter.yaml overrides.
      *
      * @param bool $addHeaders Add X-RateLimit-* headers?
      *
@@ -183,7 +183,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make a request and check the result
+     * Make a request and check the result.
      *
      * @param HttpService $http       HTTP Service
      * @param string      $path       Request URL path

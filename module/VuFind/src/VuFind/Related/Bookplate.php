@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Related;
 
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
  * @category VuFind
  * @package  Related_Records
@@ -41,37 +41,37 @@ namespace VuFind\Related;
 class Bookplate implements RelatedInterface
 {
     /**
-     * Bookplate config
+     * Bookplate config.
      */
     protected $config;
 
     /**
-     * Data fields (usually Solr)
+     * Data fields (usually Solr).
      */
     protected $fields;
 
     /**
-     * Bookplate strings
+     * Bookplate strings.
      */
     protected $bookplateStrs;
 
     /**
-     * Bookplate image names or full URLs
+     * Bookplate image names or full URLs.
      */
     protected $bookplateImages;
 
     /**
-     * Bookplate thumbnail image names or thumbnail URLs
+     * Bookplate thumbnail image names or thumbnail URLs.
      */
     protected $bookplateThumbnails;
 
     /**
-     * URL template for full bookplate
+     * URL template for full bookplate.
      */
     protected $fullUrlTemplate;
 
     /**
-     * URL template for thumbnail
+     * URL template for thumbnail.
      */
     protected $thumbUrlTemplate;
 
@@ -81,7 +81,7 @@ class Bookplate implements RelatedInterface
     protected $displayTitles;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */

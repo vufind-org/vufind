@@ -109,7 +109,7 @@ class ApiKeyService extends AbstractDbService implements ApiKeyServiceInterface
     }
 
     /**
-     * Delete API key
+     * Delete API key.
      *
      * @param ApiKeyEntityInterface $apiKey API key entity
      *

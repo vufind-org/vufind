@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait to add configurable verbosity settings to loggers
+ * Trait to add configurable verbosity settings to loggers.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Log\Handler;
 use function is_array;
 
 /**
- * Trait to add configurable verbosity settings to loggers
+ * Trait to add configurable verbosity settings to loggers.
  *
  * @category VuFind
  * @package  Log
@@ -43,14 +43,14 @@ use function is_array;
 trait VerbosityTrait
 {
     /**
-     * Holds the verbosity level
+     * Holds the verbosity level.
      *
      * @var int
      */
     protected int $verbosity = 1;
 
     /**
-     * Set verbosity
+     * Set verbosity.
      *
      * @param int $verb verbosity setting
      *

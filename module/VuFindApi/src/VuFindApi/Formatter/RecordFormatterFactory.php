@@ -47,14 +47,14 @@ use Psr\Container\ContainerInterface;
 class RecordFormatterFactory implements FactoryInterface
 {
     /**
-     * Record fields configuration file name
+     * Record fields configuration file name.
      *
      * @var string
      */
     protected $configFile = 'SearchApiRecordFields.yaml';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

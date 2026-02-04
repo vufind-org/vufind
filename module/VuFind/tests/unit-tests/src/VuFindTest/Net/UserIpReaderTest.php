@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserIpReader Test Class
+ * UserIpReader Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Stdlib\Parameters;
 use VuFind\Net\UserIpReader;
 
 /**
- * UserIpReader Test Class
+ * UserIpReader Test Class.
  *
  * @category VuFind
  * @package  Tests

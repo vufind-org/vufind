@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record fallback loader plugin manager
+ * Record fallback loader plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Record\FallbackLoader;
 
 /**
- * Record fallback loader plugin manager
+ * Record fallback loader plugin manager.
  *
  * @category VuFind
  * @package  Record

@@ -105,14 +105,14 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     protected $accessDeniedBehavior = null;
 
     /**
-     * Audit event service
+     * Audit event service.
      *
      * @var ?AuditEventServiceInterface
      */
     protected ?AuditEventServiceInterface $auditEventService = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -167,7 +167,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get request object
+     * Get request object.
      *
      * @return HttpRequest
      */
@@ -181,7 +181,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -328,7 +328,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the view renderer
+     * Get the view renderer.
      *
      * @return \Laminas\View\Renderer\RendererInterface
      */
@@ -489,7 +489,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the record loader
+     * Get the record loader.
      *
      * @return \VuFind\Record\Loader
      */
@@ -499,7 +499,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the record cache
+     * Get the record cache.
      *
      * @return \VuFind\Record\Cache
      */
@@ -569,7 +569,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
 
     /**
      * Check to see if a form was submitted from its post value
-     * Also validate the Captcha, if it's activated
+     * Also validate the Captcha, if it's activated.
      *
      * @param string|string[]|null $submitElements Name of the post field(s) to check
      * to indicate a form submission (or null for default)
@@ -643,7 +643,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the search memory
+     * Get the search memory.
      *
      * @return \VuFind\Search\Memory
      */
@@ -768,7 +768,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Checks if a followup url is set
+     * Checks if a followup url is set.
      *
      * @return bool
      */
@@ -808,7 +808,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Sometimes we need to unset the followup to trigger default behaviors
+     * Sometimes we need to unset the followup to trigger default behaviors.
      *
      * @return void
      */
@@ -845,7 +845,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *
@@ -861,7 +861,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get settings required for displaying the catalog login form
+     * Get settings required for displaying the catalog login form.
      *
      * @return array
      */

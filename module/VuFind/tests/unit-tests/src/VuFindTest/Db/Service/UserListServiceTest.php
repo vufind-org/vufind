@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserListService test class
+ * UserListService test class.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function is_int;
 use function is_object;
 
 /**
- * UserListService test class
+ * UserListService test class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ use function is_object;
 class UserListServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get user list service
+     * Get user list service.
      *
      * @param ?EntityManager $entityManager Entity manager.
      * @param array          $onlyMethods   Array containing mock only methods values.
@@ -74,7 +74,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get entity manager
+     * Get entity manager.
      *
      * @param array $expected Expected values for setParameters
      *
@@ -108,7 +108,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -183,7 +183,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get public lists query
+     * Test get public lists query.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for createQuery and setParameters
@@ -198,7 +198,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -241,7 +241,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get user lists and counts by user
+     * Test get user lists and counts by user.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
@@ -272,7 +272,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -373,7 +373,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get user lists by tag and id
+     * Test get user lists by tag and id.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
@@ -390,7 +390,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -455,7 +455,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get lists containing record
+     * Test get lists containing record.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters

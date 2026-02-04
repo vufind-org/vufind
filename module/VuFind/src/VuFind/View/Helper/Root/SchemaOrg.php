@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View helper for injecting schema.org metadata
+ * View helper for injecting schema.org metadata.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\HtmlAttributes;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
- * View helper for injecting schema.org metadata
+ * View helper for injecting schema.org metadata.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HtmlAttributes $htmlAttributes HtmlAttributes view helper
      * @param bool           $enabled        Is schema.org metadata enabled?

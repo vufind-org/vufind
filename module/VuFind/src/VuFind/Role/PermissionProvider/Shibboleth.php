@@ -48,21 +48,21 @@ use VuFind\Auth\Shibboleth as ShibbolethAuth;
 class Shibboleth extends ServerParam
 {
     /**
-     * Request object
+     * Request object.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * Server param with the identity provider entityID
+     * Server param with the identity provider entityID.
      *
      * @var string
      */
     protected $idpServerParam;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request               $request Request object
      * @param \VuFind\Config\Config $config  VuFind configuration

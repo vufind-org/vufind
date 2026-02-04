@@ -44,7 +44,7 @@ use VuFindSearch\Backend\EDS\Command\AutocompleteCommand;
 class AutocompleteCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */

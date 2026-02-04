@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search query adapter
+ * Search query adapter.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function call_user_func;
 use function count;
 
 /**
- * Search query adapter
+ * Search query adapter.
  *
  * @category VuFind
  * @package  Search_Solr

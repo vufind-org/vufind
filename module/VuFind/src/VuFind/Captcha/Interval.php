@@ -51,35 +51,35 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
     use TranslatorAwareTrait;
 
     /**
-     * Session data container
+     * Session data container.
      *
      * @var SessionContainer
      */
     protected $sessionData;
 
     /**
-     * Minimum action interval in seconds
+     * Minimum action interval in seconds.
      *
      * @var int
      */
     protected $actionInterval;
 
     /**
-     * Minimum time from session start to first action
+     * Minimum time from session start to first action.
      *
      * @var int
      */
     protected $timeFromSessionStart;
 
     /**
-     * Verification error message
+     * Verification error message.
      *
      * @var string
      */
     protected $errorMessage = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionContainer $sc     Session data container
      * @param Config           $config VuFind main configuration
@@ -94,7 +94,7 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha field from controller params and check them for accuracy.
      *
      * @param Params $params Controller params
      *

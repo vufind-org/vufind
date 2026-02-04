@@ -52,7 +52,7 @@ class Office365Handler extends PostHandler
     protected string $title;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url     URL to open as a stream
      * @param Client $client  Pre-configured http client
@@ -68,7 +68,7 @@ class Office365Handler extends PostHandler
     }
 
     /**
-     * Get data for raw body
+     * Get data for raw body.
      *
      * @param array $event event data
      *

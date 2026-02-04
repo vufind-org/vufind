@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Form Test Class
+ * Form Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Form\Form;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Form Test Class
+ * Form Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -842,7 +842,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Function to get form action route test data
+     * Function to get form action route test data.
      *
      * @return \Iterator
      */
@@ -859,7 +859,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test formActionRoute setting
+     * Test formActionRoute setting.
      *
      * @param string $id       Form id
      * @param string $expected Expected value
@@ -874,7 +874,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test prefilling values for inputs from form configuration
+     * Test prefilling values for inputs from form configuration.
      *
      * @return void
      */
@@ -939,7 +939,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test protecting fields from being prefilled
+     * Test protecting fields from being prefilled.
      *
      * @return void
      */

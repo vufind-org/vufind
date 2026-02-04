@@ -48,7 +48,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock container
+     * Mock container.
      *
      * @var \VuFindTest\Container\MockContainer
      */

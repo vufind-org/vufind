@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Similar Related Items Test Class
+ * Similar Related Items Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Related;
 use VuFind\Related\Similar;
 
 /**
- * Similar Related Items Test Class
+ * Similar Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests

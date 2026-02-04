@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Identifier linker plugin manager
+ * Identifier linker plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\IdentifierLinker;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Identifier linker plugin manager
+ * Identifier linker plugin manager.
  *
  * @category VuFind
  * @package  IdentifierLinker

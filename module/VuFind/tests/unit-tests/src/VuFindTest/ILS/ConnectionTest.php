@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Connection test
+ * Connection test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\ILS\Connection;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Connnection test
+ * Connnection test.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Connection object
+     * Connection object.
      *
      * @var Connection
      */
@@ -72,7 +72,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set TimedBlocks driver configuration
+     * Set TimedBlocks driver configuration.
      *
      * @param array $timedBlocks timed blocks as defined in Demo.ini
      *
@@ -88,7 +88,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testIsMethodBlocked
+     * Data provider for testIsMethodBlocked.
      *
      * @return \Iterator
      */
@@ -225,7 +225,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that methods are blocked correctly according to configuration
+     * Test that methods are blocked correctly according to configuration.
      *
      * @param array $timedBlocks    timedBlocks as defined in Demo.ini
      * @param bool  $expectedResult The expected result

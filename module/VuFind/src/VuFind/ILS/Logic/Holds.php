@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hold Logic Class
+ * Hold Logic Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Hold Logic Class
+ * Hold Logic Class.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -49,7 +49,7 @@ use function is_array;
 class Holds
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $catalog A catalog connection
@@ -135,7 +135,7 @@ class Holds
 
     /**
      * Public method for getting item holdings from the catalog and selecting which
-     * holding method to call
+     * holding method to call.
      *
      * @param string $id            A Bib ID
      * @param array  $ids           A list of Source Records (if catalog is for a consortium)
@@ -212,7 +212,7 @@ class Holds
     }
 
     /**
-     * Protected method for standard (i.e. No Holds) holdings
+     * Protected method for standard (i.e. No Holds) holdings.
      *
      * @param array $result A result set returned from a driver
      *
@@ -234,7 +234,7 @@ class Holds
     }
 
     /**
-     * Protected method for driver defined holdings
+     * Protected method for driver defined holdings.
      *
      * @param array $result          A result set returned from a driver
      * @param array $holdConfig      Hold configuration from driver
@@ -282,7 +282,7 @@ class Holds
     }
 
     /**
-     * Protected method for vufind (i.e. User) defined holdings
+     * Protected method for vufind (i.e. User) defined holdings.
      *
      * @param array  $result        A result set returned from a driver
      * @param string $type          The holds mode to be applied from:
@@ -491,7 +491,7 @@ class Holds
     }
 
     /**
-     * Get Hold Form
+     * Get Hold Form.
      *
      * Supplies holdLogic with the form details required to place a request
      *
@@ -543,7 +543,7 @@ class Holds
     }
 
     /**
-     * Get a grouping key for a holdings item
+     * Get a grouping key for a holdings item.
      *
      * @param array $copy Item information
      *

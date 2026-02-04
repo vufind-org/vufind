@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: commit to Solr
+ * Console command: commit to Solr.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function ini_get;
 
 /**
- * Console command: commit to Solr
+ * Console command: commit to Solr.
  *
  * @category VuFind
  * @package  Console

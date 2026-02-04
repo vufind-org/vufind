@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tag view helper
+ * Tag view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
- * Tag view helper
+ * Tag view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,21 +43,21 @@ use Laminas\View\Helper\AbstractHelper;
 class UserTags extends AbstractHelper
 {
     /**
-     * Tag mode (enabled or disabled)
+     * Tag mode (enabled or disabled).
      *
      * @var string
      */
     protected $mode;
 
     /**
-     * List tag mode (enabled or disabled)
+     * List tag mode (enabled or disabled).
      *
      * @var string
      */
     protected $listMode;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $mode     Tag mode (enabled or disabled)
      * @param string $listMode List tag mode (enabled or disabled)
@@ -69,7 +69,7 @@ class UserTags extends AbstractHelper
     }
 
     /**
-     * Get mode
+     * Get mode.
      *
      * @return string
      */
@@ -79,7 +79,7 @@ class UserTags extends AbstractHelper
     }
 
     /**
-     * Get list mode
+     * Get list mode.
      *
      * @return string
      */

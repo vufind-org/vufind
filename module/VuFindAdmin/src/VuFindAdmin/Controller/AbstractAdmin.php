@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Admin Controller Base
+ * VuFind Admin Controller Base.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * VuFind Admin Controller Base
+ * VuFind Admin Controller Base.
  *
  * @category VuFind
  * @package  Controller
@@ -44,7 +44,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class AbstractAdmin extends \VuFind\Controller\AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

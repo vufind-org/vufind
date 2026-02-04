@@ -41,7 +41,7 @@ namespace VuFind\Search\Blender2;
 class ParamsFactory extends \VuFind\Search\Blender\ParamsFactory
 {
     /**
-     * Configuration file to read Blender settings from
+     * Configuration file to read Blender settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -50,7 +50,7 @@ class ParamsFactory extends \VuFind\Search\Blender\ParamsFactory
     protected $blenderIni = 'Blender2';
 
     /**
-     * Configuration file to read Blender mappings settings from
+     * Configuration file to read Blender mappings settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *

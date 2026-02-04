@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class ApiControllerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -77,7 +77,7 @@ class ApiControllerFactory implements FactoryInterface
     }
 
     /**
-     * Get the API controllers to register with ApiController
+     * Get the API controllers to register with ApiController.
      *
      * @param ContainerInterface $container Service manager
      *

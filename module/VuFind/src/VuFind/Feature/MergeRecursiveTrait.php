@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Merge Recursive Trait - Provides Custom Array Merge Function
+ * VuFind Merge Recursive Trait - Provides Custom Array Merge Function.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function array_key_exists;
 use function is_array;
 
 /**
- * VuFind Merge Recursive Trait - Provides Custom Array Merge Function
+ * VuFind Merge Recursive Trait - Provides Custom Array Merge Function.
  *
  * @category VuFind
  * @package  Feature
@@ -48,7 +48,7 @@ use function is_array;
 trait MergeRecursiveTrait
 {
     /**
-     * Determine if a variable is a string-keyed array
+     * Determine if a variable is a string-keyed array.
      *
      * @param mixed $op Variable to test
      *

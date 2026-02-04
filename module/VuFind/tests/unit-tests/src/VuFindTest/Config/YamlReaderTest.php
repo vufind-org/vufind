@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config YamlReader Test Class
+ * Config YamlReader Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Config YamlReader Test Class
+ * Config YamlReader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -136,7 +136,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test @parent_yaml and @merged_sections directives
+     * Test @parent_yaml and @merged_sections directives.
      *
      * @return void
      */
@@ -177,7 +177,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test @parent_yaml set to false
+     * Test @parent_yaml set to false.
      *
      * @return void
      */
@@ -214,7 +214,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test @parent_config_name
+     * Test @parent_config_name.
      *
      * @param string $parentLocation Location of parent configuration to be loaded
      * @param string $childLocation  Location of child configuration to be loaded
@@ -244,7 +244,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test @parent_config_name set to false
+     * Test @parent_config_name set to false.
      *
      * @return void
      */

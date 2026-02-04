@@ -49,7 +49,7 @@ use VuFindConsole\Command\Util\PurgeCachedRecordCommand;
 class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testBasicOperation
+     * Data provider for testBasicOperation.
      *
      * @return \Iterator
      */

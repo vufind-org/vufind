@@ -279,7 +279,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testTagSearchSort
+     * Data provider for testTagSearchSort.
      *
      * @return \Iterator
      */
@@ -690,7 +690,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRating
+     * Data provider for testRating.
      *
      * @return \Iterator
      */
@@ -857,7 +857,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding comments, rating and tag to a record and then
-     * delete them from user account menu
+     * delete them from user account menu.
      *
      * @return void
      */
@@ -934,7 +934,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test export button found in toolbar
+     * Test export button found in toolbar.
      *
      * @return void
      */

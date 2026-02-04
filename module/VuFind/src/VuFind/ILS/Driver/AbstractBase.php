@@ -51,7 +51,7 @@ use function is_callable;
 abstract class AbstractBase implements DriverInterface
 {
     /**
-     * Driver configuration
+     * Driver configuration.
      *
      * @var array
      */
@@ -203,7 +203,7 @@ abstract class AbstractBase implements DriverInterface
 
     /**
      * Get array containing last and first name from string. This function expects that
-     * the template of name is: "lastName,firstName"
+     * the template of name is: "lastName,firstName".
      *
      * @param string $fullname Name to parse
      *

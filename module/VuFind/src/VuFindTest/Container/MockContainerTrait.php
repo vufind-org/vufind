@@ -53,7 +53,7 @@ trait MockContainerTrait
     protected $disabled = [];
 
     /**
-     * Services
+     * Services.
      *
      * @var array
      */
@@ -69,7 +69,7 @@ trait MockContainerTrait
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TestCase $test Test using the container (for building mock objects)
      */
@@ -99,7 +99,7 @@ trait MockContainerTrait
     }
 
     /**
-     * Disable a service
+     * Disable a service.
      *
      * @param string $id Identifier of the entry to disable.
      *

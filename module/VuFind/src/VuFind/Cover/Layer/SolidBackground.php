@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solid cover background layer
+ * Solid cover background layer.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Cover\Layer;
 
 /**
- * Solid cover background layer
+ * Solid cover background layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -41,7 +41,7 @@ namespace VuFind\Cover\Layer;
 class SolidBackground extends AbstractBackgroundLayer
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)

@@ -68,7 +68,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function to create a new API key entity
+     * Helper function to create a new API key entity.
      *
      * @param string $title API key title
      *
@@ -84,7 +84,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function to get a revoked API key entity
+     * Helper function to get a revoked API key entity.
      *
      * @return ApiKeyEntityInterface
      */
@@ -98,7 +98,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function to set correct API key configs
+     * Helper function to set correct API key configs.
      *
      * @param string $mode API key mode
      *
@@ -198,7 +198,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test generating API keys
+     * Test generating API keys.
      *
      * @return void
      */

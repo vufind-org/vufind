@@ -48,14 +48,14 @@ class ExternalVuFind implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base URL of the LibGuides API
+     * Base URL of the LibGuides API.
      *
      * @var string
      */
     protected $baseUrl = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Http\CachingDownloader $cachingDownloader The caching downloader
      */

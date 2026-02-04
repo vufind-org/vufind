@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart Class
+ * Cart Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function in_array;
 use function ord;
 
 /**
- * Cart Class
+ * Cart Class.
  *
  * The data model object representing a user's book cart.
  *
@@ -79,14 +79,14 @@ class Cart
     protected $showTogglesInSearch;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var \VuFind\Record\Loader
      */
     protected $recordLoader;
 
     /**
-     * Cookie manager
+     * Cookie manager.
      *
      * @var CookieManager
      */
@@ -97,7 +97,7 @@ class Cart
     public const CART_COOKIE_DELIM = "\t";
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Record\Loader $loader          Object for loading records
      * @param CookieManager         $cookieManager   Cookie manager

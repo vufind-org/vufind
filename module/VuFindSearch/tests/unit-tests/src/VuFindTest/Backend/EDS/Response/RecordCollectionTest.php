@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for EDS record collection
+ * Unit tests for EDS record collection.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\EDS\Response\RecordCollection;
 
 /**
- * Unit tests for EDS record collection
+ * Unit tests for EDS record collection.
  *
  * @category VuFind
  * @package  Search

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class HierarchicalFacetHelperFactory
+ * Class HierarchicalFacetHelperFactory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class HierarchicalFacetHelperFactory
+ * Class HierarchicalFacetHelperFactory.
  *
  * @category VuFind
  * @package  Search
@@ -49,7 +49,7 @@ class HierarchicalFacetHelperFactory implements
     \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

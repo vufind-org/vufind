@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler for fetching versions link
+ * AJAX handler for fetching versions link.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function count;
 use function is_array;
 
 /**
- * AJAX handler for fetching versions link
+ * AJAX handler for fetching versions link.
  *
  * @category VuFind
  * @package  AJAX
@@ -50,28 +50,28 @@ use function is_array;
 class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
 {
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Record plugin
+     * Record plugin.
      *
      * @var Record
      */
     protected $recordPlugin;
 
     /**
-     * Tab manager
+     * Tab manager.
      *
      * @var TabManager
      */
     protected $tabManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings $ss     Session settings
      * @param Loader          $loader Record loader
@@ -91,7 +91,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
     }
 
     /**
-     * Load a single record and render the link template
+     * Load a single record and render the link template.
      *
      * @param string $id       Record id
      * @param string $source   Record source

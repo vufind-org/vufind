@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites aspect of the Search Multi-class (Options)
+ * Favorites aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Favorites;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Search Favorites Options
+ * Search Favorites Options.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -45,7 +45,7 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Config\Feature\ExplodeSettingTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

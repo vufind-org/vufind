@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PRISM Test Class
+ * PRISM Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\MetadataVocabulary;
 use VuFind\MetadataVocabulary\PRISM;
 
 /**
- * PRISM Test Class
+ * PRISM Test Class.
  *
  * @category VuFind
  * @package  Tests

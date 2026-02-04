@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: database builder
+ * Console command: database builder.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\Db\DbBuilder;
 use function is_callable;
 
 /**
- * Console command: database builder
+ * Console command: database builder.
  *
  * @category VuFind
  * @package  Console
@@ -55,7 +55,7 @@ use function is_callable;
 class DatabaseCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param DbBuilder   $builder Database builder
      * @param string|null $name    The name of the command; passing null means it

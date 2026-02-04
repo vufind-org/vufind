@@ -58,14 +58,14 @@ class SolrMarcRemote extends SolrMarc implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Holds the URI-Pattern of the service that returns the marc binary blob by id
+     * Holds the URI-Pattern of the service that returns the marc binary blob by id.
      *
      * @var string
      */
     protected $uriPattern = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
@@ -102,7 +102,7 @@ class SolrMarcRemote extends SolrMarc implements
     }
 
     /**
-     * Load the fullrecord field if not already loaded
+     * Load the fullrecord field if not already loaded.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class SolrMarcRemote extends SolrMarc implements
     }
 
     /**
-     * Retrieves the full Marcrecord from a remote service defined by uriPattern
+     * Retrieves the full Marcrecord from a remote service defined by uriPattern.
      *
      * @param String $id - this record's unique identifier
      *

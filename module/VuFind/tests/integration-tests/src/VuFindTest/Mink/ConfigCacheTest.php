@@ -45,7 +45,7 @@ class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
     use CacheManagementTrait;
 
     /**
-     * Data provider for configuration caching tests
+     * Data provider for configuration caching tests.
      *
      * @return \Iterator
      */

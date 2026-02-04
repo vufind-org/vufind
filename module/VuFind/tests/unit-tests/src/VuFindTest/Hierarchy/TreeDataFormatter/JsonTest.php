@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy TreeDataFormatter Json Test Class
+ * Hierarchy TreeDataFormatter Json Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Hierarchy\TreeDataFormatter;
 use VuFind\Hierarchy\TreeDataFormatter\Json;
 
 /**
- * Hierarchy TreeDataFormatter Json Test Class
+ * Hierarchy TreeDataFormatter Json Test Class.
  *
  * @category VuFind
  * @package  Tests

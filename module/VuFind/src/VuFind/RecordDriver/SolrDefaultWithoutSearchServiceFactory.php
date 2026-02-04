@@ -46,14 +46,14 @@ use Psr\Container\ContainerInterface;
 class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * @var string
      */
     protected $searchIni = 'searches';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

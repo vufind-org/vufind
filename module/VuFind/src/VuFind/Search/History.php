@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search History Helper
+ * VuFind Search History Helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\Config;
 use VuFind\Db\Service\SearchServiceInterface;
 
 /**
- * VuFind Search History Helper
+ * VuFind Search History Helper.
  *
  * @category VuFind
  * @package  Search
@@ -47,7 +47,7 @@ use VuFind\Db\Service\SearchServiceInterface;
 class History
 {
     /**
-     * History constructor
+     * History constructor.
      *
      * @param SearchServiceInterface               $searchService  Search table
      * @param string                               $sessionId      Session ID

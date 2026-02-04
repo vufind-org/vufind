@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Email Form Handler Test Class
+ * Email Form Handler Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Form\Form;
 use VuFind\Form\Handler\Email;
 
 /**
- * Email Form Handler Test Class
+ * Email Form Handler Test Class.
  *
  * @category VuFind
  * @package  Tests

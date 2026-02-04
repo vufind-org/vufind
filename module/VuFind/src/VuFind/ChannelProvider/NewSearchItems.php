@@ -67,7 +67,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
     protected $sort;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service               $searchService Search service
      * @param \VuFind\Search\Params\PluginManager $paramManager  Params manager

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover Loader Test Class
+ * Cover Loader Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTheme\ThemeInfo;
 use function strlen;
 
 /**
- * Cover Loader Test Class
+ * Cover Loader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -128,7 +128,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing user-specified fail image
+     * Test missing user-specified fail image.
      *
      * @return void
      */
@@ -145,7 +145,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test illegal file extension
+     * Test illegal file extension.
      *
      * @return void
      */

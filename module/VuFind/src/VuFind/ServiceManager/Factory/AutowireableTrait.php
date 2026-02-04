@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait to detect whether a class can be autowired
+ * Trait to detect whether a class can be autowired.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\ServiceManager\Factory;
 use ReflectionClass;
 
 /**
- * Trait to detect whether a class can be autowired
+ * Trait to detect whether a class can be autowired.
  *
  * @category VuFind
  * @package  ServiceManager

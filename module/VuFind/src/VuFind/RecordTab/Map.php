@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Map tab
+ * Map tab.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\PathResolver;
 use function count;
 
 /**
- * Map tab
+ * Map tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -75,14 +75,14 @@ class Map extends AbstractBase
     protected $graticule = false;
 
     /**
-     * Basemap settings
+     * Basemap settings.
      *
      * @var array
      */
     protected $basemapOptions = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver $pathResolver   Config file path resolver
      * @param bool         $mapTabDisplay  Display Map

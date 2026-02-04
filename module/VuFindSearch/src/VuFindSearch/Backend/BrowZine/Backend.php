@@ -195,7 +195,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Perform a DOI lookup
+     * Perform a DOI lookup.
      *
      * @param string $doi            DOI
      * @param bool   $includeJournal Include journal data in response?

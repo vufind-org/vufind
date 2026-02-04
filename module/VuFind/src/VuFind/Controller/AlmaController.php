@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Alma controller
+ * Alma controller.
  *
  * PHP version 8
  *
@@ -48,35 +48,35 @@ use VuFind\Db\Service\UserServiceInterface;
 class AlmaController extends AbstractBase
 {
     /**
-     * Http service
+     * Http service.
      *
      * @var \VuFindHttp\HttpService
      */
     protected $httpService;
 
     /**
-     * Http response
+     * Http response.
      *
      * @var \Laminas\Http\PhpEnvironment\Response
      */
     protected $httpResponse;
 
     /**
-     * Http headers
+     * Http headers.
      *
      * @var \Laminas\Http\Headers
      */
     protected $httpHeaders;
 
     /**
-     * Alma.ini config
+     * Alma.ini config.
      *
      * @var array
      */
     protected $configAlma;
 
     /**
-     * User database service
+     * User database service.
      *
      * @var UserServiceInterface
      */

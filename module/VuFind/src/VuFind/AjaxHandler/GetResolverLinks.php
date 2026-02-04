@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Resolver Links" AJAX handler
+ * "Get Resolver Links" AJAX handler.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Resolver\Driver\PluginManager as ResolverManager;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Resolver Links" AJAX handler
+ * "Get Resolver Links" AJAX handler.
  *
  * Fetch Links from resolver given an OpenURL and format as HTML
  * and output the HTML content in JSON object.
@@ -56,28 +56,28 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Resolver driver plugin manager
+     * Resolver driver plugin manager.
      *
      * @var ResolverManager
      */
     protected $pluginManager;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Top-level VuFind configuration (config.ini)
+     * Top-level VuFind configuration (config.ini).
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings   $ss       Session settings
      * @param ResolverManager   $pm       Resolver driver plugin manager

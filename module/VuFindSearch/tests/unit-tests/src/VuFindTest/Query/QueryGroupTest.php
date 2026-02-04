@@ -45,7 +45,7 @@ use VuFindSearch\Query\QueryGroup;
 class QueryGroupTest extends TestCase
 {
     /**
-     * Test containsTerm() method
+     * Test containsTerm() method.
      *
      * @return void
      */
@@ -66,7 +66,7 @@ class QueryGroupTest extends TestCase
     }
 
     /**
-     * Test getAllTerms() method
+     * Test getAllTerms() method.
      *
      * @return void
      */
@@ -77,7 +77,7 @@ class QueryGroupTest extends TestCase
     }
 
     /**
-     * Test replaceTerm() method
+     * Test replaceTerm() method.
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class QueryGroupTest extends TestCase
     }
 
     /**
-     * Test replaceTerm() method with and without normalization using complex input
+     * Test replaceTerm() method with and without normalization using complex input.
      *
      * @return void
      */

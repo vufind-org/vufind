@@ -1,7 +1,7 @@
 <?php
 
 /**
- * List Permission Exception
+ * List Permission Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * List Permission Exception
+ * List Permission Exception.
  *
  * @category VuFind
  * @package  Exceptions

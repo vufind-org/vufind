@@ -46,7 +46,7 @@ use VuFind\Exception\Auth as AuthException;
 class SIP2 extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
@@ -126,7 +126,7 @@ class SIP2 extends AbstractBase
     }
 
     /**
-     * Process SIP2 User Account
+     * Process SIP2 User Account.
      *
      * Based on code by Bob Wicksall <bwicksall@pls-net.org>.
      *

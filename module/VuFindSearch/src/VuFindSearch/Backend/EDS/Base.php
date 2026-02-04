@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO Search API abstract base class
+ * EBSCO Search API abstract base class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Log\LoggerAwareInterface;
 use function is_array;
 
 /**
- * EBSCO Search API abstract base class
+ * EBSCO Search API abstract base class.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -55,7 +55,7 @@ abstract class Base implements LoggerAwareInterface
     protected $apiHost;
 
     /**
-     * Auth host
+     * Auth host.
      *
      * @var string
      */
@@ -69,84 +69,84 @@ abstract class Base implements LoggerAwareInterface
     protected $sessionHost = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
-     * The organization id use for authentication
+     * The organization id use for authentication.
      *
      * @var ?string
      */
     protected $orgId;
 
     /**
-     * Accept header
+     * Accept header.
      *
      * @var string
      */
     protected $accept  = 'application/json';
 
     /**
-     * Content type header
+     * Content type header.
      *
      * @var string
      */
     protected $contentType = 'application/json';
 
     /**
-     * Search HTTP method
+     * Search HTTP method.
      *
      * @var string
      */
     protected $searchHttpMethod = 'POST';
 
     /**
-     * The EDS API Key for this client
+     * The EDS API Key for this client.
      *
      * @var ?string
      */
     protected $apiKey = null;
 
     /**
-     * The EDS API Key for this client (Guest Usage)
+     * The EDS API Key for this client (Guest Usage).
      *
      * @var ?string
      */
     protected $apiKeyGuest = null;
 
     /**
-     * Indicator if user "isGuest"
+     * Indicator if user "isGuest".
      *
      * @var bool
      */
     protected $isGuest = true;
 
     /**
-     * Indicator if additional headers should be sent
+     * Indicator if additional headers should be sent.
      *
      * @var bool
      */
     protected $sendUserIp = false;
 
     /**
-     * Vendor (e.g. 10.1)
+     * Vendor (e.g. 10.1).
      *
      * @var ?string
      */
     protected $reportVendorVersion = null;
 
     /**
-     * IpToReport (e.g. 123.123.123.13)
+     * IpToReport (e.g. 123.123.123.13).
      *
      * @var ?string
      */
     protected $ipToReport = null;
 
     /**
-     * UserAgent (e.g. 10.1)
+     * UserAgent (e.g. 10.1).
      *
      * @var ?string
      */
     protected $userAgent = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the EDS API Client
      *
@@ -204,7 +204,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Obtain edsapi search criteria and application related settings
+     * Obtain edsapi search criteria and application related settings.
      *
      * @param string $authenticationToken Authentication token
      * @param string $sessionToken        Session token
@@ -220,7 +220,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Creates a new session
+     * Creates a new session.
      *
      * @param string $profile   Profile to use
      * @param string $isGuest   Whether or not this session will be a guest session
@@ -244,7 +244,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Retrieves an EDS record specified by its identifiers
+     * Retrieves an EDS record specified by its identifiers.
      *
      * @param string $an                  An of the record to retrieve from the
      * EdsApi
@@ -279,7 +279,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Retrieves an EPF record specified by its identifiers
+     * Retrieves an EPF record specified by its identifiers.
      *
      * @param string $pubId               Id of the record to retrieve from the
      * EpfApi
@@ -303,7 +303,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Execute an EdsApi search
+     * Execute an EdsApi search.
      *
      * @param SearchRequestModel $query               Search request object
      * @param string             $authenticationToken Authentication token
@@ -326,7 +326,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Parse autocomplete response from API in an array of terms
+     * Parse autocomplete response from API in an array of terms.
      *
      * @param array $msg Response from API
      *
@@ -344,7 +344,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Execute an EdsApi autocomplete
+     * Execute an EdsApi autocomplete.
      *
      * @param string $query Search term
      * @param string $type  Autocomplete type (e.g. 'rawqueries' or 'holdings')
@@ -376,7 +376,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Generate an authentication token with a valid EBSCO EDS Api account
+     * Generate an authentication token with a valid EBSCO EDS Api account.
      *
      * @param string $username username associated with an EBSCO EdsApi account
      * @param string $password password associated with an EBSCO EdsApi account
@@ -414,7 +414,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Convert an array of search parameters to EDS API querystring parameters
+     * Convert an array of search parameters to EDS API querystring parameters.
      *
      * @param array $params Parameters to convert to querystring parameters
      *
@@ -451,7 +451,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Submit REST Request
+     * Submit REST Request.
      *
      * @param string $baseUrl       URL of service
      * @param array  $headerParams  An array of headers to add to the request
@@ -498,7 +498,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Creat Header Array for Call Function
+     * Creat Header Array for Call Function.
      *
      * @param array $headerParams An array (could be empty) of headers to build
      *
@@ -533,7 +533,7 @@ abstract class Base implements LoggerAwareInterface
     }
 
     /**
-     * Process EDS API response message
+     * Process EDS API response message.
      *
      * @param string $input The raw response from EDS API
      *
@@ -559,7 +559,7 @@ abstract class Base implements LoggerAwareInterface
 
     /**
      * Populate an associative array of session and authentication parameters to
-     * send to the EDS API
+     * send to the EDS API.
      *
      * @param string $authenticationToken Authentication token to add
      * @param string $sessionToken        Session token to add

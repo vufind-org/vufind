@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SideFacets recommendation module Test Class
+ * SideFacets recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
 
 /**
- * SideFacets recommendation module Test Class
+ * SideFacets recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Test "getResults"
+     * Test "getResults".
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHierarchicalFacets() and getHierarchicalFacetSortOptions()
+     * Test getHierarchicalFacets() and getHierarchicalFacetSortOptions().
      *
      * @return void
      */
@@ -120,7 +120,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getFacetOperator
+     * Test getFacetOperator.
      *
      * @return void
      */
@@ -148,7 +148,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test excludeAllowed
+     * Test excludeAllowed.
      *
      * @return void
      */
@@ -175,7 +175,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getAllRangeFacets()
+     * Test getAllRangeFacets().
      *
      * @return void
      */
@@ -226,7 +226,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test asterisk support in getCollapsedFacets
+     * Test asterisk support in getCollapsedFacets.
      *
      * @return void
      */
@@ -245,7 +245,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test delimited list support in getCollapsedFacets
+     * Test delimited list support in getCollapsedFacets.
      *
      * @return void
      */
@@ -353,7 +353,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param ?\VuFind\Config\ConfigManagerInterface $configManager config manager
      * @param ?Results                               $results       results object

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database entity plugin manager
+ * Database entity plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Database entity plugin manager
+ * Database entity plugin manager.
  *
  * @category VuFind
  * @package  Database

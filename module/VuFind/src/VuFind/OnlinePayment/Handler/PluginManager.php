@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online payment handler plugin manager
+ * Online payment handler plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment\Handler;
 
 /**
- * Online payment handler plugin manager
+ * Online payment handler plugin manager.
  *
  * @category VuFind
  * @package  OnlinePayment

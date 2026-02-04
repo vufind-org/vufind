@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Bad Request" Exception
+ * "Bad Request" Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * "Bad Request" Exception
+ * "Bad Request" Exception.
  *
  * @category VuFind
  * @package  Exceptions

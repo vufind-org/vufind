@@ -265,7 +265,7 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
-     * Retrieve a batch of list objects corresponding to the provided IDs
+     * Retrieve a batch of list objects corresponding to the provided IDs.
      *
      * @param int[]           $ids   List ids.
      * @param string|string[] $types Types of user lists to get. Set to an empty array to get all.
@@ -325,7 +325,7 @@ class UserListService extends AbstractDbService implements
     }
 
     /**
-     * Helper function to append type check into a dql
+     * Helper function to append type check into a dql.
      *
      * @param string          $dql        Dql string
      * @param array           $parameters Parameters for dql

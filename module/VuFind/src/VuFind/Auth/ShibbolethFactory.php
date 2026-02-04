@@ -51,7 +51,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public const SHIBBOLETH_CONFIG_FILE_NAME = 'Shibboleth';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -83,7 +83,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Return configuration loader for shibboleth
+     * Return configuration loader for shibboleth.
      *
      * @param ContainerInterface $container Service manager
      *

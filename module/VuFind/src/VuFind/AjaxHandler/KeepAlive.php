@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Keep Alive" AJAX handler
+ * "Keep Alive" AJAX handler.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
 
 /**
- * "Keep Alive" AJAX handler
+ * "Keep Alive" AJAX handler.
  *
  * This is responsible for keeping the session alive whenever called
  * (via JavaScript)
@@ -47,14 +47,14 @@ use Laminas\Session\SessionManager;
 class KeepAlive extends AbstractBase
 {
     /**
-     * Session Manager
+     * Session Manager.
      *
      * @var SessionManager
      */
     protected $sessionManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionManager $sm Session manager
      */

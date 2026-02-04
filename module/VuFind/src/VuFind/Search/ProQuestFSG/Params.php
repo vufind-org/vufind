@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ProQuest Federated Search Gateway Search Parameters
+ * ProQuest Federated Search Gateway Search Parameters.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Search\ProQuestFSG;
 use VuFindSearch\ParamBag;
 
 /**
- * ProQuest Federated Search Gateway Search Parameters
+ * ProQuest Federated Search Gateway Search Parameters.
  *
  * @category VuFind
  * @package  Search_ProQuestFSG

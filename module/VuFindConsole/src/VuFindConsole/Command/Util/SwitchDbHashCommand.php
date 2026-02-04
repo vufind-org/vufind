@@ -64,7 +64,7 @@ use function count;
 class SwitchDbHashCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config                   $config          VuFind configuration
      * @param UserServiceInterface     $userService     User database service
@@ -103,7 +103,7 @@ class SwitchDbHashCommand extends Command
     }
 
     /**
-     * Get a config writer
+     * Get a config writer.
      *
      * @param string $path Path of file to write
      *

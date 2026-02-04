@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Payment handler for Stripe
+ * Payment handler for Stripe.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use VuFind\Exception\PaymentException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
- * Payment handler for Stripe
+ * Payment handler for Stripe.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -62,14 +62,14 @@ class Stripe extends AbstractBase implements
     use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
-     * Mappings from fine tax percentages to tax codes
+     * Mappings from fine tax percentages to tax codes.
      *
      * @var array
      */
     protected array $taxPercentToTaxCodeMappings = [];
 
     /**
-     * Initialize the handler
+     * Initialize the handler.
      *
      * @param array $paymentConfig Online payment configuration
      *
@@ -236,7 +236,7 @@ class Stripe extends AbstractBase implements
     }
 
     /**
-     * Get tax code for a tax percent
+     * Get tax code for a tax percent.
      *
      * @param int $taxPercent Tax percent in 1/100ths of a percent
      *

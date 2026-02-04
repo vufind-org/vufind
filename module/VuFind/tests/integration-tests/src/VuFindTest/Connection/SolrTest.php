@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Connection Test Class
+ * Solr Connection Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Integration\Connection;
 use VuFindSearch\ParamBag;
 
 /**
- * Solr Connection Test Class
+ * Solr Connection Test Class.
  *
  * @category VuFind
  * @package  Tests

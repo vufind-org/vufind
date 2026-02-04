@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Search tabs" helper
+ * "Search tabs" helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\Http\Request;
 use VuFind\Search\Results\PluginManager;
 
 /**
- * "Search tabs" helper
+ * "Search tabs" helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -47,49 +47,49 @@ use VuFind\Search\Results\PluginManager;
 class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Search manager
+     * Search manager.
      *
      * @var PluginManager
      */
     protected $results;
 
     /**
-     * Tab configuration
+     * Tab configuration.
      *
      * @var array
      */
     protected $tabConfig;
 
     /**
-     * Tab filter configuration
+     * Tab filter configuration.
      *
      * @var array
      */
     protected $filterConfig;
 
     /**
-     * Tab permission configuration
+     * Tab permission configuration.
      *
      * @var array
      */
     protected $permissionConfig;
 
     /**
-     * Tab settings
+     * Tab settings.
      *
      * @var array
      */
     protected $settings;
 
     /**
-     * Request
+     * Request.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager $results      Search results plugin manager
      * @param array         $tabConfig    Tab configuration
@@ -115,7 +115,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get an array of hidden filters
+     * Get an array of hidden filters.
      *
      * @param string $searchClassId         Active search class
      * @param bool   $returnDefaultsIfEmpty Whether to return default tab filters if
@@ -140,7 +140,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the tab configuration
+     * Get the tab configuration.
      *
      * @return array
      */
@@ -150,7 +150,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the tab filters
+     * Get the tab filters.
      *
      * @return array
      */
@@ -160,7 +160,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the tab permissions
+     * Get the tab permissions.
      *
      * @return array
      */
@@ -170,7 +170,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the tab details
+     * Get the tab details.
      *
      * @return array
      */
@@ -180,7 +180,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Extract search class name from a tab id
+     * Extract search class name from a tab id.
      *
      * @param string $tabId Tab id as defined in config.ini
      *
@@ -193,7 +193,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if given hidden filters match with the hidden filters from configuration
+     * Check if given hidden filters match with the hidden filters from configuration.
      *
      * @param string $class         Search class ID
      * @param array  $hiddenFilters Hidden filters
@@ -207,7 +207,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get an array of hidden filters for the default tab of the given search class
+     * Get an array of hidden filters for the default tab of the given search class.
      *
      * @param string $searchClassId Search class
      *
@@ -239,7 +239,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Parse a simple filter array to a keyed array
+     * Parse a simple filter array to a keyed array.
      *
      * @param string $class   Search class ID
      * @param array  $filters Filters to parse

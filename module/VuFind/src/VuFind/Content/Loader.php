@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Third-party content loader
+ * Third-party content loader.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Content;
 use VuFind\ServiceManager\AbstractPluginManager;
 
 /**
- * Third-party content loader
+ * Third-party content loader.
  *
  * @category VuFind
  * @package  Content
@@ -43,21 +43,21 @@ use VuFind\ServiceManager\AbstractPluginManager;
 class Loader
 {
     /**
-     * Plug-in loader
+     * Plug-in loader.
      *
      * @var AbstractPluginManager
      */
     protected $loader;
 
     /**
-     * Provider information
+     * Provider information.
      *
      * @var string
      */
     protected $providers;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AbstractPluginManager $loader    Plugin loader for content
      * @param string                $providers Provider information

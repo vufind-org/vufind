@@ -93,35 +93,35 @@ class MonitorCommand extends Command
     protected $fromEmail = null;
 
     /**
-     * Payments successfully registered
+     * Payments successfully registered.
      *
      * @var int
      */
     protected $registeredCount = 0;
 
     /**
-     * Payments that failed to register
+     * Payments that failed to register.
      *
      * @var int
      */
     protected $failedCount = 0;
 
     /**
-     * Expired payments
+     * Expired payments.
      *
      * @var int
      */
     protected $expiredCount = 0;
 
     /**
-     * Output interface
+     * Output interface.
      *
      * @var ?OutputInterface
      */
     protected ?OutputInterface $output = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PaymentServiceInterface    $paymentService       Payment database service
      * @param OnlinePaymentManager       $onlinePaymentManager Online payment manager
@@ -337,7 +337,7 @@ class MonitorCommand extends Command
     }
 
     /**
-     * Get error email recipient address for a source ILS
+     * Get error email recipient address for a source ILS.
      *
      * @param string $sourceIls Source ILS
      *
@@ -350,7 +350,7 @@ class MonitorCommand extends Command
     }
 
     /**
-     * Output a message with a timestamp
+     * Output a message with a timestamp.
      *
      * @param string $msg Message
      *
@@ -363,7 +363,7 @@ class MonitorCommand extends Command
     }
 
     /**
-     * Output an error message with a timestamp
+     * Output an error message with a timestamp.
      *
      * @param string $msg Message
      *

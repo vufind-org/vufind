@@ -98,7 +98,7 @@ interface RecordInterface
     public function getResultSetIdentifier();
 
     /**
-     * Add a label for the record
+     * Add a label for the record.
      *
      * @param string $label Label, may be a translation key
      * @param string $class Label class
@@ -108,7 +108,7 @@ interface RecordInterface
     public function addLabel(string $label, string $class);
 
     /**
-     * Set the labels for the record
+     * Set the labels for the record.
      *
      * @param array $labels An array of associative arrays with keys 'label' and
      * 'class'
@@ -118,7 +118,7 @@ interface RecordInterface
     public function setLabels(array $labels);
 
     /**
-     * Return all labels for the record
+     * Return all labels for the record.
      *
      * @return array An array of associative arrays with keys 'label' and 'class'
      */

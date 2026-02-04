@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function count;
 use function is_object;
 
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -47,21 +47,21 @@ use function is_object;
 class HierarchyTree extends AbstractBase
 {
     /**
-     * Tree data
+     * Tree data.
      *
      * @var array
      */
     protected $treeList = null;
 
     /**
-     * Configuration
+     * Configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config Configuration
      */
@@ -102,7 +102,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Get the ID of the active tree (false if none)
+     * Get the ID of the active tree (false if none).
      *
      * @return string|bool
      */
@@ -121,7 +121,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Get an array of tree data
+     * Get an array of tree data.
      *
      * @return array
      */
@@ -162,7 +162,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Render a hierarchy tree
+     * Render a hierarchy tree.
      *
      * @param ?string $id      Hierarchy ID (omit to use active tree)
      * @param ?string $context Context for use by renderer or null for default
@@ -204,7 +204,7 @@ class HierarchyTree extends AbstractBase
     }
 
     /**
-     * Disable record preview when screen width is narrow
+     * Disable record preview when screen width is narrow.
      *
      * @return bool
      */

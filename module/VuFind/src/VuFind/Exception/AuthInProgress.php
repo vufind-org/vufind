@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication in Progress Exception
+ * Authentication in Progress Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Authentication in Progress Exception
+ * Authentication in Progress Exception.
  *
  * @category VuFind
  * @package  Exceptions

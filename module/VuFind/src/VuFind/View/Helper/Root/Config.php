@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ use VuFind\Config\ConfigManagerInterface;
 class Config extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Display date format
+     * Display date format.
      *
      * @var ?string
      */
     protected $displayDateFormat = null;
 
     /**
-     * Display time format
+     * Display time format.
      *
      * @var ?string
      */
@@ -121,7 +121,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Check if index record should always be displayed (i.e. also when a
-     * format-specific template is available)
+     * format-specific template is available).
      *
      * @return bool
      */
@@ -132,7 +132,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get offcanvas sidebar side
+     * Get offcanvas sidebar side.
      *
      * @return ?string 'left', 'right' or null for no offcanvas
      */
@@ -148,7 +148,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get date display format
+     * Get date display format.
      *
      * @return string
      */
@@ -162,7 +162,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get time display format
+     * Get time display format.
      *
      * @return string
      */
@@ -176,7 +176,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get date+time display format
+     * Get date+time display format.
      *
      * @param string $separator String between date and time
      *
@@ -188,7 +188,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if the loan type should be displayed in holdings
+     * Check if the loan type should be displayed in holdings.
      *
      * @return bool
      */

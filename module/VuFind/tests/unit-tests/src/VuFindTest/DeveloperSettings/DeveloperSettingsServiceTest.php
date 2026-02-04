@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DeveloperSettingsService Test Class
+ * DeveloperSettingsService Test Class.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsStatus;
 use function is_bool;
 
 /**
- * DeveloperSettingsService Test Class
+ * DeveloperSettingsService Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -102,7 +102,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test generate new key data
+     * Get test generate new key data.
      *
      * @return Generator
      */
@@ -200,7 +200,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generating new apiKey for user
+     * Test generating new apiKey for user.
      *
      * @param array $config   Config
      * @param array $tokens   Token methods and returns
@@ -248,7 +248,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get testIsApiKeyAllowed data
+     * Get testIsApiKeyAllowed data.
      *
      * @return Generator
      */
@@ -345,7 +345,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test token is valid method
+     * Test token is valid method.
      *
      * @param ?string $token    Token provided in request or null
      * @param array   $config   Config

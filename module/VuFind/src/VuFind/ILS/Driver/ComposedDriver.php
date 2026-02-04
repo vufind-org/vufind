@@ -52,7 +52,7 @@ use function in_array;
 class ComposedDriver extends AbstractMultiDriver
 {
     /**
-     * Name of the main driver
+     * Name of the main driver.
      *
      * @var string
      */
@@ -76,7 +76,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -92,7 +92,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Cancel ILL Requests
+     * Cancel ILL Requests.
      *
      * Attempts to Cancel an ILL request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -109,7 +109,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Cancel Call Slips
+     * Cancel Call Slips.
      *
      * Attempts to Cancel a call slip on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -126,7 +126,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * Attempts to change patron password (PIN code)
      *
@@ -141,7 +141,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Check whether an ILL request is valid
+     * Check whether an ILL request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -159,7 +159,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Check whether a hold or recall request is valid
+     * Check whether a hold or recall request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -177,7 +177,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Check whether a storage retrieval request is valid
+     * Check whether a storage retrieval request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -195,7 +195,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -224,7 +224,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, the ILS requires some information on the hold.
      * This function returns the required information, which is then submitted
@@ -242,7 +242,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Cancel Hold Link
+     * Get Cancel Hold Link.
      *
      * @param array $holdDetails Hold Details
      * @param array $patron      Patron
@@ -255,7 +255,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Cancel ILL Request Details
+     * Get Cancel ILL Request Details.
      *
      * In order to cancel an ILL request, the ILS requires some information on the
      * request. This function returns the required information, which is then
@@ -272,7 +272,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Cancel Call Slip Details
+     * Get Cancel Call Slip Details.
      *
      * In order to cancel a call slip, the ILS requires some information on it.
      * This function returns the required information, which is then submitted
@@ -302,7 +302,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Consortial Holdings
+     * Get Consortial Holdings.
      *
      * This is responsible for retrieving the holding information of a certain
      * consortial record.
@@ -327,7 +327,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -339,7 +339,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location
      *
@@ -358,7 +358,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -370,7 +370,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
@@ -383,7 +383,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported.
      *
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Contains most of the same values passed to
@@ -397,7 +397,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -422,7 +422,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -439,7 +439,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get ILL Pickup Libraries
+     * Get ILL Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -455,7 +455,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get ILL Pickup Locations
+     * Get ILL Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -473,7 +473,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -485,7 +485,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -499,7 +499,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -513,7 +513,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL Requests by a specific patron.
      *
@@ -527,7 +527,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -541,7 +541,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Call Slips
+     * Get Patron Call Slips.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -555,7 +555,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * @param array $user   The patron array from patronLogin
      * @param array $params Parameters
@@ -570,7 +570,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -585,7 +585,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -607,7 +607,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Offline Mode
+     * Get Offline Mode.
      *
      * This is responsible for returning the offline mode
      *
@@ -620,7 +620,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -656,7 +656,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -672,7 +672,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, the ILS requires information on the item and
      * patron. This function returns the information as a string which is then used
@@ -702,7 +702,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $id          BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -721,7 +721,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -738,7 +738,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -754,7 +754,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get suppressed authority records
+     * Get suppressed authority records.
      *
      * @return array ID numbers of suppressed authority records in the system.
      */
@@ -788,7 +788,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Has Holdings
+     * Has Holdings.
      *
      * This is responsible for determining if holdings exist for a particular
      * bibliographic id
@@ -805,7 +805,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Hidden Login Mode
+     * Get Hidden Login Mode.
      *
      * This is responsible for indicating whether login should be hidden.
      *
@@ -817,7 +817,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -834,7 +834,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details
@@ -850,7 +850,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Place ILL Request
+     * Place ILL Request.
      *
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details (or throws an exception on failure of support
@@ -867,7 +867,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Place Storage Retrieval Request
+     * Place Storage Retrieval Request.
      *
      * Attempts to place a storage retrieval request on a particular item and returns
      * an array with result details
@@ -883,7 +883,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Purge Patron Transaction History
+     * Purge Patron Transaction History.
      *
      * @param array  $patron The patron array from patronLogin
      * @param ?array $ids    IDs to purge, or null for all
@@ -897,7 +897,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -913,7 +913,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Renew My Items Link
+     * Renew My Items Link.
      *
      * @param array $checkedOutDetails Checked Out Details
      *
@@ -942,7 +942,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Update holds
+     * Update holds.
      *
      * This is responsible for changing the status of hold requests
      *
@@ -958,7 +958,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get available login targets (drivers enabled for login)
+     * Get available login targets (drivers enabled for login).
      *
      * @return string[] Source ID's
      */
@@ -968,7 +968,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get default login driver
+     * Get default login driver.
      *
      * @return string Default login driver or empty string
      */
@@ -978,7 +978,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group
      *
@@ -1012,7 +1012,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Calling a function of a driver
+     * Calling a function of a driver.
      *
      * @param string $driverName Name of the driver on which the method is called
      * @param string $method     Name of the method
@@ -1027,7 +1027,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Determines which driver should be used for the specified method
+     * Determines which driver should be used for the specified method.
      *
      * @param $method string name of the method
      *
@@ -1040,7 +1040,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Simply calls the method for the specified main driver
+     * Simply calls the method for the specified main driver.
      *
      * @param string $methodName Name of the method to be called
      * @param array  $params     Arguments for the method call
@@ -1288,7 +1288,7 @@ class ComposedDriver extends AbstractMultiDriver
     }
 
     /**
-     * Merges results of the main and the support drivers on the specified key
+     * Merges results of the main and the support drivers on the specified key.
      *
      * @param array $mainResult     Result of main driver
      * @param array $supportResults Results of support drivers
@@ -1317,7 +1317,7 @@ class ComposedDriver extends AbstractMultiDriver
 
     /**
      * Takes an array of item as input and creates an associative
-     * array using specified fields of the items as key
+     * array using specified fields of the items as key.
      *
      * @param array  $data Array of items
      * @param string $key  Items field to be used as key

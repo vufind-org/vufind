@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pagination helper test
+ * Pagination helper test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS;
 use VuFind\ILS\PaginationHelper;
 
 /**
- * Pagination helper test
+ * Pagination helper test.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\ILS\PaginationHelper;
 class PaginationHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test options supporting pagination
+     * Test options supporting pagination.
      *
      * @return void
      */
@@ -150,7 +150,7 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test options not supporting pagination
+     * Test options not supporting pagination.
      *
      * @return void
      */

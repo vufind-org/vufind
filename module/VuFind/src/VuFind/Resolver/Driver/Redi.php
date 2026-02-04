@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ReDi Link Resolver Driver
+ * ReDi Link Resolver Driver.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function chr;
 use function count;
 
 /**
- * ReDi Link Resolver Driver
+ * ReDi Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -50,21 +50,21 @@ use function count;
 class Redi extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
-     * Parsed resolver links
+     * Parsed resolver links.
      *
      * @var array
      */
     protected $links;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
@@ -76,7 +76,7 @@ class Redi extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -92,7 +92,7 @@ class Redi extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display
@@ -159,7 +159,7 @@ class Redi extends AbstractBase
 
     /**
      * Parse Redi additional information elements and return the one identified by
-     * the infoToken provided (e.g. "*")
+     * the infoToken provided (e.g. "*").
      *
      * @param DOMDocument $xml       Loaded xml document
      * @param string      $infoToken InfoToken to search for
@@ -268,7 +268,7 @@ class Redi extends AbstractBase
     }
 
     /**
-     * Helper function to remove hardcoded link-string "»" in Redi response
+     * Helper function to remove hardcoded link-string "»" in Redi response.
      *
      * @param string $string String to be manipulated
      *

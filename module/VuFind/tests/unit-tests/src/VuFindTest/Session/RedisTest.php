@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redis Session Handler Test Class
+ * Redis Session Handler Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Session;
 use VuFind\Session\Redis;
 
 /**
- * Redis Session Handler Test Class
+ * Redis Session Handler Test Class.
  *
  * @category VuFind
  * @package  Tests

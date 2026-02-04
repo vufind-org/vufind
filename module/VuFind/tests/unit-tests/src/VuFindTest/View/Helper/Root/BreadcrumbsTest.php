@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Breadcrumbs view helper Test Class
+ * Breadcrumbs view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\View\Helper\Root\Breadcrumbs;
 
 /**
- * Breadcrumbs view helper Test Class
+ * Breadcrumbs view helper Test Class.
  *
  * @category VuFind
  * @package  Tests

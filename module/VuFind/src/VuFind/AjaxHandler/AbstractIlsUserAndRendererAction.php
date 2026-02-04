@@ -50,7 +50,7 @@ abstract class AbstractIlsUserAndRendererAction extends AbstractBase implements 
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings      $ss               Session settings
      * @param Connection           $ils              ILS connection

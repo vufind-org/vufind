@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FavoritesService Test Class
+ * FavoritesService Test Class.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\Tags\TagsService;
 
 /**
- * FavoritesService Test Class
+ * FavoritesService Test Class.
  *
  * @category VuFind
  * @package  Tests

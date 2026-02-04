@@ -2,7 +2,7 @@
 
 /**
  * Metadata vocabulary base class
- * (provides results from available RecordDriver methods in a standardized form)
+ * (provides results from available RecordDriver methods in a standardized form).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use function is_array;
 
 /**
  * Metadata vocabulary base class
- * (provides results from available RecordDriver methods in a standardized form)
+ * (provides results from available RecordDriver methods in a standardized form).
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -53,7 +53,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
     protected $vocabFieldToGenericFieldsMap = [];
 
     /**
-     * Generate standardized data from available RecordDriver methods
+     * Generate standardized data from available RecordDriver methods.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
@@ -85,7 +85,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
     }
 
     /**
-     * Perform mapping from generic data to vocabulary data
+     * Perform mapping from generic data to vocabulary data.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *

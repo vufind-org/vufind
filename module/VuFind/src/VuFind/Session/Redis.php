@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redis session handler
+ * Redis session handler.
  *
  * Note: Using phpredis extension (see https://github.com/phpredis/phpredis) is
  * optional, this class use Credis in standalone mode by default
@@ -38,7 +38,7 @@ namespace VuFind\Session;
 use VuFind\Config\Config;
 
 /**
- * Redis session handler
+ * Redis session handler.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -53,21 +53,21 @@ class Redis extends AbstractBase
     use \VuFind\Service\Feature\RetryTrait;
 
     /**
-     * Redis connection
+     * Redis connection.
      *
      * @var \Credis_Client
      */
     protected $connection;
 
     /**
-     * Redis version
+     * Redis version.
      *
      * @var int
      */
     protected $redisVersion = 3;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Credis_Client $connection Redis connection object
      * @param ?Config        $config     Session configuration ([Session] section of

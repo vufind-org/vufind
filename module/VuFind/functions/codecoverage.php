@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Setup remote code coverage support if requested
+ * Setup remote code coverage support if requested.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\CodeCoverage\Report\PHP as PHPReport;
 
 /**
- * Setup remote code coverage support if requested
+ * Setup remote code coverage support if requested.
  *
  * @param array $modules Active modules
  *

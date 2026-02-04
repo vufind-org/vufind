@@ -43,14 +43,14 @@ use VuFind\Db\Entity\AuthHashEntityInterface;
 interface AuthHashServiceInterface extends DbServiceInterface
 {
     /**
-     * Hash type for email authentication
+     * Hash type for email authentication.
      *
      * @var string
      */
     public const TYPE_EMAIL = 'email';
 
     /**
-     * Hash type for ILS password recovery
+     * Hash type for ILS password recovery.
      *
      * @var string
      */

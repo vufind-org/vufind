@@ -50,7 +50,7 @@ class LookupDoiCommand extends \VuFindSearch\Command\CallMethodCommand
     protected $doi;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $backendId Search backend identifier
      * @param string $doi       DOI to look up

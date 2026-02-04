@@ -62,7 +62,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected $genreMoreSelector = '#side-collapse-genre_facet .more-facets';
 
     /**
-     * Get filtered search
+     * Get filtered search.
      *
      * @param string $building Building filter to use
      * @param string $format   Optional format filter to use
@@ -81,7 +81,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function for simple facet application test
+     * Helper function for simple facet application test.
      *
      * @param Element $page        Mink page object
      * @param array   $facets      Facets to apply (title and expected counts)
@@ -169,7 +169,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function for testing facets lists in lightbox
+     * Helper function for testing facets lists in lightbox.
      *
      * @param Element $page                 Mink page object
      * @param string  $openLightboxSelector CSS selector for control to open lightbox
@@ -259,7 +259,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testApplyFacet
+     * Data provider for testApplyFacet.
      *
      * @return array
      */
@@ -364,7 +364,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test applying a facet to filter results (deferred facet sidebar)
+     * Test applying a facet to filter results (deferred facet sidebar).
      *
      * @param bool   $deferred    Are deferred facets enabled?
      * @param bool   $orFacets    Are OR facets enabled?
@@ -418,7 +418,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test expanding facets into the lightbox
+     * Test expanding facets into the lightbox.
      *
      * @return void
      */
@@ -445,7 +445,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test filtering and unfiltering the expanded facets in the lightbox
+     * Test filtering and unfiltering the expanded facets in the lightbox.
      *
      * @return void
      */
@@ -505,7 +505,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test filtering and sorting the expanded facets in the lightbox
+     * Test filtering and sorting the expanded facets in the lightbox.
      *
      * @return void
      */
@@ -604,7 +604,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test expanding facets into the lightbox
+     * Test expanding facets into the lightbox.
      *
      * @return void
      */
@@ -709,7 +709,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test multiselection in facet lightbox
+     * Test multiselection in facet lightbox.
      *
      * @return void
      */
@@ -861,7 +861,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testHierarchicalFacetSort
+     * Data provider for testHierarchicalFacetSort.
      *
      * @return array
      */
@@ -925,7 +925,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that we can persist uncollapsed state of collapsed facets
+     * Test that we can persist uncollapsed state of collapsed facets.
      *
      * @return void
      */
@@ -964,7 +964,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test retain current filters default behavior
+     * Test retain current filters default behavior.
      *
      * @return void
      */
@@ -983,7 +983,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test retaining filters on home page
+     * Test retaining filters on home page.
      *
      * @return void
      */
@@ -1022,7 +1022,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test "never retain filters" configurable behavior
+     * Test "never retain filters" configurable behavior.
      *
      * @return void
      */
@@ -1074,7 +1074,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test disabled "always display reset filters" configurable behavior
+     * Test disabled "always display reset filters" configurable behavior.
      *
      * @return void
      */
@@ -1097,7 +1097,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test enabled "always display reset filters" configurable behavior
+     * Test enabled "always display reset filters" configurable behavior.
      *
      * @return void
      */
@@ -1124,7 +1124,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test resetting to a default filter state
+     * Test resetting to a default filter state.
      *
      * @return void
      */
@@ -1221,7 +1221,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testCheckboxFacets
+     * Data provider for testCheckboxFacets.
      *
      * @return array
      */
@@ -1250,7 +1250,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test checkbox facet selection
+     * Test checkbox facet selection.
      *
      * @param array $checkFacets   Facet checkboxes to check
      * @param int   $expectedCount Expected result count
@@ -1331,7 +1331,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testCheckboxFacets
+     * Data provider for testCheckboxFacets.
      *
      * @return array
      */
@@ -1346,7 +1346,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test checkbox facets
+     * Test checkbox facets.
      *
      * @param bool $deferred Are deferred facets enabled?
      * @param bool $counts   Are checkbox facet counts enabled?
@@ -1407,7 +1407,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRangeFacets
+     * Data provider for testRangeFacets.
      *
      * @return array
      */
@@ -1423,7 +1423,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test range facets
+     * Test range facets.
      *
      * @param string $multiselection Use multi-facet selection?
      *
@@ -1560,7 +1560,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testMultiSelectOnAdvancedSearch()
+     * Data provider for testMultiSelectOnAdvancedSearch().
      *
      * @return array[]
      */
@@ -1651,7 +1651,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test persistence across page reload of the checkbox state for multi facet selection
+     * Test persistence across page reload of the checkbox state for multi facet selection.
      *
      * @return void
      */
@@ -1681,7 +1681,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test setting "checked" for multi facet selection, the feature is checked by default
+     * Test setting "checked" for multi facet selection, the feature is checked by default.
      *
      * @return void
      */
@@ -1704,7 +1704,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test setting "always" for multi facet selection, the feature is enabled but the checkbox is hidden
+     * Test setting "always" for multi facet selection, the feature is enabled but the checkbox is hidden.
      *
      * @return void
      */

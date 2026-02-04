@@ -53,7 +53,7 @@ use function assert;
 class EntityManagerFactory extends AbstractFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

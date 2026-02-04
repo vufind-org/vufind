@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record ID list (support class for Loader)
+ * Record ID list (support class for Loader).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\RecordDriver\AbstractBase as Record;
 use function is_array;
 
 /**
- * Record ID list (support class for Loader)
+ * Record ID list (support class for Loader).
  *
  * @category VuFind
  * @package  Record
@@ -59,7 +59,7 @@ class SourceAndIdList
     protected $bySource = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $ids Array of associative arrays with id/source keys or strings
      * in source|id format. In associative array formats, there is also an optional

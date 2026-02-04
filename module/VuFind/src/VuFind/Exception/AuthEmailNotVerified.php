@@ -44,7 +44,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 class AuthEmailNotVerified extends \VuFind\Exception\Auth
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UserEntityInterface $user     User object with unverified email.
      * @param string              $message  The exception message

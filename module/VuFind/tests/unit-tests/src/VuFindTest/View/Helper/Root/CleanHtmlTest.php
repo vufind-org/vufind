@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CleanHtml view helper Test Class
+ * CleanHtml view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFindTest\Feature\ViewTrait;
 
 /**
- * CleanHtml view helper Test Class
+ * CleanHtml view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class CleanHtmlTest extends \PHPUnit\Framework\TestCase
     use ViewTrait;
 
     /**
-     * Data provider for testCleanHtml
+     * Data provider for testCleanHtml.
      *
      * @return \Iterator
      */
@@ -67,7 +67,7 @@ class CleanHtmlTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cleanHtml
+     * Test cleanHtml.
      *
      * @param string  $input       Input string
      * @param ?bool   $targetBlank Add target="_blank" to external links?

@@ -45,14 +45,14 @@ use Behat\Mink\Element\Element;
 trait SearchSortTrait
 {
     /**
-     * Selector for sort control
+     * Selector for sort control.
      *
      * @var string
      */
     protected $sortControlSelector = '#sort_options_1';
 
     /**
-     * VuFind default sort options
+     * VuFind default sort options.
      *
      * @var string[]
      */
@@ -65,7 +65,7 @@ trait SearchSortTrait
     ];
 
     /**
-     * Check that first and last record of the results are correct
+     * Check that first and last record of the results are correct.
      *
      * @param Element $page   Current page
      * @param int     $count  Expected total result count
@@ -97,7 +97,7 @@ trait SearchSortTrait
     }
 
     /**
-     * Change sort order of search results
+     * Change sort order of search results.
      *
      * @param Element $page  Current page
      * @param string  $value Sort option

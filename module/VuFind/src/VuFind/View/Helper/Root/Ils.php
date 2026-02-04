@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS (integrated library system) view helper
+ * ILS (integrated library system) view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * ILS (integrated library system) view helper
+ * ILS (integrated library system) view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,14 +41,14 @@ namespace VuFind\View\Helper\Root;
 class Ils extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * ILS connection
+     * ILS connection.
      *
      * @var \VuFind\ILS\Connection
      */
     protected $connection;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection $connection ILS connection
      */

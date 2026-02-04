@@ -143,7 +143,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Hierarchical Facet Helper
+     * Hierarchical Facet Helper.
      *
      * @var HierarchicalFacetHelper
      */
@@ -189,7 +189,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for sortFacetList (top level only, specified with boolean)
+     * Tests for sortFacetList (top level only, specified with boolean).
      *
      * @return void
      */
@@ -207,7 +207,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for sortFacetList (top level only, specified with string)
+     * Tests for sortFacetList (top level only, specified with string).
      *
      * @return void
      */
@@ -225,7 +225,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for sortFacetList (all levels, specified with boolean)
+     * Tests for sortFacetList (all levels, specified with boolean).
      *
      * @return void
      */
@@ -243,7 +243,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for sortFacetList (all levels, specified with string)
+     * Tests for sortFacetList (all levels, specified with string).
      *
      * @return void
      */
@@ -261,7 +261,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for sortFacetList (top level only by field value)
+     * Tests for sortFacetList (top level only by field value).
      *
      * @return void
      */
@@ -279,7 +279,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for sortFacetList (all levels by field value)
+     * Tests for sortFacetList (all levels by field value).
      *
      * @return void
      */
@@ -297,7 +297,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for buildFacetArray
+     * Tests for buildFacetArray.
      *
      * @return void
      */
@@ -339,7 +339,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for buildFacetArray with invalid values
+     * Tests for buildFacetArray with invalid values.
      *
      * @return void
      */
@@ -366,7 +366,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for flattenFacetHierarchy
+     * Tests for flattenFacetHierarchy.
      *
      * @return void
      */
@@ -388,7 +388,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for formatDisplayText
+     * Tests for formatDisplayText.
      *
      * @return void
      */
@@ -427,7 +427,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for isDeepestFacetLevel
+     * Tests for isDeepestFacetLevel.
      *
      * @return void
      */
@@ -456,7 +456,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for getFilterStringParts
+     * Tests for getFilterStringParts.
      *
      * @return void
      */
@@ -488,7 +488,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hierarchical exclude filters
+     * Test hierarchical exclude filters.
      *
      * @return void
      */
@@ -560,7 +560,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hierarchical facet filters
+     * Test hierarchical facet filters.
      *
      * @return void
      */
@@ -627,7 +627,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set 'isApplied' to true in facet item with the given value
+     * Set 'isApplied' to true in facet item with the given value.
      *
      * @param string $facetValue Value to search for
      * @param array  $facetList  Facet list
@@ -645,7 +645,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create mock options class
+     * Create mock options class.
      *
      * @return \PHPUnit\Framework\MockObject\MockObject
      */

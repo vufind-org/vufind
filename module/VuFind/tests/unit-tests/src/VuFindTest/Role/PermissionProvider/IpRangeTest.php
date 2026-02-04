@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IpRange ServerParam Test Class
+ * IpRange ServerParam Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Net\IpAddressUtils;
 use VuFind\Role\PermissionProvider\IpRange;
 
 /**
- * IpRange ServerParam Test Class
+ * IpRange ServerParam Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Controller
+ * Hierarchy Controller.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function count;
 use function is_object;
 
 /**
- * Hierarchy Controller
+ * Hierarchy Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -50,7 +50,7 @@ use function is_object;
 class HierarchyController extends AbstractBase
 {
     /**
-     * Output JSON
+     * Output JSON.
      *
      * @param array $result Result to be encoded as JSON
      * @param int   $status Response status code
@@ -68,7 +68,7 @@ class HierarchyController extends AbstractBase
     }
 
     /**
-     * Gets a Hierarchy Tree
+     * Gets a Hierarchy Tree.
      *
      * @return mixed
      */
@@ -143,7 +143,7 @@ class HierarchyController extends AbstractBase
     }
 
     /**
-     * Get a record for display within a tree
+     * Get a record for display within a tree.
      *
      * @return ResponseInterface
      */

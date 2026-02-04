@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonBestBetsDeferred recommendation module Test Class
+ * SummonBestBetsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * SummonBestBetsDeferred recommendation module Test Class
+ * SummonBestBetsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\Recommend;
 class SummonBestBetsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */

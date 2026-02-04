@@ -258,7 +258,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Get boolean value for a special filter
+     * Get boolean value for a special filter.
      *
      * @param array $filter Filter
      *

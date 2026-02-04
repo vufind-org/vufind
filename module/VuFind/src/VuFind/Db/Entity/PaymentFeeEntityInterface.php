@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for payment_fee table
+ * Entity model interface for payment_fee table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Db\Entity;
 
 /**
- * Entity model interface for payment_fee table
+ * Entity model interface for payment_fee table.
  *
  * @category VuFind
  * @package  Database

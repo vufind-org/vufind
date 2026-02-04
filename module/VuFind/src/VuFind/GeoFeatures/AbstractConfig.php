@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract Configuration Module
+ * Abstract Configuration Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\GeoFeatures;
 
 /**
- * MapTab Configuration Class
+ * MapTab Configuration Class.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -41,7 +41,7 @@ namespace VuFind\GeoFeatures;
 class AbstractConfig
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */

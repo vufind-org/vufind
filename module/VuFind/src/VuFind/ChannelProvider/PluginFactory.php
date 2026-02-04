@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channel provider plugin factory
+ * Channel provider plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ChannelProvider;
 
 /**
- * Channel provider plugin factory
+ * Channel provider plugin factory.
  *
  * @category VuFind
  * @package  Channels
@@ -41,7 +41,7 @@ namespace VuFind\ChannelProvider;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

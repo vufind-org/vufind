@@ -52,14 +52,14 @@ use Psr\Container\ContainerInterface;
 class CleanHtmlFactory implements FactoryInterface
 {
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected ContainerInterface $container;
 
     /**
-     * List of allowed elements in different rendering contexts
+     * List of allowed elements in different rendering contexts.
      *
      * See e.g. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#technical_summary for more
      * information on headings. Note that the defaults below are subsets of all allowed elements.
@@ -73,7 +73,7 @@ class CleanHtmlFactory implements FactoryInterface
     ];
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -144,7 +144,7 @@ class CleanHtmlFactory implements FactoryInterface
     }
 
     /**
-     * Sets additional configuration
+     * Sets additional configuration.
      *
      * @param HTMLPurifier_Config $config  Configuration
      * @param array               $options Additional options

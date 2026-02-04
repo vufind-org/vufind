@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AbstractMenu view helper
+ * AbstractMenu view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Navigation\AbstractMenu;
 
 /**
- * AbstractMenu view helper
+ * AbstractMenu view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,7 +45,7 @@ use VuFind\Navigation\AbstractMenu;
 abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AbstractMenu $menu Menu
      */
@@ -64,7 +64,7 @@ abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Render menu
+     * Render menu.
      *
      * @param ?string $activeItem The name of current active item (optional)
      * @param string  $idPrefix   Element ID prefix

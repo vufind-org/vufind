@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LocaleSettings Test Class
+ * LocaleSettings Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * LocaleSettings Test Class
+ * LocaleSettings Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -147,7 +147,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testFallbackLocalConfigs
+     * Data provider for testFallbackLocalConfigs.
      *
      * @return \Iterator
      */

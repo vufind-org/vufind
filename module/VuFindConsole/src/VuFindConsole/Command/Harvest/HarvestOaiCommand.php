@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: VuFind-specific customizations to OAI-PMH harvest command
+ * Console command: VuFind-specific customizations to OAI-PMH harvest command.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Config\PathResolver;
 use VuFindHarvest\OaiPmh\HarvesterFactory;
 
 /**
- * Console command: VuFind-specific customizations to OAI-PMH harvest command
+ * Console command: VuFind-specific customizations to OAI-PMH harvest command.
  *
  * @category VuFind
  * @package  Console
@@ -51,7 +51,7 @@ use VuFindHarvest\OaiPmh\HarvesterFactory;
 class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver      $pathResolver Config file path resolver
      * @param Client            $client       HTTP client (omit for default)

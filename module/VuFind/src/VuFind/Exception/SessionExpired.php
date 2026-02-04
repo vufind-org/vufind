@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session Expired Exception
+ * Session Expired Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Session Expired Exception
+ * Session Expired Exception.
  *
  * @category VuFind
  * @package  Exceptions

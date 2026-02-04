@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Reviews tab
+ * Reviews tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Reviews tab
+ * Reviews tab.
  *
  * @category VuFind
  * @package  RecordTabs

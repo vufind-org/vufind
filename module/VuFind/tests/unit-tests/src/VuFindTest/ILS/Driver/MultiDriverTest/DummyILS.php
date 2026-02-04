@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Support class (dummy ILS driver) for MultiBackend ILS driver test
+ * Support class (dummy ILS driver) for MultiBackend ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
- * A dummy ILS driver used for testing a driver with unsupported features
+ * A dummy ILS driver used for testing a driver with unsupported features.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -74,7 +74,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -92,7 +92,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -114,7 +114,7 @@ class DummyILS extends \VuFind\ILS\Driver\AbstractBase
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).

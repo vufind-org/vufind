@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default model for records
+ * Default model for records.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function sprintf;
 use function strlen;
 
 /**
- * Default model for records
+ * Default model for records.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -60,7 +60,7 @@ class DefaultRecord extends AbstractBase
     protected $highlight = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
@@ -156,7 +156,7 @@ class DefaultRecord extends AbstractBase
      *        ),
      *        ...
      * )
-     * </code>
+     * </code>.
      *
      * @return null|array
      */
@@ -166,7 +166,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get Author Information with Associated Data Fields
+     * Get Author Information with Associated Data Fields.
      *
      * @param string $index      The author index [primary, corporate, or secondary]
      * used to construct a method name for retrieving author data (e.g.
@@ -552,7 +552,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get primary author information with highlights applied (if applicable)
+     * Get primary author information with highlights applied (if applicable).
      *
      * @return array
      */
@@ -688,7 +688,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get a LCCN, normalised according to info:lccn
+     * Get a LCCN, normalised according to info:lccn.
      *
      * @return string
      */
@@ -1408,7 +1408,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get hierarchical place names
+     * Get hierarchical place names.
      *
      * @return array
      */
@@ -1508,7 +1508,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the value of whether or not this is a collection level record
+     * Get the value of whether or not this is a collection level record.
      *
      * NOTE: \VuFind\Hierarchy\TreeDataFormatter\AbstractBase::isCollection()
      * duplicates some of this logic.
@@ -1538,7 +1538,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the Hierarchy Type (false if none)
+     * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
      */
@@ -1773,7 +1773,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get information on records deduplicated with this one
+     * Get information on records deduplicated with this one.
      *
      * @return array Array keyed by source id containing record id
      */
@@ -1783,7 +1783,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the number of child records belonging to this record
+     * Get the number of child records belonging to this record.
      *
      * @return int Number of records
      */
@@ -1815,7 +1815,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the map display (lat/lon) coordinates
+     * Get the map display (lat/lon) coordinates.
      *
      * @return array
      */
@@ -1825,7 +1825,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get the map display (lat/lon) labels
+     * Get the map display (lat/lon) labels.
      *
      * @return array
      */
@@ -1845,7 +1845,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get a field as an array
+     * Get a field as an array.
      *
      * @param string $field Field
      *

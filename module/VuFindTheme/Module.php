@@ -44,7 +44,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 class Module
 {
     /**
-     * Return generic configuration
+     * Return generic configuration.
      *
      * @return array
      */

@@ -180,7 +180,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a real record collection factory
+     * Build a real record collection factory.
      *
      * @return RecordCollectionFactory
      */

@@ -110,7 +110,7 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
     }
 
     /**
-     * Get last paid payment for a patron
+     * Get last paid payment for a patron.
      *
      * @param string $catUsername Patron's catalog username
      *
@@ -254,7 +254,7 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
     }
 
     /**
-     * Get a filtered list of payments
+     * Get a filtered list of payments.
      *
      * @param PaymentStatus[] $statuses         Payment statuses (optional filter)
      * @param ?string         $localIdentifier  Local identifier (optional filter)

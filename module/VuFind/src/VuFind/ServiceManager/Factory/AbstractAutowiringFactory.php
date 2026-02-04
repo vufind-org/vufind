@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Abstract Autowiring Factory
+ * VuFind Abstract Autowiring Factory.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Abstract Autowiring Factory
+ * VuFind Abstract Autowiring Factory.
  *
  * @category VuFind
  * @package  ServiceManager

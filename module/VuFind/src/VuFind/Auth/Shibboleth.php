@@ -77,28 +77,28 @@ class Shibboleth extends AbstractBase
     ];
 
     /**
-     * Read attributes from headers instead of environment variables
+     * Read attributes from headers instead of environment variables.
      *
      * @var bool
      */
     protected $useHeaders = false;
 
     /**
-     * Name of attribute with shibboleth identity provider
+     * Name of attribute with shibboleth identity provider.
      *
      * @var string
      */
     protected $shibIdentityProvider = self::DEFAULT_IDPSERVERPARAM;
 
     /**
-     * Name of attribute with shibboleth session ID
+     * Name of attribute with shibboleth session ID.
      *
      * @var string
      */
     protected $shibSessionId = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
      * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
@@ -324,7 +324,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Return configuration loader
+     * Return configuration loader.
      *
      * @return ConfigurationLoaderInterface configuration loader
      */
@@ -365,7 +365,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Add session id mapping to external_session table for single logout support
+     * Add session id mapping to external_session table for single logout support.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -390,7 +390,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Fetch entityId used for authentication
+     * Fetch entityId used for authentication.
      *
      * @param Request $request Request object
      *

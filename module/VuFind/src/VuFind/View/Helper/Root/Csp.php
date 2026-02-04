@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content Security Policy view helper
+ * Content Security Policy view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\Http\Response;
 
 /**
- * Content Security Policy view helper
+ * Content Security Policy view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use Laminas\Http\Response;
 class Csp extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Response $response HTTP Response, if any
      * @param string    $nonce    CSP nonce
@@ -53,7 +53,7 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Disable Content Security Policy by removing the headers
+     * Disable Content Security Policy by removing the headers.
      *
      * @return void
      */
@@ -81,7 +81,7 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Return the current nonce
+     * Return the current nonce.
      *
      * Result is a base64 encoded string that does not need escaping.
      *

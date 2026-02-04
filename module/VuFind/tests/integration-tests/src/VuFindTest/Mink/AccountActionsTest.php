@@ -281,7 +281,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test default pick up location
+     * Test default pick up location.
      *
      * @return void
      */
@@ -573,7 +573,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRecoverILSPassword
+     * Data provider for testRecoverILSPassword.
      *
      * @return \Iterator
      */

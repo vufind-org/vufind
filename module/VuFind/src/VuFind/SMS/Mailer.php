@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Mailer Class for SMS messages
+ * VuFind Mailer Class for SMS messages.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function count;
 use function in_array;
 
 /**
- * VuFind Mailer Class for SMS messages
+ * VuFind Mailer Class for SMS messages.
  *
  * @category VuFind
  * @package  SMS
@@ -58,21 +58,21 @@ class Mailer extends AbstractBase
     ];
 
     /**
-     * Default "from" address
+     * Default "from" address.
      *
      * @var string
      */
     protected $defaultFrom;
 
     /**
-     * VuFind Mailer object
+     * VuFind Mailer object.
      *
      * @var \VuFind\Mailer\Mailer
      */
     protected $mailer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config  SMS configuration
      * @param array                 $options Additional options: defaultFrom

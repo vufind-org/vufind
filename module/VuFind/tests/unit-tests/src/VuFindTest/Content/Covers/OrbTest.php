@@ -70,7 +70,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover not available
+     * Test cover not available.
      *
      * @return void
      */
@@ -107,7 +107,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing downloader
+     * Test missing downloader.
      *
      * @return void
      */
@@ -123,7 +123,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */

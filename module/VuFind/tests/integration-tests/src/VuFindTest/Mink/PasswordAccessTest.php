@@ -162,7 +162,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Logs out on the current page and checks if logout was successful
+     * Logs out on the current page and checks if logout was successful.
      *
      * @param Element $page Current page object
      *

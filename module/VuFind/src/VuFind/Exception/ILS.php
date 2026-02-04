@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Exception
+ * ILS Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * ILS Exception
+ * ILS Exception.
  *
  * @category VuFind
  * @package  Exceptions

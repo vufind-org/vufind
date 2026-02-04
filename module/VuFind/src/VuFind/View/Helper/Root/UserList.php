@@ -1,7 +1,7 @@
 <?php
 
 /**
- * List view helper
+ * List view helper.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Favorites\FavoritesService;
 
 /**
- * List view helper
+ * List view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -47,7 +47,7 @@ use VuFind\Favorites\FavoritesService;
 class UserList extends AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FavoritesService         $favoritesService Favorites service
      * @param UserListServiceInterface $userListService  List database service
@@ -73,7 +73,7 @@ class UserList extends AbstractHelper
     }
 
     /**
-     * Get mode
+     * Get mode.
      *
      * @return string
      */

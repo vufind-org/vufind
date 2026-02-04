@@ -76,7 +76,7 @@ interface RecordServiceInterface extends DbServiceInterface
     public function updateRecord(string $id, string $source, $rawData): RecordEntityInterface;
 
     /**
-     * Clean up orphaned entries (i.e. entries that are not in favorites anymore)
+     * Clean up orphaned entries (i.e. entries that are not in favorites anymore).
      *
      * @return int Number of records deleted
      */

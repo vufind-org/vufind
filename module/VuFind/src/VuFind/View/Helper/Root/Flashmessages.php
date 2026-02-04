@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\View\Helper\AbstractHelper;
 use function is_array;
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,21 +46,21 @@ use function is_array;
 class Flashmessages extends AbstractHelper
 {
     /**
-     * Flash messenger controller helper
+     * Flash messenger controller helper.
      *
      * @var FlashMessenger
      */
     protected $fm;
 
     /**
-     * Flash messenger namespaces
+     * Flash messenger namespaces.
      *
      * @var string[]
      */
     protected $namespaces = ['error', 'warning', 'info', 'success', 'default'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FlashMessenger $fm Flash messenger controller helper
      */
@@ -70,7 +70,7 @@ class Flashmessages extends AbstractHelper
     }
 
     /**
-     * Get the CSS class to correspond with a messenger namespace
+     * Get the CSS class to correspond with a messenger namespace.
      *
      * @param string $ns Namespace
      *

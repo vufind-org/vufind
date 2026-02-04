@@ -41,7 +41,7 @@ namespace VuFindTest\Mink;
 class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testCoverLoading()
+     * Data provider for testCoverLoading().
      *
      * @return \Iterator
      */

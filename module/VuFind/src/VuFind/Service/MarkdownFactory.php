@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class MarkdownFactory
+ * Class MarkdownFactory.
  *
  * PHP version 8
  *
@@ -55,7 +55,7 @@ use function sprintf;
 class MarkdownFactory implements FactoryInterface
 {
     /**
-     * Array of config keys for extensions classes
+     * Array of config keys for extensions classes.
      *
      * @var string[]
      */
@@ -73,7 +73,7 @@ class MarkdownFactory implements FactoryInterface
     ];
 
     /**
-     * Default set of extensions
+     * Default set of extensions.
      *
      * @var string[]
      */
@@ -82,28 +82,28 @@ class MarkdownFactory implements FactoryInterface
     ];
 
     /**
-     * Markdown processor configuration
+     * Markdown processor configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Enabled extensions
+     * Enabled extensions.
      *
      * @var array
      */
     protected $extensions;
 
     /**
-     * Dependency injection container
+     * Dependency injection container.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -183,7 +183,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Get full class name for given extension
+     * Get full class name for given extension.
      *
      * @param string $extension Extension name
      *
@@ -210,7 +210,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Get config for given extension
+     * Get config for given extension.
      *
      * @param string $extension Extension name
      *
@@ -231,7 +231,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Get config for core extension
+     * Get config for core extension.
      *
      * @return array
      */
@@ -261,7 +261,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Sanitize some config options
+     * Sanitize some config options.
      *
      * @param array $config Full config
      *
@@ -324,7 +324,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Create full config for markdown converter
+     * Create full config for markdown converter.
      *
      * @return array
      */

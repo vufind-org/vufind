@@ -49,14 +49,14 @@ abstract class AbstractBackendFactory implements FactoryInterface
     use GetServiceTrait;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
     }
 
     /**
-     * Initialize the factory
+     * Initialize the factory.
      *
      * @param ContainerInterface $sm Service manager
      *
@@ -68,7 +68,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create HTTP Client
+     * Create HTTP Client.
      *
      * @param int    $timeout Request timeout
      * @param array  $options Other options
@@ -91,7 +91,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create cache for the connector if enabled in configuration
+     * Create cache for the connector if enabled in configuration.
      *
      * @param Config $searchConfig Search configuration
      *

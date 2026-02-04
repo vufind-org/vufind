@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related record plugin factory
+ * Related record plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Related;
 
 /**
- * Related record plugin factory
+ * Related record plugin factory.
  *
  * @category VuFind
  * @package  Related_Records
@@ -41,7 +41,7 @@ namespace VuFind\Related;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

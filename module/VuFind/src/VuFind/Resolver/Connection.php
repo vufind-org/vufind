@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Link Resolver Driver Wrapper
+ * Link Resolver Driver Wrapper.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function call_user_func_array;
 use function is_callable;
 
 /**
- * Resolver Connection Class
+ * Resolver Connection Class.
  *
  * This abstract class defines the signature for the available methods for
  * interacting with the local OpenURL Resolver. It is a cutdown version
@@ -60,14 +60,14 @@ class Connection
     protected $driver = false;
 
     /**
-     * The path to the resolver cache, if any (empty string for no caching)
+     * The path to the resolver cache, if any (empty string for no caching).
      *
      * @var string
      */
     protected $cachePath = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * This is responsible for instantiating the driver that has been specified.
      *
@@ -106,7 +106,7 @@ class Connection
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * This is responsible for retrieving the valid links for a
      * particular OpenURL. The links may be cached or fetched remotely.

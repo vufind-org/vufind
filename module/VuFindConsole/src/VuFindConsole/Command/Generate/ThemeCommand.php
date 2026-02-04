@@ -48,21 +48,21 @@ use VuFindTheme\ThemeGenerator;
 class ThemeCommand extends AbstractThemeCommand
 {
     /**
-     * Type of resource being generated (used in help messages)
+     * Type of resource being generated (used in help messages).
      *
      * @var string
      */
     protected $type = 'theme';
 
     /**
-     * Configuration from config.ini
+     * Configuration from config.ini.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeGenerator $generator Generator to call
      * @param Config         $config    Configuration from config.ini

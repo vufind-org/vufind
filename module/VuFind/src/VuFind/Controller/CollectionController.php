@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Collection Controller
+ * Collection Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Config\Config;
 
 /**
- * Collection Controller
+ * Collection Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -44,7 +44,7 @@ use VuFind\Config\Config;
 class CollectionController extends AbstractRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param Config                  $config VuFind configuration

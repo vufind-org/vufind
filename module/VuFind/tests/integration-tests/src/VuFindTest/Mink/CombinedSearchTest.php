@@ -169,7 +169,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for different combinations of AJAX columns
+     * Data provider for different combinations of AJAX columns.
      *
      * @return \Iterator
      */
@@ -274,7 +274,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testJumpMenu()
+     * Data provider for testJumpMenu().
      *
      * @return \Iterator
      */

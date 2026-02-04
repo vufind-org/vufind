@@ -65,35 +65,35 @@ use function in_array;
 class OAuth2ControllerFactory extends AbstractBaseFactory
 {
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * OAuth2 configuration
+     * OAuth2 configuration.
      *
      * @var array
      */
     protected $oauth2Config;
 
     /**
-     * Config file path resolver
+     * Config file path resolver.
      *
      * @var PathResolver
      */
     protected $pathResolver;
 
     /**
-     * Claim extractor
+     * Claim extractor.
      *
      * @var ClaimExtractor
      */
     protected $claimExtractor = null;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -190,7 +190,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     }
 
     /**
-     * Add grant types to the server
+     * Add grant types to the server.
      *
      * @param AuthorizationServer $server       Authorization server
      * @param ?array              $clientConfig Client configuration
@@ -219,7 +219,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     }
 
     /**
-     * Create an auth code grant
+     * Create an auth code grant.
      *
      * @param ?array $clientConfig Client configuration
      *
@@ -245,7 +245,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     }
 
     /**
-     * Create a refresh token grant
+     * Create a refresh token grant.
      *
      * @return RefreshTokenGrant
      */

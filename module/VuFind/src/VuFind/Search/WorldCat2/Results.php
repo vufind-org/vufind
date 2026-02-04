@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat v2 Search Results
+ * WorldCat v2 Search Results.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\Command\SearchCommand;
 use function count;
 
 /**
- * WorldCat v2 Search Parameters
+ * WorldCat v2 Search Parameters.
  *
  * @category VuFind
  * @package  Search_WorldCat2
@@ -52,7 +52,7 @@ class Results extends \VuFind\Search\Base\Results
     protected $backendId = 'WorldCat2';
 
     /**
-     * Facet list
+     * Facet list.
      *
      * @var array|null
      */
@@ -117,7 +117,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Permission Checker
+ * VuFind Action Helper - Permission Checker.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
 
 /**
- * VuFind Action Helper - Permission Checker
+ * VuFind Action Helper - Permission Checker.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -53,28 +53,28 @@ class Permission extends AbstractPlugin implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Permission manager
+     * Permission manager.
      *
      * @var PermissionManager
      */
     protected $permissionManager;
 
     /**
-     * Permission denied manager
+     * Permission denied manager.
      *
      * @var PermissionDeniedManager
      */
     protected $permissionDeniedManager;
 
     /**
-     * Auth manager
+     * Auth manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $authManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PermissionManager       $pm   Permission Manager
      * @param PermissionDeniedManager $pdm  Permission Denied Manager

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class SorterTest
+ * Class SorterTest.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\I18n;
 use VuFind\I18n\Sorter;
 
 /**
- * Class SorterTest
+ * Class SorterTest.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\I18n\Sorter;
 class SorterTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data Provider for compare tests
+     * Data Provider for compare tests.
      *
      * @return \Iterator
      */
@@ -142,7 +142,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test compare function
+     * Test compare function.
      *
      * @param array $test     Test data
      * @param int   $expected Expected result
@@ -164,7 +164,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data Provider for sort tests
+     * Data Provider for sort tests.
      *
      * @return \Iterator
      */
@@ -237,7 +237,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sort function
+     * Test sort function.
      *
      * @param array $test     Test data
      * @param array $expected Expected result
@@ -254,7 +254,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data Provider for asort tests
+     * Data Provider for asort tests.
      *
      * @return \Iterator
      */
@@ -311,7 +311,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test asort function
+     * Test asort function.
      *
      * @param array $test     Test data
      * @param array $expected Expected result
@@ -329,7 +329,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testNatsort()
+     * Data provider for testNatsort().
      *
      * @return \Iterator
      */
@@ -354,7 +354,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test natsort function
+     * Test natsort function.
      *
      * @param array $test     Test data
      * @param array $expected Expected result
@@ -372,7 +372,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create sorter
+     * Create sorter.
      *
      * @param string $locale        Locale
      * @param bool   $respectLocale Does respect locale
@@ -389,7 +389,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get sorter for current test
+     * Get sorter for current test.
      *
      * @param array $testCase Test definition
      *

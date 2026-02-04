@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -493,7 +493,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetCleanISBNs
+     * Data provider for testGetCleanISBNs.
      *
      * @return \Iterator
      */

@@ -49,7 +49,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Data provider for testConversions
+     * Data provider for testConversions.
      *
      * @return \Iterator
      */
@@ -170,7 +170,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a query adapter
+     * Create a query adapter.
      *
      * @return QueryAdapterInterface
      */

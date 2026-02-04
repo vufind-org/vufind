@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ComponentTest
+ * Class ComponentTest.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Renderer\PhpRenderer;
 use VuFind\View\Helper\Root\Component;
 
 /**
- * Component Test Class
+ * Component Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -61,7 +61,7 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test basic Component conversion
+     * Test basic Component conversion.
      *
      * @return void
      */

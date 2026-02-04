@@ -1,7 +1,7 @@
 <?php
 
 /**
- * III ILS Driver
+ * III ILS Driver.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function count;
 use function strlen;
 
 /**
- * VuFind Connector for Innovative
+ * VuFind Connector for Innovative.
  *
  * This class uses screen scraping techniques to gather record holdings written
  * by Adam Bryn of the Tri-College consortium.
@@ -69,7 +69,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Make an HTTP request
+     * Make an HTTP request.
      *
      * @param string $url URL to request
      *
@@ -92,7 +92,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Prepare ID
+     * Prepare ID.
      *
      * This function returns the correct record id format as defined
      * in the Innovative.ini file.
@@ -118,7 +118,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -240,7 +240,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -262,7 +262,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -285,7 +285,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -304,7 +304,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -331,7 +331,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -346,7 +346,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *

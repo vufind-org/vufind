@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JsConfigs helper for passing configs to Javascript
+ * JsConfigs helper for passing configs to Javascript.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
- * JsConfigs helper for passing configs to Javascript
+ * JsConfigs helper for passing configs to Javascript.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use Laminas\View\Helper\AbstractHelper;
 class JsConfigs extends AbstractHelper
 {
     /**
-     * Config
+     * Config.
      *
      * @var array
      */

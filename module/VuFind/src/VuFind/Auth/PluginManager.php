@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Auth handler plugin manager
+ * Auth handler plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Auth;
 
 /**
- * Auth handler plugin manager
+ * Auth handler plugin manager.
  *
  * @category VuFind
  * @package  Authentication
@@ -88,7 +88,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

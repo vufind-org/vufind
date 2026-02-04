@@ -41,7 +41,7 @@ namespace VuFindSearch\Response;
 trait RecordTrait
 {
     /**
-     * Used for identifying record source backend
+     * Used for identifying record source backend.
      *
      * @var string
      */
@@ -58,14 +58,14 @@ trait RecordTrait
     protected $resultSetIdentifier = null;
 
     /**
-     * Used for identifying the search backend used to find the record
+     * Used for identifying the search backend used to find the record.
      *
      * @var string
      */
     protected $searchBackendIdentifier = '';
 
     /**
-     * Labels for the record
+     * Labels for the record.
      *
      * @var array
      */
@@ -148,7 +148,7 @@ trait RecordTrait
     }
 
     /**
-     * Add a label for the record
+     * Add a label for the record.
      *
      * @param string $label Label, may be a translation key
      * @param string $class Label class
@@ -161,7 +161,7 @@ trait RecordTrait
     }
 
     /**
-     * Set the labels for the record
+     * Set the labels for the record.
      *
      * @param array $labels An array of associative arrays with keys 'label' and
      * 'class'
@@ -174,7 +174,7 @@ trait RecordTrait
     }
 
     /**
-     * Return all labels for the record
+     * Return all labels for the record.
      *
      * @return array An array of associative arrays with keys 'label' and 'class'
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFindTest\Feature\FixtureTrait;
 use function count;
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -47,49 +47,49 @@ use VuFind\DeveloperSettings\DeveloperSettingsService;
 trait ApiTrait
 {
     /**
-     * Callback function in JSONP mode
+     * Callback function in JSONP mode.
      *
      * @var ?string
      */
     protected ?string $jsonpCallback = null;
 
     /**
-     * Whether to pretty-print JSON
+     * Whether to pretty-print JSON.
      *
      * @var bool
      */
     protected bool $jsonPrettyPrint = false;
 
     /**
-     * Type of output to use
+     * Type of output to use.
      *
      * @var string
      */
     protected string $outputMode = 'json';
 
     /**
-     * Whether unicode should be returned or encoded in the output
+     * Whether unicode should be returned or encoded in the output.
      *
      * @var bool
      */
     protected bool $returnUnicode = false;
 
     /**
-     * Name of HTTP header
+     * Name of HTTP header.
      *
      * @var string
      */
     protected string $apiKeyHeaderField = VUFIND_API_KEY_DEFAULT_HEADER_FIELD;
 
     /**
-     * API key service
+     * API key service.
      *
      * @var ?DeveloperSettingsService
      */
     protected ?DeveloperSettingsService $developerSettingsService = null;
 
     /**
-     * Execute the request
+     * Execute the request.
      *
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
@@ -121,7 +121,7 @@ trait ApiTrait
 
     /**
      * Determine the correct output mode based on content negotiation or the
-     * view parameter
+     * view parameter.
      *
      * @return void
      */
@@ -219,7 +219,7 @@ trait ApiTrait
     }
 
     /**
-     * Init API key settings
+     * Init API key settings.
      *
      * @param array $settings API key settings from config.ini
      *
@@ -248,7 +248,7 @@ trait ApiTrait
     }
 
     /**
-     * Return output if request is missing an API key and API keys are enforced
+     * Return output if request is missing an API key and API keys are enforced.
      *
      * @return \Laminas\Http\Response
      * @throws \Exception

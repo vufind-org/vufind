@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * HierarchyTree tab
+ * HierarchyTree tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,14 +41,14 @@ namespace VuFind\RecordTab;
 class CollectionHierarchyTree extends HierarchyTree
 {
     /**
-     * Record loader
+     * Record loader.
      *
      * @var \VuFind\Record\Loader
      */
     protected $loader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config Configuration
      * @param \VuFind\Record\Loader $loader Record loader
@@ -62,7 +62,7 @@ class CollectionHierarchyTree extends HierarchyTree
     }
 
     /**
-     * Render a hierarchy tree
+     * Render a hierarchy tree.
      *
      * @param ?string $id      Hierarchy ID (omit to use active tree)
      * @param ?string $context Context for use by renderer or null for default

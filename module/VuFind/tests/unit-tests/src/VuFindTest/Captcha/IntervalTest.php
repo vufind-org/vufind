@@ -44,7 +44,7 @@ namespace VuFindTest\Captcha;
 class IntervalTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test Interval captchas
+     * Test Interval captchas.
      *
      * @return void
      */

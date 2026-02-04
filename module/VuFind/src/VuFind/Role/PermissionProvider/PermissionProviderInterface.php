@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission provider interface
+ * Permission provider interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Role\PermissionProvider;
 
 /**
- * Permission provider interface
+ * Permission provider interface.
  *
  * @category VuFind
  * @package  Authorization

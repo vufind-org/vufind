@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat2 Search Object Parameters Test
+ * WorldCat2 Search Object Parameters Test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\WorldCat2\Options;
 use VuFind\Search\WorldCat2\Params;
 
 /**
- * WorldCat2 Search Object Parameters Test
+ * WorldCat2 Search Object Parameters Test.
  *
  * @category VuFind
  * @package  Tests
@@ -88,7 +88,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param ?Options                $options           Options object (null to create)
      * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)

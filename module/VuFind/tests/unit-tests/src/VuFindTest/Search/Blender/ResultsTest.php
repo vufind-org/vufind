@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Results Tests
+ * Blender Results Tests.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFindSearch\Command\SearchCommand;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Results Tests
+ * Blender Results Tests.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +54,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Test performing a search
+     * Test performing a search.
      *
      * @return void
      */

@@ -45,7 +45,7 @@ use function is_array;
 class Pazpar2 extends DefaultRecord
 {
     /**
-     * Pazpar2 fields
+     * Pazpar2 fields.
      *
      * @var array
      */
@@ -68,7 +68,7 @@ class Pazpar2 extends DefaultRecord
     }
 
     /**
-     * Converts a SimpleXMLElement to an array
+     * Converts a SimpleXMLElement to an array.
      *
      * @param \SimpleXMLElement $xml to be converted
      *

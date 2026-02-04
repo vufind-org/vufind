@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ShortenUrl view helper Test Class
+ * ShortenUrl view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\View\Helper\Root\ShortenUrl;
 use VuFind\View\Helper\Root\ShortenUrlFactory;
 
 /**
- * ShortenUrl view helper Test Class
+ * ShortenUrl view helper Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MapSelection Configuration Module
+ * MapSelection Configuration Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\GeoFeatures;
 
 /**
- * MapSelection Configuration Class
+ * MapSelection Configuration Class.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -41,7 +41,7 @@ namespace VuFind\GeoFeatures;
 class MapSelectionConfig extends AbstractConfig
 {
     /**
-     * Set default options
+     * Set default options.
      *
      * @return array
      */

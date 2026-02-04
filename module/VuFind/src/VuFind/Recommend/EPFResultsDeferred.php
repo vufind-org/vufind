@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPFResultsDeferred Recommendations Module
+ * EPFResultsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * EPFResultsDeferred Recommendations Module
+ * EPFResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the EPFResults module.
  *

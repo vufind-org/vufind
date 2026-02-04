@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HelpText View Helper Test Class
+ * HelpText View Helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\View\Helper\Root\Content;
 use VuFind\View\Helper\Root\HelpText;
 
 /**
- * HelpText View Helper Test Class
+ * HelpText View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests

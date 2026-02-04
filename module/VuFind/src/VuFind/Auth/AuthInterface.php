@@ -179,14 +179,14 @@ interface AuthInterface
     public function supportsCreation();
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
     public function supportsPasswordChange();
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -203,14 +203,14 @@ interface AuthInterface
     public function supportsConnectingLibraryCard();
 
     /**
-     * Get username policy for a new account (e.g. minLength, maxLength)
+     * Get username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
     public function getUsernamePolicy();
 
     /**
-     * Get password policy for a new password (e.g. minLength, maxLength)
+     * Get password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

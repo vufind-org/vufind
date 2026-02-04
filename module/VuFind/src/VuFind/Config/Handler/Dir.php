@@ -49,7 +49,7 @@ use function is_array;
 class Dir extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager

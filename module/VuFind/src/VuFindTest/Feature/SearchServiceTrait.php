@@ -43,7 +43,7 @@ use VuFind\Search\BackendManager;
 trait SearchServiceTrait
 {
     /**
-     * Create a search service to wrap the provided BackendManager instance
+     * Create a search service to wrap the provided BackendManager instance.
      *
      * @param BackendManager $bm BackendManager to wrap in service
      *

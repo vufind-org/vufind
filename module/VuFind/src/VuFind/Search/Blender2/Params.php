@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender2 Search Parameters
+ * Blender2 Search Parameters.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Blender2;
 
 /**
- * Blender2 Search Parameters
+ * Blender2 Search Parameters.
  *
  * @category VuFind
  * @package  Search_Blender

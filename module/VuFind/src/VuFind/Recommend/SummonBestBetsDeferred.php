@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonBestBetsDeferred Recommendations Module
+ * SummonBestBetsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SummonBestBetsDeferred Recommendations Module
+ * SummonBestBetsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the SummonBestBets
  * module.

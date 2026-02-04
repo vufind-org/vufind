@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Theme Initializer
+ * VuFind Theme Initializer.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 
 /**
- * VuFind Theme Initializer
+ * VuFind Theme Initializer.
  *
  * @category VuFind
  * @package  Theme
@@ -48,63 +48,63 @@ use VuFind\Cookie\CookieManager;
 class Initializer
 {
     /**
-     * Theme configuration object
+     * Theme configuration object.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Map of theme aliases to theme names (null if uninitialized)
+     * Map of theme aliases to theme names (null if uninitialized).
      *
      * @var ?array
      */
     protected $themeMap =  null;
 
     /**
-     * Laminas MVC Event
+     * Laminas MVC Event.
      *
      * @var MvcEvent
      */
     protected $event;
 
     /**
-     * Top-level service container
+     * Top-level service container.
      *
      * @var ContainerInterface
      */
     protected $serviceManager;
 
     /**
-     * Theme tools object
+     * Theme tools object.
      *
      * @var ThemeInfo
      */
     protected $tools;
 
     /**
-     * Mobile interface detector
+     * Mobile interface detector.
      *
      * @var Mobile
      */
     protected $mobile;
 
     /**
-     * Cookie manager
+     * Cookie manager.
      *
      * @var CookieManager
      */
     protected $cookieManager;
 
     /**
-     * A static flag used to determine if the theme has been initialized
+     * A static flag used to determine if the theme has been initialized.
      *
      * @var bool
      */
     protected static $themeInitialized = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config                      $config           Configuration object
      * containing these keys:

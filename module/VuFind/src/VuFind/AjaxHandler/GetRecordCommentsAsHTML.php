@@ -45,21 +45,21 @@ use VuFind\Record\Loader;
 class GetRecordCommentsAsHTML extends AbstractBase
 {
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $loader;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader            $loader   Record loader
      * @param RendererInterface $renderer View renderer

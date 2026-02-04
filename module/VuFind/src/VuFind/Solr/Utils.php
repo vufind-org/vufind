@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Utility Functions
+ * Solr Utility Functions.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function extension_loaded;
 use function strlen;
 
 /**
- * Solr Utility Functions
+ * Solr Utility Functions.
  *
  * This class is designed to hold Solr-related support methods that may
  * be called statically. This allows sharing of some Solr-related logic

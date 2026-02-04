@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS hold settings factory
+ * ILS hold settings factory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * ILS hold settings factory
+ * ILS hold settings factory.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class HoldSettingsFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

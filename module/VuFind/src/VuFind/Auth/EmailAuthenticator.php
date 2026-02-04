@@ -55,14 +55,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     use EmailSettingsTrait;
 
     /**
-     * How long a login request is considered to be valid (seconds)
+     * How long a login request is considered to be valid (seconds).
      *
      * @var int
      */
     protected $loginRequestValidTime = 600;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\SessionManager $sessionManager  Session Manager
      * @param CsrfInterface                   $csrf            CSRF Validator
@@ -153,7 +153,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     }
 
     /**
-     * Authenticate using a hash
+     * Authenticate using a hash.
      *
      * @param string $hash Hash
      *
@@ -190,7 +190,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     }
 
     /**
-     * Check if the given request is a valid login request
+     * Check if the given request is a valid login request.
      *
      * @param Request $request Request object.
      *

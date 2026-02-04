@@ -127,7 +127,7 @@ class ErrorListener
     }
 
     /**
-     * VuFindSearch.error
+     * VuFindSearch.error.
      *
      * @param EventInterface $event Event
      *

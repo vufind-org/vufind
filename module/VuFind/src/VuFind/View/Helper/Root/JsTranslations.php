@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JsTranslations helper for passing translation text to Javascript
+ * JsTranslations helper for passing translation text to Javascript.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * JsTranslations helper for passing translation text to Javascript
+ * JsTranslations helper for passing translation text to Javascript.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,21 +41,21 @@ namespace VuFind\View\Helper\Root;
 class JsTranslations extends AbstractJsStrings
 {
     /**
-     * Translate helper
+     * Translate helper.
      *
      * @var Translate
      */
     protected $translate;
 
     /**
-     * Translate + escape helper
+     * Translate + escape helper.
      *
      * @var TransEsc
      */
     protected $transEsc;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Translate $translate Translate helper
      * @param TransEsc  $transEsc  Translate + escape helper
@@ -72,7 +72,7 @@ class JsTranslations extends AbstractJsStrings
     }
 
     /**
-     * Translate string
+     * Translate string.
      *
      * @param string|array $translation String to translate
      * @param string       $key         JSON object key

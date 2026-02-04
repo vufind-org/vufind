@@ -47,14 +47,14 @@ use VuFindTheme\GeneratorInterface;
 abstract class AbstractThemeCommand extends Command
 {
     /**
-     * Theme resource generator
+     * Theme resource generator.
      *
      * @var GeneratorInterface
      */
     protected $generator;
 
     /**
-     * Type of resource being generated (used in help messages)
+     * Type of resource being generated (used in help messages).
      *
      * @var string
      */
@@ -68,7 +68,7 @@ abstract class AbstractThemeCommand extends Command
     protected $extraSuccessMessage = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorInterface $generator Generator to call
      * @param string|null        $name      The name of the command; passing null

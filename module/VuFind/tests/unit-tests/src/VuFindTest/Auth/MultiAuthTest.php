@@ -64,7 +64,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the auth object
+     * Get a working configuration for the auth object.
      *
      * @return array
      */

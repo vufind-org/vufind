@@ -79,14 +79,14 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class () {
             /**
-             * Constructor arguments
+             * Constructor arguments.
              *
              * @var array
              */
             public $constructorArgs;
 
             /**
-             * Constructor
+             * Constructor.
              */
             public function __construct()
             {
@@ -106,7 +106,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Provide data for testFactory()
+     * Provide data for testFactory().
      *
      * @return \Iterator
      */

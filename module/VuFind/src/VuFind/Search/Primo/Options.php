@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Primo Central Search Options
+ * Primo Central Search Options.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Primo;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Primo Search Options
+ * Primo Search Options.
  *
  * @category VuFind
  * @package  Search_Primo
@@ -43,14 +43,14 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Advanced search operators
+     * Advanced search operators.
      *
      * @var array
      */
     protected $advancedOperators = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

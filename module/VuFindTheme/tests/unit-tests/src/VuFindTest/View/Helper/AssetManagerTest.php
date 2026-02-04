@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AssetManager view helper Test Class
+ * AssetManager view helper Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFindTheme\View\Helper\AssetManager;
 use function is_array;
 
 /**
- * AssetManager view helper Test Class
+ * AssetManager view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -181,7 +181,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             protected $data = [];
 
             /**
-             * Constructor
+             * Constructor.
              *
              * @param string $appendMethod Name of append method to simulate
              */

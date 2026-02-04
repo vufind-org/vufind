@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionManager Test Class
+ * PermissionManager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Role;
 use VuFind\Role\PermissionManager;
 
 /**
- * PermissionManager Test Class
+ * PermissionManager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -62,7 +62,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test getAllConfiguredPermissions()
+     * Test getAllConfiguredPermissions().
      *
      * @return void
      */
@@ -76,7 +76,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a non existent permission section
+     * Test a non existent permission section.
      *
      * @return void
      */
@@ -88,7 +88,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an existing permission section
+     * Test an existing permission section.
      *
      * @return void
      */
@@ -100,7 +100,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an existing permission section in an array
+     * Test an existing permission section in an array.
      *
      * @return void
      */
@@ -112,7 +112,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a granted permission
+     * Test a granted permission.
      *
      * @return void
      */
@@ -127,7 +127,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a denied permission
+     * Test a denied permission.
      *
      * @return void
      */

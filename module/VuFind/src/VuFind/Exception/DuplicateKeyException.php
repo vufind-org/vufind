@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Duplicate Key Exception
+ * Duplicate Key Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Duplicate Key Exception
+ * Duplicate Key Exception.
  *
  * @category VuFind
  * @package  Exceptions

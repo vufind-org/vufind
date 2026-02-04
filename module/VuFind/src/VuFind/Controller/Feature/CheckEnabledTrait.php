@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Check Enabled Trait
+ * Check Enabled Trait.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Mvc\MvcEvent;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
- * Check Enabled Trait
+ * Check Enabled Trait.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -44,7 +44,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 trait CheckEnabledTrait
 {
     /**
-     * Check whether the controller is enabled
+     * Check whether the controller is enabled.
      *
      * @return void
      *
@@ -64,7 +64,7 @@ trait CheckEnabledTrait
     }
 
     /**
-     * Add to event listeners a check that the controller is enabled
+     * Add to event listeners a check that the controller is enabled.
      *
      * @return void
      */

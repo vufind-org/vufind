@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -44,14 +44,14 @@ use Psr\Container\ContainerInterface;
 abstract class AbstractPluginFactory implements AbstractFactoryInterface
 {
     /**
-     * Default namespace for building class names
+     * Default namespace for building class names.
      *
      * @var string
      */
     protected $defaultNamespace;
 
     /**
-     * Optional suffix to append to class names
+     * Optional suffix to append to class names.
      *
      * @var string
      */

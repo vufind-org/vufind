@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online payment handler interface
+ * Online payment handler interface.
  *
  * PHP version 8
  *
@@ -48,7 +48,7 @@ use VuFind\Exception\PaymentException;
 interface HandlerInterface
 {
     /**
-     * Initialize the handler
+     * Initialize the handler.
      *
      * @param array $config Online payment configuration
      *

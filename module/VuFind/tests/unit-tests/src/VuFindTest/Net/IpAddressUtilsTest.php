@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IpAddressUtils Test Class
+ * IpAddressUtils Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Net;
 use VuFind\Net\IpAddressUtils;
 
 /**
- * IpAddressUtils Test Class
+ * IpAddressUtils Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Net\IpAddressUtils;
 class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test normalizeIp()
+     * Test normalizeIp().
      *
      * @return void
      */
@@ -78,7 +78,7 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isInRange()
+     * Test isInRange().
      *
      * @return void
      */
@@ -136,7 +136,7 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test truncate()
+     * Test truncate().
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * InjectTemplateListener Test Class
+ * InjectTemplateListener Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest;
 use VuFindTheme\InjectTemplateListener;
 
 /**
- * InjectTemplateListener Test Class
+ * InjectTemplateListener Test Class.
  *
  * @category VuFind
  * @package  Tests

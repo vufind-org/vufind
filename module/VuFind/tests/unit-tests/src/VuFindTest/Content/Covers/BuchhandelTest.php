@@ -46,7 +46,7 @@ use VuFindCode\ISBN;
 class BuchhandelTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @return void
      */
@@ -64,7 +64,7 @@ class BuchhandelTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facets Channel Provider Test Class
+ * Facets Channel Provider Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTest\Feature\SearchObjectsTrait;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * Facets Channel Provider Test Class
+ * Facets Channel Provider Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -81,7 +81,7 @@ class FacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param array $data Custom record data
      *

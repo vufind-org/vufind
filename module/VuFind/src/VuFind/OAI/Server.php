@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OAI Server class
+ * OAI Server class.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ use function intval;
 use function strlen;
 
 /**
- * OAI Server class
+ * OAI Server class.
  *
  * This class provides OAI server functionality.
  *
@@ -62,7 +62,7 @@ class Server
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
 
     /**
-     * Repository base URL
+     * Repository base URL.
      *
      * @var string
      */
@@ -76,14 +76,14 @@ class Server
     protected $baseHostURL;
 
     /**
-     * Incoming request parameters
+     * Incoming request parameters.
      *
      * @var array
      */
     protected $params;
 
     /**
-     * Search object class to use
+     * Search object class to use.
      *
      * @var string
      */
@@ -97,70 +97,70 @@ class Server
     protected $core = 'biblio';
 
     /**
-     * ISO-8601 date format
+     * ISO-8601 date format.
      *
      * @var string
      */
     protected $iso8601 = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * Records per page in lists
+     * Records per page in lists.
      *
      * @var int
      */
     protected $pageSize = 100;
 
     /**
-     * Solr field for set membership
+     * Solr field for set membership.
      *
      * @var string
      */
     protected $setField = null;
 
     /**
-     * Supported metadata formats
+     * Supported metadata formats.
      *
      * @var array
      */
     protected $metadataFormats = [];
 
     /**
-     * Namespace used for ID prefixing (if any)
+     * Namespace used for ID prefixing (if any).
      *
      * @var string
      */
     protected $idNamespace = null;
 
     /**
-     * Repository name used in "Identify" response
+     * Repository name used in "Identify" response.
      *
      * @var string
      */
     protected $repositoryName = 'VuFind';
 
     /**
-     * Earliest datestamp used in "Identify" response
+     * Earliest datestamp used in "Identify" response.
      *
      * @var string
      */
     protected $earliestDatestamp = '2000-01-01T00:00:00Z';
 
     /**
-     * Admin email used in "Identify" response
+     * Admin email used in "Identify" response.
      *
      * @var string
      */
     protected $adminEmail;
 
     /**
-     * Record link helper (optional)
+     * Record link helper (optional).
      *
      * @var \VuFind\View\Helper\Root\RecordLinker
      */
     protected $recordLinkerHelper = null;
 
     /**
-     * Set queries
+     * Set queries.
      *
      * @var array
      */
@@ -189,7 +189,7 @@ class Server
     protected $vufindApiFields = [];
 
     /**
-     * Filter queries specific to the requested record format
+     * Filter queries specific to the requested record format.
      *
      * @var array
      */
@@ -214,7 +214,7 @@ class Server
     protected $useCursorMark = true;
 
     /**
-     * List of possible valid OAI-PMH error codes
+     * List of possible valid OAI-PMH error codes.
      *
      * @var string[]
      */
@@ -230,7 +230,7 @@ class Server
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
      * @param \VuFind\Record\Loader                $recordLoader      Record loader
@@ -247,7 +247,7 @@ class Server
     }
 
     /**
-     * Initialize settings
+     * Initialize settings.
      *
      * @param \VuFind\Config\Config $config  VuFind configuration
      * @param string                $baseURL The base URL for the OAI server
@@ -515,7 +515,7 @@ class Server
     }
 
     /**
-     * Get record as a metadata presentation
+     * Get record as a metadata presentation.
      *
      * @param AbstractRecordDriver $record A record driver object
      * @param string               $format Metadata format to obtain
@@ -1188,7 +1188,7 @@ class Server
     }
 
     /**
-     * Check if a DateTime was successfully created without errors or warnings
+     * Check if a DateTime was successfully created without errors or warnings.
      *
      * @param \DateTime|false $dt DateTime or false (return value of createFromFormat)
      *

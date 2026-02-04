@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for Primo record collection
+ * Unit tests for Primo record collection.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Response\RecordCollection;
 
 /**
- * Unit tests for Primo record collection
+ * Unit tests for Primo record collection.
  *
  * @category VuFind
  * @package  Search

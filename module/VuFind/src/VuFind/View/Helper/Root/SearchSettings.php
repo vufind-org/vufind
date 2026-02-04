@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search settings view helper
+ * Search settings view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
 
 /**
- * Search settings view helper
+ * Search settings view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,21 +44,21 @@ use VuFind\Search\Base\Params;
 class SearchSettings extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Search params
+     * Search params.
      *
      * @var Params
      */
     protected $params = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config VuFind configuration
      */
@@ -68,7 +68,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Store params and return this object
+     * Store params and return this object.
      *
      * @param Params $params Search params
      *
@@ -81,7 +81,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if bulk options are enabled
+     * Check if bulk options are enabled.
      *
      * @return bool
      */
@@ -94,7 +94,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if cart controls are enabled
+     * Check if cart controls are enabled.
      *
      * @return bool
      */
@@ -108,7 +108,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if result selection checkboxes are enabled
+     * Check if result selection checkboxes are enabled.
      *
      * @return bool
      */
@@ -118,7 +118,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get search options from params
+     * Get search options from params.
      *
      * @return Options
      */

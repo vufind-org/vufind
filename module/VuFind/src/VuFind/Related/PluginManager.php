@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related record plugin manager
+ * Related record plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Related;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Related record plugin manager
+ * Related record plugin manager.
  *
  * @category VuFind
  * @package  Related_Records
@@ -72,7 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

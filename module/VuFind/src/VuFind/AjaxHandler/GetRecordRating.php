@@ -46,7 +46,7 @@ use VuFind\View\Helper\Root\Record as RecordHelper;
 class GetRecordRating extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordLoader   $recordLoader   Record loader
      * @param RecordHelper   $recordHelper   Record helper

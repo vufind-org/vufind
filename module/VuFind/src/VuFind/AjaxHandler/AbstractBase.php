@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base AJAX handler
+ * Abstract base AJAX handler.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * Abstract base AJAX handler
+ * Abstract base AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -43,7 +43,7 @@ use VuFind\Session\Settings as SessionSettings;
 abstract class AbstractBase implements AjaxHandlerInterface
 {
     /**
-     * Session settings
+     * Session settings.
      *
      * @var SessionSettings
      */

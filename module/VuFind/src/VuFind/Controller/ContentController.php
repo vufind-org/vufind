@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content Controller
+ * Content Controller.
  *
  * PHP version 8
  *
@@ -49,7 +49,7 @@ use function is_callable;
 class ContentController extends AbstractBase
 {
     /**
-     * Types/formats of content
+     * Types/formats of content.
      *
      * @var array $types
      */
@@ -59,7 +59,7 @@ class ContentController extends AbstractBase
     ];
 
     /**
-     * Default action if none provided
+     * Default action if none provided.
      *
      * @return ViewModel
      */
@@ -92,7 +92,7 @@ class ContentController extends AbstractBase
     }
 
     /**
-     * Get ViewModel for markdown based page
+     * Get ViewModel for markdown based page.
      *
      * @param string $page    Page name/route (if applicable)
      * @param string $relPath Relative path to file with content (if applicable)
@@ -110,7 +110,7 @@ class ContentController extends AbstractBase
     }
 
     /**
-     * Get ViewModel for phtml base page
+     * Get ViewModel for phtml base page.
      *
      * @param string $page    Page name/route (if applicable)
      * @param string $relPath Relative path to file with content (if applicable)

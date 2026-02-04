@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy tree renderer plugin manager
+ * Hierarchy tree renderer plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Hierarchy\TreeRenderer;
 
 /**
- * Hierarchy tree renderer plugin manager
+ * Hierarchy tree renderer plugin manager.
  *
  * @category VuFind
  * @package  HierarchyTree_Renderer

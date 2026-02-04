@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SearchTabs view helper Test Class
+ * SearchTabs view helper Test Class.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use VuFind\View\Helper\Root\SearchTabs;
 use VuFindSearch\Service as SearchService;
 
 /**
- * SearchTabs view helper Test Class
+ * SearchTabs view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Data provider for testGetCurrentHiddenFilterParams
+     * Data provider for testGetCurrentHiddenFilterParams.
      *
      * @return \Iterator
      */
@@ -93,7 +93,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getCurrentHiddenFilterParams method
+     * Test getCurrentHiddenFilterParams method.
      *
      * @param array  $currentFilters   Current hidden filters
      * @param int    $filtersCalls     Number of expected calls to get filters
@@ -129,7 +129,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTabConfig method
+     * Test getTabConfig method.
      *
      * @return void
      */
@@ -197,7 +197,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHiddenFilters method
+     * Test getHiddenFilters method.
      *
      * @return void
      */
@@ -244,7 +244,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a SearchTabs helper
+     * Get a SearchTabs helper.
      *
      * @param array $filters              Current filters
      * @param int   $filtersCalls         Number of expected calls to get filters
@@ -304,7 +304,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a Solr Params object
+     * Get a Solr Params object.
      *
      * @return Params
      */

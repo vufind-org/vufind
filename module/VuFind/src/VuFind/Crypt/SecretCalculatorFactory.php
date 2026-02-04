@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Secret calculator factory
+ * Secret calculator factory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Secret calculator factory
+ * Secret calculator factory.
  *
  * @category VuFind
  * @package  Crypt
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class SecretCalculatorFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

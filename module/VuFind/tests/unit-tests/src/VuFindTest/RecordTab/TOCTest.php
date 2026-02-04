@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TOC Test Class
+ * TOC Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\TOC;
 
 /**
- * TOC Test Class
+ * TOC Test Class.
  *
  * @category VuFind
  * @package  Tests

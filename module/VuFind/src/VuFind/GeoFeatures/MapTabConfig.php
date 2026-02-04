@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Map Tab Configuration Module
+ * Map Tab Configuration Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\GeoFeatures;
 
 /**
- * MapTab Configuration Class
+ * MapTab Configuration Class.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -41,7 +41,7 @@ namespace VuFind\GeoFeatures;
 class MapTabConfig extends AbstractConfig
 {
     /**
-     * Set default options
+     * Set default options.
      *
      * @return array
      */

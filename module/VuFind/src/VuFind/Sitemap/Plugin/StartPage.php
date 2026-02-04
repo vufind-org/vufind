@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Start page generator plugin
+ * Start page generator plugin.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Sitemap\Plugin;
 
 /**
- * Start page generator plugin
+ * Start page generator plugin.
  *
  * @category VuFind
  * @package  Sitemap
@@ -41,7 +41,7 @@ namespace VuFind\Sitemap\Plugin;
 class StartPage extends AbstractGeneratorPlugin
 {
     /**
-     * Base URL for site
+     * Base URL for site.
      *
      * @var string
      */

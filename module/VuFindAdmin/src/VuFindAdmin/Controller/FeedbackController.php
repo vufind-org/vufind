@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class FeedbackController
+ * Class FeedbackController.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function intval;
 use function is_array;
 
 /**
- * Class FeedbackController
+ * Class FeedbackController.
  *
  * @category VuFind
  * @package  VuFindAdmin\Controller
@@ -49,7 +49,7 @@ use function is_array;
 class FeedbackController extends AbstractAdmin
 {
     /**
-     * Home action
+     * Home action.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -77,7 +77,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Feedback details action
+     * Feedback details action.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -91,7 +91,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Delete action
+     * Delete action.
      *
      * @return \Laminas\Http\Response
      */
@@ -138,7 +138,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Confirm delete feedback messages
+     * Confirm delete feedback messages.
      *
      * @param array  $ids       IDs of feedback messages to delete
      * @param string $originUrl URL to redirect to after cancel
@@ -167,7 +167,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Get messages for confirm delete
+     * Get messages for confirm delete.
      *
      * @param int $count Count of feedback messages to delete
      *
@@ -208,7 +208,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Update status field of feedback message
+     * Update status field of feedback message.
      *
      * @return \Laminas\Http\Response
      */
@@ -257,7 +257,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Converts null and "ALL" params to null
+     * Converts null and "ALL" params to null.
      *
      * @param string|null $value A parameter to check
      *
@@ -270,7 +270,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Get available feedback statuses
+     * Get available feedback statuses.
      *
      * @return array
      */

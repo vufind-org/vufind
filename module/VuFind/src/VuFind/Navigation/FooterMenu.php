@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FooterMenu section plugin
+ * FooterMenu section plugin.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Navigation;
 use function count;
 
 /**
- * FooterMenu section plugin
+ * FooterMenu section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -43,7 +43,7 @@ use function count;
 class FooterMenu extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $sectionConfig Menu configuration
      * @param array $config        Main configuration
@@ -107,7 +107,7 @@ class FooterMenu extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -195,7 +195,7 @@ class FooterMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show cookie settings item
+     * Check whether to show cookie settings item.
      *
      * @return bool
      */

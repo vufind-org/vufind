@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: Link to Channels
+ * Related Records: Link to Channels.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Related;
 
 /**
- * Related Records: Link to Channels
+ * Related Records: Link to Channels.
  *
  * @category VuFind
  * @package  Related_Records
@@ -41,7 +41,7 @@ namespace VuFind\Related;
 class Channels implements RelatedInterface
 {
     /**
-     * Record driver
+     * Record driver.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */

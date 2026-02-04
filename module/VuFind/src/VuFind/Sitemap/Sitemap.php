@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for representing sitemap files
+ * Class for representing sitemap files.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Sitemap;
 use function is_array;
 
 /**
- * Class for representing sitemap files
+ * Class for representing sitemap files.
  *
  * @category VuFind
  * @package  Sitemap
@@ -45,28 +45,28 @@ class Sitemap extends AbstractFile
     public const XHTML_NAMESPACE = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"';
 
     /**
-     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
+     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never).
      *
      * @var string
      */
     protected $frequency;
 
     /**
-     * Alternative languages
+     * Alternative languages.
      *
      * @var array
      */
     protected $alternativeLanguages = [];
 
     /**
-     * Whether the XHTML namespace is needed
+     * Whether the XHTML namespace is needed.
      *
      * @var bool
      */
     protected $xhtmlNamespaceNeeded = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $frequency Frequency of URL updates
      */
@@ -124,7 +124,7 @@ class Sitemap extends AbstractFile
     }
 
     /**
-     * Get any extra namespace declarations needed for the sitemap
+     * Get any extra namespace declarations needed for the sitemap.
      *
      * @return array
      */

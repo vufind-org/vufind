@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Forbidden Access" Exception
+ * "Forbidden Access" Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * "Forbidden Access" Exception
+ * "Forbidden Access" Exception.
  *
  * @category VuFind
  * @package  Exceptions

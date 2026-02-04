@@ -95,7 +95,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testCreateWithPasswordPolicy
+     * Data provider for testCreateWithPasswordPolicy.
      *
      * @return \Iterator
      */
@@ -261,7 +261,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testCreateWithUsernamePolicy
+     * Data provider for testCreateWithUsernamePolicy.
      *
      * @return \Iterator
      */

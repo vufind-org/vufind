@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ContentPages Plugin Test Class
+ * ContentPages Plugin Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindTheme\ThemeInfo;
 use function func_get_args;
 
 /**
- * ContentPages Plugin Test Class
+ * ContentPages Plugin Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,14 +51,14 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Mock container
+     * Mock container.
      *
      * @var MockContainer
      */
     protected $container = null;
 
     /**
-     * Theme data for testing
+     * Theme data for testing.
      *
      * @var array
      */
@@ -120,7 +120,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a ContentPages object from its factory
+     * Get a ContentPages object from its factory.
      *
      * @param array                $config    Configuration
      * @param ?RouteStackInterface $router    Router object
@@ -149,7 +149,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock router object
+     * Get mock router object.
      *
      * @return RouteStackInterface
      */
@@ -169,7 +169,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock ThemeInfo object
+     * Get mock ThemeInfo object.
      *
      * @return ThemeInfo
      */

@@ -176,7 +176,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the handler code if permission matches
-     * This should return the actual institution code (depending on config)
+     * This should return the actual institution code (depending on config).
      *
      * @return void
      */
@@ -195,7 +195,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the handler if permission does not match
      * This should return the default institution code
-     * (if this is configured, for this test it is configured)
+     * (if this is configured, for this test it is configured).
      *
      * @return void
      */
@@ -220,7 +220,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the institution code setter
+     * Test the institution code setter.
      *
      * @return void
      */
@@ -232,7 +232,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission via member code matches
+     * Test the handler if permission via member code matches.
      *
      * @return void
      */
@@ -257,7 +257,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission (member and default) does not match
+     * Test the handler if permission (member and default) does not match.
      *
      * @return void
      */
@@ -282,7 +282,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -307,7 +307,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -332,7 +332,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not exist
+     * Test the handler if permission does not exist.
      *
      * @return void
      */
@@ -353,7 +353,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      ************/
 
     /**
-     * Test the handler if permission matches
+     * Test the handler if permission matches.
      *
      * @return void
      */
@@ -378,7 +378,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission (member and default) does not match
+     * Test the handler if permission (member and default) does not match.
      *
      * @return void
      */
@@ -403,7 +403,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler code if permission matches
+     * Test the handler code if permission matches.
      *
      * @return void
      */
@@ -422,7 +422,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the handler if permission does not match
      * This should return the default PrimoInstance code
-     * (if this is configured, for this test it is configured)
+     * (if this is configured, for this test it is configured).
      *
      * @return void
      */
@@ -439,7 +439,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -464,7 +464,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -493,7 +493,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      ************/
 
     /**
-     * Test the handler if permission (member and default) does not match
+     * Test the handler if permission (member and default) does not match.
      *
      * @return void
      */
@@ -520,7 +520,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the handler if permission does not match
      * This should return the default PrimoInstance code
-     * (if this is configured, for this test it is configured)
+     * (if this is configured, for this test it is configured).
      *
      * @return void
      */
@@ -545,7 +545,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -570,7 +570,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -599,7 +599,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      ************/
 
     /**
-     * Test the handler if permission (member and default) does not match
+     * Test the handler if permission (member and default) does not match.
      *
      * @return void
      */
@@ -628,7 +628,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the handler if permission does not match
      * This should return the default PrimoInstance code
-     * (if this is configured, for this test it is configured)
+     * (if this is configured, for this test it is configured).
      *
      * @return void
      */
@@ -655,7 +655,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -682,7 +682,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not exist
+     * Test the handler if permission does not exist.
      *
      * @return void
      */
@@ -713,7 +713,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      ************/
 
     /**
-     * Test the handler if permission (member and default) does not match
+     * Test the handler if permission (member and default) does not match.
      *
      * @return void
      */
@@ -743,7 +743,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the handler if permission does not match
      * This should return the default PrimoInstance code
-     * (if this is configured, for this test it is configured)
+     * (if this is configured, for this test it is configured).
      *
      * @return void
      */
@@ -771,7 +771,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the handler if permission does not match
+     * Test the handler if permission does not match.
      *
      * @return void
      */
@@ -803,7 +803,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      ************/
 
     /**
-     * Permission cannot be granted without an onCampusRule
+     * Permission cannot be granted without an onCampusRule.
      *
      * @return void
      */
@@ -821,7 +821,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the handler if permission does not match
      * This should return the default PrimoInstance code
-     * (if this is configured, for this test it is configured)
+     * (if this is configured, for this test it is configured).
      *
      * @return void
      */
@@ -842,7 +842,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *
@@ -855,7 +855,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *
@@ -868,7 +868,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *
@@ -881,7 +881,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *
@@ -894,7 +894,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *
@@ -913,7 +913,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *
@@ -929,7 +929,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *
@@ -942,7 +942,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Helper function (Callback) to inject different return values
-     * for the mock object with different parameters
+     * for the mock object with different parameters.
      *
      * @param string $param Parameter name
      *

@@ -60,7 +60,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the CAS object
+     * Get a working configuration for the CAS object.
      *
      * @param array $extraCasConfig Extra config parameters to include in [CAS] section
      * @param array $extraTopConfig Extra top-level config settings to include

@@ -41,7 +41,7 @@ namespace VuFind\RecordDriver\Feature;
 interface VersionAwareInterface
 {
     /**
-     * Get work identification keys
+     * Get work identification keys.
      *
      * @return array
      */

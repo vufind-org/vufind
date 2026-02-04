@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MemCache session handler
+ * MemCache session handler.
  *
  * Note: This relies on PHP's Memcache extension
  * (see http://us.php.net/manual/en/book.memcache.php)
@@ -38,7 +38,7 @@ use function get_class;
 use function in_array;
 
 /**
- * Memcache session handler
+ * Memcache session handler.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -49,14 +49,14 @@ use function in_array;
 class Memcache extends AbstractBase
 {
     /**
-     * Memcache connection
+     * Memcache connection.
      *
      * @var \Memcache
      */
     protected $connection;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Config                   $config Session configuration ([Session] section of config.ini)
      * @param \Memcache|\Memcached|null $client Optional Memcache client object

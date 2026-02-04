@@ -63,7 +63,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @param array       $ids      Array of IDs to look up
      * @param ?string     $fixture  Fixture to return from backend (null to assume backend will not be called)

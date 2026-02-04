@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Multiple ILS authentication module that works with MultiBackend driver
+ * Multiple ILS authentication module that works with MultiBackend driver.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\ILS\Driver\MultiBackend;
 use function in_array;
 
 /**
- * Multiple ILS authentication module that works with MultiBackend driver
+ * Multiple ILS authentication module that works with MultiBackend driver.
  *
  * @category VuFind
  * @package  Authentication
@@ -85,7 +85,7 @@ class MultiILS extends ILS
     }
 
     /**
-     * Get login targets (ILS drivers/source ID's)
+     * Get login targets (ILS drivers/source ID's).
      *
      * @return array
      */
@@ -95,7 +95,7 @@ class MultiILS extends ILS
     }
 
     /**
-     * Get default login target (ILS driver/source ID)
+     * Get default login target (ILS driver/source ID).
      *
      * @return string
      */
@@ -126,7 +126,7 @@ class MultiILS extends ILS
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

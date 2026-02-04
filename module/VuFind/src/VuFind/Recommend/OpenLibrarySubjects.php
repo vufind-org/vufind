@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function intval;
 use function is_object;
 
 /**
- * OpenLibrarySubjects Recommendations Module
+ * OpenLibrarySubjects Recommendations Module.
  *
  * This class provides recommendations by doing a search of the catalog; useful
  * for displaying catalog recommendations in other modules (i.e. Summon, Web, etc.)
@@ -56,49 +56,49 @@ class OpenLibrarySubjects implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Parameter to use for search terms
+     * Parameter to use for search terms.
      *
      * @var string
      */
     protected $requestParam;
 
     /**
-     * Search limit
+     * Search limit.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Field to use for date filtering
+     * Field to use for date filtering.
      *
      * @var string
      */
     protected $pubFilter;
 
     /**
-     * Date filter to apply
+     * Date filter to apply.
      *
      * @var string
      */
     protected $publishedIn = '';
 
     /**
-     * Subject to search for
+     * Subject to search for.
      *
      * @var string
      */
     protected $subject;
 
     /**
-     * Subject types to use
+     * Subject types to use.
      *
      * @var array
      */
     protected $subjectTypes;
 
     /**
-     * Result of search (false if none)
+     * Result of search (false if none).
      *
      * @var array|bool
      */
@@ -197,7 +197,7 @@ class OpenLibrarySubjects implements
 
     /**
      * Support function to get publication date range. Return string in the form
-     * "YYYY-YYYY"
+     * "YYYY-YYYY".
      *
      * @param string                     $field   Name of filter field to check for
      * date limits

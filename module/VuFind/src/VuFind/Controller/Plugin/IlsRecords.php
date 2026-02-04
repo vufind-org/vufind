@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - ILS Records Support Methods
+ * VuFind Action Helper - ILS Records Support Methods.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\Config;
 use VuFind\Record\Loader;
 
 /**
- * Action helper to perform ILS record related actions
+ * Action helper to perform ILS record related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -46,21 +46,21 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $loader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config $config VuFind configuration
      * @param Loader $loader Record loader

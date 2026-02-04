@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFindHighlighter Test Class
+ * VuFindHighlighter Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\UrlHighlight\VuFindHighlighter;
 use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
- * VuFindHighlighter Test Class
+ * VuFindHighlighter Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,21 +46,21 @@ use VuFind\View\Helper\Root\ProxyUrl;
 class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock proxy object
+     * Mock proxy object.
      *
      * @var ProxyUrl&MockObject
      */
     protected $proxyUrl;
 
     /**
-     * VuFind highlighter object
+     * VuFind highlighter object.
      *
      * @var VuFindHighlighter
      */
     protected $vuFindHighlighter;
 
     /**
-     * Generic setup method
+     * Generic setup method.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Generic teardown method
+     * Generic teardown method.
      *
      * @return void
      */
@@ -81,7 +81,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the highlight method
+     * Test the highlight method.
      *
      * @param string $url      URL
      * @param string $expected Expected result
@@ -102,7 +102,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetHighlight()
+     * Data provider for testGetHighlight().
      *
      * @return \Iterator
      */

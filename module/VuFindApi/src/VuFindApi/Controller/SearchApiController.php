@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search API Controller
+ * Search API Controller.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function count;
 use function is_array;
 
 /**
- * Search API Controller
+ * Search API Controller.
  *
  * Controls the Search API functionality
  *
@@ -59,49 +59,49 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
 
     /**
-     * Default record fields to return if a request does not define the fields
+     * Default record fields to return if a request does not define the fields.
      *
      * @var array
      */
     protected $defaultRecordFields = [];
 
     /**
-     * Permission required for the record endpoint
+     * Permission required for the record endpoint.
      *
      * @var string
      */
     protected $recordAccessPermission = 'access.api.Record';
 
     /**
-     * Permission required for the search endpoint
+     * Permission required for the search endpoint.
      *
      * @var string
      */
     protected $searchAccessPermission = 'access.api.Search';
 
     /**
-     * Record route uri
+     * Record route uri.
      *
      * @var string
      */
     protected $recordRoute = 'record';
 
     /**
-     * Search route uri
+     * Search route uri.
      *
      * @var string
      */
     protected $searchRoute = 'search';
 
     /**
-     * Descriptive label for the index managed by this controller
+     * Descriptive label for the index managed by this controller.
      *
      * @var string
      */
     protected $indexLabel = 'primary';
 
     /**
-     * Prefix for use in model names used by API
+     * Prefix for use in model names used by API.
      *
      * @var string
      */
@@ -118,28 +118,28 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     /**
      * Default max limit for cursor based search. Even if cursor search is cheaper in terms of processing in Solr,
      * PHP memory still has limitations so set the default to be a decent amount. (Default 200).
-     * Value is adjustable in searches.ini [API] cursorLimit
+     * Value is adjustable in searches.ini [API] cursorLimit.
      *
      * @var int
      */
     protected $cursorLimit = 200;
 
     /**
-     * Facet configuration
+     * Facet configuration.
      *
      * @var array
      */
     protected $facetConfig;
 
     /**
-     * Hierarchical facets
+     * Hierarchical facets.
      *
      * @var array
      */
     protected $hierarchicalFacets;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm              Service manager
      * @param RecordFormatter         $recordFormatter Record formatter
@@ -177,7 +177,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
 
     /**
      * Get API specification JSON fragment for services provided by the
-     * controller
+     * controller.
      *
      * @return string
      */
@@ -215,7 +215,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     }
 
     /**
-     * Execute the request
+     * Execute the request.
      *
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
@@ -246,7 +246,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     }
 
     /**
-     * Record action
+     * Record action.
      *
      * @return \Laminas\Http\Response
      */
@@ -305,7 +305,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     }
 
     /**
-     * Search action
+     * Search action.
      *
      * @return \Laminas\Http\Response
      */
@@ -342,7 +342,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     }
 
     /**
-     * Perform a search using page in Solr
+     * Perform a search using page in Solr.
      *
      * @param array $request Array containing combination of post and get request params
      *
@@ -417,7 +417,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     }
 
     /**
-     * Perform a search using cursor in Solr. Do not send facet information when using cursor
+     * Perform a search using cursor in Solr. Do not send facet information when using cursor.
      *
      * @param array $request Array containing combination of post and get request params
      *
@@ -492,7 +492,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     }
 
     /**
-     * Get hierarchical facet data for the given facet fields
+     * Get hierarchical facet data for the given facet fields.
      *
      * @param array $facets Facet fields
      *
@@ -533,7 +533,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     }
 
     /**
-     * Get field list based on the request
+     * Get field list based on the request.
      *
      * @param array $request Request params
      *

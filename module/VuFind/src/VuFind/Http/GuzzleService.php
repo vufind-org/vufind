@@ -48,7 +48,7 @@ use function strlen;
 class GuzzleService implements HttpServiceInterface
 {
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var array
      */
@@ -65,7 +65,7 @@ class GuzzleService implements HttpServiceInterface
     protected $localAddressesRegEx = self::LOCAL_ADDRESS_RE;
 
     /**
-     * Mappings from VuFind HTTP settings to Guzzle
+     * Mappings from VuFind HTTP settings to Guzzle.
      *
      * @var array
      */
@@ -190,7 +190,7 @@ class GuzzleService implements HttpServiceInterface
     }
 
     /**
-     * Get Guzzle options
+     * Get Guzzle options.
      *
      * @param ?string $url     Target URL (required for proper proxy setup for non-local addresses)
      * @param ?float  $timeout Request timeout in seconds
@@ -272,7 +272,7 @@ class GuzzleService implements HttpServiceInterface
     }
 
     /**
-     * Check if given URL is a local address
+     * Check if given URL is a local address.
      *
      * @param ?string $url URL to check
      *

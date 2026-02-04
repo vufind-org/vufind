@@ -148,7 +148,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock compiler object
+     * Get a mock compiler object.
      *
      * @param array $methods Methods to mock
      *

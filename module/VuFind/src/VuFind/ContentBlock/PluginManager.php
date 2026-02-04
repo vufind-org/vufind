@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content block plugin manager
+ * Content block plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\ContentBlock;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Content block plugin manager
+ * Content block plugin manager.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -69,7 +69,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

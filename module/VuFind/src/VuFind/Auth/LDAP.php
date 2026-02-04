@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LDAP authentication class
+ * LDAP authentication class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Exception\Auth as AuthException;
 use function in_array;
 
 /**
- * LDAP authentication class
+ * LDAP authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -48,7 +48,7 @@ use function in_array;
 class LDAP extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
@@ -202,7 +202,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * If configured, bind an administrative user in order to perform a search
+     * If configured, bind an administrative user in order to perform a search.
      *
      * @param resource $connection LDAP connection
      *
@@ -226,7 +226,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Find the specified username in the directory
+     * Find the specified username in the directory.
      *
      * @param resource $connection LDAP connection
      * @param string   $username   Username
@@ -248,7 +248,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Validate credentials
+     * Validate credentials.
      *
      * @param resource $connection LDAP connection
      * @param array    $info       Data from findUsername()

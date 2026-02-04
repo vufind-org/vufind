@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr aspect of the Search Multi-class (Options)
+ * Solr aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 
 /**
- * Solr Search Options
+ * Solr Search Options.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -46,14 +46,14 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Facet list action route
+     * Facet list action route.
      *
      * @var string
      */
     protected string $facetListAction = 'search-facetlist';
 
     /**
-     * Available sort options for facets
+     * Available sort options for facets.
      *
      * @var array
      */
@@ -62,14 +62,14 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     ];
 
     /**
-     * Relevance sort override for empty searches
+     * Relevance sort override for empty searches.
      *
      * @var ?string
      */
     protected $emptySearchRelevanceOverride;
 
     /**
-     * Whether to display record versions
+     * Whether to display record versions.
      *
      * @var bool
      */
@@ -83,7 +83,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     protected $sortTieBreaker;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

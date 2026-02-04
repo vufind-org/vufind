@@ -44,7 +44,7 @@ use VuFindCode\ISBN;
 class LibraryThingTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class LibraryThingTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recommend ContentBlock Test Class
+ * Recommend ContentBlock Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\ContentBlock;
 
 /**
- * Recommend ContentBlock Test Class
+ * Recommend ContentBlock Test Class.
  *
  * @category VuFind
  * @package  Tests

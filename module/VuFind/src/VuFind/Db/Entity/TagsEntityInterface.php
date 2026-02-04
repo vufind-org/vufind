@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for tags table
+ * Entity model interface for tags table.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Db\Entity;
 
 /**
- * Entity model interface for tags table
+ * Entity model interface for tags table.
  *
  * @category VuFind
  * @package  Database
@@ -48,7 +48,7 @@ interface TagsEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Tag setter
+     * Tag setter.
      *
      * @param string $tag Tag
      *
@@ -57,7 +57,7 @@ interface TagsEntityInterface extends EntityInterface
     public function setTag(string $tag): static;
 
     /**
-     * Tag getter
+     * Tag getter.
      *
      * @return string
      */

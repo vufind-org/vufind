@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Autocomplete Module
+ * Solr Autocomplete Module.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function is_array;
 use function is_object;
 
 /**
- * Solr Autocomplete Module
+ * Solr Autocomplete Module.
  *
  * This class provides suggestions by using the local Solr index.
  *
@@ -48,77 +48,77 @@ use function is_object;
 class Solr implements AutocompleteInterface
 {
     /**
-     * Parameter for mungeQuery
+     * Parameter for mungeQuery.
      *
      * @var string
      */
     protected const NO_WILDCARD = 'NO_WILDCARD';
 
     /**
-     * Autocomplete handler
+     * Autocomplete handler.
      *
      * @var string
      */
     protected $handler;
 
     /**
-     * Solr field to use for display
+     * Solr field to use for display.
      *
      * @var string
      */
     protected $displayField;
 
     /**
-     * Default Solr display field if none is configured
+     * Default Solr display field if none is configured.
      *
      * @var string
      */
     protected $defaultDisplayField = 'title';
 
     /**
-     * Solr field to use for sorting
+     * Solr field to use for sorting.
      *
      * @var string
      */
     protected $sortField;
 
     /**
-     * Max number of search result rows
+     * Max number of search result rows.
      *
      * @var ?int
      */
     protected ?int $limit = null;
 
     /**
-     * Filters to apply to Solr search
+     * Filters to apply to Solr search.
      *
      * @var array
      */
     protected $filters;
 
     /**
-     * Search object family to use
+     * Search object family to use.
      *
      * @var string
      */
     protected $searchClassId = 'Solr';
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
@@ -165,7 +165,7 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * Add filters (in addition to the configured ones)
+     * Add filters (in addition to the configured ones).
      *
      * @param array $filters Filters to add
      *

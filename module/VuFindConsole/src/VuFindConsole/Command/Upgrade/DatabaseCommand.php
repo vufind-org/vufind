@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: database upgrader
+ * Console command: database upgrader.
  *
  * PHP version 8
  *
@@ -45,7 +45,7 @@ use VuFind\Db\Migration\MigrationManager;
 use function is_callable;
 
 /**
- * Console command: database upgrader
+ * Console command: database upgrader.
  *
  * @category VuFind
  * @package  Console
@@ -60,7 +60,7 @@ use function is_callable;
 class DatabaseCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Closure           $migrationManagerFactory Database migration manager factory
      * @param ConnectionFactory $connectionFactory       Database connection factory
@@ -118,7 +118,7 @@ class DatabaseCommand extends Command
     }
 
     /**
-     * Support method for "interactive mode."
+     * Support method for "interactive mode.".
      *
      * @param MigrationManager $migrationManager Migration manager
      * @param string[]         $migrations       Migrations to apply

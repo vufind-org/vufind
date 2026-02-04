@@ -479,7 +479,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful ILS loading with some missing required fields
+     * Test successful ILS loading with some missing required fields.
      *
      * @return void
      */
@@ -506,7 +506,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful ILS call that raises exception
+     * Test unsuccessful ILS call that raises exception.
      *
      * @return void
      */

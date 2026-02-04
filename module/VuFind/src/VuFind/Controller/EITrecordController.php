@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EIT Record Controller
+ * EIT Record Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * EIT Record Controller
- * Largely copied from Summon Record Controller
+ * Largely copied from Summon Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -46,7 +46,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class EITrecordController extends AbstractRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

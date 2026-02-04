@@ -45,7 +45,7 @@ use function intval;
 class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testWebSearch()
+     * Data provider for testWebSearch().
      *
      * @return \Iterator
      */
@@ -57,7 +57,7 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test performing a Web search
+     * Test performing a Web search.
      *
      * @param string   $query                  Search query
      * @param int      $expectedCount          Expected search result count

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy tree data source plugin manager
+ * Hierarchy tree data source plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 /**
- * Hierarchy tree data source plugin manager
+ * Hierarchy tree data source plugin manager.
  *
  * @category VuFind
  * @package  HierarchyTree_DataSource

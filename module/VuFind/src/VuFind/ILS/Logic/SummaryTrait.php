@@ -48,7 +48,7 @@ use VuFind\Service\CurrencyFormatter;
 trait SummaryTrait
 {
     /**
-     * Get a status summary for an array of fines
+     * Get a status summary for an array of fines.
      *
      * @param iterable          $fines     Fines
      * @param CurrencyFormatter $formatter Currency formatter
@@ -68,7 +68,7 @@ trait SummaryTrait
     }
 
     /**
-     * Get a status summary for an array of requests
+     * Get a status summary for an array of requests.
      *
      * @param iterable $requests Requests
      *
@@ -92,7 +92,7 @@ trait SummaryTrait
     }
 
     /**
-     * Get a status summary for an array of checkouts
+     * Get a status summary for an array of checkouts.
      *
      * @param iterable $transactions Checkouts
      *

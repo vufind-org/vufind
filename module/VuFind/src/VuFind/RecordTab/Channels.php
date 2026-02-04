@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels tab
+ * Channels tab.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\RecordTab;
 use VuFind\ChannelProvider\ChannelLoader;
 
 /**
- * Channels tab
+ * Channels tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -50,7 +50,7 @@ class Channels extends AbstractBase
     protected array $configSections = ['recordTab', 'record'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ChannelLoader $loader  Channel loader
      * @param array         $options Config settings

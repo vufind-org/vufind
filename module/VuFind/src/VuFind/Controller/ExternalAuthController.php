@@ -1,7 +1,7 @@
 <?php
 
 /**
- * External Authentication/Authorization Controller
+ * External Authentication/Authorization Controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Psr\Log\LoggerAwareInterface;
 
 /**
- * External Authentication/Authorization Controller
+ * External Authentication/Authorization Controller.
  *
  * Provides authorization support for external systems, e.g. EZproxy
  *
@@ -54,7 +54,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
     protected $ezproxyRequiredPermission = 'ezproxy.authorized';
 
     /**
-     * Provides an EZproxy session to an authorized user
+     * Provides an EZproxy session to an authorized user.
      *
      * @return mixed
      *
@@ -106,7 +106,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
     }
 
     /**
-     * Create a ticket login URL for EZproxy
+     * Create a ticket login URL for EZproxy.
      *
      * @param string $user User name to pass on to EZproxy
      * @param string $url  The original URL

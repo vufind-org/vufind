@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender aspect of the Search Multi-class (Results)
+ * Blender aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Blender;
 
 /**
- * Blender aspect of the Search Multi-class (Results)
+ * Blender aspect of the Search Multi-class (Results).
  *
  * @category VuFind
  * @package  Search_Blender

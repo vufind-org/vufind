@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Version Reader Test Class
+ * Version Reader Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\Version;
 
 /**
- * Version Reader Test Class
+ * Version Reader Test Class.
  *
  * @category VuFind
  * @package  Tests

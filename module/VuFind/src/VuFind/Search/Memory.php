@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search Memory
+ * VuFind Search Memory.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function intval;
 use function strlen;
 
 /**
- * Wrapper class to handle search memory
+ * Wrapper class to handle search memory.
  *
  * @category VuFind
  * @package  Search
@@ -51,21 +51,21 @@ use function strlen;
 class Memory
 {
     /**
-     * Is memory currently active? (i.e. will we save new URLs?)
+     * Is memory currently active? (i.e. will we save new URLs?).
      *
      * @var bool
      */
     protected $active = true;
 
     /**
-     * Cached searches
+     * Cached searches.
      *
      * @var array
      */
     protected $searchCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Container              $session        Session container for storing URLs
      * @param string                 $sessionId      Current session ID
@@ -204,7 +204,7 @@ class Memory
     }
 
     /**
-     * Get current search id
+     * Get current search id.
      *
      * @return ?int
      */
@@ -216,7 +216,7 @@ class Memory
     }
 
     /**
-     * Get current search
+     * Get current search.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -229,7 +229,7 @@ class Memory
     }
 
     /**
-     * Get latest search id from current request or session
+     * Get latest search id from current request or session.
      *
      * @return ?int
      */
@@ -240,7 +240,7 @@ class Memory
     }
 
     /**
-     * Get latest search from current request or session
+     * Get latest search from current request or session.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -253,7 +253,7 @@ class Memory
     }
 
     /**
-     * Get a search by id
+     * Get a search by id.
      *
      * @param int                  $id   Search ID
      * @param ?UserEntityInterface $user Currently logged-in user to also check saved searches

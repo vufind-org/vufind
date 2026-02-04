@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: remove suppressed records from index
+ * Console command: remove suppressed records from index.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function is_array;
 
 /**
- * Console command: remove suppressed records from index
+ * Console command: remove suppressed records from index.
  *
  * @category VuFind
  * @package  Console

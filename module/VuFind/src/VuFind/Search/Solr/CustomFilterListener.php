@@ -56,21 +56,21 @@ class CustomFilterListener
     protected $backend;
 
     /**
-     * Normal filters
+     * Normal filters.
      *
      * @var array
      */
     protected $normalFilters;
 
     /**
-     * Inverted filters
+     * Inverted filters.
      *
      * @var array
      */
     protected $invertedFilters;
 
     /**
-     * Name of parameter used to store filters
+     * Name of parameter used to store filters.
      *
      * @var string
      */

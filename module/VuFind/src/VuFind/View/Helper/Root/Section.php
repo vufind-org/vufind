@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_callable;
 use function is_string;
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * @category VuFind
  * @package  View_Helpers

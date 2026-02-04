@@ -76,7 +76,7 @@ class AbstractSolrSearch extends AbstractSearch
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return mixed
      */
@@ -213,7 +213,7 @@ class AbstractSolrSearch extends AbstractSearch
     }
 
     /**
-     * Get an array of hierarchical facets
+     * Get an array of hierarchical facets.
      *
      * @param string $config Name of facet configuration file to load.
      *
@@ -226,7 +226,7 @@ class AbstractSolrSearch extends AbstractSearch
     }
 
     /**
-     * Get an array of hierarchical facet sort options for Advanced search
+     * Get an array of hierarchical facet sort options for Advanced search.
      *
      * @param string $config Name of facet configuration file to load.
      *

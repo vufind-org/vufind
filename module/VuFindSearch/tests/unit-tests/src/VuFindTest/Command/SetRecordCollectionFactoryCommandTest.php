@@ -45,7 +45,7 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 class SetRecordCollectionFactoryCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */

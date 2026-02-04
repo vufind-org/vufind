@@ -44,14 +44,14 @@ use VuFind\Config\Config;
 trait FacetRestrictionsTrait
 {
     /**
-     * Per-field facet prefix
+     * Per-field facet prefix.
      *
      * @var array
      */
     protected $facetPrefixByField = [];
 
     /**
-     * Per-field facet matches
+     * Per-field facet matches.
      *
      * @var array
      */
@@ -75,7 +75,7 @@ trait FacetRestrictionsTrait
     }
 
     /**
-     * Set Facet Prefix by Field
+     * Set Facet Prefix by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
@@ -87,7 +87,7 @@ trait FacetRestrictionsTrait
     }
 
     /**
-     * Set Facet Matches by Field
+     * Set Facet Matches by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *

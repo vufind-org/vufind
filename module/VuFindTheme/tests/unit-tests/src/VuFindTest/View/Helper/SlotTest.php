@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Slot view helper Test Class
+ * Slot view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper;
 use VuFindTheme\View\Helper\Slot;
 
 /**
- * Slot view helper Test Class
+ * Slot view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -294,7 +294,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build Slot helper with mock view
+     * Build Slot helper with mock view.
      *
      * @return \VuFindTheme\View\Helper\Slot
      */

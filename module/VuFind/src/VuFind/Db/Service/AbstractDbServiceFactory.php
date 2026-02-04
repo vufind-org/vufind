@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service factory
+ * Database service factory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\Db\PersistenceManager;
 
 /**
- * Database service factory
+ * Database service factory.
  *
  * @category VuFind
  * @package  Database
@@ -48,7 +48,7 @@ use VuFind\Db\PersistenceManager;
 class AbstractDbServiceFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

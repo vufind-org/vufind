@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: WorldCat v2-based similarity
+ * Related Records: WorldCat v2-based similarity.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function count;
 use function in_array;
 
 /**
- * Related Records: WorldCat v2-based similarity
+ * Related Records: WorldCat v2-based similarity.
  *
  * @category VuFind
  * @package  Related_Records

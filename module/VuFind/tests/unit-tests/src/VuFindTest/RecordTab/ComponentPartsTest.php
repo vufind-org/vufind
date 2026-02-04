@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ComponentParts Test Class
+ * ComponentParts Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\ComponentParts;
 
 /**
- * ComponentParts Test Class
+ * ComponentParts Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -134,7 +134,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a Service object
+     * Get a Service object.
      *
      * @return Service
      */

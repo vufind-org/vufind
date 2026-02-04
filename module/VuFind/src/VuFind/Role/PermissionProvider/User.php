@@ -35,7 +35,7 @@ use function count;
 
 /**
  * LDAP permission provider for VuFind.
- * based on permission provider Username.php
+ * based on permission provider Username.php.
  *
  * @category VuFind
  * @package  Authorization
@@ -50,14 +50,14 @@ class User implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Authorization object
+     * Authorization object.
      *
      * @var AuthorizationService
      */
     protected $auth;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AuthorizationService $authorization Authorization service
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Item Status" AJAX handler
+ * "Get Item Status" AJAX handler.
  *
  * PHP version 8
  *
@@ -52,7 +52,7 @@ use function is_array;
 use function is_string;
 
 /**
- * "Get Item Status" AJAX handler
+ * "Get Item Status" AJAX handler.
  *
  * This is responsible for printing the holdings information for a
  * collection of records in JSON format.
@@ -74,7 +74,7 @@ class GetItemStatuses extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings           $ss                        Session settings
      * @param Config                    $config                    Top-level configuration
@@ -421,7 +421,7 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Get a message for availability status
+     * Get a message for availability status.
      *
      * @param AvailabilityStatusInterface $availability Availability Status
      *

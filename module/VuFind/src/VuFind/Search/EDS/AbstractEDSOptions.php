@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Common EDS & EPF API Options
+ * Common EDS & EPF API Options.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ namespace VuFind\Search\EDS;
 use function count;
 
 /**
- * Common EDS & EPF API Options
+ * Common EDS & EPF API Options.
  *
  * @category VuFind
  * @package  EBSCO
@@ -51,7 +51,7 @@ abstract class AbstractEDSOptions extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Default view option
+     * Default view option.
      *
      * @var string
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Digital Content Formats tab
+ * Digital Content Formats tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Digital Content Formats
+ * Digital Content Formats.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -49,7 +49,7 @@ class Formats extends AbstractBase
     protected $enabled;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $enabled is this tab enabled?
      */

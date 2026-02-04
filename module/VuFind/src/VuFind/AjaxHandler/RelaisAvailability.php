@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Relais: Check item availability using a generic patron ID
+ * Relais: Check item availability using a generic patron ID.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
- * Relais: Check item availability using a generic patron ID
+ * Relais: Check item availability using a generic patron ID.
  *
  * @category VuFind
  * @package  AJAX

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration loader for Multiple IdPs
+ * Configuration loader for Multiple IdPs.
  *
  * PHP version 8
  *
@@ -17,7 +17,7 @@ namespace VuFind\Auth\Shibboleth;
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Configuration loader for Multiple IdPs
+ * Configuration loader for Multiple IdPs.
  *
  * @category VuFind
  * @package  Authentication
@@ -32,21 +32,21 @@ class MultiIdPConfigurationLoader implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Configured IdPs with entityId and overridden attribute mapping
+     * Configured IdPs with entityId and overridden attribute mapping.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Configured IdPs with entityId and overridden attribute mapping
+     * Configured IdPs with entityId and overridden attribute mapping.
      *
      * @var array
      */
     protected $shibConfig;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config     Configuration
      * @param \VuFind\Config\Config $shibConfig Shibboleth configuration for IdPs

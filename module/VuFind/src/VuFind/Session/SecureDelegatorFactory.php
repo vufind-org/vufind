@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Secure session delegator factory
+ * Secure session delegator factory.
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
@@ -38,7 +38,7 @@ use VuFind\Crypt\BlockCipher;
 use function call_user_func;
 
 /**
- * Secure session delegator factory
+ * Secure session delegator factory.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -79,7 +79,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
     }
 
     /**
-     * Creates the delegating session handler
+     * Creates the delegating session handler.
      *
      * @param ContainerInterface $container Service Container
      * @param HandlerInterface   $handler   Wrapped session handler

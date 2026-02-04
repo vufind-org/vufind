@@ -218,7 +218,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Set up configuration for Database+Email authentication
+     * Set up configuration for Database+Email authentication.
      *
      * @return void
      */

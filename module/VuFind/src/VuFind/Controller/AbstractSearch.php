@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search Controller
+ * VuFind Search Controller.
  *
  * PHP version 8
  *
@@ -47,7 +47,7 @@ use function intval;
 use function is_array;
 
 /**
- * VuFind Search Controller
+ * VuFind Search Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -94,7 +94,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return ViewModel
      */
@@ -186,7 +186,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get active recommendation module settings
+     * Get active recommendation module settings.
      *
      * @return array
      */
@@ -247,7 +247,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Home action
+     * Home action.
      *
      * @return mixed
      */
@@ -283,7 +283,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Send search results to results view
+     * Send search results to results view.
      *
      * @return Response|ViewModel
      */
@@ -331,7 +331,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get the value multiFacetsSelection from the config
+     * Get the value multiFacetsSelection from the config.
      *
      * @param array $config The config containing multiFacetsSelection
      *
@@ -348,7 +348,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Perform a search and send results to a results view
+     * Perform a search and send results to a results view.
      *
      * @param callable $setupCallback Optional setup callback that overrides the
      * default one
@@ -511,7 +511,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get a redirection response to a single record
+     * Get a redirection response to a single record.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
      * @param array                             $queryParams Any query parameters
@@ -604,7 +604,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Convenience method for accessing results
+     * Convenience method for accessing results.
      *
      * @return \VuFind\Search\Results\PluginManager
      */
@@ -870,7 +870,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Returns a list of all items associated with one facet for the lightbox
+     * Returns a list of all items associated with one facet for the lightbox.
      *
      * Parameters:
      * facet        The facet to retrieve
@@ -951,7 +951,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get proper options file for search class
+     * Get proper options file for search class.
      *
      * @return \VuFind\Search\Base\Options
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Error Controller
+ * Error Controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Mvc\Controller\AbstractActionController;
 
 /**
- * Error Controller
+ * Error Controller.
  *
  * @category VuFind
  * @package  Controller

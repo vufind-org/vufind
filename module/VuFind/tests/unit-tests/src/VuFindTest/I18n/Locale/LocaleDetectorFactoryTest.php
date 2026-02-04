@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LocaleDetectorFactory Test Class
+ * LocaleDetectorFactory Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 use function func_get_args;
 
 /**
- * LocaleDetectorFactory Test Class
+ * LocaleDetectorFactory Test Class.
  *
  * @category VuFind
  * @package  Tests

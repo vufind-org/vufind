@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tab Overdrive Holdings
+ * Tab Overdrive Holdings.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Summary of OverdriveHoldings
+ * Summary of OverdriveHoldings.
  *
  * @category VuFind
  * @package  RecordTabs

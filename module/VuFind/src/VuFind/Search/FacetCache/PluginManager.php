@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facet cache plugin manager
+ * Facet cache plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\FacetCache;
 
 /**
- * Facet cache plugin manager
+ * Facet cache plugin manager.
  *
  * @category VuFind
  * @package  Search

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Search Request Model Test
+ * EDS Search Request Model Test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Search\EDS;
 use VuFindSearch\Backend\EDS\SearchRequestModel;
 
 /**
- * EDS Search Object Parameters Test
+ * EDS Search Object Parameters Test.
  *
  * @category VuFind
  * @package  Tests

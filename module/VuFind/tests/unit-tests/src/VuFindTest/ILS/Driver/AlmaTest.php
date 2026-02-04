@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Alma ILS driver test
+ * Alma ILS driver test.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function func_get_args;
 use function is_array;
 
 /**
- * Alma ILS driver test
+ * Alma ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +52,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -64,21 +64,21 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test data for simulated HTTP responses (reset by each test)
+     * Test data for simulated HTTP responses (reset by each test).
      *
      * @var array
      */
     protected $fixtureSteps = [];
 
     /**
-     * Current fixture step
+     * Current fixture step.
      *
      * @var int
      */
     protected $currentFixtureStep = 0;
 
     /**
-     * Current fixture name
+     * Current fixture name.
      *
      * @var string
      */
@@ -95,7 +95,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Replace makeRequest to inject test returns
+     * Replace makeRequest to inject test returns.
      *
      * @param string        $path          Path to retrieve from API (excluding base
      *                                     URL/API key)
@@ -147,7 +147,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Generate a new driver to return responses set in a json fixture
+     * Generate a new driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      *
@@ -193,7 +193,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Testing getCourses
+     * Testing getCourses.
      *
      * @return void
      */
@@ -209,7 +209,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Testing getFunds
+     * Testing getFunds.
      *
      * @return void
      */
@@ -225,7 +225,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getHolding
+     * Test getHolding.
      *
      * @return void
      */
@@ -241,7 +241,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testing getMyProfile
+     * Data provider for testing getMyProfile.
      *
      * @return Generator
      */
@@ -293,7 +293,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyProfile
+     * Test getMyProfile.
      *
      * @param string $fixtureKey Key which selects the correct test path in json file containing
      *                           multiple tests.
@@ -316,7 +316,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testing patronLogin
+     * Data provider for testing patronLogin.
      *
      * @return Generator
      */
@@ -380,7 +380,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test patron login when login method is set to email
+     * Test patron login when login method is set to email.
      *
      * @param array  $config     Driver config
      * @param array  $expected   Expected results
@@ -397,7 +397,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getHolding with location type to item status mappings
+     * Test getHolding with location type to item status mappings.
      *
      * @return void
      */
@@ -422,7 +422,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Convert TranslatableString instances for easier comparison
+     * Convert TranslatableString instances for easier comparison.
      *
      * @param array $array Array to process
      *

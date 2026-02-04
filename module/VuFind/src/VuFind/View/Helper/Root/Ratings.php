@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ratings view helper
+ * Ratings view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Ratings\RatingsService;
 
 /**
- * Ratings view helper
+ * Ratings view helper.
  *
  * @category VuFind
  * @package  View_Helpers

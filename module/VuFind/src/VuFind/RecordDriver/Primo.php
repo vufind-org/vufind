@@ -295,7 +295,7 @@ class Primo extends DefaultRecord
     }
 
     /**
-     * Get citation references
+     * Get citation references.
      *
      * @return array
      */

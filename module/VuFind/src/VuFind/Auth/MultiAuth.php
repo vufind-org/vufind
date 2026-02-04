@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function call_user_func;
 use function strlen;
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * This module enables chaining of multiple authentication plugins. Authentication
  * plugins are executed in order, and the first successful authentication is
@@ -71,35 +71,35 @@ use function strlen;
 class MultiAuth extends AbstractBase
 {
     /**
-     * Filter configuration for credentials
+     * Filter configuration for credentials.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Authentication methods to try
+     * Authentication methods to try.
      *
      * @var array
      */
     protected $methods = [];
 
     /**
-     * Username input
+     * Username input.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password input
+     * Password input.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Plugin manager for obtaining other authentication objects
+     * Plugin manager for obtaining other authentication objects.
      *
      * @var PluginManager
      */

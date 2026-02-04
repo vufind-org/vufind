@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for Lucene syntax helper
+ * Unit tests for Lucene syntax helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Backend\Solr;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 
 /**
- * Unit tests for Lucene syntax helper
+ * Unit tests for Lucene syntax helper.
  *
  * @category VuFind
  * @package  Search
@@ -45,7 +45,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Data provider for testCapitalizeBooleans
+     * Data provider for testCapitalizeBooleans.
      *
      * @return \Iterator
      */
@@ -220,7 +220,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testCapitalizeRanges
+     * Data provider for testCapitalizeRanges.
      *
      * @return \Iterator
      */
@@ -272,7 +272,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test advanced query detection (default settings)
+     * Test advanced query detection (default settings).
      *
      * @return void
      */
@@ -316,7 +316,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test advanced query detection (with case insensitivity)
+     * Test advanced query detection (with case insensitivity).
      *
      * @return void
      */
@@ -338,7 +338,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test case insensitive range normalization
+     * Test case insensitive range normalization.
      *
      * @return void
      */
@@ -353,7 +353,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testColonNormalization
+     * Data provider for testColonNormalization.
      *
      * @return \Iterator
      */
@@ -371,7 +371,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test colon normalization
+     * Test colon normalization.
      *
      * @param $input    Input to test
      * @param $expected Expected output
@@ -417,7 +417,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test search term extraction
+     * Test search term extraction.
      *
      * @param $input    Input to test
      * @param $expected Expected output
@@ -432,7 +432,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testUnquotedNormalization
+     * Data provider for testUnquotedNormalization.
      *
      * @return \Iterator
      */
@@ -491,7 +491,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test normalization of unquoted special characters
+     * Test normalization of unquoted special characters.
      *
      * @param string $input    Input string
      * @param string $expected Expected result

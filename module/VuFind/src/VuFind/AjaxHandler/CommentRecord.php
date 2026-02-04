@@ -55,7 +55,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourcePopulator        $resourcePopulator   Resource populator service
      * @param CommentsServiceInterface $commentsService     Comments database service

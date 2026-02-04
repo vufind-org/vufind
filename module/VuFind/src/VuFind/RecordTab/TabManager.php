@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record tab manager
+ * Record tab manager.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
 use function in_array;
 
 /**
- * Record tab manager
+ * Record tab manager.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -63,7 +63,7 @@ class TabManager
     ];
 
     /**
-     * Tab configurations
+     * Tab configurations.
      *
      * @var array
      */
@@ -79,14 +79,14 @@ class TabManager
     protected array $legacyConfig;
 
     /**
-     * Current active context (defaults to 'record')
+     * Current active context (defaults to 'record').
      *
      * @var string
      */
     protected string $context = 'record';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordTabPluginManager $recordTabPluginManager RecordTab plugin manager
      * @param ConfigManagerInterface $configManager          Configuration manager
@@ -189,7 +189,7 @@ class TabManager
     }
 
     /**
-     * Get an array of tabs names configured to load via AJAX in the background
+     * Get an array of tabs names configured to load via AJAX in the background.
      *
      * @param AbstractRecordDriver $driver Record driver
      *

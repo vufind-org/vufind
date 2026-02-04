@@ -45,7 +45,7 @@ use VuFind\Exception\Auth as AuthException;
 class Email extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EmailAuthenticator $emailAuthenticator Email authenticator
      * @param ILSAuthenticator   $ilsAuthenticator   ILS authenticator

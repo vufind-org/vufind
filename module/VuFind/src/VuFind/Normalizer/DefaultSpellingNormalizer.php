@@ -63,7 +63,7 @@ class DefaultSpellingNormalizer
     }
 
     /**
-     * Remove diacritics (accents, umlauts, etc.) from a string
+     * Remove diacritics (accents, umlauts, etc.) from a string.
      *
      * @param string $string The text where we would like to remove diacritics
      *

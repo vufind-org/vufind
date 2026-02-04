@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Versions tab
+ * Versions tab.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 /**
- * Versions tab
+ * Versions tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -46,21 +46,21 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     use TranslatorAwareTrait;
 
     /**
-     * Main configuration
+     * Main configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Search options plugin manager
+     * Search options plugin manager.
      *
      * @var \VuFind\Search\Options\PluginManager
      */
     protected $searchOptionsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config                $config Configuration
      * @param \VuFind\Search\Options\PluginManager $som    Search options plugin

@@ -76,7 +76,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testPaymentDisabled
+     * Data provider for testPaymentDisabled.
      *
      * @return \Iterator
      */
@@ -104,7 +104,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testPayment
+     * Data provider for testPayment.
      *
      * @return \Iterator
      */
@@ -377,7 +377,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testReceipt
+     * Data provider for testReceipt.
      *
      * @return \Iterator
      */
@@ -434,7 +434,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testBlockedPayment
+     * Data provider for testBlockedPayment.
      *
      * @return \Iterator
      */
@@ -619,7 +619,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Log in and display fines
+     * Log in and display fines.
      *
      * @param bool $createAccount Do we need a new user account?
      * @param bool $multibackend  Is MultiBackend driver enabled?
@@ -799,7 +799,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get the local identifier from the returl URL of the payment service
+     * Get the local identifier from the returl URL of the payment service.
      *
      * @param Element $page Page
      *
@@ -814,7 +814,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get a payment entity by the local identifier in the returl URL of the payment service
+     * Get a payment entity by the local identifier in the returl URL of the payment service.
      *
      * @param string $localIdentifier Local identifier
      *
@@ -828,7 +828,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get a payment entity by the local identifier in the returl URL of the payment service
+     * Get a payment entity by the local identifier in the returl URL of the payment service.
      *
      * @param Element $page Page
      *
@@ -840,7 +840,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Check for blocked payment due to missing VuFindDevTools module
+     * Check for blocked payment due to missing VuFindDevTools module.
      *
      * @param Element $page Page
      *

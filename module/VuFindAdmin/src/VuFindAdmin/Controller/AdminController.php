@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Controller
+ * Admin Controller.
  *
  * PHP version 8
  *

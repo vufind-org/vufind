@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Eprints Test Class
+ * Eprints Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\MetadataVocabulary;
 use VuFind\MetadataVocabulary\Eprints;
 
 /**
- * Eprints Test Class
+ * Eprints Test Class.
  *
  * @category VuFind
  * @package  Tests

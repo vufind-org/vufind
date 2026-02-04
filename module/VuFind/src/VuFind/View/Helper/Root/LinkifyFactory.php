@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Linkify helper factory
+ * Linkify helper factory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VStelmakh\UrlHighlight\Validator\Validator;
 use VuFind\UrlHighlight\VuFindHighlighter;
 
 /**
- * Linkify helper factory
+ * Linkify helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,7 +48,7 @@ use VuFind\UrlHighlight\VuFindHighlighter;
 class LinkifyFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service Manager
      * @param string             $requestedName Service being created

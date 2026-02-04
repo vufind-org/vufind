@@ -45,14 +45,14 @@ use XMLWriter;
 class OptimizeDocument implements DocumentInterface
 {
     /**
-     * Value for waitFlush attribute
+     * Value for waitFlush attribute.
      *
      * @var ?bool
      */
     protected $waitFlush;
 
     /**
-     * Value for waitSearch attribute
+     * Value for waitSearch attribute.
      *
      * @var ?bool
      */

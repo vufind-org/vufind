@@ -49,7 +49,7 @@ use function in_array;
 class ScopeRepository implements ScopeRepositoryInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $oauth2Config OAuth2 configuration
      */

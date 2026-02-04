@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CookieManager view helper
+ * CookieManager view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * CookieManager view helper
+ * CookieManager view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Root;
 class CookieManager extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Cookie\CookieManager $cookieManager Cookie manager
      */

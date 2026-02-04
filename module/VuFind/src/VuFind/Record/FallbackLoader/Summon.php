@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon record fallback loader
+ * Summon record fallback loader.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindSearch\ParamBag;
 use function strlen;
 
 /**
- * Summon record fallback loader
+ * Summon record fallback loader.
  *
  * @category VuFind
  * @package  Record
@@ -47,7 +47,7 @@ use function strlen;
 class Summon extends AbstractFallbackLoader
 {
     /**
-     * Record source
+     * Record source.
      *
      * @var string
      */

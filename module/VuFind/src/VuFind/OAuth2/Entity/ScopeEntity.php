@@ -48,28 +48,28 @@ class ScopeEntity implements ScopeEntityInterface
     use ScopeTrait;
 
     /**
-     * Scope description
+     * Scope description.
      *
      * @var string
      */
     protected $description;
 
     /**
-     * Whether the scope is hidden from the scope list
+     * Whether the scope is hidden from the scope list.
      *
      * @var bool
      */
     protected $hidden;
 
     /**
-     * Whether the scope requires data from an ILS account
+     * Whether the scope requires data from an ILS account.
      *
      * @var bool
      */
     protected $ilsNeeded;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config Scope configuration
      */
@@ -87,7 +87,7 @@ class ScopeEntity implements ScopeEntityInterface
     }
 
     /**
-     * Get description
+     * Get description.
      *
      * @return string
      */
@@ -97,7 +97,7 @@ class ScopeEntity implements ScopeEntityInterface
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description Description
      *
@@ -110,7 +110,7 @@ class ScopeEntity implements ScopeEntityInterface
     }
 
     /**
-     * Get hidden flag
+     * Get hidden flag.
      *
      * @return bool
      */
@@ -120,7 +120,7 @@ class ScopeEntity implements ScopeEntityInterface
     }
 
     /**
-     * Set hidden flag
+     * Set hidden flag.
      *
      * @param bool $value New value
      *
@@ -133,7 +133,7 @@ class ScopeEntity implements ScopeEntityInterface
     }
 
     /**
-     * Get ILS needed flag
+     * Get ILS needed flag.
      *
      * @return bool
      */
@@ -143,7 +143,7 @@ class ScopeEntity implements ScopeEntityInterface
     }
 
     /**
-     * Set ILS needed flag
+     * Set ILS needed flag.
      *
      * @param bool $value New value
      *

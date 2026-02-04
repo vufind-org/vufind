@@ -83,7 +83,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set up everything for testing
+     * Set up everything for testing.
      *
      * @return void
      */
@@ -97,7 +97,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lookup
+     * Test lookup.
      *
      * @return void
      */
@@ -119,7 +119,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test lookupBatch
+     * Test lookupBatch.
      *
      * @return void
      */
@@ -141,7 +141,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isFallback
+     * Test isFallback.
      *
      * @return void
      */
@@ -156,7 +156,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isPrimary
+     * Test isPrimary.
      *
      * @return void
      */
@@ -171,7 +171,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test IsCachable
+     * Test IsCachable.
      *
      * @return void
      */
@@ -185,7 +185,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test setContext
+     * Test setContext.
      *
      * @return void
      */
@@ -207,7 +207,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test createOrUpdate
+     * Test createOrUpdate.
      *
      * @return void
      */
@@ -221,7 +221,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create configuration
+     * Create configuration.
      *
      * @return Config
      */
@@ -244,7 +244,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create Record Table
+     * Create Record Table.
      *
      * @return MockObject&RecordServiceInterface
      */
@@ -284,7 +284,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a Record Factory Manager
+     * Create a Record Factory Manager.
      *
      * @return MockObject&\VuFind\RecordDriver\PluginManager
      */
@@ -297,7 +297,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a Cache object
+     * Create a Cache object.
      *
      * @return Cache
      */
@@ -313,7 +313,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a record driver
+     * Create a record driver.
      *
      * @param string $id     id
      * @param string $source source

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SwitchType Test Class
+ * SwitchType Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\SwitchType;
 
 /**
- * SwitchType Test Class
+ * SwitchType Test Class.
  *
  * @category VuFind
  * @package  Tests

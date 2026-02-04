@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Index-based generator plugin factory
+ * Index-based generator plugin factory.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use Psr\Container\ContainerInterface;
 use function is_callable;
 
 /**
- * Index-based generator plugin factory
+ * Index-based generator plugin factory.
  *
  * @category VuFind
  * @package  Sitemap
@@ -49,7 +49,7 @@ use function is_callable;
 class IndexFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

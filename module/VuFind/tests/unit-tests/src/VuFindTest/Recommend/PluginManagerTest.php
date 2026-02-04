@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recommend Plugin Manager Test Class
+ * Recommend Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\PluginManager;
 
 /**
- * Recommend Plugin Manager Test Class
+ * Recommend Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

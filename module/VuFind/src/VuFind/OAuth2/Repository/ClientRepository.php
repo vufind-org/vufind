@@ -46,7 +46,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class ClientRepository implements ClientRepositoryInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $oauth2Config OAuth2 configuration
      */

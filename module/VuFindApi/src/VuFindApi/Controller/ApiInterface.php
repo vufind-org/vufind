@@ -47,7 +47,7 @@ interface ApiInterface
 
     /**
      * Get API specification JSON fragment for services provided by the
-     * controller
+     * controller.
      *
      * @return string
      */

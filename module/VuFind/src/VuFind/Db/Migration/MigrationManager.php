@@ -55,7 +55,7 @@ class MigrationManager
     protected $migrationPath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Connection      $connection    A database connection (with read rights)
      * @param MigrationLoader $loader        Helper object to find/load migration files

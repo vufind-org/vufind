@@ -49,7 +49,7 @@ use VuFindConsole\Command\Util\CreateHierarchyTreesCommand;
 class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get mock hierarchy driver
+     * Get mock hierarchy driver.
      *
      * @return HierarchyDriver
      */
@@ -59,7 +59,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock tree source
+     * Get mock tree source.
      *
      * @return TreeSource
      */

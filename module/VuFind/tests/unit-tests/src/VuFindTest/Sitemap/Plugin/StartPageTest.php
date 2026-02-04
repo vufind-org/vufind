@@ -1,7 +1,7 @@
 <?php
 
 /**
- * StartPage Plugin Test Class
+ * StartPage Plugin Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Sitemap\Plugin;
 use VuFind\Sitemap\Plugin\StartPage;
 
 /**
- * StartPage Plugin Test Class
+ * StartPage Plugin Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -67,12 +67,12 @@ class StartPageTest extends \PHPUnit\Framework\TestCase
         // Use anonymous class to test the callable verbose message option:
         $messageCollector = new class () {
             /**
-             * Messages collected
+             * Messages collected.
              */
             public $messages = [];
 
             /**
-             * Receive a message
+             * Receive a message.
              *
              * @param string $msg Message
              *

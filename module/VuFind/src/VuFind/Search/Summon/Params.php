@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search Parameters
+ * Summon Search Parameters.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\ParamBag;
 
 /**
- * Summon Search Parameters
+ * Summon Search Parameters.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -49,14 +49,14 @@ class Params extends \VuFind\Search\Base\Params
     use \VuFind\Search\Params\FacetLimitTrait;
 
     /**
-     * Settings for all the facets
+     * Settings for all the facets.
      *
      * @var array
      */
     protected $fullFacetSettings = [];
 
     /**
-     * Settings for the date facet only
+     * Settings for the date facet only.
      *
      * @var array
      */
@@ -80,7 +80,7 @@ class Params extends \VuFind\Search\Base\Params
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager

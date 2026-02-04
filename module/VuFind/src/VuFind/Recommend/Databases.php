@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Databases Recommendations Module
+ * Databases Recommendations Module.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * Databases Recommendations Module
+ * Databases Recommendations Module.
  *
  * This class displays a list of external links to the research databases represented
  * by EDS or similar results.  (Unlike the EDS ContentProvider facet that would narrow
@@ -56,14 +56,14 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Results object
+     * Results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Number of results to show
+     * Number of results to show.
      *
      * @var int
      */
@@ -85,21 +85,21 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     protected $resultFacetNameKey = 'value';
 
     /**
-     * Databases listed in configuration file
+     * Databases listed in configuration file.
      *
      * @var array
      */
     protected $configFileDatabases = [];
 
     /**
-     * Configuration of whether to use the query string as a match point
+     * Configuration of whether to use the query string as a match point.
      *
      * @var bool
      */
     protected $useQuery = true;
 
     /**
-     * Minimum string length of a query to use as a match point
+     * Minimum string length of a query to use as a match point.
      *
      * @var int
      */
@@ -116,14 +116,14 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 
     /**
      * Maximum Levenshtein distance to match a query with the start
-     * of a database name
+     * of a database name.
      *
      * @var int
      */
     protected $useQueryMaxDifference = 2;
 
     /**
-     * Configuration of whether to use LibGuides as a data source
+     * Configuration of whether to use LibGuides as a data source.
      *
      * @var bool
      */
@@ -131,7 +131,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 
     /**
      * Configuration of whether to match on the alt_names field in LibGuides
-     * in addition to the primary name
+     * in addition to the primary name.
      *
      * @var bool
      */
@@ -146,7 +146,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     protected $linkToAllDatabases = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager   Config Manager
      * @param Closure                               $libGuidesGetter Getter for LibGuides API connection

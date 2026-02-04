@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * @category VuFind
  * @package  ServiceManager

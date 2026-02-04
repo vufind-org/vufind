@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDataFormatter spec plugin manager
+ * RecordDataFormatter spec plugin manager.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\RecordDataFormatter\Specs;
 
 /**
- * RecordDataFormatter spec plugin manager
+ * RecordDataFormatter spec plugin manager.
  *
  * @category VuFind
  * @package  RecordDataFormatter

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config SearchSpecsReader Test Class
+ * Config SearchSpecsReader Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\SearchSpecsReader;
 
 /**
- * Config SearchSpecsReader Test Class
+ * Config SearchSpecsReader Test Class.
  *
  * @category VuFind
  * @package  Tests

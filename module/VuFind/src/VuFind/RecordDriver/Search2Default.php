@@ -49,14 +49,14 @@ namespace VuFind\RecordDriver;
 class Search2Default extends SolrDefault
 {
     /**
-     * Used for identifying search backends
+     * Used for identifying search backends.
      *
      * @var string
      */
     protected $sourceIdentifier = 'Search2';
 
     /**
-     * Get the Hierarchy Type (false if none)
+     * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
      */

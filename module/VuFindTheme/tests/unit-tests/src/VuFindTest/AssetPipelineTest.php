@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AssetPipeline Test Class
+ * AssetPipeline Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindTheme\ThemeInfo;
 use function count;
 
 /**
- * AssetPipeline Test Class
+ * AssetPipeline Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use function count;
 class AssetPipelineTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get a partially mocked pipeline object
+     * Get a partially mocked pipeline object.
      *
      * @param string|bool $pipelineConfig Pipeline configuration
      * @param ?ThemeInfo  $themeInfo      ThemeInfo object (omit for default mock)

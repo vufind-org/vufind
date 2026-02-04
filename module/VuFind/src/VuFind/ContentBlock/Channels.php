@@ -44,28 +44,28 @@ use VuFind\ChannelProvider\ChannelLoader;
 class Channels implements ContentBlockInterface
 {
     /**
-     * Request object
+     * Request object.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * Channel loader
+     * Channel loader.
      *
      * @var ChannelLoader
      */
     protected $loader;
 
     /**
-     * Data source (null to use default found in channels.ini)
+     * Data source (null to use default found in channels.ini).
      *
      * @var string
      */
     protected $source = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request       $request Request object
      * @param ChannelLoader $loader  Channel loader

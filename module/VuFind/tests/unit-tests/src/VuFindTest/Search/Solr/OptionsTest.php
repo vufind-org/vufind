@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Search Object Options Test
+ * Solr Search Object Options Test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 
 /**
- * Solr Search Object Options Test
+ * Solr Search Object Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Get Options object
+     * Get Options object.
      *
      * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
      * for new mock)
@@ -59,7 +59,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that correct search class ID is reported
+     * Test that correct search class ID is reported.
      *
      * @return void
      */

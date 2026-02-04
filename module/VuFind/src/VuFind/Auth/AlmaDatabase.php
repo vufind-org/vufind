@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Alma Database authentication class
+ * Alma Database authentication class.
  *
  * PHP version 8
  *
@@ -47,21 +47,21 @@ use VuFind\Exception\Auth as AuthException;
 class AlmaDatabase extends Database
 {
     /**
-     * Alma driver
+     * Alma driver.
      *
      * @var \VuFind\ILS\Driver\Alma
      */
     protected $almaDriver = null;
 
     /**
-     * Alma config
+     * Alma config.
      *
      * @var array
      */
     protected $almaConfig = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection        $catalog       The ILS connection
      * @param \VuFind\Auth\ILSAuthenticator $authenticator The ILS authenticator

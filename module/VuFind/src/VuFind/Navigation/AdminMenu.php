@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin menu
+ * Admin menu.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Navigation;
 
 /**
- * Admin menu
+ * Admin menu.
  *
  * @category VuFind
  * @package  Navigation
@@ -73,7 +73,7 @@ class AdminMenu extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -129,7 +129,7 @@ class AdminMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show Overdrive admin menu item
+     * Check whether to show Overdrive admin menu item.
      *
      * @return bool
      */

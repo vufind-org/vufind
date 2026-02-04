@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Relais view helper
+ * Relais view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Config\Config;
 
 /**
- * Relais view helper
+ * Relais view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ use VuFind\Config\Config;
 class Relais extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Relais configuration (or null if none found)
+     * Relais configuration (or null if none found).
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Login URL
+     * Login URL.
      *
      * @var string
      */

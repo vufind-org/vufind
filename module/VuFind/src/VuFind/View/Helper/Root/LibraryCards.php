@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibraryCards view helper
+ * LibraryCards view helper.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 
 /**
- * LibraryCards view helper
+ * LibraryCards view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,7 +45,7 @@ use VuFind\Db\Service\UserCardServiceInterface;
 class LibraryCards extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UserCardServiceInterface $cardService User card database service
      */

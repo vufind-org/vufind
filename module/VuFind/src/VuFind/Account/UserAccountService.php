@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User account service
+ * User account service.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Favorites\FavoritesService;
 
 /**
- * User account service
+ * User account service.
  *
  * @category VuFind
  * @package  Account
@@ -53,7 +53,7 @@ class UserAccountService implements DbServiceAwareInterface
     use DbServiceAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FavoritesService $favoritesService Favorites service
      */

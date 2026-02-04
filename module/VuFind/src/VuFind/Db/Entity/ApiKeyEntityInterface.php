@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for api_key table
+ * Entity model interface for api_key table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for api_key table
+ * Entity model interface for api_key table.
  *
  * @category VuFind
  * @package  Database
@@ -66,7 +66,7 @@ interface ApiKeyEntityInterface extends EntityInterface
     public function getTitle(): string;
 
     /**
-     * Set title
+     * Set title.
      *
      * @param string $title Title
      *

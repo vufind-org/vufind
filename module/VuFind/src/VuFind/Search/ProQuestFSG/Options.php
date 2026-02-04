@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ProQuest Federated Search Gateway Search Options
+ * ProQuest Federated Search Gateway Search Options.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Search\ProQuestFSG;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * ProQuest Federated Search Gateway Search Options
+ * ProQuest Federated Search Gateway Search Options.
  *
  * @category VuFind
  * @package  Search_ProQuestFSG
@@ -45,7 +45,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

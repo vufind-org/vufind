@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Form handler plugin factory
+ * Form handler plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Form\Handler;
 
 /**
- * Form handler plugin factory
+ * Form handler plugin factory.
  *
  * @category VuFind
  * @package  Form
@@ -41,7 +41,7 @@ namespace VuFind\Form\Handler;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

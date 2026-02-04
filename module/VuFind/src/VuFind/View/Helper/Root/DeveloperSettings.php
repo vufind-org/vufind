@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Developer settings helper
+ * Developer settings helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 
 /**
- * Developer settings helper
+ * Developer settings helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsService;
 class DeveloperSettings extends AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param DeveloperSettingsService $developerSettingsService Developer settings service
      */
@@ -53,7 +53,7 @@ class DeveloperSettings extends AbstractHelper
     }
 
     /**
-     * Are developer settings enabled? This includes in example: API keys
+     * Are developer settings enabled? This includes in example: API keys.
      *
      * @return bool
      */

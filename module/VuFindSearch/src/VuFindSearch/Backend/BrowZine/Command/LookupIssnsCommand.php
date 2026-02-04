@@ -50,7 +50,7 @@ class LookupIssnsCommand extends \VuFindSearch\Command\CallMethodCommand
     protected $issns;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string          $backendId Search backend identifier
      * @param string|string[] $issns     ISSNs to look up

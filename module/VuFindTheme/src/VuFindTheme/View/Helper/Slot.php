@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Slot view helper
+ * Slot view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTheme\View\Helper;
 
 /**
- * Slot view helper
+ * Slot view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFindTheme\View\Helper;
 class Slot extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * End saving methods
+     * End saving methods.
      *
      * @const string
      */
@@ -50,28 +50,28 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     public const APPEND = 'APPEND';
 
     /**
-     * Storage for strings to be concatenated to the front of a block
+     * Storage for strings to be concatenated to the front of a block.
      *
      * @var array of arrays
      */
     protected $blockPrepends = [];
 
     /**
-     * Storage for strings saved to slots
+     * Storage for strings saved to slots.
      *
      * @var array
      */
     protected $blocks = [];
 
     /**
-     * Storage for strings to be concatenated to the end of a block
+     * Storage for strings to be concatenated to the end of a block.
      *
      * @var array of arrays
      */
     protected $blockAppends = [];
 
     /**
-     * Call stack to handle nested slots
+     * Call stack to handle nested slots.
      *
      * @var array
      */
@@ -119,7 +119,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Helper function to return blocks with prepends and appends.
-     * Prepends, blocks, and appends are separated byspacestopreventthisfromhappening
+     * Prepends, blocks, and appends are separated byspacestopreventthisfromhappening.
      *
      * Non-string data can be stored in a slot but prepend and append
      * will cause it to be concatenated into a string.

@@ -48,7 +48,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Language fixture directory
+     * Language fixture directory.
      *
      * @var string
      */
@@ -175,7 +175,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock normalizer object
+     * Get a mock normalizer object.
      *
      * @param array $methods Methods to mock
      *
@@ -192,7 +192,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock reader object
+     * Get a mock reader object.
      *
      * @param array $methods Methods to mock
      *

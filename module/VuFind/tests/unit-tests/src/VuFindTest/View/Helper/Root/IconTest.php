@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Icon View Helper Test Class
+ * Icon View Helper Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\View\Helper\Root\Icon;
 use VuFindTheme\View\Helper\ImageLink;
 
 /**
- * Icon View Helper Test Class
+ * Icon View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -96,7 +96,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock ImageLink helper
+     * Get a mock ImageLink helper.
      *
      * @param string $expected Expected image
      *
@@ -112,7 +112,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get an Icon helper
+     * Get an Icon helper.
      *
      * @param ?array            $config  Icon helper configuration array
      * @param ?StorageInterface $cache   Cache storage adapter (null for BlackHole)
@@ -192,7 +192,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testUnicodeIcons
+     * Data provider for testUnicodeIcons.
      *
      * @return \Iterator
      */
@@ -369,7 +369,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test RTL
+     * Test RTL.
      *
      * @return void
      */
@@ -391,7 +391,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we can use an alias
+     * Test that we can use an alias.
      *
      * @return void
      */
@@ -405,7 +405,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we can detect a direct circular alias
+     * Test that we can detect a direct circular alias.
      *
      * @return void
      */
@@ -416,7 +416,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we can detect an indirect circular alias
+     * Test that we can detect an indirect circular alias.
      *
      * @return void
      */

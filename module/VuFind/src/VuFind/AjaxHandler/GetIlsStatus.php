@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get ILS Status" AJAX handler
+ * "Get ILS Status" AJAX handler.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get ILS Status" AJAX handler
+ * "Get ILS Status" AJAX handler.
  *
  * This will check the ILS for being online and will return the ils-offline
  * template upon failure.
@@ -51,21 +51,21 @@ use VuFind\Session\Settings as SessionSettings;
 class GetIlsStatus extends AbstractBase
 {
     /**
-     * ILS connection
+     * ILS connection.
      *
      * @var Connection
      */
     protected $ils;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings   $ss       Session settings
      * @param Connection        $ils      ILS connection

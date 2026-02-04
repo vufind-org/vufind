@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Solr-based similarity.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Related;
 use VuFindSearch\Command\SimilarCommand;
 
 /**
- * Related Records: Solr-based similarity
+ * Related Records: Solr-based similarity.
  *
  * @category VuFind
  * @package  Related_Records
@@ -43,21 +43,21 @@ use VuFindSearch\Command\SimilarCommand;
 class Similar implements RelatedInterface
 {
     /**
-     * Similar records
+     * Similar records.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Search service
+     * Search service.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service $search Search service
      */

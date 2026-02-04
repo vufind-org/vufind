@@ -476,7 +476,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Data provider for testGetIds
+     * Data provider for testGetIds.
      *
      * @return \Iterator
      */
@@ -572,7 +572,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test random method
+     * Test random method.
      *
      * @return void
      */
@@ -597,7 +597,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test writeDocument
+     * Test writeDocument.
      *
      * @return void
      */
@@ -634,7 +634,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test extra request details
+     * Test extra request details.
      *
      * @return void
      */
@@ -651,7 +651,7 @@ class BackendTest extends TestCase
     }
 
     /**
-     * Test reset extra request details
+     * Test reset extra request details.
      *
      * @return void
      */

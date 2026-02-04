@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Turnstile Controller
+ * Turnstile Controller.
  *
  * PHP version 8
  *
@@ -51,14 +51,14 @@ class TurnstileController extends AbstractBase implements
     use LoggerAwareTrait;
 
     /**
-     * Request properties to be securely hashed, to avoid manipulation
+     * Request properties to be securely hashed, to avoid manipulation.
      *
      * @var array
      */
     protected $hashKeys = ['siteKey', 'policyId', 'destination'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm                 Service locator
      * @param Turnstile               $turnstile          Turnstile service
@@ -77,7 +77,7 @@ class TurnstileController extends AbstractBase implements
     }
 
     /**
-     * Present the Turnstile challenge to the user
+     * Present the Turnstile challenge to the user.
      *
      * @return mixed
      */
@@ -94,7 +94,7 @@ class TurnstileController extends AbstractBase implements
     }
 
     /**
-     * Verify the Turnstile widget result against the Turnstile backend
+     * Verify the Turnstile widget result against the Turnstile backend.
      *
      * @return mixed
      *

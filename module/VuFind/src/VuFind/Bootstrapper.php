@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Bootstrapper
+ * VuFind Bootstrapper.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RateLimiter\RateLimiterManager;
 
 /**
- * VuFind Bootstrapper
+ * VuFind Bootstrapper.
  *
  * @category VuFind
  * @package  Bootstrap
@@ -47,35 +47,35 @@ use VuFind\RateLimiter\RateLimiterManager;
 class Bootstrapper
 {
     /**
-     * Main VuFind configuration
+     * Main VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * Current MVC event
+     * Current MVC event.
      *
      * @var MvcEvent
      */
     protected $event;
 
     /**
-     * Event manager
+     * Event manager.
      *
      * @var \Laminas\EventManager\EventManagerInterface
      */
     protected $events;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param MvcEvent $event Laminas MVC Event object
      */
@@ -158,7 +158,7 @@ class Bootstrapper
     }
 
     /**
-     * Initializes timezone value
+     * Initializes timezone value.
      *
      * @return void
      */
@@ -366,7 +366,7 @@ class Bootstrapper
     }
 
     /**
-     * Set up content security policy
+     * Set up content security policy.
      *
      * @return void
      */
@@ -384,7 +384,7 @@ class Bootstrapper
     }
 
     /**
-     * Set up rate limiter
+     * Set up rate limiter.
      *
      * @return void
      */
@@ -416,7 +416,7 @@ class Bootstrapper
     }
 
     /**
-     * Present a Cloudflare Turnstile challenge to the user
+     * Present a Cloudflare Turnstile challenge to the user.
      *
      * @param RateLimiterManager               $rateLimiterManager The RateLimiterManager
      * @param MvcEvent                         $event              The current Laminas event

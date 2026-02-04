@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Followup
+ * VuFind Action Helper - Followup.
  *
  * PHP version 8
  *
@@ -46,14 +46,14 @@ use Laminas\Uri\Http;
 class Followup extends AbstractPlugin
 {
     /**
-     * Session container
+     * Session container.
      *
      * @var Container
      */
     protected $session;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Container $session Session container
      */

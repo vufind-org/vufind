@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExtendedIni translation loader Test Class
+ * ExtendedIni translation loader Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\I18n\Translator\Loader;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 
 /**
- * ExtendedIni translation loader Test Class
+ * ExtendedIni translation loader Test Class.
  *
  * @category VuFind
  * @package  Tests

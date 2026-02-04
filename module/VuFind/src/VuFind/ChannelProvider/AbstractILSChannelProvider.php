@@ -65,21 +65,21 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
     protected $maxAge;
 
     /**
-     * ILS connection
+     * ILS connection.
      *
      * @var \VuFind\ILS\Connection
      */
     protected $ils;
 
     /**
-     * Search service
+     * Search service.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service  $search  Search service
      * @param \VuFind\ILS\Connection $ils     ILS connection

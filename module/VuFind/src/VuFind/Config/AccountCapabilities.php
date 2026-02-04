@@ -47,14 +47,14 @@ use function in_array;
 class AccountCapabilities
 {
     /**
-     * Function to fetch auth manager
+     * Function to fetch auth manager.
      *
      * @var callable
      */
     protected $authCallback;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config   $config  Top-level configuration
      * @param callable $getAuth Function to fetch auth manager
@@ -65,7 +65,7 @@ class AccountCapabilities
     }
 
     /**
-     * Get authentication manager
+     * Get authentication manager.
      *
      * @return AuthManager
      */
@@ -255,7 +255,7 @@ class AccountCapabilities
     }
 
     /**
-     * Check if record ratings can be removed
+     * Check if record ratings can be removed.
      *
      * @return bool
      */

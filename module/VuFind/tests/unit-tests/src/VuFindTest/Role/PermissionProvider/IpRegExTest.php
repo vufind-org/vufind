@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IpRegEx ServerParam Test Class
+ * IpRegEx ServerParam Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Role\PermissionProvider;
 use VuFind\Role\PermissionProvider\IpRegEx;
 
 /**
- * IpRegEx ServerParam Test Class
+ * IpRegEx ServerParam Test Class.
  *
  * @category VuFind
  * @package  Tests

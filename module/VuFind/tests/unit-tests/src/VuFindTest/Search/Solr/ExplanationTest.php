@@ -51,7 +51,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Solr 9 example response
+     * Solr 9 example response.
      *
      * @var string
      */
@@ -200,7 +200,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
             EXPLANATION;
 
     /**
-     * Second Solr 9 example response
+     * Second Solr 9 example response.
      *
      * @var string
      */
@@ -268,7 +268,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         EXPLANATION;
 
     /**
-     * Third Solr 9 example response
+     * Third Solr 9 example response.
      *
      * @var string
      */
@@ -425,7 +425,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         . 'const(1))),const(6.5)),const(1)))';
 
     /**
-     * Test basic Explanation attributes
+     * Test basic Explanation attributes.
      *
      * @return void
      */
@@ -464,7 +464,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the explanation array
+     * Test the explanation array.
      *
      * @return void
      */
@@ -506,7 +506,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test rest length with minPercent
+     * Test rest length with minPercent.
      *
      * @return void
      */
@@ -545,7 +545,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test rest length with maxFields
+     * Test rest length with maxFields.
      *
      * @return void
      */
@@ -583,7 +583,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test escaping brackets
+     * Test escaping brackets.
      *
      * @return void
      */
@@ -618,7 +618,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test without boost
+     * Test without boost.
      *
      * @return void
      */
@@ -648,7 +648,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test boost
+     * Test boost.
      *
      * @return void
      */
@@ -683,7 +683,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test coord
+     * Test coord.
      *
      * @return void
      */
@@ -714,7 +714,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test when explainOther ins empty (recordId is not in Solr index)
+     * Test when explainOther ins empty (recordId is not in Solr index).
      *
      * @return void
      */
@@ -744,7 +744,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test when explainOther has no matching clause
+     * Test when explainOther has no matching clause.
      *
      * @return void
      */

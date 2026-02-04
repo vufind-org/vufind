@@ -48,7 +48,7 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param CommentsServiceInterface $commentsService Comments database service
      * @param ?UserEntityInterface     $user            Logged in user (or null)

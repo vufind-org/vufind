@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Jop resolver driver test
+ * Jop resolver driver test.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Laminas\Http\Response as HttpResponse;
 use VuFind\Resolver\Driver\Jop;
 
 /**
- * Jop resolver driver test
+ * Jop resolver driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Test-Config
+     * Test-Config.
      *
      * @var array
      */
@@ -70,7 +70,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test link parsing
+     * Test link parsing.
      *
      * @return void
      */
@@ -139,7 +139,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test URL generation
+     * Test URL generation.
      *
      * @return void
      */
@@ -156,7 +156,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test implicit downgrade of open url
+     * Test implicit downgrade of open url.
      *
      * @return void
      */
@@ -190,7 +190,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test implicit call of downgradeOpenUrl
+     * Test implicit call of downgradeOpenUrl.
      *
      * @return void
      */

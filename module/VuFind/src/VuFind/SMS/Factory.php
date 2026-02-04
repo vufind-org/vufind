@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating SMS objects.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating SMS objects.
  *
  * @category VuFind
  * @package  SMS
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class Factory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service manager
      * @param string             $name      Requested service name (unused)

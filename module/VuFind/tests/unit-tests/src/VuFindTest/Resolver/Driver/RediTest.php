@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Redi resolver driver test
+ * Redi resolver driver test.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Laminas\Http\Response as HttpResponse;
 use VuFind\Resolver\Driver\Redi;
 
 /**
- * Redi resolver driver test
+ * Redi resolver driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class RediTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Test-Config
+     * Test-Config.
      *
      * @var array
      */
@@ -70,7 +70,7 @@ class RediTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */

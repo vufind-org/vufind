@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Results
+ * EDS API Results.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
 /**
- * EDS API Results
+ * EDS API Results.
  *
  * @category VuFind
  * @package  EBSCO
@@ -56,14 +56,14 @@ class Results extends \VuFind\Search\Base\Results
     protected $backendId = 'EDS';
 
     /**
-     * Facet list
+     * Facet list.
      *
      * @var array
      */
     protected $responseFacets;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
@@ -161,7 +161,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
@@ -191,7 +191,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Getting the highest relevance of all the results
+     * Getting the highest relevance of all the results.
      *
      * @return ?float
      */

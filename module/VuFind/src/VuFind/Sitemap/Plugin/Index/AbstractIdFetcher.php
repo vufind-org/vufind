@@ -43,7 +43,7 @@ use VuFindSearch\Service;
 abstract class AbstractIdFetcher
 {
     /**
-     * Search service
+     * Search service.
      *
      * @var Service
      */
@@ -60,7 +60,7 @@ abstract class AbstractIdFetcher
     }
 
     /**
-     * Get the initial offset to seed the search process
+     * Get the initial offset to seed the search process.
      *
      * @return string
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Navigation plugin manager
+ * Navigation plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Navigation;
 
 /**
- * Navigation plugin manager
+ * Navigation plugin manager.
  *
  * @category VuFind
  * @package  Navigation

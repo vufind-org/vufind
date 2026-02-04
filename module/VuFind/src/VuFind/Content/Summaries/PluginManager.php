@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summaries content loader plugin manager
+ * Summaries content loader plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Content\Summaries;
 
 /**
- * Summaries content loader plugin manager
+ * Summaries content loader plugin manager.
  *
  * @category VuFind
  * @package  Content

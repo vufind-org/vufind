@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
+ * VuFind Theme Public Resource Handler (for CSS, JS, etc.).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function count;
 use function is_array;
 
 /**
- * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
+ * VuFind Theme Public Resource Handler (for CSS, JS, etc.).
  *
  * @category VuFind
  * @package  Theme
@@ -46,35 +46,35 @@ class ResourceContainer
     use \VuFind\Log\VarDumperTrait;
 
     /**
-     * CSS files
+     * CSS files.
      *
      * @var array
      */
     protected $css = [];
 
     /**
-     * Javascript files
+     * Javascript files.
      *
      * @var array
      */
     protected $js = [];
 
     /**
-     * Favicon
+     * Favicon.
      *
      * @var string|array|null
      */
     protected $favicon = null;
 
     /**
-     * Encoding type
+     * Encoding type.
      *
      * @var string
      */
     protected $encoding = 'UTF-8';
 
     /**
-     * Generator value for <meta> tag
+     * Generator value for <meta> tag.
      *
      * @var string
      */
@@ -474,7 +474,7 @@ class ResourceContainer
     }
 
     /**
-     * Remove a CSS file if it matches another file's name
+     * Remove a CSS file if it matches another file's name.
      *
      * @param string $file Filename to remove
      *

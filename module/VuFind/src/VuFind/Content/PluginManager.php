@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content loader plugin manager
+ * Content loader plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Content;
 
 /**
- * Content loader plugin manager
+ * Content loader plugin manager.
  *
  * @category VuFind
  * @package  Content

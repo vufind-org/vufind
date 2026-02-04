@@ -68,7 +68,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test persistent
+     * Test persistent.
      *
      * @return void
      */
@@ -301,7 +301,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test default limit sorting
+     * Test default limit sorting.
      *
      * @return void
      */
@@ -326,7 +326,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test limit sorting with order override
+     * Test limit sorting with order override.
      *
      * @return void
      */
@@ -362,7 +362,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testHierarchicalFacetsFilters
+     * Data provider for testHierarchicalFacetsFilters.
      *
      * @return \Iterator
      */

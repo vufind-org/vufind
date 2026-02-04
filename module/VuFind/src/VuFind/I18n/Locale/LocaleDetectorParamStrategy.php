@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Locale Detector Strategy for VuFind POST Parameter
+ * Locale Detector Strategy for VuFind POST Parameter.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use SlmLocale\Strategy\AbstractStrategy;
 use function in_array;
 
 /**
- * Locale Detector Strategy for VuFind POST Parameter
+ * Locale Detector Strategy for VuFind POST Parameter.
  *
  * @category VuFind
  * @package  I18n\Locale

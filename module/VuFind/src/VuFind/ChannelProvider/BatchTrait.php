@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait for ChannelProviders to configure and calculate batch sizes
+ * Trait for ChannelProviders to configure and calculate batch sizes.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ChannelProvider;
 
 /**
- * Trait for ChannelProviders to configure and calculate batch sizes
+ * Trait for ChannelProviders to configure and calculate batch sizes.
  *
  * @category VuFind
  * @package  ServiceManager

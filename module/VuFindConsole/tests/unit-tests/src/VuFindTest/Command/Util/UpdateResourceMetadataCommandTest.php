@@ -53,7 +53,7 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
     use WithConsecutiveTrait;
 
     /**
-     * Data provider for testUpdate
+     * Data provider for testUpdate.
      *
      * @return \Iterator
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SierraRest ILS driver test
+ * SierraRest ILS driver test.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\SierraRest;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * SierraRest ILS driver test
+ * SierraRest ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     use FixtureTrait;
 
     /**
-     * Test bib IDs (raw value => formatted value)
+     * Test bib IDs (raw value => formatted value).
      *
      * @var array
      */
@@ -135,7 +135,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testGetMyProfileData
+     * Data provider for testGetMyProfileData.
      *
      * @return Generator
      */
@@ -190,7 +190,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyProfile
+     * Test getMyProfile.
      *
      * @param array  $patron   User patron
      * @param string $fixture  Name of the response fixture file
@@ -218,7 +218,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testPatronLogin
+     * Data provider for testPatronLogin.
      *
      * @return Generator
      */
@@ -263,7 +263,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test patronLogin
+     * Test patronLogin.
      *
      * @param array  $patron   User patron
      * @param string $fixture  Name of the response fixture file
@@ -298,7 +298,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Create driver
+     * Create driver.
      *
      * @param ?Converter $dateConverter  Date converter
      * @param ?callable  $sessionFactory Session factory function

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session handler interface
+ * Session handler interface.
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
@@ -34,7 +34,7 @@ namespace VuFind\Session;
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
 
 /**
- * Session handler interface
+ * Session handler interface.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -46,14 +46,14 @@ use Laminas\Session\SaveHandler\SaveHandlerInterface;
 interface HandlerInterface extends SaveHandlerInterface
 {
     /**
-     * Enable session writing (default)
+     * Enable session writing (default).
      *
      * @return void
      */
     public function enableWrites();
 
     /**
-     * Disable session writing, i.e. make it read-only
+     * Disable session writing, i.e. make it read-only.
      *
      * @return void
      */

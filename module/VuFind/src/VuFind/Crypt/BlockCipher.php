@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Block cipher class
+ * Block cipher class.
  *
  * This class was developed to replace the deprecated \Laminas\Crypt\BlockCipher
  * class. Its default behavior is inspired by that earlier class and some of its
@@ -43,7 +43,7 @@ use function in_array;
 use function ord;
 
 /**
- * Block cipher class
+ * Block cipher class.
  *
  * @category VuFind
  * @package  Crypt
@@ -54,28 +54,28 @@ use function ord;
 class BlockCipher
 {
     /**
-     * Salt
+     * Salt.
      *
      * @var string
      */
     protected $salt;
 
     /**
-     * Encryption algorithm
+     * Encryption algorithm.
      *
      * @var string
      */
     protected $algo = 'aes';
 
     /**
-     * OpenSSL encryption mode
+     * OpenSSL encryption mode.
      *
      * @var string
      */
     protected $mode = 'cbc';
 
     /**
-     * The encryption algorithms to support
+     * The encryption algorithms to support.
      *
      * @var array
      */
@@ -89,7 +89,7 @@ class BlockCipher
     ];
 
     /**
-     * Block sizes (in bytes) for each supported algorithm
+     * Block sizes (in bytes) for each supported algorithm.
      *
      * @var array
      */
@@ -103,7 +103,7 @@ class BlockCipher
     ];
 
     /**
-     * Key sizes (in bytes) for each supported algorithm
+     * Key sizes (in bytes) for each supported algorithm.
      *
      * @var array
      */
@@ -117,35 +117,35 @@ class BlockCipher
     ];
 
     /**
-     * Hash algorithm for Pbkdf2
+     * Hash algorithm for Pbkdf2.
      *
      * @var string
      */
     protected $pbkdf2Hash = 'sha256';
 
     /**
-     * Hash algorithm for HMAC
+     * Hash algorithm for HMAC.
      *
      * @var string
      */
     protected $hash = 'sha256';
 
     /**
-     * Number of iterations for Pbkdf2
+     * Number of iterations for Pbkdf2.
      *
      * @var string
      */
     protected $keyIteration = 5000;
 
     /**
-     * Raw key provided by user
+     * Raw key provided by user.
      *
      * @var string
      */
     protected $key;
 
     /**
-     * Key prepared for OpenSSL
+     * Key prepared for OpenSSL.
      *
      * @var string
      */
@@ -159,7 +159,7 @@ class BlockCipher
     protected $legacyPbkdf2 = true;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $options Options (supported keys: algorithm, legacyPbkdf2)
      */
@@ -177,7 +177,7 @@ class BlockCipher
     }
 
     /**
-     * Pad the string using PKCS#7
+     * Pad the string using PKCS#7.
      *
      * @param string $string    String to pad
      * @param int    $blockSize Target size
@@ -191,7 +191,7 @@ class BlockCipher
     }
 
     /**
-     * Unpad a PKCS#7 string
+     * Unpad a PKCS#7 string.
      *
      * @param string $string String to unpad
      *
@@ -253,7 +253,7 @@ class BlockCipher
     }
 
     /**
-     * Set the encryption algorithm (cipher) and mode (optionally)
+     * Set the encryption algorithm (cipher) and mode (optionally).
      *
      * @param string  $algo New algorithm
      * @param ?string $mode New mode (null to keep current setting)
@@ -275,7 +275,7 @@ class BlockCipher
     }
 
     /**
-     * Set the encryption algorithm (cipher)
+     * Set the encryption algorithm (cipher).
      *
      * @param string $algo New algorithm
      *
@@ -288,7 +288,7 @@ class BlockCipher
     }
 
     /**
-     * Encrypt data using OpenSSL
+     * Encrypt data using OpenSSL.
      *
      * @param string $data Data to encrypt
      *
@@ -325,7 +325,7 @@ class BlockCipher
     }
 
     /**
-     * Decrypt data using OpenSSL
+     * Decrypt data using OpenSSL.
      *
      * @param string $data Data to decrypt
      *
@@ -354,7 +354,7 @@ class BlockCipher
     }
 
     /**
-     * Get the salt (IV) size
+     * Get the salt (IV) size.
      *
      * @return int
      */
@@ -366,7 +366,7 @@ class BlockCipher
     }
 
     /**
-     * Set the salt value
+     * Set the salt value.
      *
      * @param string $salt Salt value
      *
@@ -394,7 +394,7 @@ class BlockCipher
     }
 
     /**
-     * Get the block size for the selected algorithm
+     * Get the block size for the selected algorithm.
      *
      * @return int
      */
@@ -404,7 +404,7 @@ class BlockCipher
     }
 
     /**
-     * Set the encryption/decryption key
+     * Set the encryption/decryption key.
      *
      * @param string $key Encryption/decryption key
      *
@@ -422,7 +422,7 @@ class BlockCipher
     }
 
     /**
-     * Get the expected hash size based on algorithm and output format
+     * Get the expected hash size based on algorithm and output format.
      *
      * @param string $hash   Hash algorithm to measure
      * @param bool   $binary Output in binary mode?
@@ -492,7 +492,7 @@ class BlockCipher
     }
 
     /**
-     * Encrypt data (with HMAC authentication)
+     * Encrypt data (with HMAC authentication).
      *
      * @param string $data Data to encrypt
      *
@@ -525,7 +525,7 @@ class BlockCipher
     }
 
     /**
-     * Generate the encryption/decryption key and the HMAC key for the authentication
+     * Generate the encryption/decryption key and the HMAC key for the authentication.
      *
      * @param string $ciphertext Text to decrypt
      * @param string $salt       Salt
@@ -552,7 +552,7 @@ class BlockCipher
     }
 
     /**
-     * Decrypt data
+     * Decrypt data.
      *
      * @param string $data Data to decrypt
      *

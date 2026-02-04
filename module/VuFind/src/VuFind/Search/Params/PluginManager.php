@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search params plugin manager
+ * Search params plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Params;
 
 /**
- * Search params plugin manager
+ * Search params plugin manager.
  *
  * @category VuFind
  * @package  Search
@@ -111,7 +111,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

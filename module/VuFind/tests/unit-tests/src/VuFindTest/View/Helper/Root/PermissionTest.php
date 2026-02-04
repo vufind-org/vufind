@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission view helper Test Class
+ * Permission view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\Permission;
 
 /**
- * Permission view helper Test Class
+ * Permission view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -78,7 +78,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test the message display
+     * Test the message display.
      *
      * @return void
      */
@@ -102,7 +102,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the template display
+     * Test the template display.
      *
      * @return void
      */
@@ -128,7 +128,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the template display with an existing template
+     * Test the template display with an existing template.
      *
      * @return void
      */
@@ -170,7 +170,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock permission manager
+     * Get mock permission manager.
      *
      * @param array $isAuthorized isAuthorized value to return
      *

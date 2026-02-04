@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTTP POST log writer for Slack
+ * HTTP POST log writer for Slack.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Monolog\Handler\SlackWebhookHandler as MonologSlackWebhookHandler;
 use Monolog\LogRecord;
 
 /**
- * This class extends the Laminas Logging towards streams
+ * This class extends the Laminas Logging towards streams.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -48,7 +48,7 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
     use VerbosityTrait;
 
     /**
-     * Icons that appear at the start of log messages in Slack, by severity
+     * Icons that appear at the start of log messages in Slack, by severity.
      *
      * @var array
      */
@@ -64,7 +64,7 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string      $webhookUrl             Slack webhook URL
      * @param string      $channel                Slack channel (default: '#log')
@@ -95,7 +95,7 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
     }
 
     /**
-     * Writes the record down to the log
+     * Writes the record down to the log.
      *
      * @param LogRecord $record Log record to write
      *
@@ -129,7 +129,7 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
     }
 
     /**
-     * Format a log message with appropriate icon
+     * Format a log message with appropriate icon.
      *
      * @param array $event Event data array
      *
@@ -142,7 +142,7 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
     }
 
     /**
-     * Get Slack data for the log record
+     * Get Slack data for the log record.
      *
      * @param LogRecord $record Log record to process
      *

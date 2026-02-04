@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for InjectTemplateListener
+ * Factory for InjectTemplateListener.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for InjectTemplateListener
+ * Factory for InjectTemplateListener.
  *
  * @category VuFind
  * @package  Theme
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class InjectTemplateListenerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default Controller
+ * Default Controller.
  *
  * PHP version 8
  *
@@ -44,21 +44,21 @@ use VuFind\Config\Config;
 class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
 {
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Auth manager
+     * Auth manager.
      *
      * @var AuthManager
      */
     protected $authManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config      $config      VuFind configuration
      * @param AuthManager $authManager Auth manager

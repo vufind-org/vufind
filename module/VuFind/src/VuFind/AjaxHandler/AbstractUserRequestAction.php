@@ -77,7 +77,7 @@ abstract class AbstractUserRequestAction extends AbstractIlsUserAndRendererActio
     }
 
     /**
-     * Get account status level for notification icon
+     * Get account status level for notification icon.
      *
      * @param array $status Status information
      *

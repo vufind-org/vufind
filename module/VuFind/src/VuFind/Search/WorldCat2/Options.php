@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat v2 Search Options
+ * WorldCat v2 Search Options.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\WorldCat2;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * WorldCat v2 Search Options
+ * WorldCat v2 Search Options.
  *
  * @category VuFind
  * @package  Search_WorldCat2
@@ -50,7 +50,7 @@ class Options extends \VuFind\Search\Base\Options
     protected int $termsLimit;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

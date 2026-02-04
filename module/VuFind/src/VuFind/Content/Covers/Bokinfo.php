@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin for Bokinfo coverimages
+ * Plugin for Bokinfo coverimages.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use SimpleXMLElement;
 use function strlen;
 
 /**
- * Plugin for Bokinfo coverimages
+ * Plugin for Bokinfo coverimages.
  *
  * @category VuFind
  * @package  Content
@@ -51,7 +51,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -102,7 +102,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Return a HTTP Client object
+     * Return a HTTP Client object.
      *
      * @param string $url API Url
      *
@@ -120,7 +120,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Test that the url is really working
+     * Test that the url is really working.
      *
      * @param string $url image Url
      *
@@ -142,7 +142,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Find the image url in the XML returned from API
+     * Find the image url in the XML returned from API.
      *
      * @param string $rawXML XML returned from API
      *

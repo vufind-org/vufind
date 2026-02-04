@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender aspect of the Search Multi-class (Options)
+ * Blender aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Search\Blender;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Blender Search Options
+ * Blender Search Options.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -45,7 +45,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -54,7 +54,7 @@ class Options extends \VuFind\Search\Solr\Options
     protected $searchIni = 'Blender';
 
     /**
-     * Configuration file to read facet settings from
+     * Configuration file to read facet settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -77,7 +77,7 @@ class Options extends \VuFind\Search\Solr\Options
     protected $advancedSearchAction = 'blender-advanced';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

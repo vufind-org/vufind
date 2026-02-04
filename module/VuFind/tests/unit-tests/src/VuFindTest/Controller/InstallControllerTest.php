@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class InstallControllerTest
+ * Class InstallControllerTest.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\Controller;
 use VuFind\Controller\InstallController;
 
 /**
- * Class InstallControllerTest
+ * Class InstallControllerTest.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\Controller\InstallController;
 class InstallControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test getMinimalPhpVersion with actual composer.json file
+     * Test getMinimalPhpVersion with actual composer.json file.
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Simulate missing composer.json file
+     * Simulate missing composer.json file.
      *
      * @return void
      */
@@ -76,7 +76,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Simulate no PHP version defined in composer.json file
+     * Simulate no PHP version defined in composer.json file.
      *
      * @return void
      */
@@ -90,7 +90,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test data for getMinimalPhpVersion
+     * Test data for getMinimalPhpVersion.
      *
      * @return \Iterator
      */
@@ -180,7 +180,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMinimalPhpVersion with actual composer.json file
+     * Test getMinimalPhpVersion with actual composer.json file.
      *
      * @param array  $json     JSON data
      * @param string $expected Expected version number
@@ -199,7 +199,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Mock controller
+     * Mock controller.
      *
      * @param array $json JSON data
      *
@@ -220,7 +220,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return method InstallController::getMinimalPhpVersion
+     * Return method InstallController::getMinimalPhpVersion.
      *
      * @return \ReflectionMethod
      */

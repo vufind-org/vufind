@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Library Pickup Locations" AJAX handler
+ * "Get Library Pickup Locations" AJAX handler.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
- * "Get Library Pickup Locations" AJAX handler
+ * "Get Library Pickup Locations" AJAX handler.
  *
  * Get pick up locations for a library
  *

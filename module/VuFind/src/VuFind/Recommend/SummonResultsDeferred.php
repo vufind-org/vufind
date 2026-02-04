@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonResultsDeferred Recommendations Module
+ * SummonResultsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function is_object;
 
 /**
- * SummonResultsDeferred Recommendations Module
+ * SummonResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the SummonResults
  * module.
@@ -47,14 +47,14 @@ use function is_object;
 class SummonResultsDeferred extends AbstractSummonRecommendDeferred
 {
     /**
-     * Label for current search type
+     * Label for current search type.
      *
      * @var string
      */
     protected $typeLabel = '';
 
     /**
-     * Number of expected module parameters (from .ini config)
+     * Number of expected module parameters (from .ini config).
      *
      * @var int
      */

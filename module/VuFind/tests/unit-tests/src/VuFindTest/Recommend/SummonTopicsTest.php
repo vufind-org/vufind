@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonTopics Test Class
+ * SummonTopics Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\SummonTopics;
 
 /**
- * SummonTopics Test Class
+ * SummonTopics Test Class.
  *
  * @category VuFind
  * @package  Tests

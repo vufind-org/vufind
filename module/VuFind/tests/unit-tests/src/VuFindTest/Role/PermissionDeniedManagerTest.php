@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionManager Test Class
+ * PermissionManager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Role;
 use VuFind\Role\PermissionDeniedManager;
 
 /**
- * PermissionManager Test Class
+ * PermissionManager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -74,7 +74,7 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test a correctly configured template
+     * Test a correctly configured template.
      *
      * @return void
      */
@@ -99,7 +99,7 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a correctly configured exception
+     * Test a correctly configured exception.
      *
      * @return void
      */
@@ -119,7 +119,7 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test an empty permission section
      * getDeniedControllerBehavior should return false as the PermissionDeniedManager
-     * has nothing to do
+     * has nothing to do.
      *
      * @return void
      */
@@ -138,7 +138,7 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test a non existent permission section
      * getDeniedControllerBehavior should return false as the PermissionDeniedManager
-     * has nothing to do
+     * has nothing to do.
      *
      * @return void
      */

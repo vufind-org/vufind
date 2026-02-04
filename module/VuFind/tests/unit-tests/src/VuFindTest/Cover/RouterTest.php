@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover Router Test Class
+ * Cover Router Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTest\RecordDriver\TestHarness;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Cover Router Test Class
+ * Cover Router Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +54,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     protected $testTheme = 'bootstrap5';
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param array $data Test data
      *
@@ -68,7 +68,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a router to test
+     * Get a router to test.
      *
      * @return Router
      */

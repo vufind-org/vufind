@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Locale Detector Strategy for language cookie
+ * Locale Detector Strategy for language cookie.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\CookieStrategy;
 
 /**
- * Locale Detector Strategy for language cookie
+ * Locale Detector Strategy for language cookie.
  *
  * @category VuFind
  * @package  I18n\Locale
@@ -44,7 +44,7 @@ use SlmLocale\Strategy\CookieStrategy;
 class LocaleDetectorCookieStrategy extends CookieStrategy
 {
     /**
-     * Event handler for the 'found' event
+     * Event handler for the 'found' event.
      *
      * @param LocaleEvent $event Event
      *

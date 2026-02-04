@@ -52,7 +52,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Data provider for testSuccessWithMinimalParameters()
+     * Data provider for testSuccessWithMinimalParameters().
      *
      * @return \Iterator
      */
@@ -186,7 +186,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock command object
+     * Get a mock command object.
      *
      * @param ?Importer $importer Importer object
      * @param ?Writer   $solr     Solr writer object
@@ -213,7 +213,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock importer object
+     * Get a mock importer object.
      *
      * @param array $methods Methods to mock
      *
@@ -230,7 +230,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock solr writer object
+     * Get a mock solr writer object.
      *
      * @param array $methods Methods to mock
      *

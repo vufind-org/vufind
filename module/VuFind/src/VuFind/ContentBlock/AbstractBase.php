@@ -41,7 +41,7 @@ namespace VuFind\ContentBlock;
 class AbstractBase implements ContentBlockInterface
 {
     /**
-     * Configuration
+     * Configuration.
      *
      * @var string
      */

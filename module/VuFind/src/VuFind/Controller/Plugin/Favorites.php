@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Favorites Support Methods
+ * VuFind Action Helper - Favorites Support Methods.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller\Plugin;
 use VuFind\Favorites\FavoritesService;
 
 /**
- * Action helper to perform favorites-related actions
+ * Action helper to perform favorites-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -45,7 +45,7 @@ use VuFind\Favorites\FavoritesService;
 class Favorites extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FavoritesService $favoritesService Favorites service
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Login Token Exception
+ * Login Token Exception.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Exception;
 
 /**
- * Login Token Exception
+ * Login Token Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -43,7 +43,7 @@ namespace VuFind\Exception;
 class LoginToken extends \Exception
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string          $message  Exception message
      * @param int             $userId   User ID
@@ -58,7 +58,7 @@ class LoginToken extends \Exception
     }
 
     /**
-     * Get the associated user ID
+     * Get the associated user ID.
      *
      * @return int
      */

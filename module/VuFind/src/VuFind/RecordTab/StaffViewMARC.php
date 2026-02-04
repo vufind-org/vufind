@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Staff view (MARC dump) tab
+ * Staff view (MARC dump) tab.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Staff view (MARC dump) tab
+ * Staff view (MARC dump) tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,7 +41,7 @@ namespace VuFind\RecordTab;
 class StaffViewMARC extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

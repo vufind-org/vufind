@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Authority aspect of the Search Multi-class (Options)
+ * Solr Authority aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrAuth;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Solr Authority Search Options
+ * Solr Authority Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuth
@@ -43,7 +43,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RetryTrait Test Class
+ * RetryTrait Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Service\Feature;
 use VuFind\Service\Feature\RetryTrait;
 
 /**
- * RetryTrait Test Class
+ * RetryTrait Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
             use RetryTrait;
 
             /**
-             * Call a method and retry the call if an exception is thrown
+             * Call a method and retry the call if an exception is thrown.
              *
              * @param callable  $callback       Method to call
              * @param ?callable $statusCallback Status callback called before retry and after
@@ -72,7 +72,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Get the delay before a try
+             * Get the delay before a try.
              *
              * @param int   $attempt Attempt number
              * @param array $options Current options
@@ -88,7 +88,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retry with an eventually successful method
+     * Test retry with an eventually successful method.
      *
      * @return void
      */
@@ -110,7 +110,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the trait with a failing method
+     * Test the trait with a failing method.
      *
      * @return void
      */
@@ -137,7 +137,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the trait with retryableExceptionCallback
+     * Test the trait with retryableExceptionCallback.
      *
      * @return void
      */
@@ -174,7 +174,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testBackoff
+     * Data provider for testBackoff.
      *
      * @return \Iterator
      */
@@ -196,7 +196,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the backoff duration handling
+     * Test the backoff duration handling.
      *
      * @param int   $expected Expected result
      * @param int   $attempt  Attempt number

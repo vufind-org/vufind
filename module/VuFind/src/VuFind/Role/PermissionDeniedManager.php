@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Role;
 use function count;
 
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * @category VuFind
  * @package  Authorization
@@ -45,7 +45,7 @@ use function count;
 class PermissionDeniedManager
 {
     /**
-     * List config
+     * List config.
      *
      * @var array
      */
@@ -67,7 +67,7 @@ class PermissionDeniedManager
     protected $defaultDeniedTemplateBehavior = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config configuration
      */
@@ -87,7 +87,7 @@ class PermissionDeniedManager
     }
 
     /**
-     * Set the default behavior for a denied controller permission
+     * Set the default behavior for a denied controller permission.
      *
      * @param string|bool $value Default behavior for a denied controller permission
      *
@@ -99,7 +99,7 @@ class PermissionDeniedManager
     }
 
     /**
-     * Set the default behavior for a denied template permission
+     * Set the default behavior for a denied template permission.
      *
      * @param string|bool $value Default behavior for a denied template permission
      *
@@ -155,7 +155,7 @@ class PermissionDeniedManager
     }
 
     /**
-     * Get permission denied logic
+     * Get permission denied logic.
      *
      * @param string $permission      Permission that has been denied
      * @param string $mode            Mode of the operation. Should be either

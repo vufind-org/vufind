@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata Test Class
+ * Metadata Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\View\Helper\Root\Metadata;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * Metadata Test Class
+ * Metadata Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use VuFindTest\RecordDriver\TestHarness;
 class MetadataTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param array $data Test data
      *
@@ -62,7 +62,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock HeadMeta helper
+     * Get a mock HeadMeta helper.
      *
      * @return HeadMeta
      */
@@ -84,7 +84,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock plugin manager
+     * Get a mock plugin manager.
      *
      * @return PluginManager
      */

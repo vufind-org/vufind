@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Staff view MARC Test Class
+ * Staff view MARC Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\StaffViewMARC;
 
 /**
- * StaffViewMARC Test Class
+ * StaffViewMARC Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -46,7 +46,7 @@ class GetHoldingsCommand extends \VuFindSearch\Command\CallMethodCommand
     use RecordIdentifierTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string   $backendId Search backend identifier
      * @param ParamBag $paramBag  Parameters for holdings lookup

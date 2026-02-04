@@ -108,7 +108,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Set the limit for batch queries
+     * Set the limit for batch queries.
      *
      * @param int $pageSize Records per Query
      *
@@ -183,7 +183,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Clears all accumulated extra request details
+     * Clears all accumulated extra request details.
      *
      * @return void
      */
@@ -228,7 +228,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Get Random records
+     * Get Random records.
      *
      * @param AbstractQuery $query  Search query
      * @param int           $limit  Search limit

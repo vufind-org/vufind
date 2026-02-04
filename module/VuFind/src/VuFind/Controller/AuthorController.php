@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author Search Controller
+ * Author Search Controller.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Controller;
 
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Controller
@@ -41,7 +41,7 @@ namespace VuFind\Controller;
 class AuthorController extends AbstractSearch
 {
     /**
-     * Returns a list of all items associated with one facet for the lightbox
+     * Returns a list of all items associated with one facet for the lightbox.
      *
      * Parameters:
      * facet        The facet to retrieve
@@ -56,7 +56,7 @@ class AuthorController extends AbstractSearch
     }
 
     /**
-     * Sets the configuration for displaying author results
+     * Sets the configuration for displaying author results.
      *
      * @return mixed
      */
@@ -75,7 +75,7 @@ class AuthorController extends AbstractSearch
     }
 
     /**
-     * Sets the configuration for performing an author search
+     * Sets the configuration for performing an author search.
      *
      * @return mixed
      */
@@ -88,7 +88,7 @@ class AuthorController extends AbstractSearch
     }
 
     /**
-     * Displays the proper page for a search action
+     * Displays the proper page for a search action.
      *
      * @return mixed
      */

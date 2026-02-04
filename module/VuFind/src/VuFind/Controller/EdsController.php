@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Eds Controller
+ * Eds Controller.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function array_key_exists;
 use function in_array;
 
 /**
- * EDS Controller
+ * EDS Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -47,7 +47,7 @@ use function in_array;
 class EdsController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -58,7 +58,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return mixed
      */
@@ -78,7 +78,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */
@@ -191,7 +191,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Process the publication date range limiter widget
+     * Process the publication date range limiter widget.
      *
      * @param object $searchObject Saved search object (false if none)
      *

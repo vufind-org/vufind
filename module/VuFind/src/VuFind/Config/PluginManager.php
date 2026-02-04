@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Config Manager
+ * VuFind Config Manager.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\Config\Location\ConfigLocationInterface;
 
 /**
- * VuFind Config Manager
+ * VuFind Config Manager.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -47,14 +47,14 @@ use VuFind\Config\Location\ConfigLocationInterface;
 class PluginManager extends Base implements ConfigManagerInterface
 {
     /**
-     * ConfigManager
+     * ConfigManager.
      *
      * @var ConfigManagerInterface
      */
     protected ConfigManagerInterface $configManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -79,7 +79,7 @@ class PluginManager extends Base implements ConfigManagerInterface
     }
 
     /**
-     * Validate the plugin
+     * Validate the plugin.
      *
      * Checks that the filter loaded is either a valid callback or an instance
      * of FilterInterface.
@@ -96,7 +96,7 @@ class PluginManager extends Base implements ConfigManagerInterface
     }
 
     /**
-     * Reload a configuration and return the new version
+     * Reload a configuration and return the new version.
      *
      * @param string $id Service identifier
      *

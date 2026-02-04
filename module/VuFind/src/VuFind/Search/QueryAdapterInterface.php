@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search query adapter interface
+ * Search query adapter interface.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\WorkKeysQuery;
 
 /**
- * Search query adapter interface
+ * Search query adapter interface.
  *
  * @category VuFind
  * @package  Search_Solr

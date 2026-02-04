@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config handler plugin manager
+ * Config handler plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Config\Handler;
 use VuFind\Config\Location\ConfigLocationInterface;
 
 /**
- * Config handler plugin manager
+ * Config handler plugin manager.
  *
  * @category VuFind
  * @package  Config_Handlers

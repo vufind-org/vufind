@@ -83,7 +83,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock results manager
+     * Get a mock results manager.
      *
      * @return \VuFind\Search\Results\PluginManager
      */
@@ -93,7 +93,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock record loader
+     * Get a mock record loader.
      *
      * @return \VuFind\Record\Loader
      */
@@ -103,7 +103,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock change tracker service
+     * Get a mock change tracker service.
      *
      * @return MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
      */
@@ -113,7 +113,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock record formatter
+     * Get a mock record formatter.
      *
      * @return MockObject&\VuFindApi\Formatter\RecordFormatter
      */
@@ -123,7 +123,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock resumption Service
+     * Get a mock resumption Service.
      *
      * @return MockObject&\VuFind\Db\Service\OaiResumptionService
      */

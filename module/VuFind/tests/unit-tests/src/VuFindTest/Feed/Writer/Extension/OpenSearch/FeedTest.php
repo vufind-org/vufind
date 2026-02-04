@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenSearch Feed Plugin Test Class
+ * OpenSearch Feed Plugin Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Feed\Writer\Extension\OpenSearch;
 use VuFind\Feed\Writer\Extension\OpenSearch\Feed;
 
 /**
- * OpenSearch Feed Plugin Test Class
+ * OpenSearch Feed Plugin Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication view helper
+ * Authentication view helper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
- * Authentication view helper
+ * Authentication view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,21 +52,21 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     use DbServiceAwareTrait;
 
     /**
-     * Authentication manager
+     * Authentication manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $manager;
 
     /**
-     * ILS Authenticator
+     * ILS Authenticator.
      *
      * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuthenticator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\Manager          $manager          Authentication manager
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
@@ -97,7 +97,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get manager
+     * Get manager.
      *
      * @return \VuFind\Auth\Manager
      */
@@ -117,7 +117,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get the logged-in user's identity (null if not logged in)
+     * Get the logged-in user's identity (null if not logged in).
      *
      * @return ?IdentityInterface
      */
@@ -210,7 +210,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get login token data
+     * Get login token data.
      *
      * @param int $userId user identifier
      *

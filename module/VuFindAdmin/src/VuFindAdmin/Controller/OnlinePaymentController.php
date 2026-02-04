@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online Payment Controller
+ * Online Payment Controller.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use VuFind\OnlinePayment\OnlinePaymentManager;
 use VuFind\Validator\CsrfInterface;
 
 /**
- * Online Payment Controller
+ * Online Payment Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -55,7 +55,7 @@ class OnlinePaymentController extends AbstractAdmin
     use OnlinePaymentEventTrait;
 
     /**
-     * List payments
+     * List payments.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -90,7 +90,7 @@ class OnlinePaymentController extends AbstractAdmin
     }
 
     /**
-     * Details
+     * Details.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -131,7 +131,7 @@ class OnlinePaymentController extends AbstractAdmin
     }
 
     /**
-     * Mark payment resolved
+     * Mark payment resolved.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -174,7 +174,7 @@ class OnlinePaymentController extends AbstractAdmin
     }
 
     /**
-     * Converts wildcards and null and "ALL" params to null
+     * Converts wildcards and null and "ALL" params to null.
      *
      * @param string $param Parameter name
      *
@@ -195,7 +195,7 @@ class OnlinePaymentController extends AbstractAdmin
     }
 
     /**
-     * Get a date filter
+     * Get a date filter.
      *
      * @param string $param Parameter name
      *
@@ -210,7 +210,7 @@ class OnlinePaymentController extends AbstractAdmin
     }
 
     /**
-     * Get a status set filter
+     * Get a status set filter.
      *
      * @return array
      */
@@ -226,7 +226,7 @@ class OnlinePaymentController extends AbstractAdmin
     }
 
     /**
-     * Get available payment statuses
+     * Get available payment statuses.
      *
      * @return array
      */

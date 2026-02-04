@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionProvider Shibboleth Test Class
+ * PermissionProvider Shibboleth Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\Role\PermissionProvider;
 use VuFind\Role\PermissionProvider\Shibboleth;
 
 /**
- * PermissionProvider Shibboleth Test Class
+ * PermissionProvider Shibboleth Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\Role\PermissionProvider\Shibboleth;
 class ShibbolethTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test option alias idpentityid for Shib-Identity-Provider
+     * Test option alias idpentityid for Shib-Identity-Provider.
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test multi-valued option with matching header
+     * Test multi-valued option with matching header.
      *
      * @return void
      */
@@ -74,7 +74,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test multi-valued option with matching no header
+     * Test multi-valued option with matching no header.
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Setup request and shibboleth objects, run getPermissions and check the result
+     * Setup request and shibboleth objects, run getPermissions and check the result.
      *
      * @param array $headers        Request headers
      * @param mixed $options        options as from configuration

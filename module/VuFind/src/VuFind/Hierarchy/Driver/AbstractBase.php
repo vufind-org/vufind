@@ -48,14 +48,14 @@ use VuFind\Hierarchy\TreeRenderer\PluginManager as RendererManager;
 abstract class AbstractBase
 {
     /**
-     * Driver configuration
+     * Driver configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Tree data source plugin manager
+     * Tree data source plugin manager.
      *
      * @var DataManager
      */
@@ -69,21 +69,21 @@ abstract class AbstractBase
     protected $enabled = true;
 
     /**
-     * Tree renderer plugin manager
+     * Tree renderer plugin manager.
      *
      * @var RendererManager
      */
     protected $rendererManager;
 
     /**
-     * Find out whether or not to show the tree
+     * Find out whether or not to show the tree.
      *
      * @return bool
      */
     abstract public function showTree();
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config          Configuration
      * @param DataManager           $dataManager     Tree data source plugin manager
@@ -105,7 +105,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Returns the Source of the Tree
+     * Returns the Source of the Tree.
      *
      * @return object The tree data source object
      */
@@ -117,7 +117,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Returns the actual object for generating trees
+     * Returns the actual object for generating trees.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
@@ -156,14 +156,14 @@ abstract class AbstractBase
     }
 
     /**
-     * Returns the Tree Renderer Type
+     * Returns the Tree Renderer Type.
      *
      * @return string
      */
     abstract public function getTreeRendererType();
 
     /**
-     * Get Tree Settings
+     * Get Tree Settings.
      *
      * Returns all the configuration settings for a hierarchy tree
      *
@@ -172,28 +172,28 @@ abstract class AbstractBase
     abstract public function getTreeSettings();
 
     /**
-     * Get Tree Data Source Type
+     * Get Tree Data Source Type.
      *
      * @return string
      */
     abstract public function getTreeSourceType();
 
     /**
-     * Check if sorting is enabled in the hierarchy Options
+     * Check if sorting is enabled in the hierarchy Options.
      *
      * @return bool
      */
     abstract public function treeSorting();
 
     /**
-     * Get Collection Link Type
+     * Get Collection Link Type.
      *
      * @return string
      */
     abstract public function getCollectionLinkType();
 
     /**
-     * Get tree cache time in seconds
+     * Get tree cache time in seconds.
      *
      * @return int
      */

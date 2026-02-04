@@ -43,7 +43,7 @@ use VuFindSearch\Response\AbstractRecordCollection;
 class RecordCollection extends AbstractRecordCollection
 {
     /**
-     * Response from API
+     * Response from API.
      *
      * @var array
      */

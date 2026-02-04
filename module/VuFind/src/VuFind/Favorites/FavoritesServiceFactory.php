@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites service factory
+ * Favorites service factory.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\Tags\TagsService;
 
 /**
- * Favorites service
+ * Favorites service.
  *
  * @category VuFind
  * @package  Favorites
@@ -54,7 +54,7 @@ use VuFind\Tags\TagsService;
 class FavoritesServiceFactory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service container
      * @param string             $name      Requested service name (unused)

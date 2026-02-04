@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record tab plugin manager
+ * Record tab plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\RecordTab;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Record tab plugin manager
+ * Record tab plugin manager.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -102,7 +102,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

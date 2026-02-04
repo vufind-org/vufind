@@ -48,7 +48,7 @@ use function is_callable;
 class AbstractTokenRepository
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string                      $tokenType          Token type
      * @param string                      $entityClass        Entity class name
@@ -66,7 +66,7 @@ class AbstractTokenRepository
     }
 
     /**
-     * Persist a token in the database
+     * Persist a token in the database.
      *
      * @param Object $token Token
      *
@@ -104,7 +104,7 @@ class AbstractTokenRepository
     }
 
     /**
-     * Revoke a token
+     * Revoke a token.
      *
      * @param string $tokenId Token ID
      *
@@ -120,7 +120,7 @@ class AbstractTokenRepository
     }
 
     /**
-     * Check if a token is revoked
+     * Check if a token is revoked.
      *
      * @param string $tokenId Token ID
      *
@@ -133,7 +133,7 @@ class AbstractTokenRepository
     }
 
     /**
-     * Get a new token
+     * Get a new token.
      *
      * @return Object
      */

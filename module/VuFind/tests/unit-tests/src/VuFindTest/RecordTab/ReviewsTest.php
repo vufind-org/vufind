@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Reviews Test Class
+ * Reviews Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\Reviews;
 
 /**
- * Reviews Test Class
+ * Reviews Test Class.
  *
  * @category VuFind
  * @package  Tests

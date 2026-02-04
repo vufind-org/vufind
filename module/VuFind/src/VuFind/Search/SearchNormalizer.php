@@ -50,7 +50,7 @@ use function count;
 class SearchNormalizer
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager         $resultsManager Search results manager
      * @param SearchServiceInterface $searchService  Search database service
@@ -62,7 +62,7 @@ class SearchNormalizer
     }
 
     /**
-     * Normalize a search
+     * Normalize a search.
      *
      * @param Results $results Search results object
      *
@@ -74,7 +74,7 @@ class SearchNormalizer
     }
 
     /**
-     * Normalize a minified search
+     * Normalize a minified search.
      *
      * @param Minified $minified Minified search results object
      *
@@ -120,7 +120,7 @@ class SearchNormalizer
     }
 
     /**
-     * Add a search into the search table (history)
+     * Add a search into the search table (history).
      *
      * @param \VuFind\Search\Base\Results $results   Search to save
      * @param string                      $sessionId Current session ID

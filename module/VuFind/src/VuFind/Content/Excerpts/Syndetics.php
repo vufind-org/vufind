@@ -41,7 +41,7 @@ namespace VuFind\Content\Excerpts;
 class Syndetics extends \VuFind\Content\AbstractSyndetics
 {
     /**
-     * List of syndetic excerpts
+     * List of syndetic excerpts.
      *
      * @var array
      */

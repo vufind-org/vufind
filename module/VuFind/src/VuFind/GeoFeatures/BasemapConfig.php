@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Basemap Configuration Module
+ * Basemap Configuration Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\GeoFeatures;
 
 /**
- * Basemap Configuration Class
+ * Basemap Configuration Class.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -41,21 +41,21 @@ namespace VuFind\GeoFeatures;
 class BasemapConfig extends AbstractConfig
 {
     /**
-     * Request origin
+     * Request origin.
      *
      * @var string
      */
     protected $requestOrigin;
 
     /**
-     * Valid options to retrieve from configuration
+     * Valid options to retrieve from configuration.
      *
      * @var string[]
      */
     protected $options = ['basemap_url', 'basemap_attribution'];
 
     /**
-     * Set default options
+     * Set default options.
      *
      * @return array
      */

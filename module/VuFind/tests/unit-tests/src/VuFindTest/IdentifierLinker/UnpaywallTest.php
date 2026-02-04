@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unpaywall Test Class
+ * Unpaywall Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\Http\Response as HttpResponse;
 use VuFind\IdentifierLinker\Unpaywall;
 
 /**
- * Unpaywall Test Class
+ * Unpaywall Test Class.
  *
  * @category VuFind
  * @package  Tests

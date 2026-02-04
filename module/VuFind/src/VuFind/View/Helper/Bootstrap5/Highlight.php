@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Highlight view helper
+ * Highlight view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Bootstrap5;
 
 /**
- * Highlight view helper
+ * Highlight view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Bootstrap5;
 class Highlight extends \VuFind\View\Helper\Root\Highlight
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

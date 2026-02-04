@@ -117,7 +117,7 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Load HTTP client w/ fixture
+     * Load HTTP client w/ fixture.
      *
      * @param string $fixture Fixture name
      *

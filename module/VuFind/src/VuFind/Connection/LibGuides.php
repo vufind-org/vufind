@@ -65,42 +65,42 @@ class LibGuides implements
     }
 
     /**
-     * HTTP Client
+     * HTTP Client.
      *
      * @var \Laminas\Http\HttpClient
      */
     protected $client;
 
     /**
-     * Base URL of the LibGuides API
+     * Base URL of the LibGuides API.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Client ID for a client_credentials grant
+     * Client ID for a client_credentials grant.
      *
      * @var string
      */
     protected $clientId;
 
     /**
-     * Client Secret for a client_credentials grant
+     * Client Secret for a client_credentials grant.
      *
      * @var string
      */
     protected $clientSecret;
 
     /**
-     * User agent to send in header
+     * User agent to send in header.
      *
      * @var string
      */
     protected $userAgent = 'VuFind';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config               $config LibGuides API configuration object
      * @param \Laminas\Http\Client $client HTTP client

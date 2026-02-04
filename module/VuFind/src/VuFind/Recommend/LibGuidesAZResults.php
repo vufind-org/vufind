@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesAZResults Recommendations Module
+ * LibGuidesAZResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * LibGuidesAZResults Recommendations Module
+ * LibGuidesAZResults Recommendations Module.
  *
  * This class provides recommendations by doing a search of LibGuides AZ Databases.
  *

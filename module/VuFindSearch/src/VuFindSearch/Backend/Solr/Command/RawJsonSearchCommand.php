@@ -51,14 +51,14 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
     use QueryOffsetLimitTrait;
 
     /**
-     * If json should be returned as an array instead an object
+     * If json should be returned as an array instead an object.
      *
      * @var ?bool
      */
     protected $asArray = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string        $backendId Search backend identifier
      * @param AbstractQuery $query     Search query string

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Explanation plugin manager
+ * Explanation plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\Search\Explanation;
 
 /**
- * Explanation plugin manager
+ * Explanation plugin manager.
  *
  * @category VuFind
  * @package  Search

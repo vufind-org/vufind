@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Account Capabilities Test Class
+ * Account Capabilities Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Config\Config;
 
 /**
- * Account Capabilities Test Class
+ * Account Capabilities Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -75,7 +75,7 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getEmailActionSettings()
+     * Test getEmailActionSettings().
      *
      * @param array  $mailConfig Settings for Mail configuration section
      * @param string $expected   Expected return value
@@ -90,7 +90,7 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testIsEmailActionAvailable()
+     * Data provider for testIsEmailActionAvailable().
      *
      * @return \Iterator
      */
@@ -105,7 +105,7 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isEmailActionAvailable()
+     * Test isEmailActionAvailable().
      *
      * @param string $mailSetting  The email_action config setting
      * @param bool   $loginEnabled Is login enabled?

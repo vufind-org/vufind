@@ -56,7 +56,7 @@ class PaymentFeeService extends AbstractDbService implements PaymentFeeServiceIn
     }
 
     /**
-     * Get fines associated with a payment
+     * Get fines associated with a payment.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -73,7 +73,7 @@ class PaymentFeeService extends AbstractDbService implements PaymentFeeServiceIn
     }
 
     /**
-     * Get IDs from fines associated with a payment
+     * Get IDs from fines associated with a payment.
      *
      * @param PaymentEntityInterface $payment Payment
      *

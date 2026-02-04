@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ReCaptcha Service Test Class
+ * ReCaptcha Service Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
 use VuFind\Service\ReCaptcha;
 
 /**
- * CurrencyFormatter Test Class
+ * CurrencyFormatter Test Class.
  *
  * @category VuFind
  * @package  Tests

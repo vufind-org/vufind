@@ -41,7 +41,7 @@ namespace VuFind\SMS;
 interface SMSInterface
 {
     /**
-     * Get validation type for phone numbers
+     * Get validation type for phone numbers.
      *
      * @return string
      */

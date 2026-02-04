@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
     use \VuFind\Feature\BulkActionTrait;
 
     /**
-     * CSS class for button
+     * CSS class for button.
      *
      * @var ?string
      */
     protected $buttonClass = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Export                        $export        Export support class
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
@@ -62,7 +62,7 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get a bulk action button
+     * Get a bulk action button.
      *
      * @param string $action     Action name
      * @param string $icon       Icon identifier

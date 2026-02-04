@@ -163,7 +163,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Data provider for testSingleLookup
+     * Data provider for testSingleLookup.
      *
      * @return array
      */

@@ -57,7 +57,7 @@ class RateLimiterManagerFactory implements FactoryInterface
     use GetServiceTrait;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -107,7 +107,7 @@ class RateLimiterManagerFactory implements FactoryInterface
     }
 
     /**
-     * Get rate limiter
+     * Get rate limiter.
      *
      * @param array   $config        Rate limiter configuration
      * @param string  $policyId      Policy ID
@@ -147,7 +147,7 @@ class RateLimiterManagerFactory implements FactoryInterface
     }
 
     /**
-     * Create cache for the rate limiter
+     * Create cache for the rate limiter.
      *
      * @param array  $config          Rate limiter configuration
      * @param string $namespaceSuffix Qualifier for the namespace
@@ -173,7 +173,7 @@ class RateLimiterManagerFactory implements FactoryInterface
     }
 
     /**
-     * Create Redis cache for the rate limiter
+     * Create Redis cache for the rate limiter.
      *
      * @param array $storageConfig Storage configuration
      *

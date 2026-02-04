@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * Voyager Restful ILS Driver
+ * Voyager Restful ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -65,77 +65,77 @@ class VoyagerRestful extends Voyager implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Web services host
+     * Web services host.
      *
      * @var string
      */
     protected $ws_host;
 
     /**
-     * Web services port
+     * Web services port.
      *
      * @var string
      */
     protected $ws_port;
 
     /**
-     * Web services app
+     * Web services app.
      *
      * @var string
      */
     protected $ws_app;
 
     /**
-     * Web services database key
+     * Web services database key.
      *
      * @var string
      */
     protected $ws_dbKey;
 
     /**
-     * Web services patron home UB ID
+     * Web services patron home UB ID.
      *
      * @var string
      */
     protected $ws_patronHomeUbId;
 
     /**
-     * Legal pickup locations
+     * Legal pickup locations.
      *
      * @var array
      */
     protected $ws_pickUpLocations;
 
     /**
-     * Default pickup location
+     * Default pickup location.
      *
      * @var string
      */
     protected $defaultPickUpLocation;
 
     /**
-     * The maximum number of holds to check at a time (0 = no limit)
+     * The maximum number of holds to check at a time (0 = no limit).
      *
      * @var int
      */
     protected $holdCheckLimit;
 
     /**
-     * The maximum number of call slips to check at a time (0 = no limit)
+     * The maximum number of call slips to check at a time (0 = no limit).
      *
      * @var int
      */
     protected $callSlipCheckLimit;
 
     /**
-     * Holds mode
+     * Holds mode.
      *
      * @var string
      */
     protected $holdsMode;
 
     /**
-     * Title-level holds mode
+     * Title-level holds mode.
      *
      * @var string
      */
@@ -143,49 +143,49 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Web Services cookies. Required for at least renewals (for JSESSIONID) as
-     * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
+     * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew.
      *
      * @var \Laminas\Http\Response\Header\SetCookie[]
      */
     protected $cookies = false;
 
     /**
-     * Whether recalls are enabled
+     * Whether recalls are enabled.
      *
      * @var bool
      */
     protected $recallsEnabled;
 
     /**
-     * Whether item holds are enabled
+     * Whether item holds are enabled.
      *
      * @var bool
      */
     protected $itemHoldsEnabled;
 
     /**
-     * Whether request groups are enabled
+     * Whether request groups are enabled.
      *
      * @var bool
      */
     protected $requestGroupsEnabled;
 
     /**
-     * Default request group
+     * Default request group.
      *
      * @var bool|string
      */
     protected $defaultRequestGroup;
 
     /**
-     * Whether pickup location must belong to the request group
+     * Whether pickup location must belong to the request group.
      *
      * @var bool
      */
     protected $pickupLocationsInRequestGroup;
 
     /**
-     * Whether to check that items exist when placing a hold or recall request
+     * Whether to check that items exist when placing a hold or recall request.
      *
      * @var bool
      */
@@ -193,7 +193,7 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Whether to check that items are not available when placing a hold or recall
-     * request
+     * request.
      *
      * @var bool
      */
@@ -201,7 +201,7 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Whether to check that the user doesn't already have the record on loan when
-     * placing a hold or recall request
+     * placing a hold or recall request.
      *
      * @var bool
      */
@@ -216,14 +216,14 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Whether it is allowed to cancel a request for an item that is available for
-     * pickup
+     * pickup.
      *
      * @var bool
      */
     protected $allowCancelingAvailableRequests;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param string                 $holdsMode      Holds mode setting
@@ -341,7 +341,7 @@ class VoyagerRestful extends Voyager implements
     /**
      * Support method for VuFind Hold Logic. Take an array of status strings
      * and determines whether or not an item is holdable based on the
-     * valid_hold_statuses settings in configuration file
+     * valid_hold_statuses settings in configuration file.
      *
      * @param array $statusArray The status codes to analyze.
      *
@@ -368,7 +368,7 @@ class VoyagerRestful extends Voyager implements
     /**
      * Support method for VuFind Hold Logic. Takes an item type id
      * and determines whether or not an item is borrowable based on the
-     * non_borrowable settings in configuration file
+     * non_borrowable settings in configuration file.
      *
      * @param string $itemTypeID The item type id to analyze.
      *
@@ -396,7 +396,7 @@ class VoyagerRestful extends Voyager implements
      * Support method for VuFind Storage Retrieval Request (Call Slip) Logic.
      * Take a holdings row array and determine whether or not a call slip is
      * allowed based on the valid_call_slip_locations settings in configuration
-     * file
+     * file.
      *
      * @param array $holdingsRow The holdings row to analyze.
      *
@@ -574,7 +574,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check if request is valid
+     * Check if request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -608,7 +608,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check if storage retrieval request is valid
+     * Check if storage retrieval request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -674,7 +674,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -777,7 +777,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in VoyagerRestful.ini
      *
@@ -799,7 +799,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group set in VoyagerRestful.ini
      *
@@ -821,7 +821,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Sort function for sorting request groups
+     * Sort function for sorting request groups.
      *
      * @param array $a Request group
      * @param array $b Request group
@@ -847,7 +847,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $bibId       BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -1012,7 +1012,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Voyager Restful API
      *
@@ -1116,7 +1116,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Encode a string for XML
+     * Encode a string for XML.
      *
      * @param string $string String to be encoded
      *
@@ -1128,7 +1128,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Build Basic XML
+     * Build Basic XML.
      *
      * Builds a simple xml string to send to the API
      *
@@ -1209,7 +1209,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check Account Blocks
+     * Check Account Blocks.
      *
      * Checks if a user has any blocks against their account which may prevent them
      * performing certain operations
@@ -1254,7 +1254,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -1419,7 +1419,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check Item Requests
+     * Check Item Requests.
      *
      * Determines if a user can place a hold or recall on a specific item
      *
@@ -1478,7 +1478,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Make Item Requests
+     * Make Item Requests.
      *
      * Places a Hold or Recall for a particular title or item
      *
@@ -1587,7 +1587,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Determine Hold Type
+     * Determine Hold Type.
      *
      * Determines if a user can place a hold or recall on a particular item
      *
@@ -1625,7 +1625,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Hold Error
+     * Hold Error.
      *
      * Returns a Hold Error Message
      *
@@ -1704,7 +1704,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check whether items exist for the given BIB ID
+     * Check whether items exist for the given BIB ID.
      *
      * @param int  $bibId          BIB ID
      * @param ?int $requestGroupId Request group ID or null
@@ -1766,7 +1766,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check whether there are items available for loan for the given BIB ID
+     * Check whether there are items available for loan for the given BIB ID.
      *
      * @param int  $bibId          BIB ID
      * @param ?int $requestGroupId Request group ID or null
@@ -1891,7 +1891,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1941,7 +1941,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -2079,7 +2079,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -2142,7 +2142,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -2165,7 +2165,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -2184,7 +2184,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -2296,7 +2296,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get patron's local or remote holds from the API
+     * Get patron's local or remote holds from the API.
      *
      * This is responsible for retrieving all local or remote holds by a specific
      * patron.
@@ -2478,7 +2478,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Place Storage Retrieval Request (Call Slip)
+     * Place Storage Retrieval Request (Call Slip).
      *
      * Attempts to place a call slip request on a particular item and returns
      * an array with result details
@@ -2587,7 +2587,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Cancel Storage Retrieval Requests (Call Slips)
+     * Cancel Storage Retrieval Requests (Call Slips).
      *
      * Attempts to Cancel a call slip on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -2652,7 +2652,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Cancel Storage Retrieval Request (Call Slip) Details
+     * Get Cancel Storage Retrieval Request (Call Slip) Details.
      *
      * In order to cancel a call slip, Voyager requires the item ID and a
      * request ID. This function returns the item id and call slip id as a
@@ -2879,7 +2879,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Check if ILL Request is valid
+     * Check if ILL Request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2929,7 +2929,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get ILL (UB) Pickup Libraries
+     * Get ILL (UB) Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -2955,7 +2955,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get ILL (UB) Pickup Locations
+     * Get ILL (UB) Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -3040,7 +3040,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Place ILL (UB) Request
+     * Place ILL (UB) Request.
      *
      * Attempts to place an UB request on a particular item and returns
      * an array with result details or a PEAR error on failure of support classes
@@ -3189,7 +3189,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all UB requests by a specific patron.
      *
@@ -3207,7 +3207,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Cancel ILL (UB) Requests
+     * Cancel ILL (UB) Requests.
      *
      * Attempts to Cancel an UB request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -3277,7 +3277,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Get Cancel ILL (UB) Request Details
+     * Get Cancel ILL (UB) Request Details.
      *
      * In Voyager an UB request is either a call slip (pending delivery) or a hold
      * (pending checkout). In order to cancel an UB request, Voyager requires the
@@ -3318,7 +3318,7 @@ class VoyagerRestful extends Voyager implements
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * Attempts to change patron password (PIN code)
      *

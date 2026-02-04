@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Mailer Class
+ * VuFind Mailer Class.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use function count;
 use function is_array;
 
 /**
- * VuFind Mailer Class
+ * VuFind Mailer Class.
  *
  * @category VuFind
  * @package  Mailer
@@ -61,7 +61,7 @@ class Mailer implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Mail transport
+     * Mail transport.
      *
      * @var MailerInterface
      */
@@ -75,21 +75,21 @@ class Mailer implements
     protected $initialTransport;
 
     /**
-     * The maximum number of email recipients allowed (0 = no limit)
+     * The maximum number of email recipients allowed (0 = no limit).
      *
      * @var int
      */
     protected $maxRecipients = 1;
 
     /**
-     * "From" address override
+     * "From" address override.
      *
      * @var string
      */
     protected $fromAddressOverride = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param MailerInterface $transport Mail transport
      * @param array           $options   Message log options
@@ -414,7 +414,7 @@ class Mailer implements
     }
 
     /**
-     * Set the maximum number of email recipients
+     * Set the maximum number of email recipients.
      *
      * @param int $max Maximum
      *
@@ -426,7 +426,7 @@ class Mailer implements
     }
 
     /**
-     * Get the default subject line for sendRecord()
+     * Get the default subject line for sendRecord().
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      *
@@ -438,7 +438,7 @@ class Mailer implements
     }
 
     /**
-     * Get the "From" address override value
+     * Get the "From" address override value.
      *
      * @return string
      */
@@ -448,7 +448,7 @@ class Mailer implements
     }
 
     /**
-     * Set the "From" address override
+     * Set the "From" address override.
      *
      * @param string $address "From" address
      *
@@ -460,7 +460,7 @@ class Mailer implements
     }
 
     /**
-     * Convert the given addresses to an array
+     * Convert the given addresses to an array.
      *
      * @param string|Address|Address[]|null $addresses Addresses
      *

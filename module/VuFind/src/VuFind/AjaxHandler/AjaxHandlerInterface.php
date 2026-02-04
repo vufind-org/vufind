@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler interface
+ * AJAX handler interface.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
- * AJAX handler interface
+ * AJAX handler interface.
  *
  * @category VuFind
  * @package  AJAX

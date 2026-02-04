@@ -91,7 +91,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test disabled blended search
+     * Test disabled blended search.
      *
      * @return void
      */
@@ -119,7 +119,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testSearch
+     * Data provider for testSearch.
      *
      * @return \Iterator
      */
@@ -153,7 +153,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test blended search
+     * Test blended search.
      *
      * @param array  $queryParams    Query parameters
      * @param string $path           URL path
@@ -240,7 +240,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test checkbox filters
+     * Test checkbox filters.
      *
      * @return void
      */
@@ -276,7 +276,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test advanced search (and Blender as default)
+     * Test advanced search (and Blender as default).
      *
      * @return void
      */
@@ -351,7 +351,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test disabled advanced search
+     * Test disabled advanced search.
      *
      * @return void
      */
@@ -437,7 +437,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get expected labels for the first result pages
+     * Get expected labels for the first result pages.
      *
      * @param int $page Page (1 or 2)
      *

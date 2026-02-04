@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Title holds logic test
+ * Title holds logic test.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\ILS\Logic\TitleHolds;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Title holds logic test
+ * Title holds logic test.
  *
  * @category VuFind
  * @package  Tests
@@ -113,7 +113,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a failed catalog login
+     * Test a failed catalog login.
      *
      * @return void
      */

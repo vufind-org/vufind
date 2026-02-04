@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Password hasher
+ * Password hasher.
  *
  * This class was developed to replace the deprecated \Laminas\Crypt\Password\Bcrypt
  * class. Its default behavior is inspired by that earlier class.
@@ -38,7 +38,7 @@ use function password_verify;
 use const PASSWORD_BCRYPT;
 
 /**
- * Password hasher
+ * Password hasher.
  *
  * @category VuFind
  * @package  Crypt
@@ -49,21 +49,21 @@ use const PASSWORD_BCRYPT;
 class PasswordHasher
 {
     /**
-     * Algorithm to use for hashing
+     * Algorithm to use for hashing.
      *
      * @var string
      */
     protected string $algorithm = PASSWORD_BCRYPT;
 
     /**
-     * Cost of hashing
+     * Cost of hashing.
      *
      * @var int
      */
     protected int $cost = 10;
 
     /**
-     * Create a hash from a password
+     * Create a hash from a password.
      *
      * @param string $password Password to hash
      *

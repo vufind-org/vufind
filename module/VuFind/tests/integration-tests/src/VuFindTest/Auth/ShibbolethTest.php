@@ -147,7 +147,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the Shibboleth object
+     * Get a working configuration for the Shibboleth object.
      *
      * @param bool $useHeaders         Value for use_headers config setting
      * @param bool $requiredAttributes Should we include a required attribute in config?
@@ -172,7 +172,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the Shibboleth object
+     * Get a working configuration for the Shibboleth object.
      *
      * @return array
      */
@@ -300,7 +300,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test session initiator
+     * Test session initiator.
      *
      * @return void
      */

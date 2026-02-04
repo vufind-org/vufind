@@ -47,14 +47,14 @@ use VuFind\Config\ConfigManagerInterface;
 class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
 {
     /**
-     * Config filename
+     * Config filename.
      *
      * @var string
      */
     protected string $configName = 'EDS';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

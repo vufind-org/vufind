@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Auth handler plugin factory
+ * Auth handler plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Auth;
 
 /**
- * Auth handler plugin factory
+ * Auth handler plugin factory.
  *
  * @category VuFind
  * @package  Authentication
@@ -41,7 +41,7 @@ namespace VuFind\Auth;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

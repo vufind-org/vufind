@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Component parts display tab
+ * Component parts display tab.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\RecordTab;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * Component parts display tab
+ * Component parts display tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -43,28 +43,28 @@ use VuFindSearch\Command\SearchCommand;
 class ComponentParts extends AbstractBase
 {
     /**
-     * Similar records
+     * Similar records.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Maximum results to display
+     * Maximum results to display.
      *
      * @var int
      */
     protected $maxResults = 100;
 
     /**
-     * Search service
+     * Search service.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service $search Search service
      */

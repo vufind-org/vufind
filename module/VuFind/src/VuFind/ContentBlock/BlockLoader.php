@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content block loader
+ * Content block loader.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
 /**
- * Content block plugin manager
+ * Content block plugin manager.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -47,7 +47,7 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
 class BlockLoader
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param OptionsManager         $optionsManager Options manager
      * @param ConfigManagerInterface $configManager  Config manager
@@ -86,7 +86,7 @@ class BlockLoader
     }
 
     /**
-     * Fetch blocks using a configuration name
+     * Fetch blocks using a configuration name.
      *
      * @param string $name    Configuration name
      * @param string $section Section to load from object

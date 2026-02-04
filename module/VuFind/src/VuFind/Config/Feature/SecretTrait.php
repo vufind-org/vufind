@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait to import secret from file rather than a hardcoded config
+ * Trait to import secret from file rather than a hardcoded config.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Config\Feature;
 use VuFind\Config\Config;
 
 /**
- * Trait to import secret from file rather than a hardcoded config
+ * Trait to import secret from file rather than a hardcoded config.
  *
  * @category VuFind
  * @package  Config

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "System Status" AJAX handler
+ * "System Status" AJAX handler.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
- * "System Status" AJAX handler
+ * "System Status" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -51,7 +51,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionManager          $sessionManager Session manager
      * @param ResultsManager          $resultsManager Results manager

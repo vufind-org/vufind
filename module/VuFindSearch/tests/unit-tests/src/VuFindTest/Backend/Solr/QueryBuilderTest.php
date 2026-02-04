@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR query builder
+ * Unit tests for SOLR query builder.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 /**
- * Unit tests for SOLR query builder
+ * Unit tests for SOLR query builder.
  *
  * @category VuFind
  * @package  Search
@@ -225,7 +225,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler
+     * Test generation with a query handler.
      *
      * @return void
      */
@@ -240,7 +240,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with regular dismax
+     * Test generation with a query handler with regular dismax.
      *
      * @return void
      */
@@ -255,7 +255,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with edismax
+     * Test generation with a query handler with edismax.
      *
      * @return void
      */
@@ -302,7 +302,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with a filter set and DisMax settings
+     * Test generation with a query handler with a filter set and DisMax settings.
      *
      * @return void
      */
@@ -320,7 +320,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with a filter set and no DisMax settings
+     * Test generation with a query handler with a filter set and no DisMax settings.
      *
      * @return void
      */
@@ -339,7 +339,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test generation with a query handler with a filter set and no DisMax settings
-     * when the query is "all records"
+     * when the query is "all records".
      *
      * @return void
      */
@@ -459,7 +459,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation from a QueryGroup
+     * Test generation from a QueryGroup.
      *
      * @return void
      */
@@ -490,7 +490,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation from a QueryGroup with advanced syntax
+     * Test generation from a QueryGroup with advanced syntax.
      *
      * @return void
      */
@@ -549,7 +549,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with mix of quoted and unquoted phrases
+     * Test generation with mix of quoted and unquoted phrases.
      *
      * @return void
      */
@@ -573,7 +573,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with mix of quoted and unquoted phrases
+     * Test generation with mix of quoted and unquoted phrases.
      *
      * @return void
      */

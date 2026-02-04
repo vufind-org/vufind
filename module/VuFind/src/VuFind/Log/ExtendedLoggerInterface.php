@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Logger Extended Interface
+ * VuFind Logger Extended Interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Log;
 
 /**
- * VuFind Logger Extended Interface
+ * VuFind Logger Extended Interface.
  *
  * @category VuFind
  * @package  Error_Logging

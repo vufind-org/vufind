@@ -104,7 +104,7 @@ class InjectOnCampusListener
     }
 
     /**
-     * Determines, which value is needed for the onCampus parameter
+     * Determines, which value is needed for the onCampus parameter.
      *
      * @return bool
      */

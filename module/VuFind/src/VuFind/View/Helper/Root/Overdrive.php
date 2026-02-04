@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Overdrive view helper
+ * Overdrive view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\DigitalContent\OverdriveConnector;
 
 /**
- * Overdrive view helper
+ * Overdrive view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -50,7 +50,7 @@ class Overdrive extends \Laminas\View\Helper\AbstractHelper
     protected $connector;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?OverdriveConnector $connector Overdrive connector
      */

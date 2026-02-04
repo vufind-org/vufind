@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Search Object Parameters Test
+ * EDS Search Object Parameters Test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\EDS\Options;
 use VuFind\Search\EDS\Params;
 
 /**
- * EDS Search Object Parameters Test
+ * EDS Search Object Parameters Test.
  *
  * @category VuFind
  * @package  Tests
@@ -87,7 +87,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param ?Options                $options           Options object (null to create)
      * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)

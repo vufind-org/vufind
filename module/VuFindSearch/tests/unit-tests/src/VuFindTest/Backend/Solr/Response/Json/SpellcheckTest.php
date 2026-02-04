@@ -117,7 +117,7 @@ class SpellcheckTest extends TestCase
     }
 
     /**
-     * Test getQuery()
+     * Test getQuery().
      *
      * @return void
      */

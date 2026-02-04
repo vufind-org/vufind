@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author notes content loader plugin manager
+ * Author notes content loader plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Content\AuthorNotes;
 
 /**
- * Author notes content loader plugin manager
+ * Author notes content loader plugin manager.
  *
  * @category VuFind
  * @package  Content

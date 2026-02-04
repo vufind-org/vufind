@@ -57,14 +57,14 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     protected $logger;
 
     /**
-     * BrowZine configuration
+     * BrowZine configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $browzineConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -142,7 +142,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

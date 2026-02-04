@@ -50,7 +50,7 @@ use function strlen;
 class SpellingProcessor
 {
     /**
-     * Spelling limit
+     * Spelling limit.
      *
      * @var int
      */
@@ -86,7 +86,7 @@ class SpellingProcessor
     protected $normalizer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config   $config     Spelling configuration (optional)
      * @param callable $normalizer Callback for normalization of text (optional).
@@ -121,7 +121,7 @@ class SpellingProcessor
     }
 
     /**
-     * Input Tokenizer - Specifically for spelling purposes
+     * Input Tokenizer - Specifically for spelling purposes.
      *
      * Because of its focus on spelling, these tokens are unsuitable
      * for actual searching. They are stripping important search data
@@ -198,7 +198,7 @@ class SpellingProcessor
     }
 
     /**
-     * Support method for getSuggestions()
+     * Support method for getSuggestions().
      *
      * @param AbstractQuery $query Query for which info should be retrieved
      * @param array         $info  Spelling suggestion information

@@ -169,7 +169,7 @@ class DeduplicationListener
     }
 
     /**
-     * Check search parameters for child records filter
+     * Check search parameters for child records filter.
      *
      * @param \VuFindSearch\ParamBag $params Search parameters
      *
@@ -182,7 +182,7 @@ class DeduplicationListener
     }
 
     /**
-     * Fetch appropriate dedup child
+     * Fetch appropriate dedup child.
      *
      * @param EventInterface $event Event
      *
@@ -205,7 +205,7 @@ class DeduplicationListener
     }
 
     /**
-     * Fetch local records for all the found dedup records
+     * Fetch local records for all the found dedup records.
      *
      * @param EventInterface $event Event
      *
@@ -367,7 +367,7 @@ class DeduplicationListener
     }
 
     /**
-     * Function that determines the priority for sources
+     * Function that determines the priority for sources.
      *
      * @param array $recordSources Record sources defined in searches.ini
      *
@@ -382,7 +382,7 @@ class DeduplicationListener
     }
 
     /**
-     * Function that determines the priority for buildings
+     * Function that determines the priority for buildings.
      *
      * @param \VuFindSearch\ParamBag $params Query parameters
      *

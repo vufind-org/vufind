@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Locale Settings
+ * VuFind Locale Settings.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function array_key_exists;
 use function in_array;
 
 /**
- * VuFind Locale Settings
+ * VuFind Locale Settings.
  *
  * @category VuFind
  * @package  I18n\Locale
@@ -52,7 +52,7 @@ use function in_array;
 class LocaleSettings
 {
     /**
-     * Default locale (code)
+     * Default locale (code).
      *
      * @var string
      */
@@ -95,7 +95,7 @@ class LocaleSettings
     protected $browserDetectLanguage;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config $config Configuration object
      */

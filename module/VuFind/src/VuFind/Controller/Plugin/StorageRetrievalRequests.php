@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Storage Retrieval Requests Support Methods
+ * VuFind Action Helper - Storage Retrieval Requests Support Methods.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\Controller\Plugin;
 use function in_array;
 
 /**
- * Action helper to perform storage retrieval request related actions
+ * Action helper to perform storage retrieval request related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission helper
+ * Permission helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
 
 /**
- * Permission helper
+ * Permission helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -47,21 +47,21 @@ use VuFind\Role\PermissionManager;
 class Permission extends AbstractHelper
 {
     /**
-     * PermissionDenied manager for behavior on denied permissions
+     * PermissionDenied manager for behavior on denied permissions.
      *
      * @var PermissionDeniedManager
      */
     protected $permissionDeniedManager;
 
     /**
-     * Permission manager to decide if a permission has been granted or not
+     * Permission manager to decide if a permission has been granted or not.
      *
      * @var PermissionManager
      */
     protected $permissionManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PermissionManager       $permissionManager       Manager to decide if a permission has been granted or
      * not
@@ -88,7 +88,7 @@ class Permission extends AbstractHelper
     }
 
     /**
-     * Determine if a local block inside the template should be displayed
+     * Determine if a local block inside the template should be displayed.
      *
      * @param string $context Name of the permission rule
      *
@@ -115,7 +115,7 @@ class Permission extends AbstractHelper
     }
 
     /**
-     * Get content to display in place of blocked content
+     * Get content to display in place of blocked content.
      *
      * @param string $context Name of the permission rule
      *

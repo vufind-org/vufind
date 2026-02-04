@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SimilarItems Test Class
+ * SimilarItems Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\ParamBag;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * SimilarItems Test Class
+ * SimilarItems Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -241,7 +241,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get SimilarItems mock object
+     * Get SimilarItems mock object.
      *
      * @param array $options options for the provider
      *
@@ -280,7 +280,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @return TestHarness
      */

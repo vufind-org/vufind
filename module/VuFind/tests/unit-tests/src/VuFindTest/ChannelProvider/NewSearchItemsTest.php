@@ -1,7 +1,7 @@
 <?php
 
 /**
- * NewSearchItems Test Class
+ * NewSearchItems Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindSearch\Query\Query;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * NewSearchItems Test Class
+ * NewSearchItems Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -201,7 +201,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @return TestHarness
      */

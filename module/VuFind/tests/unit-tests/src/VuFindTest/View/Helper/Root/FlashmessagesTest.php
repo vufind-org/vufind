@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Data provider for testFlashmessageData
+     * Data provider for testFlashmessageData.
      *
      * @return \Iterator
      */
@@ -210,7 +210,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a Flashmessages helper with the given messages in the queue
+     * Get a Flashmessages helper with the given messages in the queue.
      *
      * @param array $messages Messages
      *
@@ -230,7 +230,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 
         $layout = new class () {
             /**
-             * Set layout template or retrieve "layout" view model
+             * Set layout template or retrieve "layout" view model.
              *
              * If no arguments are given, grabs the "root" or "layout" view model.
              * Otherwise, attempts to set the template for that view model.

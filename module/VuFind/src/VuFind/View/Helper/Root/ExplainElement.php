@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Explain element view helper
+ * Explain element view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\View\Helper\Root;
 use function count;
 
 /**
- * Explain element view helper
+ * Explain element view helper.
  *
  * @category VuFind
  * @package  View_Helpers

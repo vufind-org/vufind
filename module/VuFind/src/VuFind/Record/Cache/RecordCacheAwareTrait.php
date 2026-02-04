@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default implementation of RecordCacheAwareInterface
+ * Default implementation of RecordCacheAwareInterface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Record\Cache;
 
 /**
- * Default implementation of RecordCacheAwareInterface
+ * Default implementation of RecordCacheAwareInterface.
  *
  * @category VuFind
  * @package  Record
@@ -41,14 +41,14 @@ namespace VuFind\Record\Cache;
 trait RecordCacheAwareTrait
 {
     /**
-     * Record cache
+     * Record cache.
      *
      * @var \VuFind\Record\Cache
      */
     protected $recordCache = null;
 
     /**
-     * Set record cache
+     * Set record cache.
      *
      * @param \VuFind\Record\Cache $recordCache record cache
      *
@@ -60,7 +60,7 @@ trait RecordCacheAwareTrait
     }
 
     /**
-     * Get record cache
+     * Get record cache.
      *
      * @return \VuFind\Record\Cache
      */

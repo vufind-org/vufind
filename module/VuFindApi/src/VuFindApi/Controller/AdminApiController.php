@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Api Controller
+ * Admin Api Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Cache\Manager as CacheManager;
 
 /**
- * Admin Api Controller
+ * Admin Api Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -46,14 +46,14 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
     use ApiTrait;
 
     /**
-     * Cache manager
+     * Cache manager.
      *
      * @var CacheManager
      */
     protected $cacheManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      * @param CacheManager            $cm Cache manager
@@ -65,14 +65,14 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
     }
 
     /**
-     * Permission required for the clear cache endpoint
+     * Permission required for the clear cache endpoint.
      *
      * @var string
      */
     protected $cacheAccessPermission = 'access.api.admin.cache';
 
     /**
-     * Clear the cache
+     * Clear the cache.
      *
      * @return \Laminas\Http\Response
      */
@@ -100,7 +100,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
 
     /**
      * Get API specification JSON fragment for services provided by the
-     * controller
+     * controller.
      *
      * @return string
      */
@@ -159,7 +159,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
     }
 
     /**
-     * Get an array of caches to clear by default
+     * Get an array of caches to clear by default.
      *
      * @return array
      */

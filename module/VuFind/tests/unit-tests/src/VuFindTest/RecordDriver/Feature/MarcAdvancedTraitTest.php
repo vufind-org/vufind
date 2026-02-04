@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Driver Marc Advanced Trait Test Class
+ * Record Driver Marc Advanced Trait Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordDriver\Feature;
 use VuFind\RecordDriver\SolrMarc;
 
 /**
- * Record Driver Marc Advanced Trait Test Class
+ * Record Driver Marc Advanced Trait Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -202,7 +202,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMarcFieldWithInd when a single indicator value is sent
+     * Test getMarcFieldWithInd when a single indicator value is sent.
      *
      * @return void
      */
@@ -218,7 +218,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMarcFieldWithInd when multiple values for the indicator are sent
+     * Test getMarcFieldWithInd when multiple values for the indicator are sent.
      *
      * @return void
      */
@@ -235,7 +235,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getMarcFieldWithInd when multiple indicators are requested
-     * as AND conditions
+     * as AND conditions.
      *
      * @return void
      */
@@ -252,7 +252,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getMarcFieldWithInd when multiple indicators are requested
-     * as OR conditions
+     * as OR conditions.
      *
      * @return void
      */
@@ -268,7 +268,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMarcFieldWithInd when no indicator filters are sent
+     * Test getMarcFieldWithInd when no indicator filters are sent.
      *
      * @return void
      */
@@ -284,7 +284,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getSummary to get expected marc data
+     * Test calling getSummary to get expected marc data.
      *
      * @return void
      */
@@ -299,7 +299,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getSummaryNotes to get expected marc data
+     * Test calling getSummaryNotes to get expected marc data.
      *
      * @return void
      */
@@ -314,7 +314,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getAbstractNotes to get expected marc data
+     * Test calling getAbstractNotes to get expected marc data.
      *
      * @return void
      */
@@ -329,7 +329,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getReviewtNotes to get expected marc data
+     * Test calling getReviewtNotes to get expected marc data.
      *
      * @return void
      */
@@ -344,7 +344,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getContentAdviceNotes to get expected marc data
+     * Test calling getContentAdviceNotes to get expected marc data.
      *
      * @return void
      */
@@ -359,7 +359,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data
+     * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data.
      *
      * @return void
      */

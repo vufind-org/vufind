@@ -112,7 +112,7 @@ trait LiveSolrTrait
     }
 
     /**
-     * Get a search backend
+     * Get a search backend.
      *
      * @param string $name Backend name
      *
@@ -125,7 +125,7 @@ trait LiveSolrTrait
     }
 
     /**
-     * Get a search results object
+     * Get a search results object.
      *
      * @param string $name Backend name
      *

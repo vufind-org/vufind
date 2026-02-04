@@ -108,7 +108,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldings()
+     * Test getHoldings().
      *
      * @return void
      */
@@ -125,7 +125,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "get record" success
+     * Test "get record" success.
      *
      * @return void
      */
@@ -146,7 +146,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "get record" 429 response
+     * Test "get record" 429 response.
      *
      * @return void
      */
@@ -167,7 +167,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "get record" with error
+     * Test "get record" with error.
      *
      * @return void
      */
@@ -188,7 +188,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful search
+     * Test successful search.
      *
      * @return void
      */
@@ -207,7 +207,7 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful search
+     * Test unsuccessful search.
      *
      * @return void
      */

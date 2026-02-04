@@ -41,7 +41,7 @@ namespace VuFind\Content\Covers;
 class LibraryThing extends \VuFind\Content\AbstractCover
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

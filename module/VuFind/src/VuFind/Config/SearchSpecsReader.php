@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind SearchSpecs Configuration Reader.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Config;
 
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind SearchSpecs Configuration Reader.
  *
  * @category VuFind
  * @package  Config
@@ -41,7 +41,7 @@ namespace VuFind\Config;
 class SearchSpecsReader extends YamlReader
 {
     /**
-     * Cache directory name
+     * Cache directory name.
      *
      * @var string
      */

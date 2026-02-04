@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecommendLinks recommendation module Test Class
+ * RecommendLinks recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\RecommendLinks;
 
 /**
- * RecommendLinks recommendation module Test Class
+ * RecommendLinks recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class RecommendLinksTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Run a test scenario
+     * Run a test scenario.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      * @param string                                $config        Recommendation config

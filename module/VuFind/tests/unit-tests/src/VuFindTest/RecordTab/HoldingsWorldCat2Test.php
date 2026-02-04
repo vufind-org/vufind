@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HoldingsWorldCat2 Test Class
+ * HoldingsWorldCat2 Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\RecordTab\HoldingsWorldCat2;
 use VuFindSearch\ParamBag;
 
 /**
- * HoldingsWorldCat2 Test Class
+ * HoldingsWorldCat2 Test Class.
  *
  * @category VuFind
  * @package  Tests

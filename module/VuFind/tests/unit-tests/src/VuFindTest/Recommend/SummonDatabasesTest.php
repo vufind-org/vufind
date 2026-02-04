@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonDatabases Test Class
+ * SummonDatabases Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\SummonDatabases;
 
 /**
- * SummonDatabases Test Class
+ * SummonDatabases Test Class.
  *
  * @category VuFind
  * @package  Tests

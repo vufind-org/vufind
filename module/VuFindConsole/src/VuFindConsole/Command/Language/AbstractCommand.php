@@ -50,35 +50,35 @@ use function is_callable;
 abstract class AbstractCommand extends Command
 {
     /**
-     * Normalizer for .ini files
+     * Normalizer for .ini files.
      *
      * @var ExtendedIniNormalizer
      */
     protected $normalizer;
 
     /**
-     * Reader for .ini files
+     * Reader for .ini files.
      *
      * @var ExtendedIniReader
      */
     protected $reader;
 
     /**
-     * Language directory
+     * Language directory.
      *
      * @var string
      */
     protected $languageDir;
 
     /**
-     * Files to ignore when processing directories
+     * Files to ignore when processing directories.
      *
      * @var string[]
      */
     protected $filesToIgnore = ['aliases.ini', 'native.ini'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
      * @param ?ExtendedIniReader     $reader      Reader for .ini files
@@ -100,7 +100,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * Add a line to a language file
+     * Add a line to a language file.
      *
      * @param string $filename File to update
      * @param string $key      Name of language key

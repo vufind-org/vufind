@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for \VuFind\Date\Converter
+ * Factory for \VuFind\Date\Converter.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for \VuFind\Date\Converter
+ * Factory for \VuFind\Date\Converter.
  *
  * @category VuFind
  * @package  Service
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class DateConverterFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

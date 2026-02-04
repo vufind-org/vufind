@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr record fallback loader factory
+ * Solr record fallback loader factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Solr record fallback loader factory
+ * Solr record fallback loader factory.
  *
  * @category VuFind
  * @package  Record
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class SolrFactory extends AbstractFallbackLoaderFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

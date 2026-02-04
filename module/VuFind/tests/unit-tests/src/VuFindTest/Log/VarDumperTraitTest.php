@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Var Dumper Trait Test Class
+ * Var Dumper Trait Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Log;
 
 /**
- * Var Dumper Trait Test Class
+ * Var Dumper Trait Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
     use \VuFind\Log\VarDumperTrait;
 
     /**
-     * Test varDump method data provider
+     * Test varDump method data provider.
      *
      * @return \Iterator
      */
@@ -68,7 +68,7 @@ class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
         yield 'object' => [
             new class (42, 'string', false) {
                 /**
-                 * Test class constructor
+                 * Test class constructor.
                  *
                  * @param int    $number Some number
                  * @param string $text   Some text
@@ -84,7 +84,7 @@ class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test varDump method
+     * Test varDump method.
      *
      * @param mixed  $var      Variable to dump
      * @param string $expected Expected dumped string

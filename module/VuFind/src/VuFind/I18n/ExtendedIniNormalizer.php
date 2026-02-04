@@ -206,7 +206,7 @@ class ExtendedIniNormalizer
     }
 
     /**
-     * Check if the given filename matches the filter pattern
+     * Check if the given filename matches the filter pattern.
      *
      * @param string $filename Filename
      * @param string $filter   Filter

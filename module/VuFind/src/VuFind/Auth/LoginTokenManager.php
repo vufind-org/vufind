@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Persistent login token manager
+ * Persistent login token manager.
  *
  * PHP version 8
  *
@@ -50,7 +50,7 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
 
 /**
- * Class LoginTokenManager
+ * Class LoginTokenManager.
  *
  * @category VuFind
  * @package  VuFind\Auth
@@ -74,7 +74,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     protected $browscapCallback;
 
     /**
-     * Browscap
+     * Browscap.
      *
      * @var BrowscapInterface
      */
@@ -88,14 +88,14 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     protected $themeInitialized = false;
 
     /**
-     * User that needs to receive a warning (or null for no warning needed)
+     * User that needs to receive a warning (or null for no warning needed).
      *
      * @var ?UserEntityInterface
      */
     protected $userToWarn = null;
 
     /**
-     * Token data for deferred token update
+     * Token data for deferred token update.
      *
      * @var ?array
      */
@@ -127,7 +127,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Authenticate user using a login token cookie
+     * Authenticate user using a login token cookie.
      *
      * @param string $sessionId Session identifier
      *
@@ -178,7 +178,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Create a new login token series
+     * Create a new login token series.
      *
      * @param UserEntityInterface $user      User
      * @param string              $sessionId Session identifier
@@ -267,7 +267,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Get login token cookie lifetime (days)
+     * Get login token cookie lifetime (days).
      *
      * @return int
      */
@@ -277,7 +277,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Get login token cookie name
+     * Get login token cookie name.
      *
      * @return string
      */
@@ -287,7 +287,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Delete a login token from cookies and database
+     * Delete a login token from cookies and database.
      *
      * @return void
      */
@@ -301,7 +301,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Create a new login token series or rotate login token in given series
+     * Create a new login token series or rotate login token in given series.
      *
      * @param UserEntityInterface $user           User
      * @param string              $sessionId      Session identifier
@@ -356,7 +356,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Send email warning to user
+     * Send email warning to user.
      *
      * @param UserEntityInterface $user User
      *
@@ -390,7 +390,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Set login token cookie
+     * Set login token cookie.
      *
      * @param string $token   Login token
      * @param string $series  Series the token belongs to
@@ -410,7 +410,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Get login token cookie in array format
+     * Get login token cookie in array format.
      *
      * @return array
      */
@@ -434,7 +434,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Get Browscap
+     * Get Browscap.
      *
      * @return BrowscapInterface
      */

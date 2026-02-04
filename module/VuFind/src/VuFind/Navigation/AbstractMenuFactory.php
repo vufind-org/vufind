@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Menu factory
+ * Menu factory.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use Psr\Container\ContainerInterface;
 use function array_slice;
 
 /**
- * Menu factory
+ * Menu factory.
  *
  * @category VuFind
  * @package  Navigation
@@ -49,7 +49,7 @@ use function array_slice;
 class AbstractMenuFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ConfigManager Integration Test Class
+ * ConfigManager Integration Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFindTest\Integration\ConfigTestCase;
 
 /**
- * ConfigManager Integration Test Class
+ * ConfigManager Integration Test Class.
  *
  * @category VuFind
  * @package  Tests

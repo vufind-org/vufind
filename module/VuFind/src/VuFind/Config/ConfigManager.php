@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration manager
+ * Configuration manager.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function is_array;
 use function strval;
 
 /**
- * Configuration manager
+ * Configuration manager.
  *
  * @category VuFind
  * @package  Config
@@ -61,7 +61,7 @@ class ConfigManager implements ConfigManagerInterface
     protected StorageInterface $cache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigLoader         $configLoader         Config loader
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager

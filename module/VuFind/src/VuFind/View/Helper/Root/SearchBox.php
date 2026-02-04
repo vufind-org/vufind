@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search box view helper
+ * Search box view helper.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Search box view helper
+ * Search box view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -50,14 +50,14 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Cache for configurations
+     * Cache for configurations.
      *
      * @var array
      */
     protected $cachedConfigs = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param OptionsManager $optionsManager    Search options plugin manager
      * @param array          $config            Configuration for search box
@@ -193,7 +193,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get limit of items in autocomplete list
+     * Get limit of items in autocomplete list.
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -227,7 +227,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Helper method: get special character to represent operator in filter
+     * Helper method: get special character to represent operator in filter.
      *
      * @param string $operator Operator
      *
@@ -284,7 +284,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get placeholder text from config using the activeSearchClass as key
+     * Get placeholder text from config using the activeSearchClass as key.
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -302,7 +302,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get an array of the configured virtual keyboard layouts
+     * Get an array of the configured virtual keyboard layouts.
      *
      * @return array
      */
@@ -330,7 +330,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get number of active filters
+     * Get number of active filters.
      *
      * @param array $checkboxFilters Checkbox filters
      * @param array $filterList      Other filters

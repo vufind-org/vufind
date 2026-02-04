@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine aspect of the Search Multi-class (Params)
+ * BrowZine aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\BrowZine;
 
 /**
- * BrowZine Search Parameters
+ * BrowZine Search Parameters.
  *
  * @category VuFind
  * @package  Search_BrowZine

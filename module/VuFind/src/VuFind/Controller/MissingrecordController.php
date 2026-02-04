@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Missing Record Controller
+ * Missing Record Controller.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Controller;
 
 /**
- * Missing Record Controller
+ * Missing Record Controller.
  *
  * @category VuFind
  * @package  Controller

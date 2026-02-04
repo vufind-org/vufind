@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autocomplete Plugin Manager Test Class
+ * Autocomplete Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Autocomplete;
 use VuFind\Autocomplete\PluginManager;
 
 /**
- * Autocomplete Plugin Manager Test Class
+ * Autocomplete Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

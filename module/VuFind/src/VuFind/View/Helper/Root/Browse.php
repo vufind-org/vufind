@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Browse controller view helper
+ * Browse controller view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
- * Browse controller view helper
+ * Browse controller view helper.
  *
  * @category VuFind
  * @package  View_Helpers

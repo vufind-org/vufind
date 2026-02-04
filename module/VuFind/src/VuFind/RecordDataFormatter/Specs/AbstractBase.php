@@ -57,7 +57,7 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
     protected array $defaults = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config Config
      */

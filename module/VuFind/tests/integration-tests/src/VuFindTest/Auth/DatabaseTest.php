@@ -48,7 +48,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\LiveDetectionTrait;
 
     /**
-     * Object to test
+     * Object to test.
      *
      * @var Database
      */

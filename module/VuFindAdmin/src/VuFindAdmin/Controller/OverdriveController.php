@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Overdrive Controller
+ * Admin Overdrive Controller.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindAdmin\Controller;
 
 /**
- * Admin Overdrive Controller
+ * Admin Overdrive Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -41,7 +41,7 @@ namespace VuFindAdmin\Controller;
 class OverdriveController extends AbstractAdmin
 {
     /**
-     * Overdrive Details
+     * Overdrive Details.
      *
      * @return \Laminas\View\Model\ViewModel
      */

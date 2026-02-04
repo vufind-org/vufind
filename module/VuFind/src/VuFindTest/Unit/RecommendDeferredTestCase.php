@@ -41,7 +41,7 @@ namespace VuFindTest\Unit;
 abstract class RecommendDeferredTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param string                      $class    class to construct
      * @param string                      $settings settings

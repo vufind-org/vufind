@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CSS path converter extension
+ * CSS path converter extension.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTheme\Minify;
 
 /**
- * CSS path converter extension
+ * CSS path converter extension.
  *
  * @category VuFind
  * @package  View_Helpers

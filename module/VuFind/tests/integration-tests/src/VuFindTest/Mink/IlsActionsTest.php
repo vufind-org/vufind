@@ -257,7 +257,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Routine to place an ILL request
+     * Routine to place an ILL request.
      *
      * @param Element $page Page element.
      *
@@ -285,7 +285,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Routine to place a storage retrieval request
+     * Routine to place a storage retrieval request.
      *
      * @param Element $page Page element.
      *
@@ -438,7 +438,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling an ILL request with "cancel all."
+     * Test canceling an ILL request with "cancel all.".
      *
      * @return void
      */
@@ -450,7 +450,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling an ILL request with "cancel selected."
+     * Test canceling an ILL request with "cancel selected.".
      *
      * @return void
      */
@@ -509,7 +509,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling storage retrieval requests with "cancel all."
+     * Test canceling storage retrieval requests with "cancel all.".
      *
      * @return void
      */
@@ -521,7 +521,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling storage retrieval requests with "cancel selected."
+     * Test canceling storage retrieval requests with "cancel selected.".
      *
      * @return void
      */
@@ -640,7 +640,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testLoanHistoryWithPurgeDisabled
+     * Data provider for testLoanHistoryWithPurgeDisabled.
      *
      * @return \Iterator
      */
@@ -688,7 +688,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Log in and open loan history page
+     * Log in and open loan history page.
      *
      * @return DocumentElement
      */

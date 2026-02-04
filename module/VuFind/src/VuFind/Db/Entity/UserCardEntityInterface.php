@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for user_card table
+ * Entity model interface for user_card table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for user_card table
+ * Entity model interface for user_card table.
  *
  * @category VuFind
  * @package  Database
@@ -43,14 +43,14 @@ use DateTime;
 interface UserCardEntityInterface extends EntityInterface
 {
     /**
-     * ID getter (returns null if the entity has not been saved/populated yet)
+     * ID getter (returns null if the entity has not been saved/populated yet).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Card name setter
+     * Card name setter.
      *
      * @param string $cardName User card name.
      *
@@ -66,7 +66,7 @@ interface UserCardEntityInterface extends EntityInterface
     public function getCardName(): string;
 
     /**
-     * Catalog username setter
+     * Catalog username setter.
      *
      * @param string $catUsername Catalog username
      *
@@ -82,7 +82,7 @@ interface UserCardEntityInterface extends EntityInterface
     public function getCatUsername(): string;
 
     /**
-     * Raw catalog password setter
+     * Raw catalog password setter.
      *
      * @param ?string $catPassword Cat password
      *
@@ -98,7 +98,7 @@ interface UserCardEntityInterface extends EntityInterface
     public function getRawCatPassword(): ?string;
 
     /**
-     * Encrypted catalog password setter
+     * Encrypted catalog password setter.
      *
      * @param ?string $passEnc Encrypted password
      *
@@ -114,7 +114,7 @@ interface UserCardEntityInterface extends EntityInterface
     public function getCatPassEnc(): ?string;
 
     /**
-     * Home library setter
+     * Home library setter.
      *
      * @param ?string $homeLibrary Home library
      *
@@ -171,7 +171,7 @@ interface UserCardEntityInterface extends EntityInterface
     public function setUser(UserEntityInterface $user): static;
 
     /**
-     * User getter
+     * User getter.
      *
      * @return UserEntityInterface
      */

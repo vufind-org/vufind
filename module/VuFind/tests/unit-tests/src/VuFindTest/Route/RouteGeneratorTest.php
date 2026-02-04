@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Route Generator Test Class
+ * Route Generator Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Route;
 use VuFind\Route\RouteGenerator;
 
 /**
- * Route Generator Test Class
+ * Route Generator Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Route\RouteGenerator;
 class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test addDynamicRoutes()
+     * Test addDynamicRoutes().
      *
      * @return void
      */
@@ -93,7 +93,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test addStaticRoutes()
+     * Test addStaticRoutes().
      *
      * @return void
      */
@@ -131,7 +131,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test addRecordRoutes()
+     * Test addRecordRoutes().
      *
      * @return void
      */
@@ -212,7 +212,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test addRecordRoutes() using a subclass
+     * Test addRecordRoutes() using a subclass.
      *
      * @return void
      */

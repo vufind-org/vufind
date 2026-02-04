@@ -54,7 +54,7 @@ interface UserEntityInterface extends
     public function getId(): ?int;
 
     /**
-     * Username setter
+     * Username setter.
      *
      * @param string $username Username
      *
@@ -166,7 +166,7 @@ interface UserEntityInterface extends
     public function getPendingEmail(): string;
 
     /**
-     * Catalog id setter
+     * Catalog id setter.
      *
      * @param ?string $catId Catalog id
      *
@@ -182,7 +182,7 @@ interface UserEntityInterface extends
     public function getCatId(): ?string;
 
     /**
-     * Catalog username setter
+     * Catalog username setter.
      *
      * @param ?string $catUsername Catalog username
      *
@@ -198,7 +198,7 @@ interface UserEntityInterface extends
     public function getCatUsername(): ?string;
 
     /**
-     * Home library setter
+     * Home library setter.
      *
      * @param ?string $homeLibrary Home library
      *
@@ -214,7 +214,7 @@ interface UserEntityInterface extends
     public function getHomeLibrary(): ?string;
 
     /**
-     * Raw catalog password setter
+     * Raw catalog password setter.
      *
      * @param ?string $catPassword Cat password
      *
@@ -230,7 +230,7 @@ interface UserEntityInterface extends
     public function getRawCatPassword(): ?string;
 
     /**
-     * Encrypted catalog password setter
+     * Encrypted catalog password setter.
      *
      * @param ?string $passEnc Encrypted password
      *
@@ -351,14 +351,14 @@ interface UserEntityInterface extends
     public function setLastLogin(?DateTime $dateTime): static;
 
     /**
-     * Last login getter
+     * Last login getter.
      *
      * @return ?DateTime
      */
     public function getLastLogin(): ?DateTime;
 
     /**
-     * Created setter
+     * Created setter.
      *
      * @param DateTime $dateTime Last login date
      *
@@ -367,7 +367,7 @@ interface UserEntityInterface extends
     public function setCreated(DateTime $dateTime): static;
 
     /**
-     * Created getter
+     * Created getter.
      *
      * @return DateTime
      */

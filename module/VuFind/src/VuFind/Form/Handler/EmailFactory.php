@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class EmailFactory
+ * Class EmailFactory.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class EmailFactory
+ * Class EmailFactory.
  *
  * @category VuFind
  * @package  Form
@@ -49,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class EmailFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

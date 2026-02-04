@@ -49,7 +49,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class RefreshTokenRepository extends AbstractTokenRepository implements RefreshTokenRepositoryInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
@@ -73,7 +73,7 @@ class RefreshTokenRepository extends AbstractTokenRepository implements RefreshT
     }
 
     /**
-     * Create a new refresh token
+     * Create a new refresh token.
      *
      * @return RefreshTokenEntityInterface
      */

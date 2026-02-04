@@ -1,7 +1,7 @@
 <?php
 
 /**
- * API Controller
+ * API Controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindApi\Controller;
 use function in_array;
 
 /**
- * API Controller
+ * API Controller.
  *
  * Controls the API functionality
  *
@@ -47,14 +47,14 @@ class ApiController extends \VuFind\Controller\AbstractBase
     use ApiTrait;
 
     /**
-     * Array of available API controllers
+     * Array of available API controllers.
      *
      * @var array
      */
     protected $apiControllers = [];
 
     /**
-     * Add an API controller to the list of available controllers
+     * Add an API controller to the list of available controllers.
      *
      * @param Laminas\Mvc\Controller\AbstractActionController $controller API
      * Controller
@@ -69,7 +69,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Index action
+     * Index action.
      *
      * Return API specification or redirect to Swagger UI
      *
@@ -98,7 +98,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Get API specification JSON fragment for the root nodes
+     * Get API specification JSON fragment for the root nodes.
      *
      * @return string
      */
@@ -117,7 +117,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Merge specification fragments from all APIs to an array
+     * Merge specification fragments from all APIs to an array.
      *
      * @return array
      */

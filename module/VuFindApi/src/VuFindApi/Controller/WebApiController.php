@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class WebApiController
+ * Class WebApiController.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindApi\Controller;
 
 /**
- * Web API Controller
+ * Web API Controller.
  *
  * Controls the Search API functionality on website index
  *
@@ -50,28 +50,28 @@ class WebApiController extends SearchApiController
     protected $searchClassId = 'SolrWeb';
 
     /**
-     * Record route uri
+     * Record route uri.
      *
      * @var string
      */
     protected $recordRoute = 'web/record';
 
     /**
-     * Search route uri
+     * Search route uri.
      *
      * @var string
      */
     protected $searchRoute = 'web/search';
 
     /**
-     * Descriptive label for the index managed by this controller
+     * Descriptive label for the index managed by this controller.
      *
      * @var string
      */
     protected $indexLabel = 'website';
 
     /**
-     * Prefix for use in model names used by API
+     * Prefix for use in model names used by API.
      *
      * @var string
      */

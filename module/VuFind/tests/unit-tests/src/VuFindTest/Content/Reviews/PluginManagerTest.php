@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content Reviews Plugin Manager Test Class
+ * Content Reviews Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Reviews\Content;
 use VuFind\Content\Reviews\PluginManager;
 
 /**
- * Content Reviews Plugin Manager Test Class
+ * Content Reviews Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

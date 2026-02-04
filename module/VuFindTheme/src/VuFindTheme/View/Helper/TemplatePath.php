@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Helper to get path to a template from another theme (for including)
+ * Helper to get path to a template from another theme (for including).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTheme\View\Helper;
 use Laminas\View\Resolver\TemplatePathStack;
 
 /**
- * Helper to get path to a template from another theme (for including)
+ * Helper to get path to a template from another theme (for including).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,28 +43,28 @@ use Laminas\View\Resolver\TemplatePathStack;
 class TemplatePath extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Absolute path up to the theme name
+     * Absolute path up to the theme name.
      *
      * @var string
      */
     protected $pathPre;
 
     /**
-     * Absolute path after the theme name
+     * Absolute path after the theme name.
      *
      * @var string
      */
     protected $pathPost;
 
     /**
-     * Template path stack
+     * Template path stack.
      *
      * @var TemplatePathStack
      */
     protected $templatePathStack;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TemplatePathStack $templateStack Inheritance stack of template paths
      */
@@ -80,7 +80,7 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Returns an template path according the configured theme
+     * Returns an template path according the configured theme.
      *
      * @param string $template    template name like 'footer.phtml'
      * @param string $targetTheme template to pull the template from

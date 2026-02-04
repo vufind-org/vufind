@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFindTest\ServiceManager\Factory\TestHarness;
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ namespace VuFindTest\ServiceManager\Factory\TestHarness;
 class AutowiredClassEmptyConstructor
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

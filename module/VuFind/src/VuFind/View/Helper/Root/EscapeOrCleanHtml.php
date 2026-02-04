@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View helper for escaping or cleaning HTML
+ * View helper for escaping or cleaning HTML.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\String\PropertyStringInterface;
 
 /**
- * View helper for escaping or cleaning HTML
+ * View helper for escaping or cleaning HTML.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,14 +45,14 @@ use VuFind\String\PropertyStringInterface;
 class EscapeOrCleanHtml extends AbstractHelper
 {
     /**
-     * Contexts that allow HTML
+     * Contexts that allow HTML.
      *
      * @var array
      */
     protected array $htmlContexts;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Escaper   $escaper   Escaper
      * @param CleanHtml $cleanHtml Clean HTML helper
@@ -64,7 +64,7 @@ class EscapeOrCleanHtml extends AbstractHelper
     }
 
     /**
-     * Invoke this helper: escape a value
+     * Invoke this helper: escape a value.
      *
      * @param string|PropertyStringInterface $value            Value to escape
      * @param ?string                        $dataContext      Data context (for fields that allow sanitized HTML)
@@ -93,7 +93,7 @@ class EscapeOrCleanHtml extends AbstractHelper
     }
 
     /**
-     * Escape a string
+     * Escape a string.
      *
      * @param string $value String to escape
      *

@@ -32,7 +32,7 @@ namespace VuFind\Controller\Feature;
 use function is_callable;
 
 /**
- * Request helper trait
+ * Request helper trait.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -43,7 +43,7 @@ use function is_callable;
 trait RequestHelperTrait
 {
     /**
-     * Get the url parameters
+     * Get the url parameters.
      *
      * @param string $param          A key to check the url params for.
      * @param bool   $prioritizePost If true, check the POST params first
@@ -71,7 +71,7 @@ trait RequestHelperTrait
     }
 
     /**
-     * Get header field value
+     * Get header field value.
      *
      * @param string $headerKey Header field key to get
      *

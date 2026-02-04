@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Audit event database service factory
+ * Audit event database service factory.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Net\UserIpReader;
 
 /**
- * Audit event database service factory
+ * Audit event database service factory.
  *
  * @category VuFind
  * @package  Database
@@ -51,7 +51,7 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
     use ExplodeSettingTrait;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

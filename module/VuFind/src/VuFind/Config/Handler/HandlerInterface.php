@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for config handler classes
+ * Interface for config handler classes.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Config\Handler;
 use VuFind\Config\Location\ConfigLocationInterface;
 
 /**
- * Interface for config handler classes
+ * Interface for config handler classes.
  *
  * This interface class is the definition of the required methods for
  * loading configuration.

@@ -59,70 +59,70 @@ abstract class Options implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Available sort options
+     * Available sort options.
      *
      * @var array
      */
     protected $sortOptions;
 
     /**
-     * Allowed hidden sort options
+     * Allowed hidden sort options.
      *
      * @var array
      */
     protected $hiddenSortOptions = [];
 
     /**
-     * Available sort options for facets
+     * Available sort options for facets.
      *
      * @var array
      */
     protected $facetSortOptions = [];
 
     /**
-     * Overall default sort option
+     * Overall default sort option.
      *
      * @var string
      */
     protected $defaultSort;
 
     /**
-     * Handler-specific defaults
+     * Handler-specific defaults.
      *
      * @var array
      */
     protected $defaultSortByHandler;
 
     /**
-     * RSS-specific sort option
+     * RSS-specific sort option.
      *
      * @var ?string
      */
     protected $rssSort;
 
     /**
-     * Default search handler
+     * Default search handler.
      *
      * @var ?string
      */
     protected $defaultHandler;
 
     /**
-     * Advanced search handlers
+     * Advanced search handlers.
      *
      * @var array
      */
     protected $advancedHandlers;
 
     /**
-     * Basic search handlers
+     * Basic search handlers.
      *
      * @var array
      */
     protected $basicHandlers;
 
     /**
-     * Special advanced facet settings
+     * Special advanced facet settings.
      *
      * @var string
      */
@@ -143,21 +143,21 @@ abstract class Options implements TranslatorAwareInterface
     protected $alwaysDisplayResetFilters;
 
     /**
-     * Default filters to apply to new searches
+     * Default filters to apply to new searches.
      *
      * @var array
      */
     protected $defaultFilters;
 
     /**
-     * Default limit option
+     * Default limit option.
      *
      * @var int
      */
     protected $defaultLimit;
 
     /**
-     * Available limit options
+     * Available limit options.
      *
      * @var array
      */
@@ -171,28 +171,28 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $resultScrollerActive = false;
 
     /**
-     * Default view option
+     * Default view option.
      *
      * @var string
      */
     protected $defaultView = 'list';
 
     /**
-     * Available view options
+     * Available view options.
      *
      * @var array
      */
     protected $viewOptions = [];
 
     /**
-     * Default delimiter used for delimited facets
+     * Default delimiter used for delimited facets.
      *
      * @var string
      */
     protected $defaultFacetDelimiter;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
@@ -206,63 +206,63 @@ abstract class Options implements TranslatorAwareInterface
     protected $processedDelimitedFacets = null;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
     protected $translatedFacets = [];
 
     /**
-     * Text domains for translated facets
+     * Text domains for translated facets.
      *
      * @var array
      */
     protected $translatedFacetsTextDomains = [];
 
     /**
-     * Formats for translated facets
+     * Formats for translated facets.
      *
      * @var array
      */
     protected $translatedFacetsFormats = [];
 
     /**
-     * Hierarchical facets
+     * Hierarchical facets.
      *
      * @var array
      */
     protected $hierarchicalFacets = [];
 
     /**
-     * Hierarchical facet separators
+     * Hierarchical facet separators.
      *
      * @var array
      */
     protected $hierarchicalFacetSeparators = [];
 
     /**
-     * Hierarchical facet sort settings
+     * Hierarchical facet sort settings.
      *
      * @var array
      */
     protected $hierarchicalFacetSortSettings = [];
 
     /**
-     * Spelling setting
+     * Spelling setting.
      *
      * @var bool
      */
     protected $spellcheck = true;
 
     /**
-     * Available shards
+     * Available shards.
      *
      * @var array
      */
     protected $shards = [];
 
     /**
-     * Default selected shards
+     * Default selected shards.
      *
      * @var array
      */
@@ -276,28 +276,28 @@ abstract class Options implements TranslatorAwareInterface
     protected $visibleShardCheckboxes = false;
 
     /**
-     * Highlighting setting
+     * Highlighting setting.
      *
      * @var bool
      */
     protected $highlight = false;
 
     /**
-     * Autocomplete setting
+     * Autocomplete setting.
      *
      * @var bool
      */
     protected $autocompleteEnabled = false;
 
     /**
-     * Autocomplete auto submit setting
+     * Autocomplete auto submit setting.
      *
      * @var bool
      */
     protected $autocompleteAutoSubmit = true;
 
     /**
-     * Autocomplete apply active filters setting (null to fall back to retainFiltersByDefault setting)
+     * Autocomplete apply active filters setting (null to fall back to retainFiltersByDefault setting).
      *
      * @var ?bool
      */
@@ -311,14 +311,14 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteDisplayLimit = 20;
 
     /**
-     * Autocomplete query formatting rules
+     * Autocomplete query formatting rules.
      *
      * @var array
      */
     protected $autocompleteFormattingRules = [];
 
     /**
-     * Configuration file to read global settings from
+     * Configuration file to read global settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -327,7 +327,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $mainIni = 'config';
 
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -336,7 +336,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $searchIni = 'searches';
 
     /**
-     * Configuration file to read facet settings from
+     * Configuration file to read facet settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -352,7 +352,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $listviewOption;
 
     /**
-     * Maximum number of results (-1 = unlimited)
+     * Maximum number of results (-1 = unlimited).
      *
      * @var int
      */
@@ -392,28 +392,28 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
-     * apply in advanced search
+     * apply in advanced search.
      *
      * @var bool
      */
     protected $filterHierarchicalFacetsInAdvanced;
 
     /**
-     * Hierarchical exclude filters
+     * Hierarchical exclude filters.
      *
      * @var array
      */
     protected $hierarchicalExcludeFilters;
 
     /**
-     * Hierarchical facet filters
+     * Hierarchical facet filters.
      *
      * @var array
      */
     protected $hierarchicalFacetFilters;
 
     /**
-     * Top pagination control style (none, simple or full)
+     * Top pagination control style (none, simple or full).
      *
      * @var string
      */
@@ -441,35 +441,35 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $showRestrictedViewWarning;
 
     /**
-     * VuFind main configuration
+     * VuFind main configuration.
      *
      * @var array
      */
     protected array $mainConfig;
 
     /**
-     * Search settings
+     * Search settings.
      *
      * @var array
      */
     protected array $searchSettings;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
     protected array $facetSettings;
 
     /**
-     * Section name for advanced facet settings
+     * Section name for advanced facet settings.
      *
      * @var string
      */
     protected string $advancedFacetSettingsSection = 'Advanced_Settings';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -768,7 +768,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Return the sorting value for RSS mode
+     * Return the sorting value for RSS mode.
      *
      * @param string $sort Sort setting to modify for RSS mode
      *
@@ -854,7 +854,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get a list of delimited facets
+     * Get a list of delimited facets.
      *
      * @param bool $processed False = return raw values; true = process values into
      * field => delimiter associative array.
@@ -1070,7 +1070,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get max number of displayed suggestions
+     * Get max number of displayed suggestions.
      *
      * @return array
      */
@@ -1355,7 +1355,7 @@ abstract class Options implements TranslatorAwareInterface
      * Get the search class ID for identifying search box options; this is normally
      * the same as the current search class ID, but some "special purpose" search
      * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
-     * generation
+     * generation.
      *
      * @return string
      */
@@ -1365,7 +1365,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Is first/last navigation supported by the backend
+     * Is first/last navigation supported by the backend.
      *
      * @return bool
      */
@@ -1418,7 +1418,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get top paginator style
+     * Get top paginator style.
      *
      * @return string
      */
@@ -1567,7 +1567,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Initialize hidden sort options by combining the settings into a single array
+     * Initialize hidden sort options by combining the settings into a single array.
      *
      * @return void
      */

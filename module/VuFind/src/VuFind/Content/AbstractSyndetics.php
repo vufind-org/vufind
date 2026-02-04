@@ -43,7 +43,7 @@ use DOMDocument;
 abstract class AbstractSyndetics extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param int $timeout HTTP timeout for API calls (in seconds)
      */
@@ -52,7 +52,7 @@ abstract class AbstractSyndetics extends AbstractBase
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
      * @param string $url URL for client to use
      *

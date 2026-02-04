@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Autowiring Factory
+ * VuFind Autowiring Factory.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\YamlReader;
 
 /**
- * VuFind Autowiring Factory
+ * VuFind Autowiring Factory.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -50,14 +50,14 @@ use VuFind\Config\YamlReader;
 class AutowiringFactory implements FactoryInterface
 {
     /**
-     * Configuration manager
+     * Configuration manager.
      *
      * @var ?ConfigManagerInterface
      */
     protected ?ConfigManagerInterface $configManager = null;
 
     /**
-     * YAML reader
+     * YAML reader.
      *
      * @var ?YamlReader
      */

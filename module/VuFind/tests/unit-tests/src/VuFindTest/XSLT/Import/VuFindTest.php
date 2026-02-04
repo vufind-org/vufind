@@ -245,7 +245,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * DataProvider for name-related tests
+     * DataProvider for name-related tests.
      *
      * @return array
      */

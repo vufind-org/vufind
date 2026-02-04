@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Format Unavailable" Exception
+ * "Format Unavailable" Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * "Format Unavailable" Exception
+ * "Format Unavailable" Exception.
  *
  * @category VuFind
  * @package  Exceptions

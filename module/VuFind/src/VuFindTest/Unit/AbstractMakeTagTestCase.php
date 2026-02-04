@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract Test Class for element making helpers
+ * Abstract Test Class for element making helpers.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFindTest\Unit;
 
 /**
- * Abstract Test Class for element making helpers
+ * Abstract Test Class for element making helpers.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ namespace VuFindTest\Unit;
 abstract class AbstractMakeTagTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get makeTag helper with mock view
+     * Get makeTag helper with mock view.
      *
      * @return \Laminas\View\Helper\EscapeHtml
      */

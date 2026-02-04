@@ -80,14 +80,14 @@ abstract class AbstractExpireCommand extends Command
     protected $defaultAge = null;
 
     /**
-     * Table on which to expire rows
+     * Table on which to expire rows.
      *
      * @var DeleteExpiredInterface
      */
     protected $table;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param DeleteExpiredInterface $service Service on which to expire rows
      * @param ?string                $name    The name of the command; passing null means it
@@ -134,7 +134,7 @@ abstract class AbstractExpireCommand extends Command
     }
 
     /**
-     * Add a time stamp to a message
+     * Add a time stamp to a message.
      *
      * @param string $msg Message
      *
@@ -199,7 +199,7 @@ abstract class AbstractExpireCommand extends Command
     }
 
     /**
-     * Convert days to a date threshold
+     * Convert days to a date threshold.
      *
      * @param float $daysOld Days before now
      *
