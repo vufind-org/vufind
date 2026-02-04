@@ -59,7 +59,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
     /**
      * Constructor
      *
-     * @param array          $config         Config
+     * @param array $config Config
      */
     public function __construct(
         #[Autowire(config: 'Notices', configType: 'yaml')]

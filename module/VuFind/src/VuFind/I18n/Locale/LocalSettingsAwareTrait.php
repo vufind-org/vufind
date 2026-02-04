@@ -29,6 +29,8 @@
 
 namespace VuFind\I18n\Locale;
 
+use function in_array;
+
 /**
  * Default implementation of LocaleSettingsAwareTrait.
  *

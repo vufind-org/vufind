@@ -1,10 +1,11 @@
 <?php
 
 /**
- * Locale settings aware marker interface.
+ * Notices view helper.
  *
  * PHP version 8
  *
+ * Copyright (C) effective WEBWORK GmbH 2023.
  * Copyright (C) Hebis Verbundzentrale 2026.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,31 +22,36 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  I18n\Locale
+ * @package  View_Helpers
+ * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\I18n\Locale;
+namespace VuFind\View\Helper\Bootstrap5;
 
 /**
- * Locale settings aware marker interface.
+ * Notices view helper.
  *
  * @category VuFind
- * @package  I18n\Locale
+ * @package  View_Helpers
+ * @author   Johannes Schultze <schultze@effective-webwork.de>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-interface LocaleSettingsAwareInterface
+class Notices extends \VuFind\View\Helper\Root\Notices
 {
     /**
-     * Set locale settings
+     * Default style classes.
      *
-     * @param LocaleSettings $localeSettings Locale Settings
-     *
-     * @return LocaleSettingsAwareInterface
+     * @var array
      */
-    public function setLocaleSettings(LocaleSettings $localeSettings): LocaleSettingsAwareInterface;
+    protected array $defaultStyleClasses = [
+        'success' => 'alert alert-success',
+        'info' => 'alert alert-info',
+        'warning' => 'alert alert-warning',
+        'danger' => 'alert alert-danger',
+    ];
 }

@@ -52,6 +52,13 @@ class Notices implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
+     * Default style classes.
+     *
+     * @var array
+     */
+    protected array $defaultStyleClasses = [];
+
+    /**
      * Constructor
      *
      * @param NoticeManager $noticeManager Notice manager
@@ -119,7 +126,9 @@ class Notices implements TranslatorAwareInterface
         $content = ($this->escapeHtml)($content);
         $classes = '';
         if ($style = $notice['style'] ?? null) {
-            $classes = $this->noticeManager->getConfig()['styles'][$style]['classes'] ?? '';
+            $classes = $this->noticeManager->getConfig()['styles'][$style]['classes']
+                ?? $this->defaultStyleClasses[$style]
+                ?? '';
         }
         return $this->renderer->render(
             'Helpers/notices/notice.phtml',

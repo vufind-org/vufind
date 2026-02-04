@@ -1,13 +1,11 @@
-# Available styles. Classes are added to the notice if the style is selected.
+# Available styles. Keys are style names. Values are options.
+# The following options are available:
+# - classes: HMTL classes to be added to the notices.
 styles:
   success:
-    classes: "alert alert-success"
   info:
-    classes: "alert alert-info"
   warning:
-    classes: "alert alert-warning"
   danger:
-    classes: "alert alert-danger"
 
 # Notices can be configured here. You can use the following options:
 # - content: The message to be displayed.
