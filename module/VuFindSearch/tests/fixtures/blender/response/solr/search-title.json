@@ -409,62 +409,69 @@
         "work_keys_str_mv":["AT demiankatz octothorpeswhynot"],
         "_version_":1726988259035185152}]
   },
-  "facet_counts":{
-    "facet_queries":{},
-    "facet_fields":{
-      "institution":
-      [
-        ["MyInstitution",240]],
-      "building":
-      [
-        ["0/Main/", 231],
-        ["1/Main/Sub/", 7],
-        ["0/Sub/",1],
-        ["1/Sub/Foo/",1]],
-      "format":
-      [
-        ["Book Chapter",177],
-        ["Book",63]],
-      "author_facet":
-      [
-        ["Granda, Isiah",5],
-        ["Hartfield, Shelba",5],
-        ["Oram, Donn",5],
-        ["Overall, Lula",5],
-        ["Winrow, Sanjuana",5],
-        ["Abner, Shelli",4],
-        ["Crafts, Claudette",4],
-        ["Erickson, Joette",4],
-        ["Harrill, Mariko",4],
-        ["Leyva, Marie",4],
-        ["Mackson, Yolanda",4],
-        ["Oros, Cierra",4],
-        ["Pakele, Marina",4],
-        ["Saar, Danna",4],
-        ["Walcott, Porfirio",4],
-        ["Murden, Claud",3],
-        ["Nelms, Lanelle",3],
-        ["Alcina, Rashad",2],
-        ["Arechiga, Moon",2],
-        ["Beckett, Tamala",2],
-        ["Behringer, Anitra",2],
-        ["Beveridge, Albina",2],
-        ["Blacker, Minerva",2],
-        ["Bogard, Noma",2],
-        ["Bornstein, Dia",2],
-        ["Boyland, Bebe",2],
-        ["Bucher, Margit",2],
-        ["Cantrell, Cornelius",2],
-        ["Cornforth, Desiree",2],
-        ["Counter, Modesto",2]],
-      "language":
-      [
-        ["English",7],
-        ["Italian",2],
-        ["Latin",2]]},
-    "facet_ranges":{},
-    "facet_intervals":{},
-    "facet_heatmaps":{}},
+"facets": {
+    "count": 240,
+    "institution": {
+      "buckets": [
+        { "val": "MyInstitution", "count": 240 }
+      ]
+    },
+    "building": {
+      "buckets": [
+        { "val": "0/Main/", "count": 231 },
+        { "val": "1/Main/Sub/", "count": 7 },
+        { "val": "0/Sub/", "count": 1 },
+        { "val": "1/Sub/Foo/", "count": 1 }
+      ]
+    },
+    "format": {
+      "buckets": [
+        { "val": "Book Chapter", "count": 177 },
+        { "val": "Book", "count": 63 }
+      ]
+    },
+    "author_facet": {
+      "buckets": [
+        { "val": "Granda, Isiah", "count": 5 },
+        { "val": "Hartfield, Shelba", "count": 5 },
+        { "val": "Oram, Donn", "count": 5 },
+        { "val": "Overall, Lula", "count": 5 },
+        { "val": "Winrow, Sanjuana", "count": 5 },
+        { "val": "Abner, Shelli", "count": 4 },
+        { "val": "Crafts, Claudette", "count": 4 },
+        { "val": "Erickson, Joette", "count": 4 },
+        { "val": "Harrill, Mariko", "count": 4 },
+        { "val": "Leyva, Marie", "count": 4 },
+        { "val": "Mackson, Yolanda", "count": 4 },
+        { "val": "Oros, Cierra", "count": 4 },
+        { "val": "Pakele, Marina", "count": 4 },
+        { "val": "Saar, Danna", "count": 4 },
+        { "val": "Walcott, Porfirio", "count": 4 },
+        { "val": "Murden, Claud", "count": 3 },
+        { "val": "Nelms, Lanelle", "count": 3 },
+        { "val": "Alcina, Rashad", "count": 2 },
+        { "val": "Arechiga, Moon", "count": 2 },
+        { "val": "Beckett, Tamala", "count": 2 },
+        { "val": "Behringer, Anitra", "count": 2 },
+        { "val": "Beveridge, Albina", "count": 2 },
+        { "val": "Blacker, Minerva", "count": 2 },
+        { "val": "Bogard, Noma", "count": 2 },
+        { "val": "Bornstein, Dia", "count": 2 },
+        { "val": "Boyland, Bebe", "count": 2 },
+        { "val": "Bucher, Margit", "count": 2 },
+        { "val": "Cantrell, Cornelius", "count": 2 },
+        { "val": "Cornforth, Desiree", "count": 2 },
+        { "val": "Counter, Modesto", "count": 2 }
+      ]
+    },
+    "language": {
+      "buckets": [
+        { "val": "English", "count": 7 },
+        { "val": "Italian", "count": 2 },
+        { "val": "Latin", "count": 2 }
+      ]
+    }
+  },
   "spellcheck":{
     "suggestions":
     [],

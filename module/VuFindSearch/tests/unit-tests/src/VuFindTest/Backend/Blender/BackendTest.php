@@ -350,54 +350,54 @@ class BackendTest extends TestCase
         );
 
         return [
-            [
+            'limit 0' => [
                 0,
                 0,
                 [],
             ],
-            [
+            'limit 20' => [
                 0,
                 20,
                 array_slice($expectedRecords, 0, 20),
             ],
-            [
+            'offset 1, limit 20' => [
                 1,
                 20,
                 array_slice($expectedRecords, 1, 20),
             ],
-            [
+            'offset 2, limit 20' => [
                 2,
                 20,
                 array_slice($expectedRecords, 2, 20),
             ],
-            [
+            'offset 3, limit 20' => [
                 3,
                 20,
                 array_slice($expectedRecords, 3, 20),
             ],
-            [
+            'offset 19, limit 20' => [
                 19,
                 20,
                 array_slice($expectedRecords, 19, 20),
             ],
-            [
+            'offset 0, limit 40' => [
                 0,
                 40,
                 array_slice($expectedRecords, 0, 40),
             ],
-            [
+            'offset 0, limit 40, no boost config' => [
                 0,
                 40,
                 array_slice($expectedRecordsNoBoost, 0, 40),
                 $noBoostConfig,
             ],
-            [
+            'offset 0, limit 40, adaptive config' => [
                 0,
                 40,
                 array_slice($expectedRecordsAdaptive, 0, 40),
                 $adaptiveConfig,
             ],
-            [
+            'solr only' => [
                 0,
                 20,
                 array_slice($solrRecords, 0, 20),
@@ -406,7 +406,7 @@ class BackendTest extends TestCase
                 240,
                 null,
             ],
-            [
+            'not EDS' => [
                 0,
                 20,
                 array_slice($solrRecords, 0, 20),
@@ -415,7 +415,7 @@ class BackendTest extends TestCase
                 240,
                 0,
             ],
-            [
+            'EDS only' => [
                 0,
                 20,
                 array_slice($edsRecords, 0, 20),
@@ -424,7 +424,7 @@ class BackendTest extends TestCase
                 0,
                 65924,
             ],
-            [
+            'both backends' => [
                 0,
                 40,
                 array_slice($expectedRecords, 0, 40),
@@ -434,7 +434,7 @@ class BackendTest extends TestCase
                     . '(blender_backend:"Solr" OR blender_backend:"EDS")',
                 ],
             ],
-            [
+            'no Solr or EDS backend' => [
                 0,
                 20,
                 [],
@@ -443,7 +443,7 @@ class BackendTest extends TestCase
                 0,
                 0,
             ],
-            [
+            'title query' => [
                 0,
                 20,
                 $expectedRecordsTitleSearch,
@@ -453,7 +453,7 @@ class BackendTest extends TestCase
                 65924,
                 new Query('foo', 'Title'),
             ],
-            [
+            'author query' => [
                 0,
                 20,
                 $expectedRecordsAuthorSearch,
@@ -487,7 +487,7 @@ class BackendTest extends TestCase
         $expectedRecords,
         $config = null,
         $filters = [],
-        $expectedSolr = 246,
+        $expectedSolr = 240,
         $expectedEDS = 65924,
         $query = null
     ): void {

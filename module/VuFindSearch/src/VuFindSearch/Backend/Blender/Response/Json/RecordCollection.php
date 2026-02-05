@@ -142,7 +142,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
             }
         }
 
-        $this->response['facet_counts']['facet_fields']
+        $this->response['facets']
             = $this->getMergedFacets($collections);
 
         return $backendRecords;
@@ -341,14 +341,17 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
 
         $mergedFacets['blender_backend'] = $this->getBlenderFacetStats($collections);
 
-        // Convert the array back to Solr-style array with two elements
+        // Convert the array back to Solr-style array from JSON Facet API
         $facetFields = [];
         foreach ($mergedFacets as $facet => $values) {
-            $list = [];
-            foreach ($values as $key => $value) {
-                $list[] = [$key, $value];
+            $buckets = [];
+            foreach ($values as $key => $count) {
+                $buckets[] = [
+                    'val' => $key,
+                    'count' => $count,
+                ];
             }
-            $facetFields[$facet] = $list;
+            $facetFields[$facet] = ['buckets' => $buckets];
         }
 
         return $facetFields;
