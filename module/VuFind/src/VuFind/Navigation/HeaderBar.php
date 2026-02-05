@@ -62,7 +62,7 @@ class HeaderBar extends AbstractMenu
      */
     public function __construct(
         array $sectionConfig,
-        protected array $config,
+        array $config,
         protected Cart $cart,
         protected Manager $authManager,
         protected ViewModel $viewModel,
@@ -90,7 +90,7 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct($sectionConfig, $config);
     }
 
     /**

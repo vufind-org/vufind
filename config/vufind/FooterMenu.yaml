@@ -78,3 +78,7 @@ footer-right:
       attributes:
         data-cc: show-preferencesModal
         aria-haspopup: dialog
+
+    - label: 'Site Map'
+      route: sitemap-home
+      checkMethod: checkSiteMapPage
