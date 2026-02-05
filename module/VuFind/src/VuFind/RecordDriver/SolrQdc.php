@@ -129,11 +129,11 @@ class SolrQdc extends SolrDefault
             return $allResults;
         }
         $userLocale = $this->localeSettings->getUserLocale();
-        [$userLanguage] = explode('-', $userLocale);
-        if (null !== ($results = $localeResults[$userLocale] ?? $localeResults[$userLanguage] ?? null)) {
+        if (null !== ($results = $this->getBestLocaleMatch($userLocale, $localeResults))) {
             return $results;
         }
         // Check for matching language in locale-specific results:
+        [$userLanguage] = explode('-', $userLocale);
         foreach ($localeResults as $locale => $results) {
             [$lang] = explode('-', $locale);
             if ($lang === $userLanguage) {
@@ -143,12 +143,25 @@ class SolrQdc extends SolrDefault
         // Check for match in default and fallback locales:
         $locales = [$this->localeSettings->getDefaultLocale(), ...$this->localeSettings->getFallbackLocales()];
         foreach ($locales as $locale) {
-            [$language] = explode('-', $locale);
-            if (null !== ($results = $localeResults[$locale] ?? $localeResults[$language] ?? null)) {
+            if (null !== ($results = $this->getBestLocaleMatch($locale, $localeResults))) {
                 return $results;
             }
         }
         // Could not find anything else, so return all:
         return $allResults;
+    }
+
+    /**
+     * Pick best match for a locale from the results.
+     *
+     * @param string $locale        Locale
+     * @param array  $localeResults Result(s) keyed by locale
+     *
+     * @return mixed
+     */
+    protected function getBestLocaleMatch(string $locale, array $localeResults): mixed
+    {
+        [$language] = explode('-', $locale);
+        return $localeResults[$locale] ?? $localeResults[$language] ?? null;
     }
 }

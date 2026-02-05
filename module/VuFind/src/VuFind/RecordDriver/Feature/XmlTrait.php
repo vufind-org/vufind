@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use FinnaXml\XmlDoc;
+
 /**
  * Functions for reading XML records.
  *
@@ -49,26 +51,28 @@ trait XmlTrait
      *
      * @var string
      */
-    protected $xmlNs = 'http://www.w3.org/2000/xmlns/';
+    protected string $xmlNs = 'http://www.w3.org/2000/xmlns/';
 
     /**
      * XML class to use.
      *
      * @var string
      */
-    protected $xmlClass = \FinnaXml\XmlDoc::class;
+    protected string $xmlClass = \FinnaXml\XmlDoc::class;
 
     /**
      * XML instance. Access only via getXmlReader() as this is initialized lazily.
+     *
+     * @var XmlDoc
      */
-    protected $lazyXmlReader = null;
+    protected ?XmlDoc $lazyXmlReader = null;
 
     /**
      * Get access to the XML object.
      *
-     * @return object
+     * @return XmlDoc
      */
-    public function getXmlReader()
+    public function getXmlReader(): XmlDoc
     {
         if (null === $this->lazyXmlReader) {
             $this->lazyXmlReader = new $this->xmlClass();
