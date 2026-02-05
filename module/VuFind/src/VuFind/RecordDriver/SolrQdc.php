@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\RecordDriver\Feature\LocaleSupportTrait;
 use VuFind\RecordDriver\Feature\XmlTrait;
 
 /**
@@ -42,6 +43,7 @@ use VuFind\RecordDriver\Feature\XmlTrait;
  */
 class SolrQdc extends SolrDefault
 {
+    use LocaleSupportTrait;
     use XmlTrait;
 
     /**
@@ -113,55 +115,5 @@ class SolrQdc extends SolrDefault
         $xml = $this->getXmlReader();
         $method = $valuesOnly ? 'allValues' : 'all';
         return $xml->$method(path: "{{$this->dcTermsNs}}$nodeName") ?: $xml->$method(path: $nodeName);
-    }
-
-    /**
-     * Pick correct results from locale-specific results with fallback to all results.
-     *
-     * @param array        $localeResults Result(s) keyed by locale
-     * @param array|string $allResults    All results
-     *
-     * @return array|string
-     */
-    protected function getLocaleSpecificResults(array $localeResults, array|string $allResults): array|string
-    {
-        if (null === $this->localeSettings) {
-            return $allResults;
-        }
-        $userLocale = $this->localeSettings->getUserLocale();
-        if (null !== ($results = $this->getBestLocaleMatch($userLocale, $localeResults))) {
-            return $results;
-        }
-        // Check for matching language in locale-specific results:
-        [$userLanguage] = explode('-', $userLocale);
-        foreach ($localeResults as $locale => $results) {
-            [$lang] = explode('-', $locale);
-            if ($lang === $userLanguage) {
-                return $results;
-            }
-        }
-        // Check for match in default and fallback locales:
-        $locales = [$this->localeSettings->getDefaultLocale(), ...$this->localeSettings->getFallbackLocales()];
-        foreach ($locales as $locale) {
-            if (null !== ($results = $this->getBestLocaleMatch($locale, $localeResults))) {
-                return $results;
-            }
-        }
-        // Could not find anything else, so return all:
-        return $allResults;
-    }
-
-    /**
-     * Pick best match for a locale from the results.
-     *
-     * @param string $locale        Locale
-     * @param array  $localeResults Result(s) keyed by locale
-     *
-     * @return mixed
-     */
-    protected function getBestLocaleMatch(string $locale, array $localeResults): mixed
-    {
-        [$language] = explode('-', $locale);
-        return $localeResults[$locale] ?? $localeResults[$language] ?? null;
     }
 }
