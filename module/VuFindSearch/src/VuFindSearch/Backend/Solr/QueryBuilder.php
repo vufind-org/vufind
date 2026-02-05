@@ -130,9 +130,9 @@ class QueryBuilder implements QueryBuilderInterface
      * @param AbstractQuery $query  User query
      * @param ?ParamBag     $params Search backend parameters
      *
-     * @return ParamBag
+     * @return ParamBagBag
      */
-    public function build(AbstractQuery $query, ?ParamBag $params = null)
+    public function build(AbstractQuery $query, ?ParamBag $params = null): ParamBagBag
     {
         $newParams = new ParamBagBag();
 
@@ -171,7 +171,7 @@ class QueryBuilder implements QueryBuilderInterface
                     // If a boost was added, we don't want to highlight based on
                     // the boost query, so we should use the non-boosted version:
                     if ($highlight && $oldString != $string) {
-                        $newParams->set('hl.q', $oldString);
+                        $newParams->setNested('params', 'hl.q', $oldString);
                     }
                 }
             } elseif ($handler->hasDismax()) {

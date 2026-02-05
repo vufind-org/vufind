@@ -144,8 +144,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
-        $this->assertEquals([], $fq);
+        $filter = $params->get('filter');
+        $this->assertEquals([], $filter);
     }
 
     /**
@@ -159,7 +159,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params = new ParamBag(
             [
-                'fq' => ['fulltext:VuFind', 'field2:novalue'],
+                'filter' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
         $listener = new InjectConditionalFilterListener($this->backend, self::$searchConfig);
@@ -167,11 +167,11 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
+        $filter = $params->get('filter');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue'],
-            $fq
+            $filter
         );
     }
 
@@ -190,8 +190,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
-        $this->assertEquals([], $fq);
+        $filter = $params->get('filter');
+        $this->assertEquals([], $filter);
     }
 
     /**
@@ -204,7 +204,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params = new ParamBag(
             [
-                'fq' => ['fulltext:VuFind', 'field2:novalue'],
+                'filter' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
         $listener = new InjectConditionalFilterListener($this->backend, self::$emptySearchConfig);
@@ -214,11 +214,11 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
+        $filter = $params->get('filter');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue'],
-            $fq
+            $filter
         );
     }
 
@@ -241,17 +241,17 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
+        $filter = $params->get('filter');
         $this->assertEquals(
             [0 => 'institution:"MyInst"'],
-            $fq
+            $filter
         );
 
         // Check that a filter is not added for wrong backend:
         $params = new ParamBag([]);
         $event = $this->getMockPreEvent($params, 'Other');
         $listener->onSearchPre($event);
-        $this->assertEmpty($params->get('fq'));
+        $this->assertEmpty($params->get('filter'));
     }
 
     /**
@@ -273,8 +273,8 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
-        $this->assertEquals([0 => '(NOT institution:"MyInst")'], $fq);
+        $filter = $params->get('filter');
+        $this->assertEquals([0 => '(NOT institution:"MyInst")'], $filter);
     }
 
     /**
@@ -287,7 +287,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params = new ParamBag(
             [
-                'fq' => ['fulltext:VuFind', 'field2:novalue'],
+                'filter' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
 
@@ -300,13 +300,13 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
+        $filter = $params->get('filter');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => '(NOT institution:"MyInst")',
             ],
-            $fq
+            $filter
         );
     }
 
@@ -320,7 +320,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params = new ParamBag(
             [
-                'fq' => ['fulltext:VuFind', 'field2:novalue'],
+                'filter' => ['fulltext:VuFind', 'field2:novalue'],
             ]
         );
 
@@ -333,13 +333,13 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
 
-        $fq = $params->get('fq');
+        $filter = $params->get('filter');
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
             2 => 'institution:"MyInst"',
             ],
-            $fq
+            $filter
         );
     }
 }

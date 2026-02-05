@@ -152,7 +152,7 @@ class InjectConditionalFilterListener
             $filters = [];
         }
         $new_filters = array_merge($filters, $this->filterList);
-        $params->set('filters', $new_filters);
+        $params->set('filter', $new_filters);
 
         return $event;
     }

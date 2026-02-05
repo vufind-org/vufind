@@ -487,7 +487,7 @@ class BackendTest extends TestCase
         $expectedRecords,
         $config = null,
         $filters = [],
-        $expectedSolr = 240,
+        $expectedSolr = 246,
         $expectedEDS = 65924,
         $query = null
     ): void {
@@ -1102,15 +1102,15 @@ class BackendTest extends TestCase
                 throw new BackendException('Simulated Solr failure');
             }
             if (null === $fixture) {
-                $field = $params->get('qf')[0] ?? '';
+                $field = $params->getNested('params', 'qf')[0] ?? '';
                 $type = '';
                 if (in_array($field, ['title', 'author'])) {
                     $type = "-$field";
                 }
                 $fixture = "blender/response/solr/search$type.json";
             }
-            $start = $params->get('start')[0];
-            $rows = $params->get('rows')[0];
+            $start = $params->get('offset')[0];
+            $rows = $params->get('limit')[0];
             $results = $this->getJsonFixture($fixture, 'VuFindSearch');
             $results['response']['docs'] = array_slice(
                 $results['response']['docs'],

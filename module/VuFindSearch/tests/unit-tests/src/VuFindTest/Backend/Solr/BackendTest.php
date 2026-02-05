@@ -41,9 +41,8 @@ use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\Query;
-
-use function count;
 
 /**
  * Unit tests for SOLR backend.
@@ -430,9 +429,9 @@ class BackendTest extends TestCase
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid response writer type: xml');
 
-        $conn = $this->getConnectorMock();
+        $conn = $this->getConnectorMock(['retrieve']);
         $back = new Backend($conn);
-        $back->retrieve('foobar', new ParamBag(['wt' => ['xml']]));
+        $back->retrieve('foobar', ParamBagBag::fromArray(['params' => ['wt' => 'xml']]));
     }
 
     /**
@@ -447,7 +446,7 @@ class BackendTest extends TestCase
 
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
-        $back->retrieve('foobar', new ParamBag(['json.nl' => ['bad']]));
+        $back->retrieve('foobar', ParamBagBag::fromArray(['params' => ['json.nl' => ['bad']]]));
     }
 
     /**
@@ -489,30 +488,27 @@ class BackendTest extends TestCase
     /**
      * Test getting multiple IDs.
      *
-     * @param ?string $flIn          Additional field list in input (null = none)
-     * @param string  $expectedFlOut Expected field list in output
+     * @param ?string $fieldsIn          Additional field list in input (null = none)
+     * @param string  $expectedFieldsOut Expected field list in output
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getIdsProvider')]
-    public function testGetIds(?string $flIn, string $expectedFlOut): void
+    public function testGetIds(?string $fieldsIn, string $expectedFieldsOut): void
     {
-        $paramBagChecker = function (ParamBag $params) use ($expectedFlOut) {
+        $paramBagChecker = function (ParamBag $params) use ($expectedFieldsOut) {
             $expected = [
-                'wt' => ['json'],
-                'json.nl' => ['arrarr'],
-                'fl' => [$expectedFlOut],
-                'rows' => [10],
-                'start' => [0],
-                'q' => ['foo'],
+                'params' => [
+                    'wt' => 'json',
+                    'json.nl' => 'arrarr',
+                ],
+                'fields' => $expectedFieldsOut,
+                'limit' => 10,
+                'offset' => 0,
+                'query' => 'foo',
             ];
-            $paramsArr = $params->getArrayCopy();
-            foreach ($expected as $key => $vals) {
-                if (count(array_diff($vals, $paramsArr[$key] ?? [])) !== 0) {
-                    return false;
-                }
-            }
-            return true;
+            $paramsArr = ParamBagBag::from($params)->jsonSerialize();
+            return $expected == $paramsArr;
         };
         // TODO: currently this test is concerned with ensuring that the right
         // parameters are sent to Solr; it may be worth adding a more realistic
@@ -524,8 +520,8 @@ class BackendTest extends TestCase
         $back = new Backend($conn);
         $query = new Query('foo');
         $params = new ParamBag();
-        if ($flIn) {
-            $params->set('fl', $flIn);
+        if ($fieldsIn) {
+            $params->set('fields', $fieldsIn);
         }
         $result = $back->getIds($query, 0, 10, $params);
         $this->assertInstanceOf(RecordCollection::class, $result);
@@ -579,7 +575,7 @@ class BackendTest extends TestCase
     public function testRandom(): void
     {
         // Test that random sort parameter is added:
-        $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
+        $params = $this->getMockBuilder(\VuFindSearch\ParamBagBag::class)
             ->onlyMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with('sort', $this->matchesRegularExpression('/[0-9]+_random asc/'));

@@ -211,7 +211,7 @@ class ParamBagBag extends ParamBag implements JsonSerializable
     /**
      * Return a serializable object, for json_encode use into a POST body.
      *
-     * @return string
+     * @return mixed
      */
     public function jsonSerialize(): mixed
     {

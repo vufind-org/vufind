@@ -56,7 +56,7 @@ class RecordCollection extends AbstractRecordCollection
         'responseHeader' => [],
         'response'       => ['numFound' => 0, 'start' => 0],
         'spellcheck'     => ['suggestions' => []],
-        'facet_counts'   => [],
+        'facets'   => [],
     ];
 
     /**

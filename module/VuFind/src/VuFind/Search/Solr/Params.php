@@ -260,10 +260,21 @@ class Params extends \VuFind\Search\Base\Params
                         'limit' => $fieldLimit,
                     ];
 
+                    $facet['sort'] = in_array($facetField, $this->indexSortedFacets ?? [])
+                        ? 'index'
+                        : ($this->facetSort ?: 'count');
+
                     $fieldPrefix = $this->getFacetPrefixForField($facetField);
                     if (!empty($fieldPrefix)) {
                         $facet['prefix'] = $fieldPrefix;
+                    } elseif ($this->facetPrefix != null) {
+                        $facet['prefix'] = $this->facetPrefix;
                     }
+
+                    if ($this->facetOffset != null) {
+                        $facet['offset'] = $this->facetOffset;
+                    }
+
                     // TODO Deal with matches
                     $fieldMatches = $this->getFacetMatchesForField($facetField);
                     if (!empty($fieldMatches)) {
@@ -278,24 +289,14 @@ class Params extends \VuFind\Search\Base\Params
                     $facetSet[$facetFieldName] = $facet;
                 }
             }
+
+            // TODO Deal with contains
             if ($this->facetContains != null) {
                 $facetSet['contains'] = $this->facetContains;
             }
             if ($this->facetContainsIgnoreCase != null) {
                 $facetSet['contains.ignoreCase']
                     = $this->facetContainsIgnoreCase ? 'true' : 'false';
-            }
-            if ($this->facetOffset != null) {
-                $facetSet['offset'] = $this->facetOffset;
-            }
-            if ($this->facetPrefix != null) {
-                $facetSet['prefix'] = $this->facetPrefix;
-            }
-            $facetSet['sort'] = $this->facetSort ?: 'count';
-            if ($this->indexSortedFacets != null) {
-                foreach ($this->indexSortedFacets as $field) {
-                    $facetSet["f.{$field}.facet.sort"] = 'index';
-                }
             }
         }
 

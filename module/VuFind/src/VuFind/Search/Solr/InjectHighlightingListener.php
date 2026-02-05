@@ -129,7 +129,7 @@ class InjectHighlightingListener
                     // Set extra parameters first so they don't override necessary
                     // core parameters:
                     foreach ($this->extraHighlightingParameters as $key => $val) {
-                        $params->set($key, $val);
+                        $params->addMultiNested($key, $val);
                     }
                     $params->setNested('params', 'hl', 'true');
                     $params->setNested('params', 'hl.simple.pre', '{{{{START_HILITE}}}}');

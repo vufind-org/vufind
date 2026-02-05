@@ -59,7 +59,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFacet('building', 'building_label');
 
         // No filters:
-        $this->assertEquals(null, $params->getBackendParameters()->get('fq'));
+        $this->assertEquals(null, $params->getBackendParameters()->get('filter'));
 
         // Add multiple filters:
         $params->addFilter('~format:bar');
@@ -70,7 +70,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'building:"main"',
                 '{!tag=format_filter}format:(format:"bar" OR format:"baz")',
             ],
-            $params->getBackendParameters()->get('fq')
+            $params->getBackendParameters()->get('filter')
         );
 
         // Add a hidden filter:
@@ -81,7 +81,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'building:"main"',
                 '{!tag=format_filter}format:(format:"bar" OR format:"baz")',
             ],
-            $params->getBackendParameters()->get('fq')
+            $params->getBackendParameters()->get('filter')
         );
 
         // Remove format filters:
@@ -91,7 +91,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'building:"sub"',
                 'building:"main"',
             ],
-            $params->getBackendParameters()->get('fq')
+            $params->getBackendParameters()->get('filter')
         );
 
         // Remove building filter:
@@ -100,7 +100,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'building:"sub"',
             ],
-            $params->getBackendParameters()->get('fq')
+            $params->getBackendParameters()->get('filter')
         );
     }
 

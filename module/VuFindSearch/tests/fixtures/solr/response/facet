@@ -12,32 +12,36 @@ Content-Length: 779
 {
   "responseHeader":{
     "status":0,
-    "QTime":0,
+    "QTime":3,
     "params":{
-      "facet.limit":"5",
-      "q":"*:*",
-      "facet.field":"topic_facet",
-      "json.nl":"arrarr",
-      "fl":"*",
-      "start":"0",
-      "facet.mincount":"1",
-      "sort":"title_sort asc",
-      "rows":"0",
-      "facet":"true",
-      "wt":"json",
-      "facet.sort":"count"}},
-  "response":{"numFound":317,"start":0,"numFoundExact":true,"docs":[]
+      "json":"{\r\n    \"query\": \"*:*\",\r\n    \"limit\" :0,\r\n    \"facet\": {\r\n        \"topic_facet\": {\r\n            \"type\": \"terms\",\r\n            \"field\": \"topic_facet\",\r\n            \"limit\": 5\r\n        }\r\n    }\r\n}"
+    }
   },
-  "facet_counts":{
-    "facet_queries":{},
-    "facet_fields":{
-      "topic_facet":
-      [
-        ["Research",16],
-        ["Psychotherapy",8],
-        ["Adult children of aging parents",7],
-        ["Automobile drivers' tests",7],
-        ["Fathers and daughters",7]]},
-    "facet_ranges":{},
-    "facet_intervals":{},
-    "facet_heatmaps":{}}}
+  "response":{
+    "numFound":328,
+    "start":0,
+    "numFoundExact":true,
+    "docs":[ ]
+  },
+  "facets":{
+    "count":328,
+    "topic_facet":{
+      "buckets":[{
+        "val":"Research",
+        "count":16
+      },{
+        "val":"Psychotherapy",
+        "count":8
+      },{
+        "val":"Adult children of aging parents",
+        "count":7
+      },{
+        "val":"Automobile drivers' tests",
+        "count":7
+      },{
+        "val":"Fathers and daughters",
+        "count":7
+      }]
+    }
+  }
+}

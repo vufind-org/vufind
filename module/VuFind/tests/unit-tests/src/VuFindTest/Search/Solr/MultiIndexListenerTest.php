@@ -34,7 +34,7 @@ use VuFind\Search\Solr\MultiIndexListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
-use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 use VuFindSearch\Service;
 
 /**
@@ -146,10 +146,16 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testStripFacetFields()
     {
-        $params = new ParamBag(
+        $params = ParamBagBag::fromArray(
             [
-                'facet.field' => ['field_1', 'field_2', 'field_3'],
-                'shards' => [self::$shards['b'], self::$shards['c']],
+                'facet' => [
+                    'field_1' => ['field' => 'field_1'],
+                    'field_2' => ['field' => 'field_2'],
+                    'field_3' => ['field' => 'field_3'],
+                ],
+                'params' => [
+                    'shards' => [self::$shards['b'], self::$shards['c']],
+                ],
             ]
         );
         $command = $this->getMockSearchCommand($params);
@@ -160,9 +166,10 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
         );
         $this->listener->onSearchPre($event);
 
-        $facets   = $params->get('facet.field');
-        sort($facets);
-        $this->assertEquals(['field_1', 'field_2'], $facets);
+        $facets   = $params->jsonSerialize()['facet'];
+        $facetFields = array_map(fn ($facet) => $facet['field'], $facets);
+        sort($facetFields);
+        $this->assertSame(['field_1', 'field_2'], $facetFields);
     }
 
     /**
@@ -172,10 +179,12 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAllShardsUsedForRecordRetrieval()
     {
-        $params   = new ParamBag(
-            [
-                'shards' => [self::$shards['b'], self::$shards['c']],
-            ]
+        $params   = ParamBagBag::fromArray(
+            ['params' =>
+                [
+                    'shards' => [self::$shards['b'], self::$shards['c']],
+                ],
+            ],
         );
         $command  = $this->getMockSearchCommand($params, 'retrieve');
         $event    = new Event(
@@ -185,8 +194,8 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
         );
         $this->listener->onSearchPre($event);
 
-        $shards = $params->get('shards');
-        $this->assertEquals(
+        $shards = $params->getNested('params', 'shards');
+        $this->assertSame(
             [implode(',', [self::$shards['a'], self::$shards['b'], self::$shards['c']])],
             $shards
         );

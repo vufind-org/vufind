@@ -161,7 +161,7 @@ class Backend extends AbstractBackend implements
         AbstractQuery $query,
         $offset,
         $limit,
-        ?ParamBagBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
@@ -210,7 +210,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = $params ?: new ParamBag();
+        $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->set('limit', $limit);
@@ -243,7 +243,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = $params ?: new ParamBag();
+        $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
 
         $random = rand(0, 1000000);
@@ -263,7 +263,7 @@ class Backend extends AbstractBackend implements
      */
     public function retrieve($id, ?ParamBag $params = null)
     {
-        $params = ParamBagBag::from($params, false);
+        $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
 
         $response   = $this->connector->retrieve($id, $params);
@@ -282,7 +282,7 @@ class Backend extends AbstractBackend implements
      */
     public function retrieveBatch($ids, ?ParamBag $params = null)
     {
-        $params = $params ?: new ParamBag();
+        $params = ParamBagBag::from($params);
 
         // Callback function for formatting IDs:
         $formatIds = function ($i) {
@@ -323,7 +323,7 @@ class Backend extends AbstractBackend implements
      */
     public function similar($id, ?ParamBag $params = null)
     {
-        $params = $params ?: new ParamBag();
+        $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->mergeWith($this->getSimilarBuilder()->build($id));
@@ -347,7 +347,7 @@ class Backend extends AbstractBackend implements
         string|ParamBag|null $field = null,
         ?string $start = null,
         ?int $limit = null,
-        ?ParamBagBag $params = null
+        ?ParamBag $params = null
     ) {
         // Support alternate syntax with ParamBag as first parameter:
         if ($field instanceof ParamBag && $params === null) {
@@ -408,7 +408,7 @@ class Backend extends AbstractBackend implements
         $offsetDelta = 0
     ) {
         // TODO Does alphabrowse also need to be converted?  Custom request handler...
-        $params = $params ?: new ParamBag();
+        $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->set('from', $from);

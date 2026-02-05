@@ -104,13 +104,13 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
             'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
-        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
+        $params = new ParamBag(['filter' => ['foo:"bar"', 'vufind:"normal"']]);
         $command = $this->getMockSearchCommand($params, 'search', 'Solr');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
             ['foo:"bar"', 'field1:normal OR field2:alsoNormal'],
-            $params->get('fq')
+            $params->get('filter')
         );
     }
 
@@ -125,13 +125,13 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
             'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
-        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
+        $params = new ParamBag(['filter' => ['foo:"bar"', 'vufind:"normal"']]);
         $command = $this->getMockSearchCommand($params, 'search', 'Search2');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
             ['foo:"bar"', 'vufind:"normal"'],
-            $params->get('fq')
+            $params->get('filter')
         );
     }
 
@@ -146,13 +146,13 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
             'vufind:"normal"' => 'field1:normal OR field2:alsoNormal',
         ];
         $listener = $this->getListener($normal);
-        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"normal"']]);
+        $params = new ParamBag(['filter' => ['foo:"bar"', 'vufind:"normal"']]);
         $command = $this->getMockSearchCommand($params, 'weird', 'Solr');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
             ['foo:"bar"', 'vufind:"normal"'],
-            $params->get('fq')
+            $params->get('filter')
         );
     }
 
@@ -168,13 +168,13 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
             'vufind:"inverted"' => 'field3:invertedFilter',
         ];
         $listener = $this->getListener([], $inverted);
-        $params = new ParamBag(['fq' => ['foo:"bar"']]);
+        $params = new ParamBag(['filter' => ['foo:"bar"']]);
         $command = $this->getMockSearchCommand($params, 'search', 'Solr');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
         $this->assertEquals(
             ['foo:"bar"', 'field3:invertedFilter'],
-            $params->get('fq')
+            $params->get('filter')
         );
     }
 
@@ -190,10 +190,10 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
             'vufind:"inverted"' => 'field3:invertedFilter',
         ];
         $listener = $this->getListener([], $inverted);
-        $params = new ParamBag(['fq' => ['foo:"bar"', 'vufind:"inverted"']]);
+        $params = new ParamBag(['filter' => ['foo:"bar"', 'vufind:"inverted"']]);
         $command = $this->getMockSearchCommand($params, 'search', 'Solr');
         $event = new Event(null, null, compact('command'));
         $listener->onSearchPre($event);
-        $this->assertEquals(['foo:"bar"'], $params->get('fq'));
+        $this->assertEquals(['foo:"bar"'], $params->get('filter'));
     }
 }

@@ -300,14 +300,15 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     /**
      * Send query to SOLR and return response body.
      *
-     * @param string      $handler   SOLR request handler to use
-     * @param ParamBagBag $params    Request parameters
-     * @param bool        $cacheable Whether the query is cacheable
+     * @param string   $handler   SOLR request handler to use
+     * @param ParamBag $params    Request parameters
+     * @param bool     $cacheable Whether the query is cacheable
      *
      * @return string Response body
      */
-    public function query($handler, ParamBagBag $params, bool $cacheable = false)
+    public function query($handler, ParamBag $params, bool $cacheable = false)
     {
+        $params = ParamBagBag::from($params);
         $urlSuffix = '/' . $handler;
         $body = json_encode($params, JSON_THROW_ON_ERROR);
         $method = Request::METHOD_POST;
