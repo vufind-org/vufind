@@ -32,7 +32,7 @@ namespace VuFind\Search\Solr;
 
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 
 use function count;
 use function in_array;
@@ -577,11 +577,11 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Create search backend parameters for advanced features.
      *
-     * @return ParamBagBag
+     * @return NestingParamBag
      */
     public function getBackendParameters()
     {
-        $backendParams = new ParamBagBag();
+        $backendParams = new NestingParamBag();
 
         // Spellcheck
         $backendParams->setNested(

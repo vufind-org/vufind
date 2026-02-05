@@ -33,7 +33,7 @@ use JsonException;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\Solr\Backend;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Service;
 
 /**
@@ -124,7 +124,7 @@ class DefaultParametersListener
             $defaultParamsText = $this->defaultParams[$context]
                 ?? $this->defaultParams['*']
                 ?? '';
-            if ($defaultParamsText && $params = ParamBagBag::from($command->getSearchParameters())) {
+            if ($defaultParamsText && $params = NestingParamBag::from($command->getSearchParameters())) {
                 $command->setSearchParameters($params);
                 try {
                     $defaultParams = json_decode($defaultParamsText, true, flags: JSON_THROW_ON_ERROR);

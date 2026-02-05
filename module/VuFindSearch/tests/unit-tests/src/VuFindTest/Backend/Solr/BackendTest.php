@@ -40,8 +40,8 @@ use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
-use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\Query;
 
 /**
@@ -431,7 +431,7 @@ class BackendTest extends TestCase
 
         $conn = $this->getConnectorMock(['retrieve']);
         $back = new Backend($conn);
-        $back->retrieve('foobar', ParamBagBag::fromArray(['params' => ['wt' => 'xml']]));
+        $back->retrieve('foobar', NestingParamBag::fromArray(['params' => ['wt' => 'xml']]));
     }
 
     /**
@@ -446,7 +446,7 @@ class BackendTest extends TestCase
 
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
-        $back->retrieve('foobar', ParamBagBag::fromArray(['params' => ['json.nl' => ['bad']]]));
+        $back->retrieve('foobar', NestingParamBag::fromArray(['params' => ['json.nl' => ['bad']]]));
     }
 
     /**
@@ -507,7 +507,7 @@ class BackendTest extends TestCase
                 'offset' => 0,
                 'query' => 'foo',
             ];
-            $paramsArr = ParamBagBag::from($params)->jsonSerialize();
+            $paramsArr = NestingParamBag::from($params)->jsonSerialize();
             return $expected == $paramsArr;
         };
         // TODO: currently this test is concerned with ensuring that the right
@@ -575,7 +575,7 @@ class BackendTest extends TestCase
     public function testRandom(): void
     {
         // Test that random sort parameter is added:
-        $params = $this->getMockBuilder(\VuFindSearch\ParamBagBag::class)
+        $params = $this->getMockBuilder(\VuFindSearch\NestingParamBag::class)
             ->onlyMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
             ->with('sort', $this->matchesRegularExpression('/[0-9]+_random asc/'));

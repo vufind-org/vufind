@@ -31,8 +31,8 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
-use VuFindSearch\ParamBagBag;
 
 use function count;
 use function floatval;
@@ -250,9 +250,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
 
         // prepare search params
         $params = $this->getParams()->getBackendParameters();
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $params->setNested('params', 'spellcheck', 'false');
-        $explainParams = new ParamBagBag([
+        $explainParams = new NestingParamBag([
             'fields' => 'id,score',
             'params' => new ParamBag([
                 'debug' => 'true',

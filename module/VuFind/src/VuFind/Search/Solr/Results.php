@@ -30,7 +30,7 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Command\SearchCommand;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 
@@ -195,7 +195,7 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $searchService = $this->getSearchService();
         $cursorMark = $this->getCursorMark();
         if (null !== $cursorMark) {

@@ -35,7 +35,7 @@ use Psr\Log\LoggerInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
@@ -128,7 +128,7 @@ class InjectSpellingListener
         }
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
-                $params = ParamBagBag::from($params);
+                $params = NestingParamBag::from($params);
 
                 // Set spelling parameters when enabled:
                 $sc = $params->getNested('params', 'spellcheck');
@@ -178,7 +178,7 @@ class InjectSpellingListener
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $result = $command->getResult();
             $params = $command->getSearchParameters();
-            $params = ParamBagBag::from($params);
+            $params = NestingParamBag::from($params);
             $spellcheckQuery = $params->getNested('params', 'spellcheck.q');
             if (!empty($spellcheckQuery)) {
                 $this->aggregateSpellcheck(
@@ -201,7 +201,7 @@ class InjectSpellingListener
     protected function aggregateSpellcheck(Spellcheck $spellcheck, $query)
     {
         while (next($this->dictionaries) !== false) {
-            $params = new ParamBagBag();
+            $params = new NestingParamBag();
             $params->setNested('params', 'spellcheck', 'true');
             $params->setNested('params', 'spellcheck.dictionary', current($this->dictionaries));
             $queryObj = new Query($query, 'AllFields');

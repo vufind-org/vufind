@@ -32,8 +32,8 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
-use VuFindSearch\ParamBagBag;
 use VuFindSearch\Service;
 
 use function in_array;
@@ -128,7 +128,7 @@ class MultiIndexListener
         $command = $event->getParam('command');
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $params = $command->getSearchParameters();
-            $params = ParamBagBag::from($params);
+            $params = NestingParamBag::from($params);
             $allShardsContexts = ['retrieve', 'retrieveBatch'];
             if (in_array($command->getContext(), $allShardsContexts)) {
                 // If we're retrieving by id(s), we should pull all shards to be

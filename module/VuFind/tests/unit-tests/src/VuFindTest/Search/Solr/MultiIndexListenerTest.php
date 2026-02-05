@@ -34,7 +34,7 @@ use VuFind\Search\Solr\MultiIndexListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Service;
 
 /**
@@ -146,7 +146,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testStripFacetFields()
     {
-        $params = ParamBagBag::fromArray(
+        $params = NestingParamBag::fromArray(
             [
                 'facet' => [
                     'field_1' => ['field' => 'field_1'],
@@ -179,7 +179,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAllShardsUsedForRecordRetrieval()
     {
-        $params   = ParamBagBag::fromArray(
+        $params   = NestingParamBag::fromArray(
             ['params' =>
                 [
                     'shards' => [self::$shards['b'], self::$shards['c']],

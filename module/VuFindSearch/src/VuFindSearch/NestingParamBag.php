@@ -43,39 +43,39 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ParamBagBag extends ParamBag implements JsonSerializable
+class NestingParamBag extends ParamBag implements JsonSerializable
 {
     /**
-     * Transform any ParamBag into a ParamBagBag.
+     * Transform any ParamBag into a NestingParamBag.
      *
      * @param ?ParamBag $original     The original ParamBag
      * @param bool      $createIfNull Create an empty ParamBag if $original is null
      *
-     * @return ?ParamBagBag
+     * @return ?NestingParamBag
      */
-    public static function from(?ParamBag $original, bool $createIfNull = true): ?ParamBagBag
+    public static function from(?ParamBag $original, bool $createIfNull = true): ?NestingParamBag
     {
         if (!$original) {
-            return $createIfNull ? new ParamBagBag() : null;
+            return $createIfNull ? new NestingParamBag() : null;
         }
-        if ($original instanceof ParamBagBag) {
+        if ($original instanceof NestingParamBag) {
             return $original;
         }
-        $bag = new ParamBagBag();
+        $bag = new NestingParamBag();
         $bag->mergeWith($original);
         return $bag;
     }
 
     /**
-     * Transform a potentially nested array of values into a ParamBagBag.
+     * Transform a potentially nested array of values into a NestingParamBag.
      *
      * @param array $values Source values
      *
-     * @return ParamBagBag
+     * @return NestingParamBag
      */
-    public static function fromArray(array $values): ParamBagBag
+    public static function fromArray(array $values): NestingParamBag
     {
-        $bag = new ParamBagBag();
+        $bag = new NestingParamBag();
         foreach ($values as $name => $value) {
             $bag->addMultiNested($name, $value);
         }
@@ -171,8 +171,8 @@ class ParamBagBag extends ParamBag implements JsonSerializable
                 }
             } else {
                 $nestedBag = $this->items[$name][0] ?? null;
-                if (!$nestedBag || !$nestedBag instanceof ParamBagBag) {
-                    $nestedBag = ParamBagBag::from($nestedBag);
+                if (!$nestedBag || !$nestedBag instanceof NestingParamBag) {
+                    $nestedBag = NestingParamBag::from($nestedBag);
                     $this->set($name, $nestedBag);
                 }
                 foreach ($value as $nestedName => $nestedValue) {

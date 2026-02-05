@@ -32,7 +32,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Service;
 
 /**
@@ -121,7 +121,7 @@ class InjectHighlightingListener
         }
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
-                $params = ParamBagBag::from($params);
+                $params = NestingParamBag::from($params);
                 // Set highlighting parameters unless explicitly disabled:
                 $hl = $params->getNested('params', 'hl');
                 if (($hl[0] ?? 'true') != 'false') {

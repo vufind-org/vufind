@@ -41,8 +41,8 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
-use VuFindSearch\ParamBagBag;
 
 use function call_user_func_array;
 use function count;
@@ -308,7 +308,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      */
     public function query($handler, ParamBag $params, bool $cacheable = false)
     {
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $urlSuffix = '/' . $handler;
         $body = json_encode($params, JSON_THROW_ON_ERROR);
         $method = Request::METHOD_POST;

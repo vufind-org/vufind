@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for ParamBagBag.
+ * Unit tests for NestingParamBag.
  *
  * PHP version 8
  *
@@ -30,11 +30,11 @@
 namespace VuFindTest;
 
 use PHPUnit\Framework\TestCase;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
-use VuFindSearch\ParamBagBag;
 
 /**
- * Unit tests for ParamBagBag.
+ * Unit tests for NestingParamBag.
  *
  * @category VuFind
  * @package  Search
@@ -42,7 +42,7 @@ use VuFindSearch\ParamBagBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ParamBagBagTest extends TestCase
+class NestingParamBagTest extends TestCase
 {
     /**
      * Data provider for testFrom
@@ -78,14 +78,14 @@ class ParamBagBagTest extends TestCase
      *
      * @param ?ParamBag $original          Original ParamBag
      * @param array     $createIfNullParam Array containing nothing or the $createIfNull bool
-     * @param ?array    $expectedContent   Expected content of the ParamBagBag
+     * @param ?array    $expectedContent   Expected content of the NestingParamBag
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('fromProvider')]
     public function testFrom(?ParamBag $original, array $createIfNullParam, ?array $expectedContent): void
     {
-        $params = ParamBagBag::from($original, ...$createIfNullParam);
+        $params = NestingParamBag::from($original, ...$createIfNullParam);
         $this->assertSame($expectedContent, $params?->getArrayCopy());
     }
 
@@ -98,13 +98,13 @@ class ParamBagBagTest extends TestCase
     {
         yield 'simple' => [
             [ 'filter' => 'format:Book', 'rows' => 10 ],
-            new ParamBagBag([ 'filter' => [ 'format:Book' ], 'rows' => [ 10 ] ]),
+            new NestingParamBag([ 'filter' => [ 'format:Book' ], 'rows' => [ 10 ] ]),
         ];
         yield 'two dimensions' => [
             [ 'filter' => 'format:Book', 'params' => [ 'sow' => false, 'timeAllowed' => -1 ] ],
-            new ParamBagBag([
+            new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                 'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                 'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
             ]),
         ];
     }
@@ -112,15 +112,15 @@ class ParamBagBagTest extends TestCase
     /**
      * Test static fromArray() function.
      *
-     * @param array       $values   Input values
-     * @param ParamBagBag $expected Expected result
+     * @param array           $values   Input values
+     * @param NestingParamBag $expected Expected result
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('fromArrayProvider')]
-    public function testFromArray(array $values, ParamBagBag $expected): void
+    public function testFromArray(array $values, NestingParamBag $expected): void
     {
-        $params = ParamBagBag::fromArray($values);
+        $params = NestingParamBag::fromArray($values);
         $this->assertEquals($expected, $params);
     }
 
@@ -138,15 +138,15 @@ class ParamBagBagTest extends TestCase
     /**
      * Test getNested method.
      *
-     * @param ParamBagBag $params     Bag of nested parameters
-     * @param string      $name       Parameter name
-     * @param string      $nestedName Nested parameter name
-     * @param ?array      $expected   Expected array of parameter values or NULL if not set
+     * @param NestingParamBag $params     Bag of nested parameters
+     * @param string          $name       Parameter name
+     * @param string          $nestedName Nested parameter name
+     * @param ?array          $expected   Expected array of parameter values or NULL if not set
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getNestedProvider')]
-    public function testGetNested(ParamBagBag $params, string $name, string $nestedName, ?array $expected): void
+    public function testGetNested(NestingParamBag $params, string $name, string $nestedName, ?array $expected): void
     {
         $this->assertSame($expected, $params->getNested($name, $nestedName));
     }
@@ -154,16 +154,20 @@ class ParamBagBagTest extends TestCase
     /**
      * Test hasNestedParam method.
      *
-     * @param ParamBagBag $params        Bag of nested parameters
-     * @param string      $name          Parameter name
-     * @param string      $nestedName    Nested parameter name
-     * @param ?array      $expectedArray Expected array of parameter values or NULL if not set
+     * @param NestingParamBag $params        Bag of nested parameters
+     * @param string          $name          Parameter name
+     * @param string          $nestedName    Nested parameter name
+     * @param ?array          $expectedArray Expected array of parameter values or NULL if not set
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getNestedProvider')]
-    public function testHasNested(ParamBagBag $params, string $name, string $nestedName, ?array $expectedArray): void
-    {
+    public function testHasNested(
+        NestingParamBag $params,
+        string $name,
+        string $nestedName,
+        ?array $expectedArray
+    ): void {
         $expected = !empty($expectedArray);
         $this->assertSame($expected, $params->hasNestedParam($name, $nestedName));
     }
@@ -178,25 +182,25 @@ class ParamBagBagTest extends TestCase
         yield 'add value' => [
             self::buildInputParams(),
             'params', 'spellcheck', true,
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1, 'spellcheck' => true]),
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1, 'spellcheck' => true]),
              ]),
         ];
         yield 'overwrite value' => [
             self::buildInputParams(),
             'params', 'sow', true,
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => true, 'timeAllowed' => -1]),
+                'params' => new NestingParamBag(['sow' => true, 'timeAllowed' => -1]),
              ]),
         ];
         yield 'new top-level name' => [
             self::buildInputParams(),
             'facet', 'topic_facet', 'foo',
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
                 'facet' => new ParamBag(['topic_facet' => 'foo']),
              ]),
         ];
@@ -205,21 +209,21 @@ class ParamBagBagTest extends TestCase
     /**
      * Test setNestedParam method.
      *
-     * @param ParamBagBag $params     Bag of nested parameters
-     * @param string      $name       Parameter name
-     * @param string      $nestedName Nested parameter name
-     * @param mixed       $value      Nested parameter value
-     * @param ParamBagBag $expected   Expected resulting bag of nested parameters
+     * @param NestingParamBag $params     Bag of nested parameters
+     * @param string          $name       Parameter name
+     * @param string          $nestedName Nested parameter name
+     * @param mixed           $value      Nested parameter value
+     * @param NestingParamBag $expected   Expected resulting bag of nested parameters
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('setNestedProvider')]
     public function testSetNested(
-        ParamBagBag $params,
+        NestingParamBag $params,
         string $name,
         string $nestedName,
         mixed $value,
-        ParamBagBag $expected
+        NestingParamBag $expected
     ): void {
         $params->setNested($name, $nestedName, $value);
         $this->assertEquals($expected, $params);
@@ -235,25 +239,25 @@ class ParamBagBagTest extends TestCase
         yield 'existing name' => [
             self::buildInputParams(),
             'params', 'sow', true,
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => [false, true], 'timeAllowed' => -1]),
+                'params' => new NestingParamBag(['sow' => [false, true], 'timeAllowed' => -1]),
              ]),
         ];
         yield 'new nested name' => [
             self::buildInputParams(),
             'params', 'spellcheck', true,
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => [false], 'timeAllowed' => -1, 'spellcheck' => true]),
+                'params' => new NestingParamBag(['sow' => [false], 'timeAllowed' => -1, 'spellcheck' => true]),
              ]),
         ];
         yield 'new top-level name' => [
             self::buildInputParams(),
             'facet', 'topic_facet', 'foo',
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
                 'facet' => new ParamBag(['topic_facet' => 'foo']),
              ]),
         ];
@@ -262,21 +266,21 @@ class ParamBagBagTest extends TestCase
     /**
      * Test addNestedParam method.
      *
-     * @param ParamBagBag $params     Bag of nested parameters
-     * @param string      $name       Parameter name
-     * @param string      $nestedName Nested parameter name
-     * @param mixed       $value      Nested parameter value
-     * @param ParamBagBag $expected   Expected resulting bag of nested parameters
+     * @param NestingParamBag $params     Bag of nested parameters
+     * @param string          $name       Parameter name
+     * @param string          $nestedName Nested parameter name
+     * @param mixed           $value      Nested parameter value
+     * @param NestingParamBag $expected   Expected resulting bag of nested parameters
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('addNestedProvider')]
     public function testAddNested(
-        ParamBagBag $params,
+        NestingParamBag $params,
         string $name,
         string $nestedName,
         mixed $value,
-        ParamBagBag $expected
+        NestingParamBag $expected
     ): void {
         $params->addNested($name, $nestedName, $value);
         $this->assertEquals($expected, $params);
@@ -293,9 +297,9 @@ class ParamBagBagTest extends TestCase
             self::buildInputParams(),
             'params',
             ['spellcheck' => true],
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1, 'spellcheck' => true]),
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1, 'spellcheck' => true]),
              ]),
         ];
         yield 'deeper' => [
@@ -303,11 +307,11 @@ class ParamBagBagTest extends TestCase
             'facet',
             ['topic_facet' => ['type' => 'terms', 'field' => 'topic_facet', 'limit' => 30,
                 'domain' => ['excludeTags' => 'topic_facet_filter']]],
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
-                'facet' => new ParamBagBag(['topic_facet' => new ParamBagBag(
-                    ['type' => 'terms', 'field' => 'topic_facet', 'limit' => 30, 'domain' => new ParamBagBag(
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
+                'facet' => new NestingParamBag(['topic_facet' => new NestingParamBag(
+                    ['type' => 'terms', 'field' => 'topic_facet', 'limit' => 30, 'domain' => new NestingParamBag(
                         ['excludeTags' => 'topic_facet_filter']
                     )]
                 )]),
@@ -318,16 +322,20 @@ class ParamBagBagTest extends TestCase
     /**
      * Test addMultiNested method.
      *
-     * @param ParamBagBag $params   Bag of nested parameters
-     * @param string      $name     Parameter name
-     * @param array       $value    Nested array of parameter values
-     * @param ParamBagBag $expected Expected resulting bag of nested parameters
+     * @param NestingParamBag $params   Bag of nested parameters
+     * @param string          $name     Parameter name
+     * @param array           $value    Nested array of parameter values
+     * @param NestingParamBag $expected Expected resulting bag of nested parameters
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('addMultiNestedProvider')]
-    public function testAddMultiNested(ParamBagBag $params, string $name, mixed $value, ParamBagBag $expected): void
-    {
+    public function testAddMultiNested(
+        NestingParamBag $params,
+        string $name,
+        mixed $value,
+        NestingParamBag $expected
+    ): void {
         $params->addMultiNested($name, $value);
         $this->assertEquals($expected, $params);
     }
@@ -342,18 +350,18 @@ class ParamBagBagTest extends TestCase
         yield 'new name' => [
             self::buildInputParams(),
             'sort', 'title', true,
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book' ],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
                 'sort' => 'title',
              ]),
         ];
         yield 'existing name' => [
             self::buildInputParams(),
             'filter', 'location:Main Library', true,
-             new ParamBagBag([
+             new NestingParamBag([
                 'filter' => [ 'format:Book', 'location:Main Library' ],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
              ]),
         ];
     }
@@ -361,21 +369,21 @@ class ParamBagBagTest extends TestCase
     /**
      * Test add method.
      *
-     * @param ParamBagBag $params      Bag of nested parameters
-     * @param string      $name        Parameter name
-     * @param array       $value       Nested array of parameter values
-     * @param bool        $deduplicate Whether to de-duplicate
-     * @param ParamBagBag $expected    Expected resulting bag of nested parameters
+     * @param NestingParamBag $params      Bag of nested parameters
+     * @param string          $name        Parameter name
+     * @param array           $value       Nested array of parameter values
+     * @param bool            $deduplicate Whether to de-duplicate
+     * @param NestingParamBag $expected    Expected resulting bag of nested parameters
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('addProvider')]
     public function testAdd(
-        ParamBagBag $params,
+        NestingParamBag $params,
         string $name,
         mixed $value,
         bool $deduplicate,
-        ParamBagBag $expected
+        NestingParamBag $expected
     ): void {
         $params->add($name, $value, $deduplicate);
         $this->assertEquals($expected, $params);
@@ -396,9 +404,9 @@ class ParamBagBagTest extends TestCase
             ],
         ];
         yield 'multiple values for same name' => [
-            new ParamBagBag([
+            new NestingParamBag([
                 'filter' => [ 'format:Book', 'location:Main Library'],
-                'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+                'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
             ]),
             [
                 'filter' => ['format:Book', 'location:Main Library'],
@@ -411,28 +419,28 @@ class ParamBagBagTest extends TestCase
     /**
      * Test add method.
      *
-     * @param ParamBagBag $params   Bag of nested parameters
-     * @param array       $expected Expected array of JSON-serialized values
+     * @param NestingParamBag $params   Bag of nested parameters
+     * @param array           $expected Expected array of JSON-serialized values
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('jsonSerializeProvider')]
-    public function testJsonSerialize(ParamBagBag $params, array $expected): void
+    public function testJsonSerialize(NestingParamBag $params, array $expected): void
     {
         $serialized = $params->jsonSerialize();
         $this->assertEquals($expected, $serialized);
     }
 
     /**
-     * Build a ParamBagBag for testing.
+     * Build a NestingParamBag for testing.
      *
-     * @return ParamBagBag
+     * @return NestingParamBag
      */
-    protected static function buildInputParams(): ParamBagBag
+    protected static function buildInputParams(): NestingParamBag
     {
-        return new ParamBagBag([
+        return new NestingParamBag([
             'filter' => [ 'format:Book' ],
-            'params' => new ParamBagBag(['sow' => false, 'timeAllowed' => -1]),
+            'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
         ]);
     }
 }

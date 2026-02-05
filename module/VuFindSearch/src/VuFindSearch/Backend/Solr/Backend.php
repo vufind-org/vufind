@@ -40,8 +40,8 @@ use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
-use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\WorkKeysQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
@@ -136,7 +136,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = ParamBagBag::from($params, false);
+        $params = NestingParamBag::from($params, false);
         if ($query instanceof WorkKeysQuery) {
             return $this->workKeysSearch($query, $offset, $limit, $params);
         }
@@ -163,7 +163,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->set('limit', $limit);
@@ -210,7 +210,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->set('limit', $limit);
@@ -243,7 +243,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $random = rand(0, 1000000);
@@ -263,7 +263,7 @@ class Backend extends AbstractBackend implements
      */
     public function retrieve($id, ?ParamBag $params = null)
     {
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $response   = $this->connector->retrieve($id, $params);
@@ -282,7 +282,7 @@ class Backend extends AbstractBackend implements
      */
     public function retrieveBatch($ids, ?ParamBag $params = null)
     {
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
 
         // Callback function for formatting IDs:
         $formatIds = function ($i) {
@@ -323,7 +323,7 @@ class Backend extends AbstractBackend implements
      */
     public function similar($id, ?ParamBag $params = null)
     {
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->mergeWith($this->getSimilarBuilder()->build($id));
@@ -356,7 +356,7 @@ class Backend extends AbstractBackend implements
         }
 
         // Create empty ParamBag if none provided:
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         // Always enable terms:
@@ -408,7 +408,7 @@ class Backend extends AbstractBackend implements
         $offsetDelta = 0
     ) {
         // TODO Does alphabrowse also need to be converted?  Custom request handler...
-        $params = ParamBagBag::from($params);
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->set('from', $from);
@@ -610,7 +610,7 @@ class Backend extends AbstractBackend implements
      * @throws InvalidArgumentException Response writer and named list
      * implementation already set to an incompatible type.
      */
-    protected function injectResponseWriter(ParamBagBag $params)
+    protected function injectResponseWriter(NestingParamBag $params)
     {
         if (array_diff($params->getNested('params', 'wt') ?: [], ['json'])) {
             throw new InvalidArgumentException(

@@ -31,8 +31,8 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
-use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
@@ -130,11 +130,11 @@ class QueryBuilder implements QueryBuilderInterface
      * @param AbstractQuery $query  User query
      * @param ?ParamBag     $params Search backend parameters
      *
-     * @return ParamBagBag
+     * @return NestingParamBag
      */
-    public function build(AbstractQuery $query, ?ParamBag $params = null): ParamBagBag
+    public function build(AbstractQuery $query, ?ParamBag $params = null): NestingParamBag
     {
-        $newParams = new ParamBagBag();
+        $newParams = new NestingParamBag();
 
         // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:

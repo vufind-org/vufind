@@ -32,7 +32,7 @@ namespace VuFindTest\Search\Solr;
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFindSearch\Backend\Solr\QueryBuilder;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Service;
 
 /**
@@ -96,7 +96,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testParameters()
     {
-        $params = ParamBagBag::fromArray(
+        $params = NestingParamBag::fromArray(
             ['params' =>
                 [
                   'hl' => 'true',

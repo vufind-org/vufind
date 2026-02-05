@@ -31,7 +31,7 @@ namespace VuFind\Hierarchy\TreeDataSource;
 
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
-use VuFindSearch\ParamBagBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
@@ -174,7 +174,7 @@ class Solr extends AbstractBase
      */
     protected function searchSolrLegacy(Query $query, $rows): array
     {
-        $params = ParamBagBag::fromArray($this->getDefaultSearchParams());
+        $params = NestingParamBag::fromArray($this->getDefaultSearchParams());
         $command = new RawJsonSearchCommand(
             $this->backendId,
             $query,
@@ -200,7 +200,7 @@ class Solr extends AbstractBase
         $cursorMark = '*';
         $records = [];
         while ($cursorMark !== $prevCursorMark) {
-            $params = ParamBagBag::fromArray(
+            $params = NestingParamBag::fromArray(
                 $this->getDefaultSearchParams() + [
                     // Sort is required
                     'sort' => ['id asc'],
