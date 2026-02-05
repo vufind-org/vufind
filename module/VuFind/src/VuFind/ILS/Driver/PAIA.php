@@ -1872,11 +1872,17 @@ class PAIA extends DAIA
 
         // finalize post data
         $post_data['grant_type'] = $this->grantType;
-        $post_data['scope'] = self::SCOPE_READ_PATRON . ' ' .
-                self::SCOPE_READ_FEES . ' ' .
-                self::SCOPE_READ_ITEMS . ' ' .
-                self::SCOPE_WRITE_ITEMS . ' ' .
-                self::SCOPE_CHANGE_PASSWORD;
+        $scopes = array_merge(
+            [
+                self::SCOPE_READ_PATRON,
+                self::SCOPE_READ_FEES,
+                self::SCOPE_READ_ITEMS,
+                self::SCOPE_WRITE_ITEMS,
+                self::SCOPE_CHANGE_PASSWORD,
+            ],
+            (array)($this->config['PAIA']['additionalScopes'] ?? [])
+        );
+        $post_data['scope'] = implode(' ', $scopes);
 
         // perform full PAIA auth and get patron info
         $result = $this->httpService->post(

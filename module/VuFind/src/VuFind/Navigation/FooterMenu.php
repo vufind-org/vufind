@@ -50,7 +50,7 @@ class FooterMenu extends AbstractMenu
      */
     public function __construct(
         array $sectionConfig,
-        protected array $config
+        array $config
     ) {
         $this->addRequiredSettings(
             [
@@ -73,7 +73,7 @@ class FooterMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct($sectionConfig, $config);
     }
 
     /**
@@ -188,6 +188,11 @@ class FooterMenu extends AbstractMenu
                             'data-cc' => 'show-preferencesModal',
                             'aria-haspopup' => 'dialog',
                         ],
+                    ],
+                    [
+                        'label' => 'Site Map',
+                        'route' => 'sitemap-home',
+                        'checkMethod' => 'checkSiteMapPage',
                     ],
                 ],
             ],

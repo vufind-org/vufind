@@ -540,6 +540,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                 if (empty($basic)) {
                     $basic = ['' => ''];
                 }
+                $collapseInactiveBackends = $this->config['General']['collapseInactiveBackendOptions'] ?? false;
                 foreach ($basic as $searchVal => $searchDesc) {
                     $j++;
                     $selected = $target == $filteredActiveSearchClass
@@ -569,6 +570,11 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                         'selected' => $selected,
                         'group' => $settings['group'][$i],
                     ];
+                    // If collapsing inactive backends is turned on, we only want to show the
+                    // first value for non-active backends:
+                    if ($collapseInactiveBackends && $target !== $activeSearchClass) {
+                        break;
+                    }
                 }
 
                 // Should we add alphabrowse links?

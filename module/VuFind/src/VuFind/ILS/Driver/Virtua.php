@@ -29,6 +29,7 @@
 
 namespace VuFind\ILS\Driver;
 
+use VuFind\Connection\Oracle;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -53,9 +54,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /**
      * Oracle connection
      *
-     * @var \VuFind\Connection\Oracle
+     * @var ?Oracle
      */
-    protected $db;
+    protected $db = null;
 
     /**
      * Initialize the driver.
@@ -71,25 +72,40 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
+    }
 
-        // Define Database Name
-        $tns = '(DESCRIPTION=' .
-                 '(ADDRESS_LIST=' .
-                   '(ADDRESS=' .
-                     '(PROTOCOL=TCP)' .
-                     '(HOST=' . $this->config['Catalog']['host'] . ')' .
-                     '(PORT=' . $this->config['Catalog']['port'] . ')' .
-                   ')' .
-                 ')' .
-                 '(CONNECT_DATA=' .
-                   '(SERVICE_NAME=' . $this->config['Catalog']['service'] . ')' .
-                 ')' .
-               ')';
-        $this->db = new \VuFind\Connection\Oracle(
-            $this->config['Catalog']['user'],
-            $this->config['Catalog']['password'],
-            $tns
-        );
+    /**
+     * Get the Oracle database connection (and initialize if not already established).
+     *
+     * @return Oracle
+     */
+    protected function getDb(): Oracle
+    {
+        if (!$this->db) {
+            // Define Database Name
+            $tns = '(DESCRIPTION=' .
+                    '(ADDRESS_LIST=' .
+                    '(ADDRESS=' .
+                        '(PROTOCOL=TCP)' .
+                        '(HOST=' . $this->config['Catalog']['host'] . ')' .
+                        '(PORT=' . $this->config['Catalog']['port'] . ')' .
+                    ')' .
+                    ')' .
+                    '(CONNECT_DATA=' .
+                    '(SERVICE_NAME=' . $this->config['Catalog']['service'] . ')' .
+                    ')' .
+                ')';
+            try {
+                $this->db = new \VuFind\Connection\Oracle(
+                    $this->config['Catalog']['user'],
+                    $this->config['Catalog']['password'],
+                    $tns
+                );
+            } catch (\Exception $e) {
+                throw new ILSException('Error establishing database connection', previous: $e);
+            }
+        }
+        return $this->db;
     }
 
     /**
@@ -144,14 +160,14 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Bind our bib_id and execute
         $fields = ['bib_id:string' => $db_id];
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
 
         // If there are no results, lets try again because it has no items
         if (count($result) == 0) {
             $sql = 'SELECT b.call_number ' .
                    'FROM dbadmin.bibliographic_fields b ' .
                    'WHERE b.bib_id = :bib_id';
-            $result = $this->db->simpleSelect($sql, $fields);
+            $result = $this->getDb()->simpleSelect($sql, $fields);
 
             if (count($result) > 0) {
                 $new_holding = [
@@ -201,7 +217,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             'FROM dbadmin.holdlink h, location l ' .
                             'WHERE h.location = l.location_id ' .
                             'AND h.bibid = :bib_id';
-                        $result = $this->db->simpleSelect($sql, $fields);
+                        $result = $this->getDb()->simpleSelect($sql, $fields);
 
                         if (count($result) > 0) {
                             foreach ($result as $r) {
@@ -405,9 +421,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'ORDER BY l.location_id, d.units_sort_form desc, d.copyno';
         //print "<div style='display:none;'>$sql</div>";
 
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
         if ($result === false) {
-            throw new ILSException($this->db->getHtmlError());
+            throw new ILSException($this->getDb()->getHtmlError());
         }
 
         // Build Holdings Array
@@ -492,7 +508,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'WHERE  b.patron_id = p.patron_id ' .
             'AND    b.barcode   = :patron';
         $fields = ['patron:string' => $patron_id];
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
 
         // We should have 1 row and only 1 row.
         if (count($result) != 1) {
@@ -1070,7 +1086,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND h.masked    = 0 ' .
             'AND h.location  = l.location_id';
 
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
 
         // Results indicate serial holdings
         if (count($result) == 0) {
@@ -1087,7 +1103,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $data = [];
         foreach ($result as $row) {
             $fields = ['hid:string' => $row['HOLDINGSID']];
-            $hresult = $this->db->simpleSelect($sql, $fields);
+            $hresult = $this->getDb()->simpleSelect($sql, $fields);
             $data[$row['NAME']] = $this->renderSerialHoldings($hresult);
         }
 
@@ -1107,7 +1123,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'WHERE i.idtype = 104 ' .
             "AND i.field_tag in ('853') " .
             'ORDER BY i.field_sequence, i.subfield_sequence';
-        $hresult = $this->db->simpleSelect($sql);
+        $hresult = $this->getDb()->simpleSelect($sql);
         if (count($hresult) == 0) {
             return null;
         }
@@ -1159,7 +1175,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             ')';
 
         $fields = ['barcode:string' => $barcode];
-        $result = $this->db->simpleSelect($sql, $fields)[0] ?? false;
+        $result = $this->getDb()->simpleSelect($sql, $fields)[0] ?? false;
         if (!$result || $result['PASSWORD'] !== $password) {
             return null;
         }
@@ -1202,7 +1218,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         $fields = ['patron_id:string' => $patron['id']];
 
-        $result = $this->db->simpleSelect($sql, $fields)[0] ?? null;
+        $result = $this->getDb()->simpleSelect($sql, $fields)[0] ?? null;
         if (!$result) {
             return null;
         }
@@ -1253,7 +1269,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND   a.patron_id    = :patron_id';
 
         $fields = ['patron_id:string' => $patron['id']];
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
@@ -1291,7 +1307,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND   h.patron_id       = :patron_id';
 
         $fields = ['patron_id:string' => $patron['id']];
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
@@ -1342,7 +1358,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'ORDER BY c.due_date';
 
         $fields = ['patron_id:string' => $patron['id']];
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
@@ -1376,7 +1392,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'WHERE l.Reserve_list_id = i.Reserve_list_id ' .
             'AND SYSDATE BETWEEN i.Begin_date AND i.End_date ' .
             'ORDER BY l.course_id';
-        $result = $this->db->simpleSelect($sql);
+        $result = $this->getDb()->simpleSelect($sql);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
@@ -1412,7 +1428,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND i.Item_id = d.itemid ' .
             'AND l.Course_id = :course';
         $fields = ['course:string' => $course];
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
@@ -1440,7 +1456,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $time_format = 'H:i:s';
 
         // Fix Date Handling
-        $this->db->simpleSql(
+        $this->getDb()->simpleSql(
             "ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YY HH24:MI:SS'"
         );
 
@@ -1449,7 +1465,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'FROM usq_sr_open_normal n ' .
             'WHERE UPPER(dayofweek) = UPPER(:dow)';
         $fields = ['dow:string' => date('l', $time)];
-        $result = $this->db->simpleSelect($sql, $fields);
+        $result = $this->getDb()->simpleSelect($sql, $fields);
         if (count($result) == 0) {
             return [];
         }
@@ -1485,7 +1501,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'BETWEEN e.except_date_from AND e.except_date_to ' .
             "AND   app_$day = 1";
         $fields = ['today:string' => date('d/m/Y', $time)];
-        $exceptions = $this->db->simpleSelect($sql, $fields);
+        $exceptions = $this->getDb()->simpleSelect($sql, $fields);
 
         foreach ($exceptions as $row) {
             $times[$row['CAMPUS']] = [
@@ -1812,7 +1828,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'from state_record_authority ' .
             'WHERE STATE_ID = 1';
 
-        $result = $this->db->simpleSelect($sql);
+        $result = $this->getDb()->simpleSelect($sql);
 
         if ($result === false) {
             throw new ILSException(
@@ -1887,6 +1903,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         return $result->getBody();
+    }
+
+    /**
+     * Get Offline Mode
+     *
+     * This is responsible for returning the offline mode
+     *
+     * @return string|false "ils-offline" for systems where the main ILS is offline,
+     * "ils-none" for systems which do not use an ILS, false when online
+     */
+    public function getOfflineMode()
+    {
+        try {
+            $this->getDb();
+        } catch (\Exception $e) {
+            return 'ils-offline';
+        }
+        return false;
     }
 
     /* Methods yet to be implemented -- see Voyager driver for examples
