@@ -72,6 +72,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeYamlConfigs(
             [
                 'SiteMap' => [
+                    '@parent_config_name' => false,
                     'HomePage' => [
                         'MenuItems' => [
                             [
