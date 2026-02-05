@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for Followup controller plugin.
+ * LinkIq factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Resolver\Driver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\BadConfig;
 
 /**
- * Factory for Followup controller plugin.
+ * LinkIq factory.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class FollowupFactory implements FactoryInterface
+class LinkIqFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,14 +66,20 @@ class FollowupFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        if (!($baseUrl = $config['OpenURL']['url'] ?? null)) {
+            throw new BadConfig('[OpenURL] url is not set.');
+        }
+        if (!($password = $config['LinkIQ']['password'] ?? null)) {
+            throw new BadConfig('[LinkIQ] password is not set.');
         }
         return new $requestedName(
-            new \Laminas\Session\Container(
-                'Followup',
-                $container->get(\Laminas\Session\SessionManager::class)
-            )
+            $baseUrl,
+            $container->get(\VuFind\Http\GuzzleService::class),
+            $container->get(\VuFind\Date\Converter::class),
+            $password,
+            $config['LinkIQ']['moreOptionsUrl'] ?? null,
+            ...($options ?: [])
         );
     }
 }

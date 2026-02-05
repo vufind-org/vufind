@@ -49,26 +49,24 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCreateAndPersistResourceForRecordId
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function createAndPersistResourceForRecordIdProvider(): array
+    public static function createAndPersistResourceForRecordIdProvider(): \Iterator
     {
-        return [
-            [['1999'], 1999],
-            [['1999?'], 1999],
-            [['2025-10-10'], 2025],
-            [['-100'], -100],
-            [['0'], 0],
-            [['foo', '1999'], 1999],
-            [['©1999'], 1999],
-            [['Ⓟ1999'], 1999],
-            [['copyright 1999'], 1999],
-            [['2020-2025'], 2025],
-            [['2020 - 2025'], 2025],
-            [['copyright 2020-2025'], 2025],
-            [['copyright 2020 -2025'], 2025],
-            [['copyright 2020?-2025?'], 2025],
-        ];
+        yield [['1999'], 1999];
+        yield [['1999?'], 1999];
+        yield [['2025-10-10'], 2025];
+        yield [['-100'], -100];
+        yield [['0'], 0];
+        yield [['foo', '1999'], 1999];
+        yield [['©1999'], 1999];
+        yield [['Ⓟ1999'], 1999];
+        yield [['copyright 1999'], 1999];
+        yield [['2020-2025'], 2025];
+        yield [['2020 - 2025'], 2025];
+        yield [['copyright 2020-2025'], 2025];
+        yield [['copyright 2020 -2025'], 2025];
+        yield [['copyright 2020?-2025?'], 2025];
     }
 
     /**

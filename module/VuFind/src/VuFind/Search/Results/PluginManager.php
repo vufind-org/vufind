@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'blender' => \VuFind\Search\Blender\Results::class,
+        'blender2' => \VuFind\Search\Blender2\Results::class,
         'browzine' => \VuFind\Search\BrowZine\Results::class,
         'combined' => \VuFind\Search\Combined\Results::class,
         'eds' => \VuFind\Search\EDS\Results::class,
@@ -85,7 +86,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             => \VuFind\Search\Solr\ResultsFactory::class,
         \VuFind\Search\BrowZine\Results::class => ResultsFactory::class,
         \VuFind\Search\Combined\Results::class => ResultsFactory::class,
-        \VuFind\Search\EDS\Results::class => ResultsFactory::class,
+        \VuFind\Search\EDS\Results::class => \VuFind\Search\EDS\ResultsFactory::class,
         \VuFind\Search\EIT\Results::class => ResultsFactory::class,
         \VuFind\Search\EPF\Results::class => ResultsFactory::class,
         \VuFind\Search\EmptySet\Results::class => ResultsFactory::class,

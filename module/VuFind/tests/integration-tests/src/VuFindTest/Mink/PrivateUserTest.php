@@ -103,7 +103,7 @@ final class PrivateUserTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Comment control should not be present
-        $this->unfindCss($page, '.record-tabs .usercomments a');
+        $this->unfindCss($page, '.record-tabs .usercomments');
     }
 
     /**
@@ -150,7 +150,7 @@ final class PrivateUserTest extends \VuFindTest\Integration\MinkTestCase
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         // Check that login link is back
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
         // Assert that nothing was added to the user database:
         static::failIfDataExists('User data should not have been created in private user mode.');
     }

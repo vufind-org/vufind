@@ -52,146 +52,144 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testFlashmessageData
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestFlashmessageData(): array
+    public static function getTestFlashmessageData(): \Iterator
     {
-        return [
+        yield [
+            [],
+            '',
+        ];
+        yield [
             [
-                [],
-                '',
+                'success' => [
+                    'Foo',
+                ],
             ],
+            '<div role="alert" class="success">Foo</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        'Foo',
+                'error' => [
+                    'Fail',
+                ],
+                'success' => [
+                    'Good',
+                ],
+            ],
+            '<div role="alert" class="error">Fail</div>'
+                . '<div role="alert" class="success">Good Translation</div>',
+        ];
+        yield [
+            [
+                'success' => [
+                    [
+                        'msg' => 'Good',
                     ],
                 ],
-                '<div role="alert" class="success">Foo</div>',
             ],
+            '<div role="alert" class="success">Good Translation</div>',
+        ];
+        yield [
             [
-                [
-                    'error' => [
-                        'Fail',
-                    ],
-                    'success' => [
-                        'Good',
+                'success' => [
+                    [
+                        'msg' => 'Good',
+                        'translate' => false,
                     ],
                 ],
-                '<div role="alert" class="error">Fail</div>'
-                    . '<div role="alert" class="success">Good Translation</div>',
             ],
+            '<div role="alert" class="success">Good</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'Good',
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'Good',
                         ],
                     ],
                 ],
-                '<div role="alert" class="success">Good Translation</div>',
             ],
+            '<div role="alert" class="success">foo Good</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'Good',
-                            'translate' => false,
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'paragraph',
                         ],
+                        'translateTokens' => true,
                     ],
                 ],
-                '<div role="alert" class="success">Good</div>',
             ],
+            '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'Good',
-                            ],
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'html' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'paragraph',
                         ],
+                        'translateTokens' => true,
                     ],
                 ],
-                '<div role="alert" class="success">foo Good</div>',
             ],
+            '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'paragraph',
-                            ],
-                            'translateTokens' => true,
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'html' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'paragraph',
                         ],
+                        'translateTokens' => true,
+                        'tokensHtml' => true,
                     ],
                 ],
-                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
             ],
+            '<div role="alert" class="success">foo Tag <p></div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'html' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'paragraph',
-                            ],
-                            'translateTokens' => true,
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'html' => true,
+                        'tokens' => [
+                            '%%ph%%' => '<b>bold</b>',
                         ],
+                        'translateTokens' => false,
+                        'tokensHtml' => true,
                     ],
                 ],
-                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
             ],
+            '<div role="alert" class="success">foo <b>bold</b></div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'html' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'paragraph',
-                            ],
-                            'translateTokens' => true,
-                            'tokensHtml' => true,
-                        ],
+                'success' => [
+                    [
+                        'msg' => 'Goof',
+                        'default' => 'Good',
                     ],
                 ],
-                '<div role="alert" class="success">foo Tag <p></div>',
             ],
-            [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'html' => true,
-                            'tokens' => [
-                                '%%ph%%' => '<b>bold</b>',
-                            ],
-                            'translateTokens' => false,
-                            'tokensHtml' => true,
-                        ],
-                    ],
-                ],
-                '<div role="alert" class="success">foo <b>bold</b></div>',
-            ],
-            [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'Goof',
-                            'default' => 'Good',
-                        ],
-                    ],
-                ],
-                '<div role="alert" class="success">Good</div>',
-            ],
+            '<div role="alert" class="success">Good</div>',
         ];
     }
 

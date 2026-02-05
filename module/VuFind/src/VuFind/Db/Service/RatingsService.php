@@ -215,6 +215,7 @@ class RatingsService extends AbstractDbService implements
         $parameters = compact('resource', 'user');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
+        $query->setMaxResults(1); // SHOULD be unique, but just in case...
 
         if ($existing = $query->getOneOrNullResult()) {
             if (null === $rating) {

@@ -31,8 +31,6 @@ declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
-use function count;
-
 /**
  * OAI-PMH test class.
  *
@@ -62,14 +60,12 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider describing OAI servers.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function serverProvider(): array
+    public static function serverProvider(): \Iterator
     {
-        return [
-            'auth' => ['/OAI/AuthServer'],
-            'biblio' => ['/OAI/Server'],
-        ];
+        yield 'auth' => ['/OAI/AuthServer'];
+        yield 'biblio' => ['/OAI/Server'];
     }
 
     /**
@@ -167,7 +163,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         )->getBody()->getContents();
         $xml2 = simplexml_load_string($rawXml2);
         $resumptionAttributes2 = $xml2->ListRecords->resumptionToken->attributes();
-        $this->assertEquals($resultSetSize - $pageSize, count($xml2->ListRecords->record));
+        $this->assertCount($resultSetSize - $pageSize, $xml2->ListRecords->record);
         $this->assertSame($resultSetSize, (int)$resumptionAttributes2['completeListSize']);
         $this->assertEquals($pageSize, (int)$resumptionAttributes2['cursor']);
         $resumptionToken2 = (string)$xml2->ListRecords->resumptionToken;

@@ -807,9 +807,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function setStatus(string $id, $holding = [], $append = true, $patron = null)
     {
         $session = $this->getSession($patron['id'] ?? null);
-        $i = isset($session->statuses[$id])
-            ? count($session->statuses[$id]) + 1 : 1;
-        $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+
+        if ($this->config['Holdings']['generateRandomHoldings'] ?? true) {
+            $i = isset($session->statuses[$id])
+                ? count($session->statuses[$id]) + 1 : 1;
+            $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+        }
 
         // if statuses is already stored
         if ($session->statuses) {
@@ -2256,9 +2259,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'hold_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
@@ -2381,9 +2388,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'storage_retrieval_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
@@ -2511,9 +2522,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'ill_request_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'ill_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
@@ -2882,7 +2897,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $function The name of the feature to be checked
      * @param array  $params   Optional feature-specific parameters (array)
      *
-     * @return array An array with key-value pairs.
+     * @return array|false An array with key-value pairs.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

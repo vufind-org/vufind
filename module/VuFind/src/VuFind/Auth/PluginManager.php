@@ -71,7 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AlmaDatabase::class => ILSFactory::class,
+        AlmaDatabase::class => AlmaDatabaseFactory::class,
         CAS::class => CASFactory::class,
         ChoiceAuth::class => ChoiceAuthFactory::class,
         Database::class => DatabaseFactory::class,

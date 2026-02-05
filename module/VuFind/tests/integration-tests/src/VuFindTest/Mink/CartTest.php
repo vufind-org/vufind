@@ -451,11 +451,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to return in lightbox / not in lightbox states.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function inLightboxProvider(): array
+    public static function inLightboxProvider(): \Iterator
     {
-        return ['in lightbox' => [true], 'not in lightbox' => [false]];
+        yield 'in lightbox' => [true];
+        yield 'not in lightbox' => [false];
     }
 
     /**
@@ -612,7 +613,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal .alert-success')
         );
@@ -645,7 +646,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );

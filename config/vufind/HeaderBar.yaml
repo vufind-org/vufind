@@ -1,0 +1,51 @@
+# This file configures the HeaderBar section plugin, which renders menus and other
+# controls at the top of every page. If this file is empty or missing, default
+# settings will be used, matching the examples provided below.
+#
+# The format of this configuration is as follows:
+#
+# Array keys for every group are:
+#   - MenuItems: items shown in the menu - required
+#   - checkMethod: the name of a HeaderBar section plugin method to perform
+#     a check whether to show the group. If omitted, group will always display.
+#
+# Array keys for every menu item could be:
+#   - checkMethod: the name of a HeaderBar section plugin method to perform
+#     a check whether to show the item. If omitted, item will always display.
+#   - template: template to render the item with. Templates do not support the keys
+#     documented below.
+#   - label: the text shown as link, will be translated - required
+#   - route: route name used to generate link target - required unless url or
+#     template is set
+#   - routeParams: parameters for dynamic routes
+#   - url: target url, alternative to route - required unless route or template
+#     is set
+#   - icon: icon used for the item, has to be defined in theme config
+#   - attributes: additional attributes for the menu item's <a> tag
+#
+# You can use checkMethod: alwaysFail to disable specific inherited groups or items
+# in local configuration. If you wish to completely override the default
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
+
+Header:
+  MenuItems:
+    - label: 'Feedback'
+      route: feedback-home
+      icon: feedback
+      checkMethod: checkFeedback
+      attributes:
+        id: feedbackLink
+        data-lightbox: data-lightbox
+
+    - template: Section/HeaderBar/HeaderBar-cart.phtml
+      checkMethod: checkCart
+
+    - template: Section/HeaderBar/HeaderBar-account.phtml
+      checkMethod: checkAccount
+
+    - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
+      checkMethod: checkThemeOptions
+
+    - template: Section/HeaderBar/HeaderBar-allLangs.phtml
+      checkMethod: checkAllLangs

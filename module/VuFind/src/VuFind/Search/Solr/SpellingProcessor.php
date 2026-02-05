@@ -29,9 +29,11 @@
 
 namespace VuFind\Search\Solr;
 
+use Closure;
 use VuFind\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\QueryInterface;
 
 use function count;
 use function in_array;
@@ -54,21 +56,21 @@ class SpellingProcessor
      *
      * @var int
      */
-    protected $spellingLimit;
+    protected int $spellingLimit;
 
     /**
      * Spell check words with numbers in them?
      *
      * @var bool
      */
-    protected $spellSkipNumeric;
+    protected bool $spellSkipNumeric;
 
     /**
      * Offer expansions on terms as well as basic replacements?
      *
      * @var bool
      */
-    protected $expand;
+    protected bool $expand;
 
     /**
      * Show the full modified search phrase on screen rather then just the suggested
@@ -76,28 +78,28 @@ class SpellingProcessor
      *
      * @var bool
      */
-    protected $phrase;
+    protected bool $phrase;
 
     /**
      * Callback for normalizing text.
      *
-     * @var callable
+     * @var ?Closure
      */
-    protected $normalizer;
+    protected ?Closure $normalizer;
 
     /**
      * Constructor
      *
-     * @param Config   $config     Spelling configuration (optional)
-     * @param callable $normalizer Callback for normalization of text (optional).
+     * @param ?Config   $config     Spelling configuration (optional)
+     * @param ?callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct($config = null, $normalizer = null)
+    public function __construct(?Config $config = null, ?callable $normalizer = null)
     {
         $this->spellingLimit = $config->limit ?? 3;
         $this->spellSkipNumeric = $config->skip_numeric ?? true;
         $this->expand = $config->expand ?? true;
         $this->phrase = $config->phrase ?? false;
-        $this->normalizer = $normalizer;
+        $this->normalizer = ($normalizer !== null) ? $normalizer(...) : null;
     }
 
     /**
@@ -105,7 +107,7 @@ class SpellingProcessor
      *
      * @return bool
      */
-    public function shouldSkipNumericSpelling()
+    public function shouldSkipNumericSpelling(): bool
     {
         return $this->spellSkipNumeric;
     }
@@ -115,7 +117,7 @@ class SpellingProcessor
      *
      * @return int
      */
-    public function getSpellingLimit()
+    public function getSpellingLimit(): int
     {
         return $this->spellingLimit;
     }
@@ -132,7 +134,7 @@ class SpellingProcessor
      *
      * @return array        Tokenized array
      */
-    public function tokenize($input)
+    public function tokenize(string $input): array
     {
         // Exclusion list of useless tokens:
         $joins = ['AND', 'OR', 'NOT'];
@@ -176,7 +178,7 @@ class SpellingProcessor
      * @return array
      * @throws \Exception
      */
-    public function getSuggestions(Spellcheck $spellcheck, AbstractQuery $query)
+    public function getSuggestions(Spellcheck $spellcheck, AbstractQuery $query): array
     {
         $allSuggestions = [];
         foreach ($spellcheck as $term => $info) {
@@ -200,13 +202,13 @@ class SpellingProcessor
     /**
      * Support method for getSuggestions()
      *
-     * @param AbstractQuery $query Query for which info should be retrieved
-     * @param array         $info  Spelling suggestion information
+     * @param QueryInterface $query Query for which info should be retrieved
+     * @param array          $info  Spelling suggestion information
      *
      * @return array
      * @throws \Exception
      */
-    protected function formatAndFilterSuggestions($query, $info)
+    protected function formatAndFilterSuggestions(QueryInterface $query, array $info): array
     {
         // Validate response format
         if (isset($info['suggestion'][0]) && !is_array($info['suggestion'][0])) {
@@ -232,15 +234,15 @@ class SpellingProcessor
     /**
      * Should we skip the specified term?
      *
-     * @param AbstractQuery $query         Query for which info should be retrieved
-     * @param string        $term          Term to check
-     * @param bool          $queryContains Should we skip the term if it is found
+     * @param QueryInterface $query         Query for which info should be retrieved
+     * @param string         $term          Term to check
+     * @param bool           $queryContains Should we skip the term if it is found
      * in the query (true), or should we skip the term if it is NOT found in the
      * query (false)?
      *
      * @return bool
      */
-    protected function shouldSkipTerm($query, $term, $queryContains)
+    protected function shouldSkipTerm(QueryInterface $query, string $term, bool $queryContains): bool
     {
         // If term is numeric and we're in "skip numeric" mode, we should skip it:
         if ($this->shouldSkipNumericSpelling() && is_numeric($term)) {
@@ -259,7 +261,7 @@ class SpellingProcessor
      *
      * @return array
      */
-    public function processSuggestions($suggestions, $query, Params $params)
+    public function processSuggestions(array $suggestions, string $query, Params $params): array
     {
         $returnArray = [];
         foreach ($suggestions as $term => $details) {
@@ -313,13 +315,13 @@ class SpellingProcessor
      * @return array              $returnArray modified
      */
     protected function doSingleReplace(
-        $term,
-        $targetTerm,
-        $inToken,
-        $details,
-        $returnArray,
+        string $term,
+        string $targetTerm,
+        bool $inToken,
+        array $details,
+        array $returnArray,
         Params $params
-    ) {
+    ): array {
         $returnArray[$targetTerm]['freq'] = $details['freq'];
         foreach ($details['suggestions'] as $word => $freq) {
             // If the suggested word is part of a token, we need to make sure we

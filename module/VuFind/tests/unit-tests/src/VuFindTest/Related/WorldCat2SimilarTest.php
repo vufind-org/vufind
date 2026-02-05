@@ -80,16 +80,14 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetResults()
      *
-     * @return void
+     * @return \Iterator
      */
-    public static function getResultsProvider(): array
+    public static function getResultsProvider(): \Iterator
     {
-        return [
-            'default limit' => ['"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"', null],
-            'limit of 1' => ['"fakesh2"', 1],
-            'limit of 2' => ['"fakesh1a fakesh1b"', 2],
-            'limit of 3' => ['"fakesh1a fakesh1b" "fakesh2"', 3],
-        ];
+        yield 'default limit' => ['"fakesh1a fakesh1b" "fakesh2" "fakepa" "faketitle"', null];
+        yield 'limit of 1' => ['"fakesh2"', 1];
+        yield 'limit of 2' => ['"fakesh1a fakesh1b"', 2];
+        yield 'limit of 3' => ['"fakesh1a fakesh1b" "fakesh2"', 3];
     }
 
     /**

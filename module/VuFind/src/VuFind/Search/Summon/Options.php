@@ -45,18 +45,18 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Maximum number of topic recommendations to show (false for none)
+     * Maximum number of topic recommendations to show (null for none)
      *
-     * @var int|bool
+     * @var ?int
      */
-    protected $maxTopicRecommendations = false;
+    protected ?int $maxTopicRecommendations = null;
 
     /**
      * Relevance sort override for empty searches
      *
-     * @var string
+     * @var ?string
      */
-    protected $emptySearchRelevanceOverride = null;
+    protected ?string $emptySearchRelevanceOverride = null;
 
     /**
      * Constructor
@@ -98,29 +98,29 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'summon-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return 'summon-advanced';
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return 'summon-facetlist';
     }
@@ -128,9 +128,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Get the relevance sort override for empty searches.
      *
-     * @return string Sort field or null if not set
+     * @return ?string Sort field or null if not set
      */
-    public function getEmptySearchRelevanceOverride()
+    public function getEmptySearchRelevanceOverride(): ?string
     {
         return $this->emptySearchRelevanceOverride;
     }
@@ -138,9 +138,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Get the maximum number of topic recommendations (false for none)
      *
-     * @return bool|int
+     * @return ?int
      */
-    public function getMaxTopicRecommendations()
+    public function getMaxTopicRecommendations(): ?int
     {
         return $this->maxTopicRecommendations;
     }
@@ -148,11 +148,11 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Set the maximum number of topic recommendations (false for none)
      *
-     * @param bool|int $max New maximum setting
+     * @param ?int $max New maximum setting
      *
      * @return void
      */
-    public function setMaxTopicRecommendations($max)
+    public function setMaxTopicRecommendations(?int $max): void
     {
         $this->maxTopicRecommendations = $max;
     }

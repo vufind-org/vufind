@@ -68,6 +68,7 @@ use VuFind\ILS\Logic\RenewalsHelper;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
+use VuFind\Session\Helper\FollowupHelper;
 use VuFind\Tags\TagsService;
 use VuFind\Validator\CsrfInterface;
 
@@ -215,7 +216,7 @@ class MyResearchController extends AbstractBase
                         $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
                         && (!$this->hasFollowupUrl()
-                        || $this->followup()->retrieve('isReferrer') === true)
+                        || $this->getService(FollowupHelper::class)->retrieve('isReferrer') === true)
                     ) {
                         $this->clearFollowupUrl();
                         return $this->getRefreshResponse();
@@ -229,7 +230,7 @@ class MyResearchController extends AbstractBase
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->getIdentity()) {
             if (
-                $this->followup()->retrieve('lightboxParent')
+                $this->getService(FollowupHelper::class)->retrieve('lightboxParent')
                 && $url = $this->getAndClearFollowupUrl(true)
             ) {
                 return $this->redirect()->toUrl($url);

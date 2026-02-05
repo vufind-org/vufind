@@ -120,18 +120,16 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFeedbackForm
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function feedbackFormProvider(): array
+    public static function feedbackFormProvider(): \Iterator
     {
-        return [
-            ['test@test.com', true, true],
-            ['foobar@spam.com', true, true],
-            ['test@blockeddomain.com', false, false],
-            ['bar@bad.com', false, false],
-            ['test@ignoreddomain.com', true, false],
-            ['bar@spam.com', true, false],
-        ];
+        yield ['test@test.com', true, true];
+        yield ['foobar@spam.com', true, true];
+        yield ['test@blockeddomain.com', false, false];
+        yield ['bar@bad.com', false, false];
+        yield ['test@ignoreddomain.com', true, false];
+        yield ['bar@spam.com', true, false];
     }
 
     /**
@@ -150,12 +148,12 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setupPage();
         $this->fillInAndSubmitFeedbackForm($page, $sender);
         if ($expectSuccess) {
-            $this->assertEquals(
+            $this->assertSame(
                 'Thank you for your feedback.',
                 $this->findCssAndGetText($page, '#modal .alert-success')
             );
         } else {
-            $this->assertEquals(
+            $this->assertSame(
                 'Could not process your feedback. Please try again later.',
                 $this->findCssAndGetText($page, '#modal .alert-danger')
             );
@@ -163,7 +161,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         if ($expectEmail) {
             $this->assertStringContainsString(
                 'Comments',
-                $this->getLoggedEmail()->getBody()->getBody()
+                (string)$this->getLoggedEmail()->getBody()->getBody()
             );
         } else {
             $this->expectExceptionMessage('No serialized email message data found');
@@ -197,7 +195,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         ];
         foreach ($feedbackEntries as $feedbackParams) {
             $this->fillInAndSubmitFeedbackForm($page, ...$feedbackParams);
-            $this->assertEquals(
+            $this->assertSame(
                 'Thank you for your feedback.',
                 $this->findCssAndGetText($page, '#modal .alert-success')
             );
@@ -291,7 +289,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->fillInAndSubmitFeedbackForm($page);
         // CAPTCHA should have failed...
-        $this->assertEquals(
+        $this->assertSame(
             'CAPTCHA not passed',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
@@ -299,7 +297,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, 'form [name="demo_captcha"]')
             ->setValue('demo');
         $this->clickCss($page, '#modal input[type="submit"]');
-        $this->assertEquals(
+        $this->assertSame(
             'Thank you for your feedback.',
             $this->findCssAndGetText($page, '#modal .alert-success')
         );
@@ -339,7 +337,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Thank you for your feedback.',
             $this->findCssAndGetText($page, '#modal .alert-success')
         );

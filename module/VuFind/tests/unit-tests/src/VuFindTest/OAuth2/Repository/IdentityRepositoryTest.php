@@ -101,15 +101,13 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Data provider for testIdentityRepository
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestIdentityRepositoryData(): array
+    public static function getTestIdentityRepositoryData(): \Iterator
     {
-        return [
-            [null],
-            [false],
-            [true],
-        ];
+        yield [null];
+        yield [false];
+        yield [true];
     }
 
     /**
@@ -133,7 +131,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
             $this->getMockILSAuthenticator()
         );
 
-        $this->assertNull($repo->getUserEntityByIdentifier(1));
+        $this->assertNotInstanceOf(UserEntity::class, $repo->getUserEntityByIdentifier(1));
         $user = $repo->getUserEntityByIdentifier(2);
         $this->assertInstanceOf(UserEntity::class, $user);
 

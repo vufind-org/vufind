@@ -32,8 +32,6 @@ namespace VuFindTest\Backend\Solr\Json\Response;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 
-use function get_class;
-
 /**
  * Unit tests for terms information.
  *
@@ -61,7 +59,7 @@ class TermsTest extends TestCase
             ]
         );
 
-        $this->assertSame(\ArrayIterator::class, get_class($terms->getIterator()));
+        $this->assertInstanceOf(\ArrayIterator::class, $terms->getIterator());
         $this->assertNull($terms->getFieldTerms('field2'));
         $fieldTerms = $terms->getFieldTerms('field1');
         $this->assertCount(3, $fieldTerms);

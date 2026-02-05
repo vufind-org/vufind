@@ -1268,19 +1268,7 @@ class Folio extends AbstractAPI implements
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0 && $showHoldingsNoItems) {
-                $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
-                $invisibleAvailabilityStatus = new AvailabilityStatus(
-                    true,
-                    'HoldingStatus::holding_no_items_availability_message'
-                );
-                $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
-                $nextBatch[] = $locAndHoldings + [
-                    'id' => $bibId,
-                    'callnumber' => $holdingDetails['holdingCallNumber'],
-                    'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
-                    'reserve' => 'N',
-                    'availability' => $invisibleAvailabilityStatus,
-                ];
+                $nextBatch[] = $this->buildHoldingsNoItemsData($bibId, $holdingDetails, $holding);
             }
             $items = array_merge(
                 $items,
@@ -1293,6 +1281,33 @@ class Folio extends AbstractAPI implements
             'total' => count($items),
             'holdings' => $items,
             'electronic_holdings' => [],
+        ];
+    }
+
+    /**
+     * Support method for getHoldings() -- create a fake item for holdings with no items
+     * from FOLIO.
+     *
+     * @param string $bibId          Bib-level id
+     * @param array  $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     * @param object $holding        FOLIO holding record (decoded from JSON)
+     *
+     * @return array An associative array with the item keys
+     */
+    protected function buildHoldingsNoItemsData(string $bibId, array $holdingDetails, object $holding): array
+    {
+        $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
+        $invisibleAvailabilityStatus = new AvailabilityStatus(
+            true,
+            'HoldingStatus::holding_no_items_availability_message'
+        );
+        $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
+        return $locAndHoldings + [
+            'id' => $bibId,
+            'callnumber' => $holdingDetails['holdingCallNumber'],
+            'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
+            'reserve' => 'N',
+            'availability' => $invisibleAvailabilityStatus,
         ];
     }
 
@@ -2264,15 +2279,30 @@ class Folio extends AbstractAPI implements
         $cacheKey = 'module_version:' . $moduleName;
         $version = $this->getCachedData($cacheKey);
         if ($version === null) {
-            // get latest version of a module enabled for a tenant
+            // Get latest version of a module enabled for a tenant.
+            // Allow errors to not trigger an exception because that means we need to try the
+            // next call that is compatible with pre-Sunflower.
             $response = $this->makeRequest(
                 'GET',
-                '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1'
+                '/modules/discovery?query=(name==' . $moduleName . ')',
+                allowedFailureCodes:[400, 403, 404, 500]
             );
 
+            // If there was a failure with the first method, attempt the second
+            // endpoint to get the version.
+            $json = json_decode($response->getBody(), true);
+            if (empty($json) || isset($json['errors'])) {
+                $response = $this->makeRequest(
+                    'GET',
+                    '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1',
+                );
+                $json = json_decode($response->getBody(), true);
+                $latest = $json[0]['id'] ?? '0';
+            } else {
+                $latest = $json['discovery'][0]['id'] ?? '0';
+            }
+
             // get version major from json result
-            $versions = json_decode($response->getBody());
-            $latest = $versions[0]->id ?? '0';
             preg_match_all('!\d+!', $latest, $matches);
             $version = (int)($matches[0][0] ?? 0);
             if ($version === 0) {
@@ -2445,7 +2475,7 @@ class Folio extends AbstractAPI implements
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
-        $allowed = $this->getAllowedServicePoints(
+        $allowedServicePoints = $fulfillmentValue == 'Delivery' ? null : $this->getAllowedServicePoints(
             $instance->id,
             $holdDetails['item_id'] ?? null,
             $holdDetails['patron']['id']
@@ -2453,12 +2483,15 @@ class Folio extends AbstractAPI implements
         $preferredRequestType = $this->getPreferredRequestType($holdDetails);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
             // Skip illegal request types, if we have validation data available:
-            if (null !== $allowed) {
+            if (null !== $allowedServicePoints) {
                 if (
                     // Unsupported request type:
-                    !isset($allowed[$requestType])
+                    !isset($allowedServicePoints[$requestType])
                     // Unsupported pickup location:
-                    || !in_array($holdDetails['pickUpLocation'], array_column($allowed[$requestType] ?? [], 'id'))
+                    || !in_array(
+                        $holdDetails['pickUpLocation'],
+                        array_column($allowedServicePoints[$requestType] ?? [], 'id')
+                    )
                 ) {
                     continue;
                 }

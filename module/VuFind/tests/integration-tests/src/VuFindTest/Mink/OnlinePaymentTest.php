@@ -45,7 +45,6 @@ use VuFindTest\Feature\EmailTrait;
 use VuFindTest\Feature\LiveDatabaseTrait;
 use VuFindTest\Feature\UserCreationTrait;
 
-use function assert;
 use function count;
 
 /**
@@ -79,14 +78,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPaymentDisabled
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function paymentDisabledProvider(): array
+    public static function paymentDisabledProvider(): \Iterator
     {
-        return [
-            'without multibackend' => [false],
-            'with multibackend' => [true],
-        ];
+        yield 'without multibackend' => [false];
+        yield 'with multibackend' => [true];
     }
 
     /**
@@ -109,31 +106,29 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPayment
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function paymentProvider(): array
+    public static function paymentProvider(): \Iterator
     {
-        return [
-            'payment with receipt enabled, single ILS' => [
-                [],
-                true,
-                false,
-            ],
-            'payment with receipt disabled, single ILS' => [
-                ['receipt' => false],
-                false,
-                false,
-            ],
-            'payment with receipt enabled, MultiBackend' => [
-                [],
-                true,
-                true,
-            ],
-            'payment with receipt disabled, MultiBackend' => [
-                ['receipt' => false],
-                false,
-                true,
-            ],
+        yield 'payment with receipt enabled, single ILS' => [
+            [],
+            true,
+            false,
+        ];
+        yield 'payment with receipt disabled, single ILS' => [
+            ['receipt' => false],
+            false,
+            false,
+        ];
+        yield 'payment with receipt enabled, MultiBackend' => [
+            [],
+            true,
+            true,
+        ];
+        yield 'payment with receipt disabled, MultiBackend' => [
+            ['receipt' => false],
+            false,
+            true,
         ];
     }
 
@@ -178,7 +173,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
         $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
         $this->clickCss($page, '.button-cancel');
-        $this->assertEquals(
+        $this->assertSame(
             'Payment canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
@@ -193,7 +188,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
         $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
         $this->clickCss($page, '.button-failure');
-        $this->assertEquals(
+        $this->assertSame(
             'Payment request failed',
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
@@ -236,7 +231,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $email = $this->getLoggedEmail();
             $this->assertStringContainsString(
                 'A receipt for your payment is attached as a PDF file',
-                $email->getBody()->getParts()[0]->getBody()
+                (string)$email->getBody()->getParts()[0]->getBody()
             );
         }
 
@@ -246,7 +241,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $payment->getAmount()
         );
         $paymentFeeService = $this->getDbService(PaymentFeeServiceInterface::class);
-        assert($paymentFeeService instanceof PaymentFeeServiceInterface);
+        $this->assertInstanceOf(PaymentFeeServiceInterface::class, $paymentFeeService);
         $this->assertSame(
             [
                 'demo1',
@@ -255,13 +250,13 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $paymentFeeService->getFineIdsForPayment($payment)
         );
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
-        assert($paymentService instanceof PaymentServiceInterface);
+        $this->assertInstanceOf(PaymentServiceInterface::class, $paymentService);
         $this->assertSame(
             $payment,
             $paymentService->getLastPaidPaymentForPatron($multibackend ? 'pay.catuser' : 'catuser')
         );
         $auditEventService = $this->getDbService(AuditEventServiceInterface::class);
-        assert($auditEventService instanceof AuditEventServiceInterface);
+        $this->assertInstanceOf(AuditEventServiceInterface::class, $auditEventService);
         $events = array_map(
             function (AuditEventEntityInterface $event) {
                 return [$event->getSubType(), $event->getMessage()];
@@ -319,9 +314,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check payment status:
         $payment = $this->getPaymentFromReturnUrl($page);
-        $this->assertEquals(
-            $payment->getStatus(),
-            PaymentStatus::InProgress
+        $this->assertSame(
+            PaymentStatus::InProgress,
+            $payment->getStatus()
         );
 
         // Send notify event:
@@ -335,11 +330,11 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check payment status again:
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
-        assert($paymentService instanceof PaymentServiceInterface);
+        $this->assertInstanceOf(PaymentServiceInterface::class, $paymentService);
         $paymentService->refreshEntity($payment);
-        $this->assertEquals(
-            $payment->getStatus(),
-            PaymentStatus::Paid
+        $this->assertSame(
+            PaymentStatus::Paid,
+            $payment->getStatus()
         );
 
         // Resolve the payment so that it doesn't block further tests:
@@ -384,14 +379,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testReceipt
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function receiptProvider(): array
+    public static function receiptProvider(): \Iterator
     {
-        return [
-            'no VAT breakdown' => [false],
-            'VAT breakdown' => [true],
-        ];
+        yield 'no VAT breakdown' => [false];
+        yield 'VAT breakdown' => [true];
     }
 
     /**
@@ -443,42 +436,40 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testBlockedPayment
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function blockedPaymentProvider(): array
+    public static function blockedPaymentProvider(): \Iterator
     {
         $blockMsg = 'You have fees that cannot be paid online. Please contact the library customer service.';
-        return [
-            'overdue fee blocks payment' => [
-                [
-                    'blockingNonPayableTypes' => ['Overdue'],
-                ],
-                $blockMsg,
+        yield 'overdue fee blocks payment' => [
+            [
+                'blockingNonPayableTypes' => ['Overdue'],
             ],
-            'lost card fee blocks payment' => [
-                [
-                    'blockingNonPayableDescriptions' => ['Lost card replacement'],
-                ],
-                $blockMsg,
+            $blockMsg,
+        ];
+        yield 'lost card fee blocks payment' => [
+            [
+                'blockingNonPayableDescriptions' => ['Lost card replacement'],
             ],
-            'lost card fee blocks payment (regex)' => [
-                [
-                    'blockingNonPayableDescriptions' => ['/Lost.*replacement/'],
-                ],
-                $blockMsg,
+            $blockMsg,
+        ];
+        yield 'lost card fee blocks payment (regex)' => [
+            [
+                'blockingNonPayableDescriptions' => ['/Lost.*replacement/'],
             ],
-            'lost card fee blocks payment (regex with modifier)' => [
-                [
-                    'blockingNonPayableDescriptions' => ['/Lost.*replacement/u'],
-                ],
-                $blockMsg,
+            $blockMsg,
+        ];
+        yield 'lost card fee blocks payment (regex with modifier)' => [
+            [
+                'blockingNonPayableDescriptions' => ['/Lost.*replacement/u'],
             ],
-            'minimum payable amount blocks payment' => [
-                [
-                    'minimumFee' => '5000',
-                ],
-                'Minimum payable amount: $50.00',
+            $blockMsg,
+        ];
+        yield 'minimum payable amount blocks payment' => [
+            [
+                'minimumFee' => '5000',
             ],
+            'Minimum payable amount: $50.00',
         ];
     }
 
@@ -502,7 +493,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->goToFines(false, false);
         $this->checkForMissingDevTools($page);
-        $this->assertEquals(
+        $this->assertSame(
             $expectedMsg,
             $this->findCssAndGetText($page, '.fines-info-area__blocked')
         );
@@ -550,7 +541,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $auditEventService = $this->getDbService(AuditEventServiceInterface::class);
-        assert($auditEventService instanceof AuditEventServiceInterface);
+        $this->assertInstanceOf(AuditEventServiceInterface::class, $auditEventService);
         $events = array_map(
             function (AuditEventEntityInterface $event) {
                 $data = $event->getData();
@@ -832,7 +823,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     protected function getPaymentByLocalIdentifier(string $localIdentifier): PaymentEntityInterface
     {
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
-        assert($paymentService instanceof PaymentServiceInterface);
+        $this->assertInstanceOf(PaymentServiceInterface::class, $paymentService);
         return $paymentService->getPaymentByLocalIdentifier($localIdentifier);
     }
 

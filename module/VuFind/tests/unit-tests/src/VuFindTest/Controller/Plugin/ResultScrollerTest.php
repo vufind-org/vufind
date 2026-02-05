@@ -96,7 +96,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(1))
+            $plugin->getScrollData($results->getMockRecordDriver('1'))
         );
     }
 
@@ -117,7 +117,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(1))
+            $plugin->getScrollData($results->getMockRecordDriver('1'))
         );
     }
 
@@ -138,7 +138,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(5))
+            $plugin->getScrollData($results->getMockRecordDriver('5'))
         );
     }
 
@@ -159,7 +159,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(1))
+            $plugin->getScrollData($results->getMockRecordDriver('1'))
         );
     }
 
@@ -180,7 +180,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(1))
+            $plugin->getScrollData($results->getMockRecordDriver('1'))
         );
     }
 
@@ -202,7 +202,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(10))
+            $plugin->getScrollData($results->getMockRecordDriver('10'))
         );
     }
 
@@ -224,7 +224,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(9))
+            $plugin->getScrollData($results->getMockRecordDriver('9'))
         );
     }
 
@@ -246,7 +246,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(5))
+            $plugin->getScrollData($results->getMockRecordDriver('5'))
         );
     }
 
@@ -267,7 +267,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(1))
+            $plugin->getScrollData($results->getMockRecordDriver('1'))
         );
     }
 
@@ -288,7 +288,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(10))
+            $plugin->getScrollData($results->getMockRecordDriver('10'))
         );
     }
 
@@ -309,7 +309,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(17))
+            $plugin->getScrollData($results->getMockRecordDriver('17'))
         );
     }
 
@@ -330,7 +330,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(11))
+            $plugin->getScrollData($results->getMockRecordDriver('11'))
         );
     }
 
@@ -361,7 +361,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals(
             $expected,
-            $plugin->getScrollData($results->getMockRecordDriver(20))
+            $plugin->getScrollData($results->getMockRecordDriver('20'))
         );
     }
 

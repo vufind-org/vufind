@@ -77,14 +77,12 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLogin.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function loginProvider(): array
+    public static function loginProvider(): \Iterator
     {
-        return [
-            'unhashed password' => [false],
-            'hashed password' => [true],
-        ];
+        yield 'unhashed password' => [false];
+        yield 'hashed password' => [true];
     }
 
     /**
@@ -111,7 +109,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#login_PasswordAccess_password', 'bad');
         $this->clickCss($page, '.modal-content input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.modal-content .alert-danger')
         );
@@ -148,7 +146,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#login_PasswordAccess_password', 'bad');
         $this->clickCss($page, '.modal-content input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.modal-content .alert-danger')
         );
@@ -157,7 +155,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#login_PasswordAccess_password', 'password');
         $this->clickCss($page, '.modal-content input[type="submit"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.modal-content .alert-danger')
         );
@@ -176,7 +174,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Check that login link is back
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
     }
 
     /**

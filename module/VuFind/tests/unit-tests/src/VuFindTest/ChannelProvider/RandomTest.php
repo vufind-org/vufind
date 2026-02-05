@@ -117,7 +117,11 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $recordRouter = $this->getConfiguredRecordRouterMock($recordDriver);
         $random->setCoverRouter($coverRouter);
         $random->setRecordRouter($recordRouter);
-        return [$random, $expectedResult, $params];
+        return [
+            $random,
+            $expectedResult,
+            $params,
+        ];
     }
 
     /**
@@ -168,7 +172,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            $this->assertSame($class, $command::class);
+            $this->assertSame($command::class, $class);
             $this->assertEquals($args, $command->getArguments());
             $this->assertSame($target, $command->getTargetIdentifier());
             return true;

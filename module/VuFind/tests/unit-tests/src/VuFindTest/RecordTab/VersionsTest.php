@@ -76,28 +76,27 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Test1' => [true, 1, true],
-                'Test2' => [true, 0, false],
-                'Test3' => [false, 1, false],
-                'Test4' => [true, 0, false],
-            ];
+        yield 'Test1' => ['foo', 1, true];
+        yield 'Test2' => ['foo', 0, false];
+        yield 'Test3' => [null, 1, false];
+        yield 'Test4' => ['foo', 0, false];
     }
 
     /**
      * Test if the tab is active.
      *
-     * @param bool $versionAction  Action from Plugin
-     * @param int  $versionCount   Version count from Record Driver
-     * @param bool $expectedResult Expected return value from isActive
+     * @param ?string $versionAction  Action from Plugin
+     * @param int     $versionCount   Version count from Record Driver
+     * @param bool    $expectedResult Expected return value from isActive
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
-    public function testisActive(bool $versionAction, int $versionCount, bool $expectedResult): void
+    public function testisActive(?string $versionAction, int $versionCount, bool $expectedResult): void
     {
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();

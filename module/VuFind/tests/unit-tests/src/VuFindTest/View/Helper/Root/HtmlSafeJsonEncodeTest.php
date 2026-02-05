@@ -76,17 +76,14 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for JSON encoding tests
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getJsonTests(): array
+    public static function getJsonTests(): \Iterator
     {
-        return [
-            'string with special characters'
-                => ['<\'">', '"\u003C\u0027\u0022\u003E"'],
-            'array of special characters' => [
-                ['<', '"', "'", '>', '&'],
-                '["\u003C","\u0022","\u0027","\u003E","\u0026"]',
-            ],
+        yield 'string with special characters' => ['<\'">', '"\u003C\u0027\u0022\u003E"'];
+        yield 'array of special characters' => [
+            ['<', '"', "'", '>', '&'],
+            '["\u003C","\u0022","\u0027","\u003E","\u0026"]',
         ];
     }
 

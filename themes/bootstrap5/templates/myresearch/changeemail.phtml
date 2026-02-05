@@ -28,5 +28,5 @@
   <?php endif; ?>
 </div>
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render('newpassword')?>
+  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'newpassword'])?>
 </div>

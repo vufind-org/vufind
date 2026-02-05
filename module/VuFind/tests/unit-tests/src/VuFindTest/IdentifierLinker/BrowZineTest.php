@@ -35,6 +35,8 @@ use VuFind\IdentifierLinker\BrowZineFactory;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
 
+use function is_array;
+
 /**
  * BrowZine Test Class
  *
@@ -93,126 +95,130 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDOIApiSuccess()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function doiProvider(): array
+    public static function doiProvider(): \Iterator
     {
-        return [
-            'unfiltered' => [
-                [],
-                [],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://weblink',
-                            'label' => 'View Complete Issue',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
-                            'linkType' => 'browzineWebLink',
-                        ],
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'PDF Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        yield 'unfiltered' => [
+            [],
+            [],
+            [],
+            [
+                4 => [
+                    [
+                        'link' => 'https://weblink',
+                        'label' => 'View Complete Issue',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                        'linkType' => 'browzineWebLink',
+                    ],
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'PDF Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'exclude filter' => [
-                ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
-                [],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'PDF Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'exclude filter' => [
+            ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
+            [],
+            [],
+            [
+                4 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'PDF Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'include filter' => [
-                ['filterType' => 'include', 'filter' => ['browzineWebLink']],
-                [],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://weblink',
-                            'label' => 'View Complete Issue',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
-                            'linkType' => 'browzineWebLink',
-                        ],
+        ];
+        yield 'include filter' => [
+            ['filterType' => 'include', 'filter' => ['browzineWebLink']],
+            [],
+            [],
+            [
+                4 => [
+                    [
+                        'link' => 'https://weblink',
+                        'label' => 'View Complete Issue',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                        'linkType' => 'browzineWebLink',
                     ],
                 ],
             ],
-            'best integrator link with no section in config' => [
-                [],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                null,
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'PDF Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with no section in config' => [
+            [],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            null,
+            [
+                4 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'PDF Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'best integrator link with empty config section' => [
-                [],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'Get full text',
-                            'localIcon' => 'browzine-best',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with empty config section' => [
+            [],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            [],
+            [
+                4 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'Get full text',
+                        'localIcon' => 'browzine-best',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'best integrator link with configured label' => [
-                [],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                ['fullTextFile' =>
-                    'Fancy Full Text|browzine-pdf|' .
-                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'Fancy Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with configured label' => [
+            [],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            ['fullTextFile' =>
+                'Fancy Full Text|browzine-pdf|' .
+                'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+            [
+                4 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'Fancy Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'best integrator link with browzine label override' => [
-                ['useBrowzineLabel' => true],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                ['fullTextFile' =>
-                    'PDF Full Text|browzine-pdf|' .
-                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'Download Best PDF Ever',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with browzine label override' => [
+            ['useBrowzineLabel' => true],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            ['fullTextFile' =>
+                'PDF Full Text|browzine-pdf|' .
+                'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+            [
+                4 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'Download Best PDF Ever',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
+        ];
+        yield 'best integrator link with full text disabled' => [
+            ['useBrowzineLabel' => true],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            ['fullTextFile' => false],
+            [],
         ];
     }
 
@@ -234,7 +240,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         ?array $doiServicesConfig = null,
         ?array $bestIntegratorLinksConfig = null
     ): BrowZine {
-        $connector = $this->getMockConnector($ids[0], $rawData);
+        $connector = $this->getMockConnector($ids[array_key_first($ids)], $rawData);
         $ss = $this->getSearchService($this->getBackendManager($connector));
 
         // Use the factory to build the test object so that the correct default configs are
@@ -261,10 +267,10 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Test a DOI API response.
      *
-     * @param array $identifierLinksConfig     BrowZine configuration for identifier links
-     * @param array $doiServicesConfig         BrowZine configuration for DOI services
-     * @param array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
-     * @param array $expectedResponse          Expected response
+     * @param array  $identifierLinksConfig     BrowZine configuration for identifier links
+     * @param array  $doiServicesConfig         BrowZine configuration for DOI services
+     * @param ?array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
+     * @param ?array $expectedResponse          Expected response
      *
      * @return void
      */
@@ -276,7 +282,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         array $expectedResponse
     ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
-        $ids = [['doi' => '10.1155/2020/8690540']];
+        $idKey = 4; // test with an arbitrary integer to confirm that results retain key values
+        $ids = [$idKey => ['doi' => '10.1155/2020/8690540']];
         $browzine = $this->getBrowZineHandler(
             $ids,
             $rawData,
@@ -284,10 +291,13 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             $doiServicesConfig,
             $bestIntegratorLinksConfig
         );
-        foreach ($expectedResponse[0] as & $current) {
-            $current['data'] = $rawData['data'];
+
+        if (is_array($expectedResponse[$idKey] ?? null)) {
+            foreach ($expectedResponse[$idKey] as & $current) {
+                $current['data'] = $rawData['data'];
+            }
+            unset($current);
         }
-        unset($current);
         $this->assertEquals($expectedResponse, $browzine->getLinks($ids));
     }
 
@@ -299,11 +309,12 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     public function testISSNApiSuccess(): void
     {
         $rawData = $this->getJsonFixture('browzine/issn.json');
-        $ids = [['issn' => '0006-2952']];
+        $idKey = 3; // test with an arbitrary integer to confirm that results retain key values
+        $ids = [$idKey => ['issn' => '0006-2952']];
         $browzine = $this->getBrowZineHandler($ids, $rawData);
         $this->assertEquals(
             [
-                0 => [
+                $idKey => [
                     [
                         'link' => 'https://weblink',
                         'label' => 'Browse Available Issues',

@@ -154,7 +154,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
         $service = $this->getService($entityManager, $pluginManager, $persistenceManager);
-        $this->assertNull($service->getSessionById('1', false));
+        $this->assertNotInstanceOf(SessionEntityInterface::class, $service->getSessionById('1', false));
     }
 
     /**

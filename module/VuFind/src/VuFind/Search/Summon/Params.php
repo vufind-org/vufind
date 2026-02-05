@@ -53,14 +53,14 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $fullFacetSettings = [];
+    protected array $fullFacetSettings = [];
 
     /**
      * Settings for the date facet only
      *
      * @var array
      */
-    protected $dateFacetSettings = [];
+    protected array $dateFacetSettings = [];
 
     /**
      * Config sections to search for facet labels if no override configuration
@@ -68,7 +68,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelSections
+    protected array $defaultFacetLabelSections
         = ['Advanced_Facets', 'HomePage_Facets', 'FacetsTop', 'Facets'];
 
     /**
@@ -77,7 +77,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+    protected array $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
      * Constructor
@@ -85,26 +85,23 @@ class Params extends \VuFind\Search\Base\Params
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, ConfigManagerInterface $configManager)
+    public function __construct(\VuFind\Search\Base\Options $options, ConfigManagerInterface $configManager)
     {
         parent::__construct($options, $configManager);
-        $facetConfigName = $options->getFacetsIni();
-        $config = ($facetConfigName !== null)
-            ? $configManager->getConfigObject($facetConfigName)
-            : new Config([]);
+        $config = $configManager->getConfigObject($options->getFacetsIni());
         $this->initFacetLimitsFromConfig($config->Facet_Settings ?? null);
     }
 
     /**
      * Add a field to facet on.
      *
-     * @param string $newField Field name
-     * @param string $newAlias Optional on-screen display label
-     * @param bool   $ored     Should we treat this as an ORed facet?
+     * @param string  $newField Field name
+     * @param ?string $newAlias Optional on-screen display label
+     * @param bool    $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null, $ored = false)
+    public function addFacet(string $newField, ?string $newAlias = null, bool $ored = false): void
     {
         // Save the full field name (which may include extra parameters);
         // we'll need these to do the proper search using the Summon class:
@@ -127,7 +124,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function resetFacetConfig()
+    public function resetFacetConfig(): void
     {
         parent::resetFacetConfig();
         $this->dateFacetSettings = [];
@@ -140,7 +137,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getFullFacetSettings()
+    public function getFullFacetSettings(): array
     {
         return $this->fullFacetSettings;
     }
@@ -150,7 +147,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getDateFacetSettings()
+    public function getDateFacetSettings(): array
     {
         return $this->dateFacetSettings;
     }
@@ -158,15 +155,19 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field               Facet field name.
-     * @param string $value               Facet value.
-     * @param string $default             Default field name (null for default behavior).
-     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
+     * @param string  $field               Facet field name.
+     * @param ?string $value               Facet value.
+     * @param ?string $default             Default field name (null for default behavior).
+     * @param bool    $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
      * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
-    {
+    public function getFacetLabel(
+        string $field,
+        ?string $value = null,
+        ?string $default = null,
+        bool $allowCheckboxFacets = true
+    ): string {
         // The default use of "Other" for undefined facets doesn't work well with
         // checkbox facets -- we'll use field names as the default within the Summon
         // search object.
@@ -185,7 +186,7 @@ class Params extends \VuFind\Search\Base\Params
     public function getCheckboxFacets(
         ?array $include = null,
         bool $includeDynamic = true
-    ) {
+    ): array {
         // Grab checkbox facet details using the standard method:
         $facets = parent::getCheckboxFacets($include, $includeDynamic);
 
@@ -208,7 +209,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 
@@ -256,7 +257,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    protected function getBackendFacetParameters()
+    protected function getBackendFacetParameters(): array
     {
         $finalFacets = [];
         foreach ($this->getFullFacetSettings() as $facet) {
@@ -281,7 +282,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function createBackendFilterParameters(ParamBag $params)
+    public function createBackendFilterParameters(ParamBag $params): void
     {
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
@@ -359,7 +360,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    protected function formatFilterListEntry(string $field, string $value, string $operator, bool $translate): array
     {
         $filter = parent::formatFilterListEntry(
             $field,
@@ -390,14 +391,14 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize facet settings for the specified configuration sections.
      *
-     * @param string $facetList     Config section containing fields to activate
-     * @param string $facetSettings Config section containing related settings
-     * @param string $cfgFile       Name of configuration to load (null to load
+     * @param string  $facetList     Config section containing fields to activate
+     * @param string  $facetSettings Config section containing related settings
+     * @param ?string $cfgFile       Name of configuration to load (null to load
      * default facets configuration).
      *
      * @return bool                 True if facets set, false if no settings found
      */
-    protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
+    protected function initFacetList(string $facetList, string $facetSettings, ?string $cfgFile = null): bool
     {
         $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
         $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
@@ -414,7 +415,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function initAdvancedFacets()
+    public function initAdvancedFacets(): void
     {
         // If no configuration was found, set up defaults instead:
         if (!$this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings')) {
@@ -430,7 +431,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function initHomePageFacets()
+    public function initHomePageFacets(): void
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
         if (!$this->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings')) {
