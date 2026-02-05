@@ -49,7 +49,7 @@ trait BulkActionControllerTrait
      * Support method: redirect to the page we were on when the bulk action was
      * initiated.
      *
-     * @param string $flashNamespace     Namespace for flash message (null for none)
+     * @param string $flashNamespace     Namespace for flash message ('success', 'error' or null for none)
      * @param string $flashMsg           Flash message to set (ignored if namespace null)
      * @param bool   $redirectInLightbox If the redirects are performed even if in lightbox
      *
@@ -59,7 +59,10 @@ trait BulkActionControllerTrait
     {
         // Set flash message if requested:
         if (null !== $flashNamespace && !empty($flashMsg)) {
-            $this->flashMessenger()->addMessage($flashMsg, $flashNamespace);
+            match ($flashNamespace) {
+                'success' => $this->flashMessenger()->addSuccessMessage($flashMsg),
+                'error' => $this->flashMessenger()->addErrorMessage($flashMsg),
+            };
         }
 
         // Do not redirect if in lightbox only if required

@@ -148,7 +148,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getValidIds())) {
-                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
+                    $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
             }
@@ -159,7 +159,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
             );
             if ($cancelResults == false) {
                 $flashMsg
-                    ->addMessage('storage_retrieval_request_cancel_fail', 'error');
+                    ->addErrorMessage('storage_retrieval_request_cancel_fail');
             } else {
                 $failed = 0;
                 foreach ($cancelResults['items'] ?? [] as $item) {
@@ -184,7 +184,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
             }
         } else {
             $flashMsg
-                ->addMessage('storage_retrieval_request_empty_selection', 'error');
+                ->addErrorMessage('storage_retrieval_request_empty_selection');
         }
         return [];
     }

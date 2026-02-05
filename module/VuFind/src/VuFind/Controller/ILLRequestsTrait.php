@@ -123,7 +123,7 @@ trait ILLRequestsTrait
                             ->fromRoute('myresearch-illrequests'),
                     ],
                 ];
-                $this->flashMessenger()->addMessage($msg, 'success');
+                $this->flashMessenger()->addSuccessMessage($msg);
                 $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
 
                 $this->getAuditEventService()->addEvent(
@@ -142,11 +142,11 @@ trait ILLRequestsTrait
                 // the current form.
                 if (isset($results['status'])) {
                     $this->flashMessenger()
-                        ->addMessage($results['status'], 'error');
+                        ->addErrorMessage($results['status']);
                 }
                 if (isset($results['sysMessage'])) {
                     $this->flashMessenger()
-                        ->addMessage($results['sysMessage'], 'error');
+                        ->addErrorMessage($results['sysMessage']);
                 }
             }
         }

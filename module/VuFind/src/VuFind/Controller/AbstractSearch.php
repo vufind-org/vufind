@@ -578,7 +578,7 @@ class AbstractSearch extends AbstractBase
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger()->addMessage('advSearchError_notFound', 'error');
+            $this->flashMessenger()->addErrorMessage('advSearchError_notFound');
             return false;
         }
 
@@ -594,7 +594,7 @@ class AbstractSearch extends AbstractBase
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
                 $this->flashMessenger()
-                    ->addMessage('advSearchError_notAdvanced', 'error');
+                    ->addErrorMessage('advSearchError_notAdvanced');
                 return false;
             }
         }
