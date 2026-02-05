@@ -57,14 +57,6 @@ trait LocaleSupportTrait
         if (null !== ($results = $this->getBestLocaleMatch($userLocale, $localeResults))) {
             return $results;
         }
-        // Check for matching language in locale-specific results:
-        [$userLanguage] = explode('-', $userLocale);
-        foreach ($localeResults as $locale => $results) {
-            [$lang] = explode('-', $locale);
-            if ($lang === $userLanguage) {
-                return $results;
-            }
-        }
         // Check for match in default and fallback locales:
         $locales = [$this->localeSettings->getDefaultLocale(), ...$this->localeSettings->getFallbackLocales()];
         foreach ($locales as $locale) {
@@ -87,6 +79,19 @@ trait LocaleSupportTrait
     protected function getBestLocaleMatch(string $locale, array $localeResults): mixed
     {
         [$language] = explode('-', $locale);
-        return $localeResults[$locale] ?? $localeResults[$language] ?? null;
+        if ($results = $localeResults[$locale] ?? $localeResults[$language] ?? null) {
+            return $results;
+        }
+
+        // Check for matching language in locale-specific results:
+        [$language] = explode('-', $locale);
+        foreach ($localeResults as $resultLocale => $results) {
+            [$resultLanguage] = explode('-', $resultLocale);
+            if ($resultLanguage === $language) {
+                return $results;
+            }
+        }
+
+        return null;
     }
 }
