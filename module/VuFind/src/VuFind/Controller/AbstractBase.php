@@ -68,7 +68,6 @@ use function is_object;
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
  * @method Plugin\Permission permission() Permission plugin
- * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
  *
