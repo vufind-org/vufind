@@ -88,8 +88,8 @@ class ServerProviderFactory implements FactoryInterface
                 \VuFind\Record\Loader::class,
                 \VuFindApi\Formatter\RecordFormatter::class,
                 \VuFind\Search\SearchRunner::class,
+                \VuFind\Http\RouteHelper::class,
                 \VuFind\Http\ServerUrlHelper::class,
-                \VuFind\Http\UrlHelper::class,
             ]
         );
 
