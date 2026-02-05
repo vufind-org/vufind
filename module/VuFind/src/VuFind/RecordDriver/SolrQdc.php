@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
+use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\RecordDriver\Feature\LocaleSupportTrait;
 use VuFind\RecordDriver\Feature\XmlTrait;
 
@@ -41,8 +43,9 @@ use VuFind\RecordDriver\Feature\XmlTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class SolrQdc extends SolrDefault
+class SolrQdc extends SolrDefault implements LocaleSettingsAwareInterface
 {
+    use LocaleSettingsAwareTrait;
     use LocaleSupportTrait;
     use XmlTrait;
 

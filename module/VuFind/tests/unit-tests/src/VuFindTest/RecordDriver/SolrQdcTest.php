@@ -175,7 +175,7 @@ class SolrQdcTest extends \PHPUnit\Framework\TestCase
         $localeSettings
             ->method('getFallbackLocales')
             ->willReturn($fallbackLanguages);
-        $record->attachLocaleSettings($localeSettings);
+        $record->setLocaleSettings($localeSettings);
 
         return $record;
     }

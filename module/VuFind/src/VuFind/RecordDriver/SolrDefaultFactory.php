@@ -67,7 +67,6 @@ class SolrDefaultFactory extends SolrDefaultWithoutSearchServiceFactory
     ) {
         $driver = parent::__invoke($container, $requestedName, $options);
         $driver->attachSearchService($container->get(\VuFindSearch\Service::class));
-        $driver->attachLocaleSettings($container->get(LocaleSettings::class));
         return $driver;
     }
 }
