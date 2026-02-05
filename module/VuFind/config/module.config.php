@@ -556,6 +556,7 @@ $config = [
             'VuFind\Search\Params\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Search\ReservesHelper' => 'VuFind\Search\ReservesHelperFactory',
             'VuFind\Search\Results\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Search\ResultScroller' => 'VuFind\Search\ResultScrollerFactory',
             'VuFind\Search\SearchNormalizer' => 'VuFind\Search\SearchNormalizerFactory',
             'VuFind\Search\SearchRunner' => 'VuFind\Search\SearchRunnerFactory',
             'VuFind\Search\SearchTabsHelper' => 'VuFind\Search\SearchTabsHelperFactory',

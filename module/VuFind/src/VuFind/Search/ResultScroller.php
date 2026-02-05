@@ -22,19 +22,19 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Search;
 
 use Exception;
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
 use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory as SearchMemory;
@@ -47,13 +47,13 @@ use function is_array;
  * Class for managing "next" and "previous" navigation within result sets.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ResultScroller extends AbstractPlugin
+class ResultScroller
 {
     /**
      * Maximum number of last searches to track
@@ -61,34 +61,6 @@ class ResultScroller extends AbstractPlugin
      * @var int
      */
     public const LAST_SEARCH_LIMIT = 10;
-
-    /**
-     * Is scroller enabled?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
-     * Session data used by scroller
-     *
-     * @var SessionContainer
-     */
-    protected $session;
-
-    /**
-     * Results manager
-     *
-     * @var ResultsManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Search memory
-     *
-     * @var SearchMemory
-     */
-    protected $searchMemory;
 
     /**
      * Currently active scroll data
@@ -100,21 +72,21 @@ class ResultScroller extends AbstractPlugin
     /**
      * Constructor. Create a new search result scroller.
      *
-     * @param SessionContainer $session Session container
-     * @param ResultsManager   $rm      Results manager
-     * @param SearchMemory     $sm      Search memory
-     * @param bool             $enabled Is the scroller enabled?
+     * @param SessionContainer       $session        Session container used by scroller
+     * @param ResultsManager         $resultsManager Results manager
+     * @param SearchMemory           $searchMemory   Search memory
+     * @param SearchServiceInterface $searchService  Database search service
+     * @param RouteHelper            $routeHelper    Route URL helper
+     * @param bool                   $enabled        Is the scroller enabled?
      */
     public function __construct(
-        SessionContainer $session,
-        ResultsManager $rm,
-        SearchMemory $sm,
-        $enabled = true
+        protected SessionContainer $session,
+        protected ResultsManager $resultsManager,
+        protected SearchMemory $searchMemory,
+        protected SearchServiceInterface $searchService,
+        protected RouteHelper $routeHelper,
+        protected $enabled = true
     ) {
-        $this->enabled = $enabled;
-        $this->session = $session;
-        $this->resultsManager = $rm;
-        $this->searchMemory = $sm;
     }
 
     /**
@@ -661,8 +633,7 @@ class ResultScroller extends AbstractPlugin
      */
     protected function restoreSearch(int $searchId): ?Results
     {
-        $searchService = $this->getController()->getDbService(SearchServiceInterface::class);
-        $row = $searchService->getSearchByIdAndOwner(
+        $row = $this->searchService->getSearchByIdAndOwner(
             $searchId,
             $this->session->getManager()->getId(),
             null
@@ -694,9 +665,7 @@ class ResultScroller extends AbstractPlugin
      */
     protected function rememberSearch($search)
     {
-        $baseUrl = $this->getController()->url()->fromRoute(
-            $search->getOptions()->getSearchAction()
-        );
+        $baseUrl = $this->routeHelper($search->getOptions()->getSearchAction());
         $this->searchMemory->rememberSearch(
             $baseUrl . $search->getUrlQuery()->getParams(false),
             $search->getSearchId()

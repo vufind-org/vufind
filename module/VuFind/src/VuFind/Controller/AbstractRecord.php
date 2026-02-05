@@ -37,6 +37,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\Search\ResultScroller;
 use VuFind\Session\Helper\FollowupHelper;
 use VuFind\Tags\TagsService;
 use VuFindSearch\ParamBag;
@@ -933,7 +934,7 @@ class AbstractRecord extends AbstractBase
         // Set up next/previous record links (if appropriate)
         if ($this->getSearchMemory()->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
-            $view->scrollData = $this->resultScroller()->getScrollData($driver);
+            $view->scrollData = $this->getService(ResultScroller::class)->getScrollData($driver);
         }
 
         $view->callnumberHandler = $config['Item_Status']['callnumber_handler'] ?? false;
