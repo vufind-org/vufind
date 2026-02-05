@@ -665,7 +665,7 @@ class ResultScroller
      */
     protected function rememberSearch($search)
     {
-        $baseUrl = $this->routeHelper($search->getOptions()->getSearchAction());
+        $baseUrl = $this->routeHelper->getUrlFromRoute($search->getOptions()->getSearchAction());
         $this->searchMemory->rememberSearch(
             $baseUrl . $search->getUrlQuery()->getParams(false),
             $search->getSearchId()
