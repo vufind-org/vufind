@@ -147,4 +147,39 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->unFindCss($page, '.notices .alert-success');
     }
+
+    /**
+     * Test configured notices with configured class in style.
+     *
+     * @return void
+     */
+    public function testConfiguredNoticesWithConfiguredClass(): void
+    {
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'styles' => [
+                      'success' => [
+                          'classes' => 'test-class',
+                      ],
+                    ],
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'success',
+                                'content' => 'Test Content',
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notices .alert-success');
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .test-class');
+        $this->assertSame('Test Content', $notice1);
+    }
 }
