@@ -1,6 +1,7 @@
 <nav class="banner navbar navbar-expand-md">
   <div class="container">
     <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>">VuFind</a>
+    <?=$this->notices()->renderNoticesForPosition('header')?>
     <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#header-collapse" aria-label="<?=$this->transEscAttr('mobile_toggle_navigation_text')?>">
       <?=$this->icon('ui-menu') ?>
     </button>
