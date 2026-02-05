@@ -148,7 +148,6 @@ abstract class AbstractSearch extends AbstractCapabilities
             $results->getResults(),
             $this->responseFields
         );
-        // TODO how to do this correctly, with real base path, route mapping to path, and filters.
         $resultsPage = $this->serverUrlHelper->getBaseUrl() .
             $this->routeHelper->getUrlFromRoute(
                 $this->getSearchActionRoute(),
