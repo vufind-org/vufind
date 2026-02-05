@@ -86,4 +86,90 @@ abstract class AbstractAction implements ActionInterface
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface;
+
+    /**
+     * Get a parameter from POST fields or query string.
+     *
+     * @param string            $param   Param name
+     * @param array|string|null $default Default value
+     *
+     * @return array|string|null
+     */
+    protected function getPostOrQueryParam(string $param, array|string|null $default = null): array|string|null
+    {
+        return $this->getPostParam($param)
+            ?? $this->getQueryParam($param)
+            ?? $default;
+    }
+
+    /**
+     * Get a parameter from POST fields.
+     *
+     * @param string            $param   Param name
+     * @param array|string|null $default Default value
+     *
+     * @return array|string|null
+     */
+    protected function getPostParam(string $param, array|string|null $default = null): array|string|null
+    {
+        return $this->request->getParsedBody()[$param] ?? $default;
+    }
+
+    /**
+     * Get a parameter from query string.
+     *
+     * @param string            $param   Param name
+     * @param array|string|null $default Default value
+     *
+     * @return array|string|null
+     */
+    protected function getQueryParam(string $param, array|string|null $default = null): array|string|null
+    {
+        return $this->request->getQueryParams()[$param] ?? $default;
+    }
+
+    /**
+     * Get a parameter from route match.
+     *
+     * @param string            $param   Param name
+     * @param array|string|null $default Default value
+     *
+     * @return array|string|null
+     */
+    protected function getRouteParam(string $param, array|string|null $default = null): array|string|null
+    {
+        return $this->request->getAttribute('route-match')->getParam($param) ?? $default;
+    }
+
+    /**
+     * Get a 302 redirect response.
+     *
+     * @param ResponseInterface $response Response
+     * @param string            $url      Target URL
+     *
+     * @return ResponseInterface
+     */
+    protected function getRedirectResponse(ResponseInterface $response, string $url): ResponseInterface
+    {
+        return $response->withStatus(302)
+            ->withHeader('Location', $url);
+    }
+
+    /**
+     * Generate a URL based on a route.
+     *
+     * @param string $route   Route name
+     * @param array  $params  Parameters to use in url generation, if any
+     * @param array  $options Route-specific options to use in url generation, if any.
+     *
+     * @return string
+     *
+     * @todo Maybe use RouteHelper from https://github.com/vufind-org/vufind/pull/5049
+     */
+    public function getRouteUrl(string $route, array $params = [], array $options = []): string
+    {
+        $router = $this->request->getAttribute('router');
+        $options['name'] = $route;
+        return $router->assemble($params, $options);
+    }
 }

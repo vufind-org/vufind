@@ -99,6 +99,7 @@ class ActionDispatchListener
 
         $request = Psr7ServerRequest::fromLaminas($e->getRequest())
             ->withAttribute('action-id', $id)
+            ->withAttribute('router', $e->getRouter())
             ->withAttribute('route-match', $e->getRouteMatch())
             ->withAttribute('view-model', $e->getViewModel());
         foreach ($route->getParams() as $routeParam => $value) {
