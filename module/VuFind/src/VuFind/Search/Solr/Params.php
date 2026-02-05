@@ -275,12 +275,6 @@ class Params extends \VuFind\Search\Base\Params
                         $facet['offset'] = $this->facetOffset;
                     }
 
-                    // TODO Deal with matches
-                    $fieldMatches = $this->getFacetMatchesForField($facetField);
-                    if (!empty($fieldMatches)) {
-                        $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
-                    }
-
                     if ($this->getFacetOperator($facetField) == 'OR') {
                         $facet['domain'] ??= [];
                         $facet['domain']['excludeTags'] = $facetField . '_filter';
