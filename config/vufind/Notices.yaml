@@ -1,6 +1,6 @@
 # Available styles. Keys are style names. Values are options.
 # The following options are available:
-# - classes: HMTL classes to be added to the notices.
+# - classes: CSS classes to be added to the notices. If omitted, defaults will be applied by the Notices view helper.
 styles:
   success:
   info:
