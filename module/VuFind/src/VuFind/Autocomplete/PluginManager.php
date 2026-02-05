@@ -29,8 +29,6 @@
 
 namespace VuFind\Autocomplete;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Autocomplete handler plugin manager
  *
