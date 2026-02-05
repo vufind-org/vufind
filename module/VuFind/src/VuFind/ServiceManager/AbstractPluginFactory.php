@@ -100,9 +100,15 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      */
     protected function detectFactoryForClass(string $class): ?string
     {
+        // If the class has an explicit factory, use that:
         if (class_exists($class . 'Factory')) {
             return $class . 'Factory';
         }
+        // If the class is autowireable, take advantage of that:
+        if ($this->isAutowireable($class)) {
+            return AutowiringFactory::class;
+        }
+        // Check if parent classes have factories:
         $parentClass = get_parent_class($class);
         while ($parentClass) {
             if (class_exists($parentClass . 'Factory')) {
@@ -110,9 +116,8 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
             }
             $parentClass = get_parent_class($parentClass);
         }
-        // TODO: it would be better to return null instead of InvokableFactory, and to annotate
-        // any factories that are not currently detected as autowireable so that they get autowired.
-        return $this->isAutowireable($class) ? AutowiringFactory::class : InvokableFactory::class;
+        // If we got this far, we'll try the InvokableFactory for lack of a better option:
+        return InvokableFactory::class;
     }
 
     /**
