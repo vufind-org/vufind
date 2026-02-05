@@ -32,7 +32,6 @@
 
 namespace VuFind\RecordDriver;
 
-use VuFind\I18n\Locale\LocaleSettings;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
