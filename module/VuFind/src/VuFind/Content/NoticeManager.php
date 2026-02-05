@@ -32,7 +32,7 @@
 namespace VuFind\Content;
 
 use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
-use VuFind\I18n\Locale\LocalSettingsAwareTrait;
+use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -47,7 +47,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  */
 class NoticeManager implements LocaleSettingsAwareInterface
 {
-    use LocalSettingsAwareTrait;
+    use LocaleSettingsAwareTrait;
 
     /**
      * Notices cache.
