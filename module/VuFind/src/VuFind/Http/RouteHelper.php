@@ -78,7 +78,8 @@ class RouteHelper
         array $routeParams = [],
         array $queryParams = []
     ): string {
-        $routeOptions = $queryParams ? ['query' => $queryParams] : [];
+        // Path normalization can cause problems with IDs containing escaped slashes, so let's always disable it:
+        $routeOptions = ['normalize_path' => false] + ($queryParams ? ['query' => $queryParams] : []);
         return ($this->urlHelper)($name, $routeParams, $routeOptions);
     }
 }
