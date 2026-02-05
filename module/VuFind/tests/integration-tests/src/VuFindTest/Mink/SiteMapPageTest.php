@@ -173,7 +173,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '#content > h2:nth-child(2) > a:nth-child(1)')
         );
         $this->assertStringEndsWith(
-            '/Content/asklibrary',
+            '/Content/askLibrary',
             $this->findCss($page, '#content')->findLink('Ask a Librarian')->getAttribute('href')
         );
     }
