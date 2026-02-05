@@ -1,6 +1,6 @@
 <ul>
 <?php foreach ($submenuItems as $item): ?>
-  <?php $href = isset($item['route']) ? $this->url($item['route']) : ($item['url'] ?? false) ?>
+  <?php $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? false) ?>
   <?php if (isset($item['label']) && ($href || isset($item['submenuItems']))): ?>
     <li>
     <?php if ($href): ?><a<?= $this->htmlAttributes(['href' => $href]) ?>><?php endif; ?>
