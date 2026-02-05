@@ -113,9 +113,9 @@ class HeaderBar extends AbstractMenu
     ): bool {
         if ($contextKey === self::ITEM_CONTEXT) {
             // Conditional requirement checks.
-            $diff = array_diff(['route', 'url', 'template'], [$setting]);
-            if (count($diff) === 2) {
-                // Setting is one of the three. If one of the two other settings
+            $diff = array_diff(['route', 'url', 'template', 'submenuItems'], [$setting]);
+            if (count($diff) === 3) {
+                // Setting is one of the four. If one of the three other settings
                 // exists then this setting is optional.
                 return count(array_intersect($diff, array_keys($context))) === 0;
             }

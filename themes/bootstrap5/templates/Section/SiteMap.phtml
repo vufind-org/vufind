@@ -13,9 +13,14 @@
       <?= $this->transEsc($item['label']) ?>
       <?php if ($href): ?></a><?php endif; ?>
       <?php if (isset($item['submenuItems'])): ?>
+        <?php if (!$groupHasLabel): ?>
+          </<?= $tag ?>>
+        <?php endif; ?>
         <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
       <?php endif; ?>
-      </<?= $tag ?>>
+      <?php if ($groupHasLabel): ?>
+        </<?= $tag ?>>
+      <?php endif; ?>
     <?php endif; ?>
   <?php endforeach; ?>
   <?php if ($groupHasLabel): ?>
