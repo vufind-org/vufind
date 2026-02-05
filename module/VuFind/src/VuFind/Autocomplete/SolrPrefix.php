@@ -29,6 +29,8 @@
 
 namespace VuFind\Autocomplete;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function is_object;
 
 /**
@@ -98,6 +100,7 @@ class SolrPrefix implements AutocompleteInterface
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
+    #[Autowire()]
     public function __construct(\VuFind\Search\Results\PluginManager $results)
     {
         $this->resultsManager = $results;

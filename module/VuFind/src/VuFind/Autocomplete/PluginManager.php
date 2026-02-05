@@ -70,24 +70,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        None::class => InvokableFactory::class,
-        Eds::class => EdsFactory::class,
-        Search2::class => SolrFactory::class,
-        Search2CN::class => SolrFactory::class,
-        Solr::class => SolrFactory::class,
-        SolrAuth::class => SolrFactory::class,
-        SolrCN::class => SolrFactory::class,
-        SolrReserves::class => SolrFactory::class,
-        Tag::class => TagFactory::class,
-        SolrPrefix::class => SolrFactory::class,
-    ];
-
-    /**
      * Constructor
      *
      * Make sure plugins are properly initialized.
