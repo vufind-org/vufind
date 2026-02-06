@@ -231,10 +231,11 @@ class CheckoutsController extends AbstractBase
                 }
                 $result = $catalog->purgeTransactionHistory($patron, $ids);
             }
-            $this->flashMessenger()->addMessage(
-                $result['status'],
-                $result['success'] ? 'success' : 'error'
-            );
+            if ($result['success']) {
+                $this->flashMessenger()->addSuccessMessage($result['status']);
+            } else {
+                $this->flashMessenger()->addErrorMessage($result['status']);
+            }
         }
         return $redirectResponse;
     }
