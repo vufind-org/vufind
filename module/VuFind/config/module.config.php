@@ -393,7 +393,6 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'VuFind\Controller\Plugin\Captcha' => 'VuFind\Controller\Plugin\CaptchaFactory',
-            'VuFind\Controller\Plugin\DbUpgrade' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
@@ -405,7 +404,6 @@ $config = [
         ],
         'aliases' => [
             'captcha' => 'VuFind\Controller\Plugin\Captcha',
-            'dbUpgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'flashMessenger' => 'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',

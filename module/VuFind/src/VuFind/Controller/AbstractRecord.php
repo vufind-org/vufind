@@ -178,9 +178,9 @@ class AbstractRecord extends AbstractBase
                 $ratingsService->saveRating($driver, $user->getId(), intval($rating));
             }
 
-            $this->flashMessenger()->addMessage('add_comment_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('add_comment_success');
         } else {
-            $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
+            $this->flashMessenger()->addErrorMessage('add_comment_fail_blank');
         }
 
         return $this->redirectToRecord('', 'UserComments');
@@ -207,9 +207,9 @@ class AbstractRecord extends AbstractBase
             \VuFind\Db\Service\CommentsServiceInterface::class
         );
         if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user)) {
-            $this->flashMessenger()->addMessage('delete_comment_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('delete_comment_success');
         } else {
-            $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
+            $this->flashMessenger()->addErrorMessage('delete_comment_failure');
         }
         return $this->redirectToRecord('', 'UserComments');
     }
@@ -237,7 +237,7 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $this->getService(TagsService::class)->linkTagsToRecord($driver, $user, $tags);
-            $this->flashMessenger()->addMessage(['msg' => 'add_tag_success'], 'success');
+            $this->flashMessenger()->addSuccessMessage(['msg' => 'add_tag_success']);
             return $this->redirectToRecord();
         }
 
@@ -274,12 +274,11 @@ class AbstractRecord extends AbstractBase
                 $user,
                 [$tag]
             );
-            $this->flashMessenger()->addMessage(
+            $this->flashMessenger()->addSuccessMessage(
                 [
                     'msg' => 'tags_deleted',
                     'tokens' => ['%count%' => 1],
                 ],
-                'success'
             );
         }
 
@@ -419,7 +418,7 @@ class AbstractRecord extends AbstractBase
                 . '<a href="' . $listUrl . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
         ];
-        $this->flashMessenger()->addMessage($message, 'success');
+        $this->flashMessenger()->addSuccessMessage($message);
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getAndClearFollowupUrl()) {
@@ -563,10 +562,10 @@ class AbstractRecord extends AbstractBase
                     $view->subject,
                     $cc
                 );
-                $this->flashMessenger()->addMessage('email_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('email_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -628,10 +627,10 @@ class AbstractRecord extends AbstractBase
                     ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
-                $this->flashMessenger()->addMessage('sms_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('sms_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -680,7 +679,7 @@ class AbstractRecord extends AbstractBase
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
                 $this->flashMessenger()
-                    ->addMessage('export_invalid_format', 'error');
+                    ->addErrorMessage('export_invalid_format');
             }
             $view->setTemplate('record/export-menu');
             return $view;

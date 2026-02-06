@@ -154,31 +154,17 @@ class RenewalsHelperTest extends TestCase
             )
             ->willReturn($renewalResult);
 
-        $flashMessages = [];
-        $flashMessenger->expects($this->exactly(2))
-            ->method('addMessage')
-            ->willReturnCallback(
-                function ($message, $level) use (&$flashMessages): void {
-                    $flashMessages[] = [
-                        'msg' => $message['msg'],
-                        'count' => $message['tokens']['count'],
-                        'level' => $level,
-                    ];
-                }
-            );
+        $flashMessenger->expects($this->once())
+            ->method('addSuccessMessage')
+            ->with(['msg' => 'renew_success_summary', 'tokens' => ['count' => 2], 'icu' => true]);
+        $flashMessenger->expects($this->once())
+            ->method('addErrorMessage')
+            ->with(['msg' => 'renew_error_summary', 'tokens' => ['count' => 1], 'icu' => true]);
 
         $helper = new RenewalsHelper();
         $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
 
         $this->assertEquals($renewalResult['details'], $result);
-
-        $this->assertCount(2, $flashMessages);
-        $this->assertEquals('renew_success_summary', $flashMessages[0]['msg']);
-        $this->assertEquals(2, $flashMessages[0]['count']);
-        $this->assertEquals('success', $flashMessages[0]['level']);
-        $this->assertEquals('renew_error_summary', $flashMessages[1]['msg']);
-        $this->assertEquals(1, $flashMessages[1]['count']);
-        $this->assertEquals('error', $flashMessages[1]['level']);
     }
 
     /**
@@ -214,13 +200,12 @@ class RenewalsHelperTest extends TestCase
             ->willReturn($renewalResult);
 
         $flashMessenger->expects($this->once())
-            ->method('addMessage')
+            ->method('addSuccessMessage')
             ->with(
                 $this->callback(
                     fn ($arg) => is_array($arg)
                         && ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 2)
-                ),
-                'success'
+                )
             );
 
         $helper = new RenewalsHelper();
@@ -261,13 +246,12 @@ class RenewalsHelperTest extends TestCase
             ->willReturn($renewalResult);
 
         $flashMessenger->expects($this->once())
-            ->method('addMessage')
+            ->method('addErrorMessage')
             ->with(
                 $this->callback(
                     fn ($arg) => is_array($arg)
                         && ($arg['msg'] === 'renew_error_summary' && $arg['tokens']['count'] === 3)
-                ),
-                'error'
+                )
             );
 
         $helper = new RenewalsHelper();
@@ -291,7 +275,9 @@ class RenewalsHelperTest extends TestCase
         $catalog->expects($this->never())
             ->method('__call');
         $flashMessenger->expects($this->never())
-            ->method('addMessage');
+            ->method('addSuccessMessage');
+        $flashMessenger->expects($this->never())
+            ->method('addErrorMessage');
 
         $helper = new RenewalsHelper();
         $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
@@ -318,8 +304,8 @@ class RenewalsHelperTest extends TestCase
         $catalog->expects($this->never())
             ->method('__call');
         $flashMessenger->expects($this->once())
-            ->method('addMessage')
-            ->with('renew_empty_selection', 'error');
+            ->method('addErrorMessage')
+            ->with('renew_empty_selection');
 
         $helper = new RenewalsHelper();
         $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
@@ -389,8 +375,8 @@ class RenewalsHelperTest extends TestCase
             ->willReturn(false);
 
         $flashMessenger->expects($this->once())
-            ->method('addMessage')
-            ->with('renew_error', 'error');
+            ->method('addErrorMessage')
+            ->with('renew_error');
 
         $helper = new RenewalsHelper();
         $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);

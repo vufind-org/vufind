@@ -354,7 +354,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // Store the current URL as a login followup action
         $this->getService(FollowupHelper::class)->store($extras);
         if (!empty($msg)) {
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
         }
 
         // Set a flag indicating that we are forcing login:
