@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ResultScroller controller plugin tests.
+ * ResultScroller search helper tests.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,13 +27,15 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Controller\Plugin;
+namespace VuFindTest\Search;
 
 use Laminas\Session\Container;
-use VuFind\Controller\Plugin\ResultScroller;
+use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\Search\ResultScroller;
 
 /**
- * ResultScroller controller plugin tests.
+ * ResultScroller search helper tests.
  *
  * @category VuFind
  * @package  Tests
@@ -85,6 +87,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             new Container('test'),
             $mockManager,
             $mockMemory,
+            $this->createMock(SearchServiceInterface::class),
+            $this->createMock(RouteHelper::class),
             true
         );
         $results = $this->getMockResults();
@@ -443,6 +447,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             new Container('test'),
             $mockManager,
             $mockMemory,
+            $this->createMock(SearchServiceInterface::class),
+            $this->createMock(RouteHelper::class),
             true,
         ];
         // Create an anonymous class to stub out some behavior:

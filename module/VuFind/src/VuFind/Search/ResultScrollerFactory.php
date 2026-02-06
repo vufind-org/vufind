@@ -21,25 +21,26 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Search;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\SearchServiceInterface;
 
 /**
  * Factory for ResultScroller controller plugin.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
@@ -75,6 +76,8 @@ class ResultScrollerFactory implements FactoryInterface
             ),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get(\VuFind\Search\Memory::class),
+            $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
+            $container->get(\VuFind\Http\RouteHelper::class),
             true
         );
     }

@@ -39,6 +39,7 @@ use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
+use VuFind\Search\ResultScroller;
 use VuFind\Solr\Utils as SolrUtils;
 
 use function count;
@@ -431,7 +432,7 @@ class AbstractSearch extends AbstractBase
 
             // Set up results scroller:
             if ($results->getOptions()->resultScrollerActive()) {
-                $this->resultScroller()->init($results);
+                $this->getService(ResultScroller::class)->init($results);
             }
 
             foreach ($results->getErrors() as $error) {
