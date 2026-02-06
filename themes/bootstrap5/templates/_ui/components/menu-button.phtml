@@ -56,7 +56,7 @@
 
   <?php
     $menuAttributes = $this->htmlAttributes(['class' => 'dropdown-menu']);
-    if ('end' == $this->menuAlign) {
+    if ('end' == ($this->menuAlign ?? null)) {
       $menuAttributes->add('class', 'dropdown-menu-end');
     }
   ?>
