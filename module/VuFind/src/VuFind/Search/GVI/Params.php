@@ -62,6 +62,24 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
+     * Create search backend parameters for advanced features.
+     *
+     * @return ParamBag
+     */
+    public function getBackendParameters()
+    {
+        $parameters = parent::getBackendParameters();
+        if ($parameters->hasParam('sort')) {
+            $sort = array_map(function($value) {
+                return str_replace('publishDateSort', 'publish_date_sort', $value);
+            }, $parameters->get('sort'));
+            $parameters->remove('sort');
+            $parameters->add('sort', $sort);
+        }
+        return $parameters;
+    }
+
+    /**
      * Initialize facet settings for the home page.
      *
      * @return void
