@@ -54,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eit' => EIT::class,
         'epf' => EPF::class,
         'gvi' => SolrMarc::class,
+        'gvidefault' => SolrMarc::class,
         'libguides' => LibGuides::class,
         'libguidesaz' => LibGuidesAZ::class,
         'missing' => Missing::class,
