@@ -48,10 +48,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'SolrGviMarcDE604' => SolrMarc::class,
         'browzine' => BrowZine::class,
         'eds' => EDS::class,
         'eit' => EIT::class,
         'epf' => EPF::class,
+        'gvi' => SolrMarc::class,
         'libguides' => LibGuides::class,
         'libguidesaz' => LibGuidesAZ::class,
         'missing' => Missing::class,
