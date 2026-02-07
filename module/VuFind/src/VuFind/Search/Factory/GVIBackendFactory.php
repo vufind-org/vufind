@@ -60,7 +60,6 @@ class GVIBackendFactory extends SolrDefaultBackendFactory
     protected function getCreateRecordCallback(): ?callable
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
-        //return [$manager, 'getGVIRecord'];
-        return [$manager, 'getSearch2Record'];
+        return [$manager, 'getGVIRecord'];
     }
 }

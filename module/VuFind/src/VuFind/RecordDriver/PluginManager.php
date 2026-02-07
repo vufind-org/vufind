@@ -152,6 +152,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
+     * Convenience method to retrieve a populated Search2 record driver.
+     *
+     * @param array  $data             Raw Solr data
+     * @param string $defaultKeySuffix Default key suffix
+     *
+     * @return AbstractBase
+     */
+    public function getGVIRecord($data, $defaultKeySuffix = 'Default')
+    {
+        return $this->getSolrRecord($data, 'GVI', $defaultKeySuffix);
+    }
+
+    /**
      * Convenience method to retrieve a populated Solr record driver.
      *
      * @param array  $data             Raw Solr data

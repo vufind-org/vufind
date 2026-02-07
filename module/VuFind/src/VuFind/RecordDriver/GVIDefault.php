@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * Default model for GVI records -- used when a more specific model based on
+ * the record_format field cannot be found.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  RecordDrivers
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ */
+
+namespace VuFind\RecordDriver;
+
+/**
+ * Default model for GVI records -- used when a more specific model based on
+ * the record_format field cannot be found.
+ *
+ * This should be used as the base class for all Solr-based record models.
+ *
+ * @category VuFind
+ * @package  RecordDrivers
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ *
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ */
+class GVIDefault extends SolrDefault
+{
+    /**
+     * Used for identifying search backends
+     *
+     * @var string
+     */
+    protected $sourceIdentifier = 'GVI';
+
+    /**
+     * Get the Hierarchy Type (false if none)
+     *
+     * @return string|bool
+     */
+    public function getHierarchyType()
+    {
+        return parent::getHierarchyType() ? 'gvi' : false;
+    }
+}
