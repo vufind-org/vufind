@@ -55,6 +55,10 @@ class GVIDefault extends SolrMarc
      */
     protected $sourceIdentifier = 'GVI';
 
+    use Feature\MarcAdvancedTrait {
+        Feature\MarcAdvancedTrait::getShortTitlesAltScript as getMarcTitles;
+    }
+
     /**
      * Get the Hierarchy Type (false if none)
      *
@@ -63,5 +67,18 @@ class GVIDefault extends SolrMarc
     public function getHierarchyType()
     {
         return parent::getHierarchyType() ? 'gvi' : false;
+    }
+
+    /**
+     * Get the full title of the record.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        // title is a single-valued field in the default schema, but tolerating multi-
+        // values improves compatibility with custom schemas (e.g. K10plus-Zentral)
+        $titles = $this->getFieldArray('245', ['a'], false);
+        return $titles[0] ?? '';
     }
 }
