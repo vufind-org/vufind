@@ -228,7 +228,7 @@ trait HoldsTrait
                             '%%url%%' => $this->url()->fromRoute('holds-list'),
                         ],
                     ];
-                    $this->flashMessenger()->addMessage($msg, 'success');
+                    $this->flashMessenger()->addSuccessMessage($msg);
                     if (!empty($results['warningMessage'])) {
                         $this->flashMessenger()
                             ->addWarningMessage($results['warningMessage']);
@@ -251,11 +251,11 @@ trait HoldsTrait
                     // the current form.
                     if (isset($results['status'])) {
                         $this->flashMessenger()
-                            ->addMessage($results['status'], 'error');
+                            ->addErrorMessage($results['status']);
                     }
                     if (isset($results['sysMessage'])) {
                         $this->flashMessenger()
-                            ->addMessage($results['sysMessage'], 'error');
+                            ->addErrorMessage($results['sysMessage']);
                     }
                 }
             }

@@ -13,6 +13,8 @@
    * @param string  $toggleLabel  The label for the toggle button (will be translated)
    * @param ?string $wrapperTag   Tag to use as a wrapper around the control (default = div)
    * @param ?string $wrapperClass Extra CSS class(es) to apply to the wrapper tag
+   * @param ?string $menuAlign    Alignment of the drop-down. Default is alignment with the start side of its parent.
+   *                              'end' aligns with the end side of its parent.
    */
   $wrapperTag = $this->wrapperTag ?? 'div';
   $wrapperClass = 'dropdown'; // Bootstrap class
@@ -52,7 +54,13 @@
       )
   ?>
 
-  <ul class="dropdown-menu">
+  <?php
+    $menuAttributes = $this->htmlAttributes(['class' => 'dropdown-menu']);
+    if ('end' == ($this->menuAlign ?? null)) {
+      $menuAttributes->add('class', 'dropdown-menu-end');
+    }
+  ?>
+  <ul<?=$menuAttributes?>>
     <?php foreach ($this->menuItems as $current): ?>
       <li class="dropdown__item">
         <a class="dropdown-item dropdown__link<?=($current['selected'] ?? false) ? ' active' : ''?>"

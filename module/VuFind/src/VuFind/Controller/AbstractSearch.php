@@ -39,6 +39,7 @@ use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
+use VuFind\Search\ResultScroller;
 use VuFind\Solr\Utils as SolrUtils;
 
 use function count;
@@ -431,7 +432,7 @@ class AbstractSearch extends AbstractBase
 
             // Set up results scroller:
             if ($results->getOptions()->resultScrollerActive()) {
-                $this->resultScroller()->init($results);
+                $this->getService(ResultScroller::class)->init($results);
             }
 
             foreach ($results->getErrors() as $error) {
@@ -578,7 +579,7 @@ class AbstractSearch extends AbstractBase
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger()->addMessage('advSearchError_notFound', 'error');
+            $this->flashMessenger()->addErrorMessage('advSearchError_notFound');
             return false;
         }
 
@@ -594,7 +595,7 @@ class AbstractSearch extends AbstractBase
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
                 $this->flashMessenger()
-                    ->addMessage('advSearchError_notAdvanced', 'error');
+                    ->addErrorMessage('advSearchError_notAdvanced');
                 return false;
             }
         }

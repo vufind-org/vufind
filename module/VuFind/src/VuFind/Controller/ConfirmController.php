@@ -64,7 +64,7 @@ class ConfirmController extends AbstractBase
                         'tokens' => $message['tokens'] ?? [],
                     ]
                     : $message;
-                $this->flashMessenger()->addMessage($flash, 'info');
+                $this->flashMessenger()->addInfoMessage($flash);
             }
         }
 

@@ -68,7 +68,6 @@ use function is_object;
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
  * @method Plugin\Permission permission() Permission plugin
- * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
  *
@@ -355,7 +354,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // Store the current URL as a login followup action
         $this->getService(FollowupHelper::class)->store($extras);
         if (!empty($msg)) {
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
         }
 
         // Set a flag indicating that we are forcing login:
