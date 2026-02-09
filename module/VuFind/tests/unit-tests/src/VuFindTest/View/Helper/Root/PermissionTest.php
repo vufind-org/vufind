@@ -208,13 +208,11 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-
     protected function getHelperArray(): array
     {
         $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();
         $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
-        
         return compact('translate', 'transEsc', 'escapehtml');
     }
 
