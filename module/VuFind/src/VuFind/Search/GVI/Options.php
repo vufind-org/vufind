@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Search Options for second Solr index
+ * Search Options for GVI Solr index
  *
  * PHP version 8
  *
- * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
+ * Copyright (C) Universitätsbibliothek Mannheim 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Search_GVI
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @author   Stefan Weil <sw@weilnetz.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -36,7 +36,7 @@ use VuFind\Config\ConfigManagerInterface;
  *
  * @category VuFind
  * @package  Search_GVI
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @author   Stefan Weil <sw@weilnetz.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -54,22 +54,23 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return 'gvi-facetlist';
     }
 
     /**
-     * Return the route name for the versions search action or false if disabled.
+     * Return the route name for the versions search action. Returns null to cover
+     * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getVersionsAction()
+    public function getVersionsAction(): ?string
     {
         return $this->displayRecordVersions ? 'gvi-versions' : false;
     }
@@ -88,9 +89,9 @@ class Options extends \VuFind\Search\Solr\Options
      * Return the route name of the action used for performing advanced searches.
      * Returns false if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return 'gvi-advanced';
     }

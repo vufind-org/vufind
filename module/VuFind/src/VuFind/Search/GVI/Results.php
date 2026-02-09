@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Search Results for second Solr index
+ * Search Results for GVI Solr index
  *
  * PHP version 8
  *
- * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
+ * Copyright (C) Universitätsbibliothek Mannheim 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Search_GVI
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @author   Stefan Weil <sw@weilnetz.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -34,7 +34,7 @@ namespace VuFind\Search\GVI;
  *
  * @category VuFind
  * @package  Search_GVI
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @author   Stefan Weil <sw@weilnetz.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -45,5 +45,5 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @var string
      */
-    protected $backendId = 'GVI';
+    protected string $backendId = 'GVI';
 }

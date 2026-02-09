@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Solr Explanation for second Solr index
+ * Solr Explanation for GVI Solr index
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2023.
+ * Copyright (C) Universitätsbibliothek Mannheim 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,8 +22,7 @@
  *
  * @category VuFind
  * @package  Search_Solr
- * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Stefan Weil <sw@weilnetz.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -35,8 +34,7 @@ namespace VuFind\Search\GVI;
  *
  * @category VuFind
  * @package  Search_Solr
- * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Stefan Weil <sw@weilnetz.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
