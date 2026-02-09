@@ -131,9 +131,9 @@ class Record implements DbServiceAwareInterface
         protected Truncate $truncate,
         #[Autowire(container: 'ViewHelperManager')]
         protected Auth $auth,
-        #[Autowire(container: 'ViewHelperManager', service: 'url')]
+        #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
-        #[Autowire(container: 'ViewHelperManager', service: 'serverUrl')]
+        #[Autowire(container: 'ViewHelperManager')]
         protected \Laminas\View\Helper\ServerUrl $serverUrl,
         protected ?Config $config = null
     ) {
