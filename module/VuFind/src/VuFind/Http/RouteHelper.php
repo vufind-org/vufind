@@ -31,6 +31,7 @@
 namespace VuFind\Http;
 
 use Closure;
+use Laminas\View\Helper\Url;
 
 /**
  * Route Helper class.  Wrapper around Laminas UrlHelper.
@@ -45,13 +46,20 @@ use Closure;
 class RouteHelper
 {
     /**
+     * URL helper
+     *
+     * @var ?Url
+     */
+    protected ?Url $urlHelper = null;
+
+    /**
      * Constructor.
      *
-     * @param Closure $urlHelper URL helper function
+     * @param Closure $urlHelperFactory URL helper factory callback
      *
      * @return void
      */
-    public function __construct(protected Closure $urlHelper)
+    public function __construct(protected Closure $urlHelperFactory)
     {
     }
 
@@ -71,7 +79,7 @@ class RouteHelper
      * @throws \Laminas\View\Exception\InvalidArgumentException If the params object was not an
      * array or Traversable object.
      *
-     * @return self|string Url For the link href attribute
+     * @return string Url For the link href attribute
      */
     public function getUrlFromRoute(
         string $name,
@@ -80,6 +88,19 @@ class RouteHelper
     ): string {
         // Path normalization can cause problems with IDs containing escaped slashes, so let's always disable it:
         $routeOptions = ['normalize_path' => false] + ($queryParams ? ['query' => $queryParams] : []);
-        return ($this->urlHelper)($name, $routeParams, $routeOptions);
+        return ($this->getUrlHelper())($name, $routeParams, $routeOptions);
+    }
+
+    /**
+     * Get URL helper.
+     *
+     * @return Url
+     */
+    protected function getUrlHelper(): Url
+    {
+        if (null === $this->urlHelper) {
+            $this->urlHelper = ($this->urlHelperFactory)();
+        }
+        return $this->urlHelper;
     }
 }
