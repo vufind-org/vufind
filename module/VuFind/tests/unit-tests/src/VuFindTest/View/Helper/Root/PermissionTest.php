@@ -89,10 +89,11 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     protected function getPermissionHelper(PermissionDeniedManager $mockPdm): Permission
     {
         $mockContext = $this->getMockContextWithView();
+        $helpers = $this->getHelperArray();
         return new Permission(
             $this->getMockPm(false),
             $mockPdm,
-            $this->getTransEsc(),
+            $helpers['transEsc'],
             $mockContext
         );
     }
@@ -203,15 +204,18 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get TransEsc helper.
+     * Get array with helpers.
      *
-     * @return \VuFind\View\Helper\Root\TransEsc
+     * @return array
      */
-    protected function getTransEsc()
+
+    protected function getHelperArray(): array
     {
         $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();
-        return new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
+        
+        return compact('translate', 'transEsc', 'escapehtml');
     }
 
     /**
@@ -231,14 +235,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockContextWithView()
     {
-        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
-        $translate = new \VuFind\View\Helper\Root\Translate();
-        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
-
-        $realView = $this->getPhpRenderer(
-            compact('translate', 'transEsc', 'escapehtml')
-        );
-
+        $realView = $this->getPhpRenderer($this->getHelperArray());
         return new \VuFind\View\Helper\Root\Context($realView);
     }
 }
