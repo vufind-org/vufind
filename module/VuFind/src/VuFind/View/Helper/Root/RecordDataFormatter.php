@@ -74,7 +74,6 @@ class RecordDataFormatter
      * @param EscapeHtml        $escapeHtml   EscapeHtml view helper
      */
     public function __construct(
-        #[Autowire]
         protected SpecsManager $specsManager,
         #[Autowire(container: 'ViewHelperManager')]
         protected RendererInterface $viewRenderer,

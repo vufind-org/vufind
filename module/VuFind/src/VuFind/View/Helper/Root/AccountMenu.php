@@ -53,7 +53,7 @@ class AccountMenu extends AbstractMenuHelper
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
-        #[Autowire(service: Context::class, container: 'ViewHelperManager')]
+        #[Autowire(container: 'ViewHelperManager')]
         protected Context $contextHelper
     ) {
     }

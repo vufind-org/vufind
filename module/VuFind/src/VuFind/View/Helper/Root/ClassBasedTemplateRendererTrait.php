@@ -184,10 +184,8 @@ trait ClassBasedTemplateRendererTrait
      * @param array  $context   Context for rendering template
      * @param bool   $throw     If true (default), an exception is thrown if the
      * template is not found. Otherwise an empty string is returned.
-     * public
      *
      * @throws RuntimeException
-     *
      * @return string
      */
     protected function renderClassTemplate(
@@ -198,7 +196,7 @@ trait ClassBasedTemplateRendererTrait
     ) {
         $viewRenderer = $this->getViewRenderer();
         $contextHelper = $this->getContextHelper();
-        $oldContext = $contextHelper->apply($context);
+        $oldContext = $contextHelper($viewRenderer)->apply($context);
 
         // Find and render the template:
         $classTemplate = $this->getCachedClassTemplate($template, $className);

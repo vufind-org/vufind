@@ -120,6 +120,9 @@ class Context
      */
     public function __invoke()
     {
+        if (null !== $view) {
+            $this->view = $view;
+        }
         return $this;
     }
 }

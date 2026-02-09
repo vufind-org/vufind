@@ -88,12 +88,11 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getPermissionHelper(PermissionDeniedManager $mockPdm): Permission
     {
-        $mockTransEsc = $this->getTransEsc();
         $mockContext = $this->getMockContextWithView();
         return new Permission(
             $this->getMockPm(false),
             $mockPdm,
-            $mockTransEsc,
+            $this->getTransEsc(),
             $mockContext
         );
     }

@@ -159,6 +159,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $addEllipsis,
             $escapeOrCleanHtml,
             $truncate,
+            $auth,
             $url,
             $serverUrl,
             $configEntity

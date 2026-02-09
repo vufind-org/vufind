@@ -795,6 +795,13 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $config = is_array($config) ? new Config($config) : $config;
         $smvh = $this->getSearchMemoryViewHelper();
 
+        $auth = new \VuFind\View\Helper\Root\Auth(
+            $this->createMock(\VuFind\Auth\Manager::class),
+            $this->createMock(\VuFind\Auth\ILSAuthenticator::class),
+            $view,
+            $resolver
+        );
+
         $record = new Record(
             $this->createMock(TagsService::class),
             $view,
@@ -808,6 +815,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\View\Helper\Root\AddEllipsis::class),
             $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class),
             $this->createMock(\VuFind\View\Helper\Root\Truncate::class),
+            $auth,
             $urlHelper,
             $serverUrlHelper,
             $config

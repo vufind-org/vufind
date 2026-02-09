@@ -102,6 +102,7 @@ class Record implements DbServiceAwareInterface
      * @param AddEllipsis       $addEllipsis        AddEllipsis helper
      * @param EscapeOrCleanHtml $escape             EscapeOrCleanHtml helper
      * @param Truncate          $truncate           Truncate helper
+     * @param Auth              $auth               Auth helper
      * @param Url               $url                Url helper
      * @param ServerUrl         $serverUrl          ServerUrl helper
      * @param ?Config           $config             Configuration from config.ini
@@ -128,6 +129,8 @@ class Record implements DbServiceAwareInterface
         protected EscapeOrCleanHtml $escape,
         #[Autowire(container: 'ViewHelperManager')]
         protected Truncate $truncate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Auth $auth,
         #[Autowire(container: 'ViewHelperManager', service: 'url')]
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager', service: 'serverUrl')]
@@ -517,7 +520,10 @@ class Record implements DbServiceAwareInterface
         if ($this->searchMemory) {
             $searchId = $this->driver->getExtraDetail('searchId')
                 ?? $this->searchMemoryHelper->getLastSearchId();
-            if ($searchId && ($search = $this->searchMemory->getSearchById($searchId, null))) {
+            if (
+                $searchId
+                && ($search = $this->searchMemory->getSearchById($searchId, ($this->auth)->getUserObject()))
+            ) {
                 $filters = UrlQueryHelper::buildQueryString(
                     ['hiddenFilters' => $search->getParams()->getHiddenFiltersAsQueryParams()]
                 );
@@ -677,7 +683,7 @@ class Record implements DbServiceAwareInterface
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (isset($this->config->Content->coversize) && !$this->config->Content->coversize) {
+        if (!($this->config->Content->coversize ?? true)) {
             return false;
         }
         return $this->config->Content->coversize[$context] ?? $default;
@@ -693,7 +699,13 @@ class Record implements DbServiceAwareInterface
     public function getThumbnailAlignment($context = 'result')
     {
         $configField = $context . 'ThumbnailsOnLeft';
-        $left = $this->config->Site->$configField ?? true;
+        $left = !isset($this->config->Site->$configField)
+            ? true : $this->config->Site->$configField;
+        $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
+            ? true : $this->config->Site->mirrorThumbnailsRTL;
+        if (($this->layout)()->rtl && !$mirror) {
+            $left = !$left;
+        }
         return $left ? 'left' : 'right';
     }
 
@@ -719,7 +731,7 @@ class Record implements DbServiceAwareInterface
             return false;
         }
         $key = 'showIn' . ucwords(strtolower($context));
-        if (!isset($this->config->QRCode->$key) || !$this->config->QRCode->$key) {
+        if (!in_array($context, ['core', 'results']) || !($this->config->QRCode->$key ?? false)) {
             return false;
         }
 

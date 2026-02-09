@@ -78,7 +78,7 @@ class RecordLinker
      */
     public function __construct(
         protected Router $router,
-        #[Autowire(container: 'ViewHelperManager', service: 'url')]
+        #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager')]
         protected SearchOptions $searchOptions,
@@ -187,7 +187,7 @@ class RecordLinker
             [
                 'query' => $this->getRecordUrlParams($options) + $query,
                 'fragment' => $anchor ? ltrim($anchor, '#') : '',
-                'normalize_path' => false,
+                'normalize_path' => false, // required to keep slashes encoded
             ]
         );
     }
