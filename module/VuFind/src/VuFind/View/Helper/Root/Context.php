@@ -118,7 +118,7 @@ class Context
      *
      * @return Context
      */
-    public function __invoke()
+    public function __invoke(?RendererInterface $view = null)
     {
         if (null !== $view) {
             $this->view = $view;

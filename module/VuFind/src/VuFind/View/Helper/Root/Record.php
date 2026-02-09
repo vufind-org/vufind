@@ -703,7 +703,7 @@ class Record implements DbServiceAwareInterface
             ? true : $this->config->Site->$configField;
         $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
             ? true : $this->config->Site->mirrorThumbnailsRTL;
-        if (($this->layout)()->rtl && !$mirror) {
+        if ($this->viewRenderer->layout()->rtl && !$mirror) {
             $left = !$left;
         }
         return $left ? 'left' : 'right';
