@@ -62,7 +62,7 @@ class RouteHelperTest extends \PHPUnit\Framework\TestCase
             ->with($routeName, $routeParams, ['query' => $queryParams, 'normalize_path' => false])
             ->willReturn($routeResult);
         $routeHelper = new RouteHelper(
-            Closure::fromCallable($urlHelper)
+            Closure::fromCallable(fn () => $urlHelper)
         );
 
         $url = $routeHelper->getUrlFromRoute($routeName, $routeParams, $queryParams);

@@ -72,7 +72,9 @@ class RouteHelperFactory implements FactoryInterface
 
         $viewRenderer = $container->get('ViewRenderer');
         return new $requestedName(
-            Closure::fromCallable($viewRenderer->plugin('url'))
+            // Defer fetching of the plugin until it's actually needed to allow for Laminas MvcEvent to be dispatched
+            // first:
+            Closure::fromCallable(fn () => $viewRenderer->plugin('url'))
         );
     }
 }
