@@ -116,6 +116,8 @@ class Context
     /**
      * Return this helper instance.
      *
+     * @param RendererInterface $view View Renderer
+     *
      * @return Context
      */
     public function __invoke(?RendererInterface $view = null)
