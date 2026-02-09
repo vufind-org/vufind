@@ -32,7 +32,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\HelperPluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -49,11 +49,11 @@ class HtmlSafeJsonEncode
     /**
      * Constructor
      *
-     * @param EscapeHtmlAttr $escapeHtmlAttr Escape HTML attribute helper
+     * @param HelperPluginManager $viewHelperManager View Helper Manager
      */
     public function __construct(
-        #[Autowire(service: EscapeHtmlAttr::class)]
-        protected EscapeHtmlAttr $escapeHtmlAttr
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HelperPluginManager $viewHelperManager
     ) {
     }
 
@@ -71,8 +71,8 @@ class HtmlSafeJsonEncode
             $value,
             JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
         );
-        return $outerEscaper === 'escapeHtmlAttr'
-            ? ($this->escapeHtmlAttr)($json)
+        return $outerEscaper
+            ? ($this->viewHelperManager->get($outerEscaper))($json)
             : $json;
     }
 }

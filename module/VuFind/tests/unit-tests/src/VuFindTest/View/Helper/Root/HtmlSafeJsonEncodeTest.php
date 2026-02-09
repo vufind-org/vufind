@@ -30,6 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\HelperPluginManager;
 use VuFind\View\Helper\Root\HtmlSafeJsonEncode;
 
 /**
@@ -48,14 +49,16 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     /**
      * Get helper to test
      *
-     * @param EscapeHtmlAttr $escapeHtmlAttr EscapeHtmlAttr helper
+     * @param HelperPluginManager $viewHelperManager View Helper Manager
      *
      * @return HtmlSafeJsonEncode
      */
-    protected function getHelper(?EscapeHtmlAttr $escapeHtmlAttr = null): HtmlSafeJsonEncode
+    protected function getHelper(?HelperPluginManager $viewHelperManager = null): HtmlSafeJsonEncode
     {
-        $escapeHtmlAttr ??= $this->createMock(EscapeHtmlAttr::class);
-        return new HtmlSafeJsonEncode($escapeHtmlAttr);
+        if ($viewHelperManager === null) {
+            $viewHelperManager = $this->createMock(HelperPluginManager::class);
+        }
+        return new HtmlSafeJsonEncode($viewHelperManager);
     }
 
     /**
@@ -67,7 +70,14 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     {
         $escapeHtmlAttr = $this->createMock(EscapeHtmlAttr::class);
         $escapeHtmlAttr->expects($this->once())->method('__invoke')->with('1')->willReturn('1');
-        $this->assertEquals('1', ($this->getHelper($escapeHtmlAttr))(1));
+
+        $viewHelperManager = $this->createMock(HelperPluginManager::class);
+        $viewHelperManager->expects($this->once())
+            ->method('get')
+            ->with('escapeHtmlAttr')
+            ->willReturn($escapeHtmlAttr);
+
+        $this->assertEquals('1', ($this->getHelper($viewHelperManager))(1));
     }
 
     /**
