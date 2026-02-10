@@ -66,7 +66,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $parameters = parent::getBackendParameters();
         if ($parameters->hasParam('sort')) {

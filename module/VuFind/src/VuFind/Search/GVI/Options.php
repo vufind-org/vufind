@@ -80,7 +80,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'gvi-results';
     }
