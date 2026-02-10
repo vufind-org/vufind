@@ -89,7 +89,7 @@ trait ILLRequestsTrait
             $patron
         );
         if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 is_array($validRequest)
                     ? $validRequest['status'] : 'ill_request_error_blocked'
             );
@@ -123,7 +123,7 @@ trait ILLRequestsTrait
                             ->fromRoute('myresearch-illrequests'),
                     ],
                 ];
-                $this->flashMessenger()->addSuccessMessage($msg);
+                $this->getFlashMessenger()->addSuccessMessage($msg);
                 $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
 
                 $this->getAuditEventService()->addEvent(
@@ -141,11 +141,11 @@ trait ILLRequestsTrait
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.
                 if (isset($results['status'])) {
-                    $this->flashMessenger()
+                    $this->getFlashMessenger()
                         ->addErrorMessage($results['status']);
                 }
                 if (isset($results['sysMessage'])) {
-                    $this->flashMessenger()
+                    $this->getFlashMessenger()
                         ->addErrorMessage($results['sysMessage']);
                 }
             }
@@ -172,7 +172,7 @@ trait ILLRequestsTrait
         // Check that there are pick up locations to choose from if the field is
         // required:
         if (in_array('pickUpLocation', $extraFields) && !$pickupLocations) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('No pickup locations available');
             return $this->redirectToRecord('#top');
         }

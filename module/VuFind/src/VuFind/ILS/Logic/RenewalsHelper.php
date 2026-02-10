@@ -29,10 +29,10 @@
 
 namespace VuFind\ILS\Logic;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\Stdlib\Parameters;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function is_array;
 
@@ -79,11 +79,11 @@ class RenewalsHelper
     /**
      * Process renewal requests.
      *
-     * @param Parameters     $request        Request object
-     * @param Connection     $catalog        ILS connection object
-     * @param array          $patron         Current logged in patron
-     * @param FlashMessenger $flashMessenger Flash messenger for user messages
-     * @param ?CsrfInterface $csrfValidator  CSRF validator
+     * @param Parameters             $request        Request object
+     * @param Connection             $catalog        ILS connection object
+     * @param array                  $patron         Current logged in patron
+     * @param FlashMessengeInterface $flashMessenger Flash messenger for user messages
+     * @param ?CsrfInterface         $csrfValidator  CSRF validator
      *
      * @return array The result of the renewal, an associative array keyed by
      * item ID (empty if no renewals performed)
@@ -92,7 +92,7 @@ class RenewalsHelper
         Parameters $request,
         Connection $catalog,
         array $patron,
-        FlashMessenger $flashMessenger,
+        FlashMessengerInterface $flashMessenger,
         ?CsrfInterface $csrfValidator = null
     ): array {
         // Pick IDs to renew based on which button was pressed:

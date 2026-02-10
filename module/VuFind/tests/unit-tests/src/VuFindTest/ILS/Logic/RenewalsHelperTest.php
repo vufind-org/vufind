@@ -29,12 +29,12 @@
 
 namespace VuFindTest\ILS\Logic;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\RenewalsHelper;
 use VuFind\Validator\CsrfInterface;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function is_array;
 
@@ -136,7 +136,7 @@ class RenewalsHelperTest extends TestCase
         $catalog = $this->createMock(Connection::class);
 
         $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger = $this->createMock(FlashMessengerInterface::class);
 
         $renewalResult = [
             'details' => [
@@ -182,7 +182,7 @@ class RenewalsHelperTest extends TestCase
 
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger = $this->createMock(FlashMessengerInterface::class);
 
         $renewalResult = [
             'details' => [
@@ -230,7 +230,7 @@ class RenewalsHelperTest extends TestCase
 
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger = $this->createMock(FlashMessengerInterface::class);
 
         $renewalResult = [
             'details' => [
@@ -270,7 +270,7 @@ class RenewalsHelperTest extends TestCase
         $request = new Parameters([]);
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger = $this->createMock(FlashMessengerInterface::class);
 
         $catalog->expects($this->never())
             ->method('__call');
@@ -299,7 +299,7 @@ class RenewalsHelperTest extends TestCase
         ]);
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger = $this->createMock(FlashMessengerInterface::class);
 
         $catalog->expects($this->never())
             ->method('__call');
@@ -328,7 +328,7 @@ class RenewalsHelperTest extends TestCase
         ]);
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger = $this->createMock(FlashMessengerInterface::class);
         $csrfValidator = $this->createMock(CsrfInterface::class);
 
         $csrfValidator->expects($this->once())
@@ -367,7 +367,7 @@ class RenewalsHelperTest extends TestCase
 
         $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $flashMessenger = $this->createMock(FlashMessengerInterface::class);
 
         $catalog->expects($this->once())
             ->method('__call')

@@ -93,7 +93,7 @@ trait HoldsTrait
             $patron
         );
         if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 is_array($validRequest)
                     ? $validRequest['status'] : 'hold_error_blocked'
             );
@@ -148,7 +148,7 @@ trait HoldsTrait
         if (in_array('pickUpLocation', $extraHoldFields)) {
             $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
             if (!$pickup) {
-                $this->flashMessenger()->addErrorMessage('No pickup locations available');
+                $this->getFlashMessenger()->addErrorMessage('No pickup locations available');
                 return $this->redirectToRecord('#top');
             }
         }
@@ -184,14 +184,14 @@ trait HoldsTrait
                 $extraHoldFields
             );
             if (!$validGroup) {
-                $this->flashMessenger()
+                $this->getFlashMessenger()
                     ->addErrorMessage('hold_invalid_request_group');
             }
             if (!$validPickup) {
-                $this->flashMessenger()->addErrorMessage('hold_invalid_pickup');
+                $this->getFlashMessenger()->addErrorMessage('hold_invalid_pickup');
             }
             foreach ($dateValidationResults['errors'] as $msg) {
-                $this->flashMessenger()->addErrorMessage($msg);
+                $this->getFlashMessenger()->addErrorMessage($msg);
             }
             if ($validGroup && $validPickup && !$dateValidationResults['errors']) {
                 // If we made it this far, we're ready to place the hold;
@@ -228,9 +228,9 @@ trait HoldsTrait
                             '%%url%%' => $this->url()->fromRoute('holds-list'),
                         ],
                     ];
-                    $this->flashMessenger()->addSuccessMessage($msg);
+                    $this->getFlashMessenger()->addSuccessMessage($msg);
                     if (!empty($results['warningMessage'])) {
-                        $this->flashMessenger()
+                        $this->getFlashMessenger()
                             ->addWarningMessage($results['warningMessage']);
                     }
                     $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
@@ -250,11 +250,11 @@ trait HoldsTrait
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
                     if (isset($results['status'])) {
-                        $this->flashMessenger()
+                        $this->getFlashMessenger()
                             ->addErrorMessage($results['status']);
                     }
                     if (isset($results['sysMessage'])) {
-                        $this->flashMessenger()
+                        $this->getFlashMessenger()
                             ->addErrorMessage($results['sysMessage']);
                     }
                 }

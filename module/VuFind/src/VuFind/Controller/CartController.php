@@ -181,7 +181,7 @@ class CartController extends AbstractBase
                     $msg = $this->translate('bookbag_full_msg') . '. '
                         . $addItems['notAdded'] . ' '
                         . $this->translate('items_already_in_bookbag') . '.';
-                    $this->flashMessenger()->addInfoMessage($msg);
+                    $this->getFlashMessenger()->addInfoMessage($msg);
                 }
             }
         }
@@ -312,7 +312,7 @@ class CartController extends AbstractBase
                 );
                 return $this->redirectToSource('success', 'bulk_email_success', true);
             } catch (MailException $e) {
-                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
+                $this->getFlashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -423,7 +423,7 @@ class CartController extends AbstractBase
 
         // No legal export options?  Display a warning:
         if (empty($view->exportOptions)) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('bulk_export_not_supported');
         }
         return $view;
@@ -539,7 +539,7 @@ class CartController extends AbstractBase
                 . '<a href="' . $listUrl . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
             ];
-            $this->flashMessenger()->addSuccessMessage($message);
+            $this->getFlashMessenger()->addSuccessMessage($message);
             return $this->redirect()->toUrl($listUrl);
         }
 

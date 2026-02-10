@@ -274,7 +274,7 @@ class AbstractSearch extends AbstractBase
             throw new \Exception('Unrecoverable deep paging error.');
         }
         $request['page'] = $page;
-        $this->flashMessenger()->addErrorMessage(
+        $this->getFlashMessenger()->addErrorMessage(
             [
                 'msg' => 'deep_paging_failure',
                 'tokens' => ['%%page%%' => $page],
@@ -437,7 +437,7 @@ class AbstractSearch extends AbstractBase
 
             foreach ($results->getErrors() as $error) {
                 try {
-                    $this->flashMessenger()->addErrorMessage($error);
+                    $this->getFlashMessenger()->addErrorMessage($error);
                 } catch (\Exception $e) {
                     // The flash messenger will throw an exception if session writes are disabled,
                     // which will happen in combined search AJAX requests. For that situation, we'll
@@ -579,7 +579,7 @@ class AbstractSearch extends AbstractBase
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger()->addErrorMessage('advSearchError_notFound');
+            $this->getFlashMessenger()->addErrorMessage('advSearchError_notFound');
             return false;
         }
 
@@ -594,7 +594,7 @@ class AbstractSearch extends AbstractBase
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
-                $this->flashMessenger()
+                $this->getFlashMessenger()
                     ->addErrorMessage('advSearchError_notAdvanced');
                 return false;
             }

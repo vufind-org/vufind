@@ -86,11 +86,11 @@ class DeveloperSettingsController extends AbstractBase
                         'Developer::api_key_generation_success',
                         ['%%TOKEN%%' => $apiKey->getToken()]
                     );
-                    $this->flashMessenger()->addSuccessMessage($successMsg);
+                    $this->getFlashMessenger()->addSuccessMessage($successMsg);
                     return $view;
                 }
             }
-            $this->flashMessenger()->addErrorMessage('An error has occurred');
+            $this->getFlashMessenger()->addErrorMessage('An error has occurred');
         }
 
         return $view;
@@ -113,9 +113,9 @@ class DeveloperSettingsController extends AbstractBase
         if ($this->getParam('confirm') === '1') {
             $id = $this->getParam('id');
             if ($id && $developerSettingsService->deleteApiKeyForUser($user, $id)) {
-                $this->flashMessenger()->addSuccessMessage('Developer::api_key_deletion_success');
+                $this->getFlashMessenger()->addSuccessMessage('Developer::api_key_deletion_success');
             } else {
-                $this->flashMessenger()->addErrorMessage('An error has occurred');
+                $this->getFlashMessenger()->addErrorMessage('An error has occurred');
             }
         }
         return $this->redirect()->toRoute('developersettings-displaysettings');

@@ -167,7 +167,7 @@ class LibraryCardsController extends AbstractBase
             );
 
             // Success Message
-            $this->flashMessenger()->addSuccessMessage('Library Card Deleted');
+            $this->getFlashMessenger()->addSuccessMessage('Library Card Deleted');
             // Redirect to MyResearch library cards
             return $this->redirect()->toRoute('librarycards-home');
         }
@@ -223,11 +223,11 @@ class LibraryCardsController extends AbstractBase
                 $this->getILSAuthenticator()->getCatPasswordForUser($user)
             );
             if (!$patron) {
-                $this->flashMessenger()
+                $this->getFlashMessenger()
                     ->addErrorMessage('authentication_error_invalid');
             }
         } catch (ILSException $e) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('authentication_error_technical');
         }
 
@@ -251,7 +251,7 @@ class LibraryCardsController extends AbstractBase
         $url = $this->getServerUrl('librarycards-connectcard');
         $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
         if (!$redirectUrl) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('authentication_error_technical');
             return $this->redirect()->toRoute('librarycards-home');
         }
@@ -271,7 +271,7 @@ class LibraryCardsController extends AbstractBase
         try {
             $this->getAuthManager()->connectLibraryCard($this->getRequest(), $user);
         } catch (\Exception $ex) {
-            $this->flashMessenger()->addErrorMessage($ex->getMessage());
+            $this->getFlashMessenger()->addErrorMessage($ex->getMessage());
         }
         return $this->redirect()->toRoute('librarycards-home');
     }
@@ -293,7 +293,7 @@ class LibraryCardsController extends AbstractBase
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
 
         if (!$username) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('authentication_error_blank');
             return false;
         }
@@ -322,7 +322,7 @@ class LibraryCardsController extends AbstractBase
             try {
                 $patron = $catalog->patronLogin($username, $password);
             } catch (ILSException $e) {
-                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
                 return false;
             }
             if ($patron) {
@@ -337,7 +337,7 @@ class LibraryCardsController extends AbstractBase
                 );
             } else {
                 if ('password' === $loginMethod) {
-                    $this->flashMessenger()->addErrorMessage('authentication_error_invalid');
+                    $this->getFlashMessenger()->addErrorMessage('authentication_error_invalid');
                 }
                 $this->getAuditEventService()->addEvent(
                     AuditEventType::User,
@@ -374,7 +374,7 @@ class LibraryCardsController extends AbstractBase
                     );
                 }
                 // Don't reveal the result
-                $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
+                $this->getFlashMessenger()->addSuccessMessage('email_login_link_sent');
                 return $this->redirect()->toRoute('librarycards-home');
             }
         }
@@ -388,7 +388,7 @@ class LibraryCardsController extends AbstractBase
                 $password
             );
         } catch (\VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $this->getFlashMessenger()->addErrorMessage($e->getMessage());
             return false;
         }
 
@@ -427,7 +427,7 @@ class LibraryCardsController extends AbstractBase
                 ]
             );
         } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $this->getFlashMessenger()->addErrorMessage($e->getMessage());
         }
 
         return $this->redirect()->toRoute('librarycards-home');
