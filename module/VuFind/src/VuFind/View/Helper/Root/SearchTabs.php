@@ -76,7 +76,6 @@ class SearchTabs implements LoggerAwareInterface
      * @param SearchMemory     $searchMemory Search memory view helper
      */
     public function __construct(
-        #[Autowire(service: PluginManager::class)]
         protected PluginManager $results,
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,

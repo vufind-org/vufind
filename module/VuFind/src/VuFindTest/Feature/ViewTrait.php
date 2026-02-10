@@ -136,15 +136,9 @@ trait ViewTrait
                 ->method('getLastSearchId')
                 ->willReturn(-123);
         }
-        if (null === $url) {
-            $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
-        }
-        if (null === $escapeHtml) {
-            $escapeHtml = $this->createMock(\Laminas\View\Helper\EscapeHtml::class);
-        }
-        if (null === $searchParams) {
-            $searchParams = $this->createMock(\VuFind\View\Helper\Root\SearchParams::class);
-        }
+        $url ??= $this->createMock(\VuFind\View\Helper\Root\Url::class);
+        $escapeHtml ??= $this->createMock(\Laminas\View\Helper\EscapeHtml::class);
+        $searchParams ??= $this->createMock(\VuFind\View\Helper\Root\SearchParams::class);
         return new \VuFind\View\Helper\Root\SearchMemory($memory, $url, $escapeHtml, $searchParams);
     }
 

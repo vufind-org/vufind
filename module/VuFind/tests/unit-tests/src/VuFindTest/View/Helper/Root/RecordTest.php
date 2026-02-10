@@ -31,7 +31,6 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Helper\ServerUrl;
-use Laminas\View\Helper\Url;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\ResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -45,6 +44,7 @@ use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\SearchTabs;
+use VuFind\View\Helper\Root\Url;
 use VuFindTheme\ThemeInfo;
 
 use function is_array;
@@ -853,22 +853,14 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $expectedRoute Route expected by mock helper
      *
-     * @return MockObject&\VuFind\View\Helper\Root\Url
+     * @return MockObject&Url
      */
-    protected function getMockUrl($expectedRoute): MockObject&\VuFind\View\Helper\Root\Url
+    protected function getMockUrl($expectedRoute): MockObject&Url
     {
-        $laminasUrl = $this->createMock(Url::class);
-        $laminasUrl->expects($this->once())
-            ->method('__invoke')
+        $url = $this->createMock(Url::class);
+        $url->expects($this->once())->method('__invoke')
             ->with($expectedRoute)
             ->willReturn('http://foo/bar');
-
-        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
-        $url->method('__invoke')
-            ->willReturnCallback(function (...$args) use ($laminasUrl) {
-                return ($laminasUrl)(...$args);
-            });
-
         return $url;
     }
 

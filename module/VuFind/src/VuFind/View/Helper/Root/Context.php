@@ -52,8 +52,8 @@ class Context
      *
      * @param RendererInterface $view View renderer
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire]
         protected RendererInterface $view
     ) {
     }

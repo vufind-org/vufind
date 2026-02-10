@@ -212,7 +212,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $url = $this->getUrl();
 
         $searchMemory = $this->getSearchMemoryViewHelper();
-        $searchOptions = $this->createMock(SearchOptions::class);
+        $searchOptions = $extraHelpers['searchOptions'] ?? $this->createMock(SearchOptions::class);
 
         $translate = $extraHelpers['translate'] ?? $this->createMock(Translate::class);
         $translate->method('__invoke')->willReturnCallback(function ($str) {

@@ -657,9 +657,10 @@ class Record implements DbServiceAwareInterface
             'linkPreview' => $this->getPreviewCoverLinkSetting($context),
         ];
         $preferredSize = $this->getCoverSize($context, $default);
-        if (empty($preferredSize)) {
+        if (empty($preferredSize)) {    // covers disabled entirely
             $details['html'] = '';
         } else {
+            // Find best option if more than one size is defined (e.g. small:medium)
             foreach (explode(':', $preferredSize) as $size) {
                 if ($details['cover'] = $this->getThumbnail($size)) {
                     $details['size'] = $size;
@@ -669,6 +670,7 @@ class Record implements DbServiceAwareInterface
             if ($details['size'] === false) {
                 [$details['size']] = explode(':', $preferredSize);
             }
+            // check for context-specific overrides
             $details['html'] = $this->renderTemplate('cover.phtml', $details);
         }
         return $details;
@@ -738,7 +740,7 @@ class Record implements DbServiceAwareInterface
 
         // Try to build text:
         $text = $this->renderTemplate($context . '-qrcode.phtml', $extra + ['driver' => $this->driver]);
-        $qrcode = ['text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin];
+        $qrcode = compact('text', 'level', 'size', 'margin');
 
         return ($this->url)('qrcode-show') . '?' . http_build_query($qrcode);
     }

@@ -31,7 +31,6 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Navigation\AbstractMenu;
-use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * AbstractMenu view helper
@@ -54,7 +53,6 @@ abstract class AbstractMenuHelper
      */
     public function __construct(
         protected AbstractMenu $menu,
-        #[Autowire(service: 'ViewRenderer')]
         protected RendererInterface $renderer
     ) {
     }
