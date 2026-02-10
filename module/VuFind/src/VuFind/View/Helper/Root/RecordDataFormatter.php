@@ -75,7 +75,6 @@ class RecordDataFormatter
      */
     public function __construct(
         protected SpecsManager $specsManager,
-        #[Autowire(container: 'ViewHelperManager')]
         protected RendererInterface $viewRenderer,
         #[Autowire(container: 'ViewHelperManager')]
         protected Record $record,

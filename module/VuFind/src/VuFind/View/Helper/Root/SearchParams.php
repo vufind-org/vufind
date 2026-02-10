@@ -49,7 +49,7 @@ class SearchParams
      * @param PluginManager $manager Search manager
      */
     public function __construct(
-        #[Autowire(service: 'VuFind\Search\Results\PluginManager')]
+        #[Autowire(service: 'VuFind\Search\Params\PluginManager')]
         protected PluginManager $manager
     ) {
     }

@@ -112,9 +112,8 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfiguredHelper(Params $solrParams, Memory $memory): SearchMemory
     {
-        $laminasUrl = $this->createMock(\Laminas\View\Helper\Url::class);
-        $laminasUrl->method('__invoke')->with($this->searchRoute)->willReturn($this->searchBasePath);
-        $url = new \VuFind\View\Helper\Root\Url($laminasUrl);
+        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
+        $url->method('__invoke')->with($this->searchRoute)->willReturn($this->searchBasePath);
         $escapeHtml = $this->createMock(EscapeHtml::class);
         $escapeHtml->method('__invoke')->willReturnCallback(function ($str) {
             return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');

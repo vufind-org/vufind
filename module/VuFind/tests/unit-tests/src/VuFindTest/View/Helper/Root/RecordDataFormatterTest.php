@@ -31,7 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Helper\ServerUrl;
-use Laminas\View\Helper\Url as LaminasUrl;
+use VuFind\View\Helper\Root\Url;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\ResolverInterface;
 use Laminas\View\Resolver\TemplatePathStack;
@@ -84,7 +84,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      * @param SchemaOrg          $schemaOrgHelper schema.org helper
      * @param PhpRenderer        $renderer        View renderer
      * @param ResolverInterface  $resolver        View resolver
-     * @param LaminasUrl         $laminasUrl      Base Laminas URL helper
+     * @param Url                $url             URL helper
      *
      * @return array
      */
@@ -93,7 +93,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         SchemaOrg $schemaOrgHelper,
         PhpRenderer $renderer,
         ResolverInterface $resolver,
-        LaminasUrl $laminasUrl
+        Url $url
     ): array {
         $escapeHtml = new EscapeHtml(new Escaper());
         $serverUrl = new ServerUrl();
@@ -107,7 +107,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $translate = new \VuFind\View\Helper\Root\Translate();
 
         $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapeHtml);
-        $url = new \VuFind\View\Helper\Root\Url($laminasUrl);
         $truncate = new \VuFind\View\Helper\Root\Truncate();
 
         $searchParams = new \VuFind\View\Helper\Root\SearchParams(
@@ -366,9 +365,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $match = new \Laminas\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
 
-        $laminasUrl = new LaminasUrl();
-        $laminasUrl->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class));
-        $laminasUrl->setRouteMatch($match);
+        $url = new Url();
+        $url->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class));
+        $url->setRouteMatch($match);
 
         // Create resolver and view
         $resolver = new TemplatePathStack();
@@ -380,7 +379,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $view = new PhpRenderer();
         $view->setResolver($resolver);
 
-        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $resolver, $laminasUrl);
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $resolver, $url);
 
         $pluginManager = $view->getHelperPluginManager();
         foreach ($helpers as $key => $value) {

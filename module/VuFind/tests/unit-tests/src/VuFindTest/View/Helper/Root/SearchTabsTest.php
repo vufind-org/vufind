@@ -281,8 +281,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
             $request->getQuery()->hiddenFilters = $queryFilters;
         }
 
-        $laminasUrl = $this->createMock(\Laminas\View\Helper\Url::class);
-        $url = new \VuFind\View\Helper\Root\Url($laminasUrl);
+        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
 
         $searchTabsHelper = new SearchTabsHelper(
             $resultsPM,

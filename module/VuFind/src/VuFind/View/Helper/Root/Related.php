@@ -29,9 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\PluginManager as RelatedManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Related records view helper
@@ -42,7 +45,7 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Related extends \Laminas\View\Helper\AbstractHelper
+class Related
 {
     use ClassBasedTemplateRendererTrait;
 
@@ -56,8 +59,25 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     public function __construct(
         protected RelatedManager $relatedPluginManager,
         protected ConfigManagerInterface $configManager,
-        protected OptionsManager $optionsManager
+        protected OptionsManager $optionsManager,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Context $context,
     ) {
+        $this->viewRenderer = $viewRenderer;
+        $this->viewResolver = $viewResolver;
+        $this->setContextHelper($context);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 
     /**

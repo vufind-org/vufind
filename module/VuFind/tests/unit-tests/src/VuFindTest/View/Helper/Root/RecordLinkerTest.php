@@ -254,8 +254,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->method('getQuery')->willReturn(new \Laminas\Stdlib\Parameters());
 
-        $laminasUrl = new \Laminas\View\Helper\Url();
-        $url = new \VuFind\View\Helper\Root\Url($laminasUrl, $request);
+        $url = new \VuFind\View\Helper\Root\Url();
 
         $router = new \Laminas\Router\Http\TreeRouteStack();
         $router->setRequestUri(new \Laminas\Uri\Http('http://localhost'));
@@ -286,7 +285,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         );
         $router->addRoute('record-description', $actionRoute);
 
-        $laminasUrl->setRouter($router);
+        $url->setRouter($router);
 
         return $url;
     }

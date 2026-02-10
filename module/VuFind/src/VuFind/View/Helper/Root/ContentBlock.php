@@ -56,10 +56,13 @@ class ContentBlock
         #[Autowire(service: 'ViewRenderer')]
         RendererInterface $viewRenderer,
         #[Autowire(service: 'ViewResolver')]
-        ResolverInterface $viewResolver
+        ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $context,
     ) {
         $this->viewRenderer = $viewRenderer;
         $this->viewResolver = $viewResolver;
+        $this->contextHelper = $context;
     }
 
     /**

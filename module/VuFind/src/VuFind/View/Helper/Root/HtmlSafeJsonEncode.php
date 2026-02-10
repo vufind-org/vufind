@@ -52,7 +52,7 @@ class HtmlSafeJsonEncode
      * @param HelperPluginManager $viewHelperManager View Helper Manager
      */
     public function __construct(
-        #[Autowire(container: 'ViewHelperManager')]
+        #[Autowire(service: 'ViewHelperManager')]
         protected HelperPluginManager $viewHelperManager
     ) {
     }
@@ -60,8 +60,9 @@ class HtmlSafeJsonEncode
     /**
      * JSON-encode $value in an HTML-safe manner.
      *
-     * @param mixed  $value        Data to encode
-     * @param string $outerEscaper OuterEscaper
+     * @param mixed   $value        Data to encode
+     * @param ?string $outerEscaper Name of a view helper to use to escape the JSON
+     * (null/empty value for no extra escaping). Defaults to escapeHtmlAttr.
      *
      * @return string
      */

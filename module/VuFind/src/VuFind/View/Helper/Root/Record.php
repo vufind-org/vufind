@@ -135,6 +135,7 @@ class Record implements DbServiceAwareInterface
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager')]
         protected \Laminas\View\Helper\ServerUrl $serverUrl,
+        #[Autowire(config: 'config', configType: 'object')]
         protected ?Config $config = null
     ) {
         $this->viewRenderer = $viewRenderer;

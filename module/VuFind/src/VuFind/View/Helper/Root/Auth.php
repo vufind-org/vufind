@@ -65,9 +65,7 @@ class Auth implements DbServiceAwareInterface
      * @param ResolverInterface $viewResolver     View resolver
      */
     public function __construct(
-        #[Autowire]
         protected Manager $manager,
-        #[Autowire]
         protected ILSAuthenticator $ilsAuthenticator,
         #[Autowire(service: 'ViewRenderer')]
         RendererInterface $viewRenderer,

@@ -30,9 +30,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\View\Helper\Url as LaminasUrl;
-use VuFind\ServiceManager\Factory\Autowire;
 
+use function func_get_args;
 use function func_num_args;
 
 /**
@@ -44,19 +43,23 @@ use function func_num_args;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Url
+class Url extends \Laminas\View\Helper\Url
 {
+    /**
+     * Request (or null if unavailable)
+     *
+     * @var Request
+     */
+    protected $request = null;
+
     /**
      * Constructor
      *
-     * @param LaminasUrl $laminasUrl Base Laminas URL helper
-     * @param ?Request   $request    Request object for GET parameters
+     * @param ?Request $request Request object for GET parameters
      */
-    public function __construct(
-        #[Autowire(container: 'ViewHelperManager', service: LaminasUrl::class)]
-        protected LaminasUrl $laminasUrl,
-        protected ?Request $request = null
-    ) {
+    public function __construct(?Request $request = null)
+    {
+        $this->request = $request;
     }
 
     /**
@@ -85,10 +88,8 @@ class Url
         $options = [],
         $reuseMatchedParams = false
     ) {
-        if (func_num_args() == 0) {
-            return $this;
-        }
-        return ($this->laminasUrl)($name, $params, $options, $reuseMatchedParams);
+        // If argument list is empty, return object for method access:
+        return func_num_args() == 0 ? $this : parent::__invoke(...func_get_args());
     }
 
     /**
@@ -107,8 +108,8 @@ class Url
             'query' => array_merge($requestQuery, $params),
             'normalize_path' => false, // fix for VUFIND-1392
         ];
-
-        // Use the injected helper to generate the URL
-        return ($this->laminasUrl)(null, [], $options, $reuseMatchedParams);
+        // If we don't have a route match, direct any url's to default route:
+        $routeName = $this->routeMatch ? null : 'default';
+        return ($this)($routeName, [], $options, $reuseMatchedParams);
     }
 }

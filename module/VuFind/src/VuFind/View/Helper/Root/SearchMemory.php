@@ -56,7 +56,7 @@ class SearchMemory
      */
     public function __construct(
         protected Memory $memory,
-        #[Autowire(container: 'ViewHelperManager', service: Url::class)]
+        #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtml,
