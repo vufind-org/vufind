@@ -55,6 +55,9 @@ class Related
      * @param RelatedManager         $relatedPluginManager Plugin manager for related record modules
      * @param ConfigManagerInterface $configManager        Configuration manager
      * @param OptionsManager         $optionsManager       Search options plugin manager
+     * @param RendererInterface      $viewRenderer         View renderer
+     * @param ResolverInterface      $viewResolver         View resolver
+     * @param Context                $context              Context helper
      */
     public function __construct(
         protected RelatedManager $relatedPluginManager,

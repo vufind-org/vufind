@@ -31,7 +31,6 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Helper\ServerUrl;
-use VuFind\View\Helper\Root\Url;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\ResolverInterface;
 use Laminas\View\Resolver\TemplatePathStack;
@@ -43,6 +42,7 @@ use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\SchemaOrg;
+use VuFind\View\Helper\Root\Url;
 
 use function count;
 

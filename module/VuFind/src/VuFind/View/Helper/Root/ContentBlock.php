@@ -51,6 +51,7 @@ class ContentBlock
      *
      * @param RendererInterface $viewRenderer View renderer
      * @param ResolverInterface $viewResolver View resolver
+     * @param Context           $context      Context helper
      */
     public function __construct(
         #[Autowire(service: 'ViewRenderer')]

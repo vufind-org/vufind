@@ -52,6 +52,7 @@ class Recommend
      *
      * @param RendererInterface $viewRenderer View renderer
      * @param ResolverInterface $viewResolver View resolver
+     * @param Context           $context      Context helper
      */
     public function __construct(
         #[Autowire(service: 'ViewRenderer')]
@@ -63,7 +64,7 @@ class Recommend
     ) {
         $this->viewRenderer = $viewRenderer;
         $this->viewResolver = $viewResolver;
-        $this->contextHelper = $context;
+        $this->setContextHelper($context);
     }
 
     /**
