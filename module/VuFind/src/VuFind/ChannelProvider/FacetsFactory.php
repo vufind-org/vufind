@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\RouteHelper;
 
 /**
  * Factory for Facets channel provider.
@@ -70,7 +71,7 @@ class FacetsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get('ControllerPluginManager')->get('url')
+            $container->get(RouteHelper::class)
         );
     }
 }

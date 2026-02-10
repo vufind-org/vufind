@@ -29,8 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
-use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
@@ -93,12 +93,12 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      * Constructor
      *
      * @param ResultsManager $resultsManager Results manager
-     * @param Url            $url            URL helper
+     * @param RouteHelper    $routeHelper    Route helper
      * @param array          $options        Settings (optional)
      */
     public function __construct(
         protected ResultsManager $resultsManager,
-        protected Url $url,
+        protected RouteHelper $routeHelper,
         array $options = []
     ) {
         $this->setOptions($options);
@@ -280,18 +280,17 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         // Determine the filter for the current channel, and add it:
         $params->addFilter($filter);
 
-        $query = $newResults->getUrlQuery()->getParams(false);
+        $query = $newResults->getUrlQuery()->getParamArray();
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'search',
-            'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
-                . $query,
+            'url' => $this->routeHelper->getUrlFromRoute($params->getOptions()->getSearchAction(), queryParams: $query),
         ];
+        $query['source'] = $params->getSearchClassId();
         $retVal['links'][] = [
             'label' => 'channel_expand',
             'icon' => 'ui-add',
-            'url' => $this->url->fromRoute('channels-search')
-                . $query . '&source=' . urlencode($params->getSearchClassId()),
+            'url' => $this->routeHelper->getUrlFromRoute('channels-search', queryParams: $query),
         ];
 
         // Add pagination
