@@ -29,9 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
-use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\AlphabeticBrowseCommand;
@@ -64,27 +63,6 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
     protected $maxRecordsToExamine;
 
     /**
-     * Search service
-     *
-     * @var \VuFindSearch\Service
-     */
-    protected $searchService;
-
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
-     * Record router
-     *
-     * @var RecordRouter
-     */
-    protected $recordRouter;
-
-    /**
      * Browse index to search
      *
      * @var string
@@ -115,20 +93,15 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
     /**
      * Constructor
      *
-     * @param \VuFindSearch\Service $search  Search service
-     * @param Url                   $url     URL helper
-     * @param RecordRouter          $router  Record router
-     * @param array                 $options Settings (optional)
+     * @param \VuFindSearch\Service $searchService Search service
+     * @param RouteHelper           $routeHelper   Route helper
+     * @param array                 $options       Settings (optional)
      */
     public function __construct(
-        \VuFindSearch\Service $search,
-        Url $url,
-        RecordRouter $router,
+        protected \VuFindSearch\Service $searchService,
+        protected RouteHelper $routeHelper,
         array $options = []
     ) {
-        $this->searchService = $search;
-        $this->url = $url;
-        $this->recordRouter = $router;
         $this->setOptions($options);
     }
 
@@ -303,22 +276,29 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             $retVal['links'][] = [
                 'label' => 'View Record',
                 'icon' => 'format-default',
-                'url' => $this->url
-                    ->fromRoute($route['route'], $route['params']),
+                'url' => $this->routeHelper->getUrlFromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'ui-add',
-                'url' => $this->url->fromRoute('channels-record')
-                    . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier()),
+                'url' => $this->routeHelper->getUrlFromRoute(
+                    'channels-record',
+                    queryParams: [
+                        'id' => $driver->getUniqueID(),
+                        'source' => $driver->getSourceIdentifier(),
+                    ]
+                ),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_browse',
                 'icon' => 'list',
-                'url' => $this->url->fromRoute('alphabrowse-home')
-                    . '?source=' . urlencode($this->browseIndex)
-                    . '&from=' . $from[0],
+                'url' => $this->routeHelper->getUrlFromRoute(
+                    'alphabrowse-home',
+                    queryParams: [
+                        'source' => $this->browseIndex,
+                        'from' => $from[0],
+                    ]
+                ),
             ];
         }
         return $retVal;
