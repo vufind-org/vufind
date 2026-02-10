@@ -51,11 +51,11 @@ class GVIDefault extends SolrMarc
      *
      * @var string
      */
-    protected $sourceIdentifier = 'GVI';
-
     use Feature\MarcAdvancedTrait {
         Feature\MarcAdvancedTrait::getShortTitlesAltScript as getMarcTitles;
     }
+
+    protected $sourceIdentifier = 'GVI';
 
     /**
      * Get the Hierarchy Type (false if none)
