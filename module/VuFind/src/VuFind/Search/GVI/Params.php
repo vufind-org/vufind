@@ -29,8 +29,10 @@
 
 namespace VuFind\Search\GVI;
 
+use VuFindSearch\ParamBag;
+
 /**
- * Search Params for second Solr index
+ * Search Params for GVI Solr index
  *
  * @category VuFind
  * @package  Search_GVI
