@@ -49,6 +49,44 @@ use VuFind\RecordTab\TabManager;
 class HomeAction extends AbstractRecordAction
 {
     /**
+     * Display a particular tab.
+     *
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
+     */
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        $routeMatch = $request->getAttribute('route-match');
+        // If collections are active, we may need to check if the driver is actually
+        // a collection; if so, we should redirect to the collection controller.
+        $this->getUrlFromRoute('collection');
+        $checkRoute = $this->getPostOrQueryParam('checkRoute');
+        if ($checkRoute && ($this->config['Collections']['collections'] ?? false)) {
+            $routeConfig = $this->config['Collections']['route'] ?? [];
+            $collectionRoutes = array_merge(['record' => 'collection'], $routeConfig);
+            $routeName = $routeMatch->getMatchedRouteName() ?? '';
+            if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
+                $driver = $this->loadRecord();
+                if (true === $driver->tryMethod('isCollection')) {
+                    $routeParams = $this->request->getQueryParams() + $routeMatch->getParams();
+                    $queryParams = [];
+                    if ($sid = $this->searchMemory->getCurrentSearchId()) {
+                        $queryParams = compact('sid');
+                    }
+                    $collectionUrl = $this->getUrlFromRoute($collectionRoute, $routeParams, $queryParams);
+                    return $this->getRedirectResponse($response, $collectionUrl);
+                }
+            }
+        }
+
+        return $this->showTab($routeMatch->getParam('tab') ?? $this->getDefaultTab());
+    }
+
+    /**
      * Initialize the action.
      *
      * @return void
@@ -71,48 +109,6 @@ class HomeAction extends AbstractRecordAction
         $manager = $this->tabManager;
         $manager->setContext('collection');
         return $manager;
-    }
-
-    /**
-     * Display a particular tab.
-     *
-     * @param ServerRequestInterface $request  Server request
-     * @param ResponseInterface      $response Response
-     *
-     * @return ResponseInterface
-     */
-    public function action(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-    ): ResponseInterface {
-        $routeMatch = $request->getAttribute('route-match');
-        // If collections are active, we may need to check if the driver is actually
-        // a collection; if so, we should redirect to the collection controller.
-        $checkRoute = $this->getPostOrQueryParam('checkRoute');
-        if ($checkRoute && ($this->config['Collections']['collections'] ?? false)) {
-            $routeConfig = $this->config['Collections']['route'] ?? [];
-            $collectionRoutes
-                = array_merge(['record' => 'collection'], $routeConfig);
-            $routeName = $routeMatch->getMatchedRouteName() ?? '';
-            if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
-                $driver = $this->loadRecord();
-                if (true === $driver->tryMethod('isCollection')) {
-                    $params = $this->request->getQueryParams() + $routeMatch->getParams();
-                    // Disable path normalization since it can unencode e.g. encoded
-                    // slashes in record id's
-                    $options = [
-                        'normalize_path' => false,
-                    ];
-                    if ($sid = $this->searchMemory->getCurrentSearchId()) {
-                        $options['query'] = compact('sid');
-                    }
-                    $collectionUrl = $this->getRouteUrl($collectionRoute, $params, $options);
-                    return $this->getRedirectResponse($response, $collectionUrl);
-                }
-            }
-        }
-
-        return $this->showTab($routeMatch->getParam('tab') ?? $this->getDefaultTab());
     }
 
     /**

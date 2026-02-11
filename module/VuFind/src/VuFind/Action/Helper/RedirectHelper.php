@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for actions that render templates.
+ * Action helper for redirecting requests.
  *
  * PHP version 8
  *
@@ -21,69 +21,73 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Action
+ * @package  Action_Helper
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 
-namespace VuFind\Action;
+namespace VuFind\Action\Helper;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
+use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Abstract base class for actions that render templates.
+ * Action helper for redirecting requests.
  *
  * @category VuFind
- * @package  Action
+ * @package  Action_Helper
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractTemplateRenderingAction extends AbstractAction
+class RedirectHelper extends AbstractHelper
 {
     /**
-     * Constructor.
+     * Constructor
      *
-     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
-     * @param TemplateRendererInterface $templateRenderer    Template renderer
+     * @param RouteHelper $routeHelper Route helper
      */
     #[Autowire()]
     public function __construct(
-        HelperPluginManager $helperPluginManager,
-        protected TemplateRendererInterface $templateRenderer,
+        protected RouteHelper $routeHelper,
     ) {
-        parent::__construct($helperPluginManager);
     }
 
     /**
-     * Invoke the action.
+     * Get a redirect response for a URL.
      *
-     * @param ServerRequestInterface $request  Server request
-     * @param ResponseInterface      $response Response
+     * @param ResponseInterface $response Response
+     * @param string            $url      URL
      *
      * @return ResponseInterface
      */
-    public function __invoke(
-        ServerRequestInterface $request,
+    public function redirectToUrl(
         ResponseInterface $response,
+        string $url
     ): ResponseInterface {
-        $this->request = $request;
-        $this->response = $response;
-        try {
-            return $this->action($request, $response);
-        } catch (Throwable $exception) {
-            $message = 'An error occurred during execution; please try again later.';
-            return $this->templateRenderer->renderErrorPage(
-                $request,
-                $response,
-                compact('exception', 'message')
-            );
-        }
+        return $response->withStatus(302)
+            ->withHeader('Location', $url);
+    }
+
+    /**
+     * Get a redirect response for a route.
+     *
+     * @param ResponseInterface $response    Response
+     * @param string            $name        Name of the route
+     * @param array             $routeParams Path parameters
+     * @param array             $queryParams Query parameters
+     *
+     * @return ResponseInterface
+     */
+    public function redirectToRoute(
+        ResponseInterface $response,
+        string $name,
+        array $routeParams = [],
+        array $queryParams = []
+    ): ResponseInterface {
+        $url = $this->routeHelper->getUrlFromRoute($name, $routeParams, $queryParams);
+        return $this->redirectToUrl($response, $url);
     }
 }

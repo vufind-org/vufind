@@ -34,6 +34,8 @@ namespace VuFind\Action\Record;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use stdClass;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\Action\Helper\LoginHelper;
+use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -41,6 +43,7 @@ use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFind\RecordTab\TabManager;
 use VuFind\Search\Memory as SearchMemory;
+use VuFind\Search\ResultScroller;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindSearch\ParamBag;
@@ -112,25 +115,29 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param TemplateRendererInterface $templateRenderer Template renderer
-     * @param SearchMemory              $searchMemory     Search memory
-     * @param TabManager                $tabManager       Tab manager
-     * @param AuthManager               $authManager      Authentication manager
-     * @param RecordLoader              $recordLoader     Record loader
-     * @param RecordRouter              $recordRouter     Record router
-     * @param array                     $config           VuFind configuration
+     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
+     * @param TemplateRendererInterface $templateRenderer    Template renderer
+     * @param SearchMemory              $searchMemory        Search memory
+     * @param TabManager                $tabManager          Tab manager
+     * @param AuthManager               $authManager         Authentication manager
+     * @param RecordLoader              $recordLoader        Record loader
+     * @param RecordRouter              $recordRouter        Record router
+     * @param ResultScroller            $resultScroller      Result scroller
+     * @param array                     $config              VuFind configuration
      */
     #[Autowire()]
     public function __construct(
+        HelperPluginManager $helperPluginManager,
         TemplateRendererInterface $templateRenderer,
         protected SearchMemory $searchMemory,
         protected TabManager $tabManager,
         protected AuthManager $authManager,
         protected RecordLoader $recordLoader,
         protected RecordRouter $recordRouter,
+        protected ResultScroller $resultScroller,
         #[Autowire(config: 'config')] protected array $config,
     ) {
-        parent::__construct($templateRenderer);
+        parent::__construct($helperPluginManager, $templateRenderer);
         $this->init();
     }
 
@@ -290,10 +297,10 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
             $this->getQueryParam('login') == 'true'
             && !$this->getUser()
         ) {
-            return $this->forceLogin(null);
+            return $this->getHelper(LoginHelper::class)->forceLogin($this->request, $this->response);
         } elseif (
             $this->getQueryParam('catalogLogin') == 'true'
-            && !is_array($patron = $this->catalogLogin())
+            && !is_array($patron = $this->getHelper(LoginHelper::class)->catalogLogin($this->request, $this->response))
         ) {
             return $patron;
         }
@@ -309,7 +316,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
         // Set up next/previous record links (if appropriate)
         if ($this->searchMemory->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
-            $viewParams->scrollData = $this->resultScroller()->getScrollData($driver);
+            $viewParams->scrollData = $this->resultScroller->getScrollData($driver);
         }
 
         $viewParams->callnumberHandler = $this->config['Item_Status']['callnumber_handler'] ?? false;
@@ -353,8 +360,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     protected function redirectToRecord($params = '', $tab = null)
     {
         $details = $this->recordRouter->getTabRouteDetails($this->loadRecord(), $tab);
-        $target = $this->getRouteUrl($details['route'], $details['params']);
-
+        $target = $this->getUrlFromRoute($details['route'], $details['params']);
         return $this->getRedirectResponse($this->response, $target . $params);
     }
 }

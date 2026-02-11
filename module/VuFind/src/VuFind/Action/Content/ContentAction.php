@@ -34,6 +34,7 @@ namespace VuFind\Action\Content;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Content\PageLocator;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Renderer\TemplateRendererInterface;
@@ -55,15 +56,17 @@ class ContentAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param TemplateRendererInterface $templateRenderer Template renderer
-     * @param PageLocator               $pageLocator      Page locator
+     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
+     * @param TemplateRendererInterface $templateRenderer    Template renderer
+     * @param PageLocator               $pageLocator         Page locator
      */
     #[Autowire()]
     public function __construct(
+        HelperPluginManager $helperPluginManager,
         TemplateRendererInterface $templateRenderer,
         protected PageLocator $pageLocator,
     ) {
-        parent::__construct($templateRenderer);
+        parent::__construct($helperPluginManager, $templateRenderer);
     }
 
     /**

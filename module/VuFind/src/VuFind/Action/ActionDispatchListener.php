@@ -35,9 +35,9 @@ use Laminas\Mvc\Application;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
-use Laminas\Uri\Http;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
+use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -55,10 +55,12 @@ class ActionDispatchListener
      * Constructor.
      *
      * @param PluginManager $actionPluginManager Action plugin manager
+     * @param RouteHelper   $routeHelper         Route helper
      */
     #[Autowire()]
     public function __construct(
         protected PluginManager $actionPluginManager,
+        protected RouteHelper $routeHelper,
     ) {
     }
 
@@ -99,7 +101,7 @@ class ActionDispatchListener
 
         $request = Psr7ServerRequest::fromLaminas($e->getRequest())
             ->withAttribute('action-id', $id)
-            ->withAttribute('router', $e->getRouter())
+            ->withAttribute('route-helper', $this->routeHelper)
             ->withAttribute('route-match', $e->getRouteMatch())
             ->withAttribute('view-model', $e->getViewModel());
         foreach ($route->getParams() as $routeParam => $value) {

@@ -32,6 +32,7 @@ namespace VuFind\Action\ShortLink;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\UrlShortener\UrlShortenerInterface;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
@@ -59,16 +60,19 @@ class RedirectAction extends AbstractTemplateRenderingAction
     /**
      * Constructor
      *
-     * @param TemplateRendererInterface $templateRenderer Template renderer
-     * @param UrLShortenerInterface     $shortener        URL shortener
-     * @param string                    $redirectMethod   Redirect mechanism to use (html, http, threshold:<urlLength>)
+     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
+     * @param TemplateRendererInterface $templateRenderer    Template renderer
+     * @param UrLShortenerInterface     $shortener           URL shortener
+     * @param string                    $redirectMethod      Redirect mechanism to use
+     * (html, http, threshold:<urlLength>)
      */
     public function __construct(
+        HelperPluginManager $helperPluginManager,
         TemplateRendererInterface $templateRenderer,
         protected UrlShortenerInterface $shortener,
         protected string $redirectMethod
     ) {
-        parent::__construct($templateRenderer);
+        parent::__construct($helperPluginManager, $templateRenderer);
     }
 
     /**

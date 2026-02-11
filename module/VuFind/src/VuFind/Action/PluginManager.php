@@ -50,6 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'collection/home' => Collection\HomeAction::class,
         'content/content' => Content\ContentAction::class,
+        'myresearch/login' => MyResearch\LoginAction::class,
         'shortlink/redirect' => ShortLink\RedirectAction::class,
     ];
 
@@ -61,6 +62,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         Collection\HomeAction::class => AutowiringFactory::class,
         Content\ContentAction::class => AutowiringFactory::class,
+        MyResearch\LoginAction::class => AutowiringFactory::class,
         ShortLink\RedirectAction::class => ShortLink\RedirectActionFactory::class,
     ];
 

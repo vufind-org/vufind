@@ -31,6 +31,10 @@ namespace VuFind\Action;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\Helper\AbstractHelper;
+use VuFind\Action\Helper\PluginManager as HelperPluginManager;
+use VuFind\Action\Helper\RedirectHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Abstract base class for actions.
@@ -56,6 +60,17 @@ abstract class AbstractAction implements ActionInterface
      * @var ?ResponseInterface $response
      */
     protected ?ResponseInterface $response = null;
+
+    /**
+     * Constructor.
+     *
+     * @param HelperPluginManager $helperPluginManager Helper plugin manager
+     */
+    #[Autowire()]
+    public function __construct(
+        protected HelperPluginManager $helperPluginManager,
+    ) {
+    }
 
     /**
      * Invoke the action.
@@ -142,6 +157,20 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Get a helper plugin.
+     *
+     * @param class-string<T> $name Name of plugin
+     *
+     * @template T
+     *
+     * @return T
+     */
+    protected function getHelper(string $name): AbstractHelper
+    {
+        return $this->helperPluginManager->get($name);
+    }
+
+    /**
      * Get a 302 redirect response.
      *
      * @param ResponseInterface $response Response
@@ -151,25 +180,32 @@ abstract class AbstractAction implements ActionInterface
      */
     protected function getRedirectResponse(ResponseInterface $response, string $url): ResponseInterface
     {
-        return $response->withStatus(302)
-            ->withHeader('Location', $url);
+        return $this->getHelper(RedirectHelper::class)->redirectToUrl($url, $response);
     }
 
     /**
-     * Generate a URL based on a route.
+     * Generate a URL given the name of a route.
      *
-     * @param string $route   Route name
-     * @param array  $params  Parameters to use in url generation, if any
-     * @param array  $options Route-specific options to use in url generation, if any.
+     * @param string $name        Name of the route
+     * @param array  $routeParams Path parameters
+     * @param array  $queryParams Query parameters
      *
-     * @return string
+     * @see \Laminas\Router\RouteInterface::assemble()
      *
-     * @todo Maybe use RouteHelper from https://github.com/vufind-org/vufind/pull/5049
+     * @throws \Laminas\View\Exception\RuntimeException If no RouteStackInterface was provided
+     * @throws \Laminas\View\Exception\RuntimeException If no RouteMatch was provided
+     * @throws \Laminas\View\Exception\RuntimeException If RouteMatch didn't contain a matched route name
+     * @throws \Laminas\View\Exception\InvalidArgumentException If the params object was not an array or Traversable
+     * object.
+     *
+     * @return string Url For the link href attribute
      */
-    public function getRouteUrl(string $route, array $params = [], array $options = []): string
-    {
-        $router = $this->request->getAttribute('router');
-        $options['name'] = $route;
-        return $router->assemble($params, $options);
+    public function getUrlFromRoute(
+        string $name,
+        array $routeParams = [],
+        array $queryParams = []
+    ): string {
+        $routeHelper = $this->request->getAttribute('route-helper');
+        return $routeHelper->getUrlFromRoute($name, $routeParams, $queryParams);
     }
 }

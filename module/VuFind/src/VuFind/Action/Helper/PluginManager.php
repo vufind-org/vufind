@@ -30,6 +30,7 @@
 namespace VuFind\Action\Helper;
 
 use Laminas\ServiceManager\AbstractPluginManager;
+use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 /**
  * Action helper plugin manager
@@ -43,11 +44,21 @@ use Laminas\ServiceManager\AbstractPluginManager;
 class PluginManager extends AbstractPluginManager
 {
     /**
+     * An object type that the created instance must be instanced of
+     *
+     * @var ?string
+     */
+    protected $instanceOf = AbstractHelper::class;
+
+    /**
      * Default plugin factories.
      *
      * @var array
      */
     protected $factories = [
+        ForwardHelper::class => AutowiringFactory::class,
         HttpResponseHelper::class => HttpResponseHelperFactory::class,
+        LoginHelper::class => AutowiringFactory::class,
+        RedirectHelper::class => AutowiringFactory::class,
     ];
 }

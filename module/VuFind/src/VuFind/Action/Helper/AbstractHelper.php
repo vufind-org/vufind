@@ -1,11 +1,11 @@
 <?php
 
 /**
- * HTTP response action helper
+ * Abstract base class for helpers.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2025.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,55 +22,22 @@
  *
  * @category VuFind
  * @package  Action_Helper
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 
 namespace VuFind\Action\Helper;
 
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
-
 /**
- * HTTP response action helper
+ * Abstract base class for helpers.
  *
  * @category VuFind
  * @package  Action_Helper
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class HttpResponseHelper extends AbstractHelper
+abstract class AbstractHelper
 {
-    /**
-     * Constructor
-     *
-     * @param ResponseFactoryInterface $factory HTTP response factory
-     */
-    public function __construct(protected ResponseFactoryInterface $factory)
-    {
-    }
-
-    /**
-     * Get a "not found" HTTP response.
-     *
-     * @return ResponseInterface
-     */
-    public function getNotFoundResponse(): ResponseInterface
-    {
-        return $this->factory->createResponse(404);
-    }
-
-    /**
-     * Get a redirect HTTP response
-     *
-     * @param string $url Target URL
-     *
-     * @return ResponseInterface
-     */
-    public function redirectToUrl(string $url): ResponseInterface
-    {
-        return $this->factory->createResponse(302)->withHeader('Location', $url);
-    }
 }

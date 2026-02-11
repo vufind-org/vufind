@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for actions that render templates.
+ * Action helper for forwarding requests.
  *
  * PHP version 8
  *
@@ -21,69 +21,59 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Action
+ * @package  Action_Helper
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 
-namespace VuFind\Action;
+namespace VuFind\Action\Helper;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
+use VuFind\Action\PluginManager as ActionPluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Abstract base class for actions that render templates.
+ * Action helper for forwarding requests.
  *
  * @category VuFind
- * @package  Action
+ * @package  Action_Helper
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractTemplateRenderingAction extends AbstractAction
+class ForwardHelper extends AbstractHelper
 {
     /**
-     * Constructor.
+     * Constructor
      *
-     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
-     * @param TemplateRendererInterface $templateRenderer    Template renderer
+     * @param ActionPluginManager $actionPluginManager Action plugin manager
      */
     #[Autowire()]
     public function __construct(
-        HelperPluginManager $helperPluginManager,
-        protected TemplateRendererInterface $templateRenderer,
+        protected ActionPluginManager $actionPluginManager,
     ) {
-        parent::__construct($helperPluginManager);
     }
 
     /**
-     * Invoke the action.
+     * Forward the request to another action.
      *
-     * @param ServerRequestInterface $request  Server request
+     * @param ServerRequestInterface $request  Request
      * @param ResponseInterface      $response Response
+     * @param string                 $actionId Action ('category/action')
      *
-     * @return ResponseInterface
+     * @return mixed
      */
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-    ): ResponseInterface {
-        $this->request = $request;
-        $this->response = $response;
-        try {
-            return $this->action($request, $response);
-        } catch (Throwable $exception) {
-            $message = 'An error occurred during execution; please try again later.';
-            return $this->templateRenderer->renderErrorPage(
-                $request,
-                $response,
-                compact('exception', 'message')
-            );
+    public function forwardTo(ServerRequestInterface $request, ResponseInterface $response, string $actionId)
+    {
+        if (!$this->actionPluginManager->has($actionId)) {
+            throw new \InvalidArgumentException("Unknown action '$actionId'");
         }
+        $action = $this->actionPluginManager->get($actionId);
+        return $action(
+            $request->withAttribute('action-id', $actionId),
+            $response
+        );
     }
 }
