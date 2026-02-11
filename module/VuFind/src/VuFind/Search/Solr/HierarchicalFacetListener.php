@@ -33,9 +33,7 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
-use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
 
@@ -54,90 +52,53 @@ use function is_array;
  */
 class HierarchicalFacetListener
 {
-    use GetServiceTrait;
-
-    /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
-     * Facet configuration.
-     *
-     * @var Config
-     */
-    protected $facetConfig;
-
-    /**
-     * Facet helper.
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $facetHelper;
-
     /**
      * Facet display styles.
      *
      * @var array
      */
-    protected $displayStyles;
+    protected array $displayStyles;
 
     /**
      * Hierarchy level separators
      *
      * @var array
      */
-    protected $separators;
+    protected array $separators;
 
     /**
      * Facet settings
      *
      * @var array
      */
-    protected $translatedFacets = [];
+    protected array $translatedFacets = [];
 
     /**
      * Text domains for translated facets
      *
      * @var array
      */
-    protected $translatedFacetsTextDomains = [];
+    protected array $translatedFacetsTextDomains = [];
 
     /**
      * Constructor.
      *
-     * @param BackendInterface        $backend        Search backend
-     * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param string                  $facetConfig    Facet config file id
+     * @param BackendInterface        $backend     Search backend
+     * @param HierarchicalFacetHelper $facetHelper Hierarchical facet helper
+     * @param array                   $facetConfig Facet configuration
      *
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        ServiceLocatorInterface $serviceLocator,
-        $facetConfig
+        protected BackendInterface $backend,
+        protected HierarchicalFacetHelper $facetHelper,
+        protected array $facetConfig
     ) {
-        $this->backend = $backend;
-        $this->serviceLocator = $serviceLocator;
+        $specialFacets = $this->facetConfig['SpecialFacets'] ?? [];
+        $this->displayStyles = $specialFacets['hierarchicalFacetDisplayStyles'] ?? [];
+        $this->separators = $specialFacets['hierarchicalFacetSeparators'] ?? [];
 
-        $this->facetConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($facetConfig);
-        $this->facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-
-        $specialFacets = $this->facetConfig->SpecialFacets;
-        $this->displayStyles
-            = isset($specialFacets->hierarchicalFacetDisplayStyles)
-            ? $specialFacets->hierarchicalFacetDisplayStyles->toArray()
-            : [];
-        $this->separators
-            = isset($specialFacets->hierarchicalFacetSeparators)
-            ? $specialFacets->hierarchicalFacetSeparators->toArray()
-            : [];
-
-        $translatedFacets = $this->facetConfig->Advanced_Settings->translated_facets
-            ?? [];
+        $translatedFacets = $this->facetConfig['Advanced_Settings']['translated_facets'] ?? [];
         foreach ($translatedFacets as $current) {
             $parts = explode(':', $current);
             $this->translatedFacets[] = $parts[0];
@@ -156,7 +117,7 @@ class HierarchicalFacetListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
+    ): void {
         $manager->attach(
             Service::class,
             Service::EVENT_POST,
@@ -171,7 +132,7 @@ class HierarchicalFacetListener
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
 
@@ -192,15 +153,15 @@ class HierarchicalFacetListener
      *
      * @return void
      */
-    protected function processHierarchicalFacets($event)
+    protected function processHierarchicalFacets(EventInterface $event): void
     {
-        if (empty($this->facetConfig->SpecialFacets->hierarchical)) {
+        if (empty($this->facetConfig['SpecialFacets']['hierarchical'])) {
             return;
         }
         $result = $event->getParam('command')->getResult();
         foreach ($result->getRecords() as $record) {
             $fields = $record->getRawData();
-            foreach ($this->facetConfig->SpecialFacets->hierarchical as $facetName) {
+            foreach ($this->facetConfig['SpecialFacets']['hierarchical'] as $facetName) {
                 if (!isset($fields[$facetName])) {
                     continue;
                 }
@@ -244,7 +205,7 @@ class HierarchicalFacetListener
      *
      * @return string Formatted field
      */
-    protected function formatFacetField($facet, $value)
+    protected function formatFacetField(string $facet, string $value): string
     {
         $allLevels = isset($this->displayStyles[$facet])
             ? $this->displayStyles[$facet] == 'full'

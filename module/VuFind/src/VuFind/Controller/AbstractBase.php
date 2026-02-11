@@ -32,7 +32,6 @@ namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
@@ -49,6 +48,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Service\GetServiceTrait;
 use VuFind\Session\Helper\FollowupHelper;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function intval;
 use function is_object;
@@ -64,11 +64,9 @@ use function is_object;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  *
  * @method Plugin\Captcha captcha() Captcha plugin
- * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
  * @method Plugin\Permission permission() Permission plugin
- * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
  *
@@ -355,7 +353,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // Store the current URL as a login followup action
         $this->getService(FollowupHelper::class)->store($extras);
         if (!empty($msg)) {
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
         }
 
         // Set a flag indicating that we are forcing login:
@@ -408,17 +406,17 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                     $routeParams = $routeMatch ? $routeMatch->getParams() : [];
                     $ilsAuth
                         ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
-                    $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
+                    $this->getFlashMessenger()->addSuccessMessage('email_login_link_sent');
                 } else {
                     $patron = $ilsAuth->newCatalogLogin($username, $password, $user);
 
                     // If login failed, store a warning message:
                     if (!$patron) {
-                        $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                        $this->getFlashMessenger()->addErrorMessage('Invalid Patron Login');
                     }
                 }
             } catch (ILSException $e) {
-                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
             }
         } elseif (
             'ILS' === $this->params()->fromQuery('auth_method', false)
@@ -427,14 +425,14 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             try {
                 $patron = $ilsAuth->processEmailLoginHash($hash);
             } catch (AuthException $e) {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                $this->getFlashMessenger()->addErrorMessage($e->getMessage());
             }
         } else {
             try {
                 // If no credentials were provided, try the stored values:
                 $patron = $ilsAuth->storedCatalogLogin();
             } catch (ILSException $e) {
-                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
                 return $this->createViewModel();
             }
         }
@@ -928,5 +926,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             $this->auditEventService = $dbServiceManager->get(AuditEventServiceInterface::class);
         }
         return $this->auditEventService;
+    }
+
+    /**
+     * Get flash messenger.
+     *
+     * @return FlashMessengerInterface
+     */
+    public function getFlashMessenger(): FlashMessengerInterface
+    {
+        return $this->serviceLocator->get(FlashMessengerInterface::class);
     }
 }

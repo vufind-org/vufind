@@ -31,6 +31,7 @@ namespace VuFindTest\Search;
 
 use VuFind\ILS\Connection;
 use VuFind\Search\NewItemsHelper;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 /**
  * New items controller plugin tests.
@@ -63,7 +64,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetBibIDsFromCatalog()
     {
-        $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
+        $flash = $this->createMock(FlashMessengerInterface::class);
         $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
             $this->getMockParams(),
@@ -81,9 +82,8 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetBibIDsFromCatalogWithIDLimit()
     {
-        $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
-        $flash->expects($this->once())->method('addMessage')
-            ->with('too_many_new_items', 'info');
+        $flash = $this->createMock(FlashMessengerInterface::class);
+        $flash->expects($this->once())->method('addInfoMessage')->with('too_many_new_items');
         $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
             $this->getMockParams(1),

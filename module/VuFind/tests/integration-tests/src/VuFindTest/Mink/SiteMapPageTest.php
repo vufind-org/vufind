@@ -60,9 +60,19 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+    }
+
+    /**
+     * Apply a non-default SiteMap.yaml configuration that includes submenu items.
+     *
+     * @return void
+     */
+    protected function applySiteMapConfigWithSubmenuItems(): void
+    {
         $this->changeYamlConfigs(
             [
                 'SiteMap' => [
+                    '@parent_config_name' => false,
                     'HomePage' => [
                         'MenuItems' => [
                             [
@@ -148,7 +158,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that the page is working.
+     * Test that the page is working with default settings.
      *
      * @return void
      */
@@ -162,6 +172,10 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsString(
             'Home Page',
             $this->findCssAndGetText($page, '#content > h2:nth-child(2) > a:nth-child(1)')
+        );
+        $this->assertStringEndsWith(
+            '/Content/askLibrary',
+            $this->findCss($page, '#content')->findLink('Ask a Librarian')->getAttribute('href')
         );
     }
 
@@ -202,6 +216,7 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testSubmenuItems(): void
     {
+        $this->applySiteMapConfigWithSubmenuItems();
         $page = $this->getSiteMapPage();
         $this->assertStringContainsString(
             'Submenu Items Test',

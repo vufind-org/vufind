@@ -1,0 +1,33 @@
+# Available styles. Keys are style names. Values are options.
+# The following options are available:
+# - classes: CSS classes to be added to the notices. If omitted, defaults will be applied by the Notices view helper.
+styles:
+  success:
+  info:
+  warning:
+  danger:
+#  my-custom-style-name:
+#    classes: my-custom-css-class my-other-custom-css-class
+
+# Notices can be configured here. You can use the following options:
+# - content: The message to be displayed.
+# - translations: To support multiple languages use this option instead of content.
+#                 This is an associative array. Keys are language codes and values are
+#                 the translated messages. The notices will only be displayed if the selected language
+#                 is included in the keys. If the value is left empty the translation will be chosen
+#                 based on the language fallback configuration in config.ini.
+# - style: Specifies one of the styles above.
+# - position: Specifies the position of the notice. By default, the notices are displayed above the main content.
+#             Currently, the only other option that is available is "header", but you can add more possible position
+#             by adding <?=$this->notices()->renderNoticesForPosition('<position>')?> to your templates.
+notices:
+# Example 1
+#  - style: warning
+#    content: The library is closed today!
+# Example 2 (Notices will only be displayed for languages de, es and en. For es it will fall back to en)
+#  - style: success
+#    position: header
+#    translations:
+#      de: Willkommen in unserem Katalog!
+#      es:
+#      en: Welcome to our catalog!

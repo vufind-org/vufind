@@ -109,14 +109,14 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->findCss($page, '.comment-form');
         // Create new account
         $this->openCommentsLoginModal($page);
         $this->makeAccount($page, 'username1');
         $this->waitForLightboxHidden();
         // Make sure page updated for login
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->waitForPageLoad($page);
         $this->assertSame(// Can Comment?
             'Add your comment',
@@ -155,7 +155,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Go to a record view
         $page = $this->gotoRecord();
         // Click add comment without logging in
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->findCss($page, '.comment-form');
         // Log in to existing account
         $this->openCommentsLoginModal($page);
@@ -163,7 +163,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page);
         // Make sure page updated for login
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->assertSame(// Can Comment?
             'Add your comment',
             $this->findCssAndGetValue($page, 'form.comment-form .btn.btn-primary')
@@ -817,7 +817,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Add comment with rating
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->waitForPageLoad($page);
         $this->findCss($page, '.comment-form');
         $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
@@ -889,7 +889,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
 
         // Add two comments
-        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->clickCss($page, '.record-tabs #tab-button-usercomments');
         $this->waitForPageLoad($page);
         $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
         $this->clickCss($page, 'form.comment-form .btn-primary');

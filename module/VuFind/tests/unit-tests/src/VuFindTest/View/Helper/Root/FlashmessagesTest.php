@@ -29,8 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\EscapeHtml;
+use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\Flashmessages;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
@@ -223,8 +223,11 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         };
 
         $mockMessenger = $this->createMock(FlashMessenger::class);
-        $mockMessenger->method('getMessages')->with($this->isType('string'))->willReturnCallback($getMessages);
-        $mockMessenger->method('getCurrentMessages')->with($this->isType('string'))->willReturn([]);
+        $mockMessenger->method('getMessages')->with($this->isString())->willReturnCallback($getMessages);
+        $mockMessenger->method('getErrorMessages')->willReturnCallback(fn (): array => $getMessages('error'));
+        $mockMessenger->method('getInfoMessages')->willReturnCallback(fn (): array => $getMessages('info'));
+        $mockMessenger->method('getSuccessMessages')->willReturnCallback(fn (): array => $getMessages('success'));
+        $mockMessenger->method('getWarningMessages')->willReturnCallback(fn (): array => $getMessages('warning'));
 
         $fm = new Flashmessages($mockMessenger);
 

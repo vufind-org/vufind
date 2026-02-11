@@ -111,6 +111,7 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap5\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap5\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClass',
+            'notices' => VuFind\View\Helper\Bootstrap5\Notices::class,
             'search' => 'VuFind\View\Helper\Bootstrap5\Search',
         ],
     ],

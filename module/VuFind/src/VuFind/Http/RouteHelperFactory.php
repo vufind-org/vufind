@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for FlashMessenger controller plugin.
+ * Route Helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,14 +21,15 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Http
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Http;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -36,15 +37,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for FlashMessenger controller plugin.
+ * Route Helper factory.
  *
  * @category VuFind
- * @package  Controller_Plugins
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Http
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class FlashMessengerFactory implements FactoryInterface
+class RouteHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,9 +69,12 @@ class FlashMessengerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $plugin = new $requestedName();
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
-        $plugin->setSessionManager($sessionManager);
-        return $plugin;
+
+        $viewRenderer = $container->get('ViewRenderer');
+        return new $requestedName(
+            // Defer fetching of the plugin until it's actually needed to allow for Laminas MvcEvent to be dispatched
+            // first:
+            Closure::fromCallable(fn () => $viewRenderer->plugin('url'))
+        );
     }
 }

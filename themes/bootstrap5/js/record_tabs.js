@@ -1,172 +1,34 @@
-/*global getUrlRoot, VuFind, setupJumpMenus */
+/*global bootstrap, getUrlRoot, VuFind, setupJumpMenus */
 VuFind.register('recordTabs', function RecordTabs() {
-  // Forward declaration
-  let ajaxLoadTab = function ajaxLoadTabForward() {
-  };
-
   /**
-   * Handle a click on an AJAX tab link.
-   * @param {Event} event The click event.
+   * Load tab pane content via ajax.
+   * @param {HTMLElement} _tabPane Tab pane
    */
-  function handleAjaxTabLinkClick(event){
-    event.preventDefault();
-    const href = event.target.href;
-    const activeTab = document.querySelector('.record-tabs .nav-tabs li.active');
-    if (!activeTab) return;
-    const tabId = activeTab.dataset.tab;
-    const tab = document.querySelector('.' + tabId + '-tab');
-    if (tab) {
-      VuFind.setInnerHtml(tab, '<div role="tabpanel" class="tab-pane ' + tabId + '-tab">' + VuFind.loading() + '</div>');
-      ajaxLoadTab(tab, '', false, href);
-    }
-  }
-
-  /**
-   * Register click handlers for AJAX tab links.
-   */
-  function handleAjaxTabLinks() {
-    document.querySelectorAll('a').forEach((a) => {
-      const href = a.href;
-      if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
-        a.addEventListener('click', handleAjaxTabLinkClick);
-      }
-    });
-  }
-
-  /**
-   * Update the print button's URL hash.
-   * @param {string|null} hash The hash to set.
-   */
-  function setPrintBtnHash(hash) {
-    const printBtn = document.querySelector(".print-record");
-    if (!printBtn) {
-      return;
-    }
-    const printHref = printBtn.href;
-    const printURL = new URL(printHref, window.location.origin);
-    printURL.hash = hash === null ? "" : hash;
-    printBtn.setAttribute("href", printURL.href);
-  }
-
-  /**
-   * Add a tab ID to the URL hash.
-   * @param {string} tabId The ID of the tab.
-   */
-  function addTabToURL(tabId) {
-    window.location.hash = tabId;
-    setPrintBtnHash(tabId);
-  }
-
-  /**
-   * Remove the hash from the URL.
-   */
-  function removeHashFromLocation() {
-    if (window.history.replaceState) {
-      const href = window.location.href.split('#');
-      window.history.replaceState({}, document.title, href[0]);
-    } else {
-      window.location.hash = '#';
-    }
-
-    setPrintBtnHash(null);
-  }
-
-  ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
-    // Request the tab via AJAX:
-    let url = '';
+  function _ajaxLoadTab(_tabPane) {
+    const tabPane = _tabPane;
+    if (tabPane.dataset.init === 'true' || tabPane.dataset.init === 'loading') return;
     // Needs to be passed to a const or it might be changed in the fetch.then block
-    const setHash = _setHash;
+    tabPane.dataset.init = 'loading';
+    VuFind.setInnerHtml(tabPane, VuFind.loading());
+    let url = tabPane.dataset.ajaxUrl ? tabPane.dataset.ajaxUrl : VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
     const postData = {};
-    // If tabUrl is defined, it overrides base URL and tabId
-    if (typeof tabUrl !== 'undefined') {
-      url = tabUrl;
-    } else {
-      url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
-      postData.tab = tabId;
-      postData.sid = VuFind.getCurrentSearchId();
-    }
+    postData.tab = tabPane.dataset.tabName;
+    postData.sid = VuFind.getCurrentSearchId();
     fetch(url, {
       method: 'POST',
       body: new URLSearchParams(postData)
     }).then(response => response.text())
       .then((data) => {
         if (typeof data === 'object') {
-          VuFind.setInnerHtml(newTab, data.responseText ? VuFind.updateCspNonce(data.responseText) : VuFind.translate('error_occurred'));
+          VuFind.setInnerHtml(tabPane, data.responseText ? VuFind.updateCspNonce(data.responseText) : VuFind.translate('error_occurred'));
         } else {
-          VuFind.setInnerHtml(newTab, VuFind.updateCspNonce(data));
+          VuFind.setInnerHtml(tabPane, VuFind.updateCspNonce(data));
         }
-        VuFind.emit('record-tab-init', {container: newTab});
-        if (typeof setHash == 'undefined' || setHash) {
-          addTabToURL(tabId);
-        } else {
-          removeHashFromLocation();
-        }
-        setupJumpMenus(newTab);
-        VuFind.emit('record-tab-loaded', {container: newTab});
+        tabPane.dataset.init = 'true';
+        VuFind.emit('record-tab-init', {container: tabPane});
+        setupJumpMenus(tabPane);
+        VuFind.emit('record-tab-loaded', {container: tabPane});
       });
-  };
-
-  /**
-   * Create a new tab content element for an AJAX tab.
-   * @param {string} tabId The ID of the tab.
-   * @returns {HTMLElement} The new tab element.
-   */
-  function getNewRecordTab(tabId) {
-    const newRecordTab = document.createElement("div");
-    newRecordTab.role = 'tabpanel';
-    newRecordTab.classList.add('tab-pane', tabId + '-tab');
-    newRecordTab.setAttribute('aria-labelledby', 'record-tab-' + tabId);
-    VuFind.setInnerHtml(newRecordTab, VuFind.loading());
-    return newRecordTab;
-  }
-
-  /**
-   * Load a record tab in the background if it's not already present.
-   * @param {string} tabId The ID of the tab to load.
-   */
-  function backgroundLoadTab(tabId) {
-    if (document.querySelector('.' + tabId + '-tab')) {
-      return;
-    }
-    const newTab = getNewRecordTab(tabId);
-    const tab = document.querySelector('[data-tab="' + tabId + '"]');
-    if (!tab) return;
-    const container = tab.closest('.result,.record');
-    if (!container) return;
-    const tabContent = container.querySelector('.tab-content');
-    if (!tabContent) return;
-    tabContent.append(newTab);
-    ajaxLoadTab(newTab, tabId, false);
-  }
-
-  /**
-   * Apply the tab hash from the URL to open the corresponding tab.
-   * @param {boolean} scrollToTabs Whether to scroll to the tabs section.
-   */
-  function applyRecordTabHash(scrollToTabs) {
-    const activeLi = document.querySelector('.record-tabs li.active');
-    const activeTab = activeLi ? activeLi.dataset.tab : undefined;
-    const initiallyActiveTab = document.querySelector('.record-tabs li.initiallyActive a');
-    const newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase() : '';
-
-    // Open tab in url hash
-    if (initiallyActiveTab && (newTab.length <= 1 || newTab === '#tabnav')) {
-      initiallyActiveTab.click();
-      if (newTab === '#tabnav') {
-        initiallyActiveTab.focus();
-      }
-    } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-      const tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
-      if (tabLink) {
-        tabLink.click();
-        if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
-          $('html, body').animate({
-            scrollTop: $('.record-tabs').offset().top
-          }, 500);
-          tabLink.focus();
-        }
-      }
-    }
   }
 
   /**
@@ -175,64 +37,23 @@ VuFind.register('recordTabs', function RecordTabs() {
    */
   function updateContainer(params) {
     const container = params.container;
-    container.querySelectorAll('.record-tabs .nav-tabs a')
-      .forEach((tab) => {
-        const tabEventHandler = (event) => {
-          const li = tab.parentNode;
-          const tabId = li.dataset.tab;
-          const top = tab.closest('.record-tabs');
-          if (!top) return;
-          const targetPane = top.querySelector('.tab-pane.' + tabId + '-tab');
-          // Only trigger show on already active tabs to set up all attributes required for keyboard controls:
-          if (tab.classList.contains('active') && targetPane && targetPane.classList.contains('active')) {
-            event.preventDefault();
-            $(tab).tab('show');
-            return;
+    container.querySelectorAll('.record-tab-button')
+      .forEach((tabButton) => {
+        tabButton.addEventListener('show.bs.tab', () => {
+          let tabPane = document.querySelector(tabButton.dataset.bsTarget);
+          if (!tabPane) return;
+          let tabUrl = tabPane.dataset.tabUrl;
+          if (window.history.replaceState && tabUrl) {
+            window.history.replaceState({}, document.title, tabUrl);
           }
-          // if we're flagged to skip AJAX for this tab, we need special behavior:
-          if (li.classList.contains('noajax')) {
-            // if this was the initially active tab, we have moved away from it and
-            // now need to return -- just switch it back on.
-            if (li.classList.contains('initiallyActive')) {
-              $(tab).tab('show');
-              top.querySelectorAll('.tab-pane.active').forEach(e => e.classList.remove('active'));
-              top.querySelectorAll('.' + tabId + '-tab').forEach(e => e.classList.add('active'));
-              addTabToURL('tabnav');
-              event.preventDefault();
-            }
-            // otherwise, we need to let the browser follow the link:
-            return;
-          }
-          event.preventDefault();
-          top.querySelectorAll('.tab-pane.active').forEach((e) => e.classList.remove('active'));
-          $(tab).tab('show');
-          const tabById = top.querySelector('.' + tabId + '-tab');
-          if (tabById) {
-            tabById.classList.add('active');
-            if (li.classList.contains('initiallyActive')) {
-              removeHashFromLocation();
-            } else {
-              addTabToURL(tabId);
-            }
-          } else {
-            const newTab = getNewRecordTab(tabId);
-            newTab.classList.add('active');
-            const tabContent = top.querySelector('.tab-content');
-            if (tabContent) {
-              tabContent.append(newTab);
-            }
-            ajaxLoadTab(newTab, tabId, !li.classList.contains('initiallyActive'));
-          }
-        };
-        tab.addEventListener('click', tabEventHandler);
-        tab.addEventListener('focus', tabEventHandler);
+          _ajaxLoadTab(tabPane);
+        });
       });
 
-    container.querySelectorAll('[data-background]').forEach((el) => {
-      backgroundLoadTab(el.dataset.tab);
-    });
+    document.querySelectorAll('.record-tab-pane.active, .record-tab-pane[data-background="true"]')
+      .forEach(_ajaxLoadTab);
 
-    const recordTabs = container.querySelector( '.record-tabs');
+    const recordTabs = document.querySelector( '.record-tabs');
     VuFind.emit('record-tab-init', {container: (recordTabs !== null) ? recordTabs : document});
   }
 
@@ -240,10 +61,24 @@ VuFind.register('recordTabs', function RecordTabs() {
    * Initialize the record tabs.
    */
   function init() {
-    window.addEventListener('hashchange', applyRecordTabHash);
-    handleAjaxTabLinks();
     updateContainer({container: document});
-    applyRecordTabHash(false);
+    VuFind.listen('embedded-record-init', updateContainer);
+
+    // handle location hashes for supporting outdated links
+    const hrefParts = window.location.href.split('#');
+    if (hrefParts.length > 1) {
+      let tabElement = document.querySelector('.record-tabs #tab-button-' + hrefParts[1]);
+      if (!tabElement) return;
+      if (window.history.replaceState) {
+        const href = window.location.href.split('#');
+        window.history.replaceState({}, document.title, href[0]);
+      } else {
+        window.location.hash = '#';
+      }
+      if (tabElement.classList.contains('active')) return;
+      let tab = bootstrap.Tab.getOrCreateInstance(tabElement);
+      tab.show();
+    }
   }
 
   return {

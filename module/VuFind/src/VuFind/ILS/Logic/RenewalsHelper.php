@@ -29,10 +29,10 @@
 
 namespace VuFind\ILS\Logic;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\Stdlib\Parameters;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function is_array;
 
@@ -79,11 +79,11 @@ class RenewalsHelper
     /**
      * Process renewal requests.
      *
-     * @param Parameters     $request        Request object
-     * @param Connection     $catalog        ILS connection object
-     * @param array          $patron         Current logged in patron
-     * @param FlashMessenger $flashMessenger Flash messenger for user messages
-     * @param ?CsrfInterface $csrfValidator  CSRF validator
+     * @param Parameters              $request        Request object
+     * @param Connection              $catalog        ILS connection object
+     * @param array                   $patron         Current logged in patron
+     * @param FlashMessengerInterface $flashMessenger Flash messenger for user messages
+     * @param ?CsrfInterface          $csrfValidator  CSRF validator
      *
      * @return array The result of the renewal, an associative array keyed by
      * item ID (empty if no renewals performed)
@@ -92,7 +92,7 @@ class RenewalsHelper
         Parameters $request,
         Connection $catalog,
         array $patron,
-        FlashMessenger $flashMessenger,
+        FlashMessengerInterface $flashMessenger,
         ?CsrfInterface $csrfValidator = null
     ): array {
         // Pick IDs to renew based on which button was pressed:
@@ -127,7 +127,7 @@ class RenewalsHelper
                 // Assign Blocks to the Template
                 if (is_array($renewResult['blocks'] ?? null)) {
                     foreach ($renewResult['blocks'] as $block) {
-                        $flashMessenger->addMessage($block, 'info');
+                        $flashMessenger->addInfoMessage($block);
                     }
                 } elseif (is_array($renewResult['details'] ?? null)) {
                     $bad = $good = 0;
@@ -139,15 +139,25 @@ class RenewalsHelper
                         }
                     }
                     if ($good > 0) {
-                        $flashMessenger->addMessage(
-                            ['msg' => 'renew_success_summary', 'tokens' => ['count' => $good], 'icu' => true],
-                            'success'
+                        $flashMessenger->addSuccessMessage(
+                            [
+                                'msg' => 'renew_success_summary',
+                                'tokens' => [
+                                    'count' => $good,
+                                ],
+                                'icu' => true,
+                            ]
                         );
                     }
                     if ($bad > 0) {
-                        $flashMessenger->addMessage(
-                            ['msg' => 'renew_error_summary', 'tokens' => ['count' => $bad], 'icu' => true],
-                            'error'
+                        $flashMessenger->addErrorMessage(
+                            [
+                                'msg' => 'renew_error_summary',
+                                'tokens' => [
+                                    'count' => $bad,
+                                ],
+                                'icu' => true,
+                            ]
                         );
                     }
                 }
@@ -156,11 +166,11 @@ class RenewalsHelper
                 return $renewResult['details'];
             } else {
                 // System failure:
-                $flashMessenger->addMessage('renew_error', 'error');
+                $flashMessenger->addErrorMessage('renew_error');
             }
         } elseif (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
-            $flashMessenger->addMessage('renew_empty_selection', 'error');
+            $flashMessenger->addErrorMessage('renew_empty_selection');
         }
 
         return [];

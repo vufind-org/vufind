@@ -29,7 +29,12 @@
 
 namespace VuFind\Search\Factory;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use VuFind\Config\Config;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
@@ -51,7 +56,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return string
      */
-    protected function getServiceName()
+    protected function getServiceName(): string
     {
         return 'LibGuides';
     }
@@ -59,31 +64,39 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * LibGuides configuration
      *
-     * @var \VuFind\Config\Config
+     * @var Config
      */
-    protected $libGuidesConfig;
+    protected Config $libGuidesConfig;
 
     /**
-     * Create service
+     * Create an object
      *
-     * @param ContainerInterface $sm      Service manager
-     * @param string             $name    Requested service name (unused)
-     * @param array              $options Extra options (unused)
+     * @param ContainerInterface $container     Service manager
+     * @param string             $requestedName Service being created
+     * @param null|array         $options       Extra options (optional)
      *
-     * @return Backend
+     * @return object
+     *
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     * creating a service.
+     * @throws ContainerException&\Throwable if any other error occurs
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
-    {
-        $this->setup($sm);
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ) {
+        $this->setup($container);
         $this->libGuidesConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
@@ -101,7 +114,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
         $backend = new Backend(
@@ -119,7 +132,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         // Load credentials:
         $iid = $this->libGuidesConfig->General->iid ?? null;
@@ -150,10 +163,9 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder();
-        return $builder;
+        return new QueryBuilder();
     }
 
     /**
@@ -161,7 +173,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
