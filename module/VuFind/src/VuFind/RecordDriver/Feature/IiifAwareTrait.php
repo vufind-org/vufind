@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace Finna\RecordDriver\Feature;
+namespace VuFind\RecordDriver\Feature;
 
 /**
  * Additional functionality for IIIF in Finna
