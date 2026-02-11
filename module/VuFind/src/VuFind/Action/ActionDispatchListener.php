@@ -151,7 +151,7 @@ class ActionDispatchListener
         if ($uri === Psr7Response::URI_TEMP || $uri === Psr7Response::URI_MEMORY) {
             $laminasResponse->setContent((string)$psr7Response->getBody());
         } else {
-            $laminasResponse->setContent(file_get_contents($uri));
+            throw new \Exception('Unexpected URI in PSR-7 metadata');
         }
     }
 }
