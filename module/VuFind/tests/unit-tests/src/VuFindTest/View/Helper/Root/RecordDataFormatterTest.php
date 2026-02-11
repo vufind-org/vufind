@@ -112,8 +112,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             new \VuFind\Search\Params\PluginManager($container)
         );
 
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
         $searchMemory = new \VuFind\View\Helper\Root\SearchMemory(
-            $this->createMock(\VuFind\Search\Memory::class),
+            $memory,
             $url,
             $escapeHtml,
             $searchParams
@@ -125,9 +126,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $recordLinker = new \VuFind\View\Helper\Root\RecordLinker(
             $this->getMockRecordRouter(),
+            $memory,
             $url,
             $searchOptions,
-            $searchMemory,
             $translate,
             $truncate,
             $escapeHtml
@@ -152,7 +153,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $recordLinker,
             $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
             $transEsc,
-            $searchMemory,
             $highlight,
             $addEllipsis,
             $escapeOrCleanHtml,

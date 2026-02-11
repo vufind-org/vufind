@@ -210,8 +210,8 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     protected function getRecordLinker(array $extraHelpers = []): RecordLinker
     {
         $url = $this->getUrl();
-
-        $searchMemory = $this->getSearchMemoryViewHelper();
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
+        $memory->method('getLastSearchId')->willReturn(-123);
         $searchOptions = $extraHelpers['searchOptions'] ?? $this->createMock(SearchOptions::class);
 
         $translate = $extraHelpers['translate'] ?? $this->createMock(Translate::class);
@@ -231,9 +231,9 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
 
         $recordLinker = new RecordLinker(
             new Router(new Config([])),
+            $memory,
             $url,
             $searchOptions,
-            $searchMemory,
             $translate,
             $truncate,
             $escapeHtml

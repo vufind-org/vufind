@@ -97,7 +97,6 @@ class Record implements DbServiceAwareInterface
      * @param RecordLinker      $recordLinker       RecordLinker helper
      * @param SearchTabs        $searchTabs         SearchTabs helper
      * @param TransEsc          $transEsc           TransEsc helper
-     * @param SearchMemory      $searchMemoryHelper SearchMemory helper
      * @param Highlight         $highlight          Highlight helper
      * @param AddEllipsis       $addEllipsis        AddEllipsis helper
      * @param EscapeOrCleanHtml $escape             EscapeOrCleanHtml helper
@@ -119,8 +118,6 @@ class Record implements DbServiceAwareInterface
         protected SearchTabs $searchTabs,
         #[Autowire(container: 'ViewHelperManager')]
         protected TransEsc $transEsc,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected SearchMemory $searchMemoryHelper,
         #[Autowire(container: 'ViewHelperManager')]
         protected Highlight $highlight,
         #[Autowire(container: 'ViewHelperManager')]
@@ -520,7 +517,7 @@ class Record implements DbServiceAwareInterface
         // Try to get hidden filters for the current search:
         if ($this->searchMemory) {
             $searchId = $this->driver->getExtraDetail('searchId')
-                ?? $this->searchMemoryHelper->getLastSearchId();
+                ?? $this->searchMemory->getLastSearchId();
             if (
                 $searchId
                 && ($search = $this->searchMemory->getSearchById($searchId, ($this->auth)->getUserObject()))
@@ -554,10 +551,7 @@ class Record implements DbServiceAwareInterface
         $context = ['driver' => $this->driver, 'tab' => $tab];
         $classParts = explode('\\', $tab::class);
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
-        $oldContext = $this->context->apply($context);
-        $html = $this->viewRenderer->render($template);
-        $this->context->restore($oldContext);
-        return $html;
+        return $this->context->renderInContext($template, $context);
     }
 
     /**

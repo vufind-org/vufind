@@ -528,15 +528,11 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $tab = new \VuFind\RecordTab\Description();
         $driver = $this->loadRecordFixture('testbug1.json');
         $context = $this->getMockContext();
-        $context->expects($this->once())->method('apply')
-            ->with(compact('driver', 'tab'))
-            ->willReturn(['bar' => 'baz']);
-        $context->expects($this->once())->method('restore')
-            ->with(['bar' => 'baz']);
-        $record = $this->getRecord($driver, [], $context);
-        $record->getViewRenderer()->expects($this->once())->method('render')
-            ->with('RecordTab/description.phtml')
+        $context->expects($this->once())
+            ->method('renderInContext')
+            ->with('RecordTab/description.phtml', ['driver' => $driver, 'tab' => $tab])
             ->willReturn('success');
+        $record = $this->getRecord($driver, [], $context);
         $this->assertEquals('success', $record->getTab($tab));
     }
 
@@ -793,7 +789,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $searchTabs ??= $this->getMockSearchTabs($setSearchTabExpectations);
 
         $config = is_array($config) ? new Config($config) : $config;
-        $smvh = $this->getSearchMemoryViewHelper();
 
         $auth = new \VuFind\View\Helper\Root\Auth(
             $this->createMock(\VuFind\Auth\Manager::class),
@@ -810,7 +805,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\View\Helper\Root\RecordLinker::class),
             $searchTabs,
             $this->createMock(\VuFind\View\Helper\Root\TransEsc::class),
-            $smvh,
             $this->createMock(\VuFind\View\Helper\Root\Highlight::class),
             $this->createMock(\VuFind\View\Helper\Root\AddEllipsis::class),
             $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class),

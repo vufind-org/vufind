@@ -34,6 +34,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\EscapeHtml;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
+use VuFind\Search\Memory;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
@@ -69,21 +70,20 @@ class RecordLinker
      * Constructor
      *
      * @param Router        $router        Record router
+     * @param Memory        $memory        Search memory service
      * @param Url           $url           Url helper
      * @param SearchOptions $searchOptions SearchOptions helper
-     * @param SearchMemory  $searchMemory  SearchMemory helper
      * @param Translate     $translate     Translate helper
      * @param Truncate      $truncate      Truncate helper
      * @param EscapeHtml    $escapeHtml    EscapeHtml helper
      */
     public function __construct(
         protected Router $router,
+        protected Memory $memory,
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager')]
         protected SearchOptions $searchOptions,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected SearchMemory $searchMemory,
         #[Autowire(container: 'ViewHelperManager')]
         protected Translate $translate,
         #[Autowire(container: 'ViewHelperManager')]
@@ -384,7 +384,7 @@ class RecordLinker
             return [];
         }
         $sid = ($this->results ? $this->results->getSearchId() : null)
-            ?? $this->searchMemory->getLastSearchId();
+            ?? $this->memory->getLastSearchId();
         return $sid ? compact('sid') : [];
     }
 }
