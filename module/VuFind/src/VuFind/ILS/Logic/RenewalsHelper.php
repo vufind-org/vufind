@@ -79,11 +79,11 @@ class RenewalsHelper
     /**
      * Process renewal requests.
      *
-     * @param Parameters             $request        Request object
-     * @param Connection             $catalog        ILS connection object
-     * @param array                  $patron         Current logged in patron
-     * @param FlashMessengeInterface $flashMessenger Flash messenger for user messages
-     * @param ?CsrfInterface         $csrfValidator  CSRF validator
+     * @param Parameters              $request        Request object
+     * @param Connection              $catalog        ILS connection object
+     * @param array                   $patron         Current logged in patron
+     * @param FlashMessengerInterface $flashMessenger Flash messenger for user messages
+     * @param ?CsrfInterface          $csrfValidator  CSRF validator
      *
      * @return array The result of the renewal, an associative array keyed by
      * item ID (empty if no renewals performed)

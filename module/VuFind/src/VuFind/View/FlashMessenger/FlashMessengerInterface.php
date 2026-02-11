@@ -84,7 +84,7 @@ interface FlashMessengerInterface
      * Note: The namespace-specific methods (e.g. addSuccessMessage) above should be used whenever possible.
      *
      * @param string|array $message   Message as a string, or a complex message as an array
-     * @param ?string      $namespace Namespace
+     * @param string       $namespace Namespace
      *
      * @return static
      */
@@ -123,7 +123,7 @@ interface FlashMessengerInterface
      *
      * Note: The namespace-specific methods (e.g. getSuccessMessages) above should be used whenever possible.
      *
-     * @param ?string $namespace Namespace
+     * @param string $namespace Namespace
      *
      * @return array
      */
@@ -139,7 +139,7 @@ interface FlashMessengerInterface
     /**
      * Clear messages from the given namespace.
      *
-     * @param ?string $namespace Namespace
+     * @param string $namespace Namespace
      *
      * @return void
      */

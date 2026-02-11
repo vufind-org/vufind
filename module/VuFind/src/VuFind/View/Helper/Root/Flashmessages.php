@@ -92,7 +92,7 @@ class Flashmessages extends AbstractHelper
         }
         $html = '';
         foreach ($this->namespaces as $ns => $method) {
-            $messages = $this->flashMessenger->$method($ns);
+            $messages = $this->flashMessenger->$method();
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div role="alert" class="'
                     . $this->getClassForNamespace($ns) . '"';

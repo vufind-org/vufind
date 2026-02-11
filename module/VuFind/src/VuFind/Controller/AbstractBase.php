@@ -932,8 +932,6 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * Get flash messenger.
      *
      * @return FlashMessengerInterface
-     *
-     * @todo Make this protected when controller plugins don't need this anymore.
      */
     public function getFlashMessenger(): FlashMessengerInterface
     {
