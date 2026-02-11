@@ -89,7 +89,7 @@ trait StorageRetrievalRequestsTrait
             $patron
         );
         if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 is_array($validRequest)
                     ? $validRequest['status']
                     : 'storage_retrieval_request_error_blocked'
@@ -105,7 +105,7 @@ trait StorageRetrievalRequestsTrait
         // Check that there are pick up locations to choose from if the field is
         // required:
         if (in_array('pickUpLocation', $extraFields) && !$pickup) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('No pickup locations available');
             return $this->redirectToRecord('#top');
         }
@@ -122,7 +122,7 @@ trait StorageRetrievalRequestsTrait
                 $pickup
             );
             if (!$validPickup) {
-                $this->flashMessenger()
+                $this->getFlashMessenger()
                     ->addErrorMessage('storage_retrieval_request_invalid_pickup');
             } else {
                 // Add Patron Data to Submitted Data
@@ -142,7 +142,7 @@ trait StorageRetrievalRequestsTrait
                                 ->fromRoute('myresearch-storageretrievalrequests'),
                         ],
                     ];
-                    $this->flashMessenger()->addSuccessMessage($msg);
+                    $this->getFlashMessenger()->addSuccessMessage($msg);
                     $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
 
                     $this->getAuditEventService()->addEvent(
@@ -160,10 +160,10 @@ trait StorageRetrievalRequestsTrait
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
                     if (isset($results['status'])) {
-                        $this->flashMessenger()->addErrorMessage($results['status']);
+                        $this->getFlashMessenger()->addErrorMessage($results['status']);
                     }
                     if (isset($results['sysMessage'])) {
-                        $this->flashMessenger()
+                        $this->getFlashMessenger()
                             ->addErrorMessage($results['sysMessage']);
                     }
                 }

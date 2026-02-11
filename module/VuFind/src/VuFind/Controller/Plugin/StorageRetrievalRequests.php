@@ -98,7 +98,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
     public function cancelStorageRetrievalRequests($catalog, $patron)
     {
         // Retrieve the flashMessenger helper:
-        $flashMsg = $this->getController()->flashMessenger();
+        $flashMsg = $this->getController()->getFlashMessenger();
         $params = $this->getController()->params();
 
         // Pick IDs to cancel based on which button was pressed:

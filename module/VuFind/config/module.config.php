@@ -397,14 +397,12 @@ $config = [
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
             'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
-            'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger' => 'VuFind\Controller\Plugin\FlashMessengerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
             'captcha' => 'VuFind\Controller\Plugin\Captcha',
-            'flashMessenger' => 'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'permission' => 'VuFind\Controller\Plugin\Permission',
@@ -573,6 +571,7 @@ $config = [
             'VuFind\UrlShortener\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
             'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
+            'VuFind\View\FlashMessenger\FlashMessenger' => 'VuFind\View\FlashMessenger\FlashMessengerFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
@@ -650,6 +649,7 @@ $config = [
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
             'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\View\FlashMessenger\FlashMessengerInterface' => 'VuFind\View\FlashMessenger\FlashMessenger',
 
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',

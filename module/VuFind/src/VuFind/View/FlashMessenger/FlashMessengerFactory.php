@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for FlashMessenger controller plugin.
+ * FlashMessenger factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,28 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\View\FlashMessenger;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for FlashMessenger controller plugin.
+ * FlashMessenger factory.
  *
  * @category VuFind
- * @package  Controller_Plugins
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class FlashMessengerFactory implements FactoryInterface
 {
@@ -68,9 +71,20 @@ class FlashMessengerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $plugin = new $requestedName();
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
-        $plugin->setSessionManager($sessionManager);
-        return $plugin;
+        return new $requestedName(Closure::fromCallable(fn () => $this->getMessageContainer($container)));
+    }
+
+    /**
+     * Get session container for flash messages.
+     *
+     * Note: This is intentionally using the same namespace as Laminas' FlashMessenger for compatibility.
+     *
+     * @param ContainerInterface $sm Service Manager
+     *
+     * @return Container
+     */
+    protected function getMessageContainer(ContainerInterface $sm): Container
+    {
+        return new Container('FlashMessenger', $sm->get(SessionManager::class));
     }
 }

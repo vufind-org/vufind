@@ -183,10 +183,10 @@ class SearchController extends AbstractSolrSearch
                     $view->subject,
                     $cc
                 );
-                $this->flashMessenger()->addSuccessMessage('email_success');
+                $this->getFlashMessenger()->addSuccessMessage('email_success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
-                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
+                $this->getFlashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
         return $view;
@@ -305,7 +305,7 @@ class SearchController extends AbstractSolrSearch
                 $this->getResultsManager()->get('Solr')->getParams(),
                 $newItemParams['range'],
                 $newItemParams['dept'],
-                $this->flashMessenger()
+                $this->getFlashMessenger()
             );
             $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
         } else {
@@ -486,7 +486,7 @@ class SearchController extends AbstractSolrSearch
             ->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $this->flashMessenger()->addInfoMessage('too_many_reserves');
+            $this->getFlashMessenger()->addInfoMessage('too_many_reserves');
         }
 
         // Use standard search action with override parameter to show results:

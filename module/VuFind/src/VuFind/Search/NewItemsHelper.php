@@ -29,8 +29,8 @@
 
 namespace VuFind\Search;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use VuFind\ILS\Connection;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function array_slice;
 use function count;
@@ -64,7 +64,7 @@ class NewItemsHelper
      * @param int                        $range  Range setting (max age in days)
      * @param ?string                    $dept   Department setting (corresponds with fund ID
      * in ILS driver -- set to null to skip filtering by this criterion)
-     * @param FlashMessenger             $flash  Flash messenger
+     * @param FlashMessengerInterface    $flash  Flash messenger
      *
      * @return array
      */
@@ -72,7 +72,7 @@ class NewItemsHelper
         \VuFind\Search\Solr\Params $params,
         int $range,
         ?string $dept,
-        FlashMessenger $flash
+        FlashMessengerInterface $flash
     ): array {
         // The code always pulls in enough catalog results to get a fixed number
         // of pages worth of Solr results. Note that if the Solr index is out of
