@@ -110,7 +110,7 @@ class RedirectAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if ($id = $request->getAttribute('id')) {
+        if ($id = $this->getRouteParam('id')) {
             if ($url = $this->shortener->resolve($id)) {
                 $threshRegEx = '"^threshold:(\d+)$"i';
                 if (preg_match($threshRegEx, $this->redirectMethod, $hits)) {
