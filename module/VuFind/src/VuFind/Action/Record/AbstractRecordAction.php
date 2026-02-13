@@ -35,7 +35,6 @@ use Laminas\Psr7Bridge\Psr7ServerRequest;
 use stdClass;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\Helper\LoginHelper;
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -45,7 +44,6 @@ use VuFind\RecordTab\TabManager;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\ResultScroller;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindSearch\ParamBag;
 
 use function is_array;
@@ -115,20 +113,16 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     /**
      * Constructor.
      *
-     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
-     * @param TemplateRendererInterface $templateRenderer    Template renderer
-     * @param SearchMemory              $searchMemory        Search memory
-     * @param TabManager                $tabManager          Tab manager
-     * @param AuthManager               $authManager         Authentication manager
-     * @param RecordLoader              $recordLoader        Record loader
-     * @param RecordRouter              $recordRouter        Record router
-     * @param ResultScroller            $resultScroller      Result scroller
-     * @param array                     $config              VuFind configuration
+     * @param SearchMemory   $searchMemory   Search memory
+     * @param TabManager     $tabManager     Tab manager
+     * @param AuthManager    $authManager    Authentication manager
+     * @param RecordLoader   $recordLoader   Record loader
+     * @param RecordRouter   $recordRouter   Record router
+     * @param ResultScroller $resultScroller Result scroller
+     * @param array          $config         VuFind configuration
      */
     #[Autowire()]
     public function __construct(
-        HelperPluginManager $helperPluginManager,
-        TemplateRendererInterface $templateRenderer,
         protected SearchMemory $searchMemory,
         protected TabManager $tabManager,
         protected AuthManager $authManager,
@@ -137,18 +131,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
         protected ResultScroller $resultScroller,
         #[Autowire(config: 'config')] protected array $config,
     ) {
-        parent::__construct($helperPluginManager, $templateRenderer);
-        $this->init();
-    }
-
-    /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // This function is called after constructor for any initialization required.
+        parent::__construct();
     }
 
     /**
@@ -321,7 +304,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
 
         $viewParams->callnumberHandler = $this->config['Item_Status']['callnumber_handler'] ?? false;
 
-        return $this->templateRenderer->renderTemplate(
+        return $this->renderTemplate(
             $this->request,
             $this->response,
             get_object_vars($viewParams),

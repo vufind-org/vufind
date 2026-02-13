@@ -29,12 +29,13 @@
 
 namespace VuFind\Action;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Helper\AbstractHelper;
 use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Action\Helper\RedirectHelper;
-use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Http\RouteHelper;
 
 /**
  * Abstract base class for actions.
@@ -62,14 +63,62 @@ abstract class AbstractAction implements ActionInterface
     protected ?ResponseInterface $response = null;
 
     /**
+     * Route helper
+     *
+     * @var ?RouteHelper
+     */
+    protected ?RouteHelper $routeHelper = null;
+
+    /**
+     * Action helper plugin manager
+     *
+     * @var ?HelperPluginManager
+     */
+    protected ?HelperPluginManager $helperPluginManager = null;
+
+    /**
      * Constructor.
+     */
+    public function __construct()
+    {
+        $this->init();
+    }
+
+    /**
+     * Initialize the action.
+     *
+     * @return void
+     */
+    protected function init(): void
+    {
+        // This function is called after constructor for any initialization required.
+    }
+
+
+    /**
+     * Set helper plugin manager.
      *
      * @param HelperPluginManager $helperPluginManager Helper plugin manager
+     *
+     * @return static
      */
-    #[Autowire()]
-    public function __construct(
-        protected HelperPluginManager $helperPluginManager,
-    ) {
+    public function setHelperPluginManager(HelperPluginManager $helperPluginManager): static
+    {
+        $this->helperPluginManager = $helperPluginManager;
+        return $this;
+    }
+
+    /**
+     * Set route helper.
+     *
+     * @param RouteHelper $routeHelper Route helper
+     *
+     * @return static
+     */
+    public function setRouteHelper(RouteHelper $routeHelper): static
+    {
+        $this->routeHelper = $routeHelper;
+        return $this;
     }
 
     /**
@@ -167,6 +216,9 @@ abstract class AbstractAction implements ActionInterface
      */
     protected function getHelper(string $name): AbstractHelper
     {
+        if (null === $this->helperPluginManager) {
+            throw new Exception($this::class . ' action not properly initialized; helper plugin manager missing');
+        }
         return $this->helperPluginManager->get($name);
     }
 
@@ -180,7 +232,7 @@ abstract class AbstractAction implements ActionInterface
      */
     protected function getRedirectResponse(ResponseInterface $response, string $url): ResponseInterface
     {
-        return $this->getHelper(RedirectHelper::class)->redirectToUrl($url, $response);
+        return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $url);
     }
 
     /**
@@ -205,7 +257,19 @@ abstract class AbstractAction implements ActionInterface
         array $routeParams = [],
         array $queryParams = []
     ): string {
-        $routeHelper = $this->request->getAttribute('route-helper');
-        return $routeHelper->getUrlFromRoute($name, $routeParams, $queryParams);
+        return $this->getRouteHelper()->getUrlFromRoute($name, $routeParams, $queryParams);
+    }
+
+    /**
+     * Get route helper.
+     *
+     * @return RouteHelper
+     */
+    public function getRouteHelper(): RouteHelper
+    {
+        if (null === $this->routeHelper) {
+            throw new Exception($this::class . ' action not properly initialized; route helper missing');
+        }
+        return $this->routeHelper;
     }
 }

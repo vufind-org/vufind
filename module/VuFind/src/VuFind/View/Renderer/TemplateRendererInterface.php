@@ -80,12 +80,14 @@ interface TemplateRendererInterface
      *
      * @param ServerRequestInterface $request  Request
      * @param ResponseInterface      $response Response object
+     * @param array                  $params   Template parameters
      *
      * @return ResponseInterface
      */
     public function renderNotFoundPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
+        array $params
     ): ResponseInterface;
 
     /**

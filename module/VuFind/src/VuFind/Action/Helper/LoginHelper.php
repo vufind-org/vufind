@@ -102,7 +102,7 @@ class LoginHelper extends AbstractHelper
         }
 
         // store parent url of lightboxes
-        $extras['lightboxParent'] = $request->getQueryParams['lightboxParent'] ?? null;
+        $extras['lightboxParent'] = $request->getQueryParams()['lightboxParent'] ?? null;
 
         // Store the current URL as a login followup action
         $this->followupHelper->store($extras);

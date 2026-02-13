@@ -57,7 +57,6 @@ class PluginManager extends AbstractPluginManager
      */
     protected $factories = [
         ForwardHelper::class => AutowiringFactory::class,
-        HttpResponseHelper::class => HttpResponseHelperFactory::class,
         LoginHelper::class => AutowiringFactory::class,
         RedirectHelper::class => AutowiringFactory::class,
     ];

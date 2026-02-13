@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Marker interface for action classes.
+ * Interface for action classes.
  *
  * PHP version 8
  *
@@ -29,8 +29,11 @@
 
 namespace VuFind\Action;
 
+use VuFind\Action\Helper\PluginManager as HelperPluginManager;
+use VuFind\Http\RouteHelper;
+
 /**
- * Marker interface for action classes.
+ * Interface for action classes.
  *
  * @category VuFind
  * @package  Action
@@ -40,4 +43,21 @@ namespace VuFind\Action;
  */
 interface ActionInterface
 {
+    /**
+     * Set helper plugin manager.
+     *
+     * @param HelperPluginManager $helperPluginManager Helper plugin manager
+     *
+     * @return static
+     */
+    public function setHelperPluginManager(HelperPluginManager $helperPluginManager): static;
+
+    /**
+     * Set route helper.
+     *
+     * @param RouteHelper $routeHelper Route helper
+     *
+     * @return static
+     */
+    public function setRouteHelper(RouteHelper $routeHelper): static;
 }

@@ -55,16 +55,12 @@ class LoginAction extends AbstractTemplateRenderingAction
     /**
      * Constructor
      *
-     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
-     * @param TemplateRendererInterface $templateRenderer    Template renderer
-     * @param AuthManager               $authManager         Authentication manager
+     * @param AuthManager $authManager Authentication manager
      */
     public function __construct(
-        HelperPluginManager $helperPluginManager,
-        TemplateRendererInterface $templateRenderer,
         protected AuthManager $authManager,
     ) {
-        parent::__construct($helperPluginManager, $templateRenderer);
+        parent::__construct();
     }
 
     /**
@@ -103,6 +99,6 @@ class LoginAction extends AbstractTemplateRenderingAction
             }
         }
 
-        return $this->templateRenderer->renderTemplate($request, $response, ['request' => new Parameters($postParams)]);
+        return $this->renderTemplate($request, $response, ['request' => new Parameters($postParams)]);
     }
 }

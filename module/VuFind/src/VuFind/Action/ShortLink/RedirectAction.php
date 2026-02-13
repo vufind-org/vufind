@@ -32,9 +32,7 @@ namespace VuFind\Action\ShortLink;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\UrlShortener\UrlShortenerInterface;
-use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function is_callable;
 use function strlen;
@@ -60,19 +58,16 @@ class RedirectAction extends AbstractTemplateRenderingAction
     /**
      * Constructor
      *
-     * @param HelperPluginManager       $helperPluginManager Helper plugin manager
-     * @param TemplateRendererInterface $templateRenderer    Template renderer
-     * @param UrLShortenerInterface     $shortener           URL shortener
-     * @param string                    $redirectMethod      Redirect mechanism to use
-     * (html, http, threshold:<urlLength>)
+     * @param UrLShortenerInterface $shortener      URL shortener
+     * @param string                $redirectMethod Redirect mechanism to use
+     *                                              (html, http,
+     *                                              threshold:<urlLength>)
      */
     public function __construct(
-        HelperPluginManager $helperPluginManager,
-        TemplateRendererInterface $templateRenderer,
         protected UrlShortenerInterface $shortener,
         protected string $redirectMethod
     ) {
-        parent::__construct($helperPluginManager, $templateRenderer);
+        parent::__construct();
     }
 
     /**
@@ -84,7 +79,7 @@ class RedirectAction extends AbstractTemplateRenderingAction
      */
     protected function redirectViaHtml(string $url): ResponseInterface
     {
-        return $this->templateRenderer->renderTemplate(
+        return $this->renderTemplate(
             $this->request,
             $this->response,
             ['redirectTarget' => $url, 'redirectDelay' => $this->redirectDelayHtml]
@@ -100,8 +95,7 @@ class RedirectAction extends AbstractTemplateRenderingAction
      */
     protected function redirectViaHttp($url): ResponseInterface
     {
-        return $this->response->withStatus(302)
-            ->withHeader('Location', $url);
+        return $this->getRedirectResponse($this->response, 302);
     }
 
     /**
