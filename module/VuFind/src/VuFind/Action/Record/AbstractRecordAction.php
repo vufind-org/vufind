@@ -32,7 +32,6 @@
 namespace VuFind\Action\Record;
 
 use Laminas\Psr7Bridge\Psr7ServerRequest;
-use stdClass;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\Helper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;

@@ -33,7 +33,6 @@ use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use VuFind\Action\Helper\AbstractHelper;
 use VuFind\Action\Helper\HelperInterface;
 use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Action\Helper\RedirectHelper;
