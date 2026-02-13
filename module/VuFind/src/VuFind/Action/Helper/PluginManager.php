@@ -48,7 +48,7 @@ class PluginManager extends AbstractPluginManager
      *
      * @var ?string
      */
-    protected $instanceOf = AbstractHelper::class;
+    protected $instanceOf = HelperInterface::class;
 
     /**
      * Default plugin factories.

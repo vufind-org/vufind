@@ -34,6 +34,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use VuFind\Action\Helper\AbstractHelper;
+use VuFind\Action\Helper\HelperInterface;
 use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Action\Helper\RedirectHelper;
 use VuFind\Http\RouteHelper;
@@ -237,7 +238,7 @@ abstract class AbstractAction implements ActionInterface
      *
      * @return T
      */
-    protected function getHelper(string $name): AbstractHelper
+    protected function getHelper(string $name): HelperInterface
     {
         if (null === $this->helperPluginManager) {
             throw new Exception($this::class . ' action not properly initialized; helper plugin manager missing');

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for helpers.
+ * Marker interface for helpers.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Action\Helper;
 
 /**
- * Abstract base class for helpers.
+ * Marker interface for helpers.
  *
  * @category VuFind
  * @package  Action_Helper
@@ -38,6 +38,6 @@ namespace VuFind\Action\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractHelper
+interface HelperInterface
 {
 }

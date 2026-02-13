@@ -43,7 +43,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class ForwardHelper extends AbstractHelper
+class ForwardHelper implements HelperInterface
 {
     /**
      * Constructor
