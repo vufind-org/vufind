@@ -87,7 +87,7 @@ interface TemplateRendererInterface
     public function renderNotFoundPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params
+        array $params = []
     ): ResponseInterface;
 
     /**

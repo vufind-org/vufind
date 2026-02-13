@@ -84,7 +84,7 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             $message = 'An error occurred during execution; please try again later.';
-            return $this->getTemplateRenderer()->renderErrorPage(
+            return $this->renderErrorPage(
                 $request,
                 $response,
                 compact('exception', 'message')
@@ -140,7 +140,7 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
     public function renderNotFoundPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params
+        array $params = []
     ): ResponseInterface {
         return $this->getTemplateRenderer()->renderNotFoundPage($request, $response, $params);
     }

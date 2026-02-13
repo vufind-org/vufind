@@ -36,9 +36,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Action\Helper\ForwardHelper;
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Auth\Manager as AuthManager;
-use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Login action.

@@ -127,6 +127,6 @@ class RedirectAction extends AbstractTemplateRenderingAction
                 return $this->{'redirectVia' . $method}($url);
             }
         }
-        return $this->templateRenderer->renderNotFoundPage($request, $response);
+        return $this->renderNotFoundPage($request, $response);
     }
 }

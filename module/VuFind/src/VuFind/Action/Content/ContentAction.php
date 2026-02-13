@@ -89,7 +89,7 @@ class ContentAction extends AbstractTemplateRenderingAction
         $page = $request->getAttribute('page');
         // Path regex should prevent dots, but double-check to make sure:
         if (str_contains($page, '..')) {
-            return $this->getTemplateRenderer()->renderNotFoundPage($request, $response);
+            return $this->renderNotFoundPage($request, $response);
         }
         // Find last slash and add preceding part to path if found:
         if (false !== ($p = strrpos($page, '/'))) {
@@ -97,7 +97,7 @@ class ContentAction extends AbstractTemplateRenderingAction
             $pathPrefix .= $subPath;
             // Ensure the path prefix does not contain extra slashes:
             if (str_ends_with($pathPrefix, '//')) {
-                return $this->getTemplateRenderer()->renderNotFoundPage($request, $response);
+                return $this->renderNotFoundPage($request, $response);
             }
             $page = substr($page, $p + 1);
         }
@@ -107,7 +107,7 @@ class ContentAction extends AbstractTemplateRenderingAction
 
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['relativePath'], $data['path'])
-            : $this->getTemplateRenderer()->renderNotFoundPage($request, $response);
+            : $this->renderNotFoundPage($request, $response);
     }
 
     /**
@@ -154,7 +154,7 @@ class ContentAction extends AbstractTemplateRenderingAction
         }
         // Prevent circular inclusion:
         if ('content' === $relPage) {
-            return $this->getTemplateRenderer()->renderNotFoundPage($this->request, $this->response);
+            return $this->renderNotFoundPage($this->request, $this->response);
         }
         return $this->renderTemplate(
             $this->request,

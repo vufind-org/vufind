@@ -94,7 +94,6 @@ abstract class AbstractAction implements ActionInterface
         // This function is called after constructor for any initialization required.
     }
 
-
     /**
      * Set helper plugin manager.
      *

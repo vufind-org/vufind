@@ -149,7 +149,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function renderNotFoundPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params
+        array $params = []
     ): ResponseInterface {
         return $this->renderTemplate(
             $request,
