@@ -56,5 +56,5 @@ interface SimilarBuilderInterface
      *
      * @return ParamBag
      */
-    public function build($id);
+    public function build(string $id, ?ParamBag $params): ParamBag;
 }

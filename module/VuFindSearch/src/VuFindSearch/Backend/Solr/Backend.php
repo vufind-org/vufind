@@ -326,7 +326,7 @@ class Backend extends AbstractBackend implements
         $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
-        $params->mergeWith($this->getSimilarBuilder()->build($id));
+        $params = $this->getSimilarBuilder()->build($id, $params);
         $response   = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
