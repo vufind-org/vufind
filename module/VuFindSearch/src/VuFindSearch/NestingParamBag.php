@@ -195,17 +195,49 @@ class NestingParamBag extends ParamBag implements JsonSerializable
      */
     public function add($name, $value, $deduplicate = true): void
     {
-        // Merge as needed so there is only one ParamBag for any $name
-        if (is_array($value) && count($value) && $value[0] instanceof ParamBag) {
-            $existingValues = $this->items[$name] ?? [];
-            if (count($existingValues) && $existingValues[0] instanceof ParamBag) {
+        $existingValues = $this->items[$name] ?? [];
+        $this->validateCompatibleValues($existingValues, $value, $name);
+
+        if ($value && is_array($value)) {
+            // Merge as needed so there is only one ParamBag for any $name
+            if ($value[0] instanceof ParamBag) {
                 $existingValues[0]->mergeWith($value[0]);
-                return;
             }
-            throw new \Exception('WTF are we combining?');
         }
 
         parent::add($name, $value, $deduplicate);
+    }
+
+    /**
+     * Validate that the new values can be added to the existing values.
+     *
+     * @param array   $existingValues The existing values
+     * @param mixed   $newValues      Values being added
+     * @param ?string $name           Name associated with these values
+     *
+     * @throws \Exception If the combination of values is not valid.
+     *
+     * @return void
+     */
+    protected function validateCompatibleValues(array $existingValues, mixed $newValues, ?string $name)
+    {
+        if (!is_array($newValues)) {
+            $newValues = [$newValues];
+        }
+        foreach ([$existingValues, $newValues] as $values) {
+            if (!$values) {
+                return;
+            }
+            $this->validateValues($values, $name);
+        }
+        // Either both arrays, or neither, should contain a ParamBag
+        if (
+            empty(array_filter($existingValues, fn ($value) => $value instanceof ParamBag)) !=
+            empty(array_filter($newValues, fn ($value) => $value instanceof ParamBag))
+        ) {
+            throw new \Exception('New values for name ' . ($name ?? '(unknown)')
+                . ' are not compatible with existing values; both or neither must be a ParamBag.');
+        }
     }
 
     /**
@@ -231,12 +263,7 @@ class NestingParamBag extends ParamBag implements JsonSerializable
         $jsonObject = [];
         foreach ($items as $name => $values) {
             if (is_array($values)) {
-                if (
-                    count($values) > 1 &&
-                    array_filter($values, fn ($value) => $value instanceof ParamBag)
-                ) {
-                    throw new \Exception('More than one value for name ' . $name . ' including at least one ParamBag.');
-                }
+                $this->validateValues($values, $name);
 
                 if (count($values) > 1) {
                     $jsonObject[$name] = $values;
@@ -266,6 +293,27 @@ class NestingParamBag extends ParamBag implements JsonSerializable
      */
     public function request()
     {
-        throw new \Exception('fix this...cannot happen?');
+        throw new \Exception('Simple query parameters are not supported by NestingParamBag');
+    }
+
+    /**
+     * Validate the values in a ParamBag.
+     *
+     * @param array   $values The values
+     * @param ?string $name   Name associated with these values
+     *
+     * @throws \Exception If the combination of values is not valid.
+     *
+     * @return void
+     */
+    protected function validateValues(array $values, ?string $name): void
+    {
+        if (
+            count($values) > 1 &&
+            array_filter($values, fn ($value) => $value instanceof ParamBag)
+        ) {
+            throw new \Exception('More than one value for name ' . ($name ?? '(unknown)')
+                . 'including at least one ParamBag.');
+        }
     }
 }

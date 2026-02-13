@@ -33,6 +33,8 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
 
+use function is_string;
+
 /**
  * Unit tests for NestingParamBag.
  *
@@ -364,16 +366,26 @@ class NestingParamBagTest extends TestCase
                 'params' => new NestingParamBag(['sow' => false, 'timeAllowed' => -1]),
              ]),
         ];
+        yield 'adding scalar where existing is a ParamBag' => [
+            self::buildInputParams(),
+            'params', true, true,
+            'New values for name params are not compatible with existing values; both or neither must be a ParamBag.',
+        ];
+        yield 'adding ParamBag where existing is a scalar' => [
+            self::buildInputParams(),
+            'filter', new ParamBag(['foo' => 'bar']), true,
+            'New values for name filter are not compatible with existing values; both or neither must be a ParamBag.',
+        ];
     }
 
     /**
      * Test add method.
      *
-     * @param NestingParamBag $params      Bag of nested parameters
-     * @param string          $name        Parameter name
-     * @param array           $value       Nested array of parameter values
-     * @param bool            $deduplicate Whether to de-duplicate
-     * @param NestingParamBag $expected    Expected resulting bag of nested parameters
+     * @param NestingParamBag        $params      Bag of nested parameters
+     * @param string                 $name        Parameter name
+     * @param mixed                  $value       Parameter values
+     * @param bool                   $deduplicate Whether to de-duplicate
+     * @param NestingParamBag|string $expected    Expected resulting bag of nested parameters or exception message
      *
      * @return void
      */
@@ -383,10 +395,15 @@ class NestingParamBagTest extends TestCase
         string $name,
         mixed $value,
         bool $deduplicate,
-        NestingParamBag $expected
+        NestingParamBag|string $expected
     ): void {
+        if (is_string($expected)) {
+            $this->expectExceptionMessage($expected);
+        }
         $params->add($name, $value, $deduplicate);
-        $this->assertEquals($expected, $params);
+        if ($expected instanceof NestingParamBag) {
+            $this->assertEquals($expected, $params);
+        }
     }
 
     /**
