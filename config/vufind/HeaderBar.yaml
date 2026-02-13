@@ -14,7 +14,7 @@
 #     a check whether to show the item. If omitted, item will always display.
 #   - template: template to render the item with. Templates do not support the keys
 #     documented below.
-#   - name: name of an item
+#   - name: name of an item, used as a CSS class for the menu item's <li> tag
 #   - icon: icon used for the item, has to be defined in theme config
 #   - attributes: additional attributes for the menu item's <a> tag
 #   - submenuItems: items to be shown in a dropdown menu. Submenu items support only

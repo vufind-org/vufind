@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * Mink test class for the HeaderBar section plugin.
  *
@@ -47,37 +49,24 @@ class HeaderBarTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function applyHeaderBarConfigWithSubmenuItems(): void
     {
-        $this->changeYamlConfigs(
-            [
-                'HeaderBar' => [
-                    '@parent_config_name' => false,
-                    'Header' => [
-                        'MenuItems' => [
-                            [
-                                'label' => 'Dropdown Menu',
-                                'name' => 'submenuitems-test',
-                                'submenuItems' => [
-                                    [
-                                        'label' => 'Submenu Item 1',
-                                        'url' => '#',
-                                    ],
-                                    [
-                                        'label' => 'Submenu Item 2',
-                                        'description' => 'Submenu Item 2 Description',
-                                        'url' => '#',
-                                    ],
-                                    [
-                                        'label' => 'Submenu Item 3',
-                                        'url' => '#',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            ['HeaderBar']
-        );
+        $yaml = <<<YAML
+            Header:
+              "@parent_yaml": false
+              MenuItems:
+                - label: 'Dropdown Menu'
+                  name: 'submenuitems-test'
+                  submenuItems:
+                    - label: 'Submenu Item 1'
+                      url: '#'
+                    - label: 'Submenu Item 2'
+                      description: 'Submenu Item 2 Description'
+                      url: '#'
+                    - label: 'Submenu Item 3'
+                      url: '#'
+                  attributes:
+                    id: submenuitems-test
+            YAML;
+        $this->changeYamlConfigs(['HeaderBar' => Yaml::parse($yaml)], ['HeaderBar']);
     }
 
     /**
