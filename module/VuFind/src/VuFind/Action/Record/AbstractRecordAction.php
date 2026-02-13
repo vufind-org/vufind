@@ -139,7 +139,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      *
      * @param array $params Parameters to pass to view.
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return stdClass
      */
     protected function getViewParams(array $params = []): stdClass
     {

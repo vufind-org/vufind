@@ -32,6 +32,7 @@ namespace VuFind\Action;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 use VuFind\Action\Helper\AbstractHelper;
 use VuFind\Action\Helper\PluginManager as HelperPluginManager;
 use VuFind\Action\Helper\RedirectHelper;
@@ -134,7 +135,17 @@ abstract class AbstractAction implements ActionInterface
     ): ResponseInterface {
         $this->request = $request;
         $this->response = $response;
-        return $this->action($request, $response);
+        try {
+            return $this->action($request, $response);
+        } catch (Throwable $exception) {
+            return $this->handleException($exception);
+            $message = 'An error occurred during execution; please try again later.';
+            return $this->renderErrorPage(
+                $request,
+                $response,
+                compact('exception', 'message')
+            );
+        }
     }
 
     /**
@@ -149,6 +160,19 @@ abstract class AbstractAction implements ActionInterface
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface;
+
+    /**
+     * Handle an exception during action.
+     *
+     * @param Throwable $exception Exception
+     *
+     * @return ResponseInterface
+     */
+    protected function handleException(Throwable $exception): ResponseInterface
+    {
+        // Default behavior; re-throw the exception:
+        throw $exception;
+    }
 
     /**
      * Get a parameter from POST fields or query string.
@@ -251,7 +275,7 @@ abstract class AbstractAction implements ActionInterface
      *
      * @return string Url For the link href attribute
      */
-    public function getUrlFromRoute(
+    protected function getUrlFromRoute(
         string $name,
         array $routeParams = [],
         array $queryParams = []
@@ -264,7 +288,7 @@ abstract class AbstractAction implements ActionInterface
      *
      * @return RouteHelper
      */
-    public function getRouteHelper(): RouteHelper
+    protected function getRouteHelper(): RouteHelper
     {
         if (null === $this->routeHelper) {
             throw new Exception($this::class . ' action not properly initialized; route helper missing');

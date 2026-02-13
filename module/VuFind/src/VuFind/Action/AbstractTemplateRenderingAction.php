@@ -67,29 +67,20 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
     }
 
     /**
-     * Invoke the action.
+     * Handle an exception during action.
      *
-     * @param ServerRequestInterface $request  Server request
-     * @param ResponseInterface      $response Response
+     * @param Throwable $exception Exception
      *
      * @return ResponseInterface
      */
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-    ): ResponseInterface {
-        $this->request = $request;
-        $this->response = $response;
-        try {
-            return $this->action($request, $response);
-        } catch (Throwable $exception) {
-            $message = 'An error occurred during execution; please try again later.';
-            return $this->renderErrorPage(
-                $request,
-                $response,
-                compact('exception', 'message')
-            );
-        }
+    protected function handleException(Throwable $exception): ResponseInterface
+    {
+        $message = 'An error occurred during execution; please try again later.';
+        return $this->renderErrorPage(
+            $this->request,
+            $this->response,
+            compact('exception', 'message')
+        );
     }
 
     /**
@@ -102,7 +93,7 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
      *
      * @return ResponseInterface
      */
-    public function renderTemplate(
+    protected function renderTemplate(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $params = [],
@@ -120,7 +111,7 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
      *
      * @return ResponseInterface
      */
-    public function renderErrorPage(
+    protected function renderErrorPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $params
@@ -137,7 +128,7 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
      *
      * @return ResponseInterface
      */
-    public function renderNotFoundPage(
+    protected function renderNotFoundPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $params = []
