@@ -113,13 +113,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Return SOLR search parameters based on a record Id and params.
      *
-     * @param string $id Record Id
+     * @param string    $id     Record Id
+     * @param ?ParamBag $params Existing params
      *
      * @return ParamBag
      */
-    public function build($id)
+    public function build(string $id, ?ParamBag $params = null): ParamBag
     {
-        $params = new ParamBag();
+        $params = $params ?: new ParamBag();
         if ($this->useHandler) {
             $mltParams = $this->handlerParams
                 ? $this->handlerParams
