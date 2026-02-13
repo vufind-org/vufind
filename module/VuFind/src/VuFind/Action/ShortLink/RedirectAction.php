@@ -95,7 +95,7 @@ class RedirectAction extends AbstractTemplateRenderingAction
      */
     protected function redirectViaHttp($url): ResponseInterface
     {
-        return $this->getRedirectResponse($this->response, 302);
+        return $this->getRedirectResponse($this->response, $url);
     }
 
     /**
