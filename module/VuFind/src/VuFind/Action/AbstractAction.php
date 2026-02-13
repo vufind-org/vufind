@@ -139,12 +139,6 @@ abstract class AbstractAction implements ActionInterface
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
-            $message = 'An error occurred during execution; please try again later.';
-            return $this->renderErrorPage(
-                $request,
-                $response,
-                compact('exception', 'message')
-            );
         }
     }
 
