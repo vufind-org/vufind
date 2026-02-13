@@ -434,9 +434,22 @@ class Results extends \VuFind\Search\Base\Results
 
         // Do search
         $result = $clone->getFacetList();
-        $filteredCounts = $clone->getFilteredFacetCounts();
+
+        // Apply "facet contains"
+        if ($facetContains = $params->getFacetContains()) {
+            $ignoreCase = $params->getFacetContainsIgnoreCase();
+            foreach ($result as &$values) {
+                $values['list'] = array_filter(
+                    $values['list'],
+                    fn ($value) => $ignoreCase
+                        ? stripos($value['value'], $facetContains) !== false
+                        : str_contains($value['value'], $facetContains)
+                );
+            }
+        }
 
         // Reformat into a hash:
+        $filteredCounts = $clone->getFilteredFacetCounts();
         foreach ($result as $key => $value) {
             // Detect next page and crop results if necessary
             $more = false;
