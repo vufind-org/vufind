@@ -200,18 +200,15 @@ class Solr extends AbstractBase
         $cursorMark = '*';
         $records = [];
         while ($cursorMark !== $prevCursorMark) {
-            $params = NestingParamBag::fromArray(
-                $this->getDefaultSearchParams() + [
-                    // Sort is required
-                    'sort' => ['id asc'],
-                    'params' => [
-                        // Override any default timeAllowed since it cannot be used with
-                        // cursorMark
-                        'timeAllowed' => -1,
-                        'cursorMark' => $cursorMark,
-                    ],
-                ]
-            );
+            $params = NestingParamBag::fromArray($this->getDefaultSearchParams());
+            // Sort is required
+            $params->add('sort', 'id asc');
+            $params->addMultiNested('params', [
+                // Override any default timeAllowed since it cannot be used with
+                // cursorMark
+                'timeAllowed' => -1,
+                'cursorMark' => $cursorMark,
+            ]);
             $command = new RawJsonSearchCommand(
                 $this->backendId,
                 $query,
