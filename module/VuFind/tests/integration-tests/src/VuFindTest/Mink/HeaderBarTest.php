@@ -54,7 +54,7 @@ class HeaderBarTest extends \VuFindTest\Integration\MinkTestCase
               "@parent_yaml": false
               MenuItems:
                 - label: 'Dropdown Menu'
-                  name: 'submenuitems-test'
+                  name: submenuitems-test
                   submenuItems:
                     - label: 'Submenu Item 1'
                       url: '#'
@@ -63,8 +63,6 @@ class HeaderBarTest extends \VuFindTest\Integration\MinkTestCase
                       url: '#'
                     - label: 'Submenu Item 3'
                       url: '#'
-                  attributes:
-                    id: submenuitems-test
             YAML;
         $this->changeYamlConfigs(['HeaderBar' => Yaml::parse($yaml)], ['HeaderBar']);
     }
