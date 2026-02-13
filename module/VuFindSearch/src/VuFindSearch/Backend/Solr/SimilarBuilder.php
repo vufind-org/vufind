@@ -33,8 +33,8 @@
 
 namespace VuFindSearch\Backend\Solr;
 
-use VuFindSearch\ParamBag;
 use VuFindSearch\NestingParamBag;
+use VuFindSearch\ParamBag;
 
 use function sprintf;
 
@@ -114,7 +114,8 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Return SOLR search parameters based on a record Id and params.
      *
-     * @param string $id Record Id
+     * @param string    $id     Record Id
+     * @param ?ParamBag $params Existing params
      *
      * @return ParamBag
      */
