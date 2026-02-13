@@ -99,7 +99,7 @@ abstract class AbstractTemplateRenderingAction extends AbstractAction
         array $params = [],
         ?string $template = null,
     ): ResponseInterface {
-        return $this->renderTemplate($request, $response, $params, $template);
+        return $this->getTemplateRenderer()->renderTemplate($request, $response, $params, $template);
     }
 
     /**

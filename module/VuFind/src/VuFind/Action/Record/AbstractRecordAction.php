@@ -135,21 +135,17 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Create view params.
+     * Create view params array.
      *
-     * @param array $params Parameters to pass to view.
+     * @param array $params Parameters
      *
-     * @return stdClass
+     * @return array
      */
-    protected function getViewParams(array $params = []): stdClass
+    protected function getViewParams(array $params = []): array
     {
-        $viewParams = new stdClass();
-        foreach ($params as $key => $value) {
-            $viewParams->$key = $value;
-        }
-        $viewParams->driver = $this->loadRecord();
-        $viewParams->searchClassId = $viewParams->driver->getSearchBackendIdentifier();
-        return $viewParams;
+        $params['driver'] = $this->loadRecord();
+        $params['searchClassId'] = $params['driver']->getSearchBackendIdentifier();
+        return $params;
     }
 
     /**
@@ -288,26 +284,28 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
             return $patron;
         }
 
-        $viewParams = $this->getViewParams();
-        $viewParams->tabs = $this->getAllTabs();
-        $viewParams->activeTab = strtolower($tab);
-        $viewParams->defaultTab = strtolower($this->getDefaultTab());
-        $viewParams->backgroundTabs = $this->getBackgroundTabs();
-        $viewParams->tabsExtraScripts = $this->getTabsExtraScripts($viewParams->tabs);
-        $viewParams->loadInitialTabWithAjax = (bool)($this->config['Site']['loadInitialTabWithAjax'] ?? false);
+        $tabs = $this->getAllTabs();
+        $viewParams = $this->getViewParams([
+            'tabs' => $tabs,
+            'activeTab' => strtolower($tab),
+            'defaultTab' => strtolower($this->getDefaultTab()),
+            'backgroundTabs' => $this->getBackgroundTabs(),
+            'tabsExtraScripts' => $this->getTabsExtraScripts($tabs),
+            'loadInitialTabWithAjax' => (bool)($this->config['Site']['loadInitialTabWithAjax'] ?? false),
+        ]);
 
         // Set up next/previous record links (if appropriate)
         if ($this->searchMemory->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
-            $viewParams->scrollData = $this->resultScroller->getScrollData($driver);
+            $viewParams['scrollData'] = $this->resultScroller->getScrollData($driver);
         }
 
-        $viewParams->callnumberHandler = $this->config['Item_Status']['callnumber_handler'] ?? false;
+        $viewParams['callnumberHandler'] = $this->config['Item_Status']['callnumber_handler'] ?? false;
 
         return $this->renderTemplate(
             $this->request,
             $this->response,
-            get_object_vars($viewParams),
+            $viewParams,
             $ajax ? 'record/ajaxtab' : 'record/view'
         );
     }
