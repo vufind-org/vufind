@@ -153,7 +153,7 @@ abstract class AbstractAction implements ActionInterface
      */
     protected function getRouteParam(string $param, array|string|null $default = null): array|string|null
     {
-        return $this->request->getAttribute('route-match')->getParam($param) ?? $default;
+        return $this->request->getAttribute('route-match')?->getParam($param) ?? $default;
     }
 
     /**
