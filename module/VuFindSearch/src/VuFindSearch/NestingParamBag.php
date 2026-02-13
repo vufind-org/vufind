@@ -202,6 +202,7 @@ class NestingParamBag extends ParamBag implements JsonSerializable
             // Merge as needed so there is only one ParamBag for any $name
             if ($value[0] instanceof ParamBag) {
                 $existingValues[0]->mergeWith($value[0]);
+                return;
             }
         }
 
