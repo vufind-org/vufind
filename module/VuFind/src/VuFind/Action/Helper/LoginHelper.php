@@ -97,9 +97,7 @@ class LoginHelper extends AbstractHelper
         bool $forward = true
     ): ResponseInterface {
         // Set default message if necessary.
-        if (null === $msg) {
-            $msg = 'You must be logged in first';
-        }
+        $msg ??= 'You must be logged in first';
 
         // store parent url of lightboxes
         $extras['lightboxParent'] = $request->getQueryParams()['lightboxParent'] ?? null;
