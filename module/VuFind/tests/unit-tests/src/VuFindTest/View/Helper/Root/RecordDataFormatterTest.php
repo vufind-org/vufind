@@ -77,16 +77,13 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @param ContainerInterface $container       Mock service container
      * @param SchemaOrg          $schemaOrgHelper schema.org helper
-     * @param PhpRenderer        $renderer        View renderer
      *
      * @return array
      */
-    protected function getViewHelpers(
-        ContainerInterface $container,
-        SchemaOrg $schemaOrgHelper,
-        PhpRenderer $renderer,
-    ): array {
-        $context = new \VuFind\View\Helper\Root\Context($renderer);
+    
+    protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
+    {
+        $context = new \VuFind\View\Helper\Root\Context();
         $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
         $serviceManager->method('get')->willReturnCallback(function ($service) {
@@ -288,11 +285,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $this->addConfigRelatedServicesToContainer($container);
 
-        $view = $this->getPhpRenderer([]);
-        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view);
-        foreach ($helpers as $name => $helper) {
-            $view->getHelperPluginManager()->setService($name, $helper);
-        }
+        // Create a view object with a set of helpers:
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper);
+        $view = $this->getPhpRenderer($helpers);
         $container->set(\Laminas\View\HelperPluginManager::class, $view->getHelperPluginManager());
         $formatter = $factory($container, RecordDataFormatter::class);
 
