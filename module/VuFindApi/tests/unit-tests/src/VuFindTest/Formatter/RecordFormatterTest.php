@@ -31,7 +31,6 @@ namespace VuFindTest\Formatter;
 
 use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
-use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\View\Helper\Root\Translate;
 use VuFindApi\Formatter\RecordFormatter;
