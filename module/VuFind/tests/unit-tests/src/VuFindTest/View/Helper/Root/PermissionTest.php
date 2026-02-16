@@ -201,7 +201,6 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $realView = $this->getPhpRenderer(
             compact('translate', 'transEsc', 'context', 'escapehtml')
         );
-        $realView->getHelperPluginManager()->setService('context', $context);
         return $realView;
     }
 }
