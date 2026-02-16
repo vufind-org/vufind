@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Navigation\AbstractMenu;
 
 /**
@@ -42,15 +43,28 @@ use VuFind\Navigation\AbstractMenu;
  *
  * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
-abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
+abstract class AbstractMenuHelper
 {
     /**
      * Constructor
      *
-     * @param AbstractMenu $menu Menu
+     * @param AbstractMenu      $menu     Menu
+     * @param RendererInterface $renderer View renderer
      */
-    public function __construct(protected AbstractMenu $menu)
+    public function __construct(
+        protected AbstractMenu $menu,
+        protected RendererInterface $renderer
+    ) {
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke()
     {
+        return $this;
     }
 
     /**
