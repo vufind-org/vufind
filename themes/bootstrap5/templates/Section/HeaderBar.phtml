@@ -16,6 +16,29 @@
                   $item = array_merge($this->{\VuFind\View\Helper\Root\Section::SECTION_CONTEXT_KEY}, $item);
                 ?>
                 <?= $this->render($item['template'], $item) ?>
+              <?php elseif (isset($item['submenuItems'])): ?>
+                <?= $this->component('menu-button', [
+                  'toggleLabel' => $item['label'],
+                  'toggleAttrs' => [
+                    'class' => 'nav-link dropdown-toggle',
+                  ],
+                  'wrapperClass' => 'nav-item ' . ($item['name'] ?? ''),
+                  'wrapperTag' => 'li',
+                  'menuItems' => array_map(
+                      function ($submenuItem) {
+                        $url = isset($submenuItem['route'])
+                          ? $this->url($submenuItem['route'], $submenuItem['routeParams'] ?? [])
+                          : $submenuItem['url'];
+                        return [
+                          'label' => $submenuItem['label'],
+                          'url' => $url,
+                          'description' => $submenuItem['description'] ?? false,
+                          'selected' => $this->requestUri === $url,
+                        ];
+                      },
+                      $item['submenuItems'],
+                  ),
+                ]) ?>
               <?php else: ?>
                 <?php
                   $attributes = $this->htmlAttributes($item['attributes'] ?? []);
@@ -27,7 +50,7 @@
                     $attributes->add('class', 'icon-link');
                   }
                 ?>
-                <li class="nav-item">
+                <li class="nav-item <?=isset($item['name']) ? $this->escAttr($item['name']) : ''?>">
                   <a<?=$attributes?>>
                     <?php if ($icon = $item['icon'] ?? false): ?>
                       <?=$this->icon($icon, 'icon-link__icon') ?>

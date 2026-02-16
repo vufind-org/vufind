@@ -28,3 +28,11 @@ $btn-default-border:     #ccc !default;
 .btn-link:hover {
   color: var(--#{$prefix}link-hover-color);
 }
+
+button,
+[type="button"] {
+  &.dropdown-toggle + .dropdown-menu > li > a > .description {
+    display: block;
+    font-size: smaller;
+  }
+}
