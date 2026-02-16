@@ -29,7 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Translate + escape view helper
@@ -40,8 +41,22 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEsc extends AbstractHelper
+class TransEsc
 {
+    /**
+     * Constructor
+     *
+     * @param Translate  $translate  Translate view helper
+     * @param EscapeHtml $escapeHtml EscapeHtml view helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
+    }
+
     /**
      * Translate and escape a string
      *
@@ -64,8 +79,7 @@ class TransEsc extends AbstractHelper
         $useIcuFormatter = false,
         $fallbackDomains = []
     ) {
-        $escaper = $this->getView()->plugin('escapeHtml');
-        $translator = $this->getView()->plugin('translate');
-        return $escaper($translator($str, $tokens, $default, $useIcuFormatter, $fallbackDomains));
+        $translated = ($this->translate)($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
+        return ($this->escapeHtml)($translated);
     }
 }

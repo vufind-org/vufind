@@ -52,7 +52,6 @@ return [
             'VuFind\View\Helper\Root\Ils' => 'VuFind\View\Helper\Root\IlsFactory',
             'VuFind\View\Helper\Root\JsConfigs' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\JsIcons' => 'VuFind\View\Helper\Root\JsIconsFactory',
-            'VuFind\View\Helper\Root\JsTranslations' => 'VuFind\View\Helper\Root\JsTranslationsFactory',
             'VuFind\View\Helper\Root\KeepAlive' => 'VuFind\View\Helper\Root\KeepAliveFactory',
             'VuFind\View\Helper\Root\LibraryCards' => 'VuFind\View\Helper\Root\LibraryCardsFactory',
             'VuFind\View\Helper\Root\Linkify' => 'VuFind\View\Helper\Root\LinkifyFactory',
