@@ -29,7 +29,6 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\Escaper\Escaper;
@@ -80,7 +79,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    
     protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
     {
         $context = new \VuFind\View\Helper\Root\Context();
