@@ -48,8 +48,10 @@ class AccountMenu extends AbstractMenuHelper
     /**
      * Constructor
      *
-     * @param Config  $config        Config view helper
-     * @param Context $contextHelper Context view helper
+     * @param AccountMenu       $menu          Menu
+     * @param RendererInterface $renderer      View Renderer
+     * @param Config            $config        Config view helper
+     * @param Context           $contextHelper Context view helper
      */
     public function __construct(
         #[Autowire(container: \VuFind\Navigation\PluginManager::class)]

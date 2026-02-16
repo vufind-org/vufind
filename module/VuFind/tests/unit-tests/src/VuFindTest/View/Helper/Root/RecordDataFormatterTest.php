@@ -30,7 +30,6 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Renderer\PhpRenderer;
-use Laminas\View\Resolver\TemplatePathStack;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\Escaper\Escaper;
@@ -288,7 +287,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $this->addConfigRelatedServicesToContainer($container);
 
-         $view = $this->getPhpRenderer([]);
+        $view = $this->getPhpRenderer([]);
         $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view);
         foreach ($helpers as $name => $helper) {
             $view->getHelperPluginManager()->setService($name, $helper);
