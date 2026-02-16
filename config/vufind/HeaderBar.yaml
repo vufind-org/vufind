@@ -14,14 +14,17 @@
 #     a check whether to show the item. If omitted, item will always display.
 #   - template: template to render the item with. Templates do not support the keys
 #     documented below.
-#   - label: the text shown as link, will be translated - required
-#   - route: route name used to generate link target - required unless url or
-#     template is set
-#   - routeParams: parameters for dynamic routes
-#   - url: target url, alternative to route - required unless route or template
-#     is set
+#   - name: name of an item, used as a CSS class for the menu item's <li> tag
 #   - icon: icon used for the item, has to be defined in theme config
 #   - attributes: additional attributes for the menu item's <a> tag
+#   - submenuItems: items to be shown in a dropdown menu. Submenu items support only
+#     the keys documented below.
+#   - label: the text shown as link, will be translated - required
+#   - route: route name used to generate link target - required unless url, template
+#     or submenuItems is set
+#   - routeParams: parameters for dynamic routes
+#   - url: target url, alternative to route - required unless route, template or
+#     submenuItems is set
 #
 # You can use checkMethod: alwaysFail to disable specific inherited groups or items
 # in local configuration. If you wish to completely override the default

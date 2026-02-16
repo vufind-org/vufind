@@ -6,6 +6,7 @@
    * @param array   $menuItems    Array of arrays representing menu items; each element can/should contain these keys:
    *                              - external (bool): if true, apply a target of _blank to the link (default = false)
    *                              - label (string): text of menu option link (required, will be translated)
+   *                              - description (string): description displayed below the label (optional, will be translated)
    *                              - lightbox (bool): if true, open the link in a lightbox (default = false)
    *                              - selected (bool): is this the active menu item? (default = false)
    *                              - url (string): target link for menu option (required)
@@ -69,7 +70,10 @@
           <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
           rel="nofollow"
         >
-          <?=$this->transEsc($current['label']) ?>
+          <span><?=$this->transEsc($current['label']) ?></span>
+          <?php if ($description = $current['description'] ?? false): ?>
+            <span class="description"><?=$this->transEsc($description)?></span>
+          <?php endif; ?>
         </a>
       </li>
     <?php endforeach; ?>

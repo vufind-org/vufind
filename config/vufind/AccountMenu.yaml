@@ -19,7 +19,8 @@
 #   - icon: icon used for the item, has to be defined in theme config
 #   - template: template to render the item with. Templates do not support the keys
 #     documented below.
-#   - name: name of an item
+#   - name: name of an item, used as a CSS class for the menu item's <a> tag and as
+#     a prefix for an item-specific spinner status CSS class name
 #   - label: the text shown as link, will be translated - required
 #   - route: route name used to generate link target - required unless url or
 #     template is set

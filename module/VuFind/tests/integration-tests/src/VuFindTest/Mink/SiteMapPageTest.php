@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Symfony\Component\Yaml\Yaml;
 use VuFindTest\Integration\Session;
 
 /**
@@ -69,78 +70,90 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function applySiteMapConfigWithSubmenuItems(): void
     {
-        $this->changeYamlConfigs(
-            [
-                'SiteMap' => [
-                    '@parent_config_name' => false,
-                    'HomePage' => [
-                        'MenuItems' => [
-                            [
-                                'label' => 'Home Page',
-                                'route' => 'home',
-                            ],
-                        ],
-                    ],
-                    'SubmenuItemsTest' => [
-                        'label' => 'Submenu Items Test',
-                        'MenuItems' => [
-                            [
-                                'label' => 'Linked Parent Item 1',
-                                'url' => '#',
-                                'submenuItems' => [
-                                    [
-                                        'label' => 'Submenu 1 Item 1',
-                                        'url' => '#',
-                                    ],
-                                    [
-                                        'label' => 'Submenu 1 Item 2',
-                                        'url' => '#',
-                                        'submenuItems' => [
-                                            [
-                                                'label' => 'Submenu 1.1 Item 1',
-                                                'url' => '#',
-                                            ],
-                                            [
-                                                'label' => 'Submenu 1.1 Item 2 with checkMethod that fails',
-                                                'url' => '#',
-                                                'checkMethod' => 'alwaysFail',
-                                            ],
-                                            [
-                                                'label' => 'Submenu 1.1 Item 3',
-                                                'url' => '#',
-                                            ],
-                                        ],
-                                    ],
-                                    [
-                                        'label' => 'Submenu 1 Item 3 with checkMethod that fails',
-                                        'url' => '#',
-                                        'checkMethod' => 'alwaysFail',
-                                    ],
-                                ],
-                            ],
-                            [
-                                'label' => 'Unlinked Parent Item 2',
-                                'submenuItems' => [
-                                    [
-                                        'label' => 'Submenu 2 Item 1',
-                                        'url' => '#',
-                                    ],
-                                    [
-                                        'label' => 'Submenu 2 Item 2',
-                                        'url' => '#',
-                                    ],
-                                ],
-                            ],
-                            [
-                                'label' => 'Regular Item 3',
-                                'url' => '#',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            ['SiteMap']
-        );
+        $yaml = <<<YAML
+            "@parent_yaml": false
+            
+            GroupWithoutLabelAndWithoutSubmenuItems:
+              MenuItems:
+                - label: 'Item 1 rendered as heading'
+                  url: '#'
+                - label: 'Item 2 rendered as heading'
+                  url: '#'
+            
+            GroupWithoutLabelAndWithSubmenuItems:
+              MenuItems:
+                - label: 'Item 1 rendered as heading'
+                  url: '#'
+                - label: 'Item 2 rendered as heading'
+                  url: '#'
+                  submenuItems:
+                    - label: 'Submenu Item 1 rendered as list item'
+                      url: '#'
+                    - label: 'Submenu Item 2 rendered as list item'
+                      url: '#'
+                - label: 'Item 3 rendered as heading'
+                  url: '#'
+            
+            GroupWithLabelAndWithoutSubmenuItems:
+              label: 'Group label rendered as heading'
+              MenuItems:
+                - label: 'Item 1 rendered as list item'
+                  url: '#'
+                - label: 'Item 2 rendered as list item'
+                  url: '#'
+            
+            GroupWithLabelAndWithSubmenuItems:
+              label: 'Group label rendered as heading'
+              MenuItems:
+                - label: 'Item 1 rendered as list item'
+                  url: '#'
+                - label: 'Item 2 rendered as list item'
+                  url: '#'
+                  submenuItems:
+                    - label: 'Submenu Item 1 rendered as list item'
+                      url: '#'
+                    - label: 'Submenu Item 2 rendered as list item'
+                      url: '#'
+                - label: 'Item 3 rendered as list item'
+                  url: '#'
+            
+            NestedSubmenuItems:
+              label: 'Nested Submenu Items'
+              MenuItems:
+                - label: 'Linked Parent Item 1'
+                  route: content-page
+                  routeParams:
+                    page: askLibrary
+                  submenuItems:
+                    - label: 'Submenu 1 Item 1'
+                      route: content-page
+                      routeParams:
+                        page: askLibrary
+                    - label: 'Submenu 1 Item 2'
+                      url: '#'
+                      submenuItems:
+                        - label: 'Submenu 1.1 Item 1'
+                          url: '#'
+                        - label: 'Submenu 1.1 Item 2 with checkMethod that fails'
+                          url: '#'
+                          checkMethod: alwaysFail
+                        - label: 'Submenu 1.1 Item 3'
+                          url: '#'
+                    - label: 'Submenu 1 Item 3 with checkMethod that fails'
+                      url: '#'
+                      checkMethod: alwaysFail
+                    - label: 'Submenu 1 Item 4'
+                      url: '#'
+                - label: 'Unlinked Parent Item 2'
+                  submenuItems:
+                    - label: 'Submenu 2 Item 1'
+                      url: '#'
+                    - label: 'Submenu 2 Item 2'
+                      url: '#'
+                - label: 'Regular Item 3'
+                  url: '#'
+            YAML;
+        $this->changeYamlConfigs(['SiteMap' => Yaml::parse($yaml)], ['SiteMap']);
     }
 
     /**
@@ -209,59 +222,125 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test submenu items and nested submenus with linked and unlinked parents
-     * and with failing checkMethods.
+     * Test rendering of group labels, menu items and submenu items.
      *
      * @return void
      */
-    public function testSubmenuItems(): void
+    public function testLabelAndItemRendering(): void
+    {
+        $this->applySiteMapConfigWithSubmenuItems();
+        $page = $this->getSiteMapPage();
+
+        // Group without label and without submenu items.
+        $this->assertStringContainsString(
+            'Item 1 rendered as heading',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(2) > a:nth-child(1)')
+        );
+        $this->assertStringContainsString(
+            'Item 2 rendered as heading',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(3) > a:nth-child(1)')
+        );
+
+        // Group without label and with submenu items.
+        $this->assertStringContainsString(
+            'Item 1 rendered as heading',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(4) > a:nth-child(1)')
+        );
+        $this->assertStringContainsString(
+            'Item 2 rendered as heading',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(5) > a:nth-child(1)')
+        );
+        $this->assertStringContainsString(
+            'Submenu Item 1 rendered as list item',
+            $this->findCssAndGetText($page, '#content > ul:nth-child(6) > li:nth-child(1) > a:nth-child(1)')
+        );
+        $this->assertStringContainsString(
+            'Item 3 rendered as heading',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(7) > a:nth-child(1)')
+        );
+
+        // Group with label and without submenu items.
+        $this->assertStringContainsString(
+            'Group label rendered as heading',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(8)')
+        );
+        $this->assertStringContainsString(
+            'Item 1 rendered as list item',
+            $this->findCssAndGetText($page, '#content > ul:nth-child(9) > li:nth-child(1) > a:nth-child(1)')
+        );
+
+        // Group with label and with submenu items.
+        $this->assertStringContainsString(
+            'Group label rendered as heading',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(10)')
+        );
+        $this->assertStringContainsString(
+            'Item 1 rendered as list item',
+            $this->findCssAndGetText($page, '#content > ul:nth-child(11) > li:nth-child(1) > a:nth-child(1)')
+        );
+        $this->assertStringContainsString(
+            'Submenu Item 1 rendered as list item',
+            $this->findCssAndGetText(
+                $page,
+                '#content > ul:nth-child(11) > li:nth-child(2) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)'
+            )
+        );
+        $this->assertStringContainsString(
+            'Item 3 rendered as list item',
+            $this->findCssAndGetText($page, '#content > ul:nth-child(11) > li:nth-child(3) > a:nth-child(1)')
+        );
+    }
+
+    /**
+     * Test nested submenu items with linked and unlinked parents and with
+     * failing checkMethods.
+     *
+     * @return void
+     */
+    public function testNestedSubmenuItems(): void
     {
         $this->applySiteMapConfigWithSubmenuItems();
         $page = $this->getSiteMapPage();
         $this->assertStringContainsString(
-            'Submenu Items Test',
-            $this->findCssAndGetText($page, '#content > h2:nth-child(3)')
+            'Nested Submenu Items',
+            $this->findCssAndGetText($page, '#content > h2:nth-child(12)')
         );
         $this->assertStringContainsString(
             'Submenu 1 Item 1',
             $this->findCssAndGetText(
                 $page,
-                '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)'
-            )
-        );
-        $this->assertStringNotContainsString(
-            'Submenu 1.1 Item 2 with checkMethod that fails',
-            $this->findCssAndGetText(
-                $page,
-                '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(2) > ul:nth-child(2)'
+                '#content > ul:nth-child(13) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)'
             )
         );
         $this->assertStringContainsString(
             'Submenu 1.1 Item 3',
             $this->findCssAndGetText(
                 $page,
-                '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(2) > ul:nth-child(2) '
-                    . '> li:nth-child(2) > a:nth-child(1)'
+                '#content > ul:nth-child(13) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(2) '
+                    . '> ul:nth-child(2) > li:nth-child(2) > a:nth-child(1)'
             )
         );
-        $this->assertStringNotContainsString(
-            'Submenu 1 Item 3 with checkMethod that fails',
-            $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(1) > ul:nth-child(2)')
+        $this->assertStringContainsString(
+            'Submenu 1 Item 4',
+            $this->findCssAndGetText(
+                $page,
+                '#content > ul:nth-child(13) > li:nth-child(1) > ul:nth-child(2) > li:nth-child(3) > a:nth-child(1)'
+            )
         );
         $this->assertStringContainsString(
             'Unlinked Parent Item 2',
-            $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(2)')
+            $this->findCssAndGetText($page, '#content > ul:nth-child(13) > li:nth-child(2)')
         );
         $this->assertStringContainsString(
             'Submenu 2 Item 1',
             $this->findCssAndGetText(
                 $page,
-                '#content > ul:nth-child(4) > li:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)'
+                '#content > ul:nth-child(13) > li:nth-child(2) > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)'
             )
         );
         $this->assertStringContainsString(
             'Regular Item 3',
-            $this->findCssAndGetText($page, '#content > ul:nth-child(4) > li:nth-child(3) > a:nth-child(1)')
+            $this->findCssAndGetText($page, '#content > ul:nth-child(13) > li:nth-child(3) > a:nth-child(1)')
         );
     }
 }
