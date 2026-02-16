@@ -523,7 +523,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function normalizeSort($sort)
     {
-        static $table = [
+        $table = [
             'year' => ['field' => 'publishDateSort', 'order' => 'desc'],
             'publishDateSort' => ['field' => 'publishDateSort', 'order' => 'desc'],
             'author' => ['field' => 'author_sort', 'order' => 'asc'],
@@ -532,6 +532,10 @@ class Params extends \VuFind\Search\Base\Params
             'relevance' => ['field' => 'score', 'order' => 'desc'],
             'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],
         ];
+        //add/overwrite default sort aliases
+        foreach ($this->getLocalSortDefinitions() as $alias => $localSortDefinition) {
+            $table[$alias] = $localSortDefinition;
+        }
         $tieBreaker = $this->getOptions()->getSortTieBreaker();
         if ($tieBreaker) {
             $sort .= ',' . $tieBreaker;
@@ -777,5 +781,16 @@ class Params extends \VuFind\Search\Base\Params
 
         // Return modified list:
         return $facets;
+    }
+
+    /**
+     * Get local sort definitions for additional user-defined entries in the "Sort By" menu.
+     *
+     * @return array
+     */
+    public function getLocalSortDefinitions()
+    {
+        $config = $this->configManager->getConfigArray($this->getOptions()->getMainIni());
+        return $config['LocalSortDefinitions'] ?? array();
     }
 }
