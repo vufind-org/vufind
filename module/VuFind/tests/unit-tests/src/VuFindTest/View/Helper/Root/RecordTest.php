@@ -812,10 +812,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $auth,
             $urlHelper,
             $serverUrlHelper,
-            $config
+            new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()),
+            $this->createMock(\VuFind\Search\Memory::class),
+            $config,
         );
-
-        $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
 
         return $record($driver);
     }

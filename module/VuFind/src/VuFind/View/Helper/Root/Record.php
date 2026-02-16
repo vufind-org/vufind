@@ -67,20 +67,6 @@ class Record implements DbServiceAwareInterface
     use DbServiceAwareTrait;
 
     /**
-     * Cover router
-     *
-     * @var CoverRouter
-     */
-    protected $coverRouter = null;
-
-    /**
-     * Search memory
-     *
-     * @var Memory
-     */
-    protected $searchMemory = null;
-
-    /**
      * Record driver
      *
      * @var RecordDriver
@@ -104,6 +90,8 @@ class Record implements DbServiceAwareInterface
      * @param Auth              $auth         Auth helper
      * @param Url               $url          Url helper
      * @param ServerUrl         $serverUrl    ServerUrl helper
+     * @param Memory            $searchMemory Search Memory
+     * @param CoverRouter       $coverRouter  CoverRouter
      * @param ?Config           $config       Configuration from config.ini
      */
     public function __construct(
@@ -132,36 +120,16 @@ class Record implements DbServiceAwareInterface
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager')]
         protected \Laminas\View\Helper\ServerUrl $serverUrl,
+        #[Autowire]
+        protected CoverRouter $coverRouter,
+        #[Autowire]
+        protected Memory $searchMemory,
         #[Autowire(config: 'config', configType: 'object')]
-        protected ?Config $config = null
+        protected ?Config $config = null,
     ) {
         $this->viewRenderer = $viewRenderer;
         $this->viewResolver = $viewResolver;
         $this->setContextHelper($context);
-    }
-
-    /**
-     * Inject the cover router
-     *
-     * @param CoverRouter $router Cover router
-     *
-     * @return void
-     */
-    public function setCoverRouter($router)
-    {
-        $this->coverRouter = $router;
-    }
-
-    /**
-     * Inject the search memory
-     *
-     * @param Memory $memory Search memory
-     *
-     * @return void
-     */
-    public function setSearchMemory(Memory $memory): void
-    {
-        $this->searchMemory = $memory;
     }
 
     /**

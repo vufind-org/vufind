@@ -36,6 +36,7 @@ use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 use VuFind\Search\Memory;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Search\Options\PluginManager;
 
 use function is_array;
 use function is_string;
@@ -69,21 +70,20 @@ class RecordLinker
     /**
      * Constructor
      *
-     * @param Router        $router        Record router
-     * @param Memory        $memory        Search memory service
-     * @param Url           $url           Url helper
-     * @param SearchOptions $searchOptions SearchOptions helper
-     * @param Translate     $translate     Translate helper
-     * @param Truncate      $truncate      Truncate helper
-     * @param EscapeHtml    $escapeHtml    EscapeHtml helper
+     * @param Router        $router               Record router
+     * @param Memory        $memory               Search memory service
+     * @param Url           $url                  Url helper
+     * @param PluginManager $searchOptionsManager SearchOptions helper
+     * @param Translate     $translate            Translate helper
+     * @param Truncate      $truncate             Truncate helper
+     * @param EscapeHtml    $escapeHtml           EscapeHtml helper
      */
     public function __construct(
         protected Router $router,
         protected Memory $memory,
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected SearchOptions $searchOptions,
+        protected PluginManager $searchOptionsManager,
         #[Autowire(container: 'ViewHelperManager')]
         protected Translate $translate,
         #[Autowire(container: 'ViewHelperManager')]
@@ -354,7 +354,7 @@ class RecordLinker
      */
     protected function getSearchActionForSource($source)
     {
-        return ($this->searchOptions)($source)->getSearchAction();
+        return $this->searchOptionsManager->get($source)->getSearchAction();
     }
 
     /**
@@ -367,7 +367,7 @@ class RecordLinker
      */
     protected function getVersionsActionForSource($source): ?string
     {
-        return ($this->searchOptions)($source)->getVersionsAction();
+        return $this->searchOptionsManager->get($source)->getVersionsAction();
     }
 
     /**

@@ -145,6 +145,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $resolver
         );
 
+        $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
+
         $record = new \VuFind\View\Helper\Root\Record(
             $this->createMock(TagsService::class),
             $renderer,
@@ -160,6 +162,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $auth,
             $url,
             $serverUrl,
+            $coverRouter,
+            $memory,
             $configEntity
         );
 
