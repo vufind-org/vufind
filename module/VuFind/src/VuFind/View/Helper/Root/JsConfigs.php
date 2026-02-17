@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * JsConfigs helper for passing configs to Javascript
  *
