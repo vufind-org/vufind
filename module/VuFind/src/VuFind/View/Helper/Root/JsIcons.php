@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * JsIcons helper for passing icon HTML to Javascript
  *
@@ -42,24 +44,17 @@ namespace VuFind\View\Helper\Root;
 class JsIcons extends AbstractJsStrings
 {
     /**
-     * Icon helper
-     *
-     * @var Icon
-     */
-    protected $iconHelper;
-
-    /**
      * Constructor
      *
      * @param Icon   $iconHelper Icon helper
      * @param string $varName    Variable name to store icons
      */
     public function __construct(
-        Icon $iconHelper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Icon $iconHelper,
         $varName = 'vufindIconString'
     ) {
         parent::__construct($varName);
-        $this->iconHelper = $iconHelper;
     }
 
     /**
