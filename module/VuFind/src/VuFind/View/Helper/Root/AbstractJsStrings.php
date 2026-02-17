@@ -41,13 +41,6 @@ namespace VuFind\View\Helper\Root;
 abstract class AbstractJsStrings
 {
     /**
-     * Variable name to store values
-     *
-     * @var string
-     */
-    protected $varName;
-
-    /**
      * Strings to convey (key = js key, value = value to map)
      *
      * @var array
@@ -59,9 +52,8 @@ abstract class AbstractJsStrings
      *
      * @param string $varName Variable name to store values
      */
-    public function __construct(string $varName = 'vufindString')
+    public function __construct(protected string $varName = 'vufindString')
     {
-        $this->varName = $varName;
     }
 
     /**
