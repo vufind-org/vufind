@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\ServiceManager\Factory\Autowire;
-
 /**
  * JsTranslations helper for passing translation text to Javascript
  *
@@ -50,9 +48,7 @@ class JsTranslations extends AbstractJsStrings
      * @param string    $varName   Variable name to store translations
      */
     public function __construct(
-        #[Autowire(container: 'ViewHelperManager')]
         protected Translate $translate,
-        #[Autowire(container: 'ViewHelperManager')]
         protected TransEsc $transEsc,
         string $varName = 'vufindString'
     ) {
