@@ -63,6 +63,7 @@ class AccountMenu extends AbstractMenu
      * @param Connection          $ilsConnection       ILS connection
      * @param ILSAuthenticator    $ilsAuthenticator    ILS authenticator
      * @param ?OverdriveConnector $overdriveConnector  Overdrive connector
+     * @param array               $config              Main configuration
      */
     public function __construct(
         array $sectionConfig,
@@ -71,6 +72,7 @@ class AccountMenu extends AbstractMenu
         protected Connection $ilsConnection,
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?OverdriveConnector $overdriveConnector,
+        protected array $config
     ) {
         if (isset($sectionConfig['MenuItems'])) {
             // backward compatibility for outdated legacy AccountMenu configurations
@@ -482,5 +484,17 @@ class AccountMenu extends AbstractMenu
     protected function getUser(): ?UserEntityInterface
     {
         return $this->authManager->getUserObject();
+    }
+
+    /**
+     * Create icon name for fines item
+     *
+     * @return string
+     */
+    public function finesIcon(): string
+    {
+        $icon = 'currency-'
+            . strtolower($this->config['Site']['defaultCurrency'] ?? 'usd');
+        return $icon;
     }
 }
