@@ -113,7 +113,7 @@ class Content
     /**
      * Apply encoding to the content based on the provided content type.
      *
-     * @param string $contentType Content type
+     * @param string $contentType Content type (text, html, or markdown)
      * @param string $content     Content
      *
      * @return string
