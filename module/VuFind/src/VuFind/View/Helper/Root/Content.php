@@ -31,9 +31,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\InvalidArgumentException;
-use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Helper\AbstractHelper;
 use VuFind\ContentBlock\TemplateBased;
-use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Content View Helper to resolve translated pages.
@@ -45,36 +44,34 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Content
+class Content extends AbstractHelper
 {
+    /**
+     * TemplateBased instance to resolve translated pages.
+     *
+     * @var TemplateBased
+     */
+    protected $templateBasedBlock;
+
+    /**
+     * Context View Helper instance to resolve translated pages.
+     *
+     * @var Context
+     */
+    protected $contextHelper;
+
     /**
      * Constructor
      *
-     * @param TemplateBased $templateBasedBlock TemplateBased instance to resolve translated pages.
-     * @param Context       $contextHelper      Context View Helper instance to resolve translated pages.
-     * @param EscapeHtml    $escapeHtmlHelper   Escape HTML view helper
-     * @param Markdown      $markdownHelper     Markdown view helper
+     * @param TemplateBased $block         TemplateBased ContentBlock
+     * @param Context       $contextHelper Context view helper
      */
     public function __construct(
-        #[Autowire(container: \VuFind\ContentBlock\PluginManager::class)]
-        protected TemplateBased $templateBasedBlock,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Context $contextHelper,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected EscapeHtml $escapeHtmlHelper,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Markdown $markdownHelper
+        TemplateBased $block,
+        Context $contextHelper
     ) {
-    }
-
-    /**
-     * Make helper invokable.
-     *
-     * @return static
-     */
-    public function __invoke(): static
-    {
-        return $this;
+        $this->templateBasedBlock = $block;
+        $this->contextHelper = $contextHelper;
     }
 
     /**
@@ -123,10 +120,11 @@ class Content
         if (empty($content)) {
             return '';
         }
+        $view = $this->getView();
         return match ($contentType) {
-            'text' => ($this->escapeHtmlHelper)($content),
+            'text' => $view->plugin('escapeHtml')($content),
             'html' => $content,
-            'markdown' => ($this->markdownHelper)(($this->escapeHtmlHelper)($content))->getContent(),
+            'markdown' => $view->plugin('markdown')($view->plugin('escapeHtml')($content))->getContent(),
             default => throw new InvalidArgumentException('Invalid content type: ' . $contentType),
         };
     }
