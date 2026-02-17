@@ -8,8 +8,6 @@ return [
         'factories' => [
             'Laminas\View\Helper\HeadTitle' => 'VuFind\View\Helper\Root\HeadTitleFactory',
             'VuFind\View\Helper\Root\AccountCapabilities' => 'VuFind\View\Helper\Root\AccountCapabilitiesFactory',
-            'VuFind\View\Helper\Root\AccountMenu' => 'VuFind\View\Helper\Root\AccountMenuFactory',
-            'VuFind\View\Helper\Root\AdminMenu' => 'VuFind\View\Helper\Root\AdminMenuFactory',
             'VuFind\View\Helper\Root\AddEllipsis' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\AlphaBrowse' => 'VuFind\View\Helper\Root\AlphaBrowseFactory',
             'VuFind\View\Helper\Root\Auth' => 'VuFind\View\Helper\Root\AuthFactory',
