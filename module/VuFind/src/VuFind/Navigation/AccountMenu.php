@@ -493,8 +493,6 @@ class AccountMenu extends AbstractMenu
      */
     public function finesIcon(): string
     {
-        $icon = 'currency-'
-            . strtolower($this->config['Site']['defaultCurrency'] ?? 'usd');
-        return $icon;
+        return 'currency-' . strtolower($this->config['Site']['defaultCurrency'] ?? 'usd');
     }
 }
