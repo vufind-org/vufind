@@ -31,7 +31,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Content\NoticeManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -63,7 +62,7 @@ class Notices implements TranslatorAwareInterface
      *
      * @param NoticeManager $noticeManager Notice manager
      * @param PhpRenderer   $renderer      PhpRenderer
-     * @param EscapeHtml    $escapeHtml    EscapeHtml view helper
+     * @param Content       $contentHelper Content view helper
      */
     public function __construct(
         #[Autowire(service: NoticeManager::class)]
@@ -71,7 +70,7 @@ class Notices implements TranslatorAwareInterface
         #[Autowire(service: PhpRenderer::class)]
         protected PhpRenderer $renderer,
         #[Autowire(container: 'ViewHelperManager')]
-        protected EscapeHtml $escapeHtml
+        protected Content $contentHelper,
     ) {
     }
 
@@ -123,7 +122,10 @@ class Notices implements TranslatorAwareInterface
         if ($content === null) {
             return '';
         }
-        $content = ($this->escapeHtml)($content);
+        $content = $this->contentHelper->handleContentType(
+            $notice['contentType'] ?? 'text',
+            $this->translate($content)
+        );
         $classes = '';
         if ($style = $notice['style'] ?? null) {
             $classes = $this->noticeManager->getConfig()['styles'][$style]['classes']
