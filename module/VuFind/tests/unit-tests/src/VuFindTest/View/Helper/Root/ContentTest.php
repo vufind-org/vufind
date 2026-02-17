@@ -79,7 +79,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
         $content = new Content($mockTemplateBased, $mockContext);
         // Confirm that expected content was rendered:
         $pageDetails = [];
-        $this->assertEquals(
+        $this->assertSame(
             'rendered-content',
             $content->renderTranslated(
                 $pageName,
