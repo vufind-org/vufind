@@ -91,7 +91,7 @@ class Content extends AbstractHelper
         array $context = [],
         ?array &$pageDetails = [],
         ?string $pattern = null
-    ): string {
+    ) {
         if (!str_ends_with($pathPrefix, '/')) {
             $pathPrefix .= '/';
         }
