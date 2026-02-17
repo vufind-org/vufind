@@ -31,6 +31,7 @@ namespace VuFind\Navigation;
 
 use Laminas\Http\Request;
 use Laminas\View\Model\ViewModel;
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\I18n\Locale\LocaleSettings;
@@ -148,38 +149,30 @@ class HeaderBar extends AbstractMenu
      */
     public static function getDefaultMenuConfig(): array
     {
-        return [
-            'Header' => [
-                'MenuItems' => [
-                    [
-                        'label' => 'Feedback',
-                        'route' => 'feedback-home',
-                        'icon' => 'feedback',
-                        'checkMethod' => 'checkFeedback',
-                        'attributes' => [
-                            'id' => 'feedbackLink',
-                            'data-lightbox' => 'data-lightbox',
-                        ],
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-cart.phtml',
-                        'checkMethod' => 'checkCart',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-account.phtml',
-                        'checkMethod' => 'checkAccount',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-themeOptions.phtml',
-                        'checkMethod' => 'checkThemeOptions',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-allLangs.phtml',
-                        'checkMethod' => 'checkAllLangs',
-                    ],
-                ],
-            ],
-        ];
+        $yaml = <<<YAML
+            Header:
+              MenuItems:
+                - label: 'Feedback'
+                  route: feedback-home
+                  icon: feedback
+                  checkMethod: checkFeedback
+                  attributes:
+                    id: feedbackLink
+                    data-lightbox: data-lightbox
+            
+                - template: Section/HeaderBar/HeaderBar-cart.phtml
+                  checkMethod: checkCart
+            
+                - template: Section/HeaderBar/HeaderBar-account.phtml
+                  checkMethod: checkAccount
+            
+                - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
+                  checkMethod: checkThemeOptions
+            
+                - template: Section/HeaderBar/HeaderBar-allLangs.phtml
+                  checkMethod: checkAllLangs
+            YAML;
+        return Yaml::parse($yaml);
     }
 
     /**

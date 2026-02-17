@@ -29,6 +29,7 @@
 
 namespace VuFind\Navigation;
 
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Exception\BadConfig;
 
 use function array_key_exists;
@@ -191,21 +192,18 @@ class SiteMap extends AbstractMenu
      */
     public static function getDefaultMenuConfig(): array
     {
-        return [
-            'HomePage' => [
-                'MenuItems' => [
-                    [
-                        'label' => 'Home Page',
-                        'route' => 'home',
-                    ],
-                ],
-            ],
-            'HeaderBar' => [
-                'section' => 'HeaderBar',
-            ],
-            'FooterMenu' => [
-                'section' => 'FooterMenu',
-            ],
-        ];
+        $yaml = <<<YAML
+            HomePage:
+              MenuItems:
+                - label: 'Home Page'
+                  route: home
+            
+            HeaderBar:
+              section: HeaderBar
+            
+            FooterMenu:
+              section: FooterMenu
+            YAML;
+        return Yaml::parse($yaml);
     }
 }
