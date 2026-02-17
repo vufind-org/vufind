@@ -76,7 +76,7 @@ class JsConfigs
     }
 
     /**
-     * Return this helper instance (for method chaining).
+     * Return this helper instance.
      *
      * @return JsConfigs
      */
