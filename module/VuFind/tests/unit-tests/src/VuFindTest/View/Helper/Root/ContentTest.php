@@ -29,9 +29,11 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\ContentBlock\TemplateBased;
 use VuFind\View\Helper\Root\Content;
 use VuFind\View\Helper\Root\Context;
+use VuFind\View\Helper\Root\Markdown;
 
 /**
  * Content View Helper Test Class
@@ -76,10 +78,16 @@ class ContentTest extends \PHPUnit\Framework\TestCase
                 'ContentBlock/TemplateBased.phtml',
                 $context + $contentBlockContext
             )->willReturn('rendered-content');
-        $content = new Content($mockTemplateBased, $mockContext);
+        $mockMarkdownHelper = $this->createMock(Markdown::class);
+        $content = new Content(
+            $mockTemplateBased,
+            $mockContext,
+            new EscapeHtml(),
+            $mockMarkdownHelper
+        );
         // Confirm that expected content was rendered:
         $pageDetails = [];
-        $this->assertEquals(
+        $this->assertSame(
             'rendered-content',
             $content->renderTranslated(
                 $pageName,

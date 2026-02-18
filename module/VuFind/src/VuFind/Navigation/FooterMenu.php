@@ -29,6 +29,8 @@
 
 namespace VuFind\Navigation;
 
+use Symfony\Component\Yaml\Yaml;
+
 use function count;
 
 /**
@@ -113,90 +115,67 @@ class FooterMenu extends AbstractMenu
      */
     public static function getDefaultMenuConfig(): array
     {
-        return [
-            'footer-left' => [
-                'label' => 'footer_header_search_options',
-                'MenuItems' => [
-                    [
-                        'label' => 'Search History',
-                        'route' => 'search-history',
-                    ],
-                    [
-                        'label' => 'Advanced Search',
-                        'route' => 'search-advanced',
-                    ],
-                ],
-            ],
-            'footer-center' => [
-                'label' => 'footer_header_find_more',
-                'MenuItems' => [
-                    [
-                        'label' => 'Browse the Catalog',
-                        'route' => 'browse-home',
-                    ],
-                    [
-                        'label' => 'Browse Alphabetically',
-                        'route' => 'alphabrowse-home',
-                    ],
-                    [
-                        'label' => 'channel_explore',
-                        'route' => 'channels-home',
-                    ],
-                    [
-                        'label' => 'Course Reserves',
-                        'route' => 'search-reserves',
-                    ],
-                    [
-                        'label' => 'New Items',
-                        'route' => 'search-newitem',
-                    ],
-                ],
-            ],
-            'footer-right' => [
-                'label' => 'footer_header_need_help',
-                'MenuItems' => [
-                    [
-                        'label' => 'Search Tips',
-                        'route' => 'help',
-                        'routeParams' => [
-                            'topic' => 'search',
-                        ],
-                        'attributes' => [
-                            'data-lightbox' => 'data-lightbox',
-                            'class' => 'help-link',
-                        ],
-                    ],
-                    [
-                        'label' => 'Ask a Librarian',
-                        'route' => 'content-page',
-                        'routeParams' => [
-                            'page' => 'askLibrary',
-                        ],
-                    ],
-                    [
-                        'label' => 'FAQs',
-                        'route' => 'content-page',
-                        'routeParams' => [
-                            'page' => 'faq',
-                        ],
-                    ],
-                    [
-                        'label' => 'Cookie Settings',
-                        'url' => '#',
-                        'checkMethod' => 'checkCookieSettings',
-                        'attributes' => [
-                            'data-cc' => 'show-preferencesModal',
-                            'aria-haspopup' => 'dialog',
-                        ],
-                    ],
-                    [
-                        'label' => 'Site Map',
-                        'route' => 'sitemap-home',
-                        'checkMethod' => 'checkSiteMapPage',
-                    ],
-                ],
-            ],
-        ];
+        $yaml = <<<YAML
+            footer-left:
+              label: footer_header_search_options
+              MenuItems:
+                - label: 'Search History'
+                  route: search-history
+            
+                - label: 'Advanced Search'
+                  route: search-advanced
+            
+            footer-center:
+              label: footer_header_find_more
+              MenuItems:
+                - label: 'Browse the Catalog'
+                  route: browse-home
+            
+                - label: 'Browse Alphabetically'
+                  route: alphabrowse-home
+            
+                - label: channel_explore
+                  route: channels-home
+            
+                - label: 'Course Reserves'
+                  route: search-reserves
+            
+                - label: 'New Items'
+                  route: search-newitem
+            
+            footer-right:
+              label: footer_header_need_help
+              MenuItems:
+                - label: 'Search Tips'
+                  route: help
+                  routeParams:
+                    topic: search
+                  attributes:
+                    data-lightbox: data-lightbox
+                    class: help-link
+            
+                - label: 'Ask a Librarian'
+                  route: content-page
+                  routeParams:
+                    page: askLibrary
+            
+                - label: 'FAQs'
+                  route: content-page
+                  routeParams:
+                    page: faq
+            
+                - label: 'Cookie Settings'
+                  url: '#'
+                  checkMethod: checkCookieSettings
+                  attributes:
+                    data-cc: show-preferencesModal
+                    aria-haspopup: dialog
+            
+                - label: 'Site Map'
+                  route: sitemap-home
+                  checkMethod: checkSiteMapPage
+            YAML;
+        return Yaml::parse($yaml);
     }
 
     /**

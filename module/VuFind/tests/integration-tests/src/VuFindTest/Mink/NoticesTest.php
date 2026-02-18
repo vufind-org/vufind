@@ -110,6 +110,10 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
                     'notices' =>
                         [
                             [
+                                'style' => 'warning',
+                                'content' => 'ils_offline_status',
+                            ],
+                            [
                                 'style' => 'success',
                                 'translations' => [
                                     'de' => 'German Content',
@@ -127,6 +131,11 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
 
+        // Test default translation
+        $notice = $this->findCssAndGetText($page, '.notices .alert-warning');
+        $this->assertSame('Our Library Management System is currently under maintenance.', $notice);
+
+        // Test configured translation
         $notice = $this->findCssAndGetText($page, '.notices .alert-success');
         $this->assertSame('English Content', $notice);
 
@@ -149,12 +158,63 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test content types for notices.
+     *
+     * @return void
+     */
+    public function testContentTypesForConfiguredNotices(): void
+    {
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearCache('yaml');
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'success',
+                                'content' => '<strong>*Test*</strong>',
+                                'contentType' => 'text',
+                            ],
+                            [
+                                'style' => 'info',
+                                'content' => '<strong>Test</strong>',
+                                'contentType' => 'html',
+                            ],
+                            [
+                                'style' => 'danger',
+                                'content' => '**Test**',
+                                'contentType' => 'markdown',
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        $notice = $this->findCssAndGetText($page, '#content > .notices .alert-success');
+        $this->assertSame('<strong>*Test*</strong>', $notice);
+
+        $notice = $this->findCssAndGetText($page, '#content > .notices .alert-info strong');
+        $this->assertSame('Test', $notice);
+
+        $notice = $this->findCssAndGetText($page, '#content > .notices .alert-danger strong');
+        $this->assertSame('Test', $notice);
+    }
+
+    /**
      * Test configured notices with configured class in style.
      *
      * @return void
      */
     public function testConfiguredNoticesWithConfiguredClass(): void
     {
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearCache('yaml');
         $this->changeYamlConfigs(
             [
                 'Notices' => [
@@ -179,7 +239,7 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         $this->unFindCss($page, '.notices .alert-success');
-        $notice1 = $this->findCssAndGetText($page, '#content > .notices .test-class');
-        $this->assertSame('Test Content', $notice1);
+        $notice = $this->findCssAndGetText($page, '#content > .notices .test-class');
+        $this->assertSame('Test Content', $notice);
     }
 }
