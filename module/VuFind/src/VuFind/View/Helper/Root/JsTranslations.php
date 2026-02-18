@@ -41,20 +41,6 @@ namespace VuFind\View\Helper\Root;
 class JsTranslations extends AbstractJsStrings
 {
     /**
-     * Translate helper
-     *
-     * @var Translate
-     */
-    protected $translate;
-
-    /**
-     * Translate + escape helper
-     *
-     * @var TransEsc
-     */
-    protected $transEsc;
-
-    /**
      * Constructor
      *
      * @param Translate $translate Translate helper
@@ -62,13 +48,11 @@ class JsTranslations extends AbstractJsStrings
      * @param string    $varName   Variable name to store translations
      */
     public function __construct(
-        Translate $translate,
-        TransEsc $transEsc,
-        $varName = 'vufindString'
+        protected Translate $translate,
+        protected TransEsc $transEsc,
+        string $varName = 'vufindString'
     ) {
         parent::__construct($varName);
-        $this->translate = $translate;
-        $this->transEsc = $transEsc;
     }
 
     /**

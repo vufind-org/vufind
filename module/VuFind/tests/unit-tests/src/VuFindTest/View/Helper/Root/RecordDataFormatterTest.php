@@ -88,6 +88,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             return $this->createMock($service);
         });
         $record->setDbServiceManager($serviceManager);
+        $translate = new \VuFind\View\Helper\Root\Translate();
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $this->createMock(\VuFind\Auth\Manager::class),
@@ -118,8 +119,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 new \VuFind\Search\Options\PluginManager($container)
             ),
             'searchTabs' => $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
-            'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
-            'translate' => new \VuFind\View\Helper\Root\Translate(),
+            'transEsc' => new \VuFind\View\Helper\Root\TransEsc($translate, new \Laminas\View\Helper\EscapeHtml()),
+            'translate' => $translate,
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
         ];
     }

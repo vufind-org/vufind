@@ -134,15 +134,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $transEsc = new TransEsc();
-        $transEsc->setView(
-            $this->getPhpRenderer(
-                [
-                    'escapeHtml' => new EscapeHtml(),
-                    'translate' => $translate,
-                ]
-            )
-        );
+        $transEsc = new TransEsc($translate, new EscapeHtml());
 
         $connection = $this->createMock(Connection::class);
         $connection->method('getMethodTimedBlocks')->willReturn($timedBlocks);
