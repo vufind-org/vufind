@@ -156,7 +156,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         }
 
         $moreOptionsLink = $resolver->supportsMoreOptionsLink()
-            ? $resolver->getResolverUrl($openUrl) : '';
+            ? $resolver->getResolverUrlForMoreOptions($openUrl) : '';
 
         // Render the links using the view:
         $view = [

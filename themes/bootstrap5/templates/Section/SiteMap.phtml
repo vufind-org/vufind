@@ -1,0 +1,32 @@
+<h1><?= $this->transEsc('Site Map') ?></h1>
+<?php foreach ($this->menu as $groupName => $group) : ?>
+  <?php if ($groupHasLabel = isset($group['label'])): ?>
+    <h2><?= $this->transEsc($group['label']) ?></h2>
+    <ul>
+  <?php endif; ?>
+  <?php foreach ($group['MenuItems'] as $item): ?>
+    <?php
+      $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? null);
+      $hasSubmenuItems = isset($item['submenuItems']);
+    ?>
+    <?php if (isset($item['label']) && ($href || $hasSubmenuItems)): ?>
+      <?php $label = $this->makeLink($this->translate($item['label']), $href); ?>
+      <?php if ($hasSubmenuItems): ?>
+        <?php if ($groupHasLabel): ?>
+          <li><?= $label ?>
+        <?php else: ?>
+          <h2><?= $label ?></h2>
+        <?php endif; ?>
+        <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
+        <?php if ($groupHasLabel): ?>
+          </li>
+        <?php endif; ?>
+      <?php else: ?>
+        <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $label, options: ['escapeContent' => false]) ?>
+      <?php endif; ?>
+    <?php endif; ?>
+  <?php endforeach; ?>
+  <?php if ($groupHasLabel): ?>
+    </ul>
+  <?php endif; ?>
+<?php endforeach; ?>

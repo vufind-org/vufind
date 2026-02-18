@@ -705,9 +705,7 @@ class BackendTest extends TestCase
         $records = $result->getRecords();
         $this->assertIsArray($records);
         $this->assertCount(20, $records);
-        foreach ($records as $record) {
-            $this->assertInstanceOf(SolrRecord::class, $record);
-        }
+        $this->assertContainsOnlyInstancesOf(SolrRecord::class, $records);
     }
 
     /**

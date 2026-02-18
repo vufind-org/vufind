@@ -1,0 +1,19 @@
+<?=$this->component('menu-button', [
+  'toggleLabel' => 'Language',
+  'toggleAttrs' => [
+    'class' => 'nav-link dropdown-toggle',
+  ],
+  'wrapperClass' => 'nav-item language',
+  'wrapperTag' => 'li',
+  'menuItems' => array_map(
+      function ($langCode, $langName) {
+          return [
+            'label' => $this->displayLanguageOption($langName),
+            'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
+            'selected' => $this->userLang == $langCode,
+          ];
+      },
+      array_keys($this->allLangs),
+      array_values($this->allLangs),
+  ),
+]);

@@ -52,7 +52,7 @@ class CommitDocumentTest extends TestCase
      */
     public function testAsXML()
     {
-        $document = new CommitDocument('30000');
+        $document = new CommitDocument(30000);
         $this->assertSame(
             'text/xml; charset=UTF-8',
             $document->getContentType()

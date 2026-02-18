@@ -124,8 +124,8 @@ class StreamHandlerTest extends TestCase
 
         $this->assertFileExists($this->tempLogFile);
         $logContent = file_get_contents($this->tempLogFile);
-        $this->assertStringContainsString($message, $logContent);
-        $this->assertStringContainsString('INFO', $logContent);
+        $this->assertStringContainsString($message, (string)$logContent);
+        $this->assertStringContainsString('INFO', (string)$logContent);
     }
 
     /**
@@ -153,8 +153,8 @@ class StreamHandlerTest extends TestCase
         $logContent = file_get_contents($this->tempLogFile);
 
         foreach ($levels as $level => $message) {
-            $this->assertStringContainsString($message, $logContent);
-            $this->assertStringContainsString(strtoupper($level), $logContent);
+            $this->assertStringContainsString($message, (string)$logContent);
+            $this->assertStringContainsString(strtoupper($level), (string)$logContent);
         }
     }
 
@@ -188,12 +188,12 @@ class StreamHandlerTest extends TestCase
         $logContent = file_get_contents($this->tempLogFile);
 
         // Verify only WARNING and above appear in log
-        $this->assertStringNotContainsString('Debug message', $logContent);
-        $this->assertStringNotContainsString('Info message', $logContent);
-        $this->assertStringNotContainsString('Notice message', $logContent);
-        $this->assertStringContainsString('Warning message', $logContent);
-        $this->assertStringContainsString('Error message', $logContent);
-        $this->assertStringContainsString('Critical message', $logContent);
+        $this->assertStringNotContainsString('Debug message', (string)$logContent);
+        $this->assertStringNotContainsString('Info message', (string)$logContent);
+        $this->assertStringNotContainsString('Notice message', (string)$logContent);
+        $this->assertStringContainsString('Warning message', (string)$logContent);
+        $this->assertStringContainsString('Error message', (string)$logContent);
+        $this->assertStringContainsString('Critical message', (string)$logContent);
     }
 
     /**
@@ -214,10 +214,10 @@ class StreamHandlerTest extends TestCase
         $this->logger->info($message, $context);
 
         $logContent = file_get_contents($this->tempLogFile);
-        $this->assertStringContainsString($message, $logContent);
+        $this->assertStringContainsString($message, (string)$logContent);
 
         foreach ($context as $value) {
-            $this->assertStringContainsString((string)$value, $logContent);
+            $this->assertStringContainsString((string)$value, (string)$logContent);
         }
     }
 
@@ -237,7 +237,7 @@ class StreamHandlerTest extends TestCase
 
         $logContent = file_get_contents($this->tempLogFile);
         foreach ($messages as $message) {
-            $this->assertStringContainsString($message, $logContent);
+            $this->assertStringContainsString($message, (string)$logContent);
         }
 
         $lines = explode("\n", trim($logContent));
@@ -271,6 +271,6 @@ class StreamHandlerTest extends TestCase
         $this->handler->close();
         $this->assertFileExists($this->tempLogFile);
         $logContent = file_get_contents($this->tempLogFile);
-        $this->assertStringContainsString('Test message', $logContent);
+        $this->assertStringContainsString('Test message', (string)$logContent);
     }
 }

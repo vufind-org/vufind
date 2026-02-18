@@ -142,7 +142,7 @@ trait StorageRetrievalRequestsTrait
                                 ->fromRoute('myresearch-storageretrievalrequests'),
                         ],
                     ];
-                    $this->flashMessenger()->addMessage($msg, 'success');
+                    $this->flashMessenger()->addSuccessMessage($msg);
                     $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
 
                     $this->getAuditEventService()->addEvent(
@@ -164,7 +164,7 @@ trait StorageRetrievalRequestsTrait
                     }
                     if (isset($results['sysMessage'])) {
                         $this->flashMessenger()
-                            ->addMessage($results['sysMessage'], 'error');
+                            ->addErrorMessage($results['sysMessage']);
                     }
                 }
             }

@@ -37,6 +37,8 @@ namespace VuFind\Navigation;
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use \VuFind\Section\Plugin\PluginManager instead
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {

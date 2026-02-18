@@ -92,10 +92,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             // for this user and add to our array of IDS
             $checkoutResults = $this->connector->getCheckouts(true);
             if (!($checkoutResults->status ?? false)) {
-                $this->flashMessenger()->addMessage(
-                    $checkoutResults->code ?? 'An error has occurred',
-                    'error'
-                );
+                $this->flashMessenger()->addErrorMessage($checkoutResults->code ?? 'An error has occurred');
                 $checkoutsUnavailable = true;
             } else {
                 foreach ($checkoutResults->data as $checkout) {
@@ -118,10 +115,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                     } catch (\VuFind\Exception\RecordMissing $e) {
                         $this->debug("missing record in index: $idToLoad");
                         // checkout is missing from Solr
-                        $this->flashMessenger()->addMessage(
-                            'One or more checkouts could not be displayed properly: ' .
-                            $e->getMessage(),
-                            'error'
+                        $this->flashMessenger()->addErrorMessage(
+                            'One or more checkouts could not be displayed properly: ' . $e->getMessage()
                         );
                         // get metadata from overdrive.
                         $meta = $this->connector->getMetadata([strtolower($checkout->reserveId)]);
@@ -137,10 +132,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 !($holdsResults->status ?? false)
                 && ($checkoutResults->status ?? false) // avoid double errors
             ) {
-                $this->flashMessenger()->addMessage(
-                    $holdsResults->code ?? 'An error has occurred',
-                    'error'
-                );
+                $this->flashMessenger()->addErrorMessage($holdsResults->code ?? 'An error has occurred');
                 $holdsUnavailable = true;
             } else {
                 foreach ($holdsResults->data as $hold) {
@@ -150,10 +142,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                         $holds[] = $myhold;
                     } catch (\VuFind\Exception\RecordMissing $e) {
                         // hold is missing from Solr
-                        $this->flashMessenger()->addMessage(
-                            'One or more holds could not be displayed properly: ' .
-                            $e->getMessage(),
-                            'error'
+                        $this->flashMessenger()->addErrorMessage(
+                            'One or more holds could not be displayed properly: ' . $e->getMessage()
                         );
 
                         // get metadata from overdrive.

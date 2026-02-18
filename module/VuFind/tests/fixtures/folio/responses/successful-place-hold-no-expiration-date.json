@@ -87,9 +87,19 @@
     {
         "comment": "Version check",
         "expectedMethod": "GET",
-        "expectedPath": "\/_\/proxy\/tenants\/config_tenant\/modules?filter=mod-circulation&latest=1",
+        "expectedPath": "\/modules\/discovery?query=(name==mod-circulation)",
         "expectedParams": [],
-        "body": [ {"id":"mod-circulation-24.0.0"} ],
+        "body": {
+            "discovery": [
+                {
+                    "location": "http://mod-circulation-b:8051/mod-circulation",
+                    "id": "mod-circulation-24.4.11",
+                    "name": "mod-circulation",
+                    "version": "24.4.11"
+                }
+            ],
+            "totalRecords": 1
+        },
         "bodyType": "json",
         "status": 200
     },

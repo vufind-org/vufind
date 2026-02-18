@@ -29,6 +29,7 @@
 
 namespace VuFindTest\OAuth2\Repository;
 
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use VuFind\OAuth2\Repository\ScopeRepository;
 
 /**
@@ -88,6 +89,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         $repo = new ScopeRepository($config);
 
         $scope = $repo->getScopeEntityByIdentifier($scopeId);
+        $this->assertInstanceOf(ScopeEntityInterface::class, $scope);
         $this->assertEquals($desc, $scope->getDescription());
         $this->assertEquals($hidden, $scope->gethidden());
         $this->assertEquals($ils, $scope->getILSNeeded());
@@ -115,7 +117,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         ];
         $repo = new ScopeRepository($config);
 
-        $this->assertNull($repo->getScopeEntityByIdentifier('foo'));
+        $this->assertNotInstanceOf(ScopeEntityInterface::class, $repo->getScopeEntityByIdentifier('foo'));
     }
 
     /**

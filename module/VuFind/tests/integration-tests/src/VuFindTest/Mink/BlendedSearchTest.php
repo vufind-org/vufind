@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2025.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -112,7 +112,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/Blender/Results');
         $page = $session->getPage();
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred',
             $this->findCssAndGetText($page, '.alert-danger p')
         );
@@ -204,7 +204,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Go to record screen and check active tab:
         $this->clickCss($page, '#result0 .title');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             $searchBoxLabel,
             $this->findCssAndGetText($page, '.searchbox li a.active')
         );
@@ -344,7 +344,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#search_type0_1', 'Author');
         $this->clickCss($page, '.adv-submit .btn-primary');
 
-        $this->assertEquals(
+        $this->assertSame(
             'Your search - (All Fields:Dublin AND Author:Award) - did not match any resources.',
             $this->findCssAndGetText($page, '.mainbody p')
         );
@@ -376,6 +376,64 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         $this->unFindCss($page, '.advanced-search-link');
+    }
+
+    /**
+     * Test facet default values.
+     *
+     * @return void
+     */
+    public function testFacetDefaultValues(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'Blender' => 'Blended',
+                    ],
+                ],
+                'Blender' => $this->getBlenderIniOverrides(),
+            ],
+            ['Blender']
+        );
+        $this->changeYamlConfigs(
+            [
+                'BlenderMappings' => [
+                    'Facets' => [
+                        'Fields' => [
+                            'def1' => [
+                                'Mappings' => [
+                                    'Solr' => [
+                                        'Field' => 'format',
+                                        'DefaultValue' => 'Book',
+                                    ],
+                                ],
+                            ],
+                            'def2' => [
+                                'Mappings' => [
+                                    'Solr' => [
+                                        'Field' => 'format',
+                                        'DefaultValue' => 'Manuscript',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Blender/Results?filter%5B%5D=blender_backend%3ASolr'));
+        $page = $session->getPage();
+
+        $text = $this->findCssAndGetText($page, '.search-stats strong');
+        [$start, $limit] = explode(' - ', $text);
+        $this->assertSame(1, intval($start));
+        $this->assertSame(2, intval($limit));
+        $this->assertSame('old1', $this->findCss($page, '#result0 .hiddenId')->getValue());
+        $this->assertSame('old2', $this->findCss($page, '#result1 .hiddenId')->getValue());
     }
 
     /**
