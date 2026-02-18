@@ -49,7 +49,7 @@ class JsIcons extends AbstractJsStrings
      */
     public function __construct(
         protected Icon $iconHelper,
-        $varName = 'vufindIconString'
+        string $varName = 'vufindIconString'
     ) {
         parent::__construct($varName);
     }
