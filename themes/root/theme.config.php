@@ -82,7 +82,6 @@ return [
             'VuFind\View\Helper\Root\SearchMemory' => 'VuFind\View\Helper\Root\SearchMemoryFactory',
             'VuFind\View\Helper\Root\SearchOptions' => 'VuFind\View\Helper\Root\SearchOptionsFactory',
             'VuFind\View\Helper\Root\SearchSettings' => 'VuFind\View\Helper\Root\SearchSettingsFactory',
-            'VuFind\View\Helper\Root\SearchTabs' => 'VuFind\View\Helper\Root\SearchTabsFactory',
             'VuFind\View\Helper\Root\Section' => 'VuFind\View\Helper\Root\SectionFactory',
             'VuFind\View\Helper\Root\Session' => 'VuFind\View\Helper\Root\SessionFactory',
             'VuFind\View\Helper\Root\ShortenUrl' => 'VuFind\View\Helper\Root\ShortenUrlFactory',
