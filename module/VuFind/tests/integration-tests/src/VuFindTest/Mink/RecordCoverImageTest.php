@@ -183,6 +183,19 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         }
 
         // Confirm the expected status of the image (most importantly, should it be visible or hidden?):
+        $coverContainer = $this->findCss($page, '.record-cover-container');
+        if ($noCoverAvailableImage) {
+            $this->assertStringNotContainsString(
+                'hidden',
+                $coverContainer?->getAttribute('class') ?? ''
+            );
+        } else {
+            $this->assertStringContainsString(
+                'hidden',
+                $coverContainer?->getAttribute('class') ?? ''
+            );
+        }
+
         $expectedClasses = 'recordcover'
             . ($ajaxcovers ? ' ajax' : '')
             . (empty($noCoverAvailableImage) ? ' hidden' : '');
