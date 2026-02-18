@@ -117,20 +117,29 @@ trait ViewTrait
     /**
      * Get mock SearchMemory view helper
      *
-     * @param ?\VuFind\Search\Memory $memory Optional search memory
+     * @param ?\VuFind\Search\Memory                 $memory       Optional search memory
+     * @param ?\VuFind\View\Helper\Root\Url          $url          URL helper
+     * @param ?\Laminas\View\Helper\EscapeHtml       $escapeHtml   EscapeHtml helper
+     * @param ?\VuFind\View\Helper\Root\SearchParams $searchParams SearchParams helper
      *
      * @return SearchMemory
      */
-    protected function getSearchMemoryViewHelper($memory = null): SearchMemory
-    {
+    protected function getSearchMemoryViewHelper(
+        $memory = null,
+        $url = null,
+        $escapeHtml = null,
+        $searchParams = null
+    ): SearchMemory {
         if (null === $memory) {
-            $memory = $this->getMockBuilder(\VuFind\Search\Memory::class)
-                ->disableOriginalConstructor()->getMock();
+            $memory = $this->createMock(\VuFind\Search\Memory::class);
             $memory->expects($this->any())
                 ->method('getLastSearchId')
                 ->willReturn(-123);
         }
-        return new \VuFind\View\Helper\Root\SearchMemory($memory);
+        $url ??= $this->createMock(\VuFind\View\Helper\Root\Url::class);
+        $escapeHtml ??= $this->createMock(\Laminas\View\Helper\EscapeHtml::class);
+        $searchParams ??= $this->createMock(\VuFind\View\Helper\Root\SearchParams::class);
+        return new \VuFind\View\Helper\Root\SearchMemory($memory, $url, $escapeHtml, $searchParams);
     }
 
     /**
