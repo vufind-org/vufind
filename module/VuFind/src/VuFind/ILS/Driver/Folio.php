@@ -1555,7 +1555,7 @@ class Folio extends AbstractAPI implements
             $usernameField,
             $passwordField,
             $this->escapeCql($username),
-            $this->escapeCql($password),
+            $this->escapeCql($password ?? ''),
         ];
         return str_replace($placeholders, $values, $cql);
     }
