@@ -88,9 +88,9 @@ class SearchTabs implements LoggerAwareInterface
     /**
      * Invoke the helper.
      *
-     * @return SearchTabs
+     * @return static
      */
-    public function __invoke()
+    public function __invoke(): static
     {
         return $this;
     }
