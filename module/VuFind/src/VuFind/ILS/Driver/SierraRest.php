@@ -512,7 +512,7 @@ class SierraRest extends AbstractBase implements
         $this->patronBlockMappings = $this->config['PatronBlockMappings'] ?? [];
         $this->fineTypeMappings = (array)($this->config['FineTypeMappings'] ?? []);
         if ($types = $this->config['OnlinePayment']['fineTypes'] ?? '') {
-            $this->onlinePayableFineTypes = $this->explodeSetting($types, true, ',');
+            $this->onlinePayableFineTypes = $this->explodeSetting($types, 'trim', ',');
         }
         if ($mappings = $this->config['OnlinePayment']['driverProductCodeMappings'] ?? []) {
             foreach ($mappings as $mapping) {

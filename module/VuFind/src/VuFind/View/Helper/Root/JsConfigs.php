@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * JsConfigs helper for passing configs to Javascript
  *
@@ -40,7 +38,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class JsConfigs extends AbstractHelper
+class JsConfigs
 {
     /**
      * Config
@@ -73,5 +71,15 @@ class JsConfigs extends AbstractHelper
             return '{}';
         }
         return json_encode($this->config);
+    }
+
+    /**
+     * Return this helper instance.
+     *
+     * @return JsConfigs
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 }

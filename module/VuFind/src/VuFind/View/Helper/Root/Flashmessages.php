@@ -29,8 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function is_array;
 
@@ -46,27 +46,26 @@ use function is_array;
 class Flashmessages extends AbstractHelper
 {
     /**
-     * Flash messenger controller helper
+     * Flash messenger namespaces and methods for getting the messages.
      *
-     * @var FlashMessenger
-     */
-    protected $fm;
-
-    /**
-     * Flash messenger namespaces
+     * The list is in priority order (errors are displayed first).
      *
-     * @var string[]
+     * @var array
      */
-    protected $namespaces = ['error', 'warning', 'info', 'success', 'default'];
+    protected $namespaces = [
+        'error' => 'getErrorMessages',
+        'warning' => 'getWarningMessages',
+        'info' => 'getInfoMessages',
+        'success' => 'getSuccessMessages',
+    ];
 
     /**
      * Constructor
      *
-     * @param FlashMessenger $fm Flash messenger controller helper
+     * @param FlashMessengerInterface $flashMessenger Flash messenger controller helper
      */
-    public function __construct(FlashMessenger $fm)
+    public function __construct(protected FlashMessengerInterface $flashMessenger)
     {
-        $this->fm = $fm;
     }
 
     /**
@@ -92,11 +91,8 @@ class Flashmessages extends AbstractHelper
             return '';
         }
         $html = '';
-        foreach ($this->namespaces as $ns) {
-            $messages = array_merge(
-                $this->fm->getMessages($ns),
-                $this->fm->getCurrentMessages($ns)
-            );
+        foreach ($this->namespaces as $ns => $method) {
+            $messages = $this->flashMessenger->$method();
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div role="alert" class="'
                     . $this->getClassForNamespace($ns) . '"';
@@ -148,9 +144,8 @@ class Flashmessages extends AbstractHelper
                 }
                 $html .= '</div>';
             }
-            $this->fm->clearMessages($ns);
-            $this->fm->clearCurrentMessages($ns);
         }
+        $this->flashMessenger->clearAllMessages();
         return $html;
     }
 }

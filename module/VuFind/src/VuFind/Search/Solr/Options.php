@@ -57,7 +57,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @var array
      */
-    protected $facetSortOptions = [
+    protected array $facetSortOptions = [
         '*' => ['count' => 'sort_count', 'index' => 'sort_alphabetic'],
     ];
 
@@ -66,21 +66,21 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @var ?string
      */
-    protected $emptySearchRelevanceOverride;
+    protected ?string $emptySearchRelevanceOverride;
 
     /**
      * Whether to display record versions
      *
      * @var bool
      */
-    protected $displayRecordVersions;
+    protected bool $displayRecordVersions;
 
     /**
      * Solr field to be used as a tie-breaker.
      *
      * @var ?string
      */
-    protected $sortTieBreaker;
+    protected ?string $sortTieBreaker;
 
     /**
      * Constructor
@@ -166,29 +166,29 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'search-results';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return 'search-advanced';
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return $this->facetListAction;
     }
@@ -206,21 +206,22 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     }
 
     /**
-     * Return the route name for the versions search action or false if disabled.
+     * Return the route name for the versions search action. Returns null to cover
+     * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getVersionsAction()
+    public function getVersionsAction(): ?string
     {
-        return $this->displayRecordVersions ? 'search-versions' : false;
+        return $this->displayRecordVersions ? 'search-versions' : null;
     }
 
     /**
      * Get the relevance sort override for empty searches.
      *
-     * @return string Sort field or null if not set
+     * @return ?string Sort field or null if not set
      */
-    public function getEmptySearchRelevanceOverride()
+    public function getEmptySearchRelevanceOverride(): ?string
     {
         return $this->emptySearchRelevanceOverride;
     }
@@ -230,7 +231,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return ?string Sort field or null if not set
      */
-    public function getSortTieBreaker()
+    public function getSortTieBreaker(): ?string
     {
         return $this->sortTieBreaker;
     }
@@ -240,7 +241,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return bool
      */
-    public function supportsScheduledSearch()
+    public function supportsScheduledSearch(): bool
     {
         // Solr supports this!
         return true;

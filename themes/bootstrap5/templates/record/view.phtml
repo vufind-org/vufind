@@ -6,6 +6,7 @@
 
   // Set up standard record scripts:
   $this->assetManager()->appendScriptLink('record.js');
+  $this->assetManager()->appendScriptLink('record_tabs.js');
   $this->assetManager()->appendScriptLink('check_save_statuses.js');
 
   // Add any extra scripts the tabs require:
@@ -48,50 +49,10 @@
     <?php if (count($this->tabs) > 0): ?>
       <a id="tabnav"></a>
       <div class="record-tabs">
-        <ul class="nav nav-tabs" role="tablist">
-          <?php foreach ($this->tabs as $tab => $obj): ?>
-            <?php
-              $desc = $obj->getDescription();
-              $tabName = preg_replace("/\W/", '-', strtolower($tab));
-              $liClasses = [ 'nav-item', 'record-tab', $tabName ];
-              $aAttrs = $this->htmlAttributes([
-                'class' => 'nav-link',
-                'role' => 'tab',
-                'href' => $this->recordLinker()->getTabUrl($this->driver, $tab) . '#tabnav',
-                'data-bs-target' => '.tab-pane.' . $tabName,
-                'data-lightbox-ignore' => true,
-              ]);
-              if (0 === strcasecmp($this->activeTab, $tab)) {
-                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
-                  $aAttrs->add('class', 'active');
-                  $aAttrs->add('aria-selected', 'true');
-                }
-                $liClasses[] = 'initiallyActive';
-                $activeTabName = $tabName;
-                $activeTabObj = $obj;
-              }
-              if (!$obj->isVisible()) {
-                $liClasses[] = 'hidden';
-              }
-              if (!$obj->supportsAjax()) {
-                $liClasses[] = 'noajax';
-              }
-            ?>
-            <li role="presentation" id="record-tab-<?=$this->escapeHtmlAttr($tabName)?>" class="<?=implode(' ', $liClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-              <a<?=$aAttrs?>>
-                <?=$this->transEsc($desc)?>
-              </a>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-
-        <div class="tab-content">
-          <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div role="tabpanel" class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab" aria-labelledby="record-tab-<?=$this->escapeHtmlAttr($activeTabName ?? '')?>">
-              <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-            </div>
-          <?php endif; ?>
-        </div>
+        <?= $this->tabs(
+          $this->recordTabs()->getTabs($this->driver, $this->tabs, $this->activeTab),
+          $this->activeTab,
+        )?>
       </div>
     <?php endif; ?>
 
@@ -106,4 +67,3 @@
     </div>
   <?php endif; ?>
 </div>
-<?=$this->assetManager()->outputInlineScriptString('$(document).ready(recordDocReady);'); ?>

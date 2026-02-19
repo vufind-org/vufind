@@ -49,7 +49,7 @@ class Options extends \VuFind\Search\Blender\Options
      *
      * @var string
      */
-    protected $searchIni = 'Blender2';
+    protected string $searchIni = 'Blender2';
 
     /**
      * Configuration file to read facet settings from
@@ -58,19 +58,19 @@ class Options extends \VuFind\Search\Blender\Options
      *
      * @var string
      */
-    protected $facetsIni = 'Blender2';
+    protected string $facetsIni = 'Blender2';
 
     /**
      * The route name for the search results action.
      *
      * @var string
      */
-    protected $searchAction = 'blender2-results';
+    protected string $searchAction = 'blender2-results';
 
     /**
      * The route name for the advanced search action.
      *
      * @var string
      */
-    protected $advancedSearchAction = 'blender2-advanced';
+    protected string $advancedSearchAction = 'blender2-advanced';
 }

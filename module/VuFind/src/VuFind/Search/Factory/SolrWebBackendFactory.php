@@ -45,7 +45,6 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
      */
     public function __construct()
     {
-        parent::__construct();
         $this->searchConfig = 'website';
         $this->searchYaml = 'websearchspecs.yaml';
         $this->facetConfig = 'website';
@@ -57,7 +56,7 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
      *
      * Returns a callable or null to use RecordCollectionFactory's default method.
      *
-     * @return callable|null
+     * @return ?callable
      */
     protected function getCreateRecordCallback(): ?callable
     {

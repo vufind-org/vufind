@@ -49,14 +49,14 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @var string
      */
-    protected $backendId = 'WorldCat2';
+    protected string $backendId = 'WorldCat2';
 
     /**
      * Facet list
      *
-     * @var array|null
+     * @var ?array
      */
-    protected $responseFacets = null;
+    protected ?array $responseFacets = null;
 
     /**
      * Store an empty response with an error message instead of performing a search.
@@ -77,7 +77,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $allTerms = $query->getAllTerms();
@@ -119,12 +119,12 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Returns the stored list of facets for the last search
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         if (null === $this->responseFacets) {
             $this->performAndProcessSearch();

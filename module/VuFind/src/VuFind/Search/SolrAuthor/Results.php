@@ -47,7 +47,7 @@ class Results extends SolrResults
      *
      * @return array
      */
-    protected function getUrlQueryHelperOptions()
+    protected function getUrlQueryHelperOptions(): array
     {
         return ['basicSearchParam' => 'author'];
     }
@@ -57,7 +57,7 @@ class Results extends SolrResults
      *
      * @return bool
      */
-    public function isSavedSearch()
+    public function isSavedSearch(): bool
     {
         // Author searches are never saved:
         return false;

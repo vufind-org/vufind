@@ -105,20 +105,6 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test legacy host/port configuration.
-     *
-     * @return void
-     */
-    public function testLegacyHostAndPortConfiguration(): void
-    {
-        $config = $this->getAuthConfig();
-        unset($config['LDAP']['uri']);
-        $config['LDAP']['host'] = 'localhost';
-        $config['LDAP']['port'] = '636';
-        $this->assertIsObject($this->getAuthObject($config)->getConfig());
-    }
-
-    /**
      * Test case normalization of parameters.
      *
      * @return void

@@ -145,7 +145,7 @@ trait OnlinePaymentTrait
             $csrfValidator = $this->serviceLocator->get(\VuFind\Validator\CsrfInterface::class);
             $csrf = $this->getRequest()->getPost()->get('csrf');
             if (!$csrfValidator->isValid($csrf)) {
-                $this->flashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
+                $this->getFlashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
                 return $this->redirect()->toRoute('myresearch-fines');
             }
             // After successful token verification, clear list to shrink session and
@@ -154,7 +154,7 @@ trait OnlinePaymentTrait
 
             // Payment requested, do preliminary checks:
             if ($paymentInProgress) {
-                $this->flashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
+                $this->getFlashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
                 return $this->redirect()->toRoute('myresearch-fines');
             }
             if (
@@ -164,7 +164,7 @@ trait OnlinePaymentTrait
                 && $onlinePaymentManager->getStoredPayableAmount($patron) !== $paymentDetails['amount']
             ) {
                 // Fines updated, redirect and show updated list.
-                $this->flashMessenger()->addErrorMessage('Payment::error_fines_changed');
+                $this->getFlashMessenger()->addErrorMessage('Payment::error_fines_changed');
                 return $this->redirect()->toRoute('myresearch-fines');
             }
             $returnUrl = $this->getServerUrl('myresearch-fines');
@@ -185,7 +185,7 @@ trait OnlinePaymentTrait
                     'local_payment_id'
                 );
             } catch (PaymentException $e) {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                $this->getFlashMessenger()->addErrorMessage($e->getMessage());
             }
             // We should only end up here on error, but redirect always just in case
             // the payment handler somehow misbehaves:
@@ -204,7 +204,7 @@ trait OnlinePaymentTrait
 
             if ($payment->isRegistered()) {
                 // Already registered, treat as success:
-                $this->flashMessenger()->addSuccessMessage('Payment::Payment Successful');
+                $this->getFlashMessenger()->addSuccessMessage('Payment::Payment Successful');
             } else {
                 // Process payment response:
                 try {
@@ -214,7 +214,7 @@ trait OnlinePaymentTrait
                         $payment = $paymentService->getPaymentByLocalIdentifier($localIdentifier);
                         if ($payment?->isRegistrationNeeded()) {
                             // Display page with success message and register payment with ILS asynchronously:
-                            $this->flashMessenger()->addSuccessMessage('Payment::Payment Successful');
+                            $this->getFlashMessenger()->addSuccessMessage('Payment::Payment Successful');
                             $view->registerPaymentLocalIdentifier = $payment->getLocalIdentifier();
                             $this->addPaymentEvent(
                                 $payment,
@@ -223,9 +223,9 @@ trait OnlinePaymentTrait
                             );
                         }
                     } elseif (BaseHandler::PAYMENT_CANCEL === $result['resultCode']) {
-                        $this->flashMessenger()->addSuccessMessage('Payment::Payment Canceled');
+                        $this->getFlashMessenger()->addSuccessMessage('Payment::Payment Canceled');
                     } elseif (BaseHandler::PAYMENT_FAILURE === $result['resultCode']) {
-                        $this->flashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
+                        $this->getFlashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
                     }
                 } catch (PaymentException $e) {
                     $this->handleError(
@@ -238,7 +238,7 @@ trait OnlinePaymentTrait
 
         if (!$view->registerPaymentLocalIdentifier) {
             if ($paymentInProgress) {
-                $this->flashMessenger()->addErrorMessage('Payment::registration_failed');
+                $this->getFlashMessenger()->addErrorMessage('Payment::registration_failed');
             } else {
                 // Check if payment is permitted:
                 $allowPayment = $paymentDetails['payable'] && $paymentDetails['amount'];
@@ -247,7 +247,7 @@ trait OnlinePaymentTrait
                 $onlinePaymentManager->storePayableAmount($patron, $paymentDetails['amount']);
 
                 if ($onlinePaymentManager->getAndClearPaymentSuccessFlag()) {
-                    $this->flashMessenger()->addSuccessMessage('Payment::Payment Successful');
+                    $this->getFlashMessenger()->addSuccessMessage('Payment::Payment Successful');
                 }
 
                 $view->onlinePaymentEnabled = $allowPayment;

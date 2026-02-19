@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * AbstractJsStrings helper for passing transformed text to Javascript
  *
@@ -40,15 +38,8 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractJsStrings extends AbstractHelper
+abstract class AbstractJsStrings
 {
-    /**
-     * Variable name to store values
-     *
-     * @var string
-     */
-    protected $varName;
-
     /**
      * Strings to convey (key = js key, value = value to map)
      *
@@ -61,9 +52,18 @@ abstract class AbstractJsStrings extends AbstractHelper
      *
      * @param string $varName Variable name to store values
      */
-    public function __construct($varName = 'vufindString')
+    public function __construct(protected string $varName = 'vufindString')
     {
-        $this->varName = $varName;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 
     /**

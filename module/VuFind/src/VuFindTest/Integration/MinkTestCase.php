@@ -170,11 +170,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for active record tab
      *
-     * First for Bootstrap 3, second for Bootstrap 5
-     *
      * @var string
      */
-    protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
+    protected $activeRecordTabSelector = '.record-tabs .nav-link.active';
 
     /**
      * Get name of the current test

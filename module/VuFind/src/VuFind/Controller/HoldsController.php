@@ -36,6 +36,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Logic\RecordsHelper;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -130,7 +131,7 @@ class HoldsController extends AbstractBase
         if ($this->params()->fromPost('updateSelected')) {
             $selectedIds = $this->params()->fromPost('selectedIDS');
             if (empty($selectedIds)) {
-                $this->flashMessenger()->addErrorMessage('hold_empty_selection');
+                $this->getFlashMessenger()->addErrorMessage('hold_empty_selection');
                 if ($this->inLightbox()) {
                     return $this->getRefreshResponse();
                 }
@@ -198,9 +199,9 @@ class HoldsController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
-        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
-        $view->accountStatus = $this->ilsRecords()
-            ->collectRequestStats($view->recordList);
+        $recordsHelper = $this->getService(RecordsHelper::class);
+        $view->recordList = $recordsHelper->getDrivers($driversNeeded);
+        $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
         return $view;
     }
 
@@ -238,7 +239,7 @@ class HoldsController extends AbstractBase
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
         if (!$this->holds()->validateIds($selectedIds)) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
             return $this->inLightbox()
                 ? $this->getRefreshResponse()
@@ -284,14 +285,14 @@ class HoldsController extends AbstractBase
                         'hold_edit_success_items',
                         ['%%count%%' => $successful]
                     );
-                    $this->flashMessenger()->addSuccessMessage($msg);
+                    $this->getFlashMessenger()->addSuccessMessage($msg);
                 }
                 if ($failed) {
                     $msg = $this->translate(
                         'hold_edit_failed_items',
                         ['%%count%%' => $failed]
                     );
-                    $this->flashMessenger()->addErrorMessage($msg);
+                    $this->getFlashMessenger()->addErrorMessage($msg);
                 }
 
                 $this->getAuditEventService()->addEvent(
@@ -383,7 +384,7 @@ class HoldsController extends AbstractBase
                         break;
                     }
                 } catch (ILSException $e) {
-                    $this->flashMessenger()
+                    $this->getFlashMessenger()
                         ->addErrorMessage('ils_connection_failed');
                 }
             }
@@ -446,10 +447,10 @@ class HoldsController extends AbstractBase
             );
         }
         if (!$validPickup) {
-            $this->flashMessenger()->addErrorMessage('hold_invalid_pickup');
+            $this->getFlashMessenger()->addErrorMessage('hold_invalid_pickup');
         }
         foreach ($dateValidationResults['errors'] as $msg) {
-            $this->flashMessenger()->addErrorMessage($msg);
+            $this->getFlashMessenger()->addErrorMessage($msg);
         }
         if (!$validPickup || $dateValidationResults['errors']) {
             return null;

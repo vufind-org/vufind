@@ -61,10 +61,10 @@ trait BulkActionControllerTrait
         // Set flash message if requested:
         if (null !== $flashNamespace && !empty($flashMsg)) {
             match ($flashNamespace) {
-                'error' => $this->flashMessenger()->addErrorMessage($flashMsg),
-                'info' => $this->flashMessenger()->addInfoMessage($flashMsg),
-                'success' => $this->flashMessenger()->addSuccessMessage($flashMsg),
-                'warning' => $this->flashMessenger()->addWarningMessage($flashMsg),
+                'error' => $this->getFlashMessenger()->addErrorMessage($flashMsg),
+                'info' => $this->getFlashMessenger()->addInfoMessage($flashMsg),
+                'success' => $this->getFlashMessenger()->addSuccessMessage($flashMsg),
+                'warning' => $this->getFlashMessenger()->addWarningMessage($flashMsg),
                 default => throw new \InvalidArgumentException("Unknown flash message namespace '$flashNamespace'")
             };
         }

@@ -42,24 +42,16 @@ namespace VuFind\View\Helper\Root;
 class JsIcons extends AbstractJsStrings
 {
     /**
-     * Icon helper
-     *
-     * @var Icon
-     */
-    protected $iconHelper;
-
-    /**
      * Constructor
      *
      * @param Icon   $iconHelper Icon helper
      * @param string $varName    Variable name to store icons
      */
     public function __construct(
-        Icon $iconHelper,
-        $varName = 'vufindIconString'
+        protected Icon $iconHelper,
+        string $varName = 'vufindIconString'
     ) {
         parent::__construct($varName);
-        $this->iconHelper = $iconHelper;
     }
 
     /**
