@@ -73,7 +73,7 @@ class AccountMenu extends AbstractMenu
         protected Connection $ilsConnection,
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?OverdriveConnector $overdriveConnector,
-        protected array $config
+        array $config = []
     ) {
         if (isset($sectionConfig['MenuItems'])) {
             // backward compatibility for outdated legacy AccountMenu configurations
@@ -103,7 +103,7 @@ class AccountMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct($sectionConfig, $config);
     }
 
     /**
