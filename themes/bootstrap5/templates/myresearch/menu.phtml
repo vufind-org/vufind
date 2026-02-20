@@ -9,7 +9,7 @@
             'sectionPlugin' => $this->{\VuFind\View\Helper\Root\Section::SECTION_PLUGIN_KEY},
             'active' => $this->active,
             ...$item,
-          ]
+          ];
         ?>
         <?=$this->render($item['template'] ?? 'myresearch/menu-item.phtml', $context)?>
       <?php endforeach; ?>
