@@ -1,6 +1,6 @@
 <?php
   if (isset($this->iconMethod) && !isset($this->icon)) {
-    $this->icon = $this->section('AccountMenu')->{$this->iconMethod}();
+    $this->icon = $this->sectionPlugin->{$this->iconMethod}();
   }
 
   $url = $this->url ?: $this->url($this->route, $this->routeParams ?? []);
