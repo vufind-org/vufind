@@ -30,8 +30,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Exception\InvalidArgumentException;
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\ContentBlock\TemplateBased;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Content View Helper to resolve translated pages.
@@ -43,44 +45,46 @@ use VuFind\ContentBlock\TemplateBased;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Content extends AbstractHelper
+class Content
 {
-    /**
-     * TemplateBased instance to resolve translated pages.
-     *
-     * @var TemplateBased
-     */
-    protected $templateBasedBlock;
-
-    /**
-     * Context View Helper instance to resolve translated pages.
-     *
-     * @var Context
-     */
-    protected $contextHelper;
-
     /**
      * Constructor
      *
-     * @param TemplateBased $block         TemplateBased ContentBlock
-     * @param Context       $contextHelper Context view helper
+     * @param TemplateBased $templateBasedBlock TemplateBased instance to resolve translated pages.
+     * @param Context       $contextHelper      Context View Helper instance to resolve translated pages.
+     * @param EscapeHtml    $escapeHtmlHelper   Escape HTML view helper
+     * @param Markdown      $markdownHelper     Markdown view helper
      */
     public function __construct(
-        TemplateBased $block,
-        Context $contextHelper
+        #[Autowire(container: \VuFind\ContentBlock\PluginManager::class)]
+        protected TemplateBased $templateBasedBlock,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Context $contextHelper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtmlHelper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Markdown $markdownHelper
     ) {
-        $this->templateBasedBlock = $block;
-        $this->contextHelper = $contextHelper;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 
     /**
      * Search for a translated template and render it using a temporary context.
      *
-     * @param string $pageName    Name of the page
-     * @param string $pathPrefix  Path where the template should be located
-     * @param array  $context     Optional array of context variables
-     * @param array  $pageDetails Optional output variable for additional info
-     * @param string $pattern     Optional file system pattern to search page
+     * @param string  $pageName    Name of the page
+     * @param string  $pathPrefix  Path where the template should be located
+     * @param array   $context     Optional array of context variables
+     * @param ?array  $pageDetails Optional output variable for additional info
+     * @param ?string $pattern     Optional file system pattern to search page
      *
      * @return string            Rendered template output
      */
@@ -90,7 +94,7 @@ class Content extends AbstractHelper
         array $context = [],
         ?array &$pageDetails = [],
         ?string $pattern = null
-    ) {
+    ): string {
         if (!str_ends_with($pathPrefix, '/')) {
             $pathPrefix .= '/';
         }
@@ -104,5 +108,26 @@ class Content extends AbstractHelper
             'ContentBlock/TemplateBased.phtml',
             $context + $pageDetails
         );
+    }
+
+    /**
+     * Apply encoding to the content based on the provided content type.
+     *
+     * @param string $contentType Content type (text, html, or markdown)
+     * @param string $content     Content
+     *
+     * @return string
+     */
+    public function handleContentType(string $contentType, string $content): string
+    {
+        if (empty($content)) {
+            return '';
+        }
+        return match ($contentType) {
+            'text' => ($this->escapeHtmlHelper)($content),
+            'html' => $content,
+            'markdown' => ($this->markdownHelper)(($this->escapeHtmlHelper)($content))->getContent(),
+            default => throw new InvalidArgumentException('Invalid content type: ' . $contentType),
+        };
     }
 }

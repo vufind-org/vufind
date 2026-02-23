@@ -4,7 +4,14 @@
   <nav class="myresearch-menu" aria-labelledby="<?=$this->idPrefix ?? ''?><?=$menuGroup['id']?>">
     <ul<?=!empty($menuGroup['class']) ? ' class="' . $menuGroup['class'] . '"' : ''?>>
       <?php foreach ($menuGroup['MenuItems'] as $item): ?>
-        <?=$this->render($item['template'] ?? 'myresearch/menu-item.phtml', ['active' => $this->active, ...$item])?>
+        <?php
+          $context = [
+            'sectionPlugin' => $this->{\VuFind\View\Helper\Root\Section::SECTION_PLUGIN_KEY},
+            'active' => $this->active,
+            ...$item,
+          ];
+        ?>
+        <?=$this->render($item['template'] ?? 'myresearch/menu-item.phtml', $context)?>
       <?php endforeach; ?>
     </ul>
   </nav>

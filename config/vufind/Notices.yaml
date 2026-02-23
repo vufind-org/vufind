@@ -10,12 +10,16 @@ styles:
 #    classes: my-custom-css-class my-other-custom-css-class
 
 # Notices can be configured here. You can use the following options:
-# - content: The message to be displayed.
-# - translations: To support multiple languages use this option instead of content.
+# - content: The message to be displayed. It can be translated using the language files.
+# - translations: To configure multiple languages in this file use this option instead of content.
 #                 This is an associative array. Keys are language codes and values are
 #                 the translated messages. The notices will only be displayed if the selected language
 #                 is included in the keys. If the value is left empty the translation will be chosen
 #                 based on the language fallback configuration in config.ini.
+# - contentType: Specifies how the messages should be displayed. The default is "text". The options are
+#                - "text": The message will be display as is. HTML will be escaped.
+#                - "html": HTML in messages will not be escaped.
+#                - "markdown": Messages will be rendered using Markdown.
 # - style: Specifies one of the styles above.
 # - position: Specifies the position of the notice. By default, the notices are displayed above the main content.
 #             Currently, the only other option that is available is "header", but you can add more possible position
@@ -31,3 +35,18 @@ notices:
 #      de: Willkommen in unserem Katalog!
 #      es:
 #      en: Welcome to our catalog!
+# Example 3
+#  - style: info
+#    content: >
+#      ## This is the catalog of our library
+#
+#      -------------------------------------
+#
+#      You can
+#
+#      * **search** for books
+#
+#      * **request** books
+#
+#      * create **favorite** lists
+#    contentType: markdown

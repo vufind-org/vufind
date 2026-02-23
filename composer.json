@@ -56,7 +56,7 @@
         "doctrine/orm": "^2.20.9",
         "endroid/qr-code": "6.0.9",
         "ezyang/htmlpurifier": "4.19.0",
-        "firebase/php-jwt": "6.11.1",
+        "firebase/php-jwt": "^7.0.0",
         "guzzlehttp/guzzle": "7.10.0",
         "jaybizzle/crawler-detect": "^1.2",
         "laminas/laminas-cache": "3.13.0",

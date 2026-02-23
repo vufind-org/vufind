@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Config view helper
@@ -40,7 +41,7 @@ use VuFind\Config\ConfigManagerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Config extends \Laminas\View\Helper\AbstractHelper
+class Config
 {
     /**
      * Display date format
@@ -61,8 +62,10 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      *
      * @param ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(protected ConfigManagerInterface $configManager)
-    {
+    public function __construct(
+        #[Autowire]
+        protected ConfigManagerInterface $configManager
+    ) {
     }
 
     /**
@@ -196,5 +199,15 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return (bool)($this->get('config')->Catalog
             ->display_loan_type_in_holdings ?? false);
+    }
+
+    /**
+     * Return this helper instance (for method chaining).
+     *
+     * @return Config
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 }

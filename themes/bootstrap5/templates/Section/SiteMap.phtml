@@ -4,18 +4,26 @@
     <h2><?= $this->transEsc($group['label']) ?></h2>
     <ul>
   <?php endif; ?>
-  <?php $tag = $groupHasLabel ? 'li' : 'h2'; ?>
   <?php foreach ($group['MenuItems'] as $item): ?>
-    <?php $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? false) ?>
-    <?php if (isset($item['label']) && ($href || isset($item['submenuItems']))): ?>
-      <<?= $tag ?>>
-      <?php if ($href): ?><a<?= $this->htmlAttributes(['href' => $href]) ?>><?php endif; ?>
-      <?= $this->transEsc($item['label']) ?>
-      <?php if ($href): ?></a><?php endif; ?>
-      <?php if (isset($item['submenuItems'])): ?>
+    <?php
+      $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? null);
+      $hasSubmenuItems = isset($item['submenuItems']);
+    ?>
+    <?php if (isset($item['label']) && ($href || $hasSubmenuItems)): ?>
+      <?php $label = $this->makeLink($this->translate($item['label']), $href); ?>
+      <?php if ($hasSubmenuItems): ?>
+        <?php if ($groupHasLabel): ?>
+          <li><?= $label ?>
+        <?php else: ?>
+          <h2><?= $label ?></h2>
+        <?php endif; ?>
         <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
+        <?php if ($groupHasLabel): ?>
+          </li>
+        <?php endif; ?>
+      <?php else: ?>
+        <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $label, options: ['escapeContent' => false]) ?>
       <?php endif; ?>
-      </<?= $tag ?>>
     <?php endif; ?>
   <?php endforeach; ?>
   <?php if ($groupHasLabel): ?>
