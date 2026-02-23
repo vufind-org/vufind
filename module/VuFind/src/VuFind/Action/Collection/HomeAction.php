@@ -83,7 +83,7 @@ class HomeAction extends AbstractRecordAction
             }
         }
 
-        return $this->showTab($routeMatch->getParam('tab') ?? $this->getDefaultTab());
+        return $this->showTab($this->getRouteParam('tab') ?? $this->getDefaultTab());
     }
 
     /**
