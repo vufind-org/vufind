@@ -80,25 +80,6 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Convenience method to get permission helper
-     *
-     * @param PermissionDeniedManager $mockPdm Mock driver
-     *
-     * @return Permission
-     */
-    protected function getPermissionHelper(PermissionDeniedManager $mockPdm): Permission
-    {
-        $mockContext = $this->getMockContextWithView();
-        $helpers = $this->getHelperArray();
-        return new Permission(
-            $this->getMockPm(false),
-            $mockPdm,
-            $helpers['transEsc'],
-            $mockContext
-        );
-    }
-
-    /**
      * Test the message display
      *
      * @return void
@@ -115,7 +96,13 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = $this->getPermissionHelper($mockPdmMessage);
+        $view = $this->getMockView();
+        $helper = new Permission(
+            $this->getMockPm(false),
+            $mockPdmMessage,
+            $view->plugin('transEsc'),
+            $view->plugin('context')
+        );
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
         $this->assertEquals('dl_translatable_test', $displayBlock);
@@ -141,7 +128,13 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = $this->getPermissionHelper($mockPdm);
+        $view = $this->getMockView();
+        $helper = new Permission(
+            $this->getMockPm(false),
+            $mockPdm,
+            $view->plugin('transEsc'),
+            $view->plugin('context')
+        );
 
         $helper->getAlternateContent('permissionDeniedTemplate');
     }
@@ -163,7 +156,13 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = $this->getPermissionHelper($mockPdm);
+        $view = $this->getMockView();
+        $helper = new Permission(
+            $this->getMockPm(false),
+            $mockPdm,
+            $view->plugin('transEsc'),
+            $view->plugin('context')
+        );
 
         $this->assertSame(
             '<span class="label label-success">Available</span>',
@@ -204,19 +203,6 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get array with helpers.
-     *
-     * @return array
-     */
-    protected function getHelperArray(): array
-    {
-        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
-        $translate = new \VuFind\View\Helper\Root\Translate();
-        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
-        return compact('translate', 'transEsc', 'escapehtml');
-    }
-
-    /**
      * Get mock context helper.
      *
      * @return \VuFind\View\Helper\Root\Context
@@ -227,13 +213,20 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock context helper with real view renderer.
+     * Return a view object populated for these test cases.
      *
-     * @return \VuFind\View\Helper\Root\Context
+     * @return \Laminas\View\Renderer\PhpRenderer
      */
-    protected function getMockContextWithView()
+    protected function getMockView()
     {
-        $realView = $this->getPhpRenderer($this->getHelperArray());
-        return new \VuFind\View\Helper\Root\Context($realView);
+        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
+        $translate = new \VuFind\View\Helper\Root\Translate();
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
+        $context = new \VuFind\View\Helper\Root\Context();
+        $realView = $this->getPhpRenderer(
+            compact('translate', 'transEsc', 'context', 'escapehtml')
+        );
+        $context->setView($realView);
+        return $realView;
     }
 }
