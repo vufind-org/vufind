@@ -29,9 +29,9 @@
 
 namespace VuFind\Action;
 
-use VuFind\Action\MyResearch\LoginAction;
-use VuFind\Action\ShortLink\RedirectAction;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
+
+use function count;
 
 /**
  * Action plugin manager

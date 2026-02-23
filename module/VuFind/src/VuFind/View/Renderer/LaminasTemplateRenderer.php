@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Renderer;
 
+use InvalidArgumentException;
 use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ModelInterface;
@@ -219,10 +220,15 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * @param ServerRequestInterface $request Request
      *
      * @return ModelInterface
+     *
+     * @throws InvalidArgumentException
      */
     public function getLayout(ServerRequestInterface $request): ModelInterface
     {
-        return $request->getAttribute('view-model');
+        if (!($result = $request->getAttribute('view-model'))) {
+            throw new InvalidArgumentException("Attribute 'view-model' required in request");
+        }
+        return $result;
     }
 
     /**

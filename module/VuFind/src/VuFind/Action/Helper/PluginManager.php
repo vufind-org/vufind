@@ -30,7 +30,6 @@
 namespace VuFind\Action\Helper;
 
 use Laminas\ServiceManager\AbstractPluginManager;
-use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 /**
  * Action helper plugin manager

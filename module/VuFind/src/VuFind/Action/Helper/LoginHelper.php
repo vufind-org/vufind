@@ -70,8 +70,10 @@ class LoginHelper implements HelperInterface
         protected RouteHelper $routeHelper,
         protected FollowupHelper $followupHelper,
         protected FlashMessengerInterface $flashMessenger,
-        #[Autowire(container: HelperPluginManager::class)] protected ForwardHelper $forwardHelper,
-        #[Autowire(container: HelperPluginManager::class)] protected RedirectHelper $redirectHelper,
+        #[Autowire(container: HelperPluginManager::class)]
+        protected ForwardHelper $forwardHelper,
+        #[Autowire(container: HelperPluginManager::class)]
+        protected RedirectHelper $redirectHelper,
         protected AuthManager $authManager,
         protected ILSAuthenticator $ilsAuthenticator,
         protected Connection $ils,
