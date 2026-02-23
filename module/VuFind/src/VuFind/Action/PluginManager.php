@@ -29,6 +29,7 @@
 
 namespace VuFind\Action;
 
+use VuFind\Action\MyResearch\LoginAction;
 use VuFind\Action\ShortLink\RedirectAction;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
 
@@ -54,6 +55,18 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         // ShortLink doesn't follow the auto-discovery naming convention:
         'shortlink/redirect' => RedirectAction::class,
+    ];
+
+    /**
+     * Category aliases from default case to the actual case used.
+     *
+     * Required for action categories not following the format Uppercase letter + lowercase letters.
+     *
+     * @var array
+     */
+    protected $categoryAliases = [
+        'Shortlink' => 'ShortLink',
+        'Myresearch' => 'MyResearch',
     ];
 
     /**
@@ -96,14 +109,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * Configure the plugin manager.
      *
-     * @return string
+     * @param array $config Plugin manager configuration
+     *
+     * @return static
+     *
+     * @throws ContainerModificationsNotAllowedException If the allow
+     *     override flag has been toggled off, and a service instance
+     *     exists for a given service.
      */
-    protected function getExpectedInterface()
+    public function configure(array $config)
     {
-        return ActionInterface::class;
+        parent::configure($config);
+        $this->categoryAliases = ($config['category_aliases'] ?? []) + $this->categoryAliases;
+        return $this;
     }
 
     /**
@@ -163,6 +183,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
+     *
+     * @return string
+     */
+    protected function getExpectedInterface()
+    {
+        return ActionInterface::class;
+    }
+
+    /**
      * Resolve alias using auto-discovery as required.
      *
      * @param string $alias Alias
@@ -179,12 +210,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             fn ($s) => ucfirst(strtolower($s)),
             explode('/', $alias)
         );
+        if (count($nameParts) > 1) {
+            $nameParts[0] = $this->categoryAliases[$nameParts[0]] ?? $nameParts[0];
+        }
         $actionClass = implode('\\', $nameParts) . 'Action';
 
         foreach ($this->autoDiscoveryNamespaces as $ns) {
             $unprefixedClassName = $ns . '\\' . $actionClass;
-            $className = '\\' . $unprefixedClassName;
-            if (class_exists($className)) {
+            if (class_exists($unprefixedClassName)) {
+                // Laminas prepends a backslash to class names before actually creating an instance, so we need to
+                // ensure that we can handle both unprefixed and prefixed class names:
+                $className = '\\' . $unprefixedClassName;
                 $this->aliases[$alias] = $className;
                 $this->factories[$unprefixedClassName] ??= AutowiringFactory::class;
                 $this->factories[$className] ??= AutowiringFactory::class;
