@@ -31,6 +31,7 @@
 
 namespace VuFind\Action\Content;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
@@ -86,7 +87,9 @@ class ContentAction extends AbstractTemplateRenderingAction
         ResponseInterface $response,
     ): ResponseInterface {
         $pathPrefix = 'templates/content/';
-        $page = $request->getAttribute('page');
+        if (!($page = $this->getRouteParam('page'))) {
+            throw new InvalidArgumentException("Route param 'page' missing");
+        }
         // Path regex should prevent dots, but double-check to make sure:
         if (str_contains($page, '..')) {
             return $this->renderNotFoundPage($request, $response);
