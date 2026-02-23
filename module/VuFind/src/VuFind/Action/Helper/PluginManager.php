@@ -43,15 +43,6 @@ use Laminas\ServiceManager\AbstractPluginManager;
 class PluginManager extends AbstractPluginManager
 {
     /**
-     * Abstract factories
-     *
-     * @var Factory\AbstractFactoryInterface[]
-     */
-    protected $abstractFactories = [
-        \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
-    ];
-
-    /**
      * An object type that the created instance must be instanced of
      *
      * @var ?string

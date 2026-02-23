@@ -213,15 +213,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $actionClass = implode('\\', $nameParts) . 'Action';
 
         foreach ($this->autoDiscoveryNamespaces as $ns) {
-            $unprefixedClassName = $ns . '\\' . $actionClass;
-            if (class_exists($unprefixedClassName)) {
-                // Laminas prepends a backslash to class names before actually creating an instance, so we need to
-                // ensure that we can handle both unprefixed and prefixed class names:
-                $className = '\\' . $unprefixedClassName;
+            $className = $ns . '\\' . $actionClass;
+            if (class_exists($className)) {
                 $this->aliases[$alias] = $className;
-                $this->factories[$unprefixedClassName] ??= AutowiringFactory::class;
-                $this->factories[$className] ??= $this->factories[$unprefixedClassName];
-                return $unprefixedClassName;
+                $this->factories[$className] ??= AutowiringFactory::class;
+                return $className;
             }
         }
         return $alias;
