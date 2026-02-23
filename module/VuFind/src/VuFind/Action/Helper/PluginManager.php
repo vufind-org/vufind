@@ -44,20 +44,18 @@ use VuFind\ServiceManager\Factory\AutowiringFactory;
 class PluginManager extends AbstractPluginManager
 {
     /**
+     * Abstract factories
+     *
+     * @var Factory\AbstractFactoryInterface[]
+     */
+    protected $abstractFactories = [
+        \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+    ];
+
+    /**
      * An object type that the created instance must be instanced of
      *
      * @var ?string
      */
     protected $instanceOf = HelperInterface::class;
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        ForwardHelper::class => AutowiringFactory::class,
-        LoginHelper::class => AutowiringFactory::class,
-        RedirectHelper::class => AutowiringFactory::class,
-    ];
 }
