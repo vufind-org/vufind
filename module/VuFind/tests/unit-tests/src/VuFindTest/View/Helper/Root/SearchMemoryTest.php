@@ -39,7 +39,6 @@ use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\View\Helper\Root\SearchMemory;
-use VuFind\View\Helper\Root\SearchParams;
 
 /**
  * SearchMemory view helper Test Class
