@@ -52,10 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [
-        // ShortLink doesn't follow the auto-discovery naming convention:
-        'shortlink/redirect' => RedirectAction::class,
-    ];
+    protected $aliases = [];
 
     /**
      * Category aliases from default case to the actual case used.
@@ -223,7 +220,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
                 $className = '\\' . $unprefixedClassName;
                 $this->aliases[$alias] = $className;
                 $this->factories[$unprefixedClassName] ??= AutowiringFactory::class;
-                $this->factories[$className] ??= AutowiringFactory::class;
+                $this->factories[$className] ??= $this->factories[$unprefixedClassName];
                 return $unprefixedClassName;
             }
         }
