@@ -169,7 +169,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $normalizedCategory = $category ? strtolower($category) : '';
         $normalizedAction = $action ? strtolower($action) : '';
 
-        // If the class is known already, just return it:
+        // Check for "category/action" first, then for category or action alone:
         if ($normalizedCategory && $normalizedAction && $this->has("$normalizedCategory/$normalizedAction")) {
             return "$normalizedCategory/$normalizedAction";
         } elseif ($this->has("$normalizedCategory$normalizedAction")) {

@@ -174,9 +174,8 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         array $params = [],
         ?string $template = null,
     ): string {
-        $template ??= $this->getDefaultTemplateName($request);
         $view = $this->viewManager->getView();
-        $viewModel = $this->createViewModel($request, $params)->setTemplate($template);
+        $viewModel = $this->createViewModel($request, $params, $template);
         $layout = $this->getLayout($request);
         // Clear any previous children (e.g. when rendering an error):
         if ($layout instanceof ViewModel) {
@@ -191,13 +190,18 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     /**
      * Create a new ViewModel.
      *
-     * @param ServerRequestInterface $request Request
-     * @param array                  $params  Parameters to pass to ViewModel constructor.
+     * @param ServerRequestInterface $request  Request
+     * @param array                  $params   Parameters to pass to ViewModel constructor
+     * @param ?string                $template Template name, or null to use default for the action
      *
      * @return ViewModel
      */
-    public function createViewModel(ServerRequestInterface $request, array $params): ViewModel
-    {
+    public function createViewModel(
+        ServerRequestInterface $request,
+        array $params,
+        ?string $template = null
+    ): ViewModel {
+        $template ??= $this->getDefaultTemplateName($request);
         $layout = $this->getLayout($request);
         if ($this->inLightbox($request)) {
             $layout->setTemplate('layout/lightbox');
@@ -211,7 +215,12 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         if ($lightboxChild = $request->getQueryParams()['lightboxChild'] ?? null) {
             $layout->lightboxChild = $lightboxChild;
         }
-        return new ViewModel($params);
+        $templateParts = explode('/', $template);
+        $layout->setVariable('templateDir', $templateParts[0]);
+        $layout->setVariable('templateName', $templateParts[1] ?? null);
+        $viewModel = new ViewModel($params);
+        $viewModel->setTemplate($template);
+        return $viewModel;
     }
 
     /**
@@ -266,12 +275,8 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         if (!($action = $request->getAttribute('action-id'))) {
             throw new \InvalidArgumentException("Request must include the 'action-id' attribute");
         }
-        $parts = explode('\\', $action);
+        $parts = explode('/', $action);
         $second = array_pop($parts);
-        if (str_ends_with($second, 'Action')) {
-            $second = substr($second, 0, -6);
-        }
-        $parts = array_diff($parts, ['Action']);
         $first = implode('/', $parts);
         return $this->inflectName($first) . '/' . $this->inflectName($second);
     }
