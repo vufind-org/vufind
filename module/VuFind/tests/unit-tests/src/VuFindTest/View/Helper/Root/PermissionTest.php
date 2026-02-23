@@ -80,6 +80,24 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
+     * Convenience method to get permission helper
+     *
+     * @param PermissionDeniedManager $mockPdm Mock permission denied manager
+     *
+     * @return Permission
+     */
+    protected function getPermissionHelper(PermissionDeniedManager $mockPdm): Permission
+    {
+        $view = $this->getMockView();
+        return new Permission(
+            $this->getMockPm(false),
+            $mockPdm,
+            $view->plugin('transEsc'),
+            $view->plugin('context')
+        );
+    }
+
+    /**
      * Test the message display
      *
      * @return void
@@ -96,13 +114,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $view = $this->getMockView();
-        $helper = new Permission(
-            $this->getMockPm(false),
-            $mockPdmMessage,
-            $view->plugin('transEsc'),
-            $view->plugin('context')
-        );
+        $helper = $this->getPermissionHelper($mockPdmMessage);
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
         $this->assertEquals('dl_translatable_test', $displayBlock);
@@ -116,8 +128,6 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     public function testTemplateDisplay()
     {
         $this->expectException(\Laminas\View\Exception\RuntimeException::class);
-
-        // Template does not exist, expect an exception, though
         $mockPdm = $this->getMockPdm(
             [
                 'deniedTemplateBehavior' => [
@@ -128,13 +138,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $view = $this->getMockView();
-        $helper = new Permission(
-            $this->getMockPm(false),
-            $mockPdm,
-            $view->plugin('transEsc'),
-            $view->plugin('context')
-        );
+        $helper = $this->getPermissionHelper($mockPdm);
 
         $helper->getAlternateContent('permissionDeniedTemplate');
     }
@@ -156,13 +160,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $view = $this->getMockView();
-        $helper = new Permission(
-            $this->getMockPm(false),
-            $mockPdm,
-            $view->plugin('transEsc'),
-            $view->plugin('context')
-        );
+        $helper = $this->getPermissionHelper($mockPdm);
 
         $this->assertSame(
             '<span class="label label-success">Available</span>',
