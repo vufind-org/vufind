@@ -104,9 +104,6 @@ class ActionDispatchListener
             ->withAttribute('route-helper', $this->routeHelper)
             ->withAttribute('route-match', $e->getRouteMatch())
             ->withAttribute('view-model', $e->getViewModel());
-        foreach ($route->getParams() as $routeParam => $value) {
-            $request = $request->withAttribute($routeParam, $value);
-        }
         $laminasResponse = $e->getApplication()->getResponse();
         $response = Psr7Response::fromLaminas($laminasResponse);
         try {
