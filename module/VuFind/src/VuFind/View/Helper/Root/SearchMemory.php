@@ -32,6 +32,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
 use VuFind\Search\Memory;
+use VuFind\Search\Params\PluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
@@ -60,17 +61,16 @@ class SearchMemory
         protected Url $url,
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtml,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected SearchParams $searchParams
+        protected PluginManager $searchParams
     ) {
     }
 
     /**
      * Invoke the helper
      *
-     * @return SearchMemory
+     * @return static
      */
-    public function __invoke()
+    public function __invoke(): static
     {
         return $this;
     }
@@ -200,7 +200,7 @@ class SearchMemory
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
         $request = new \Laminas\Stdlib\Parameters();
         $request->fromString($queryParams ?? '');
-        $params = ($this->searchParams)($searchClassId);
+        $params = $this->searchParams->get($searchClassId);
         // Make sure the saved URL represents search results from $searchClassId;
         // if the user jumps from search results of one backend to a record of a
         // different backend, we don't want to display irrelevant filters. If there

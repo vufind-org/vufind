@@ -31,13 +31,17 @@ namespace VuFindTest\Feature;
 
 use Laminas\Cache\Storage\Adapter\AdapterOptions;
 use Laminas\Cache\Storage\StorageInterface;
+use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Renderer\PhpRenderer;
 use Psr\Container\ContainerInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Search\Memory;
+use VuFind\Search\Params\PluginManager;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
+use VuFind\View\Helper\Root\Url;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\View\Helper\AssetManager;
 use VuFindTheme\View\Helper\AssetManagerFactory;
@@ -117,29 +121,27 @@ trait ViewTrait
     /**
      * Get mock SearchMemory view helper
      *
-     * @param ?\VuFind\Search\Memory                 $memory       Optional search memory
-     * @param ?\VuFind\View\Helper\Root\Url          $url          URL helper
-     * @param ?\Laminas\View\Helper\EscapeHtml       $escapeHtml   EscapeHtml helper
-     * @param ?\VuFind\View\Helper\Root\SearchParams $searchParams SearchParams helper
+     * @param ?Memory        $memory       Optional search memory
+     * @param ?Url           $url          URL helper
+     * @param ?EscapeHtml    $escapeHtml   EscapeHtml helper
+     * @param ?PluginManager $searchParams SearchParams helper
      *
      * @return SearchMemory
      */
     protected function getSearchMemoryViewHelper(
-        $memory = null,
-        $url = null,
-        $escapeHtml = null,
-        $searchParams = null
+        ?Memory $memory = null,
+        ?Url $url = null,
+        ?EscapeHtml $escapeHtml = null,
+        ?PluginManager $searchParams = null
     ): SearchMemory {
         if (null === $memory) {
-            $memory = $this->createMock(\VuFind\Search\Memory::class);
-            $memory->expects($this->any())
-                ->method('getLastSearchId')
-                ->willReturn(-123);
+            $memory = $this->createMock(Memory::class);
+            $memory->method('getLastSearchId')->willReturn(-123);
         }
-        $url ??= $this->createMock(\VuFind\View\Helper\Root\Url::class);
-        $escapeHtml ??= $this->createMock(\Laminas\View\Helper\EscapeHtml::class);
-        $searchParams ??= $this->createMock(\VuFind\View\Helper\Root\SearchParams::class);
-        return new \VuFind\View\Helper\Root\SearchMemory($memory, $url, $escapeHtml, $searchParams);
+        $url ??= $this->createMock(Url::class);
+        $escapeHtml ??= $this->createMock(EscapeHtml::class);
+        $searchParams ??= $this->createMock(PluginManager::class);
+        return new SearchMemory($memory, $url, $escapeHtml, $searchParams);
     }
 
     /**

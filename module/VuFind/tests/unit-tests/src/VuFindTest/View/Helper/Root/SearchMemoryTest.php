@@ -33,6 +33,7 @@ use Laminas\Stdlib\Parameters;
 use Laminas\View\Helper\EscapeHtml;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Search\Memory;
+use VuFind\Search\Params\PluginManager;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
@@ -118,8 +119,8 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $escapeHtml->method('__invoke')->willReturnCallback(function ($str) {
             return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
         });
-        $searchParams = $this->createMock(SearchParams::class);
-        $searchParams->method('__invoke')->with('Solr')->willReturn($solrParams);
+        $searchParams = $this->createMock(PluginManager::class);
+        $searchParams->method('get')->with('Solr')->willReturn($solrParams);
         return $this->getSearchMemoryViewHelper($memory, $url, $escapeHtml, $searchParams);
     }
 
