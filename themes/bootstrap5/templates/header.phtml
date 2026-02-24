@@ -81,7 +81,7 @@
                       function ($item) {
                           $item['label'] = $item['desc'];
                           $item['url'] = $this->url()->addQueryParameters(['ui' => $item['name']]);
-
+                          $item['setQueryParams'] = ['ui' => $item['name']];
                           return $item;
                       },
                       $this->layout()->themeOptions
@@ -103,6 +103,7 @@
                             'label' => $this->displayLanguageOption($langName),
                             'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
                             'selected' => $this->layout()->userLang == $langCode,
+                            'setQueryParams' => ['lng' => $langCode],
                           ];
                       },
                       array_keys($this->layout()->allLangs),

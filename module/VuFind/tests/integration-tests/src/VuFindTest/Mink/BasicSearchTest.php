@@ -177,6 +177,15 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertShowingResults($page, '21 - 40');
         $this->scrollToResults();
 
+        // Switch language to ensure that query params are not lost:
+        $dropdown = $this->findCss($page, '.nav-item.language .dropdown__item', index: 1);
+        $this->clickCss($dropdown, '.dropdown__link');
+        $this->waitForPageLoad($page);
+        // ..and back:
+        $this->clickCss($page, '.nav-item.language .dropdown__link');
+        $this->waitForPageLoad($page);
+        $this->assertShowingResults($page, '21 - 40');
+
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
         $this->waitForPageLoad($page);
