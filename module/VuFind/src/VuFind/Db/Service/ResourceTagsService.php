@@ -31,8 +31,8 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
-use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
+use VuFind\Db\DoctrinePaginatorAdapter;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
