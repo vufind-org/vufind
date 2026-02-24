@@ -29,7 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 
@@ -42,7 +43,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Highlight extends AbstractHelper
+class Highlight
 {
     /**
      * Start tag for highlighting
@@ -57,6 +58,17 @@ class Highlight extends AbstractHelper
      * @var string
      */
     protected $endTag = '</span>';
+
+    /**
+     * Constructor
+     *
+     * @param EscapeHtml $escapeHtml EscapeHtml view helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
+    }
 
     /**
      * Adds a span tag with class "highlight" around a specific phrase for
