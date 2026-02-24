@@ -29,9 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\EscapeHtml;
-use VuFind\ServiceManager\Factory\Autowire;
-
 use function is_array;
 
 /**
@@ -61,13 +58,9 @@ class Highlight
 
     /**
      * Constructor
-     *
-     * @param EscapeHtml $escapeHtml EscapeHtml view helper
      */
-    public function __construct(
-        #[Autowire(container: 'ViewHelperManager')]
-        protected EscapeHtml $escapeHtml
-    ) {
+    public function __construct()
+    {
     }
 
     /**
