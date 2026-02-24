@@ -29,10 +29,13 @@
 
 namespace VuFind\Db;
 
+use Doctrine\Common\EventManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
-use DoctrineModule\Service\AbstractFactory;
+use Doctrine\ORM\ORMSetup;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
+use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
+use Laminas\Cache\Storage\Adapter\BlackHole;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
 
@@ -50,7 +53,7 @@ use function assert;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class EntityManagerFactory extends AbstractFactory
+class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -70,13 +73,18 @@ class EntityManagerFactory extends AbstractFactory
      */
     public function __invoke(ContainerInterface $container, $requestedName, array|null $options = null)
     {
-        $options = $this->getOptions($container, 'entitymanager');
-        assert($options instanceof DoctrineORMModuleEntityManager);
-        $connection = $container->get($options->getConnection());
-        $config = $container->get($options->getConfiguration());
+        $connection = $container->get(Connection::class);
+        $paths = [
+            __DIR__ . '/Entity',
+        ];
+        $isDevMode = APPLICATION_ENV == 'development';
+        $storage = new BlackHole();
+        $cache = new CacheItemPoolDecorator($storage);
+        $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, cache: $cache);
         $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
-        $entityManager = new EntityManager($connection, $config, $connection->getEventManager());
+        $eventManager = new EventManager();
+        $entityManager = new EntityManager($connection, $config, $eventManager);
 
         // Add entity mappings to class metadata factory:
         $metadataFactory = $entityManager->getMetadataFactory();
@@ -91,15 +99,5 @@ class EntityManagerFactory extends AbstractFactory
         );
 
         return $entityManager;
-    }
-
-    /**
-     * Get the class name of the options associated with this factory.
-     *
-     * @return string
-     */
-    public function getOptionsClass(): string
-    {
-        return DoctrineORMModuleEntityManager::class;
     }
 }
