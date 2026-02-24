@@ -77,9 +77,9 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
     /**
      * Return this object
      *
-     * @return \VuFind\View\Helper\Root\Captcha
+     * @return static
      */
-    public function __invoke(): \VuFind\View\Helper\Root\Captcha
+    public function __invoke(): static
     {
         return $this;
     }

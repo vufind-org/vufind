@@ -204,9 +204,9 @@ class Config
     /**
      * Return this helper instance (for method chaining).
      *
-     * @return Config
+     * @return static
      */
-    public function __invoke()
+    public function __invoke(): static
     {
         return $this;
     }
