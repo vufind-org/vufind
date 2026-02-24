@@ -128,6 +128,8 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     public function testTemplateDisplay()
     {
         $this->expectException(\Laminas\View\Exception\RuntimeException::class);
+
+        // Template does not exist, expect an exception, though
         $mockPdm = $this->getMockPdm(
             [
                 'deniedTemplateBehavior' => [
