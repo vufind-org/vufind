@@ -508,7 +508,7 @@ class Folio extends AbstractAPI implements
      *
      * @return string
      */
-    protected function escapeCql($in)
+    protected function escapeCql(string $in): string
     {
         return str_replace('"', '\"', str_replace('&', '%26', $in));
     }
@@ -1552,7 +1552,7 @@ class Folio extends AbstractAPI implements
      *
      * @return string
      */
-    protected function getUserWithCql($username, $password)
+    protected function getUserWithCql(string $username, ?string $password): string
     {
         // Construct user query using barcode, username, etc.
         $usernameField = $this->config['User']['username_field'] ?? 'username';
