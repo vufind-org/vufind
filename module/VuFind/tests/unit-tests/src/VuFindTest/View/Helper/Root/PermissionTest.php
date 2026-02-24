@@ -80,6 +80,24 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
+     * Convenience method to get permission helper
+     *
+     * @param PermissionDeniedManager $mockPdm Mock permission denied manager
+     *
+     * @return Permission
+     */
+    protected function getPermissionHelper(PermissionDeniedManager $mockPdm): Permission
+    {
+        $view = $this->getMockView();
+        return new Permission(
+            $this->getMockPm(false),
+            $mockPdm,
+            $view->plugin('transEsc'),
+            $view->plugin('context')
+        );
+    }
+
+    /**
      * Test the message display
      *
      * @return void
@@ -96,8 +114,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = new Permission($this->getMockPm(false), $mockPdmMessage);
-        $helper->setView($this->getMockView());
+        $helper = $this->getPermissionHelper($mockPdmMessage);
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
         $this->assertEquals('dl_translatable_test', $displayBlock);
@@ -123,8 +140,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = new Permission($this->getMockPm(false), $mockPdm);
-        $helper->setView($this->getMockView());
+        $helper = $this->getPermissionHelper($mockPdm);
 
         $helper->getAlternateContent('permissionDeniedTemplate');
     }
@@ -146,8 +162,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $helper = new Permission($this->getMockPm(false), $mockPdm);
-        $helper->setView($this->getMockView());
+        $helper = $this->getPermissionHelper($mockPdm);
 
         $this->assertSame(
             '<span class="label label-success">Available</span>',
@@ -188,6 +203,16 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get mock context helper.
+     *
+     * @return \VuFind\View\Helper\Root\Context
+     */
+    protected function getMockContext()
+    {
+        return $this->createMock(\VuFind\View\Helper\Root\Context::class);
+    }
+
+    /**
      * Return a view object populated for these test cases.
      *
      * @return \Laminas\View\Renderer\PhpRenderer
@@ -201,6 +226,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $realView = $this->getPhpRenderer(
             compact('translate', 'transEsc', 'context', 'escapehtml')
         );
+        $context->setView($realView);
         return $realView;
     }
 }
