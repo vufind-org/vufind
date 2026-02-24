@@ -76,9 +76,9 @@ class JsConfigs
     /**
      * Return this helper instance.
      *
-     * @return JsConfigs
+     * @return static
      */
-    public function __invoke()
+    public function __invoke(): static
     {
         return $this;
     }
