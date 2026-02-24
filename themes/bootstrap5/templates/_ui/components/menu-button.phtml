@@ -10,6 +10,8 @@
    *                              - lightbox (bool): if true, open the link in a lightbox (default = false)
    *                              - selected (bool): is this the active menu item? (default = false)
    *                              - url (string): target link for menu option (required)
+   *                              - setQueryParams (array): An array of query parameters to set when the menu item is
+   *                                clicked instead of following the url (optional)
    * @param ?array  $toggleAttrs  Additional attributes to apply to the toggle button
    * @param string  $toggleLabel  The label for the toggle button (will be translated)
    * @param ?string $wrapperTag   Tag to use as a wrapper around the control (default = div)
@@ -68,6 +70,7 @@
           href="<?=$this->escapeHtmlAttr($current['url']) ?>"
           <?php if ($current['external'] ?? false): ?> target="_blank"<?php endif; ?>
           <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
+          <?php if ($setParams = $current['setQueryParams'] ?? null): ?> data-click-set-query-params="<?=$this->escapeHtmlAttr(http_build_query($setParams))?>"<?php endif; ?>
           rel="nofollow"
         >
           <span><?=$this->transEsc($current['label']) ?></span>
