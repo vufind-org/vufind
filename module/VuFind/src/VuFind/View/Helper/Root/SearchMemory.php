@@ -53,7 +53,7 @@ class SearchMemory
      * @param Memory        $memory       Search memory service
      * @param Url           $url          Url view helper
      * @param EscapeHtml    $escapeHtml   EscapeHtml view helper
-     * @param PluginManager $searchParams PluginManager view helper
+     * @param PluginManager $searchParams Search Params plugin manager
      */
     public function __construct(
         protected Memory $memory,
