@@ -4,6 +4,7 @@
   $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions();
   $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
   $rangeFacets = $this->recommend->getAllRangeFacets();
+  $newItemsFacets = $this->options->getNewItemsFacets();
   $facet = $this->facet;
 ?>
 <?php if (isset($rangeFacets[$facet])): // special display for ranges ?>
@@ -11,6 +12,13 @@
     $this->context($this)->renderInContext(
         'Recommend/SideFacets/range-slider.phtml',
         ['title' => $facet, 'cluster' => $cluster, 'facet' => $rangeFacets[$facet]]
+    );
+  ?>
+<?php elseif (isset($newItemsFacets[$facet])): // special display for new items facets ?>
+  <?=
+    $this->context($this)->renderInContext(
+        'Recommend/SideFacets/new-items-facet.phtml',
+        compact('results', 'facet', 'newItemsFacets')
     );
   ?>
 <?php else: ?>

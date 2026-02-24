@@ -367,6 +367,12 @@ class SearchController extends AbstractSolrSearch
     public function newitemresultsAction()
     {
         $newItemParams = $this->getNewItemParameters();
+        if ($this->newItems()->getMethod() === 'solr') {
+            $filter = (array)$this->params()->fromQuery('filter', []);
+            $filter[] = $this->newItems()->getSolrFilter($newItemParams['range']);
+            $query = ['filter' => $filter, 'hiddenFilters' => $newItemParams['hiddenFilters']];
+            return $this->redirect()->toRoute('search-results', options: compact('query'));
+        }
         $this->setUpNewItemRequestParams($newItemParams);
 
         // Don't save to history or memory -- history page doesn't handle correctly

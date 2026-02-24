@@ -453,9 +453,9 @@ class UrlQueryHelper
     /**
      * Remove a facet from the parameters.
      *
-     * @param string $field    Facet field
-     * @param string $value    Facet value
-     * @param string $operator Facet type to add (AND, OR, NOT)
+     * @param string  $field    Facet field
+     * @param ?string $value    Facet value, or null to remove all values for the facet field
+     * @param string  $operator Facet type to add (AND, OR, NOT)
      *
      * @return UrlQueryHelper
      */
@@ -480,7 +480,7 @@ class UrlQueryHelper
                     = $this->parseFilter($current);
                 if (
                     !in_array($currentField, $fieldAliases)
-                    || $currentValue != $value
+                    || (null !== $value && $currentValue != $value)
                 ) {
                     $newFilter[] = $current;
                 }
@@ -496,6 +496,21 @@ class UrlQueryHelper
         unset($params['page']);
 
         return new static($params, $this->queryObject, $this->config, false);
+    }
+
+    /**
+     * Remove any instance of the facet from the parameters and add a new one.
+     *
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
+     *
+     * @return string
+     */
+    public function replaceFacet($field, $value, $operator = 'AND')
+    {
+        return $this->removeFacet($field, null, $operator)
+            ->addFacet($field, $value, $operator);
     }
 
     /**

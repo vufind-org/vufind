@@ -203,7 +203,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     public function testGetSolrFilter()
     {
         $range = 30;
-        $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
+        $expected = 'first_indexed:[NOW-' . $range . 'DAYS/DAY TO *]';
         $newItems = new NewItems(new Config([]));
         $this->assertEquals($expected, $newItems->getSolrFilter($range));
     }

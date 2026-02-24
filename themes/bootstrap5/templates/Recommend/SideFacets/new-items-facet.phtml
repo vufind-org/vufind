@@ -1,0 +1,44 @@
+<?php
+  $newItemsFilters = $results->getOptions()->getNewItemsFacetFilters();
+  $safeBaseId = $this->escapeHtmlAttr($this->facet);
+  $ulAttrs = $this->htmlAttributes(['class' => 'facet__list']);
+  $truncateSettings = [
+    'rows' => $this->facets_before_more,
+    'btn-class' => 'facet',
+    'more-label' => $this->transEsc('more_ellipsis'),
+    'less-label' => $this->transEsc('less_ellipsis'),
+    'wrapper-class' => false,
+    'wrapper-tagname' => 'li',
+  ];
+  if ($truncateSettings) {
+    $ulAttrs->add('class', 'truncate-facets');
+    $ulAttrs->add('data-truncate', $this->htmlSafeJsonEncode($truncateSettings, null));
+  }
+?>
+<ul<?=$ulAttrs?>>
+
+<?php foreach ($newItemsFilters as $range => $newItemsFilter): ?>
+  <li class="facet__list__item">
+    <?php
+      $addURL = $results->getUrlQuery()->replaceFacet($facet, $newItemsFilter);
+      $removeURL = $results->getUrlQuery()->removeFacet($facet, $newItemsFilter);
+      $isApplied = $results->getUrlQuery() != $removeURL;
+      $toggleUrl = $isApplied
+        ? $this->urlBase . $removeURL
+        : $this->urlBase . $addURL;
+      $classList = ['facet', 'js-facet-item', 'facetAND'];
+      if ($isApplied) {
+        $classList[] = 'active';
+      }
+      $textEsc = $this->transEsc('past_days', compact('range'), useIcuFormatter: true);
+    ?>
+    <span class="<?=implode(' ', $classList) ?>" data-exclusive="">
+      <a href="<?=$toggleUrl ?>" class="main-link" data-title="<?=$this->escapeHtmlAttr($textEsc) ?>" data-count="">
+        <span class="text">
+          <?=$textEsc?>
+        </span>
+      </a>
+    </span>
+  </li>
+<?php endforeach; ?>
+</ul>
