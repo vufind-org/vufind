@@ -179,12 +179,12 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $dropdown = $this->findCss($page, '.nav-item.language .dropdown__item', index: 1);
         $this->clickCss($dropdown, '.dropdown__link');
         $this->waitForPageLoad($page);
-        $this->assertEquals('Sprache', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+        $this->assertSame('Sprache', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
         // ...and back:
         $this->clickCss($page, '.nav-item.language .dropdown__link');
         $this->waitForPageLoad($page);
         $this->assertShowingResults($page, '21 - 40');
-        $this->assertEquals('Language', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+        $this->assertSame('Language', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
 
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
