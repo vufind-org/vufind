@@ -61,7 +61,6 @@ return [
             'VuFind\View\Helper\Root\OpenUrl' => 'VuFind\View\Helper\Root\OpenUrlFactory',
             'VuFind\View\Helper\Root\OperatorToFieldPrefix' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Overdrive' => 'VuFind\View\Helper\Root\OverdriveFactory',
-            'VuFind\View\Helper\Root\Permission' => 'VuFind\View\Helper\Root\PermissionFactory',
             'VuFind\View\Helper\Root\Piwik' => 'VuFind\View\Helper\Root\PiwikFactory',
             'VuFind\View\Helper\Root\PrintArrayHtml' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Printms' => 'Laminas\ServiceManager\Factory\InvokableFactory',
