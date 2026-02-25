@@ -57,13 +57,6 @@ class Highlight
     protected $endTag = '</span>';
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * Adds a span tag with class "highlight" around a specific phrase for
      * highlighting
      *
