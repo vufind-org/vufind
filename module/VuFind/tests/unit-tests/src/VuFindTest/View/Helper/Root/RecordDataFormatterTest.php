@@ -82,7 +82,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
     {
         $translate = new \VuFind\View\Helper\Root\Translate();
-        $escapehtml = new \Laminas\View\Helper\EscapeHtml();
+        $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
         $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
         $helperArray = compact('translate', 'transEsc', 'escapehtml');
         $view = $this->getPhpRenderer($helperArray);
