@@ -89,6 +89,8 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
         $platform = strtolower(get_class($entityManager->getConnection()->getDatabasePlatform()));
         $validator = new SchemaValidator($entityManager);
         $errorList = $validator->validateMapping();
+        // We don't have entities for these tables (intentionally), so we should ignore the drops:
+        $expectedSchemaIssues = ['DROP TABLE log_table', 'DROP TABLE migrations'];
         $schemaList = $validator->getUpdateSchemaList();
         if (str_contains($platform, 'postgresql')) {
             $schemaList = $this->filterIndexRecreation($schemaList);
@@ -101,7 +103,7 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertSame(
             [],
-            $schemaList,
+            array_diff($schemaList, $expectedSchemaIssues),
             'Unexpected schema updates pending'
             . (($firstUpdate = reset($schemaList)) ? "; first update: $firstUpdate" : '')
         );
