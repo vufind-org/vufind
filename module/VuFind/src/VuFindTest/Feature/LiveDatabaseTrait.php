@@ -86,22 +86,6 @@ trait LiveDatabaseTrait
     protected ?MockContainer $liveDatabaseContainer = null;
 
     /**
-     * Get merged module config for database access.
-     *
-     * @return array
-     */
-    protected function getMergedConfig(): array
-    {
-        $dm = new \DoctrineModule\Module();
-        $dmConfig = $dm->getConfig();
-        $dmo = new \DoctrineORMModule\Module();
-        $dmoConfig = $dmo->getConfig();
-        $vfConfig
-            = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
-        return array_replace_recursive($dmConfig, $dmoConfig, $vfConfig);
-    }
-
-    /**
      * Set up minimum Doctrine dependencies in the provided container.
      *
      * @param object $container Container to populate
@@ -123,46 +107,6 @@ trait LiveDatabaseTrait
             \VuFind\Db\Connection::class,
             $connectionFactory($container, \VuFind\Db\Connection::class)
         );
-        $config = $container->get('config');
-        $options = $config['caches']['doctrinemodule.cache.filesystem']['options'];
-        $options['cache_dir']
-            = LOCAL_CACHE_DIR . '/' . $options['cache_dir'] . '_testmode';
-        if (!is_dir($options['cache_dir'])) {
-            mkdir($options['cache_dir'], 0o777, true);
-        }
-        $cacheAdapter = new \Laminas\Cache\Storage\Adapter\Filesystem($options);
-        $cacheAdapter->addPlugin(new \Laminas\Cache\Storage\Plugin\Serializer());
-        $container->set(
-            'doctrine.cache.filesystem',
-            new \DoctrineModule\Cache\LaminasStorageCache($cacheAdapter)
-        );
-        $container->set(
-            'doctrine.cache.array',
-            new \DoctrineModule\Cache\LaminasStorageCache(new \Laminas\Cache\Storage\Adapter\Memory())
-        );
-        $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
-        $container->set(
-            'doctrine.driver.orm_default',
-            $driverFactory($container, 'orm_default')
-        );
-        $configFactory
-            = new \DoctrineORMModule\Service\ConfigurationFactory('orm_vufind');
-        $container->set(
-            'doctrine.configuration.orm_vufind',
-            $configFactory($container, 'orm_vufind')
-        );
-        $eventManagerFactory
-            = new \DoctrineModule\Service\EventManagerFactory('orm_default');
-        $container->set(
-            'doctrine.eventmanager.orm_default',
-            $eventManagerFactory($container, 'orm_default')
-        );
-        $entityResolverFactory
-            = new \DoctrineORMModule\Service\EntityResolverFactory('orm_default');
-        $container->set(
-            'doctrine.entity_resolver.orm_default',
-            $entityResolverFactory($container, 'orm_default')
-        );
         $container->set(
             \VuFind\Db\Entity\PluginManager::class,
             new \VuFind\Db\Entity\PluginManager($container, [])
@@ -171,9 +115,7 @@ trait LiveDatabaseTrait
             \VuFind\Db\Service\PluginManager::class,
             new \VuFind\Db\Service\PluginManager($container, [])
         );
-        $entityManagerFactory = new \VuFind\Db\EntityManagerFactory(
-            'orm_vufind'
-        );
+        $entityManagerFactory = new \VuFind\Db\EntityManagerFactory();
         $container->set(
             \Doctrine\ORM\EntityManager::class,
             $entityManagerFactory($container, 'orm_vufind')
@@ -192,7 +134,7 @@ trait LiveDatabaseTrait
     public function getMockContainerWithDoctrineDependencies()
     {
         // Set up the bare minimum services to actually load real configs:
-        $config = $this->getMergedConfig();
+        $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
         $container->set('config', $config);
