@@ -199,16 +199,12 @@ class Params extends \VuFind\Search\Base\Params
         $searchConfig = $this->configManager->getConfigArray($this->getOptions()->getSearchIni());
         $localSortDefinitions = $searchConfig['LocalSortDefinitions'] ?? [];
         foreach ($localSortDefinitions as $alias => $localSortDefinition) {
-            if (array_key_exists('field', $localSortDefinition) && $localSortDefinition['field'] !== '') {
-                if (!array_key_exists($alias, $this->sortDefinitions)) {
-                    $this->sortDefinitions[$alias] = array();
-                }
+            if (!empty($localSortDefinition['field'])) {
+                $this->sortDefinitions[$alias] ??= [];
                 $this->sortDefinitions[$alias]['field'] = $localSortDefinition['field'];
-                if (array_key_exists('order', $localSortDefinition) && in_array($localSortDefinition['order'], ['asc', 'desc'])) {
-                    $this->sortDefinitions[$alias]['order'] = $localSortDefinition['order'];
-                } else { //take default
-                    $this->sortDefinitions[$alias]['order'] = 'desc';
-                }
+                // Default to descending if no valid order provided:
+                $this->sortDefinitions[$alias]['order']  = in_array($localSortDefinition['order'] ?? '', ['asc', 'desc'])
+                     ? $localSortDefinition['order'] : 'desc';
             } else {
                 throw new BadConfig(
                     "Neither field name nor function has been provided for the 'field'-key in LocalSortDefinitions (searches.ini)"
