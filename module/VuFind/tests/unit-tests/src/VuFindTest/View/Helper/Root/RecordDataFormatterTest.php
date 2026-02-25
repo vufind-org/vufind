@@ -83,8 +83,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         $translate = new \VuFind\View\Helper\Root\Translate();
         $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
-        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
-        $helperArray = compact('translate', 'transEsc', 'escapehtml');
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapeHtml);
+        $helperArray = compact('translate', 'transEsc', 'escapeHtml');
         $view = $this->getPhpRenderer($helperArray);
         $context = new \VuFind\View\Helper\Root\Context($view);
         $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
