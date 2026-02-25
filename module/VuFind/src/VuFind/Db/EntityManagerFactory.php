@@ -37,6 +37,7 @@ use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
 use Laminas\Cache\Storage\Adapter\BlackHole;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Mapping\ClassMetadataFactory;
 use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
 
 use function assert;
@@ -78,13 +79,13 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             __DIR__ . '/Entity',
         ];
         $isDevMode = APPLICATION_ENV == 'development';
-        $storage = new BlackHole();
+        $storage = new BlackHole(); // TODO: use different cache if not in console mode.
         $cache = new CacheItemPoolDecorator($storage);
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, cache: $cache);
+        $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
         $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
-        $eventManager = new EventManager();
-        $entityManager = new EntityManager($connection, $config, $eventManager);
+        $entityManager = new EntityManager($connection, $config);
 
         // Add entity mappings to class metadata factory:
         $metadataFactory = $entityManager->getMetadataFactory();
