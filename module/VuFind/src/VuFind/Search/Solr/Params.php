@@ -198,8 +198,7 @@ class Params extends \VuFind\Search\Base\Params
         $this->customFilterFieldName = $config->CustomFilters->custom_filter_field ?? 'vufind';
         $searchConfig = $this->configManager->getConfigArray($this->getOptions()->getSearchIni());
         $localSortDefinitions = $searchConfig['LocalSortDefinitions'] ?? array();
-        foreach ($localSortDefinitions as $alias => $localSortDefinitionConf) {
-            $localSortDefinition = $localSortDefinitionConf->toArray();
+        foreach ($localSortDefinitions as $alias => $localSortDefinition) {
             if (array_key_exists('field', $localSortDefinition) && $localSortDefinition['field'] !== '') {
                 if (!array_key_exists($alias, $this->sortDefinitions)) {
                     $this->sortDefinitions[$alias] = array();
