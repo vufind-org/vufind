@@ -91,12 +91,9 @@ class Icon
         protected RendererInterface $view,
         protected bool $rtl = false
     ) {
-        $this->config = $config;
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->defaultTemplate = $this->config['defaultTemplate'] ?? 'font';
         $this->iconMap = $this->config['aliases'] ?? [];
-        $this->cache = $cache;
-        $this->rtl = $rtl;
     }
 
     /**
