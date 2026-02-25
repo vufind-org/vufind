@@ -143,7 +143,7 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
             if ($mapping instanceof AssociationMapping) {
                 $mappingArray = $mapping->toArray();
                 $mappingArray['targetEntity'] = $this->resolveClassName($mapping['targetEntity']);
-                $mapping = (get_class($mapping))::fromMappingArray($mappingArray);
+                $mapping = ($mapping::class)::fromMappingArray($mappingArray);
             }
         }
         unset($mapping);

@@ -29,18 +29,14 @@
 
 namespace VuFind\Db;
 
-use Doctrine\Common\EventManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\ORMSetup;
-use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
 use Laminas\Cache\Storage\Adapter\BlackHole;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Mapping\ClassMetadataFactory;
 use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
-
-use function assert;
 
 /**
  * Entity manager factory.
