@@ -30,8 +30,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\Renderer\RendererInterface;
 
 use function in_array;
 use function is_string;
@@ -45,15 +45,8 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Icon extends AbstractHelper
+class Icon
 {
-    /**
-     * Icon config from theme.config.php
-     *
-     * @var array
-     */
-    protected $config;
-
     /**
      * Default icon set
      *
@@ -76,27 +69,6 @@ class Icon extends AbstractHelper
     protected $iconMap;
 
     /**
-     * Cache for icons
-     *
-     * @var StorageInterface
-     */
-    protected $cache;
-
-    /**
-     * Escape helper
-     *
-     * @var EscapeHtmlAttr
-     */
-    protected $esc;
-
-    /**
-     * Are we in right to left text mode?
-     *
-     * @var bool
-     */
-    protected $rtl;
-
-    /**
      * Prevent extra work by only appending the stylesheet once
      *
      * @var bool
@@ -106,23 +78,24 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param array            $config  Icon configuration
-     * @param StorageInterface $cache   Cache instance
-     * @param EscapeHtmlAttr   $escAttr EscapeHtmlAttr view helper
-     * @param bool             $rtl     Are we in right to left text mode?
+     * @param array             $config  Icon configuration
+     * @param StorageInterface  $cache   Cache instance
+     * @param EscapeHtmlAttr    $esc     EscapeHtmlAttr view helper
+     * @param RendererInterface $view    View renderer
+     * @param bool              $rtl     Are we in right to left text mode?
      */
     public function __construct(
-        array $config,
-        StorageInterface $cache,
-        EscapeHtmlAttr $escAttr,
-        bool $rtl = false
+        protected array $config,
+        protected StorageInterface $cache,
+        protected EscapeHtmlAttr $esc,
+        protected RendererInterface $view,
+        protected bool $rtl = false
     ) {
         $this->config = $config;
         $this->defaultSet = $this->config['defaultSet'] ?? 'FontAwesome';
         $this->defaultTemplate = $this->config['defaultTemplate'] ?? 'font';
         $this->iconMap = $this->config['aliases'] ?? [];
         $this->cache = $cache;
-        $this->esc = $escAttr;
         $this->rtl = $rtl;
     }
 
@@ -229,7 +202,7 @@ class Icon extends AbstractHelper
 
             // Surface set config and add icon and attrs
             $cached = trim(
-                $this->getView()->render(
+                $this->view->render(
                     'Helpers/icons/' . $template,
                     array_merge(
                         $this->config['sets'][$set] ?? [],

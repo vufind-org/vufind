@@ -32,6 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use Laminas\Cache\Storage\Adapter\BlackHole;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Escaper\Escaper;
 use VuFind\View\Helper\Root\Icon;
 use VuFindTheme\View\Helper\ImageLink;
@@ -128,19 +129,19 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $rtl = false
     ): Icon {
         $escaper = new Escaper();
+        $escapeHtmlAttr = new EscapeHtmlAttr($escaper);
+        $plugins = array_merge(
+            ['escapeHtmlAttr' => $escapeHtmlAttr],
+            $plugins
+        );
+        $renderer = $this->getPhpRenderer($plugins);
         $icon = new Icon(
             $config ?? $this->getDefaultTestConfig(),
             $cache ?? new BlackHole(),
-            new EscapeHtmlAttr($escaper),
+            $escapeHtmlAttr,
+            $renderer,
             $rtl
         );
-        $plugins = array_merge(
-            [
-                'escapeHtmlAttr' => new EscapeHtmlAttr($escaper),
-            ],
-            $plugins
-        );
-        $icon->setView($this->getPhpRenderer($plugins));
         return $icon;
     }
 
