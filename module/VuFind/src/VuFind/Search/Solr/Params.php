@@ -156,24 +156,22 @@ class Params extends \VuFind\Search\Base\Params
         'authorStr' => ['field' => 'author_sort', 'order' => 'asc'],
         'title' => ['field' => 'title_sort', 'order' => 'asc'],
         'relevance' => ['field' => 'score', 'order' => 'desc'],
-        'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc']
+        'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],
     ];
-
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options $options Options to use
-     * @param ConfigManagerInterface $configManager Config manager
-     * @param ?HierarchicalFacetHelper $facetHelper Hierarchical facet helper
+     * @param  \VuFind\Search\Base\Options $options       Options to use
+     * @param  ConfigManagerInterface      $configManager Config manager
+     * @param  ?HierarchicalFacetHelper    $facetHelper   Hierarchical facet helper
      * @throws BadConfig
      */
     public function __construct(
         $options,
         ConfigManagerInterface $configManager,
         ?HierarchicalFacetHelper $facetHelper = null
-    )
-    {
+    ) {
         parent::__construct($options, $configManager);
         $this->facetHelper = $facetHelper;
 
@@ -212,6 +210,7 @@ class Params extends \VuFind\Search\Base\Params
             }
         }
     }
+
     /**
      * Return the current filters as an array of strings ['field:filter']
      *
