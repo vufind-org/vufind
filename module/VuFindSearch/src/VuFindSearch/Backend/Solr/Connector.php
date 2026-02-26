@@ -41,6 +41,7 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
 
 use function call_user_func_array;
@@ -199,7 +200,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     {
         $params = $params ?: new ParamBag();
         $params
-            ->set('q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
+            ->set('query', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
 
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
@@ -307,23 +308,23 @@ class Connector implements \Psr\Log\LoggerAwareInterface
      */
     public function query($handler, ParamBag $params, bool $cacheable = false)
     {
+        $params = NestingParamBag::from($params);
         $urlSuffix = '/' . $handler;
-        $paramString = implode('&', $params->request());
-        if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
-            $method = Request::METHOD_POST;
-            $callback = function ($client) use ($paramString): void {
-                $client->setRawBody($paramString);
-                $client->setEncType(HttpClient::ENC_URLENCODED);
-                $client->setHeaders(['Content-Length' => strlen($paramString)]);
-            };
-        } else {
-            $method = Request::METHOD_GET;
-            $urlSuffix .= '?' . $paramString;
-            $callback = null;
-        }
+        $body = json_encode($params, JSON_THROW_ON_ERROR);
+        $method = Request::METHOD_POST;
+        $callback = function ($client) use ($body): void {
+            $client->setRawBody($body);
+            $client->setEncType('application/json');
+            $client->setHeaders(['Content-Length' => strlen($body)]);
+        };
 
-        $this->debug(sprintf('Query %s', $paramString));
+        $this->debug(sprintf('Query body %s', $body));
         return $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
+        // $responseBody = $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
+        // if (strlen($body) > 500) {
+        //    $this->debug(sprintf('Response body to long query %s', $responseBody));
+        // }
+        // return $responseBody;
     }
 
     /**

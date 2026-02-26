@@ -86,16 +86,18 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         'response' => [
             'numFound' => 5,
         ],
-        'facet_counts' => [
-            'facet_fields' => [
-                'topic_facet' => [
-                    ['Research', 16],
-                    ['Psychotherapy', 8],
+        'facets' => [
+            'topic_facet' => [
+                'buckets' => [
+                    ['val' => 'Research', 'count' => 16],
+                    ['val' => 'Psychotherapy', 'count' => 8],
                 ],
-                'building' => [
-                    ['0/Main/', 11],
-                    ['1/Main/Fiction/', 5],
-                    ['0/Sub/', 2],
+            ],
+            'building' => [
+                'buckets' => [
+                    ['val' => '0/Main/', 'count' => 11],
+                    ['val' => '1/Main/Fiction/', 'count' => 5],
+                    ['val' => '0/Sub/', 'count' => 2],
                 ],
             ],
         ],
@@ -143,22 +145,27 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $searchService = $this->getSearchServiceWithMockSearchMethod(
             [
                 'response' => ['numFound' => 5],
-                'facet_counts' => [
-                    'facet_fields' => [
-                        'dewey-raw' => [
-                            ['000', 100],
+                'facets' => [
+                    'dewey-raw' => [
+                        'buckets' => [
+                            ['val' => '000', 'count' => 100],
                         ],
                     ],
                 ],
             ],
             [
-                'spellcheck' => ['true'],
-                'hl' => ['false'],
-                'facet' => ['true'],
-                'facet.limit' => [30],
-                'facet.field' => ['dewey-raw'],
-                'facet.sort' => ['count'],
-                'facet.mincount' => [1],
+                'facet' => [
+                    'dewey-raw' => [
+                        'type' => 'terms',
+                        'field' => 'dewey-raw',
+                        'limit' => 30,
+                        'sort' => 'count',
+                    ],
+                ],
+                'params' => [
+                    'spellcheck' => 'true',
+                    'hl' => 'false',
+                ],
             ]
         );
         $results = $this->getResults($params, $searchService);
@@ -198,10 +205,10 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     {
         $searchService = $this->getSearchServiceWithMockSearchMethod(
             ['response' => ['numFound' => 5]],
-            [
-                'spellcheck' => ['true'],
-                'hl' => ['false'],
-            ]
+            [ 'params' => [
+                'spellcheck' => 'true',
+                'hl' => 'false',
+            ]]
         );
         $results = $this->getResults(null, $searchService);
         $this->assertEquals(5, $results->getResultTotal());
@@ -232,7 +239,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 20
-                && $command->getArguments()[3]->getArrayCopy() == $expectedParams;
+                && $command->getArguments()[3]->jsonSerialize() == $expectedParams;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))

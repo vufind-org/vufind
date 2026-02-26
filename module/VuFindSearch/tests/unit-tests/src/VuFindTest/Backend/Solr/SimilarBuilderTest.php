@@ -54,11 +54,11 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $sb = new SimilarBuilder();
         $response = $sb->build('testrecord');
-        $rows = $response->get('rows');
-        $this->assertEquals(5, $rows[0]);
-        $q = $response->get('q');
-        $this->assertEquals('id:"testrecord"', $q[0]);
-        $qt = $response->get('qt');
+        $limit = $response->get('limit');
+        $this->assertEquals(5, $limit[0]);
+        $query = $response->get('query');
+        $this->assertEquals('id:"testrecord"', $query[0]);
+        $qt = $response->getNested('params', 'qt');
         $this->assertEquals('morelikethis', $qt[0]);
     }
 
@@ -71,8 +71,8 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $sb = new SimilarBuilder(null, 'key');
         $response = $sb->build('testrecord');
-        $q = $response->get('q');
-        $this->assertEquals('key:"testrecord"', $q[0]);
+        $query = $response->get('query');
+        $this->assertEquals('key:"testrecord"', $query[0]);
     }
 
     /**
@@ -89,27 +89,27 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
         ];
         $sb = new SimilarBuilder(new \VuFind\Config\Config($config));
         $response = $sb->build('testrecord');
-        $rows = $response->get('rows');
-        $this->assertEquals(10, $rows[0]);
+        $limit = $response->get('limit');
+        $this->assertEquals(10, $limit[0]);
 
         $config['MoreLikeThis']['useMoreLikeThisHandler'] = true;
         $sb = new SimilarBuilder(new \VuFind\Config\Config($config));
         $response = $sb->build('testrecord');
-        $rows = $response->get('rows');
-        $this->assertEquals(10, $rows[0]);
-        $q = $response->get('q');
+        $limit = $response->get('limit');
+        $this->assertEquals(10, $limit[0]);
+        $query = $response->get('query');
         $this->assertEquals(
             '{!mlt qf=title,title_short,callnumber-label,topic,language,author,'
             . 'publishDate mintf=1 mindf=1}testrecord',
-            $q[0]
+            $query[0]
         );
-        $qt = $response->get('qt');
+        $qt = $response->getNested('params', 'qt');
         $this->assertEquals(null, $qt);
 
         $config['MoreLikeThis']['params'] = 'qf=title,topic';
         $sb = new SimilarBuilder(new \VuFind\Config\Config($config));
         $response = $sb->build('testrecord');
-        $q = $response->get('q');
-        $this->assertEquals('{!mlt qf=title,topic}testrecord', $q[0]);
+        $query = $response->get('query');
+        $this->assertEquals('{!mlt qf=title,topic}testrecord', $query[0]);
     }
 }

@@ -51,13 +51,6 @@ trait FacetRestrictionsTrait
     protected $facetPrefixByField = [];
 
     /**
-     * Per-field facet matches
-     *
-     * @var array
-     */
-    protected $facetMatchesByField = [];
-
-    /**
      * Initialize facet prefix and matches from a Config object.
      *
      * @param ?Config $config Configuration
@@ -68,9 +61,6 @@ trait FacetRestrictionsTrait
     {
         foreach ($config->facet_prefix_by_field ?? [] as $k => $v) {
             $this->facetPrefixByField[$k] = $v;
-        }
-        foreach ($config->facet_matches_by_field ?? [] as $k => $v) {
-            $this->facetMatchesByField[$k] = $v;
         }
     }
 
@@ -87,18 +77,6 @@ trait FacetRestrictionsTrait
     }
 
     /**
-     * Set Facet Matches by Field
-     *
-     * @param array $new Associative array of $field name => $limit
-     *
-     * @return void
-     */
-    public function setFacetMatchesByField(array $new)
-    {
-        $this->facetMatchesByField = $new;
-    }
-
-    /**
      * Get the facet prefix for the specified field.
      *
      * @param string $field Field to look up
@@ -109,18 +87,5 @@ trait FacetRestrictionsTrait
     {
         $prefix = $this->facetPrefixByField[$field] ?? '';
         return $prefix;
-    }
-
-    /**
-     * Get the facet matches for the specified field.
-     *
-     * @param string $field Field to look up
-     *
-     * @return string
-     */
-    protected function getFacetMatchesForField($field)
-    {
-        $matches = $this->facetMatchesByField[$field] ?? '';
-        return $matches;
     }
 }

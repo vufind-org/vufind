@@ -105,8 +105,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $qb = new QueryBuilder();
         $q = new Query($input);
         $response = $qb->build($q);
-        $processedQ = $response->get('q');
-        $this->assertEquals($output, $processedQ[0]);
+        $processedQuery = $response->get('query');
+        $this->assertEquals($output, $processedQuery[0]);
     }
 
     /**
@@ -172,8 +172,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $response = $qb->build($q);
         // Make sure the query builder had no side effects on the query object:
         $this->assertEquals($before, $q->getString());
-        $processedQ = $response->get('q');
-        $this->assertEquals($basicOutput, $processedQ[0]);
+        $processedQuery = $response->get('query');
+        $this->assertEquals($basicOutput, $processedQuery[0]);
     }
 
     /**
@@ -200,8 +200,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         }
         $advancedQ = new QueryGroup('AND', [new Query($input, 'test')]);
         $advResponse = $qb->build($advancedQ);
-        $advProcessedQ = $advResponse->get('q');
-        $this->assertEquals($advOutput, $advProcessedQ[0]);
+        $advProcessedQuery = $advResponse->get('query');
+        $this->assertEquals($advOutput, $advProcessedQuery[0]);
     }
 
     /**
@@ -291,13 +291,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         // non-quoted search uses main DismaxFields
         $q = new Query('q', 'test');
         $response = $qb->build($q);
-        $qf = $response->get('qf');
+        $qf = $response->getNested('params', 'qf');
         $this->assertEquals('a b', $qf[0]);
 
         // quoted search uses ExactSettings>DismaxFields
         $q = new Query('"q"', 'test');
         $response = $qb->build($q);
-        $qf = $response->get('qf');
+        $qf = $response->getNested('params', 'qf');
         $this->assertEquals('c d', $qf[0]);
     }
 
@@ -315,8 +315,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         );
         $q = new Query('q', 'test');
         $response = $qb->build($q);
-        $fq = $response->get('fq');
-        $this->assertEquals('a:filter', $fq[0]);
+        $filter = $response->get('filter');
+        $this->assertEquals('a:filter', $filter[0]);
     }
 
     /**
@@ -333,8 +333,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         );
         $q = new Query('q', 'test');
         $response = $qb->build($q);
-        $q = $response->get('q');
-        $this->assertEquals('((q) AND (a:filter))', $q[0]);
+        $query = $response->get('query');
+        $this->assertEquals('((q) AND (a:filter))', $query[0]);
     }
 
     /**
@@ -352,8 +352,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         );
         $q = new Query('*:*', 'test');
         $response = $qb->build($q);
-        $q = $response->get('q');
-        $this->assertEquals('a:filter', $q[0]);
+        $query = $response->get('query');
+        $this->assertEquals('a:filter', $query[0]);
     }
 
     /**
@@ -380,10 +380,10 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $qb->setFieldsToHighlight('*');
         $response = $qb->build($q);
-        $hlq = $response->get('hl.q');
-        $q = $response->get('q');
+        $hlq = $response->getNested('params', 'hl.q');
+        $query = $response->get('query');
         $this->assertEquals('(my friend*)', $hlq[0]);
-        $this->assertEquals('((my friend*)) AND (*:* OR boost)', $q[0]);
+        $this->assertEquals('((my friend*)) AND (*:* OR boost)', $query[0]);
     }
 
     /**
@@ -422,7 +422,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         foreach ($tests as $input => $output) {
             $qb->setFieldsToHighlight($input);
             $response = $qb->build($q);
-            $hlfl = $response->get('hl.fl');
+            $hlfl = $response->getNested('params', 'hl.fl');
             $this->assertEquals($output, $hlfl[0] ?? null);
         }
     }
@@ -448,13 +448,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         // No spellcheck.q if spellcheck query disabled:
         $qb->setCreateSpellingQuery(false);
         $response1 = $qb->build($q);
-        $spQ1 = $response1->get('spellcheck.q');
+        $spQ1 = $response1->getNested('params', 'spellcheck.q');
         $this->assertFalse(isset($spQ1[0]));
 
         // spellcheck.q if spellcheck query enabled:
         $qb->setCreateSpellingQuery(true);
         $response2 = $qb->build($q);
-        $spQ2 = $response2->get('spellcheck.q');
+        $spQ2 = $response2->getNested('params', 'spellcheck.q');
         $this->assertEquals('my friend', $spQ2[0]);
     }
 
@@ -481,11 +481,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $q = new QueryGroup('OR', [$q1, $q2]);
 
         $response = $qb->build($q);
-        $processedQ = $response->get('q');
+        $processedQuery = $response->get('query');
         $this->assertEquals(
             '((_query_:"{!dismax qf=\"field_a\" mm=\\\'100%\\\'}value1") OR '
             . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
-            $processedQ[0]
+            $processedQuery[0]
         );
     }
 
@@ -516,11 +516,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $q = new QueryGroup('OR', [$q1, $q2]);
 
         $response = $qb->build($q);
-        $processedQ = $response->get('q');
+        $processedQuery = $response->get('query');
         $this->assertEquals(
             '((field_a:(value*)^100 OR field_c:(value*)^200) OR '
             . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
-            $processedQ[0]
+            $processedQuery[0]
         );
     }
 
@@ -544,8 +544,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $q = new Query('"foo" "bar" "baz"', 'a');
 
         $response = $qb->build($q);
-        $processedQ = $response->get('q');
-        $this->assertEquals('(field_a:("foo" OR "bar" OR "baz"))', $processedQ[0]);
+        $processedQuery = $response->get('query');
+        $this->assertEquals('(field_a:("foo" OR "bar" OR "baz"))', $processedQuery[0]);
     }
 
     /**
@@ -568,8 +568,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $q = new Query('708396 "708398" 708399 "708400"', 'a');
 
         $response = $qb->build($q);
-        $processedQ = $response->get('q');
-        $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "708400"))', $processedQ[0]);
+        $processedQuery = $response->get('query');
+        $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "708400"))', $processedQuery[0]);
     }
 
     /**
@@ -592,8 +592,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $q = new Query('708396 "708398" 708399 "foo\"bar"', 'a');
 
         $response = $qb->build($q);
-        $processedQ = $response->get('q');
-        $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "foo\"bar"))', $processedQ[0]);
+        $processedQuery = $response->get('query');
+        $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "foo\"bar"))', $processedQuery[0]);
     }
 
     /**
@@ -805,7 +805,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $qb = new QueryBuilder($specs);
         $response = $qb->build($q1, $params1);
         foreach ($expected1 as $field => $expected) {
-            $values = $response->get($field);
+            $values = $response->getNested('params', $field);
             $this->assertEquals(
                 $expected,
                 $values,
@@ -814,7 +814,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         }
         $response = $qb->build($q2, $params2);
         foreach ($expected2 as $field => $expected) {
-            $values = $response->get($field);
+            $values = $response->getNested('params', $field);
             $this->assertEquals(
                 $expected,
                 $values,
@@ -927,7 +927,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $qb = new QueryBuilder($specs);
         $response = $qb->build($group);
         foreach ($expectedFields as $field => $expected) {
-            $values = $response->get($field);
+            $values = $response->getNested('params', $field);
             $this->assertEquals(
                 $expected,
                 $values
@@ -945,7 +945,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $group = new QueryGroup('NOT', [new Query('q')]);
         $qb = new QueryBuilder([]);
         $response = $qb->build($group);
-        $this->assertEquals(['(*:* NOT (q))'], $response->get('q'));
+        $this->assertEquals(['(*:* NOT (q))'], $response->get('query'));
     }
 
     /**
@@ -962,7 +962,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $response = $qb->build($group);
         $this->assertEquals(
             ['((*:* NOT (q1 OR q2)) AND (q3 AND q4))'],
-            $response->get('q')
+            $response->get('query')
         );
     }
 
@@ -980,7 +980,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $response = $qb->build($group);
         $this->assertEquals(
             ['((*:* NOT (q1 OR q2)) OR (q3 AND q4))'],
-            $response->get('q')
+            $response->get('query')
         );
     }
 
@@ -1016,8 +1016,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             [$input, $output] = $test;
             $q = new Query($input, 'test');
             $response = $qb->build($q);
-            $processedQ = $response->get('q');
-            $this->assertEquals($output, $processedQ[0]);
+            $processedQuery = $response->get('query');
+            $this->assertEquals($output, $processedQuery[0]);
         }
     }
 }

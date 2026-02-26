@@ -243,12 +243,13 @@ class RecordCollectionTest extends TestCase
     {
         $coll = new RecordCollection(
             [
-                'facet_counts' => [
-                    'facet_fields' => [
-                        'format' => [
-                            ['Book', 123],
-                            ['Journal', 234],
-                            ['Map', 1],
+                'facets' => [
+                    'count' => 358,
+                    'format' => [
+                        'buckets' => [
+                            ['val' => 'Book', 'count' => 123],
+                            ['val' => 'Journal', 'count' => 234],
+                            ['val' => 'Map', 'count' => 1],
                         ],
                     ],
                 ],

@@ -31,6 +31,7 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
@@ -129,16 +130,17 @@ class QueryBuilder implements QueryBuilderInterface
      * @param AbstractQuery $query  User query
      * @param ?ParamBag     $params Search backend parameters
      *
-     * @return ParamBag
+     * @return NestingParamBag
      */
-    public function build(AbstractQuery $query, ?ParamBag $params = null)
+    public function build(AbstractQuery $query, ?ParamBag $params = null): NestingParamBag
     {
-        $newParams = new ParamBag();
+        $newParams = new NestingParamBag();
 
         // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:
         if ($this->createSpellingQuery) {
-            $newParams->set(
+            $newParams->setNested(
+                'params',
                 'spellcheck.q',
                 $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms())
             );
@@ -169,17 +171,17 @@ class QueryBuilder implements QueryBuilderInterface
                     // If a boost was added, we don't want to highlight based on
                     // the boost query, so we should use the non-boosted version:
                     if ($highlight && $oldString != $string) {
-                        $newParams->set('hl.q', $oldString);
+                        $newParams->setNested('params', 'hl.q', $oldString);
                     }
                 }
             } elseif ($handler->hasDismax()) {
-                $newParams->set('qf', implode(' ', $handler->getDismaxFields()));
-                $newParams->set('qt', $handler->getDismaxHandler());
+                $newParams->setNested('params', 'qf', implode(' ', $handler->getDismaxFields()));
+                $newParams->setNested('params', 'qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
-                    $newParams->add(reset($param), next($param));
+                    $newParams->addNested('params', reset($param), next($param));
                 }
                 if ($handler->hasFilterQuery()) {
-                    $newParams->add('fq', $handler->getFilterQuery());
+                    $newParams->add('filter', $handler->getFilterQuery());
                 }
             } else {
                 $string = $handler->createSimpleQueryString($string);
@@ -188,9 +190,9 @@ class QueryBuilder implements QueryBuilderInterface
         // Set an appropriate highlight field list when applicable:
         if ($highlight) {
             $filter = $handler ? $handler->getAllFields() : [];
-            $newParams->add('hl.fl', $this->getFieldsToHighlight($filter));
+            $newParams->addNested('params', 'hl.fl', $this->getFieldsToHighlight($filter));
         }
-        $newParams->set('q', $string);
+        $newParams->set('query', $string);
 
         // Handle any extra parameters:
         foreach ($this->globalExtraParams as $extraParam) {
@@ -203,7 +205,7 @@ class QueryBuilder implements QueryBuilderInterface
                 continue;
             }
             foreach ((array)$extraParam['value'] as $value) {
-                $newParams->add($extraParam['param'], $value);
+                $newParams->addNested('params', $extraParam['param'], $value);
             }
         }
 

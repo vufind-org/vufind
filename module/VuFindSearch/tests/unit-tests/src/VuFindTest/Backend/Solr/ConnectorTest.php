@@ -281,7 +281,7 @@ class ConnectorTest extends TestCase
         $httpService = $this->createMock(\VuFindHttp\HttpService::class);
         $httpService->expects($this->once())
             ->method('createClient')
-            ->with('http://localhost/select?q=id%3A%221%22')
+            ->with('http://localhost/select')
             ->willReturn($this->createClient());
         $connector = new Connector(
             'http://localhost',

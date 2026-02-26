@@ -74,7 +74,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params   = new ParamBag(
             [
-                'fq' => [
+                'filter' => [
                     'foo:value',
                     'baz:"foo:value"',
                     'foofoo:value',
@@ -97,7 +97,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
         );
         $listener->onSearchPre($event);
 
-        $fq   = $params->get('fq');
+        $fq   = $params->get('filter');
         $expected = [
             'bar:value',
             'boo:"foo:value"',

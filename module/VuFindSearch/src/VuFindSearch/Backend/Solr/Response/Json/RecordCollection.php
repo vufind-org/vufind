@@ -32,6 +32,7 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 use VuFindSearch\Response\AbstractRecordCollection;
 
 use function array_key_exists;
+use function is_array;
 
 /**
  * Simple JSON-based record collection.
@@ -55,7 +56,7 @@ class RecordCollection extends AbstractRecordCollection
         'responseHeader' => [],
         'response'       => ['numFound' => 0, 'start' => 0],
         'spellcheck'     => ['suggestions' => []],
-        'facet_counts'   => [],
+        'facets'   => [],
     ];
 
     /**
@@ -144,22 +145,25 @@ class RecordCollection extends AbstractRecordCollection
     {
         if (null === $this->facetFields) {
             $this->facetFields = [];
-            $facetFieldData = $this->response['facet_counts']['facet_fields'] ?? [];
+            $facetFieldData = $this->response['facets'] ?? [];
             foreach ($facetFieldData as $field => $facetData) {
-                $values = [];
-                foreach ($facetData as $value) {
-                    $values[$value[0]] = $value[1];
+                if (is_array($facetData)) {
+                    $values = [];
+                    foreach ($facetData['buckets'] as $bucket) {
+                        $values[$bucket['val']] = $bucket['count'];
+                    }
+                    $this->facetFields[$field] = $values;
                 }
-                $this->facetFields[$field] = $values;
             }
-            $facetRangeData = $this->response['facet_counts']['facet_ranges'] ?? [];
-            foreach ($facetRangeData as $field => $facetData) {
-                $values = [];
-                foreach ($facetData['counts'] as $value) {
-                    $values[$value[0]] = $value[1];
-                }
-                $this->facetFields[$field] = $values;
-            }
+            // TODO Fix this
+            // $facetRangeData = $this->response['facet_counts']['facet_ranges'] ?? [];
+            // foreach ($facetRangeData as $field => $facetData) {
+            //     $values = [];
+            //     foreach ($facetData['counts'] as $value) {
+            //         $values[$value[0]] = $value[1];
+            //     }
+            //     $this->facetFields[$field] = $values;
+            // }
         }
         return $this->facetFields;
     }

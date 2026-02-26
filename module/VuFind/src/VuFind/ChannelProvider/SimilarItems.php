@@ -212,7 +212,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         }
 
         $retVal['limit'] = $this->batchSize;
-        $params = new \VuFindSearch\ParamBag(['rows' => $this->batchSize]);
+        $params = new \VuFindSearch\ParamBag(['limit' => $this->batchSize]);
         $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
             $driver->getUniqueID(),

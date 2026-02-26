@@ -446,7 +446,7 @@ class Params extends \VuFind\Search\Solr\Params
         $result = parent::getBackendParameters();
         foreach ($this->unsupportedFilters as $backendId => $filters) {
             if ($filters) {
-                $result->add('fq', "-blender_backend:\"$backendId\"");
+                $result->add('filter', "-blender_backend:\"$backendId\"");
             }
         }
         foreach ($this->searchParams as $params) {

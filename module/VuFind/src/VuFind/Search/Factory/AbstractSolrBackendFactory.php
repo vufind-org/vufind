@@ -494,8 +494,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $handlers = [
             'select' => [
                 'fallback' => true,
-                'defaults' => ['fl' => $defaultFields],
-                'appends'  => ['fq' => []],
+                'defaults' => ['fields' => $defaultFields],
+                'appends'  => ['filter' => []],
             ],
             'terms' => [
                 'functions' => ['terms'],
@@ -503,7 +503,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         ];
 
         foreach ($this->getHiddenFilters() as $filter) {
-            array_push($handlers['select']['appends']['fq'], $filter);
+            array_push($handlers['select']['appends']['filter'], $filter);
         }
 
         $connector = new $this->connectorClass(

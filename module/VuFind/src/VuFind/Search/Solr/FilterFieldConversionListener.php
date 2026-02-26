@@ -91,12 +91,12 @@ class FilterFieldConversionListener
     public function onSearchPre(EventInterface $event)
     {
         $params = $event->getParam('command')->getSearchParameters();
-        $fq = $params->get('fq');
-        if (is_array($fq) && !empty($fq)) {
+        $filters = $params->get('filter');
+        if (is_array($filters) && !empty($filters)) {
             // regex lookahead to ignore strings inside quotes:
             $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
-            $new_fq = [];
-            foreach ($fq as $currentFilter) {
+            $new_filters = [];
+            foreach ($filters as $currentFilter) {
                 foreach ($this->map as $oldField => $newField) {
                     $currentFilter = preg_replace(
                         "/\b$oldField:$lookahead/",
@@ -104,9 +104,9 @@ class FilterFieldConversionListener
                         $currentFilter
                     );
                 }
-                $new_fq[] = $currentFilter;
+                $new_filters[] = $currentFilter;
             }
-            $params->set('fq', $new_fq);
+            $params->set('filter', $new_filters);
         }
 
         return $event;

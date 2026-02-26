@@ -32,7 +32,7 @@ namespace VuFindTest\Search\Solr;
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFindSearch\Backend\Solr\QueryBuilder;
-use VuFindSearch\ParamBag;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Service;
 
 /**
@@ -72,7 +72,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
     {
         $this->backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $this->backend->method('getIdentifier')->willReturn('foo');
-        $this->listener = new InjectHighlightingListener($this->backend, 'bar,baz', ['xyzzy' => 'true']);
+        $this->listener = new InjectHighlightingListener($this->backend, 'bar,baz', ['params' => ['xyzzy' => 'true']]);
     }
 
     /**
@@ -96,9 +96,11 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testParameters()
     {
-        $params = new ParamBag(
-            [
-                'hl' => 'true',
+        $params = NestingParamBag::fromArray(
+            ['params' =>
+                [
+                  'hl' => 'true',
+                ],
             ]
         );
         $command = $this->getMockSearchCommand(
@@ -119,12 +121,14 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
         $this->listener->onSearchPre($event);
         $this->assertEquals(
             [
-                'hl' => ['true'],
-                'xyzzy' => ['true'],
-                'hl.simple.pre' => ['{{{{START_HILITE}}}}'],
-                'hl.simple.post' => ['{{{{END_HILITE}}}}'],
+                'params' => [
+                    'hl' => 'true',
+                    'xyzzy' => 'true',
+                    'hl.simple.pre' => '{{{{START_HILITE}}}}',
+                    'hl.simple.post' => '{{{{END_HILITE}}}}',
+                ],
             ],
-            $params->getArrayCopy()
+            $params->jsonSerialize()
         );
     }
 }

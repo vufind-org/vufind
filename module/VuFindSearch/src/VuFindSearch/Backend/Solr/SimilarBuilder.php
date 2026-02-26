@@ -33,6 +33,7 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
 
 use function sprintf;
@@ -113,28 +114,29 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Return SOLR search parameters based on a record Id and params.
      *
-     * @param string $id Record Id
+     * @param string    $id     Record Id
+     * @param ?ParamBag $params Existing params
      *
      * @return ParamBag
      */
-    public function build($id)
+    public function build(string $id, ?ParamBag $params = null): ParamBag
     {
-        $params = new ParamBag();
+        $params = NestingParamBag::from($params);
         if ($this->useHandler) {
             $mltParams = $this->handlerParams
                 ? $this->handlerParams
                 : 'qf=title,title_short,callnumber-label,topic,language,author,'
                     . 'publishDate mintf=1 mindf=1';
-            $params->set('q', sprintf('{!mlt %s}%s', $mltParams, $id));
+            $params->set('query', sprintf('{!mlt %s}%s', $mltParams, $id));
         } else {
             $params->set(
-                'q',
+                'query',
                 sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
             );
-            $params->set('qt', 'morelikethis');
+            $params->setNested('params', 'qt', 'morelikethis');
         }
-        if (null === $params->get('rows')) {
-            $params->set('rows', $this->count);
+        if (null === $params->get('limit')) {
+            $params->set('limit', $this->count);
         }
         return $params;
     }

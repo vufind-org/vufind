@@ -32,6 +32,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Service;
 
 /**
@@ -120,18 +121,19 @@ class InjectHighlightingListener
         }
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
+                $params = NestingParamBag::from($params);
                 // Set highlighting parameters unless explicitly disabled:
-                $hl = $params->get('hl');
+                $hl = $params->getNested('params', 'hl');
                 if (($hl[0] ?? 'true') != 'false') {
                     $this->active = true;
                     // Set extra parameters first so they don't override necessary
                     // core parameters:
                     foreach ($this->extraHighlightingParameters as $key => $val) {
-                        $params->set($key, $val);
+                        $params->addMultiNested($key, $val);
                     }
-                    $params->set('hl', 'true');
-                    $params->set('hl.simple.pre', '{{{{START_HILITE}}}}');
-                    $params->set('hl.simple.post', '{{{{END_HILITE}}}}');
+                    $params->setNested('params', 'hl', 'true');
+                    $params->setNested('params', 'hl.simple.pre', '{{{{START_HILITE}}}}');
+                    $params->setNested('params', 'hl.simple.post', '{{{{END_HILITE}}}}');
 
                     // Turn on hl.q generation in query builder:
                     $this->backend->getQueryBuilder()

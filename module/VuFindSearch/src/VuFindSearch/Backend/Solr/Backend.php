@@ -40,6 +40,7 @@ use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\WorkKeysQuery;
@@ -135,6 +136,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
+        $params = NestingParamBag::from($params, false);
         if ($query instanceof WorkKeysQuery) {
             return $this->workKeysSearch($query, $offset, $limit, $params);
         }
@@ -161,11 +163,11 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = $params ?: new ParamBag();
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
-        $params->set('rows', $limit);
-        $params->set('start', $offset);
+        $params->set('limit', $limit);
+        $params->set('offset', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query, $params));
         return $this->connector->search($params);
     }
@@ -208,17 +210,17 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = $params ?: new ParamBag();
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
-        $params->set('rows', $limit);
-        $params->set('start', $offset);
-        $flParts = [$this->getConnector()->getUniqueKey()];
-        if ($fl = $params->get('fl')) {
+        $params->set('limit', $limit);
+        $params->set('offset', $offset);
+        $fieldParts = [$this->getConnector()->getUniqueKey()];
+        if ($fields = $params->get('fields')) {
             // Merge multiple values if necessary, then split on delimiter:
-            $flParts = array_unique(array_merge($flParts, explode(',', implode(',', $fl))));
+            $fieldParts = array_unique(array_merge($fieldParts, explode(',', implode(',', $fields))));
         }
-        $params->set('fl', implode(',', $flParts));
+        $params->set('fields', implode(',', $fieldParts));
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
@@ -241,7 +243,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = $params ?: new ParamBag();
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $random = rand(0, 1000000);
@@ -261,7 +263,7 @@ class Backend extends AbstractBackend implements
      */
     public function retrieve($id, ?ParamBag $params = null)
     {
-        $params = $params ?: new ParamBag();
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $response   = $this->connector->retrieve($id, $params);
@@ -280,7 +282,7 @@ class Backend extends AbstractBackend implements
      */
     public function retrieveBatch($ids, ?ParamBag $params = null)
     {
-        $params = $params ?: new ParamBag();
+        $params = NestingParamBag::from($params);
 
         // Callback function for formatting IDs:
         $formatIds = function ($i) {
@@ -292,9 +294,9 @@ class Backend extends AbstractBackend implements
         while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $this->pageSize, []);
             $currentPage = array_map($formatIds, $currentPage);
-            $params->set('q', 'id:(' . implode(' OR ', $currentPage) . ')');
-            $params->set('start', 0);
-            $params->set('rows', $this->pageSize);
+            $params->set('query', 'id:(' . implode(' OR ', $currentPage) . ')');
+            $params->set('offset', 0);
+            $params->set('limit', $this->pageSize);
             $this->injectResponseWriter($params);
             $next = $this->createRecordCollection(
                 $this->connector->search($params)
@@ -321,10 +323,10 @@ class Backend extends AbstractBackend implements
      */
     public function similar($id, ?ParamBag $params = null)
     {
-        $params = $params ?: new ParamBag();
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
-        $params->mergeWith($this->getSimilarBuilder()->build($id));
+        $params = $this->getSimilarBuilder()->build($id, $params);
         $response   = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
@@ -354,29 +356,29 @@ class Backend extends AbstractBackend implements
         }
 
         // Create empty ParamBag if none provided:
-        $params = $params ?: new ParamBag();
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         // Always enable terms:
-        $params->set('terms', 'true');
+        $params->setNested('params', 'terms', 'true');
 
         // Use parameters if provided:
         if (null !== $field) {
-            $params->set('terms.fl', $field);
+            $params->setNested('params', 'terms.fl', $field);
         }
         if (null !== $start) {
-            $params->set('terms.lower', $start);
+            $params->setNested('params', 'terms.lower', $start);
         }
         if (null !== $limit) {
-            $params->set('terms.limit', $limit);
+            $params->setNested('params', 'terms.limit', $limit);
         }
 
         // Set defaults unless overridden:
-        if (!$params->hasParam('terms.lower.incl')) {
-            $params->set('terms.lower.incl', 'false');
+        if (!$params->hasNestedParam('params', 'terms.lower.incl')) {
+            $params->setNested('params', 'terms.lower.incl', 'false');
         }
-        if (!$params->hasParam('terms.sort')) {
-            $params->set('terms.sort', 'index');
+        if (!$params->hasNestedParam('params', 'terms.sort')) {
+            $params->setNested('params', 'terms.sort', 'index');
         }
 
         $response = $this->connector->terms($params);
@@ -405,7 +407,8 @@ class Backend extends AbstractBackend implements
         $params = null,
         $offsetDelta = 0
     ) {
-        $params = $params ?: new ParamBag();
+        // TODO Does alphabrowse also need to be converted?  Custom request handler...
+        $params = NestingParamBag::from($params);
         $this->injectResponseWriter($params);
 
         $params->set('from', $from);
@@ -607,26 +610,26 @@ class Backend extends AbstractBackend implements
      * @throws InvalidArgumentException Response writer and named list
      * implementation already set to an incompatible type.
      */
-    protected function injectResponseWriter(ParamBag $params)
+    protected function injectResponseWriter(NestingParamBag $params)
     {
-        if (array_diff($params->get('wt') ?: [], ['json'])) {
+        if (array_diff($params->getNested('params', 'wt') ?: [], ['json'])) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Invalid response writer type: %s',
-                    implode(', ', $params->get('wt'))
+                    implode(', ', $params->getNested('params', 'wt'))
                 )
             );
         }
-        if (array_diff($params->get('json.nl') ?: [], ['arrarr'])) {
+        if (array_diff($params->getNested('params', 'json.nl') ?: [], ['arrarr'])) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Invalid named list implementation type: %s',
-                    implode(', ', $params->get('json.nl'))
+                    implode(', ', $params->getNested('params', 'json.nl'))
                 )
             );
         }
-        $params->set('wt', ['json']);
-        $params->set('json.nl', ['arrarr']);
+        $params->setNested('params', 'wt', 'json');
+        $params->setNested('params', 'json.nl', 'arrarr');
     }
 
     /**
@@ -660,12 +663,12 @@ class Backend extends AbstractBackend implements
 
         $params = $defaultParams ? clone $defaultParams : new \VuFindSearch\ParamBag();
         $this->injectResponseWriter($params);
-        $params->set('q', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
+        $params->set('query', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
         if (!$query->getIncludeSelf()) {
-            $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
+            $params->add('filter', sprintf('-id:"%s"', addcslashes($id, '"')));
         }
-        $params->set('rows', $limit);
-        $params->set('start', $offset);
+        $params->set('limit', $limit);
+        $params->set('offset', $offset);
         if (!$params->hasParam('sort')) {
             $params->add('sort', 'publishDateSort desc, title_sort asc');
         }

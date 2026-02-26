@@ -29,9 +29,11 @@
 
 namespace VuFind\Search\Solr;
 
+use JsonException;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\NestingParamBag;
 use VuFindSearch\Service;
 
 /**
@@ -119,16 +121,21 @@ class DefaultParametersListener
                 $context = null;
             }
             $context = $this->contextMap[$context] ?? $context;
-            $defaultParams = $this->defaultParams[$context]
+            $defaultParamsText = $this->defaultParams[$context]
                 ?? $this->defaultParams['*']
                 ?? '';
-            if ($defaultParams && $params = $command->getSearchParameters()) {
-                foreach (explode('&', $defaultParams) as $keyVal) {
-                    $parts = explode('=', $keyVal, 2);
-                    if (!isset($parts[1])) {
-                        continue;
-                    }
-                    $params->add(urldecode($parts[0]), urldecode($parts[1]));
+            if ($defaultParamsText && $params = NestingParamBag::from($command->getSearchParameters())) {
+                $command->setSearchParameters($params);
+                try {
+                    $defaultParams = json_decode($defaultParamsText, true, flags: JSON_THROW_ON_ERROR);
+                } catch (JsonException $e) {
+                    throw new \Exception(
+                        'Default parameters must be expressed in JSON, using Solr\'s JSON Request API '
+                        . '(starting in VuFind 12)'
+                    );
+                }
+                foreach ($defaultParams as $name => $param) {
+                    $params->addMultiNested($name, $param);
                 }
             }
         }

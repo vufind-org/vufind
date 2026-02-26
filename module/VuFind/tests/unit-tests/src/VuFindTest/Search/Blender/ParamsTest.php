@@ -307,7 +307,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'format:"bar"',
                 '-blender_backend:"EDS"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -317,7 +317,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['formatSolr:"bar"'],
-            $solrParams->get('fq')
+            $solrParams->get('filter')
         );
         $this->assertEquals(
             [
@@ -338,7 +338,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         // Remove a filter and check that EDS is enabled again:
         $params->removeFilter('format:bar');
         $backendParams = $params->getBackendParameters();
-        $this->assertNull($backendParams->get('fq'));
+        $this->assertNull($backendParams->get('filter'));
 
         // Add multiple filters:
         $params->addFilter('~format:bar');
@@ -357,7 +357,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 '{!tag=formatSolr_filter}formatSolr:(formatSolr:"bar"'
                     . ' OR formatSolr:"baz")',
             ],
-            $solrParams->get('fq')
+            $solrParams->get('filter')
         );
         $this->assertEquals(
             [
@@ -383,12 +383,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('~format:bar');
         $params->removeFilter('~format:baz');
         $backendParams = $params->getBackendParameters();
-        $this->assertEquals(['fulltext:"1"'], $backendParams->get('fq'));
+        $this->assertEquals(['fulltext:"1"'], $backendParams->get('filter'));
 
         $solrParams = $backendParams->get('params_Solr')[0];
         $primoParams = $backendParams->get('params_Primo')[0];
         $edsParams = $backendParams->get('params_EDS')[0];
-        $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('fq'));
+        $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('filter'));
         $this->assertEquals(
             [
                 [
@@ -404,12 +404,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeAllFilters('building');
         $params->removeFilter('fulltext:1');
         $backendParams = $params->getBackendParameters();
-        $this->assertNull($backendParams->get('fq'));
+        $this->assertNull($backendParams->get('filter'));
 
         $solrParams = $backendParams->get('params_Solr')[0];
         $primoParams = $backendParams->get('params_Primo')[0];
         $edsParams = $backendParams->get('params_EDS')[0];
-        $this->assertNull($solrParams->get('fq'));
+        $this->assertNull($solrParams->get('filter'));
         $this->assertEquals(
             [
                 [
@@ -426,12 +426,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getParams();
         $params->addFilter('fulltext:1');
         $backendParams = $params->getBackendParameters();
-        $this->assertEquals(['fulltext:"1"'], $backendParams->get('fq'));
+        $this->assertEquals(['fulltext:"1"'], $backendParams->get('filter'));
 
         $solrParams = $backendParams->get('params_Solr')[0];
         $primoParams = $backendParams->get('params_Primo')[0];
         $edsParams = $backendParams->get('params_EDS')[0];
-        $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('fq'));
+        $this->assertEquals(['fulltext_boolean:"1"'], $solrParams->get('filter'));
         $this->assertEquals(
             [
                 [
@@ -455,7 +455,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 '-blender_backend:"Primo"',
                 '-blender_backend:"EDS"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         // Add a filter that maps to two values:
@@ -485,7 +485,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('-format:double');
         $backendParams = $params->getBackendParameters();
         $solrParams = $backendParams->get('params_Solr')[0];
-        $this->assertEquals(['-formatSolr:"double"'], $solrParams->get('fq'));
+        $this->assertEquals(['-formatSolr:"double"'], $solrParams->get('filter'));
         $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertEquals(
             [
@@ -510,7 +510,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->removeFilter('-format:double');
         $backendParams = $params->getBackendParameters();
         $solrParams = $backendParams->get('params_Solr')[0];
-        $this->assertEquals(null, $solrParams->get('fq'));
+        $this->assertEquals(null, $solrParams->get('filter'));
         $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertEquals(
             [
@@ -528,12 +528,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('format:double');
         $params->removeAllFilters();
         $backendParams = $params->getBackendParameters();
-        $this->assertNull($backendParams->get('fq'));
+        $this->assertNull($backendParams->get('filter'));
 
         $solrParams = $backendParams->get('params_Solr')[0];
         $primoParams = $backendParams->get('params_Primo')[0];
         $edsParams = $backendParams->get('params_EDS')[0];
-        $this->assertNull($solrParams->get('fq'));
+        $this->assertNull($solrParams->get('filter'));
         $this->assertEquals(
             [
                 [
@@ -555,7 +555,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'fulltext:"1"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         // Test a daterange filter:
@@ -564,13 +564,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $backendParams = $params->getBackendParameters();
         $this->assertEquals(
             ['publish_date:[2020 TO 2022]'],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         $solrParams = $backendParams->get('params_Solr')[0];
         $primoParams = $backendParams->get('params_Primo')[0];
         $edsParams = $backendParams->get('params_EDS')[0];
-        $this->assertEquals(['publishDate:[2020 TO 2022]'], $solrParams->get('fq'));
+        $this->assertEquals(['publishDate:[2020 TO 2022]'], $solrParams->get('filter'));
         $this->assertEquals(
             [
                 [
@@ -609,7 +609,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'format:"bar"',
                 '-blender_backend:"EDS"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -619,7 +619,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['formatSolr:"bar"'],
-            $solrParams->get('fq')
+            $solrParams->get('filter')
         );
         $this->assertEquals(
             [
@@ -650,15 +650,15 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFilter('blender_backend:Primo');
         $backendParams = $params->getBackendParameters();
 
-        $this->assertEquals(['blender_backend:"Primo"'], $backendParams->get('fq'));
+        $this->assertEquals(['blender_backend:"Primo"'], $backendParams->get('filter'));
         $solrParams = $backendParams->get('params_Solr')[0];
         $this->assertInstanceOf(ParamBag::class, $solrParams);
-        $this->assertNull($solrParams->get('fq'));
+        $this->assertNull($solrParams->get('filter'));
 
         // Remove the filter and check:
         $params->removeFilter('blender_backend:Primo');
         $backendParams = $params->getBackendParameters();
-        $this->assertNull($backendParams->get('fq'));
+        $this->assertNull($backendParams->get('filter'));
 
         // Add as a hidden filter:
         $params = $this->getParams();
@@ -671,11 +671,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 '{!tag=blender_backend_filter}blender_backend:('
                 . 'blender_backend:"Primo" OR blender_backend:"EDS")',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
         $solrParams = $backendParams->get('params_Solr')[0];
         $this->assertInstanceOf(ParamBag::class, $solrParams);
-        $this->assertNull($solrParams->get('fq'));
+        $this->assertNull($solrParams->get('filter'));
     }
 
     /**
@@ -702,7 +702,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $backendParams = $params->getBackendParameters();
 
         // Make sure no backend was disabled:
-        $this->assertNull($backendParams->get('fq'));
+        $this->assertNull($backendParams->get('filter'));
         $primoParams = $backendParams->get('params_Primo')[0];
         $this->assertInstanceOf(ParamBag::class, $primoParams);
         $this->assertEquals(
@@ -733,7 +733,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'format:"bar"',
                 '-blender_backend:"EDS"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         // Test ignoring all values:
@@ -749,7 +749,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'format:"bar"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
         $edsParams = $backendParams->get('params_EDS')[0];
         $this->assertInstanceOf(ParamBag::class, $edsParams);
@@ -770,7 +770,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'format:"bar"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
         $edsParams = $backendParams->get('params_EDS')[0];
         $this->assertInstanceOf(ParamBag::class, $edsParams);
@@ -786,7 +786,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'format:"baz"',
                 '-blender_backend:"EDS"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
     }
 
@@ -837,7 +837,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'building:"0/Main/"',
                 '-blender_backend:"Primo"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         $solrParams = $backendParams->get('params_Solr')[0];
@@ -845,32 +845,24 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             [
-                'spellcheck' => [
-                    'true',
-                ],
                 'facet' => [
-                    'true',
+                    'building' => [
+                        'type' => 'terms',
+                        'field' => 'building',
+                        'limit' => 30,
+                        'sort' => 'count',
+                        'domain' => [
+                            'excludeTags' => 'building_filter',
+                        ],
+                    ],
                 ],
-                'facet.limit' => [
-                    30,
-                ],
-                'facet.field' => [
-                    '{!ex=building_filter}building',
-                ],
-                'facet.sort' => [
-                    'count',
-                ],
-                'facet.mincount' => [
-                    1,
-                ],
-                'fq' => [
-                    'building:"0/Main/"',
-                ],
-                'hl' => [
-                    'false',
+                'filter' => 'building:"0/Main/"',
+                'params' => [
+                    'spellcheck' => 'true',
+                    'hl' => 'false',
                 ],
             ],
-            $solrParams->getArrayCopy()
+            $solrParams->jsonSerialize()
         );
 
         $this->assertEquals(
@@ -899,7 +891,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'building:"0/Sub/"',
                 '-blender_backend:"Primo"',
             ],
-            $backendParams->get('fq')
+            $backendParams->get('filter')
         );
 
         $edsParams = $backendParams->get('params_EDS')[0];
@@ -993,7 +985,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ParamBag::class, $solrParams);
         $this->assertInstanceOf(ParamBag::class, $primoParams);
         $this->assertInstanceOf(ParamBag::class, $edsParams);
-        $this->assertNull($solrParams->get('fq'));
+        $this->assertNull($solrParams->get('filter'));
 
         $solrQuery = $backendParams->get('query_Solr')[0];
         $primoQuery = $backendParams->get('query_Primo')[0];

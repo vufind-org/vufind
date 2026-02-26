@@ -32,7 +32,7 @@ namespace VuFind\Search\Solr;
 
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
-use VuFindSearch\ParamBag;
+use VuFindSearch\NestingParamBag;
 
 use function count;
 use function in_array;
@@ -58,17 +58,17 @@ class Params extends \VuFind\Search\Base\Params
      * Search with facet.contains
      * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
      *
-     * @var string
+     * @var ?string
      */
-    protected $facetContains = null;
+    protected ?string $facetContains = null;
 
     /**
      * Ignore Case when using facet.contains
      * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
      *
-     * @var bool
+     * @var ?bool
      */
-    protected $facetContainsIgnoreCase = null;
+    protected ?bool $facetContainsIgnoreCase = null;
 
     /**
      * Offset for facet results
@@ -237,20 +237,8 @@ class Params extends \VuFind\Search\Base\Params
 
         if (!empty($this->facetConfig)) {
             $dateRangeTypes = $this->getOptions()->getDateRangeFieldTypes();
-            $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
-                $fieldLimit = $this->getFacetLimitForField($facetField);
-                if ($fieldLimit != $this->facetLimit) {
-                    $facetSet["f.{$facetField}.facet.limit"] = $fieldLimit;
-                }
-                $fieldPrefix = $this->getFacetPrefixForField($facetField);
-                if (!empty($fieldPrefix)) {
-                    $facetSet["f.{$facetField}.facet.prefix"] = $fieldPrefix;
-                }
-                $fieldMatches = $this->getFacetMatchesForField($facetField);
-                if (!empty($fieldMatches)) {
-                    $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
-                }
+                // TODO Figure out date range field
                 if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
                     $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
                         ?? VUFIND_DEFAULT_EARLIEST_YEAR;
@@ -263,29 +251,36 @@ class Params extends \VuFind\Search\Base\Params
                     $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
                     $facetSet['range'][] = $facetField;
                 } else {
-                    if ($this->getFacetOperator($facetField) == 'OR') {
-                        $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                    $facetFieldName = $facetField;
+                    $fieldLimit = $this->getFacetLimitForField($facetField);
+
+                    $facet = [
+                        'type' => 'terms',
+                        'field' => $facetField,
+                        'limit' => $fieldLimit,
+                    ];
+
+                    $facet['sort'] = in_array($facetField, $this->indexSortedFacets ?? [])
+                        ? 'index'
+                        : ($this->facetSort ?: 'count');
+
+                    $fieldPrefix = $this->getFacetPrefixForField($facetField);
+                    if (!empty($fieldPrefix)) {
+                        $facet['prefix'] = $fieldPrefix;
+                    } elseif ($this->facetPrefix != null) {
+                        $facet['prefix'] = $this->facetPrefix;
                     }
-                    $facetSet['field'][] = $facetField;
-                }
-            }
-            if ($this->facetContains != null) {
-                $facetSet['contains'] = $this->facetContains;
-            }
-            if ($this->facetContainsIgnoreCase != null) {
-                $facetSet['contains.ignoreCase']
-                    = $this->facetContainsIgnoreCase ? 'true' : 'false';
-            }
-            if ($this->facetOffset != null) {
-                $facetSet['offset'] = $this->facetOffset;
-            }
-            if ($this->facetPrefix != null) {
-                $facetSet['prefix'] = $this->facetPrefix;
-            }
-            $facetSet['sort'] = $this->facetSort ?: 'count';
-            if ($this->indexSortedFacets != null) {
-                foreach ($this->indexSortedFacets as $field) {
-                    $facetSet["f.{$field}.facet.sort"] = 'index';
+
+                    if ($this->facetOffset != null) {
+                        $facet['offset'] = $this->facetOffset;
+                    }
+
+                    if ($this->getFacetOperator($facetField) == 'OR') {
+                        $facet['domain'] ??= [];
+                        $facet['domain']['excludeTags'] = $facetField . '_filter';
+                    }
+
+                    $facetSet[$facetFieldName] = $facet;
                 }
             }
         }
@@ -338,6 +333,16 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
+     * Get Facet Contains
+     *
+     * @return ?string The contains value
+     */
+    public function getFacetContains()
+    {
+        return $this->facetContains;
+    }
+
+    /**
      * Set Facet Contains Ignore Case
      *
      * @param bool $val the new boolean value
@@ -347,6 +352,16 @@ class Params extends \VuFind\Search\Base\Params
     public function setFacetContainsIgnoreCase($val)
     {
         $this->facetContainsIgnoreCase = $val;
+    }
+
+    /**
+     * Get Facet Contains Ignore Case
+     *
+     * @return ?bool The boolean value
+     */
+    public function getFacetContainsIgnoreCase()
+    {
+        return $this->facetContainsIgnoreCase;
     }
 
     /**
@@ -567,14 +582,15 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Create search backend parameters for advanced features.
      *
-     * @return ParamBag
+     * @return NestingParamBag
      */
     public function getBackendParameters()
     {
-        $backendParams = new ParamBag();
+        $backendParams = new NestingParamBag();
 
         // Spellcheck
-        $backendParams->set(
+        $backendParams->setNested(
+            'params',
             'spellcheck',
             $this->getOptions()->spellcheckEnabled() ? 'true' : 'false'
         );
@@ -582,20 +598,13 @@ class Params extends \VuFind\Search\Base\Params
         // Facets
         $facets = $this->getFacetSettings();
         if (!empty($facets)) {
-            $backendParams->add('facet', 'true');
-
-            foreach ($facets as $key => $value) {
-                // prefix keys with "facet" unless they already have a "f." prefix:
-                $fullKey = str_starts_with($key, 'f.') ? $key : "facet.$key";
-                $backendParams->add($fullKey, $value);
-            }
-            $backendParams->add('facet.mincount', 1);
+            $backendParams->addMultiNested('facet', $facets);
         }
 
         // Filters
         $filters = $this->getFilterSettings();
         foreach ($filters as $filter) {
-            $backendParams->add('fq', $filter);
+            $backendParams->add('filter', $filter);
         }
 
         // Shards
@@ -611,7 +620,7 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($shards as $current) {
                 $selectedShards[$current] = $allShards[$current];
             }
-            $backendParams->add('shards', implode(',', $selectedShards));
+            $backendParams->addNested('params', 'shards', implode(',', $selectedShards));
         }
 
         // Sort
@@ -633,14 +642,14 @@ class Params extends \VuFind\Search\Base\Params
 
         // Highlighting -- on by default, but we should disable if necessary:
         if (!$this->getOptions()->highlightEnabled()) {
-            $backendParams->add('hl', 'false');
+            $backendParams->addNested('params', 'hl', 'false');
         }
 
         // Pivot facets for visual results
 
         if ($pf = $this->getPivotFacets()) {
-            $backendParams->add('facet.pivot', $pf);
-            $backendParams->set('facet', 'true');
+            $backendParams->addNested('params', 'facet.pivot', $pf);
+            $backendParams->setNested('params', 'facet', 'true');
         }
 
         return $backendParams;

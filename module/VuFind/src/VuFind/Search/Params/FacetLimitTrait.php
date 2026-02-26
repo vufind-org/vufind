@@ -77,10 +77,10 @@ trait FacetLimitTrait
     protected function initFacetLimitsFromConfig(?Config $config = null)
     {
         if (is_numeric($config->facet_limit ?? null)) {
-            $this->setFacetLimit($config->facet_limit);
+            $this->setFacetLimit((int)($config->facet_limit));
         }
         foreach ($config->facet_limit_by_field ?? [] as $k => $v) {
-            $this->facetLimitByField[$k] = $v;
+            $this->facetLimitByField[$k] = (int)$v;
         }
     }
 
@@ -91,7 +91,7 @@ trait FacetLimitTrait
      *
      * @return void
      */
-    public function setFacetLimit($l)
+    public function setFacetLimit(int $l): void
     {
         $this->facetLimit = $l;
     }
@@ -125,7 +125,7 @@ trait FacetLimitTrait
      *
      * @return void
      */
-    public function setHierarchicalFacetLimit($limit)
+    public function setHierarchicalFacetLimit(int $limit)
     {
         $this->hierarchicalFacetLimit = $limit;
     }
