@@ -190,6 +190,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         string $expectedResult
     ): void {
         $options = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $options->method('getSearchIni')->willReturn('searches');
         $options->expects($this->once())->method('getSortTieBreaker')
                 ->willReturn($tieBreaker);
         $params = $this->getParams($options);

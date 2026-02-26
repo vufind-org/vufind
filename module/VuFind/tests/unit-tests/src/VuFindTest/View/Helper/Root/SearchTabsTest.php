@@ -311,6 +311,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     protected function getSolrParams(): Params
     {
         $solrOptions = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $solrOptions->method('getSearchIni')->willReturn('searches');
         $solrOptions->method('getSearchClassId')->willReturn('Solr');
         $solrOptions->method('getDefaultLimit')->willReturn(20);
         $configManager = $this->createMock(ConfigManagerInterface::class);
