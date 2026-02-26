@@ -1340,10 +1340,10 @@ class Folio extends AbstractAPI implements
         ];
         $cql_expanded = str_replace($placeholders, $values, $cql);
 
-        $cql_redacted = str_replace($this->escapeCql($password), "XXXX", $cql_expanded);
+        $cql_redacted = str_replace($this->escapeCql($password), 'XXXX', $cql_expanded);
         if ($this->config['User']['debug_login'] ?? false) {
             $this->debug('FOLIO patron login CQL: ' . $cql_redacted);
-            $this->debug("Environment: " . json_encode($_SERVER));
+            $this->debug('Environment: ' . json_encode($_SERVER));
         }
         return $cql_expanded;
     }

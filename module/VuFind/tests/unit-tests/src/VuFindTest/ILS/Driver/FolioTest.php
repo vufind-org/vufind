@@ -172,7 +172,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         };
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(Folio::class)
-            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, "fake_auth_method"])
+            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, 'fake_auth_method'])
             ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
