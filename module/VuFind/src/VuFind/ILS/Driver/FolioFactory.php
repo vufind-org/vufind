@@ -72,6 +72,7 @@ class FolioFactory extends DriverWithDateConverterFactory
             return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
         $authManager = $container->get(\VuFind\Auth\Manager::class);
-        return parent::__invoke($container, $requestedName, [$sessionFactory, $authManager]);
+        $selectedAuthMethod = $authManager->getSelectedAuthMethod();
+        return parent::__invoke($container, $requestedName, [$sessionFactory, $selectedAuthMethod]);
     }
 }

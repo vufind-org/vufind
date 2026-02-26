@@ -116,11 +116,11 @@ class Folio extends AbstractAPI implements
     protected $dateConverter;
 
     /**
-     * Auth Manager
+     * Auth method
      *
-     * @var \VuFind\Auth\Manager
+     * @var string
      */
-    protected $authManager = null;
+    protected $authMethod = null;
 
     /**
      * Default availability messages, in case they are not defined in Folio.ini
@@ -157,11 +157,11 @@ class Folio extends AbstractAPI implements
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
         $sessionFactory,
-        \VuFind\Auth\Manager $authManager
+        string $authMethod
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
-        $this->authManager = $authManager;
+        $this->authMethod = $authMethod;
     }
 
     /**
@@ -1283,9 +1283,15 @@ class Folio extends AbstractAPI implements
     /**
      * Get the CQL query template for retrieving the patron's information.
      *
-     * It checks if Shibboleth authentication is being used and returns the
-     * corresponding CQL query template. Otherwise, it uses the configured CQL query
-     * to retrieve the patron's information.
+     * This supports both a single CQL query configured for all auth methods, and 
+     * method-specific CQL queries, which can be configured by including the auth 
+     * method name as a key in the `cql_by_auth_method` array in the User section of 
+     * the config file. If method-specific CQL is configured, the driver will use 
+     * the query for the selected auth method if it exists, and fall back to the 
+     * general CQL query if not. If neither is configured, it will fall back to a 
+     * default query that looks for the username and password in the fields 
+     * specified by username_field and password_field in the config file, or username 
+     * and password if those fields are not specified.
      *
      * @param string $usernameField The field to use for the username in the CQL query
      * @param string $passwordField The field to use for password in the CQL query
@@ -1294,16 +1300,9 @@ class Folio extends AbstractAPI implements
      */
     protected function getLoginCql($usernameField, $passwordField)
     {
-        if (
-            isset($this->config['User']['shib_cql'])
-            && $this->authManager->getSelectedAuthMethod() === 'Shibboleth'
-        ) {
-            $cql = $this->config['User']['shib_cql'];
-        } else {
-            $cql = $this->config['User']['cql']
-                ?? '%%username_field%% == "%%username%%"'
-                . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
-        }
+        $cql = $this->config['User']['cql_by_auth_method'][$this->authMethod]
+            ?? $this->config['User']['cql']
+            ?? '%%username_field%% == "%%username%%"' . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
         $placeholders = [
             '%%username_field%%',
             '%%password_field%%',
@@ -1338,12 +1337,22 @@ class Folio extends AbstractAPI implements
             $this->escapeCql($username),
             $this->escapeCql($password),
         ];
-        return str_replace($placeholders, $values, $cql);
+        $cql_expanded = str_replace($placeholders, $values, $cql);
+
+        $cql_redacted = str_replace($this->escapeCql($password), "XXXX", $cql_expanded);
+        if ($this->config['User']['debug_login'] ?? false) {
+            $this->debug('FOLIO patron login CQL: '. $cql_redacted);
+            $this->debug("Environment: " . json_encode($_SERVER));
+        }
+        return $cql_expanded;
     }
 
     /**
      * Given a CQL query, fetch a single user; if we get an unexpected count, treat
      * that as an unsuccessful login by returning null.
+     * 
+     * Note that the `json_decode` then the `json_encode` in the debug statement
+     * is used to ensure that the JSON output appears in on line of the log file.
      *
      * @param string $query CQL query
      *
@@ -1353,6 +1362,9 @@ class Folio extends AbstractAPI implements
     {
         $response = $this->makeRequest('GET', '/users', compact('query'));
         $json = json_decode($response->getBody());
+        if ($this->config['User']['debug_login'] ?? false) {
+            $this->debug('FOLIO response body: ' . json_encode($json));
+        }
         return count($json->users ?? []) === 1 ? $json->users[0] : null;
     }
 
