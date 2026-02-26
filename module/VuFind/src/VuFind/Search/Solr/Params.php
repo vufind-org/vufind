@@ -162,9 +162,10 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Constructor
      *
-     * @param  \VuFind\Search\Base\Options $options       Options to use
-     * @param  ConfigManagerInterface      $configManager Config manager
-     * @param  ?HierarchicalFacetHelper    $facetHelper   Hierarchical facet helper
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
+     * @param ?HierarchicalFacetHelper    $facetHelper   Hierarchical facet helper
+     *
      * @throws BadConfig
      */
     public function __construct(
@@ -201,11 +202,12 @@ class Params extends \VuFind\Search\Base\Params
                 $this->sortDefinitions[$alias] ??= [];
                 $this->sortDefinitions[$alias]['field'] = $localSortDefinition['field'];
                 // Default to descending if no valid order provided:
-                $this->sortDefinitions[$alias]['order']  = in_array($localSortDefinition['order'] ?? '', ['asc', 'desc'])
-                     ? $localSortDefinition['order'] : 'desc';
+                $this->sortDefinitions[$alias]['order']
+                    = in_array($localSortDefinition['order'] ?? '', ['asc', 'desc'])
+                    ? $localSortDefinition['order'] : 'desc';
             } else {
                 throw new BadConfig(
-                    "Neither field name nor function has been provided for the 'field'-key in LocalSortDefinitions (searches.ini)"
+                    "LocalSortDefinitions $alias[field] setting missing in search configuration"
                 );
             }
         }
