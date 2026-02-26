@@ -185,15 +185,6 @@ var VuFind = (function VuFind() {
         checkClickHandlers(event, event.target);
       }
     );
-    window.addEventListener(
-      'change',
-      function handleChange(event) {
-        let elem = event.target;
-        if (elem.hasAttribute('data-submit-on-change')) {
-          elem.form.requestSubmit();
-        }
-      }
-    );
   };
 
   var addTranslations = function addTranslations(s) {

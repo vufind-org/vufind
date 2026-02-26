@@ -49,7 +49,7 @@
     <div class="form-group">
       <label class="form-label"><?=$this->transEsc('rating_prompt')?>:</label>
       <h3 class="visually-hidden" aria-label="<?=$this->transEsc('rating_instructions_screenreader')?>"></h3>
-      <?=$this->component('star-rating', ['ratingData' => $this->currentRating, 'inputAttrs' => ['data-submit-on-change']]);?>
+      <?=$this->component('star-rating', ['ratingData' => $this->currentRating]);?>
     </div>
     <div class="form-group">
       <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Save')?>">

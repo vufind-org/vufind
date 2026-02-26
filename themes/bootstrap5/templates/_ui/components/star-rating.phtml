@@ -15,7 +15,7 @@
   // Unique name for the fields of read-only ratings so that displaying multiple ratings on a page works:
   $fieldName = $this->readonly ? "rating_{$id}" : 'rating';
 ?>
-<div tabindex="0" role="radiogroup" class="star-rating<?=$this->readonly ? ' readonly' : ''?>">
+<div role="radiogroup" class="star-rating<?=$this->readonly ? ' readonly' : ''?>">
   <?php if (null === $rating): ?>
     <div class="visually-hidden"><?=$this->transEsc('rating_none')?></div>
   <?php endif; ?>
