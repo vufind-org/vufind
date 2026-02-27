@@ -33,6 +33,8 @@ namespace VuFind\Condition\Handler;
 
 use VuFind\Exception\ConditionException;
 
+use function is_string;
+
 /**
  * String condition handler (used for tests).
  *
