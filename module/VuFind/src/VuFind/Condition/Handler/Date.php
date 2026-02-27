@@ -49,6 +49,8 @@ class Date extends AbstractBase
      * @param array $condition Optionally used for handler specific parameters
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getBaseValue(array $condition): string
     {
