@@ -12,10 +12,14 @@
             <?php foreach ($group['MenuItems'] as $item): ?>
               <?php if (isset($item['template'])): ?>
                 <?php
-                  // Pass section context to template.
-                  $item = array_merge($this->{\VuFind\View\Helper\Root\Section::SECTION_CONTEXT_KEY}, $item);
+                  // Pass section plugin and section context to template.
+                  $context = [
+                    'sectionPlugin' => $this->{\VuFind\View\Helper\Root\Section::SECTION_PLUGIN_KEY},
+                    ...$this->{\VuFind\View\Helper\Root\Section::SECTION_CONTEXT_KEY},
+                    ...$item,
+                  ];
                 ?>
-                <?= $this->render($item['template'], $item) ?>
+                <?= $this->render($item['template'], $context) ?>
               <?php elseif (isset($item['submenuItems'])): ?>
                 <?= $this->component('menu-button', [
                   'toggleLabel' => $item['label'],
