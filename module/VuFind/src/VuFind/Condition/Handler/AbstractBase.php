@@ -51,7 +51,8 @@ abstract class AbstractBase implements ConditionHandlerInterface
      * Check if a condition is met.
      *
      * Conditions are represented as an associative array with the following required keys:
-     * - type: identifier of the condition handler
+     * - type: identifier of the condition handler (is mainly used to select
+     *         the handler and can be ignored at this point)
      * - comparator: identifier of the type of comparison
      * - checkedValues: values that are checked against with the comparator
      *
@@ -89,9 +90,9 @@ abstract class AbstractBase implements ConditionHandlerInterface
     /**
      * Evaluate a single set of comparison conditions.
      *
-     * @param string   $comparator    The type of comparison to evaluate
+     * @param string   $comparator    Identifier of the type of comparison
      * @param string   $baseValue     The value to validate
-     * @param string[] $checkedValues Values for the comparison which will result in success
+     * @param string[] $checkedValues Values that are checked against with the comparator
      *
      * @return bool
      * @throws ConditionException

@@ -56,9 +56,9 @@ class StringHandler extends AbstractBase
     protected function getBaseValue(array $condition): string
     {
         $string = $condition['string'] ?? null;
-        if ($string === null) {
+        if (!is_string($string)) {
             throw new ConditionException(
-                'String condition handler requires key "string" specifying the value to check.'
+                'String condition handler requires key "string" of type string specifying the value to check.'
             );
         }
         return $string;
