@@ -82,7 +82,9 @@ class StringHandlerTest extends \PHPUnit\Framework\TestCase
     public function testInvalidCondition(): void
     {
         $this->expectException(\VuFind\Exception\ConditionException::class);
-        $this->expectExceptionMessage('String condition handler requires key "string" specifying the value to check.');
+        $this->expectExceptionMessage(
+            'String condition handler requires key "string" of type string specifying the value to check.'
+        );
 
         $stringHandler = new StringHandler();
         $stringHandler->checkCondition([
