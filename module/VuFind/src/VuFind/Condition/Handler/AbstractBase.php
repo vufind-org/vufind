@@ -79,7 +79,7 @@ abstract class AbstractBase implements ConditionHandlerInterface
     /**
      * Get base value to check.
      *
-     * @param array $condition Optional used for handler specific parameters
+     * @param array $condition Optionally used for handler specific parameters
      *
      * @return string
      * @throws ConditionException
