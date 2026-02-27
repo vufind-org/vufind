@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Date condition handler.
+ * String condition handler (used for tests).
  *
  * PHP version 8
  *
@@ -22,26 +22,28 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Condition_Handlers
+ * @package  Condition_Handler
  * @author   Nathan Collins <colli372@msu.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Condition\Handlers;
+namespace VuFind\Condition\Handler;
+
+use VuFind\Exception\ConditionException;
 
 /**
- * Date condition handler.
+ * String condition handler (used for tests).
  *
  * @category VuFind
- * @package  Condition_Handlers
+ * @package  Condition_Handler
  * @author   Nathan Collins <colli372@msu.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Date extends AbstractBase
+class StringHandler extends AbstractBase
 {
     /**
      * Get base value to check.
@@ -49,9 +51,16 @@ class Date extends AbstractBase
      * @param array $condition Optional used for handler specific parameters
      *
      * @return string
+     * @throws ConditionException
      */
     protected function getBaseValue(array $condition): string
     {
-        return (new \DateTime())->format('Y-m-d');
+        $string = $condition['string'] ?? null;
+        if ($string === null) {
+            throw new ConditionException(
+                'String condition handler requires key "string" specifying the value to check.'
+            );
+        }
+        return $string;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for condition handlers
+ * Condition handler plugin manager
  *
  * PHP version 8
  *
@@ -21,41 +21,55 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Condition_Handlers
+ * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Condition\Handlers;
+namespace VuFind\Condition\Handler;
 
-use VuFind\Exception\ConditionException;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Interface for condition handlers
+ * Condition handler plugin manager
  *
  * @category VuFind
- * @package  Condition_Handlers
+ * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-interface ConditionHandlerInterface
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Check if a condition is met.
+     * Default plugin aliases.
      *
-     * Conditions are represented as an associative array with the following required keys:
-     * - type: identifier of the condition handler
-     * - comparator: identifier of the type of comparison
-     * - checkedValues: values that are checked against with the comparator
-     *
-     * Additional handler specific keys can can be added.
-     *
-     * @param array $condition Condition
-     *
-     * @return bool
-     * @throws ConditionException
+     * @var array
      */
-    public function checkCondition(array $condition): bool;
+    protected $aliases = [
+        'date' => Date::class,
+        'string' => StringHandler::class,
+    ];
+
+    /**
+     * Default plugin factories.
+     *
+     * @var array
+     */
+    protected $factories = [
+        Date::class => InvokableFactory::class,
+        StringHandler::class => InvokableFactory::class,
+    ];
+
+    /**
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
+     *
+     * @return string
+     */
+    protected function getExpectedInterface()
+    {
+        return ConditionHandlerInterface::class;
+    }
 }

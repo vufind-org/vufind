@@ -1,7 +1,7 @@
 <?php
 
 /**
- * String handler test
+ * Date handler test
  *
  * PHP version 8
  *
@@ -27,12 +27,12 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\Condition\Handlers;
+namespace VuFindTest\Condition\Handler;
 
-use VuFind\Condition\Handlers\StringHandler;
+use VuFind\Condition\Handler\Date;
 
 /**
- * String handler test
+ * Date handler test
  *
  * @category VuFind
  * @package  Tests
@@ -40,7 +40,7 @@ use VuFind\Condition\Handlers\StringHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class StringHandlerTest extends \PHPUnit\Framework\TestCase
+class DateTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test true condition.
@@ -49,12 +49,12 @@ class StringHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrueMatching(): void
     {
-        $stringHandler = new StringHandler();
-        $this->assertTrue($stringHandler->checkCondition([
-            'type' => 'string',
+        $today = (new \DateTime())->format('Y-m-d');
+        $dateHandler = new Date();
+        $this->assertTrue($dateHandler->checkCondition([
+            'type' => 'date',
             'comparator' => '=',
-            'checkedValues' => 'test',
-            'string' => 'test',
+            'checkedValues' => $today,
         ]));
     }
 
@@ -65,30 +65,11 @@ class StringHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function testFalseMatching(): void
     {
-        $stringHandler = new StringHandler();
-        $this->assertFalse($stringHandler->checkCondition([
-            'type' => 'string',
+        $dateHandler = new Date();
+        $this->assertFalse($dateHandler->checkCondition([
+            'type' => 'date',
             'comparator' => '=',
-            'checkedValues' => 'test',
-            'string' => 'other',
+            'checkedValues' => '2000-01-01',
         ]));
-    }
-
-    /**
-     * Test invalid condition.
-     *
-     * @return void
-     */
-    public function testInvalidCondition(): void
-    {
-        $this->expectException(\VuFind\Exception\ConditionException::class);
-        $this->expectExceptionMessage('String condition handler requires key "string" specifying the value to check.');
-
-        $stringHandler = new StringHandler();
-        $stringHandler->checkCondition([
-            'type' => 'string',
-            'comparator' => '=',
-            'checkedValues' => 'test',
-        ]);
     }
 }

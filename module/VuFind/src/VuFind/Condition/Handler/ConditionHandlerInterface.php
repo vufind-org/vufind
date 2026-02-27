@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Date handler test
+ * Interface for condition handlers
  *
  * PHP version 8
  *
@@ -21,55 +21,41 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Tests
+ * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindTest\Condition\Handlers;
+namespace VuFind\Condition\Handler;
 
-use VuFind\Condition\Handlers\Date;
+use VuFind\Exception\ConditionException;
 
 /**
- * Date handler test
+ * Interface for condition handlers
  *
  * @category VuFind
- * @package  Tests
+ * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class DateTest extends \PHPUnit\Framework\TestCase
+interface ConditionHandlerInterface
 {
     /**
-     * Test true condition.
+     * Check if a condition is met.
      *
-     * @return void
-     */
-    public function testTrueMatching(): void
-    {
-        $today = (new \DateTime())->format('Y-m-d');
-        $dateHandler = new Date();
-        $this->assertTrue($dateHandler->checkCondition([
-            'type' => 'date',
-            'comparator' => '=',
-            'checkedValues' => $today,
-        ]));
-    }
-
-    /**
-     * Test false condition.
+     * Conditions are represented as an associative array with the following required keys:
+     * - type: identifier of the condition handler
+     * - comparator: identifier of the type of comparison
+     * - checkedValues: values that are checked against with the comparator
      *
-     * @return void
+     * Additional handler specific keys can can be added.
+     *
+     * @param array $condition Condition
+     *
+     * @return bool
+     * @throws ConditionException
      */
-    public function testFalseMatching(): void
-    {
-        $dateHandler = new Date();
-        $this->assertFalse($dateHandler->checkCondition([
-            'type' => 'date',
-            'comparator' => '=',
-            'checkedValues' => '2000-01-01',
-        ]));
-    }
+    public function checkCondition(array $condition): bool;
 }

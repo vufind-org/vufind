@@ -22,14 +22,14 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Condition_Handlers
+ * @package  Condition_Handler
  * @author   Nathan Collins <colli372@msu.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Condition\Handlers;
+namespace VuFind\Condition\Handler;
 
 use VuFind\Exception\ConditionException;
 
@@ -39,7 +39,7 @@ use function is_array;
  * Abstract base condition handler.
  *
  * @category VuFind
- * @package  Condition_Handlers
+ * @package  Condition_Handler
  * @author   Nathan Collins <colli372@msu.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License

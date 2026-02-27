@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Condition;
 
-use VuFind\Condition\Handlers\StringHandler;
+use VuFind\Condition\Handler\StringHandler;
 use VuFind\Condition\Manager as ConditionManager;
 
 /**
@@ -50,7 +50,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getManager(): ConditionManager
     {
-        $handlerManager = $this->createMock(\VuFind\Condition\Handlers\PluginManager::class);
+        $handlerManager = $this->createMock(\VuFind\Condition\Handler\PluginManager::class);
         $handlerManager->method('get')->willReturn(new StringHandler());
         return new ConditionManager($handlerManager);
     }

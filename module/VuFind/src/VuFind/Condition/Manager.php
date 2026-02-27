@@ -32,7 +32,7 @@
 namespace VuFind\Condition;
 
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Condition\Handlers\PluginManager as HandlerPluginManager;
+use VuFind\Condition\Handler\PluginManager as HandlerPluginManager;
 use VuFind\Exception\ConditionException;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
