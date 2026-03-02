@@ -1,0 +1,76 @@
+<?php
+  /**
+   * Tabs component.
+   *
+   * @param array  $tabs              Tabs
+   * @param string $activeTab         Active tab
+   * @param string $idSuffix          Id suffix (optional)
+   * @param array  $tabNavClasses     Extra classes for the tab bar
+   * @param array  $tabContentClasses Extra classes for the tab content container
+   * @param array  $tabPaneClasses    Extra classes for the tab pane
+   */
+
+  $tabNavClasses = array_merge(['nav', 'nav-tabs'], $this->tabNavClasses ?? []);
+  $tabContentClasses = array_merge(['tab-content'], $this->tabContentClasses ?? []);
+  $idSuffix = $this->idSuffix ?? '';
+  $getPaneId = fn (string $tabName): string => 'tab-pane-' . $tabName . $idSuffix;
+  $getButtonId = fn (string $tabName): string => 'tab-button-' . $tabName . $idSuffix;
+?>
+<ul class="<?=implode(' ', $tabNavClasses)?>" role="tablist">
+  <?php foreach ($this->tabs as $tabName => $tab): ?>
+    <?php
+      $paneId = $getPaneId($tabName);
+      $buttonLiAttributes = $this->htmlAttributes([
+          'class' => 'nav-item',
+          'role' => 'presentation',
+      ]);
+      if (!($tab['visible'] ?? true)) {
+        $buttonLiAttributes->add('class', 'hidden');
+      }
+
+      $buttonAttributes = $this->htmlAttributes([
+        'id' => $getButtonId($tabName),
+        'class' => 'nav-link ' . $tabName . '-tab-button',
+        'role' => 'tab',
+        'type' => 'button',
+        'aria-controls' => $paneId,
+        'data-bs-toggle' => 'tab',
+        'data-bs-target' => '#' . $paneId,
+      ]);
+      if ($activeTab == $tabName) {
+        $buttonAttributes->add('class', 'active');
+        $buttonAttributes->add('aria-selected', 'true');
+      } else {
+        $buttonAttributes->add('aria-selected', 'false');
+      }
+      $buttonAttributes->merge($tab['buttonAttributes'] ?? []);
+      $tabDescription = $tab['description'];
+    ?>
+    <li<?=$buttonLiAttributes?>>
+      <button<?=$buttonAttributes?>>
+        <?=$this->transEsc($tab['description'])?>
+      </button>
+    </li>
+  <?php endforeach; ?>
+</ul>
+
+<div class="<?=implode(' ', $tabContentClasses)?>">
+  <?php foreach ($this->tabs as $tabName => $tab): ?>
+    <?php
+      $tabPaneAttributes = $this->htmlAttributes([
+        'id' => $getPaneId($tabName),
+        'class' => ['tab-pane', $tabName . '-tab'] + ($this->tabPaneClasses ?? []),
+        'role' => 'tabpanel',
+        'aria-labelledby' => $getButtonId($tabName),
+        'data-tab-name' => $tabName,
+      ]);
+      if ($activeTab == $tabName) {
+          $tabPaneAttributes->add('class', 'active');
+      }
+      $tabPaneAttributes->merge($tab['paneAttributes'] ?? []);
+    ?>
+    <div <?=$tabPaneAttributes?>>
+      <?=$tab['content']?>
+    </div>
+  <?php endforeach; ?>
+</div>
