@@ -152,7 +152,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure that facet links do not have inappropriate hidden filters:
         $facetLink = $this->findAndAssertLink($page, 'B - Philosophy, Psychology, Religion');
         $this->assertEquals(
-            '?range=15&department=&filter%5B%5D=callnumber-first%3A%22B+-+Philosophy%2C+Psychology%2C+Religion%22',
+            '?range=15&filter%5B%5D=callnumber-first%3A%22B+-+Philosophy%2C+Psychology%2C+Religion%22',
             $facetLink->getAttribute('href')
         );
 
