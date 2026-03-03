@@ -232,7 +232,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test new items ILS method removal.
+     * Test new items ILS method deprecation.
      *
      * @return void
      */
