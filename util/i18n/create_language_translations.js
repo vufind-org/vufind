@@ -58,7 +58,7 @@ args.forEach(lang => {
 
     const outfile = `${home}/languages/ISO639-3/${lang}.ini`;
     const existing = fs.existsSync(outfile) ? fs.readFileSync(outfile) : "";
-    fs.writeFileSync(`${home}/languages/ISO639-3/${lang}.ini`, lines + "\n" + existing);
+    fs.writeFileSync(outfile, lines + "\n" + existing);
 });
 
-childProcess.execSync(`php ${home}/public/index.php language normalize languages`);
+childProcess.execSync(`php ${home}/public/index.php language normalize ${home}/languages`);

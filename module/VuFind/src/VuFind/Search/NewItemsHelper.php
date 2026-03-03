@@ -67,6 +67,8 @@ class NewItemsHelper
      * @param FlashMessengerInterface    $flash  Flash messenger
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getBibIDsFromCatalog(
         \VuFind\Search\Solr\Params $params,
@@ -123,6 +125,8 @@ class NewItemsHelper
      * Get fund list
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getFundList(): array
     {
