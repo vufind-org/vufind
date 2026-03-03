@@ -1136,27 +1136,27 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Given a holdings array and a sort field, sort the array.
+     * Given an array and a sort field, sort the array.
      *
-     * @param array  $holdings  Holdings to sort
+     * @param array  $data      Array to sort
      * @param string $sortField Sort field
      *
      * @return array
      */
-    protected function sortHoldings(array $holdings, string $sortField): array
+    protected function sortArray(array $data, string $sortField): array
     {
         usort(
-            $holdings,
+            $data,
             function ($a, $b) use ($sortField) {
                 return strnatcasecmp($a[$sortField], $b[$sortField]);
             }
         );
         // Renumber the re-sorted batch:
-        $nbCount = count($holdings);
+        $nbCount = count($data);
         for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
-            $holdings[$nbIndex]['number'] = $nbIndex + 1;
+            $data[$nbIndex]['number'] = $nbIndex + 1;
         }
-        return $holdings;
+        return $data;
     }
 
     /**
@@ -1273,7 +1273,7 @@ class Folio extends AbstractAPI implements
             $items = array_merge(
                 $items,
                 $sortNeeded
-                    ? $this->sortHoldings($nextBatch, $vufindItemSort) : $nextBatch
+                    ? $this->sortArray($nextBatch, $vufindItemSort) : $nextBatch
             );
         }
 
@@ -1828,9 +1828,13 @@ class Folio extends AbstractAPI implements
     {
         $limit = $params['limit'] ?? 1000;
         $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
+        $vufindSortMap = $this->config['Loans']['vufind_sort'] ?? [];
+        $requestedSort = $params['sort'] ?? '';
+        $localSortField = $vufindSortMap[$requestedSort] ?? null;
 
         $query = 'userId==' . $patron['id'] . ' and status.name==Open';
-        if (isset($params['sort'])) {
+        // Only pass sort to API if it is NOT handled locally by VuFind
+        if (!empty($requestedSort) && !$localSortField) {
             $query .= ' sortby ' . $this->escapeCql($params['sort']);
         }
         $resultPage = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
@@ -1873,6 +1877,11 @@ class Folio extends AbstractAPI implements
             // safer to do a separate lookup to be sure we have the right number!
             $count = $this->getResultCount('/circulation/loans', compact('query'));
         }
+        // Add in post-sort if the sort param was used in the vufind_sort config
+        if ($localSortField) {
+            $transactions = $this->sortArray($transactions, $localSortField);
+        }
+
         return ['count' => $count, 'records' => $transactions];
     }
 
