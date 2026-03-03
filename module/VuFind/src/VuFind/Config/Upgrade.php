@@ -799,6 +799,13 @@ class Upgrade implements LoggerAwareInterface
             }
         }
 
+        if ($newConfig['NewItem']['method'] ?? null === 'ils') {
+            $this->addWarning(
+                'The searches.ini [NewItem] method setting of "ils" is deprecated; '
+                . 'you should switch to "solr" or "disabled".'
+            );
+        }
+
         // save the configuration
         $this->saveModifiedConfig('searches');
     }
