@@ -29,6 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
+use Laminas\ServiceManager\Factory\InvokableFactory;
+
 /**
  * Channel provider plugin manager
  *
@@ -49,12 +51,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'alphabrowse' => AlphaBrowse::class,
         'facets' => Facets::class,
         'listitems' => ListItems::class,
-        'newilsitems' => NewILSItems::class,
+        'newilsitems' => Deprecated::class,
         'newsearchitems' => NewSearchItems::class,
         'random' => Random::class,
         'recentlyreturned' => RecentlyReturned::class,
         'similaritems' => SimilarItems::class,
         'trendingilsitems' => TrendingILSItems::class,
+        NewILSItems::class => Deprecated::class,
     ];
 
     /**
@@ -64,9 +67,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AlphaBrowse::class => AlphaBrowseFactory::class,
+        Deprecated::class => InvokableFactory::class,
         Facets::class => FacetsFactory::class,
         ListItems::class => ListItemsFactory::class,
-        NewILSItems::class => AbstractILSChannelProviderFactory::class,
         NewSearchItems::class => NewSearchItemsFactory::class,
         Random::class => RandomFactory::class,
         RecentlyReturned::class => AbstractILSChannelProviderFactory::class,

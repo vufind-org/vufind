@@ -58,17 +58,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     protected string $targetVersion = '11.1';
 
     /**
-     * This deprecation warning is expected in many situations as we prepare to remove
-     * ILS-driven new items in release 12.0. This property can be removed after the
-     * transition is completed and the config upgrader's behavior is finalized.
-     *
-     * @var string
-     */
-    protected $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method setting of "ils" has been '
-        . 'removed; you should enable change tracking (if not already done) and switch to "solr". For now, new '
-        . 'item search has been disabled.';
-
-    /**
      * Get an upgrade object for the specified source version:
      *
      * @param string $fixture Fixture
@@ -242,8 +231,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
         $results = $upgrader->getNewConfigs();
 
-        // Make sure spellcheck 'simple' is replaced by 'dictionaries'
-        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        // Make sure the ILS method is switched to disabled and the deprecated setting is removed:
+        $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method setting of "ils" has been '
+        . 'removed; you should enable change tracking (if not already done) and switch to "solr". For now, new '
+        . 'item search has been disabled.';
+        $this->assertSame([$expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $this->assertSame('disabled', $results['searches']['NewItem']['method']);
         $this->assertFalse(isset($results['searches']['NewItem']['result_pages']));
     }
