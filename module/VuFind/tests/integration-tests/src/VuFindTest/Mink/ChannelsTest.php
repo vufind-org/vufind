@@ -291,13 +291,50 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testDeprecatedChannel().
+     *
+     * @return \Generator<string, array>
+     */
+    public static function deprecatedChannelProvider(): \Iterator
+    {
+        yield 'New ILS Items' => ['newilsitems'];
+    }
+
+    /**
+     * Test deprecated channels
+     *
+     * @param string $channel       Name of channel to test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('deprecatedChannelProvider')]
+    public function testDeprecatedChannel(string $channel): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => [$channel],
+                    ],
+                ],
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        // We don't expect deprecated options to yield any data at all:
+        $this->unfindCss($page, 'h2.channel-title');
+        $this->assertCount(0, $page->findAll('css', 'li.channel-item'));
+    }
+
+    /**
      * Data provider for testILSChannel().
      *
      * @return \Iterator
      */
     public static function ilsChannelProvider(): \Iterator
     {
-        yield 'New ILS Items' => ['newilsitems', 'New Items'];
         yield 'Recently Returned' => ['recentlyreturned', 'Recently Returned'];
         yield 'Trending ILS Items' => ['trendingilsitems', 'Trending Items'];
     }
