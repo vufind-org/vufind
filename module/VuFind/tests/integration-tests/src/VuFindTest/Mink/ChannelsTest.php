@@ -303,7 +303,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test deprecated channels
      *
-     * @param string $channel       Name of channel to test
+     * @param string $channel Name of channel to test
      *
      * @return void
      */
