@@ -805,7 +805,7 @@ class Upgrade implements LoggerAwareInterface
                 }
             }
         }
-        if ($newConfig['NewItem']['method'] ?? null === 'ils') {
+        if (($newConfig['NewItem']['method'] ?? null) === 'ils') {
             $newConfig['NewItem']['method'] = 'disabled';
             $this->addWarning(
                 'The searches.ini [NewItem] method setting of "ils" has been removed; '
