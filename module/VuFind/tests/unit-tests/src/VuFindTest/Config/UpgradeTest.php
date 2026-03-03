@@ -240,8 +240,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
         $results = $upgrader->getNewConfigs();
-
-        // Make sure spellcheck 'simple' is replaced by 'dictionaries'
         $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
     }
 
