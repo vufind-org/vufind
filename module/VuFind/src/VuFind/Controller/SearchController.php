@@ -240,7 +240,8 @@ class SearchController extends AbstractSolrSearch
      */
     public function newitemAction()
     {
-        if (in_array($this->newItems()->getMethod(), ['disabled', 'ils'])) {
+        $newItemsHelper = $this->getService(NewItemsHelper::class);
+        if (in_array($newItemsHelper->getMethod(), ['disabled', 'ils'])) {
             return $this->createHttpNotFoundModel($this->getResponse());
         }
 
@@ -249,7 +250,6 @@ class SearchController extends AbstractSolrSearch
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
-        $newItemsHelper = $this->getService(NewItemsHelper::class);
         $view = $this->createViewModel(
             [
                 'defaultSort' => $newItemsHelper->getDefaultSort(),
