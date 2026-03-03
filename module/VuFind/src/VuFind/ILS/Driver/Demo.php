@@ -1796,21 +1796,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Funds
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @return array An associative array with key = fund ID, value = fund name.
-     *
-     * @deprecated
-     */
-    public function getFunds()
-    {
-        $this->checkIntermittentFailure();
-        return ['Fund A', 'Fund B', 'Fund C'];
-    }
-
-    /**
      * Get Departments
      *
      * Obtain a list of departments for use in limiting the reserves list.
@@ -1869,40 +1854,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             }
         }
         return $results;
-    }
-
-    /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @deprecated
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        $this->checkIntermittentFailure();
-        // Pick a random number of results to return -- don't exceed limit or 30,
-        // whichever is smaller (this can be pretty slow due to the random ID code).
-        $results = $this->config['Records']['new_items']
-            ?? $this->getRandomBibIds(30);
-        $retVal = ['count' => count($results), 'results' => []];
-        foreach ($results as $result) {
-            $retVal['results'][] = ['id' => $result];
-        }
-        return $retVal;
     }
 
     /**

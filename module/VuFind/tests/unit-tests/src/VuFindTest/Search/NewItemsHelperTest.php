@@ -58,73 +58,6 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test ILS bib ID retrieval.
-     *
-     * @return void
-     */
-    public function testGetBibIDsFromCatalog()
-    {
-        $flash = $this->createMock(FlashMessengerInterface::class);
-        $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
-        $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockParams(),
-            10,
-            'a',
-            $flash
-        );
-        $this->assertSame([1, 2], $bibs);
-    }
-
-    /**
-     * Test ILS bib ID retrieval with ID limit.
-     *
-     * @return void
-     */
-    public function testGetBibIDsFromCatalogWithIDLimit()
-    {
-        $flash = $this->createMock(FlashMessengerInterface::class);
-        $flash->expects($this->once())->method('addInfoMessage')->with('too_many_new_items');
-        $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
-        $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockParams(1),
-            10,
-            'a',
-            $flash
-        );
-        $this->assertSame([1], $bibs);
-    }
-
-    /**
-     * Test default ILS getFunds() behavior.
-     *
-     * @return void
-     */
-    public function testGetFundList()
-    {
-        $catalog = $this->createMock(Connection::class);
-        $catalog->expects($this->once())->method('checkCapability')
-            ->with('getFunds')->willReturn(true);
-        $catalog->expects($this->once())->method('__call')
-            ->willReturnCallback(
-                fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
-            );
-
-        $newItems = $this->getNewItemsHelper([], $catalog);
-        $this->assertSame(['a', 'b', 'c'], $newItems->getFundList());
-    }
-
-    /**
-     * Test getFundList() in non-ILS mode.
-     *
-     * @return void
-     */
-    public function testGetFundListWithoutILS()
-    {
-        $newItems = $this->getNewItemsHelper(['method' => 'solr']);
-        $this->assertSame([], $newItems->getFundList());
-    }
-
-    /**
      * Test a single hidden filter.
      *
      * @return void
@@ -206,32 +139,6 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
         $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
         $newItems = $this->getNewItemsHelper([]);
         $this->assertSame($expected, $newItems->getSolrFilter($range));
-    }
-
-    /**
-     * Get a mock catalog object (for use in getBibIDs tests).
-     *
-     * @return Connection
-     */
-    protected function getMockCatalog(): Connection
-    {
-        $catalog = $this->createMock(Connection::class);
-
-        $catalog->expects($this->once())->method('__call')
-            ->willReturnCallback(
-                function ($method, $args) {
-                    if ($method !== 'getNewItems') {
-                        return null;
-                    }
-                    $this->assertEquals(1, $args[0]);
-                    $this->assertEquals(200, $args[1]);
-                    $this->assertEquals(10, $args[2]);
-                    $this->assertEquals('a', $args[3]);
-
-                    return ['results' => [['id' => 1], ['id' => 2]]];
-                }
-            );
-        return $catalog;
     }
 
     /**
