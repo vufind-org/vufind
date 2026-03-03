@@ -1547,8 +1547,8 @@ class Folio extends AbstractAPI implements
      * Support method for patronLogin(): authenticate the patron with a CQL looup.
      * Returns the CQL query for retrieving more information about the user.
      *
-     * @param string $username The patron username
-     * @param string $password The patron password
+     * @param string  $username The patron username
+     * @param ?string $password The patron password
      *
      * @return string
      */
@@ -1570,7 +1570,7 @@ class Folio extends AbstractAPI implements
             $usernameField,
             $passwordField,
             $this->escapeCql($username),
-            $this->escapeCql($password),
+            $this->escapeCql($password ?? ''),
         ];
         return str_replace($placeholders, $values, $cql);
     }

@@ -31,6 +31,7 @@ namespace VuFind\Navigation;
 
 use Laminas\Http\Request;
 use Laminas\View\Model\ViewModel;
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\I18n\Locale\LocaleSettings;
@@ -62,7 +63,7 @@ class HeaderBar extends AbstractMenu
      */
     public function __construct(
         array $sectionConfig,
-        protected array $config,
+        array $config,
         protected Cart $cart,
         protected Manager $authManager,
         protected ViewModel $viewModel,
@@ -90,7 +91,7 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct($sectionConfig, $config);
     }
 
     /**
@@ -113,9 +114,9 @@ class HeaderBar extends AbstractMenu
     ): bool {
         if ($contextKey === self::ITEM_CONTEXT) {
             // Conditional requirement checks.
-            $diff = array_diff(['route', 'url', 'template'], [$setting]);
-            if (count($diff) === 2) {
-                // Setting is one of the three. If one of the two other settings
+            $diff = array_diff(['route', 'url', 'template', 'submenuItems'], [$setting]);
+            if (count($diff) === 3) {
+                // Setting is one of the four. If one of the three other settings
                 // exists then this setting is optional.
                 return count(array_intersect($diff, array_keys($context))) === 0;
             }
@@ -148,38 +149,30 @@ class HeaderBar extends AbstractMenu
      */
     public static function getDefaultMenuConfig(): array
     {
-        return [
-            'Header' => [
-                'MenuItems' => [
-                    [
-                        'label' => 'Feedback',
-                        'route' => 'feedback-home',
-                        'icon' => 'feedback',
-                        'checkMethod' => 'checkFeedback',
-                        'attributes' => [
-                            'id' => 'feedbackLink',
-                            'data-lightbox' => 'data-lightbox',
-                        ],
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-cart.phtml',
-                        'checkMethod' => 'checkCart',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-account.phtml',
-                        'checkMethod' => 'checkAccount',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-themeOptions.phtml',
-                        'checkMethod' => 'checkThemeOptions',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-allLangs.phtml',
-                        'checkMethod' => 'checkAllLangs',
-                    ],
-                ],
-            ],
-        ];
+        $yaml = <<<YAML
+            Header:
+              MenuItems:
+                - label: 'Feedback'
+                  route: feedback-home
+                  icon: feedback
+                  checkMethod: checkFeedback
+                  attributes:
+                    id: feedbackLink
+                    data-lightbox: data-lightbox
+            
+                - template: Section/HeaderBar/HeaderBar-cart.phtml
+                  checkMethod: checkCart
+            
+                - template: Section/HeaderBar/HeaderBar-account.phtml
+                  checkMethod: checkAccount
+            
+                - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
+                  checkMethod: checkThemeOptions
+            
+                - template: Section/HeaderBar/HeaderBar-allLangs.phtml
+                  checkMethod: checkAllLangs
+            YAML;
+        return Yaml::parse($yaml);
     }
 
     /**

@@ -173,7 +173,7 @@ class Holds extends AbstractRequestBase
                 ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->addMessage('hold_cancel_fail', 'error');
+                $flashMsg->addErrorMessage('hold_cancel_fail');
             } else {
                 $failed = 0;
                 foreach ($cancelResults['items'] ?? [] as $item) {
@@ -194,7 +194,7 @@ class Holds extends AbstractRequestBase
                 return $cancelResults;
             }
         } else {
-            $flashMsg->addMessage('hold_empty_selection', 'error');
+            $flashMsg->addErrorMessage('hold_empty_selection');
         }
         return [];
     }

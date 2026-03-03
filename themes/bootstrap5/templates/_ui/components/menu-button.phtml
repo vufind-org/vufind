@@ -6,13 +6,18 @@
    * @param array   $menuItems    Array of arrays representing menu items; each element can/should contain these keys:
    *                              - external (bool): if true, apply a target of _blank to the link (default = false)
    *                              - label (string): text of menu option link (required, will be translated)
+   *                              - description (string): description displayed below the label (optional, will be translated)
    *                              - lightbox (bool): if true, open the link in a lightbox (default = false)
    *                              - selected (bool): is this the active menu item? (default = false)
    *                              - url (string): target link for menu option (required)
+   *                              - setQueryParams (array): An array of query parameters to set when the menu item is
+   *                                clicked instead of following the url (optional)
    * @param ?array  $toggleAttrs  Additional attributes to apply to the toggle button
    * @param string  $toggleLabel  The label for the toggle button (will be translated)
    * @param ?string $wrapperTag   Tag to use as a wrapper around the control (default = div)
    * @param ?string $wrapperClass Extra CSS class(es) to apply to the wrapper tag
+   * @param ?string $menuAlign    Alignment of the drop-down. Default is alignment with the start side of its parent.
+   *                              'end' aligns with the end side of its parent.
    */
   $wrapperTag = $this->wrapperTag ?? 'div';
   $wrapperClass = 'dropdown'; // Bootstrap class
@@ -52,16 +57,26 @@
       )
   ?>
 
-  <ul class="dropdown-menu">
+  <?php
+    $menuAttributes = $this->htmlAttributes(['class' => 'dropdown-menu']);
+    if ('end' == ($this->menuAlign ?? null)) {
+      $menuAttributes->add('class', 'dropdown-menu-end');
+    }
+  ?>
+  <ul<?=$menuAttributes?>>
     <?php foreach ($this->menuItems as $current): ?>
       <li class="dropdown__item">
         <a class="dropdown-item dropdown__link<?=($current['selected'] ?? false) ? ' active' : ''?>"
           href="<?=$this->escapeHtmlAttr($current['url']) ?>"
           <?php if ($current['external'] ?? false): ?> target="_blank"<?php endif; ?>
           <?php if ($current['lightbox'] ?? false): ?> data-lightbox="true"<?php endif; ?>
+          <?php if ($setParams = $current['setQueryParams'] ?? null): ?> data-click-set-query-params="<?=$this->escapeHtmlAttr(http_build_query($setParams))?>"<?php endif; ?>
           rel="nofollow"
         >
-          <?=$this->transEsc($current['label']) ?>
+          <span><?=$this->transEsc($current['label']) ?></span>
+          <?php if ($description = $current['description'] ?? false): ?>
+            <span class="description"><?=$this->transEsc($description)?></span>
+          <?php endif; ?>
         </a>
       </li>
     <?php endforeach; ?>
