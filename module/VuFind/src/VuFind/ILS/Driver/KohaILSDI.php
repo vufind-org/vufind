@@ -38,10 +38,8 @@ use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
 
-use function array_slice;
 use function count;
 use function in_array;
-use function intval;
 use function is_callable;
 
 /**

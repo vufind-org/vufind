@@ -31,7 +31,6 @@ namespace VuFindTest\Search;
 
 use VuFind\ILS\Connection;
 use VuFind\Search\NewItemsHelper;
-use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 /**
  * New items controller plugin tests.
