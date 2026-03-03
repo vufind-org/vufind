@@ -57,7 +57,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'recentlyreturned' => RecentlyReturned::class,
         'similaritems' => SimilarItems::class,
         'trendingilsitems' => TrendingILSItems::class,
-        NewILSItems::class => Deprecated::class,
     ];
 
     /**
