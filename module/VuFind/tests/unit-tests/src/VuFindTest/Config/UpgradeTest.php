@@ -232,6 +232,18 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test new items ILS method deprecation.
+     *
+     * @return void
+     */
+    public function testIlsNewItems(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
+        $results = $upgrader->getNewConfigs();
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+    }
+
+    /**
      * Data provider for testSyndetics.
      *
      * @return \Iterator
