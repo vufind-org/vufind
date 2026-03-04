@@ -29,11 +29,6 @@
 
 namespace VuFind\Search;
 
-use VuFind\ILS\Connection;
-use VuFind\View\FlashMessenger\FlashMessengerInterface;
-
-use function array_slice;
-use function count;
 use function intval;
 
 /**
@@ -50,53 +45,10 @@ class NewItemsHelper
     /**
      * Constructor
      *
-     * @param array      $config  Configuration
-     * @param Connection $catalog ILS connection
+     * @param array $config Configuration
      */
-    public function __construct(protected array $config, protected Connection $catalog)
+    public function __construct(protected array $config)
     {
-    }
-
-    /**
-     * Figure out which bib IDs to load from the ILS.
-     *
-     * @param \VuFind\Search\Solr\Params $params Solr parameters
-     * @param int                        $range  Range setting (max age in days)
-     * @param ?string                    $dept   Department setting (corresponds with fund ID
-     * in ILS driver -- set to null to skip filtering by this criterion)
-     * @param FlashMessengerInterface    $flash  Flash messenger
-     *
-     * @return array
-     */
-    public function getBibIDsFromCatalog(
-        \VuFind\Search\Solr\Params $params,
-        int $range,
-        ?string $dept,
-        FlashMessengerInterface $flash
-    ): array {
-        // The code always pulls in enough catalog results to get a fixed number
-        // of pages worth of Solr results. Note that if the Solr index is out of
-        // sync with the ILS, we may see fewer results than expected.
-        $resultPages = $this->getResultPages();
-        $perPage = $params->getLimit();
-        $newItems = $this->catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
-
-        // Build a list of unique IDs
-        $bibIDs = [];
-        if (isset($newItems['results'])) {
-            for ($i = 0; $i < count($newItems['results']); $i++) {
-                $bibIDs[] = $newItems['results'][$i]['id'];
-            }
-        }
-
-        // Truncate the list if it is too long:
-        $limit = $params->getQueryIDLimit();
-        if (count($bibIDs) > $limit) {
-            $bibIDs = array_slice($bibIDs, 0, $limit);
-            $flash->addInfoMessage('too_many_new_items');
-        }
-
-        return $bibIDs;
     }
 
     /**
@@ -117,20 +69,6 @@ class NewItemsHelper
     public function includeFacets(): bool
     {
         return $this->config['include_facets'] ?? false;
-    }
-
-    /**
-     * Get fund list
-     *
-     * @return array
-     */
-    public function getFundList(): array
-    {
-        if ($this->getMethod() == 'ils') {
-            return $this->catalog->checkCapability('getFunds')
-                ? $this->catalog->getFunds() : [];
-        }
-        return [];
     }
 
     /**

@@ -220,6 +220,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         $configManager = $this->createMock(ConfigManagerInterface::class);
 
         $mockSolrOptions = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $mockSolrOptions->method('getSearchIni')->willReturn('searches');
         $mockSolr = $this->createMock(\VuFind\Search\Solr\Results::class);
         $mockSolr->method('getParams')
             ->willReturn(

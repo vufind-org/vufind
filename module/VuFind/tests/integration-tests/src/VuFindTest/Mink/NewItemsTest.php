@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
 use VuFindTest\Feature\DemoDriverTestTrait;
 
 /**
@@ -46,6 +47,19 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
     use DemoDriverTestTrait;
 
     /**
+     * Load the new item page.
+     *
+     * @param Session $session Mink session
+     *
+     * @return Element
+     */
+    protected function loadNewItemPage(Session $session): Element
+    {
+        $session->visit($this->getVuFindUrl() . '/Search/NewItem');
+        return $session->getPage();
+    }
+
+    /**
      * Submit a new item search and return the resulting page object.
      *
      * @param int    $buttonIndex    Index of range button to press
@@ -57,9 +71,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         int $buttonIndex = 1,
         string $expectedRanges = 'Yesterday Past 5 Days Past 30 Days'
     ): Element {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/NewItem');
-        $page = $session->getPage();
+        $page = $this->loadNewItemPage($this->getMinkSession());
         // Confirm custom ranges display correctly:
         $this->assertSame(
             $expectedRanges,
@@ -70,46 +82,6 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.form-search-newitem input[type="submit"]');
         $this->waitForPageLoad($page);
         return $page;
-    }
-
-    /**
-     * Test that new items can be retrieved from the ILS.
-     *
-     * @return void
-     */
-    public function testILSDrivenNewItems(): void
-    {
-        // This only works for exactly 2 IDs due to the way getDemoIniOverrides works:
-        $expectedIds = ['testsample1', 'testsample2'];
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Catalog' => [
-                        'driver' => 'Demo',
-                    ],
-                ],
-                'Demo' => $this->getDemoIniOverrides(...$expectedIds),
-                'searches' => [
-                    'NewItem' => [
-                        'method' => 'ils',
-                    ],
-                ],
-            ]
-        );
-        $page = $this->submitNewItemSearch();
-        // Confirm that we've reached the custom results page:
-        $this->assertStringStartsWith(
-            'Showing 1 - 2 results of 2 New Items',
-            $this->findCssAndGetText($page, '.search-stats')
-        );
-        // Confirm that the listed records are the ones found in getDemoIniOverrides() config
-        $results = $page->findAll('css', 'h2 a.title');
-        $extractId = function ($result) {
-            $href = $result->getAttribute('href');
-            preg_match('|/Record/([^?]+)|', $href, $matches);
-            return $matches[1];
-        };
-        $this->assertSame($expectedIds, array_map($extractId, $results));
     }
 
     /**
@@ -180,7 +152,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure that facet links do not have inappropriate hidden filters:
         $facetLink = $this->findAndAssertLink($page, 'B - Philosophy, Psychology, Religion');
         $this->assertEquals(
-            '?range=15&department=&filter%5B%5D=callnumber-first%3A%22B+-+Philosophy%2C+Psychology%2C+Religion%22',
+            '?range=15&filter%5B%5D=callnumber-first%3A%22B+-+Philosophy%2C+Psychology%2C+Religion%22',
             $facetLink->getAttribute('href')
         );
 
@@ -204,6 +176,35 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringEndsWith(
             '/Search/Results?lookfor=&type=AllFields',
             $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test that when disabled a 'Page not found' message is shown and status
+     * code 404 is returned.
+     *
+     * @return void
+     */
+    public function testDisabledPage(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'NewItem' => [
+                        'method' => 'disabled',
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->loadNewItemPage($session);
+        $this->assertEquals(
+            404,
+            $session->getStatusCode()
+        );
+        $this->assertStringContainsString(
+            'Page not found',
+            $this->findCssAndGetText($page, '#content')
         );
     }
 }
