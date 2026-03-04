@@ -29,8 +29,6 @@
 
 namespace VuFind\Search;
 
-use VuFind\ILS\Connection;
-
 use function intval;
 
 /**
@@ -47,10 +45,9 @@ class NewItemsHelper
     /**
      * Constructor
      *
-     * @param array      $config  Configuration
-     * @param Connection $catalog ILS connection
+     * @param array $config Configuration
      */
-    public function __construct(protected array $config, protected Connection $catalog)
+    public function __construct(protected array $config)
     {
     }
 

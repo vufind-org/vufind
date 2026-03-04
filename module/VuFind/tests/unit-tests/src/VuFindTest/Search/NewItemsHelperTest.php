@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search;
 
-use VuFind\ILS\Connection;
 use VuFind\Search\NewItemsHelper;
 
 /**
@@ -46,14 +45,13 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a NewItemsHelper instance for testing.
      *
-     * @param array           $config     Configuration array
-     * @param Connection|null $connection ILS connection
+     * @param array $config Configuration array
      *
      * @return NewItemsHelper
      */
-    protected function getNewItemsHelper(array $config = [], ?Connection $connection = null): NewItemsHelper
+    protected function getNewItemsHelper(array $config = []): NewItemsHelper
     {
-        return new NewItemsHelper($config, $connection ?? $this->createMock(Connection::class));
+        return new NewItemsHelper($config);
     }
 
     /**
