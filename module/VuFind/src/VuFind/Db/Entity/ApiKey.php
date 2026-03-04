@@ -63,7 +63,7 @@ class ApiKey implements ApiKeyEntityInterface
     /**
      * User.
      *
-     * @var ?UserEntityInterface
+     * @var UserEntityInterface
      */
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
