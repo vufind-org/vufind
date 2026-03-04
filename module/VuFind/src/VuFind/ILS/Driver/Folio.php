@@ -1136,6 +1136,19 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a holdings array and a sort field, sort the array.
+     *
+     * @param array  $holdings  Holdings to sort
+     * @param string $sortField Sort field
+     *
+     * @return array
+     */
+    protected function sortHoldings(array $holdings, string $sortField): array
+    {
+        return $this->sortArray($holdings, $sortField);
+    }
+
+    /**
      * Given an array and a sort field, sort the array.
      *
      * @param array  $data      Array to sort
