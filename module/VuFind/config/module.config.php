@@ -414,6 +414,9 @@ $config = [
         'factories' => [
             'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
+            'VuFind\Action\ActionDispatchListener' => 'VuFind\ServiceManager\Factory\AutowiringFactory',
+            'VuFind\Action\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\ActionHelper\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\DeveloperSettings\DeveloperSettingsService' => 'VuFind\DeveloperSettings\DeveloperSettingsServiceFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
@@ -574,6 +577,7 @@ $config = [
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
             'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
             'VuFind\View\FlashMessenger\FlashMessenger' => 'VuFind\View\FlashMessenger\FlashMessengerFactory',
+            'VuFind\View\Renderer\LaminasTemplateRenderer' => 'VuFind\View\Renderer\LaminasTemplateRendererFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
@@ -652,6 +656,7 @@ $config = [
             'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
             'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
             'VuFind\View\FlashMessenger\FlashMessengerInterface' => 'VuFind\View\FlashMessenger\FlashMessenger',
+            'VuFind\View\Renderer\TemplateRendererInterface' => 'VuFind\View\Renderer\LaminasTemplateRenderer',
 
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',
@@ -736,6 +741,13 @@ $config = [
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
+            'action' => [ /* see VuFind\Action\PluginManager for details */],
+            'action_helper' => [
+                /* see VuFind\ActionHelper\PluginManager for details */
+                'abstract_factories' => [
+                    \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+                ],
+            ],
             'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
