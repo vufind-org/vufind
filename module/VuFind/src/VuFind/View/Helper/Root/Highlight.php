@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 use function is_array;
 
 /**
@@ -42,7 +40,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Highlight extends AbstractHelper
+class Highlight
 {
     /**
      * Start tag for highlighting

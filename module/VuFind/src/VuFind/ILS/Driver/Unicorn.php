@@ -34,7 +34,6 @@ use VuFind\Marc\MarcCollection;
 use VuFind\Marc\MarcReader;
 
 use function array_key_exists;
-use function array_slice;
 use function count;
 use function floatval;
 use function in_array;
@@ -984,51 +983,6 @@ class Unicorn extends AbstractBase implements
             }
         }
         return $items;
-    }
-
-    /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @throws ILSException
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        //query sirsi
-        //  isset($lib)
-        // ? $params = array('query' => 'newItems',
-        // 'lib' => array_search($lib, $config['Libraries']))
-        // : $params = array('query' => 'newItems');
-        $params = ['query' => 'newitems', 'lib' => 'PPL'];
-        $response = $this->querySirsi($params);
-
-        $item_lines = explode("\n", rtrim($response));
-
-        $rescount = 0;
-        foreach ($item_lines as $item) {
-            $item = rtrim($item, '|');
-            $items[$item] = [
-                'id' => $item,
-            ];
-            $rescount++;
-        }
-
-        $results = array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
-        return ['count' => $rescount, 'results' => $results];
     }
 
     /**

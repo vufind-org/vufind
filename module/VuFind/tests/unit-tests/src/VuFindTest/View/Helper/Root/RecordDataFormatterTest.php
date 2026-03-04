@@ -81,14 +81,18 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
     {
-        $context = new \VuFind\View\Helper\Root\Context();
+        $translate = new \VuFind\View\Helper\Root\Translate();
+        $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapeHtml);
+        $helperArray = compact('translate', 'transEsc', 'escapeHtml');
+        $view = $this->getPhpRenderer($helperArray);
+        $context = new \VuFind\View\Helper\Root\Context($view);
         $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
         $serviceManager->method('get')->willReturnCallback(function ($service) {
             return $this->createMock($service);
         });
         $record->setDbServiceManager($serviceManager);
-        $translate = new \VuFind\View\Helper\Root\Translate();
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $this->createMock(\VuFind\Auth\Manager::class),
@@ -119,7 +123,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 new \VuFind\Search\Options\PluginManager($container)
             ),
             'searchTabs' => $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
-            'transEsc' => new \VuFind\View\Helper\Root\TransEsc($translate, new \Laminas\View\Helper\EscapeHtml()),
+            'transEsc' => $transEsc,
             'translate' => $translate,
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
         ];

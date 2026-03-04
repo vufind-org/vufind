@@ -437,7 +437,7 @@ class Bootstrapper
         // base64_encoding the destination URL is just further obfuscation
         $context = base64_encode(json_encode([
             'policyId' => $policyId,
-            'destination' => $event->getRequest()->getUri()->getPath(),
+            'destination' => $event->getRequest()->getRequestUri(),
         ]));
         $response->getHeaders()->addHeaderLine(
             'Location',

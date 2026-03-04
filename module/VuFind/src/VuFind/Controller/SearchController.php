@@ -39,6 +39,7 @@ use VuFind\Session\Helper\FollowupHelper;
 
 use function array_slice;
 use function count;
+use function in_array;
 use function intval;
 
 /**
@@ -239,16 +240,19 @@ class SearchController extends AbstractSolrSearch
      */
     public function newitemAction()
     {
+        $newItemsHelper = $this->getService(NewItemsHelper::class);
+        if (in_array($newItemsHelper->getMethod(), ['disabled', 'ils'])) {
+            return $this->createHttpNotFoundModel($this->getResponse());
+        }
+
         // Search parameters set?  Process results.
         if ($this->params()->fromQuery('range') !== null) {
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
-        $newItemsHelper = $this->getService(NewItemsHelper::class);
         $view = $this->createViewModel(
             [
                 'defaultSort' => $newItemsHelper->getDefaultSort(),
-                'fundList' => $newItemsHelper->getFundList(),
                 'ranges' => $newItemsHelper->getRanges(),
             ]
         );
@@ -269,7 +273,6 @@ class SearchController extends AbstractSolrSearch
     {
         // Retrieve new item list:
         $range = intval($this->params()->fromQuery('range', 0));
-        $dept = $this->params()->fromQuery('department');
 
         // Validate the range parameter -- it should not exceed the greatest
         // configured value:
@@ -284,7 +287,7 @@ class SearchController extends AbstractSolrSearch
         // later after the whole list is collected.
         $hiddenFilters = $newItemsHelper->getHiddenFilters();
 
-        return compact('range', 'dept', 'hiddenFilters');
+        return compact('range', 'hiddenFilters');
     }
 
     /**
@@ -299,19 +302,8 @@ class SearchController extends AbstractSolrSearch
         // Depending on whether we're in ILS or Solr mode, we need to do some
         // different processing here to retrieve the correct items:
         $newItemsHelper = $this->getService(NewItemsHelper::class);
-        if ($newItemsHelper->getMethod() == 'ils') {
-            // Use standard search action with override parameter to show results:
-            $bibIDs = $newItemsHelper->getBibIDsFromCatalog(
-                $this->getResultsManager()->get('Solr')->getParams(),
-                $newItemParams['range'],
-                $newItemParams['dept'],
-                $this->getFlashMessenger()
-            );
-            $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
-        } else {
-            // Use a Solr filter to show results:
-            $newItemParams['hiddenFilters'][] = $newItemsHelper->getSolrFilter($newItemParams['range']);
-        }
+        // Use a Solr filter to show results:
+        $newItemParams['hiddenFilters'][] = $newItemsHelper->getSolrFilter($newItemParams['range']);
         // If we found hidden filters above, apply them now:
         if (!empty($newItemParams['hiddenFilters'])) {
             $this->getRequest()->getQuery()->set('hiddenFilters', $newItemParams['hiddenFilters']);
@@ -339,7 +331,6 @@ class SearchController extends AbstractSolrSearch
             $view->results->getOptions()->setFacetListAction('search-newitemfacetlist');
             $view->results->getUrlQuery()
                 ->setDefaultParameter('range', $newItemParams['range'])
-                ->setDefaultParameter('department', $newItemParams['dept'])
                 ->disableHiddenFilters()
                 ->setSuppressQuery(true);
         }

@@ -48,6 +48,13 @@
   $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding());
   $tabs = array_merge($tabs, $this->recordTabs()->getTabs($this->driver, $filteredTabs, $this->defaultTab));
 ?>
-<?=
-  $this->tabs($tabs, $this->defaultTab, idSuffix: $idSuffix, extraClasses: ['tabNav' => ['list-tabs'], 'tabPane' => ['list-tab-content']]);
-?>
+<?=$this->component(
+    'tabs',
+    [
+      'tabs' => $tabs,
+      'activeTab' => $this->defaultTab,
+      'idSuffix' => $idSuffix,
+      'tabNavClasses' => ['list-tabs'],
+      'tabPaneClasses' => ['list-tab-content'],
+    ]
+)?>

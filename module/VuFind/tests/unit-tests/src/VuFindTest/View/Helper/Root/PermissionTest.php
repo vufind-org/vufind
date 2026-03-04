@@ -222,11 +222,11 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();
         $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapehtml);
-        $context = new \VuFind\View\Helper\Root\Context();
         $realView = $this->getPhpRenderer(
-            compact('translate', 'transEsc', 'context', 'escapehtml')
+            compact('translate', 'transEsc', 'escapehtml')
         );
-        $context->setView($realView);
+        $context = new \VuFind\View\Helper\Root\Context($realView);
+        $realView->getHelperPluginManager()->setService('context', $context);
         return $realView;
     }
 }

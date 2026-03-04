@@ -83,6 +83,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoSearch();
         $this->clickCss($page, '.result a.title');
         $this->waitForPageLoad($page);
+        // Ensure that accordion has completed its transition:
+        $this->unFindCss($page, '.collapsing');
         return $page;
     }
 

@@ -137,13 +137,13 @@
             $this->assetManager()->appendStyleLink('vendor/simple-keyboard/index.css');
             ?>
             <div class="keyboard-selection dropdown">
-              <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" title="<?=$this->transEsc('Virtual Keyboard')?>" data-bs-toggle="dropdown" aria-hidden="true" tabindex="-1">
                 <?=$this->icon('keyboard') ?>
                 <?=$this->icon('dropdown-caret') ?>
               </button>
               <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">
                 <li>
-                  <a class="dropdown-item keyboard-selection-item" href="#" data-value="none"><?= $this->transEsc('None') ?></a>
+                  <a class="dropdown-item keyboard-selection-item" href="#" data-value="none"><?=$this->transEsc('Disabled')?></a>
                 </li>
                 <?php foreach ($keyboardLayouts as $keyboardLayout): ?>
                   <li>

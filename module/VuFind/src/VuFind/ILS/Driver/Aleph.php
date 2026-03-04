@@ -10,8 +10,7 @@
  * last update: 7.11.2007
  * tested with X-Server Aleph 18.1.
  *
- * TODO: login, course information, getNewItems, duedate in holdings,
- * https connection to x-server, ...
+ * TODO: login, course information, https connection to x-server, ...
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -1693,33 +1692,6 @@ class Aleph extends AbstractBase implements
     {
         // TODO
         return [];
-    }
-
-    /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @throws ILSException
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        // TODO
-        $items = [];
-        return $items;
     }
 
     /**

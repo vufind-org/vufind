@@ -1,11 +1,12 @@
 <?php
 
 /**
- * "New ILS items" channel provider.
+ * "Deprecated" channel provider (returns no results; for back-compatibility
+ * with deprecated channel provider configurations).
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,8 +30,11 @@
 
 namespace VuFind\ChannelProvider;
 
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\Search\Base\Results;
+
 /**
- * "New ILS items" channel provider.
+ * "Deprecated" channel provider.
  *
  * @category VuFind
  * @package  Channels
@@ -38,39 +42,37 @@ namespace VuFind\ChannelProvider;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class NewILSItems extends AbstractILSChannelProvider
+class Deprecated extends AbstractChannelProvider
 {
     /**
-     * Channel title (will be run through translator).
+     * Return channel information derived from a record driver object.
      *
-     * @var string
-     */
-    protected $channelTitle = 'New Items';
-
-    /**
-     * Retrieve data from the ILS.
+     * @param RecordDriver $driver       Record driver
+     * @param string       $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getIlsResponse()
+    public function getFromRecord(RecordDriver $driver, $channelToken = null)
     {
-        if ($this->ils->checkCapability('getNewItems')) {
-            $response = $this->ils->getNewItems(1, $this->batchSize, $this->maxAge);
-            return $response['results'] ?? [];
-        }
         return [];
     }
 
     /**
-     * Given one element from the ILS function's response array, extract the
-     * ID value.
+     * Return channel information derived from a search results object.
      *
-     * @param array $response Response array
+     * @param Results $results      Search results
+     * @param string  $channelToken Token identifying a single specific channel
+     * to load (if omitted, all channels will be loaded) -- not used in this provider
      *
-     * @return string
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function extractIdsFromResponse($response)
+    public function getFromSearch(Results $results, $channelToken = null)
     {
-        return $response['id'];
+        return [];
     }
 }

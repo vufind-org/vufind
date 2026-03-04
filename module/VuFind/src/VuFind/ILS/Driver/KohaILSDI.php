@@ -38,10 +38,8 @@ use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
 
-use function array_slice;
 use function count;
 use function in_array;
-use function intval;
 use function is_callable;
 
 /**
@@ -1036,53 +1034,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         );
 
         return $holding;
-    }
-
-    /**
-     * This method queries the ILS for new items
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array provides a count and the results of new items.
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        $this->debug("getNewItems called $page|$limit|$daysOld|$fundId");
-
-        $items = [];
-        $daysOld = min(abs(intval($daysOld)), 30);
-        $sql = "SELECT distinct biblionumber as id
-                FROM items
-                WHERE itemlost = 0
-                   and dateaccessioned > DATE_ADD(CURRENT_TIMESTAMP,
-                      INTERVAL -$daysOld day)
-                ORDER BY dateaccessioned DESC";
-
-        $this->debug($sql);
-
-        $itemSqlStmt = $this->getDb()->prepare($sql);
-        $itemSqlStmt->execute();
-
-        $rescount = 0;
-        foreach ($itemSqlStmt->fetchAll() as $rowItem) {
-            $items[] = [
-                'id' => $rowItem['id'],
-            ];
-            $rescount++;
-        }
-
-        $this->debug($rescount . ' fetched');
-
-        $results = array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
-        return ['count' => $rescount, 'results' => $results];
     }
 
     /**
