@@ -58,16 +58,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     protected string $targetVersion = '11.1';
 
     /**
-     * This deprecation warning is expected in many situations as we prepare to remove
-     * ILS-driven new items in release 12.0. This property can be removed after the
-     * transition is completed and the config upgrader's behavior is finalized.
-     *
-     * @var string
-     */
-    protected $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method '
-        . 'setting of "ils" is deprecated; you should switch to "solr" or "disabled".';
-
-    /**
      * Get an upgrade object for the specified source version:
      *
      * @param string $fixture Fixture
@@ -229,6 +219,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // Make sure spellcheck 'simple' is replaced by 'dictionaries'
         $this->assertFalse(isset($results['config']['Spelling']['simple']));
         $this->assertTrue(isset($results['config']['Spelling']['dictionaries']));
+    }
+
+    /**
+     * Test new items ILS method removal.
+     *
+     * @return void
+     */
+    public function testIlsNewItems(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure the ILS method is switched to disabled and the deprecated setting is removed:
+        $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method setting of "ils" has been '
+        . 'removed; you should enable change tracking (if not already done) and switch to "solr". For now, new '
+        . 'item search has been disabled.';
+        $this->assertSame([$expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame('disabled', $results['searches']['NewItem']['method']);
+        $this->assertFalse(isset($results['searches']['NewItem']['result_pages']));
     }
 
     /**
@@ -434,7 +443,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEbscoUpgrade(string $backend, string $configName): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($backend);
-        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             ['foo' => 'bar'],
@@ -454,7 +463,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeSimple(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-default');
-        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
@@ -470,7 +479,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeAdvanced(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-advanced');
-        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $edsRecordDataFormatterConfig = $results['RecordDataFormatter/EDS'];
@@ -540,7 +549,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testPrimoUpgrade(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('primo');
-        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'http://my-id.hosted.exlibrisgroup.com:1701',

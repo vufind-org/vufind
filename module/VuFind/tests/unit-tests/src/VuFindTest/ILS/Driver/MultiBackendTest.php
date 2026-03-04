@@ -740,52 +740,6 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getNewItems without a default driver
-     *
-     * @return void
-     */
-    public function testGetNewItemsNoDefault()
-    {
-        $driver = $this->initDriver();
-
-        // getNewItems only works with a default driver, so this call fails
-        $this->expectException(\VuFind\Exception\ILS::class);
-        $driver->getNewItems(1, 10, 5, 0);
-    }
-
-    /**
-     * Testing method for getNewItems with a default driver
-     *
-     * @return void
-     */
-    public function testGetNewItems()
-    {
-        $return = [
-            'count' => 2,
-            'results' => [['id' => '1'], ['id' => '2']],
-        ];
-
-        $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
-        $ILS->expects($this->once())
-            ->method('getNewItems')
-            ->with('1', '10', '5', '0')
-            ->willReturn($return);
-
-        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
-        $driver = $this->initDriver(['driverManager' => $sm]);
-        $drivers = ['d1' => 'Voyager'];
-        $this->setProperty($driver, 'drivers', $drivers);
-
-        $expected = [
-            'count' => 2,
-            'results' => [['id' => 'd1.1'], ['id' => 'd1.2']],
-        ];
-        $this->setProperty($driver, 'defaultDriver', 'd1');
-        $result = $driver->getNewItems(1, 10, 5, 0);
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
      * Testing method for getCourses without a default driver
      *
      * @return void
