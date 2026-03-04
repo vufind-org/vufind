@@ -76,6 +76,8 @@ class NewItems extends AbstractPlugin
      * @param FlashMessenger             $flash   Flash messenger
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getBibIDsFromCatalog($catalog, $params, $range, $dept, $flash)
     {
@@ -128,6 +130,8 @@ class NewItems extends AbstractPlugin
      * Get fund list
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getFundList()
     {

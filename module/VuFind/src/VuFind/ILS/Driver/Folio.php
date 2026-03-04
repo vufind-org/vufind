@@ -3033,6 +3033,8 @@ class Folio extends AbstractAPI implements
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -3075,6 +3077,7 @@ class Folio extends AbstractAPI implements
      * @return array Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
