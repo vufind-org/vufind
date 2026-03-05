@@ -49,12 +49,17 @@ class DateTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrueMatching(): void
     {
-        $today = (new \DateTime())->format('Y-m-d');
+        $today = new \DateTime();
         $dateHandler = new Date();
         $this->assertTrue($dateHandler->checkCondition([
             'type' => 'date',
-            'comparator' => '=',
-            'checkedValues' => $today,
+            'comparator' => '>=',
+            'checkedValues' => $today->format('Y-m-d'),
+        ]));
+        $this->assertTrue($dateHandler->checkCondition([
+            'type' => 'date',
+            'comparator' => '<=',
+            'checkedValues' => $today->modify('+1 day')->format('Y-m-d'),
         ]));
     }
 
