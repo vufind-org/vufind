@@ -175,8 +175,6 @@ class AutowiringFactory implements FactoryInterface
             default:
                 throw new LogicException("Invalid configType $type");
         }
-
-        return null;
     }
 
     /**
