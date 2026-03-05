@@ -114,8 +114,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $doctrineCacheDir = $container
-            ->get('config')['caches']['doctrinemodule.cache.filesystem']['options']['cache_dir'];
+        $doctrineCacheDir = LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/objects';
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
 
