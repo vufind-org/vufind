@@ -128,7 +128,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
         $yamlReader
             ->method('get')
             ->with('config2.yaml')
-            ->willReturn(['YAML' => ['foo' => 'bar']]);
+            ->willReturn(['YAML' => ['foo' => 'bar,baz']]);
         $container->set(YamlReader::class, $yamlReader);
         $plugins = new MockViewHelperContainer($this);
         $plugins->set(Url::class, $this->createMock(Url::class));

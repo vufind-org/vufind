@@ -36,7 +36,10 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Config\YamlReader;
+
+use function is_array;
 
 /**
  * VuFind Autowiring Factory
@@ -49,6 +52,8 @@ use VuFind\Config\YamlReader;
  */
 class AutowiringFactory implements FactoryInterface
 {
+    use ExplodeSettingTrait;
+
     /**
      * Configuration manager
      *
@@ -129,7 +134,7 @@ class AutowiringFactory implements FactoryInterface
         ?array $autowireArgs
     ) {
         if ($config = $autowireArgs['config'] ?? null) {
-            return $this->getConfig($container, $config, $autowireArgs);
+            return $this->getConfig($container, $config, $reflectionParameter, $autowireArgs);
         }
         return $this->resolveService($container, $reflectionParameter, $autowireArgs);
     }
@@ -137,31 +142,68 @@ class AutowiringFactory implements FactoryInterface
     /**
      * Get a configuration as an array.
      *
-     * @param ContainerInterface $container    Service container
-     * @param string             $config       Configuration name
-     * @param ?array             $autowireArgs Autowire attribute arguments
+     * @param ContainerInterface  $container           Service container
+     * @param string              $config              Configuration name
+     * @param ReflectionParameter $reflectionParameter Parameter
+     * @param ?array              $autowireArgs        Autowire attribute arguments
      *
      * @return mixed
      */
     protected function getConfig(
         ContainerInterface $container,
         string $config,
+        ReflectionParameter $reflectionParameter,
         ?array $autowireArgs
     ) {
+        $result = null;
         $type = $autowireArgs['configType'] ?? 'array';
         switch ($type) {
             case 'array':
             case 'object':
                 $this->configManager ??= $container->get(ConfigManagerInterface::class);
-                return 'object' === $type
+                $result = 'object' === $type
                     ? $this->configManager->getConfigObject($config)
                     : $this->configManager->getConfigArray($config);
+                break;
             case 'yaml':
                 $this->yamlReader ??= $container->get(YamlReader::class);
-                return $this->yamlReader->get("$config.yaml");
+                $result = $this->yamlReader->get("$config.yaml");
+                break;
             default:
                 throw new LogicException("Invalid configType $type");
         }
+
+        if (null !== $result && $path = $autowireArgs['path'] ?? null) {
+            if (!is_array($result)) {
+                throw new LogicException('Autowiring path can only be used with an array type configuration');
+            }
+            foreach (explode('/', $path) as $part) {
+                if (null === ($result = $result[$part] ?? null)) {
+                    break;
+                }
+            }
+            if (null !== $result && null !== ($explode = $autowireArgs['explode'] ?? null)) {
+                $result = $this->explodeSetting((string)$result, true, $explode);
+            } else {
+                $result ??= $autowireArgs['default'] ?? null;
+                if (null !== $result) {
+                    // Cast to proper type:
+                    $type = $reflectionParameter->getType();
+                    if ($type instanceof ReflectionNamedType) {
+                        $result = match ($type->getName()) {
+                            'array' => (array)$result,
+                            'bool' => (bool)$result,
+                            'float' => (float)$result,
+                            'int' => (int)$result,
+                            'string' => (string)$result,
+                            default => $result,
+                        };
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
