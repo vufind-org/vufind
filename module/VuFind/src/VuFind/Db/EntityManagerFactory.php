@@ -32,6 +32,7 @@ namespace VuFind\Db;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\ORM\Proxy\ProxyFactory;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
 use Laminas\Cache\Storage\Adapter\BlackHole;
 use Psr\Container\ContainerInterface;
@@ -79,11 +80,10 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $cache = new CacheItemPoolDecorator($storage);
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, cache: $cache);
         $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
-        $proxyDir = LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies';
-        if (!is_dir($proxyDir)) {
-            mkdir($proxyDir);
-        }
-        $config->setProxyDir($proxyDir);
+        $config->setProxyDir(LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies');
+        $config->setAutoGenerateProxyClasses(
+            $isDevMode ? ProxyFactory::AUTOGENERATE_ALWAYS : ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
+        );
         $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
         $entityManager = new EntityManager($connection, $config);
