@@ -73,9 +73,6 @@ class Autowire
             if (null !== $container) {
                 throw new LogicException('#[Autowire] attribute cannot contain both config and container.');
             }
-            if (null !== $path && 'object' === $configType) {
-                throw new LogicException('#[Autowire] attribute cannot contain path when configType is object');
-            }
         } elseif (null !== $configType) {
             throw new LogicException(
                 '#[Autowire] attribute cannot contain configType without config.'
