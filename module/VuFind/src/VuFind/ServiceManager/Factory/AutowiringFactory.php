@@ -29,6 +29,7 @@
 
 namespace VuFind\ServiceManager\Factory;
 
+use ArrayAccess;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use LogicException;
 use Psr\Container\ContainerInterface;
@@ -134,76 +135,48 @@ class AutowiringFactory implements FactoryInterface
         ?array $autowireArgs
     ) {
         if ($config = $autowireArgs['config'] ?? null) {
-            return $this->getConfig($container, $config, $reflectionParameter, $autowireArgs);
+            $result = $this->getConfig($container, $config, $autowireArgs);
+        } else {
+            $result = $this->resolveService($container, $reflectionParameter, $autowireArgs);
         }
-        return $this->resolveService($container, $reflectionParameter, $autowireArgs);
+
+        if ($path = $autowireArgs['path'] ?? null) {
+            $result = $this->extractValueByPath($result, $path, $reflectionParameter, $autowireArgs);
+        }
+
+        return $result;
     }
 
     /**
      * Get a configuration as an array.
      *
-     * @param ContainerInterface  $container           Service container
-     * @param string              $config              Configuration name
-     * @param ReflectionParameter $reflectionParameter Parameter
-     * @param ?array              $autowireArgs        Autowire attribute arguments
+     * @param ContainerInterface $container    Service container
+     * @param string             $config       Configuration name
+     * @param ?array             $autowireArgs Autowire attribute arguments
      *
      * @return mixed
      */
     protected function getConfig(
         ContainerInterface $container,
         string $config,
-        ReflectionParameter $reflectionParameter,
         ?array $autowireArgs
-    ) {
-        $result = null;
+    ): mixed {
         $type = $autowireArgs['configType'] ?? 'array';
         switch ($type) {
             case 'array':
             case 'object':
                 $this->configManager ??= $container->get(ConfigManagerInterface::class);
-                $result = 'object' === $type
+                return 'object' === $type
                     ? $this->configManager->getConfigObject($config)
                     : $this->configManager->getConfigArray($config);
-                break;
             case 'yaml':
                 $this->yamlReader ??= $container->get(YamlReader::class);
-                $result = $this->yamlReader->get("$config.yaml");
-                break;
+                return $this->yamlReader->get("$config.yaml");
             default:
                 throw new LogicException("Invalid configType $type");
         }
 
-        if (null !== $result && $path = $autowireArgs['path'] ?? null) {
-            if (!is_array($result)) {
-                throw new LogicException('Autowiring path can only be used with an array type configuration');
-            }
-            foreach (explode('/', $path) as $part) {
-                if (null === ($result = $result[$part] ?? null)) {
-                    break;
-                }
-            }
-            if (null !== $result && null !== ($explode = $autowireArgs['explode'] ?? null)) {
-                $result = $this->explodeSetting((string)$result, true, $explode);
-            } else {
-                $result ??= $autowireArgs['default'] ?? null;
-                if (null !== $result) {
-                    // Cast to proper type:
-                    $type = $reflectionParameter->getType();
-                    if ($type instanceof ReflectionNamedType) {
-                        $result = match ($type->getName()) {
-                            'array' => (array)$result,
-                            'bool' => (bool)$result,
-                            'float' => (float)$result,
-                            'int' => (int)$result,
-                            'string' => (string)$result,
-                            default => $result,
-                        };
-                    }
-                }
-            }
-        }
-
-        return $result;
+        return null;
     }
 
     /**
@@ -221,7 +194,7 @@ class AutowiringFactory implements FactoryInterface
         ContainerInterface $container,
         ReflectionParameter $reflectionParameter,
         ?array $autowireArgs
-    ) {
+    ): mixed {
         $name = $autowireArgs['service'] ?? null;
         if (null === $name) {
             $type = $reflectionParameter->getType();
@@ -240,5 +213,55 @@ class AutowiringFactory implements FactoryInterface
             ? $container->get($containerName)
             : $container;
         return $containerToUse->get((string)$name);
+    }
+
+    /**
+     * Get a value from a value by path.
+     *
+     * @param mixed               $value               Value
+     * @param string              $path                Path
+     * @param ReflectionParameter $reflectionParameter Parameter
+     * @param ?array              $autowireArgs        Autowire attribute arguments
+     *
+     * @return mixed
+     */
+    protected function extractValueByPath(
+        mixed $value,
+        string $path,
+        ReflectionParameter $reflectionParameter,
+        ?array $autowireArgs
+    ): mixed {
+        if (null === $value) {
+            return $autowireArgs['default'] ?? null;
+        }
+        if (!is_array($value) && !($value instanceof ArrayAccess)) {
+            throw new LogicException(
+                'Autowiring path can only be used with an array value or an object that implements ArrayAccess'
+            );
+        }
+        foreach (explode('/', $path) as $part) {
+            if (null === ($value = $value[$part] ?? null)) {
+                break;
+            }
+        }
+        if (null !== $value && null !== ($explode = $autowireArgs['explode'] ?? null)) {
+            return $this->explodeSetting((string)$value, true, $explode);
+        }
+        $value ??= $autowireArgs['default'] ?? null;
+        if (null !== $value) {
+            // Cast to proper type:
+            $type = $reflectionParameter->getType();
+            if ($type instanceof ReflectionNamedType) {
+                $value = match ($type->getName()) {
+                    'array' => (array)$value,
+                    'bool' => (bool)$value,
+                    'float' => (float)$value,
+                    'int' => (int)$value,
+                    'string' => (string)$value,
+                    default => $value,
+                };
+            }
+        }
+        return $value;
     }
 }

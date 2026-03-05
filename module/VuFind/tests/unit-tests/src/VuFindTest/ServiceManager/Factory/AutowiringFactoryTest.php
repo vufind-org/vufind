@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace VuFindTest\ServiceManager\Factory;
 
+use ArrayAccess;
 use Laminas\View\HelperPluginManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Container\ContainerInterface;
@@ -135,6 +136,61 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
         $container->set(HelperPluginManager::class, $plugins);
         $container->set(AuthManager::class, $this->createMock(AuthManager::class));
         $container->set(Connection::class, $this->createMock(Connection::class));
+        $superArray = new class () implements ArrayAccess {
+            protected array $values = [
+                'foo' => [
+                    'bar' => 'baz',
+                ],
+            ];
+
+            /**
+             * Set by offset.
+             *
+             * @param mixed $offset Offset
+             * @param mixed $value  Value
+             *
+             * @return void
+             */
+            public function offsetSet($offset, $value): void
+            {
+            }
+
+            /**
+             * Check offset.
+             *
+             * @param mixed $offset Offset
+             *
+             * @return bool
+             */
+            public function offsetExists($offset): bool
+            {
+                return isset($this->values[$offset]);
+            }
+
+            /**
+             * Unset by offset.
+             *
+             * @param mixed $offset Offset
+             *
+             * @return void
+             */
+            public function offsetUnset($offset): void
+            {
+            }
+
+            /**
+             * Get by offset.
+             *
+             * @param mixed $offset Offset
+             *
+             * @return mixed
+             */
+            public function offsetGet($offset): mixed
+            {
+                return $this->values[$offset] ?? null;
+            }
+        };
+        $container->set('superarray', $superArray);
         return $container;
     }
 }

@@ -62,6 +62,7 @@ class AutowiredClass
      * @param string     $yamlFoo         A configuration value as string
      * @param array      $yamlFooExploded A configuration value exploded to an array
      * @param array      $defaultArray    A configuration default value
+     * @param string     $superValue      A value by path from an ArrayAccess object
      */
     public function __construct(
         #[Autowire(config: 'config')]
@@ -83,6 +84,8 @@ class AutowiredClass
         protected array $yamlFooExploded,
         #[Autowire(config: 'config2', configType: 'yaml', path: 'YAML/none', default: 'none')]
         protected array $defaultArray,
+        #[Autowire(service: 'superarray', path: 'foo/bar')]
+        protected string $superValue,
     ) {
         if (!($ilsConnection instanceof Connection)) {
             throw new \Exception('Invalid ILS Connection');
@@ -99,7 +102,7 @@ class AutowiredClass
         if (!isset($yamlConfig['YAML'])) {
             throw new \Exception('Invalid YAML configuration');
         }
-        if ('bar,baz' !== $yamlFoo) {
+        if ('bar, baz' !== $yamlFoo) {
             throw new \Exception('Invalid YAML configuration from path');
         }
         if (['bar', 'baz'] !== $yamlFooExploded) {
@@ -107,6 +110,9 @@ class AutowiredClass
         }
         if (['none'] !== $defaultArray) {
             throw new \Exception('Invalid default value');
+        }
+        if ('baz' !== $superValue) {
+            throw new \Exception('Invalid superValue from path');
         }
     }
 }
