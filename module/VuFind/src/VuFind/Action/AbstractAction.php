@@ -259,14 +259,6 @@ abstract class AbstractAction implements ActionInterface
      * @param array  $routeParams Path parameters
      * @param array  $queryParams Query parameters
      *
-     * @see \Laminas\Router\RouteInterface::assemble()
-     *
-     * @throws \Laminas\View\Exception\RuntimeException If no RouteStackInterface was provided
-     * @throws \Laminas\View\Exception\RuntimeException If no RouteMatch was provided
-     * @throws \Laminas\View\Exception\RuntimeException If RouteMatch didn't contain a matched route name
-     * @throws \Laminas\View\Exception\InvalidArgumentException If the params object was not an array or Traversable
-     * object.
-     *
      * @return string Url For the link href attribute
      */
     protected function getUrlFromRoute(

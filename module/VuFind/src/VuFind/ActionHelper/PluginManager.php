@@ -30,6 +30,7 @@
 namespace VuFind\ActionHelper;
 
 use Laminas\ServiceManager\AbstractPluginManager;
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 
 /**
  * Action helper plugin manager
@@ -48,4 +49,21 @@ class PluginManager extends AbstractPluginManager
      * @var ?string
      */
     protected $instanceOf = HelperInterface::class;
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 }

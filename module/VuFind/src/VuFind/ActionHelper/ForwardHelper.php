@@ -63,10 +63,13 @@ class ForwardHelper implements HelperInterface
      * @param ResponseInterface      $response Response
      * @param string                 $actionId Action ('category/action')
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    public function forwardTo(ServerRequestInterface $request, ResponseInterface $response, string $actionId)
-    {
+    public function forwardTo(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        string $actionId
+    ): ResponseInterface {
         if (!$this->actionPluginManager->has($actionId)) {
             throw new \InvalidArgumentException("Unknown action '$actionId'");
         }

@@ -123,20 +123,19 @@ class LoginHelper implements HelperInterface
     }
 
     /**
-     * Does the user have catalog credentials available?  Returns associative array
-     * of patron data if so, otherwise forwards to appropriate login prompt and
-     * returns false. If there is an ILS exception, a flash message is added and
-     * null is returned.
+     * Does the user have catalog credentials available?  Returns associative array of patron data if so, otherwise
+     * forwards to appropriate login prompt and returns the response from it. If there is an ILS exception, a
+     * flash message is added and null is returned.
      *
      * @param ServerRequestInterface $request  Request
      * @param ResponseInterface      $response Response
      *
-     * @return bool|array|ResponseInterface|null
+     * @return array|ResponseInterface|null
      */
     protected function catalogLogin(
         ServerRequestInterface $request,
         ResponseInterface $response,
-    ): bool|array|ResponseInterface|null {
+    ): array|ResponseInterface|null {
         // First make sure user is logged in to VuFind:
         if (!($user = $this->authManager->getUserObject())) {
             return $this->forceLogin($request, $response);

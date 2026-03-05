@@ -52,7 +52,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [];
+    protected $aliases = [
+    ];
 
     /**
      * Category aliases from default case to the actual case used.
