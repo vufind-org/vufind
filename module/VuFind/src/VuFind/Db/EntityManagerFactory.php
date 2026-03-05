@@ -79,6 +79,11 @@ class EntityManagerFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         $cache = new CacheItemPoolDecorator($storage);
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, cache: $cache);
         $config->setClassMetadataFactoryName(ClassMetadataFactory::class);
+        $proxyDir = LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies';
+        if (!is_dir($proxyDir)) {
+            mkdir($proxyDir);
+        }
+        $config->setProxyDir($proxyDir);
         $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
         $entityManager = new EntityManager($connection, $config);
