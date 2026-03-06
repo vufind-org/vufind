@@ -123,7 +123,7 @@ class LoginHelper implements HelperInterface
     }
 
     /**
-     * Does the user have catalog credentials available?  Returns associative array of patron data if so, otherwise
+     * Does the user have catalog credentials available? Returns associative array of patron data if so, otherwise
      * forwards to appropriate login prompt and returns the response from it. If there is an ILS exception, a
      * flash message is added and null is returned.
      *
