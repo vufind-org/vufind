@@ -55,34 +55,15 @@ use function strlen;
 class LaminasTemplateRenderer implements TemplateRendererInterface
 {
     /**
-     * Display exceptions?
-     *
-     * @var bool
-     */
-    protected bool $displayExceptions;
-
-    /**
-     * Template for 404 errors
-     *
-     * @var string
-     */
-    protected string $notFoundTemplate;
-
-    /**
-     * Template for errors
-     *
-     * @var string
-     */
-    protected string $errorTemplate;
-
-    /**
      * Constructor.
      *
      * @param ServerUrlHelper        $serverUrlHelper        Server URL helper
      * @param RendererInterface      $viewRenderer           View renderer
      * @param ViewManager            $viewManager            View manager
      * @param InjectTemplateListener $injectTemplateListener Template injection listener (for prefixes)
-     * @param array                  $viewManagerConfig      View manager configuration
+     * @param bool                   $displayExceptions      Display exceptions?
+     * @param string                 $notFoundTemplate       Template for 404 errors
+     * @param string                 $errorTemplate          Template for errors
      */
     #[Autowire()]
     public function __construct(
@@ -92,12 +73,13 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         #[Autowire(service: 'ViewManager')]
         protected ViewManager $viewManager,
         protected InjectTemplateListener $injectTemplateListener,
-        #[Autowire(service: 'config', path: 'view_manager', default: [])]
-        protected array $viewManagerConfig,
+        #[Autowire(service: 'config', path: 'view_manager/display_exceptions', default: false)]
+        protected bool $displayExceptions,
+        #[Autowire(service: 'config', path: 'view_manager/not_found_template', default: 'error/404')]
+        protected string $notFoundTemplate,
+        #[Autowire(service: 'config', path: 'view_manager/exception_template', default: 'error/index')]
+        protected string $errorTemplate,
     ) {
-        $this->displayExceptions = $viewManagerConfig['display_exceptions'] ?? false;
-        $this->notFoundTemplate = $viewManagerConfig['not_found_template'] ?? 'error/404';
-        $this->errorTemplate = $viewManagerConfig['exception_template'] ?? 'error/index';
     }
 
     /**
