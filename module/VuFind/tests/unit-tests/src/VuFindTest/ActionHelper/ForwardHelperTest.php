@@ -76,7 +76,6 @@ class ForwardHelperTest extends TestCase
      */
     public function testValidAction(): void
     {
-        $mockPluginManager = $this->createMock(\VuFind\Action\PluginManager::class);
         $request = $this->createMock(ServerRequestInterface::class);
         $request->expects($this->once())->method('withAttribute')->with('action-id', 'foo')->willReturn($request);
         $response = $this->createMock(ResponseInterface::class);
@@ -134,6 +133,7 @@ class ForwardHelperTest extends TestCase
                 return $response;
             }
         };
+        $mockPluginManager = $this->createMock(\VuFind\Action\PluginManager::class);
         $mockPluginManager->expects($this->once())->method('has')->with('foo')->willReturn(true);
         $mockPluginManager->expects($this->once())->method('get')->with('foo')->willReturn($action);
         $helper = new ForwardHelper($mockPluginManager);
