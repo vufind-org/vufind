@@ -1286,7 +1286,7 @@ class Folio extends AbstractAPI implements
             $items = array_merge(
                 $items,
                 $sortNeeded
-                    ? $this->sortArray($nextBatch, $vufindItemSort) : $nextBatch
+                    ? $this->sortHoldings($nextBatch, $vufindItemSort) : $nextBatch
             );
         }
 
