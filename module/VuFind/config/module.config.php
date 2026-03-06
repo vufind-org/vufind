@@ -742,7 +742,7 @@ $config = [
         // pluggable components:
         'plugin_managers' => [
             'action' => [ /* see VuFind\Action\PluginManager for details */],
-            'action_helper' => [ /* see VuFind\ActionHelper\PluginManager for details */ ],
+            'actionhelper' => [ /* see VuFind\ActionHelper\PluginManager for details */ ],
             'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
