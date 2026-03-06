@@ -118,6 +118,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     {
         parent::configure($config);
         $this->categoryAliases = ($config['category_aliases'] ?? []) + $this->categoryAliases;
+        if ($namespaces = $config['autodiscovery_namespaces'] ?? null) {
+            $this->autoDiscoveryNamespaces = $namespaces;
+        }
         return $this;
     }
 
