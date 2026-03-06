@@ -38,6 +38,7 @@ use Laminas\View\Renderer\RendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\ServerUrlHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\InjectTemplateListener;
 
 use function strlen;
@@ -83,11 +84,15 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * @param InjectTemplateListener $injectTemplateListener Template injection listener (for prefixes)
      * @param array                  $viewManagerConfig      View manager configuration
      */
+    #[Autowire()]
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
+        #[Autowire(service: 'ViewRenderer')]
         protected RendererInterface $viewRenderer,
+        #[Autowire(service: 'ViewManager')]
         protected ViewManager $viewManager,
         protected InjectTemplateListener $injectTemplateListener,
+        #[Autowire(service: 'config', path: 'view_manager', default: [])]
         protected array $viewManagerConfig,
     ) {
         $this->displayExceptions = $viewManagerConfig['display_exceptions'] ?? false;
