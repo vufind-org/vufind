@@ -52,13 +52,17 @@ class AutowiredClass
     /**
      * Constructor
      *
-     * @param array      $config        Configuration
-     * @param array      $configArray   Configuration (same as $config)
-     * @param Config     $configObject  Configuration object (same configuration as $config)
-     * @param array      $yamlConfig    YAML-based configuration
-     * @param Url        $url           URL helper
-     * @param Manager    $authManager   Authentication manager
-     * @param Connection $ilsConnection ILS Connection
+     * @param array      $config          Configuration
+     * @param array      $configArray     Configuration (same as $config)
+     * @param Config     $configObject    Configuration object (same configuration as $config)
+     * @param array      $yamlConfig      YAML-based configuration
+     * @param Url        $url             URL helper
+     * @param Manager    $authManager     Authentication manager
+     * @param Connection $ilsConnection   ILS Connection
+     * @param string     $yamlFoo         A configuration value as string
+     * @param array      $yamlFooExploded A configuration value exploded to an array
+     * @param array      $defaultArray    A configuration default value
+     * @param string     $superValue      A value by path from an ArrayAccess object
      */
     public function __construct(
         #[Autowire(config: 'config')]
@@ -74,6 +78,14 @@ class AutowiredClass
         protected Manager $authManager,
         #[Autowire(service: Connection::class)]
         protected $ilsConnection,
+        #[Autowire(config: 'config2', configType: 'yaml', path: 'YAML/foo')]
+        protected string $yamlFoo,
+        #[Autowire(config: 'config2', configType: 'yaml', path: 'YAML/foo', explode: ',')]
+        protected array $yamlFooExploded,
+        #[Autowire(config: 'config2', configType: 'yaml', path: 'YAML/none', default: 'none')]
+        protected array $defaultArray,
+        #[Autowire(service: 'superarray', path: 'foo/bar')]
+        protected string $superValue,
     ) {
         if (!($ilsConnection instanceof Connection)) {
             throw new \Exception('Invalid ILS Connection');
@@ -89,6 +101,18 @@ class AutowiredClass
         }
         if (!isset($yamlConfig['YAML'])) {
             throw new \Exception('Invalid YAML configuration');
+        }
+        if ('bar, baz' !== $yamlFoo) {
+            throw new \Exception('Invalid YAML configuration from path');
+        }
+        if (['bar', 'baz'] !== $yamlFooExploded) {
+            throw new \Exception('Invalid exploded YAML configuration');
+        }
+        if (['none'] !== $defaultArray) {
+            throw new \Exception('Invalid default value');
+        }
+        if ('baz' !== $superValue) {
+            throw new \Exception('Invalid superValue from path');
         }
     }
 }
