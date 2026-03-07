@@ -77,11 +77,18 @@ trait AutowireTrait
         foreach ($reflectionParameters as $reflectionParameter) {
             $attributes = $reflectionParameter->getAttributes(Autowire::class);
             $autowireArgs = ($attributes[0] ?? null)?->getArguments();
-            if ($containerName = $autowireArgs['container'] ?? null && !$container->has($containerName)) {
-                if (is_callable([$container, 'set'])) {
-                    $container->set($containerName, new MockContainer($this));
-                } else {
-                    throw new \Exception('Cannot automatically add missing dependency: ' . $containerName);
+            if ($containerName = $autowireArgs['container'] ?? null) {
+                // If the container lacks the required service, or if it's a MockContainer that hasn't been
+                // explicity populated with a custom mock yet, create a default mock container.
+                if (
+                    !$container->has($containerName)
+                    || ($container instanceof MockContainer && $container->willAutoMockService($containerName))
+                ) {
+                    if (is_callable([$container, 'set'])) {
+                        $container->set($containerName, new MockContainer($this));
+                    } else {
+                        throw new \Exception('Cannot automatically add missing dependency: ' . $containerName);
+                    }
                 }
             }
         }
