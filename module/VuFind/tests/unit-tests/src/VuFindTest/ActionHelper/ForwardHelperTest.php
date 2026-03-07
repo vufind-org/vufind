@@ -30,7 +30,6 @@
 namespace VuFindTest\AjaxHandler;
 
 use InvalidArgumentException;
-use Laminas\ReCaptcha\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
