@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\Url;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * AlphaBrowse view helper
@@ -40,15 +41,8 @@ use Laminas\View\Helper\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
+class AlphaBrowse
 {
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
     /**
      * Additional configuration options.
      *
@@ -59,13 +53,16 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param Url   $helper  URL helper
-     * @param array $options Additional configuration options
+     * @param Url   $url    URL helper
+     * @param array $config Additional configuration options
      */
-    public function __construct(Url $helper, array $options = [])
-    {
-        $this->url = $helper;
-        $this->options = $options;
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(config: 'config')]
+        array $config = []
+    ) {
+        $this->options = $config['AlphaBrowse'] ?? $config;
     }
 
     /**
@@ -105,5 +102,15 @@ class AlphaBrowse extends \Laminas\View\Helper\AbstractHelper
     protected function escapeForSolr($str)
     {
         return '"' . addcslashes($str, '"') . '"';
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }
