@@ -108,6 +108,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
                 new \Laminas\View\Helper\EscapeHtmlAttr(new Escaper()),
+                $view
             ),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
                 $context,
