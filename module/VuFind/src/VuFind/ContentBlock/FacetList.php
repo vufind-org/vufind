@@ -172,7 +172,7 @@ class FacetList implements ContentBlockInterface
             'hierarchicalFacets' => $this->getHierarchicalFacets($facetConfig),
             'hierarchicalFacetSortOptions' =>
                 $this->getHierarchicalFacetSortSettings($facetConfig),
-            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig),
+            'twoColumnFacets' => $this->explodeListSetting($facetConfig->HomePage_Settings->two_column_facets ?? ''),
             'results' => $results,
         ];
     }
