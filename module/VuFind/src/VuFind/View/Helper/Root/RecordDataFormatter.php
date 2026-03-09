@@ -31,7 +31,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\RecordDataFormatter\Specs\PluginManager as SpecsManager;
 use VuFind\RecordDataFormatter\Specs\SpecInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -53,7 +53,7 @@ use function is_callable;
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
-class RecordDataFormatter extends AbstractHelper
+class RecordDataFormatter
 {
     /**
      * Record driver object.
@@ -65,10 +65,17 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Constructor
      *
-     * @param SpecsManager $specsManager Specs Plugin Manager
+     * @param SpecsManager $specsManager Specs plugin manager
+     * @param Record       $recordHelper Record view helper
+     * @param TransEsc     $transEsc     TransEsc view helper
+     * @param EscapeHtml   $escapeHtml   EscapeHtml view helper
      */
-    public function __construct(protected SpecsManager $specsManager)
-    {
+    public function __construct(
+        protected SpecsManager $specsManager,
+        protected Record $recordHelper,
+        protected TransEsc $transEsc,
+        protected EscapeHtml $escapeHtml
+    ) {
     }
 
     /**
@@ -383,11 +390,10 @@ class RecordDataFormatter extends AbstractHelper
         array $options
     ): string {
         $method = $options['helperMethod'] ?? null;
-        $plugin = $this->getView()->plugin('record');
-        if (empty($method) || !is_callable([$plugin, $method])) {
+        if (empty($method) || !is_callable([$this->recordHelper, $method])) {
             throw new \Exception('Cannot call "' . $method . '" on helper.');
         }
-        return $plugin($this->driver)->$method($data);
+        return ($this->recordHelper)($this->driver)->$method($data);
     }
 
     /**
@@ -405,13 +411,12 @@ class RecordDataFormatter extends AbstractHelper
         if (!isset($options['template'])) {
             throw new \Exception('Template option missing.');
         }
-        $helper = $this->getView()->plugin('record');
         $context = $options['context'] ?? [];
         $context['driver'] = $this->driver;
         $context['data'] = $data;
         $context['options'] = $options;
         return trim(
-            $helper($this->driver)->renderTemplate($options['template'], $context)
+            ($this->recordHelper)($this->driver)->renderTemplate($options['template'], $context)
         );
     }
 
@@ -427,8 +432,7 @@ class RecordDataFormatter extends AbstractHelper
     protected function getLink(string $value, array $options): string|bool
     {
         if ($options['recordLink'] ?? false) {
-            $helper = $this->getView()->plugin('record');
-            return $helper->getLink($options['recordLink'], $value);
+            return $this->recordHelper->getLink($options['recordLink'], $value);
         }
         return false;
     }
@@ -470,7 +474,6 @@ class RecordDataFormatter extends AbstractHelper
         }
 
         // render both values
-        $helper = $this->getView()->plugin('record');
         $template = $options['combineAltTemplate'] ?? 'combine-alt';
         $context = [
             'stdValue' => $stdValue,
@@ -478,7 +481,7 @@ class RecordDataFormatter extends AbstractHelper
             'prioritizeAlt' => $options['prioritizeAlt'] ?? false,
         ];
         return trim(
-            $helper($this->driver)->renderTemplate($template, $context)
+            ($this->recordHelper)($this->driver)->renderTemplate($template, $context)
         );
     }
 
@@ -494,9 +497,8 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function renderSimple(mixed $data, array $options): string
     {
-        $view = $this->getView();
         $escaper = ($options['translate'] ?? false)
-            ? $view->plugin('transEsc') : $view->plugin('escapeHtml');
+            ? $this->transEsc : $this->escapeHtml;
         $transDomain = $options['translationTextDomain'] ?? '';
         $separator = $options['separator'] ?? '<br>';
         $retVal = '';
@@ -507,7 +509,7 @@ class RecordDataFormatter extends AbstractHelper
         foreach ($array as $line) {
             $remaining--;
             $text = $options['itemPrefix'] ?? '';
-            $text .= $escaper($transDomain . $line);
+            $text .= ($escaper)($transDomain . $line);
             $text .= $options['itemSuffix'] ?? '';
             $retVal .= ($link = $this->getLink($line, $options))
                 ? '<a href="' . $link . '">' . $text . '</a>' : $text;
