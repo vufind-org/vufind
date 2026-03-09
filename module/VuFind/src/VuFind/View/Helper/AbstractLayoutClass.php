@@ -38,7 +38,7 @@ namespace VuFind\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractLayoutClass extends \Laminas\View\Helper\AbstractHelper
+abstract class AbstractLayoutClass
 {
     /**
      * Constructor
