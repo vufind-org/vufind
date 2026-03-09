@@ -52,9 +52,9 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
     {
         $view = $this->createMock(PhpRenderer::class);
         $view->method('render')->willReturnArgument(0);
-        
+
         $helper = new Component($view);
-        
+
         return $helper;
     }
 
