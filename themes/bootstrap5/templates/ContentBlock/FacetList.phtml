@@ -31,7 +31,7 @@
                 $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch, $format);
 
                 // Two-column facets (configured in facets.ini: [HomePage_Settings] two_column_facets):
-                //$useTwoColumns = in_array($field, $twoColumnFacets ?? [], true);
+                $useTwoColumns = in_array($field, $twoColumnFacets ?? [], true);
                 $maxListLength = $useTwoColumns ? $columnSize * 2 : $columnSize;
 
                 // Special case: custom URLs for collections...
