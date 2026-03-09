@@ -32,6 +32,7 @@ namespace VuFind\View\Helper\Bootstrap5;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Helper\Layout;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -79,6 +80,7 @@ class LayoutClassFactory implements FactoryInterface
         if ($layout->rtl && $mirror) {
             $sidebarOnLeft = !$sidebarOnLeft;
         }
-        return new $requestedName($sidebarOnLeft, $offcanvas, $layout->rtl);
+        $layoutHelper = $container->get('ViewHelperManager')->get(Layout::class);
+        return new $requestedName($sidebarOnLeft, $offcanvas, $layout->rtl, $layoutHelper);
     }
 }
