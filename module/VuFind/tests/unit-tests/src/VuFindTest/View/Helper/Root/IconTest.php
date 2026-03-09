@@ -128,13 +128,12 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $rtl = false
     ): Icon {
         $escaper = new Escaper();
-        $escapeHtmlAttr = new EscapeHtmlAttr($escaper);
-        $plugins['escapeHtmlAttr'] ??= $escapeHtmlAttr;
+        $plugins['escapeHtmlAttr'] ??= new EscapeHtmlAttr($escaper);
         $renderer = $this->getPhpRenderer($plugins);
         $icon = new Icon(
             $config ?? $this->getDefaultTestConfig(),
             $cache ?? new BlackHole(),
-            $escapeHtmlAttr,
+            $plugins['escapeHtmlAttr'],
             $renderer,
             $rtl
         );
