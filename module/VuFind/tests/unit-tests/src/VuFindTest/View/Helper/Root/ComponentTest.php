@@ -50,13 +50,11 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper()
     {
-        $helper = new Component();
-
         $view = $this->createMock(PhpRenderer::class);
-        $helper->setView($view);
-
-        $helper->getView()->method('render')->willReturnArgument(0);
-
+        $view->method('render')->willReturnArgument(0);
+        
+        $helper = new Component($view);
+        
         return $helper;
     }
 

@@ -40,7 +40,7 @@ use Closure;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org   Main Site
  */
-class CleanHtml extends \Laminas\View\Helper\AbstractHelper
+class CleanHtml
 {
     /**
      * Purifiers

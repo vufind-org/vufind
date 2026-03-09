@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Cart view helper
  *
@@ -38,23 +40,16 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Cart extends \Laminas\View\Helper\AbstractHelper
+class Cart
 {
-    /**
-     * VuFind Cart Model
-     *
-     * @var \VuFind\Cart
-     */
-    protected $cart;
-
     /**
      * Constructor
      *
      * @param \VuFind\Cart $cart Cart model
      */
-    public function __construct(\VuFind\Cart $cart)
+    #[Autowire()]
+    public function __construct(protected \VuFind\Cart $cart)
     {
-        $this->cart = $cart;
     }
 
     /**
