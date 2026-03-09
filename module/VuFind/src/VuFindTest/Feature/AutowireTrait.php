@@ -78,14 +78,21 @@ trait AutowireTrait
             $attributes = $reflectionParameter->getAttributes(Autowire::class);
             $autowireArgs = ($attributes[0] ?? null)?->getArguments();
             if ($containerName = $autowireArgs['container'] ?? null) {
-                // If the container lacks the required service, or if it's a MockContainer that hasn't been
-                // explicity populated with a custom mock yet, create a default mock container.
+                // If the container lacks the required container service, or if it's a MockContainer that hasn't been
+                // explicity populated with a custom mock yet, make sure we have a mock container in place.
                 if (
                     !$container->has($containerName)
                     || ($container instanceof MockContainer && $container->willAutoMockService($containerName))
                 ) {
                     if (is_callable([$container, 'set'])) {
-                        $container->set($containerName, new MockContainer($this));
+                        // If $container is a MockContainer, we'll use it as the plugin manager. This makes it easier
+                        // to override plugins when using the trait, since everything can be defined in a single
+                        // global space. However, if $container is some other kind of object, we should create a new
+                        // MockContainer for more predictable behavior.
+                        $container->set(
+                            $containerName,
+                            $container instanceof MockContainer ? $container : new MockContainer($this)
+                        );
                     } else {
                         throw new \Exception('Cannot automatically add missing dependency: ' . $containerName);
                     }
