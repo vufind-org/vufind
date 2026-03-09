@@ -107,7 +107,6 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
      * @param Partial   $partial       Partial view helper
      */
     public function __construct(
-        #[Autowire()]
         protected Converter $dateConverter,
         #[Autowire(container: 'ViewHelperManager')]
         protected Partial $partial
