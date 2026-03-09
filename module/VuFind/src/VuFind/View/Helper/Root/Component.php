@@ -30,7 +30,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Component view helper
@@ -42,7 +43,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Component extends AbstractHelper
+class Component
 {
     /**
      * Local cache of CSS class names for components (component name => class name).
@@ -50,6 +51,17 @@ class Component extends AbstractHelper
      * @var array
      */
     protected array $cssClassCache = [];
+
+    /**
+     * Constructor
+     *
+     * @param RendererInterface $view View renderer
+     */
+    #[Autowire]
+    public function __construct(
+        protected RendererInterface $view
+    ) {
+    }
 
     /**
      * Expand path and render template
