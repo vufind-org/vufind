@@ -126,7 +126,14 @@ class RecordDataFormatterFactory implements FactoryInterface
                 . 'See https://vufind.org/wiki/development:architecture:record_data_formatter for more information.';
             $logger->warn(get_class($this) . ': ' . $warningMessage);
         }
-        return new $requestedName($specPluginManager);
+
+        $viewHelperManager = $container->get('ViewHelperManager');
+        return new $requestedName(
+            $specPluginManager,
+            $viewHelperManager->get('record'),
+            $viewHelperManager->get('transEsc'),
+            $viewHelperManager->get('escapeHtml')
+        );
     }
 
     /**
