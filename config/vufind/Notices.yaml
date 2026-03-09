@@ -24,6 +24,8 @@ styles:
 # - position: Specifies the position of the notice. By default, the notices are displayed above the main content.
 #             Currently, the only other option that is available is "header", but you can add more possible position
 #             by adding <?=$this->notices()->renderNoticesForPosition('<position>')?> to your templates.
+# - conditions: Optional array of conditions. For more details
+#               see https://vufind.org/wiki/development:plugins:condition_handlers
 notices:
 # Example 1
 #  - style: warning
@@ -50,3 +52,9 @@ notices:
 #
 #      * create **favorite** lists
 #    contentType: markdown
+#  - style: success
+#    content: Merry Christmas!
+#    conditions:
+#      - type: date
+#        checkedValues: "/-12-2[4-6]/"
+#        comparator: "regex"

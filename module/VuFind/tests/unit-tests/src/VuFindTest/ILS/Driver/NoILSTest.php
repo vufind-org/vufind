@@ -138,7 +138,6 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals([], $this->driver->getPurchaseHistory('foo'));
         $this->assertEquals(null, $this->driver->patronLogin('foo', 'bar'));
-        $this->assertEquals([], $this->driver->getNewItems(1, 20, 30));
         $this->assertFalse($this->driver->getConfig('Holds'));
     }
 }

@@ -55,7 +55,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected string $targetVersion = '11.0';
+    protected string $targetVersion = '11.1';
 
     /**
      * Get an upgrade object for the specified source version:
@@ -219,6 +219,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // Make sure spellcheck 'simple' is replaced by 'dictionaries'
         $this->assertFalse(isset($results['config']['Spelling']['simple']));
         $this->assertTrue(isset($results['config']['Spelling']['dictionaries']));
+    }
+
+    /**
+     * Test new items ILS method removal.
+     *
+     * @return void
+     */
+    public function testIlsNewItems(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure the ILS method is switched to disabled and the deprecated setting is removed:
+        $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method setting of "ils" has been '
+        . 'removed; you should enable change tracking (if not already done) and switch to "solr". For now, new '
+        . 'item search has been disabled.';
+        $this->assertSame([$expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame('disabled', $results['searches']['NewItem']['method']);
+        $this->assertFalse(isset($results['searches']['NewItem']['result_pages']));
     }
 
     /**
@@ -549,7 +568,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
             . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
             . 'You may need to reimplement your custom theme.';
-        $this->assertSame([$expectedWarning], $upgrader->getWarnings());
+        $this->assertContains($expectedWarning, $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'sandal5',
