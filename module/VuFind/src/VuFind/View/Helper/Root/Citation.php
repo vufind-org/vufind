@@ -30,8 +30,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\Partial;
+use VuFind\Date\Converter;
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function function_exists;
@@ -69,13 +72,6 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected $driver;
 
     /**
-     * Date converter
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter;
-
-    /**
      * List of words to never capitalize when using title case.
      *
      * Some words that were considered for this list, but excluded due to their
@@ -107,11 +103,15 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter $converter Date converter
+     * @param Converter $dateConverter Date converter
+     * @param Partial   $partial       Partial view helper
      */
-    public function __construct(\VuFind\Date\Converter $converter)
-    {
-        $this->dateConverter = $converter;
+    public function __construct(
+        #[Autowire()]
+        protected Converter $dateConverter,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Partial $partial
+    ) {
     }
 
     /**
@@ -308,12 +308,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $apa['doi'] = $doi;
         }
 
-        $partial = $this->getView()->plugin('partial');
         // Behave differently for books vs. journals:
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
-            return $partial('Citation/apa.phtml', $apa);
+            return ($this->partial)('Citation/apa.phtml', $apa);
         }
 
         // If we got this far, it's the default article case:
@@ -321,7 +320,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
-        return $partial('Citation/apa-article.phtml', $apa);
+        return ($this->partial)('Citation/apa-article.phtml', $apa);
     }
 
     /**
@@ -397,12 +396,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         }
 
         // Behave differently for books vs. journals:
-        $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
             $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
-            return $partial('Citation/mla.phtml', $mla);
+            return ($this->partial)('Citation/mla.phtml', $mla);
         }
         // If we got this far, we should add other journal-specific details:
         $mla['doiArticleComma'] = $doiArticleComma;
@@ -413,7 +411,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $volPrefix,
             $yearFormat
         );
-        return $partial('Citation/mla-article.phtml', $mla);
+        return ($this->partial)('Citation/mla-article.phtml', $mla);
     }
 
     /**
