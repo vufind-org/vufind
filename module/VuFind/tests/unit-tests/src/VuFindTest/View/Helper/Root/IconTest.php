@@ -32,7 +32,6 @@ namespace VuFindTest\View\Helper\Root;
 use Laminas\Cache\Storage\Adapter\BlackHole;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\EscapeHtmlAttr;
-use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Escaper\Escaper;
 use VuFind\View\Helper\Root\Icon;
 use VuFindTheme\View\Helper\ImageLink;
