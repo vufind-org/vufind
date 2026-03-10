@@ -159,18 +159,23 @@ class HeaderBar extends AbstractMenu
                   attributes:
                     id: feedbackLink
                     data-lightbox: data-lightbox
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-feedback.phtml
             
                 - template: Section/HeaderBar/HeaderBar-cart.phtml
                   checkMethod: checkCart
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-cart.phtml
             
                 - template: Section/HeaderBar/HeaderBar-account.phtml
                   checkMethod: checkAccount
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-account.phtml
             
                 - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
                   checkMethod: checkThemeOptions
+                  excludeFromSiteMapPage: true
             
                 - template: Section/HeaderBar/HeaderBar-allLangs.phtml
                   checkMethod: checkAllLangs
+                  excludeFromSiteMapPage: true
             YAML;
         return Yaml::parse($yaml);
     }

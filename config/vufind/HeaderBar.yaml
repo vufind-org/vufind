@@ -5,6 +5,8 @@
 # The format of this configuration is as follows:
 #
 # Array keys for every group are:
+#   - label: text shown as group header, will be translated. Only shown on the
+#     site map page.
 #   - MenuItems: items shown in the menu - required
 #   - checkMethod: the name of a HeaderBar section plugin method to perform
 #     a check whether to show the group. If omitted, group will always display.
@@ -25,6 +27,9 @@
 #   - routeParams: parameters for dynamic routes
 #   - url: target url, alternative to route - required unless route, template or
 #     submenuItems is set
+#   - siteMapPageTemplate: template to render the item with on the site map page if
+#     the regular item is not suitable for use in the site map
+#   - excludeFromSiteMapPage: set true to exclude item from the site map page
 #
 # You can use checkMethod: alwaysFail to disable specific inherited groups or items
 # in local configuration. If you wish to completely override the default
@@ -40,15 +45,20 @@ Header:
       attributes:
         id: feedbackLink
         data-lightbox: data-lightbox
+      siteMapPageTemplate: Section/SiteMap/SiteMap-feedback.phtml
 
     - template: Section/HeaderBar/HeaderBar-cart.phtml
       checkMethod: checkCart
+      siteMapPageTemplate: Section/SiteMap/SiteMap-cart.phtml
 
     - template: Section/HeaderBar/HeaderBar-account.phtml
       checkMethod: checkAccount
+      siteMapPageTemplate: Section/SiteMap/SiteMap-account.phtml
 
     - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
       checkMethod: checkThemeOptions
+      excludeFromSiteMapPage: true
 
     - template: Section/HeaderBar/HeaderBar-allLangs.phtml
       checkMethod: checkAllLangs
+      excludeFromSiteMapPage: true
