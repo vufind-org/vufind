@@ -104,4 +104,14 @@ abstract class AbstractSearch
         $html .= '</ul></div>';
         return $html;
     }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }
