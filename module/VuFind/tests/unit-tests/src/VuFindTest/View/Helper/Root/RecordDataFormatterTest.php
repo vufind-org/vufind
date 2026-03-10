@@ -93,7 +93,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             return $this->createMock($service);
         });
         $record->setDbServiceManager($serviceManager);
-        
+
         $authManager = $this->createMock(\VuFind\Auth\Manager::class);
         $authManager->method('loginEnabled')->willReturn(true);
         $authManager->method('inPrivacyMode')->willReturn(false);
@@ -133,7 +133,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'usertags' => new \VuFind\View\Helper\Root\UserTags(
                 new \VuFind\Config\AccountCapabilities(
                     $this->createMock(\VuFind\Config\Config::class),
-                    fn() => $authManager
+                    fn () => $authManager
                 )
             ),
         ];
