@@ -93,7 +93,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             return $this->createMock($service);
         });
         $record->setDbServiceManager($serviceManager);
+        
         $authManager = $this->createMock(\VuFind\Auth\Manager::class);
+        $authManager->method('loginEnabled')->willReturn(true);
+        $authManager->method('inPrivacyMode')->willReturn(false);
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $authManager,
