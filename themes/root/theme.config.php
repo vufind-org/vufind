@@ -61,7 +61,6 @@ return [
             'VuFind\View\Helper\Root\Recommend' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Record' => 'VuFind\View\Helper\Root\RecordFactory',
             'VuFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
-            'VuFind\View\Helper\Root\RecordLinker' => 'VuFind\View\Helper\Root\RecordLinkerFactory',
             'VuFind\View\Helper\Root\RecordTabs' => 'VuFind\View\Helper\Root\RecordTabsFactory',
             'VuFind\View\Helper\Root\Relais' => 'VuFind\View\Helper\Root\RelaisFactory',
             'VuFind\View\Helper\Root\Related' => 'VuFind\View\Helper\Root\RelatedFactory',
