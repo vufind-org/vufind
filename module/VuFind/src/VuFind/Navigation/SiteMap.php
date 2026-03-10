@@ -183,7 +183,7 @@ class SiteMap extends AbstractMenu
                     throw new BadConfig('Group key clash in configuration: ' . $pluginGroupName);
                 }
                 foreach ($pluginGroup['MenuItems'] ?? [] as $key => $item) {
-                    if (isset($item['siteMapPageTemplate']) || isset($item['template'])) {
+                    if ($templateToUse = $item['siteMapPageTemplate'] ?? $item['template'] ?? null) {
                         // Templates from included sections require a plugin
                         // specific context so they are rendered at this stage.
                         $context = [
@@ -192,10 +192,7 @@ class SiteMap extends AbstractMenu
                             ...$item,
                         ];
                         $pluginGroup['MenuItems'][$key]['__html']
-                            = $this->renderer->render(
-                                $item['siteMapPageTemplate'] ?? $item['template'],
-                                $context
-                            );
+                            = $this->renderer->render($templateToUse, $context);
                     }
                 }
                 $processedGroups[$pluginGroupName] = $pluginGroup;
