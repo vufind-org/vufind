@@ -1,0 +1,29 @@
+<!-- finc: RecordDriver - DefaultRecord - data-transEscCommaSepLang -->
+<?php
+/**
+ * origin: finc
+ * called by view helper/controller:
+ * usage:
+ * modified for finc:
+ * configured in: {}
+ */
+?>
+<?php if (!empty($data)): ?>
+  <?php if (is_array($data)): ?>
+    <?php /* finc: adds schema tags for language #13850 - VE */ ?>
+    <?php /* keeps this template instead of prefix in RecordDataFormatter, but use availableLanguage #25227 - RE */ ?>
+    <span property="availableLanguage" typeof="Language">
+      <span property="name">
+      <?=
+        implode(
+            '</span></span>, <span property="availableLanguage" typeof="Language"><span property="name">',
+            array_map([$this, 'transEsc'], $data)
+        );
+      ?>
+      </span>
+    </span>
+  <?php else: ?>
+    <?=$this->transEsc($data)?>
+  <?php endif; ?>
+<?php endif; ?>
+<!-- finc: RecordDriver - DefaultRecord - data-transEscCommaSepLang - END -->

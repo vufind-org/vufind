@@ -1,0 +1,20 @@
+<!-- finc: recordDriver - DefaultRecord - record-icon -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if (!empty($iconClass)): ?>
+  <span class="access-icon hidden-print">
+    <i aria-hidden="true" class="<?=$iconClass?>"></i>
+    <?php /* separate access text from icon - moved to cover.phtml */ ?>
+  </span>
+  <?php if ($this->setIconText ?? true): ?>
+      <?=$this->record($this->driver)->getRecordIconText()?>
+  <?php endif; ?>
+<?php endif; ?>
+<!-- finc: recordDriver - DefaultRecord - record-icon - END -->

@@ -1,0 +1,110 @@
+<!-- finc: admin - i18n - home -->
+<?php $this->headTitle($this->translate('admin_i18n_menu_entry')); ?>
+
+<div class="<?= ($this->layoutClass('mainbody') . (!$this->config()->get('config')->Site->admin_enabled ? ' solo' : '')) ?>" style="width: 100%">
+    <h1><?= $this->transEsc('admin_i18n_menu_entry') ?></h1>
+    <?= $this->flashmessages() ?>
+    <div class="panel panel-info">
+        <div class="panel-body">
+            <?= $this->translate('admin_i18n_note_about_use') ?>
+        </div>
+    </div>
+
+    <form id="change-language-form" action="<?= $this->url('admin/i18n') ?>">
+        <div class="form-group">
+            <p><strong><?= $this->transEsc('admin_i18n_select_languages') ?>:</strong></p>
+            <?php foreach ($this->languages as $language): ?>
+                <?php $checked = $language['selected'] ? 'checked' : ''; ?>
+                <label class="checkbox-inline">
+                    <input type="radio" name="locale" <?= $checked ?> value="<?= $language['locale'] ?>">
+                    <?= $language['name'] ?>
+                </label>
+            <?php endforeach; ?>
+        </div>
+        <div class="form-group">
+            <p><strong><?= $this->transEsc('admin_i18n_select_domains') ?>:</strong></p>
+            <?php foreach ($domains as $domain): ?>
+                <label class="checkbox-inline">
+                    <input type="radio" name="domain" value="<?= $domain['name'] ?>"<?= $domain['selected'] ? 'checked' : '' ?>>
+                    <?= $domain['name'] ?>
+                </label>
+            <?php endforeach; ?>
+        </div>
+        <button type="submit" form="change-language-form"
+                class="btn btn-primary">
+            <?= $this->transEsc('admin_i18n_submit_language_selection') ?>
+        </button>
+    </form>
+
+    <table id="language-table"
+           class="table table-striped table-condensed table-responsive"
+           data-page-length='100' data-order='[[ 1, "asc" ]]'>
+        <thead>
+        <tr>
+            <th>
+                <?= $this->transEsc('admin_i18n_header_token') ?>
+                <i class="fa fa-fw"></i>
+                <span class="sr-only"><?= $this->transEsc('Sort') ?></span>
+            </th>
+            <th>
+                <?= $this->transEsc('admin_i18n_header_value') ?>
+                <i class="fa fa-fw"></i>
+                <span class="sr-only"><?= $this->transEsc('Sort') ?></span>
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($this->translations[$this->locale][$this->domain] as $token => $value): ?>
+            <?php $defaultValue = $this->defaultTranslations[$this->locale][$this->domain][$token]; ?>
+            <tr>
+                <td><?= $token ?></td>
+                <td><?= htmlspecialchars($value) ?></td>
+                <td>
+                    <form data-lightbox action="<?= $this->url('admin/i18n', ['action' => 'edit']) ?>" method="post">
+                        <input type="hidden" name="locale" value="<?= $this->locale ?>">
+                        <input type="hidden" name="domain" value="<?= $this->domain ?>">
+                        <input type="hidden" name="token" value="<?= $token ?>">
+                        <input type="hidden" name="value" value="<?= htmlspecialchars($value) ?>">
+                        <input type="hidden" name="default_value" value="<?= htmlspecialchars($defaultValue) ?>">
+                        <button type="submit"><?=$this->translate('Edit')?></button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<?php
+$script = <<<JS
+     $(document).ready(function () {
+         $('#language-table').DataTable({
+             // prevent paging -- all in one page
+             "language": {
+                 "sLengthMenu":"{$this->translate('admin_i18n_show')} _MENU_ {$this->translate('admin_i18n_show_entries')}",
+                 "sLoadingRecords": "Wird geladen ...",
+                 "sProcessing": "Bitte warten ...",
+                 "sSearch": "{$this->translate('Search')}: ",
+                 "sZeroRecords": "Keine Einträge vorhanden.",
+                 "oPaginate": {
+                     "sFirst": "{$this->translate('First')}",
+                     "sPrevious": "{$this->translate('navigate_back')}",
+                     "sNext": "{$this->translate('Next')}",
+                     "sLast": "{$this->translate('Last')}"
+                 },
+                 "oAria": {
+                     "sSortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+                }
+             }
+         });
+     });
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<?php $this->headScript()
+    ->appendFile("vendor/datatables/jquery.dataTables.min.js"); ?>
+<?php $this->headScript()
+    ->appendFile("vendor/datatables/dataTables.bootstrap.min.js"); ?>
+<!-- finc: admin - i18n - home - END -->
+

@@ -1,0 +1,27 @@
+<!-- finc: RecordDriver - solrMarc - data-linkviafincid -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if (!empty($data)): ?>
+  <?php foreach ($data as $field): ?>
+    <?php if (is_array($field) && (isset($field['id']) || isset($field['text']))):
+      $url = isset($field['id'])
+        ? $this->url('record') . $field['id']
+        : $this->record($this->driver)->getLink('title', $field['text']);
+      ?>
+      <?php if (isset($field['pretext']) && !empty($field['pretext'])): ?>
+      <?=$this->escapeHtml($field['pretext'])?>:
+    <?php endif; ?>
+      <a href="<?=$url?>"><?=$this->escapeHtml($field['text'])?></a><br>
+    <?php else: ?>
+      <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br>
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>
+<!-- finc: RecordDriver - solrMarc - data-linkviafincid - END -->

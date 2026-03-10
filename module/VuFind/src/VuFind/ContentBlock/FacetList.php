@@ -121,6 +121,37 @@ class FacetList implements ContentBlockInterface
     }
 
     /**
+     * Get list of facet fields that should be displayed in two columns on the homepage
+     * (configured via facets.ini -> [HomePage_Settings] -> two_column_facets).
+     *
+     * @param Config $facetConfig Facet configuration object.
+     *
+     * @return string[]
+     */
+    protected function getTwoColumnFacets(Config $facetConfig): array
+    {
+        $raw = $facetConfig->HomePage_Settings->two_column_facets ?? null;
+        
+        if ($raw === null) {
+            return [];
+        }
+        
+        if (is_array($raw)) {
+            $items = $raw;
+        } else {
+            $items = preg_split('/\s*,\s*/', (string)$raw);
+            if ($items === false) {
+                $items = [];
+            }
+        }
+        
+        $items = array_map('trim', $items);
+        $items = array_filter($items, static fn($value): bool => $value !== '');
+      
+        return array_values(array_unique($items));
+    }
+  
+    /**
      * Return context variables used for rendering the block's template.
      *
      * @return array
@@ -138,6 +169,7 @@ class FacetList implements ContentBlockInterface
             'hierarchicalFacets' => $this->getHierarchicalFacets($facetConfig),
             'hierarchicalFacetSortOptions' =>
                 $this->getHierarchicalFacetSortSettings($facetConfig),
+            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig),
             'results' => $results,
         ];
     }

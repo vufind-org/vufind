@@ -1,0 +1,395 @@
+// This file is for all search and search-box related elements,
+// incl. advanced search, bulk action buttons, search tools (limit/sort ...) and search results
+
+
+// *****************************************************************
+// ************ Search box *****************************************
+// *****************************************************************
+
+// Make more white space when Hamburger is open on XS; keep .nav for specifity
+.nav.searchbox {
+  @media (max-width: $screen-xs-max) {
+    margin-bottom: $search-container-margin-bottom-xs;
+  }
+}
+
+// Make search box container flexible -- values should complement those
+// of #header-collapse (i.e. the right-hand side navigation elements)
+.search.container {
+  padding-right: $search-container-right-padding;
+
+  // Make wider to fit searchbox and right-hand nav-elements
+  @media (min-width: $screen-sm-min) {
+    flex: $search-container-sm-up-flex;
+    padding-top: $button-top-padding;
+    width: $search-container-sm-up-width;
+  }
+
+  // Float 'Find' button next to searchbox on XS and SM
+  @media (max-width: $screen-sm-max) {
+    padding-left: $search-container-sm-max-left-padding;
+  }
+
+  @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    flex: $search-container-sm-only-flex;
+  }
+}
+
+// '.searchForm' is the class of the entire form itself
+.searchForm {
+  @media (max-width: $screen-sm-max) {
+    display: $search-form-display;
+    flex-wrap: $search-form-flex-wrap;
+    justify-content: $search-form-justify-content;
+    margin-bottom: $search-form-margin-bottom;
+    margin-top: $search-form-margin-top;
+    padding-top: $search-form-padding-top;
+  }
+
+  @media (min-width: $screen-sm-min) {
+    width: $search-form-sm-up-width;
+  }
+
+  @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    display: $search-form-sm-only-display-no-flex;
+  }
+
+  // Searchform input field + 'search for media type' field
+  input:not([type='checkbox']),
+  select.searchForm_type {
+    @media (max-width: $screen-sm-max) {
+      display: $search-form-input-type-sm-max-display;
+      flex-grow: $search-form-input-type-sm-max-flex-grow;
+      flex-shrink: $search-form-input-type-sm-max-flex-shrink;
+    }
+  }
+
+  input:not([type='checkbox']) {
+    @media (max-width: $screen-sm-max) {
+      flex-basis: $search-form-input-only-sm-max-flex-basis;
+    }
+  }
+
+  select.searchForm_type {
+    @media (max-width: $screen-sm-max) {
+      flex-basis: $search-form-select-only-sm-max-flex-basis;
+    }
+  }
+
+  // Shards checkboxes: To apply identical styles to checkboxes
+  // on HOME and all other pages, we use '.searchForm' as parent
+  // Since shards are mostly relevant for development only, we do not introduce variables here
+  .checkbox {
+    clear: both;
+    display: block;
+    float: none;
+    padding-top: ($grid-gutter-width * .25);
+
+    @media (max-width: $screen-sm-max) {
+      // make this correspond to .searchForm @media (max-width: $screen-sm-max) {}, requires "flex-wrap: wrap" on parent
+      display: flex;
+      margin-top: .7rem;
+      padding-top: 0;
+      width: 100%;
+    }
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      position: static;
+    }
+
+    // actual checkbox box
+    input {
+      margin-right: .25rem;
+      // make sure, input and label are aligned in acceptable manner between 100% and 200% zoom
+      margin-top: $input-top-margin;
+    }
+  }
+
+  // BUTTONS, inputs and selects in search form
+  .btn,
+  .form-control {
+    // align 'search type' and search button:
+    // Pls. beware that the active-filters' buttons will also be affected by this (reset in 'header-active-filters.scss' -> button[id^='dropdown-toggle-'])
+    vertical-align: $search-form-btn-form-control-vertical-align;
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      float: $search-form-btn-form-control-float-xs;
+    }
+  }
+
+  // make advanced search button discernible
+  .btn-transparent {
+    @media (max-width: $screen-sm-max) {
+      border: $search-form-advanced-search-button-border;
+    }
+  }
+
+  // when nav-tabs are active, style them flex-style as rest of search box; to activate, add
+  // [SearchTabs]
+  // Solr=Catalog
+  // WorldCat=WorldCat
+  // to dev/config.ini
+  .nav-tabs {
+    display: flex;
+    flex-basis: 100%;
+  }
+}
+
+
+// *****************************************************************
+// ************ Advanced Search ************************************
+// *****************************************************************
+// Pls. note:
+// In most instance we have MOVED the advanced search TERMS INTO the BREADCRUMBS area
+// in order to keep the header ok on small devices. If this is the case in your instance,
+// you can ignore the '.adv_search_terms' settings.
+
+// Outer container for search box and adv search links
+.navbar-form {
+  margin-bottom: 0; // overwrites BS theme
+
+  .result-advanced & {
+    // create sufficient space for header menu
+    @media (min-width: $screen-sm-min) and (max-width: $screen-md-max) {
+      max-width: $adv-search-links-sm-to-md-max-max-width;
+    }
+  }
+}
+
+// FIXME: CHECK THE FOLLOWING for redundant code - it should all relate to the advanced search page but may not - CK
+// .tab-content.adv-search container wraps advanced search terms and links
+.adv-search {
+  @media (max-width: $screen-xs-max) {
+    margin-bottom: 0;
+    margin-left: -($half-gutter);
+  }
+
+  // keep this parent for overwriting specifity
+  // input field
+  .adv-term-input {
+    // overwrite finc
+    @media (min-width: $screen-sm-min) {
+      width: 99%;
+    }
+  }
+
+  // keep this parent for overwriting specifity
+  // search type select
+  .adv-term-type {
+
+    // overwrite finc
+    @media (min-width: $screen-sm-min) {
+      max-width: 99%;
+    }
+  }
+
+  // keep this parent for overwriting specifity
+  // Suchfeld remove-X-Buttons
+  .adv-term-remove {
+    // overwrite finc
+    height: $adv-search-remove-btn-height;
+    margin-top: $adv-search-remove-btn-top-margin;
+    opacity: $adv-search-remove-btn-opacity;
+    width: $adv-search-remove-btn-width;
+
+    @media (max-width: $screen-xs-max) {
+      border: $border-default-styles;
+      line-height: 1.5;
+      margin-top: 29px;
+    }
+
+    @media (min-width: $screen-md-min) {
+      margin-left: 2px;
+    }
+  }
+}
+
+.adv-input,
+.adv-select {
+  float: left;
+
+  @media (max-width: $screen-xs-max) {
+    padding-left: $half-gutter;
+  }
+}
+
+.adv-input {
+  @media (max-width: $screen-xs-max) {
+    width: 100%;
+  }
+
+  @media (min-width: $screen-sm-min) {
+    width: 59%;
+  }
+
+  @media (min-width: $screen-md-min) {
+    width: 62%;
+  }
+}
+
+.adv-select {
+
+  @media (min-width: $screen-sm-min) {
+    max-width: unset;
+    width: 28%;
+  }
+}
+
+////// Set colors for remove search field buttons
+.adv-term-remove {
+  color: $brand-danger; // Fixme: Was $alert-danger-color
+
+
+  &:focus,
+  &:hover {
+    color: $brand-danger;
+    opacity: 1;
+  }
+}
+
+.add_search_link,
+.adv-group-close {
+  margin-bottom: 4px;
+  padding-bottom: $button-top-padding;
+  padding-top: $button-top-padding;
+
+  @media (max-width: $screen-xs-max) {
+    margin-top: $half-gutter;
+  }
+}
+
+// this is the "remove search group" button
+.adv-group-close {
+  color: $state-danger-text;
+
+  @media (min-width: $screen-sm-min) {
+    float: right;
+  }
+
+  i {
+    color: $brand-danger;
+  }
+}
+
+////// Swap find and clear buttons for consistency
+.adv-submit {
+  .fnd-btn {
+    float: right;
+  }
+
+  .clear-btn {
+    float: left;
+  }
+}
+
+
+
+// *****************************************************************
+// ************ Display of Search Terms and Options ****************
+// ************ _AFTER_ sucessful advanced search   ****************
+// *****************************************************************
+
+// FIXME: REMOVE THE FOLLOWING TWO SECTIONS + all RELATED VARIABLES when
+//  all instances have the new search terms display on top of search results - CK
+// <-- REMOVE FROM HERE
+// Advanced search terms in header (visible only after an advanced search was run)
+// i.e. the search terms entered
+.adv_search_terms {
+  background-color: $adv-search-terms-bg;
+  border: $adv-search-terms-border;
+  margin-bottom: $adv-search-terms-bottom-margin;
+  padding: $adv-search-terms-padding;
+  width: $adv-search-terms-width;
+}
+
+// Advanced search links in header (visible only after an advanced search was run)
+// i.e. 'Edit advanced search' | 'New advanced search' ...
+.adv_search_links {
+  border: $adv-search-links-border;
+  list-style: $adv-search-links-list-style;
+  margin: $adv-search-links-margin;
+  padding: $adv-search-links-padding;
+
+  @media (min-width: $screen-sm-min) {
+    margin-top: $adv-search-links-top-margin-sm;
+  }
+
+  a {
+    border-top: $adv-search-links-anchor-top-border;
+    display: $adv-search-links-anchor-display;
+    padding-left: $adv-search-links-anchor-padding-left;
+
+    &:last-of-type {
+      border-bottom: 0;
+    }
+
+    // 786px and above as inline list
+    @media (min-width: $screen-sm-min) {
+      border-bottom: $adv-search-links-anchor-border-bottom-sm-up;
+      border-right: $adv-search-links-anchor-border-right-sm-up;
+      display: $adv-search-links-anchor-display-sm-up;
+      padding-right: $adv-search-links-anchor-padding-right-sm-up;
+
+      &:last-of-type {
+        border-right: 0;
+      }
+    }
+  }
+}
+
+// <-- REMOVE TO HERE
+
+// NEW VERSION
+.adv-search-box {
+  border: $adv-search-box-border;
+  background-color: $adv-search-box-background-color;
+  display: $adv-search-box-display;
+  margin-bottom: $adv-search-box-margin-bottom;
+  padding: $adv-search-box-padding;
+}
+
+.adv-terms-label {
+  display: flex;
+  flex-basis: 100%;
+}
+
+.adv-terms,
+.adv-delete {
+  flex: content;
+}
+
+.adv-terms {
+  margin-right: 1rem;
+  word-break: break-word;
+}
+
+.adv-delete {
+  margin-top: 1.5rem;
+
+
+  .btn {
+    float: right;
+    vertical-align: bottom;
+  }
+}
+
+// Lend search terms and options the same height as the delete button for better alignment
+// Base this on the same code as for '.search-filter-toggle' in bootstrap
+.adv-edit {
+  @extend .btn;
+  // but align to left when there are many terms
+  padding-left: 0;
+  text-align: left;
+  white-space: normal;
+}
+
+
+// *****************************************************************
+// ************ Autocomplete ***************************************
+// *****************************************************************
+
+// When using a fixed header + autocomplete, increase the z-index in
+// autocomplete-results to a value higher than the fixed navbar (1030)!
+.autocomplete-results {
+ // z-index: $zindex-navbar-fixed + 1; // Fixme: Was $zindex-navbar-fixed + 1 = UNDEFINED;
+}

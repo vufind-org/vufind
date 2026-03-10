@@ -1,0 +1,25 @@
+<!-- finc: Recommend - DOI -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * uses <p> and aria-live for alerts #17950, #21622
+ * FIXME: remove file in finc, if the changes are available in VuFind; create PR if not yet done
+configured in: {}
+ */
+?>
+
+<?php $doi = $this->recommend->getDOI(); if (!empty($doi)): ?>
+  <?php $url = $this->recommend->getURL(); ?>
+  <?php /* finc: uses <p> and aria-live for alerts #17950, #21622 */ ?>
+  <p class="alert alert-info" aria-live="polite">
+    <?=$this->translate('doi_detected_html', ['%%url%%' => $url, '%%doi%%' => $doi])?>
+  </p>
+  <?php if ($this->recommend->isFullMatch() && $this->recommend->redirectFullMatch()): ?>
+    <?php $redirect = 'document.location.href = "' . $this->escapeJs($url) . '";'; ?>
+    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $redirect, 'SET')?>
+  <?php endif; ?>
+<?php endif; ?>
+<!-- finc: Recommend - DOI - END -->

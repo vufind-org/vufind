@@ -1,0 +1,55 @@
+// Use this for bulk action styles
+// If you want the bulk action buttons visible on XS devices, import the following file
+// @import '../activate-on-demand/bulkaction-visible-xs';
+
+// *****************************************************************
+// ************ Bulk Action Toolbar ********************************
+// *****************************************************************
+
+.bulk-action-buttons,
+.bulkActionButtons {
+  clear: $bulk-action-buttons-element-clear;
+  padding-bottom: $bulk-action-buttons-element-padding-bottom;
+  padding-left: $bulk-action-buttons-element-padding-left;
+  padding-top: $bulk-action-buttons-element-padding-top;
+
+  .btn-group {
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      // truncate 'add to bookbag'-button on top of search results to make it fit
+      // -- see also '#updateCart' below, CK
+      margin-right: $bulk-action-buttons-element-btn-group-sm-margin-right;
+    }
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-md-max) {
+      margin-left: $bulk-action-buttons-element-btn-group-sm-md-margin-left;
+    }
+  }
+}
+
+// 'Add to Bookbag' in bulk action buttons
+// truncate 'add to bookbag'-button on top of search results
+// to make it fit -- see also '.btn-group' in buttons.scss
+#updateCart {
+  @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    max-width: $bulk-action-buttons-element-add-to-bookbag-sm-max-width;
+  }
+}
+
+
+
+// *****************************************************************
+// ************ Check boxes for bulk actions ***********************
+// *****************************************************************
+
+.record-checkbox {
+  float: $bulk-action-record-view-checkbox-container-float;
+  margin-right: $bulk-action-record-view-checkbox-container-margin-right;
+
+  input[type='checkbox'],
+  input[type='checkbox']:focus {
+    // make sure, input and label are aligned in acceptable manner between 100% and 200% zoom
+    margin-top: $bulk-action-record-view-checkbox-input-margin-top;
+  }
+}
+

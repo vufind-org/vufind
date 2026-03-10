@@ -1,0 +1,71 @@
+<!-- finc: search - advanced-search-information -->
+<?php
+/**
+origin: vufind/BS3/templates/search/searchbox.phtml (partial)
+called by view helper/controller:
+usage:
+modified for finc:
+ * Disable search tabs on advanced search terms #22361
+ * specific adv-search-box
+configured in: {}
+ */
+?>
+<?php /* partial copy of themes/bootstrap3/templates/search/searchbox.phtml */ ?>
+<?php
+
+    // Load search actions and settings (if any):
+    $options = $this->searchOptions($this->searchClassId);
+    $handlers = $this->searchbox()->getHandlers(
+        $this->searchClassId,
+        $this->searchIndex ?? null
+    );
+    $handlerCount = count($handlers);
+    $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+    $searchHome = $options->getSearchHomeAction();
+    $advSearch = $options->getAdvancedSearchAction();
+    $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+    $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
+    $ignoreHiddenFilterMemory = $this->ignoreHiddenFilterMemory ?? false;
+    $ignoreHiddenFiltersInRequest = $this->ignoreHiddenFiltersInRequest ?? false;
+    $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
+    if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
+        $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
+        if (empty($hiddenFilters)) {
+            $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId);
+        }
+    }
+    $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
+?>
+<?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
+<?php if ($this->params->getSearchType() == 'advanced'): ?>
+  <?php /* finc: disables search tabs on advanced search terms #22361 */ /*
+  <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => false]); ?>
+  <?php if (!empty($tabs)): ?>
+    <?=$tabs ?><div class="clearfix">
+  <?php endif; ?>
+  */ ?>
+  <?php /* finc-specific adv-search-box */ ?>
+  <div class="adv-search-box">
+    <div class="adv-terms">
+      <span class="adv-terms-label"><?=$this->transEsc("Advanced Search")?>:</span>
+      <a class="adv-edit" href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>">
+        <i class="fa fa-pencil"></i>
+        <span class="hidden-xs"><?=$this->transEsc("Edit") ?>: </span>
+        <strong><?=$this->escapeHtml($this->lookfor) ?></strong>
+      </a>
+    </div>
+    <div class="adv-delete">
+      <a class="btn btn-danger" href="<?=$this->url($advSearch) . $hiddenFilterParams?>">
+        <i class="fa fa-times" aria-hidden="true"></i>
+        <span class="hidden-xs"><?=$this->transEsc("Delete") ?></span>
+      </a>
+    </div>
+  </div>
+  <?php /* finc-specific adv-search-box - END */ ?>
+  <?php /* disables search tabs on advanced search terms - refs #22361 */ /*
+  <?php if (!empty($tabs)): ?>
+    </div>
+  <?php endif; ?>
+  */ ?>
+<?php endif; ?>
+<!-- finc: search - advanced-search-information - END -->

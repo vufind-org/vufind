@@ -1,0 +1,76 @@
+<!-- finc: myresearch - bulk-action-buttons -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+ * shows action buttons on top of lists
+ *
+modified for finc:
+ * adds 'hidden-print' class
+ * improves label for myresearchCheckAll, changes translation of 'select_page' and removes 'with_selected' #19676
+ *
+configured in: {}
+ */
+?>
+<?php if (isset($list)): ?>
+  <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>">
+  <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>">
+<?php endif; ?>
+<?php $user = $this->auth()->isLoggedIn(); ?>
+<?php /* finc: uses 'hidden-print' */ ?>
+<nav class="bulkActionButtons hidden-print">
+  <div class="bulk-checkbox">
+    <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
+    <?php /* finc: improves label for myresearchCheckAll, changes translation of 'select_page' and removes 'with_selected' #19676 */ ?>
+    <label for="myresearchCheckAll"><?=$this->transEsc('select_page')?>:</label>
+  </div>
+  <ul class="action-toolbar">
+    <li>
+      <?php /* finc: adds 'sr-only' spans and aria-hides the standard translation on most of the bulk buttons to avoid redundancy;
+            make sure, this is (as far as meaningful) identical to 'search/bulk-action-buttons.phtml'
+            and 'cart.phtml', CK */ ?>
+      <button class="toolbar-btn btn-type-email" type="submit" name="email" value="1">
+        <span class="sr-only"><?=$this->transEscAttr('bookbag_email_selected')?></span>
+        <span aria-hidden="true"> <?=$this->transEsc('Email') ?></span>
+      </button>
+    </li>
+    <?php if ((null !== $this->list && $this->list->editAllowed($user)) || null === $this->list && $user): ?>
+      <li>
+        <?php /* finc: adds 'sr-only' spans and aria-hides standard translation to avoid redundancy
+                 Uses 'delete_selected' here (without 'bookbag...' */ ?>
+        <button class="toolbar-btn btn-type-delete" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="1">
+          <span class="sr-only"><?=$this->transEscAttr('delete_selected')?></span>
+          <span aria-hidden="true"><?=$this->transEsc('Delete') ?></span>
+        </button>
+      </li>
+    <?php endif; ?>
+    <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+      <li>
+        <?php /* finc: adds sr-only spans and aria-hides standard translation to avoid redundancy */ ?>
+        <button class="toolbar-btn btn-type-export" type="submit" name="export" value="1">
+          <span class="sr-only"><?=$this->transEscAttr('bookbag_export')?></span>
+          <span aria-hidden="true"><?=$this->transEsc('Export')?></span>
+        </button>
+      </li>
+    <?php endif; ?>
+    <li>
+      <?php /* finc: adds sr-only spans and aria-hides standard translation to avoid redundancy */ ?>
+      <button class="toolbar-btn btn-type-print" type="submit" name="print" value="1"  data-lightbox-ignore>
+        <span class="sr-only"><?=$this->transEscAttr('bookbag_print')?></span>
+        <span aria-hidden="true"><?=$this->transEsc('Print')?></span>
+      </button>
+    </li>
+    <?php if ($this->cart()->isActive()): ?>
+      <li>
+        <?php /* Adds data-selector="true" to prevent creation of empty titles; see also finc/templates/search/bulk-action-buttons; Fixme: Do we have a better solution? CK */
+              /* finc: adds sr-only spans and aria-hides standard translation to avoid redundancy */ ?>
+        <button class="toolbar-btn btn-type-add" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="1" data-selector="true">
+          <span class="sr-only"><?=$this->transEscAttr('bookbag_add_selected')?></span>
+          <span aria-hidden="true"><?=$this->transEsc('Add to Book Bag')?></span>
+        </button>
+      </li>
+    <?php endif; ?>
+  </ul>
+</nav>
+<!-- finc: myresearch - bulk-action-buttons - END -->

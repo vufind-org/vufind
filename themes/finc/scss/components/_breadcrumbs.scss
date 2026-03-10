@@ -1,0 +1,58 @@
+// Use this file to style all your breadcrumbs-related styles
+// For variables see customVariables
+// For '.breadcrumbs' margins see header-navbar.scss
+
+// '.breadcrumbs' ist the outer container, '.breadcrumb' is the actual ul container
+
+.breadcrumbs {
+  // Search result after advanced search needs padding for XS
+  .result-advanced {
+    @media (max-width: $screen-xs-max) {
+      padding-top: $breadcrumbs-advanced-results-top-padding;
+    }
+  }
+}
+
+// When Breadcrumbs are added to header.phtml,
+// it might be necessary to remove the breadcrumb bottom margin
+.breadcrumb {
+  font-size: $font-size-breadcrumbs;
+  margin-bottom: $breadcrumbs-bottom-margin;
+  margin-top: $breadcrumbs-top-margin;
+  padding-left: $breadcrumbs-left-padding;
+  padding-top: $breadcrumbs-top-padding;
+
+  // Divider (li + li::before) + Last element (li):
+  > li,
+  > li + li::before {
+    color: $breadcrumb-divider-color;
+
+    // remove slash in result list after an advanced search for XS
+    @media (max-width: $screen-xs-max) {
+      display: $breadcrumbs-divider-display-xs;
+    }
+  }
+
+  // color of links in breadcrumbs
+  a {
+    // Actually `$breadcrumb-color` would be appropriate here but can not be used
+    // as VuFind did not use `!default` for this variable.
+    // Will be fixed in VuFind 10.
+    color: $white;
+    text-decoration: $breadcrumb-link-text-decoration;
+
+    // more contrast: switch the colors
+    &:focus,
+    &:hover {
+      background-color: $breadcrumb-anchor-hover-bg;
+      color: $breadcrumb-anchor-hover-color;
+    }
+  }
+
+  > .active a {
+    // Actually `$breadcrumb-active-color` would be appropriate here but can not be used
+    // as VuFind did not use `!default` for this variable.
+    // Will be fixed in VuFind 10.
+    color: $white;
+  }
+}

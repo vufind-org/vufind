@@ -1,0 +1,260 @@
+<!-- finc: recordTab - holdingsils -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds $fallbackUrls #24001
+ * adds $extUrls
+ * adds specific $holdings here, #9844, #7187
+ * sets $holdingsEmpty = true
+ * uses p for alerts + role
+ * uses h2 instead of h3
+ * uses external link view helper #19650
+ * specific snippet - #9274 - replaces if ($openUrlActive):
+ * specific snippet #24001
+ * adds check if $locationTextEsc is empty to prevent empty headline #26195
+ * sets $holdingsEmpty = false;
+ * specific branch info
+ * tables must not contain caption
+ * foreach with try {} catch {} moved up
+ * adds code for responsive data table here; removes width="50%"
+ * specific "title_ordered_by_library"
+ * specific external access
+configured in: {}
+ */
+?>
+<?php
+    // Set up convenience variables:
+    $account = $this->auth()->getManager();
+    $user = $account->isLoggedIn();
+    $openUrl = $this->openUrl($this->driver, 'holdings');
+    $openUrlActive = $openUrl->isActive();
+    $doi = $this->doi($this->driver, 'holdings');
+    $doiActive = $doi->isActive();
+
+    /** @var \finc\View\Helper\Root\Record $recordViewHelper */
+    $recordViewHelper = $this->record($this->driver);
+    $urls = $recordViewHelper->getLinkDetails($openUrlActive);
+    // finc: add $fallbackUrls #24001; check account for replace_other_urls setting
+    $fallbackUrls = $recordViewHelper->hasOpenUrlReplaceSetting()
+        ? $this->driver->tryMethod('getURLs') : [];
+
+    // finc: add $extUrls
+    $extUrls = $this->externalCatalogueLink($this->driver)->getLinks();
+
+    $offlineMode = $this->ils()->getOfflineMode();
+    // finc: adds specific $holdings here, #9844, #7187 - CK
+    $holdings = ['holdings' => []];
+    // if we already know that the ils is offline we do not need to query the realtimeholdings
+    if (!$offlineMode) {
+    try {
+        $holdings = $this->driver->getRealTimeHoldings();
+    } catch (\VuFind\Exception\ILS $e) {
+        $holdings = [
+          'holdings' => [],
+          'electronic_holdings' => [],
+          'total' => 0,
+          'page' => 0,
+          'itemLimit' => 0
+        ];
+        $offlineMode = 'ils-offline';
+    }
+  }
+    // Set page title.
+    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+?>
+
+<?php /* finc: sets $holdingsEmpty = true - #7841@56988450 - CK */ ?>
+<?php $holdingsEmpty = true; ?>
+
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+
+<?php if (!empty($holdings['blocks'])):?>
+  <?php /* finc: uses p for alerts + role */ ?>
+  <p id="account-block-msg" class="alert alert-danger" role="alert">
+    <?=$this->transEsc('account_block_options_missing', ['%%details%%' => implode('; ', $holdings['blocks'])]) ?>
+  </p>
+<?php endif; ?>
+
+<?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
+
+<?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
+  <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+    <?php if (!$user): ?>
+      <p class="alert alert-info" aria-live="polite">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['login' => 'true', 'catalogLogin' => 'true']))?>" data-lightbox><?=$this->transEsc("hold_login")?></a>
+      </p>
+    <?php elseif (!$user->cat_username): ?>
+      <p class="alert alert-info" aria-live="polite">
+        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true']))])?>
+      </p>
+    <?php endif; ?>
+  <?php endif; ?>
+<?php endif; ?>
+<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+  <a class="placehold" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
+<?php endif; ?>
+<?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
+  <?php /* finc: uses h2 instead of h3 */ ?>
+  <h2><?=$this->transEsc("Internet")?></h2>
+  <?php if (!empty($urls)): ?>
+    <?php foreach ($urls as $current): ?>
+      <?php /* finc: uses external link view helper #19650 */ ?>
+      <?= $this->externalLink($this->escapeHtmlAttr($this->proxyUrl($current['url'])), $current['desc']) ?><br>
+    <?php endforeach; ?>
+  <?php endif; ?>
+  <?php /* finc-specific snippet - #9274 - replaces if ($openUrlActive): ... - CK */ ?>
+  <?php if ($openUrlActive): ?>
+    <?=$openUrl->renderTemplate()?>
+    <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>
+  <?php endif; ?>
+  <?php /* finc-specific snippet - #9274 - END */ ?>
+<?php endif; ?>
+
+<?php /* finc-specific snippet #24001 */ ?>
+<?php if ($openUrlActive && !empty($fallbackUrls)): ?>
+  <span id="urlsHideable" class="hidden">
+    <?php foreach ($fallbackUrls as $current): ?>
+      <?php /* finc: uses external link view helper #19650 */ ?>
+      <?= $this->externalLink($this->escapeHtmlAttr($this->proxyUrl($current['url'])), $current['desc'] ?? $current['url']) ?><br>
+    <?php endforeach; ?>
+  </span>
+<?php endif; ?>
+<?php /* finc-specific snippet #24001 - END */ ?>
+
+<?php if (!empty($holdings['electronic_holdings'])): ?>
+  <?=
+    $this->context($this)->renderInContext(
+        'RecordTab/holdingsils/electronic.phtml',
+        ['holdings' => $holdings['electronic_holdings']]
+    );
+  ?>
+<?php endif; ?>
+
+<?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
+<?php /* finc: sets $holdingsEmpty = false; - #7841@56988450 - CK */ ?>
+<?php $holdingsEmpty = false; ?>
+<?php /* finc: use h2 instead of h3 */ ?>
+  <h2>
+    <?php $locationText = $this->transEscWithPrefix('location_', $holding['location']); ?>
+    <?php if ($holding['locationhref'] ?? false): ?>
+      <?php /* finc: use external link view helper #19650 */ ?>
+      <?= $this->externalLink($holding['locationhref'], $locationText) ?>
+    <?php else: ?>
+      <?php if (!empty($locationText)): ?>
+        <?=$locationText?>
+      <?php elseif ($holdingsEmpty && !$openUrlActive && empty($urls) && !$doiActive && empty($extUrls)): ?>
+        <?=$this->transEsc("no_resolver_links")?>
+      <?php endif; ?>
+    <?php endif; ?>
+  </h2>
+
+  <?php /* finc: specific branch info - CK */ ?>
+  <?php if (isset($holding['locationid'])): ?>
+    <?=$this->branchInfo($this->driver)->getBranchInfo($holding['locationid']);?>
+  <?php endif; ?>
+  <?php /* finc-specific branch info - CK - END */ ?>
+<?php
+  $truncateSettings = [
+    'rows' => $this->config()->getHoldingsItemLimit(),
+  ];
+?>
+  <?php /* finc: this next section produces an empty table in some cases - the table borders collapse, producing a thick line - should be solved more elegantly - Fixme. */ ?>
+  <table class="table table-striped table-resp-data truncate-field" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>" aria-label="<?=$this->transEscAttr('holdings_details_from', ['%%location%%' => $this->transEscAttr($holding['location'])])?>">
+    <?php /* finc: tables must not contain caption - CK */ ?>
+    <?php /* finc: foreach with try {} catch {} moved up here */ ?>
+    <?php foreach ($holding['items'] as $row): ?>
+      <?php
+      try {
+        echo $this->context($this)->renderInContext(
+          'RecordTab/holdingsils/' . $this->tab->getTemplate() . '.phtml',
+          ['holding' => $row]
+        );
+      } catch (Exception $e) {
+        echo $this->context($this)->renderInContext(
+          'RecordTab/holdingsils/standard.phtml',
+          ['holding' => $row]
+        );
+      }
+      ?>
+
+    <?php endforeach; ?>
+    <?php /* finc: foreach with try {} catch {} moved up here - END */ ?>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
+  <tr>
+    <th><?=$this->transEsc("Call Number")?>: </th>
+    <?php /* finc: adds code for responsive data table here; removes width="50%" */ ?>
+    <td data-title="<?= $this->transEscAttr("Call Number") ?>:">
+      <?php foreach ($callNos as $callNo): ?>
+        <?php if ($this->callnumberHandler): ?>
+          <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo['callnumber']) ?>"><?=$this->escapeHtml($callNo['display'])?></a>
+        <?php else: ?>
+          <?=$this->escapeHtml($callNo['display'])?>
+        <?php endif; ?>
+        <br>
+      <?php endforeach; ?>
+    </td>
+  </tr>
+  <?php endif; ?>
+  <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
+    <tr>
+      <?php // Translation for summary is a special case for backwards-compatibility ?>
+      <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <?php /* finc: adds code for responsive data table here */ ?>
+      <td data-title="<?= $this->transEscAttr("Volume Holdings") ?>:">
+        <?php foreach ($textFields as $current): ?>
+          <?=$this->linkify($this->escapeHtml($current))?><br>
+        <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+  <?php /* finc: foreach with try {} catch {} moved up */ ?>
+  <?php if (!empty($holding['purchase_history'])): ?>
+    <tr>
+      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+      <?php /* finc: adds code for responsive data table here */ ?>
+      <td data-title="<?=$this->transEscAttr("Most Recent Received Issues") ?>:">
+        <?php foreach ($holding['purchase_history'] as $current): ?>
+          <?=$this->escapeHtml($current['issue'])?><br>
+        <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endif; ?>
+</table>
+<?php endforeach; ?>
+
+<?php /* finc-specific "title_ordered_by_library" - #7841@56988450 - CK */ ?>
+<?php if ($holdingsEmpty && $this->driver->tryMethod('getLocalOrderInformation') == 'e'): ?>
+  <h2><?=$this->transEsc("title_ordered_by_library")?></h2>
+<?php endif; ?>
+<?php /* finc-specific "title_ordered_by_library" - END */ ?>
+
+<?php /* finc-specific external access - #9245 - CK */ ?>
+<?php if (!empty($extUrls)): ?>
+  <h2><?=$this->transEsc("external_access")?></h2>
+  <?php if (!empty($extUrls)): ?>
+    <?php foreach ($extUrls as $current): ?>
+      <?=$this->externalLink($this->escapeHtmlAttr($this->proxyUrl($current['url'])), $this->translate($current['desc']))?>
+      <br>
+    <?php endforeach; ?>
+  <?php endif; ?>
+<?php endif; ?>
+<?php /* finc-specific external access - END */ ?>
+
+<?php if (!empty($holdings['total']) && $paginator = $this->tab->getPaginator($holdings['total'], $holdings['page'], $holdings['itemLimit'])): ?>
+  <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $holdings['page']])?>
+<?php endif; ?>
+<?php $history = $this->driver->getRealTimeHistory(); ?>
+<?php if (is_array($history) && !empty($history)): ?>
+  <?php /* finc: uses h2 instead of h3 */ ?>
+  <h2><?=$this->transEsc("Most Recent Received Issues")?></h2>
+  <?php /* finc: adds code for responsive data table here - CK */ ?>
+  <table class="table table-striped table-resp-data">
+    <?php foreach ($history as $row): ?>
+      <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
+    <?php endforeach; ?>
+  </table>
+<?php endif; ?>
+<!-- finc: recordTab - holdingsils - END -->

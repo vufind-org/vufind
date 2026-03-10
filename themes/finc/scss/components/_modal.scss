@@ -1,0 +1,78 @@
+// Use this for modal styles
+
+.modal-dialog {
+  // Set modal width to make better use of the screen
+  @media (max-width: $screen-xs-max) {
+    // Reduce size of modal to keep close-button visible
+    max-width: $modal-dialog-max-width-xs;
+  }
+
+  @media (min-width: $screen-sm-min) {
+    max-width: $modal-dialog-max-width-sm-up;
+    min-width: $modal-dialog-min-width-sm-up;
+    width: $modal-dialog-width-sm-up;
+
+    // Login form and others:
+    // keep !important or rewrite using '#modal ...', CK
+    input.form-control {
+      max-width: $modal-dialog-input-max-width-sm-up !important;
+    }
+  }
+
+  @media (min-width: $screen-md-min) {
+    // Automatically set modal's width for larger viewports
+    width: $modal-dialog-width-md-up;
+  }
+
+  @media (min-width: $screen-lg-min) {
+    max-width: $modal-dialog-max-width-lg-up;
+  }
+
+  .mainbody.left {
+    // Prevent transparent lightbox bug - keep !important to override!
+    float: $modal-dialog-mainbody-left-float !important;
+  }
+}
+
+// fix modal adding padding-right #13625
+.modal-open {
+  overflow: $modal-dialog-open-overflow;
+}
+
+// Modal close button (keep parent classes for specifity)
+#modal .modal-content > .close,
+#modal .modal-content > .adv-term-remove {
+  background: $modal-close-bg;
+  border: $modal-dialog-close-button-border;
+  border-radius: $modal-close-br;
+  color: $modal-close-color;
+  left: $modal-dialog-close-button-left;
+  opacity: $modal-dialog-close-button-opacity;
+  right: $modal-dialog-close-button-right;
+
+  @media (min-width: $screen-sm-min) {
+    right: $modal-dialog-close-button-right-sm-up;
+
+    body.rtl & {
+      left: $modal-dialog-close-button-left-sm-up-rtl;
+    }
+  }
+
+  &:focus,
+  &:hover {
+    background-color: $modal-close-bg-hover;
+    color: $modal-close-color-hover;
+    opacity: $modal-dialog-close-button-focus-hover-opacity;
+  }
+}
+
+// #21993
+.modal td[data-title="openURL:"],
+.modal .table-resp-data td {
+  word-break: break-word;
+}
+
+// set overlay-color
+#modal {
+  background-color: $overlay-color;
+}

@@ -1,0 +1,237 @@
+<?php
+// per https://www1.citavi.com/sub/manual5/en/importing_an_endnote_tagged_file.html
+// also for germans: https://www.ub.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaaptikv&download=1
+$filter = new \Laminas\Filter\Word\CamelCaseToSeparator();
+// A driver-specific template may pass in format overrides; check for these before going to the driver itself:
+$formats = $this->slot('citavi-formats')->get($this->driver->tryMethod('getFormats'));
+if (is_array($formats) && !empty($formats)) {
+  foreach ($formats as $format) {
+    switch ($format) {
+      case 'Article':
+      case 'ElectronicArticle':
+      case 'SerialComponentPart':
+      case 'ElectronicSerialComponentPart':
+        $format = "Journal article";
+        break;
+      case 'BookComponentPart':
+        $format = "Book Section";
+        break;
+      case 'ElectronicBookComponentPart':
+      case 'ElectronicBookPart':
+        $format = "Contribution in an Edited Book";
+        break;
+        case 'ElectronicBook':
+      case 'eBook':
+        $format = "Electronic Book";
+        break;
+      default:
+        //$format = $format;  // unnecessary default
+        break;
+    }
+    $format = $filter->filter($format);
+    echo "%0 $format\n";
+  }
+} else {
+  // Assume book if no format found (otherwise data may be considered invalid):
+  echo "%0 Book\n";
+}
+/*$author = $this->driver->tryMethod('getPrimaryAuthor');
+if (!empty($author)) {
+    echo "%A $author\n";
+}
+$authors = $this->driver->tryMethod('getAdditionalAuthors');
+if (!empty($authors)) {
+    $arr = [];
+    foreach ($authors as $author) {
+        $arr[] = $author['name'];
+    }
+    $author = implode(' and ', $arr);
+    echo "%A $author\n";
+}*/
+
+$authors = [];
+$primaryAuthor = $this->driver->tryMethod('getPrimaryAuthor');
+if (!empty($primaryAuthor)) {
+  $authors[] = $primaryAuthor;
+}
+$additionalAuthors = $this->driver->tryMethod('getAdditionalAuthors');
+if (!empty($additionalAuthors)) {
+  $authors[] = $additionalAuthors;
+}
+if (!empty($authors)) {
+  $arr = [];
+  foreach ($authors as $author) {
+    if (is_array($author)) {
+      foreach ($author as $au) {
+        if (!in_array($au['name'], $arr)) {
+          $arr[] = $au['name'];
+        }
+      }
+    } else {
+      if (!in_array($author, $arr)) {
+        $arr[] = $author;
+      }
+    }
+  }
+  $author = implode(' and ', $arr);
+  echo "%A {$author}\n";
+}
+
+$containerTitle = $this->driver->tryMethod('getContainerTitle');
+if (!empty($containerTitle)) {
+    echo "%B $containerTitle\n";
+}
+
+$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
+if (is_array($secondaryAuthors)) {
+  foreach ($secondaryAuthors as $current) {
+    echo "%E $current\n";
+  }
+}
+
+$pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
+$pubDates = $this->driver->tryMethod('getPublicationDates');
+$pubNames = $this->driver->tryMethod('getPublishers');
+if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
+  $total = min(count($pubPlaces), count($pubDates), count($pubNames));
+  // if we have pub dates but no other details, we still want to export the year:
+  if ($total == 0 && (
+      (count($pubDates) > 0)
+      || (count($pubNames) > 0)
+      || (count($pubPlaces) > 0)
+    )) {
+    $total = 1;
+  }
+  for ($i = 0; $i < $total; $i++) {
+    if (isset($pubNames[$i])) {
+      echo "%I " . rtrim($pubNames[$i], ", ") . "\n";
+    }
+    if (isset($pubDates[$i])) {
+      $date = trim($pubDates[$i], '[]. ');
+      if (strlen($date) > 4) {
+        $date = $this->dateTime()->extractYear($date);
+      }
+      /*if ($date) {
+        echo "%D $date\n";
+      } */ /* TODO: decide if this is really superfluous */
+    }
+    if (isset($pubPlaces[$i])) {
+      echo "%C " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': ') . "\n";
+    }
+  }
+}
+
+// echo "%C ?\n";
+
+$data = $this->driver->tryMethod('getPublishedIn');
+if (isset($data['date'])) {
+  $date = $data['date'];
+  echo "%D {$date}\n";
+}
+
+if (empty($data)) {
+  $date = $this->driver->tryMethod('getPublishDateSort');
+  if (!empty($date)) {
+    echo "%D {$date}\n";
+  }
+}
+
+$languages = $this->driver->tryMethod('getLanguages');
+if (is_array($languages)) {
+  foreach ($languages as $lang) {
+    echo "%G $lang\n";
+  }
+}
+
+$series = $this->driver->tryMethod('getSeries');
+if (is_array($series)) {
+  foreach ($series as $current) {
+    echo '%B ' . (is_array($current) ? $current['name'] : $current) . "\n";
+  }
+}
+
+$isbns = $this->driver->tryMethod('getISBNs');
+if (is_array($isbns)) {
+  foreach ($isbns as $isbn) {
+    echo "%@ $isbn\n";
+  }
+}
+
+$issns = $this->driver->tryMethod('getISSNs');
+if (is_array($issns)) {
+  foreach ($issns as $issn) {
+    echo "%@ $issn\n";
+  }
+}
+
+$library = $this->config()->get('config')->Site->title;
+if (!empty($library)) {
+  echo "%~ {$library}\n";
+}
+
+$title = rtrim($this->driver->getTitle(), " /");
+echo "%T $title\n";
+
+$volume = $this->driver->tryMethod('getVolume');
+if (!empty($volume)) {
+  $volume = str_replace(',', '', $volume);
+  echo "%V $volume\n";
+}
+
+$journalTitle = $this->driver->tryMethod('getContainerTitle');
+if (!empty($journalTitle)) {
+  echo "%J $journalTitle\n";
+  $volume = $this->driver->tryMethod('getContainerVolume');
+  if (!empty($volume)) {
+    echo "%V $volume\n";
+  }
+  $number = $this->driver->tryMethod('getContainerIssue');
+  if (!empty($number)) {
+    echo "%N $number\n";
+  }
+  /* getContainerStartPage is not implemented in default and will give '' */
+  /*$page = $this->driver->tryMethod('getContainerStartPage');
+  if (!empty($page)) {
+      $end = $this->driver->tryMethod('getContainerEndPage');
+      if (!empty($end) && $end != $page) {
+          $page .= '-' . $end;
+      }
+      echo "%P $page\n";
+  }*/
+  $pages = $this->driver->tryMethod('getPages');
+  if (!empty($pages)) {
+    // use page range if possible
+    if (!empty($pages)) {
+      echo "%P {$pages}\n";
+    }
+  }
+}
+
+foreach ($this->record($this->driver)->getUrlList() as $doi) {
+  echo "%U $doi\n";
+}
+
+$edition = $this->driver->tryMethod('getEdition');
+if (!empty($edition)) {
+  echo "%7 $edition\n";
+}
+
+$summary = $this->driver->tryMethod('getSummary');
+if (!empty($summary)) {
+  echo "%X {$summary[0]}\n";
+}
+
+$serverurl = $this->serverUrl();
+$url = $serverurl . $this->url('record', ['id' => $this->driver->getUniqueId()]);
+if (!empty($url)) {
+  echo "%Z {$url}\n";
+}
+
+$serverurl = $this->serverUrl();
+$url = $serverurl . $this->url('record', ['id' => $this->driver->getUniqueId()]);
+if (!empty($url)) {
+  echo "%U {$url}\n";
+}
+// Record separator:
+echo "\n";
+?>

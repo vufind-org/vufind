@@ -1,0 +1,23 @@
+<!-- finc: RecordDriver - DefaultRecord - data-corporateAuthors -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if (!empty($data)): ?>
+  <?php if (is_array($data)): ?>
+    <?php foreach ($data as $author): ?>
+      <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+        <?= $author ?>
+      </a>
+      <?php if(next($data)): ?>
+        <br>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  <?php endif; ?>
+<?php endif; ?>
+<!-- finc: RecordDriver - DefaultRecord - data-corporateAuthors - END -->

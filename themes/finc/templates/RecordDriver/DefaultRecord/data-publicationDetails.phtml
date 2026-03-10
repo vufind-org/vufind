@@ -1,0 +1,35 @@
+<!-- finc: RecordDriver - DefaultRecord - data-publicationDetails -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds div + schema code
+ * adds span + schema code
+configured in: {}
+ */
+?>
+<?php /* finc: adds div + schema code */ ?>
+<div itemscope itemtype="http://schema.org/publisher">
+  <?php foreach ($data as $field): ?>
+    <span property="publisher" typeof="Organization">
+    <?php $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+      <?php /* finc: adds span + schema code */ ?>
+      <span property="location" typeof="Place">
+        <span property="name"><?=$this->escapeHtml($pubPlace)?></span>
+      </span>
+    <?php endif; ?>
+    <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
+      <a property="name" href="<?=$this->record($this->driver)->getLink('publisher', $pubName)?>">
+        <?=$this->escapeHtml($pubName)?>
+      </a>
+    <?php endif; ?>
+    </span>
+    <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+      <span property="datePublished"><?=$this->escapeHtml($pubDate)?></span>
+    <?php endif; ?>
+    <br>
+  <?php endforeach; ?>
+</div>
+<!-- finc: RecordDriver - DefaultRecord - data-publicationDetails - END -->

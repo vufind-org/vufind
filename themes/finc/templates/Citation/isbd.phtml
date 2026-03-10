@@ -1,0 +1,7 @@
+<?php if (!empty($this->authors)): ?><?=$this->escapeHtml($this->authors)?>:<br><?php endif; ?>
+<span><i><?=$this->escapeHtml($this->title)?></i></span>
+<?php if (!empty($this->edition)): ?>. &mdash; <?=$this->escapeHtml($this->edition)?><?php endif; ?>
+<?php if (!empty($this->publisher)): ?>. &mdash; <?=$this->escapeHtml($this->publisher)?><?php endif; ?>
+<?php if (!empty($this->physical)): ?>. &mdash; <?=$this->escapeHtml($this->physical)?><?php endif; ?>
+<?php if (!empty($this->series)): ?>. &mdash; <?=$this->escapeHtml($this->series)?><?php endif; ?>
+<?php if (!empty($this->isbn)): ?>. &mdash; ISBN <?=$this->escapeHtml($this->isbn)?><?php endif; ?>

@@ -1,0 +1,29 @@
+<!-- finc: recordtab - staffviewarray -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds code for responsive data table
+configured in: {}
+ */
+?>
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+?>
+<?php /* finc: adds code for responsive data table here - CK */ ?>
+<table class="citation table table-striped table-resp-data">
+  <?php foreach ($this->driver->getRawData() as $field => $values): ?>
+    <tr>
+      <th><?=$this->escapeHtml($field)?></th>
+      <td data-title="<?= $this->escapeHtml($field) ?>:">
+        <?php foreach ((array)$values as $value): ?>
+          <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br>
+        <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+</table>
+<!-- finc: recordtab - staffviewarray - END -->

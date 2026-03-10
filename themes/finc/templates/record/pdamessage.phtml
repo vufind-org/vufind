@@ -1,0 +1,12 @@
+<!-- finc: record - pdamessage -->
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('PDA::Acquisition'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
+    . '<li class="active">' . $this->transEsc('PDA::Acquisition') . '</li>';
+?>
+<?=$this->flashmessages()?>
+<!-- finc: record - pdamessage - END -->

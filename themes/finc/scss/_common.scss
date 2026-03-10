@@ -1,0 +1,340 @@
+// This file ist for common basic elements, such as
+// empty containers,
+// tooltips
+// radiuses,
+// pagination,
+// helper classes ...
+
+// *****************************************************************
+// ************ Link text decoration *******************************
+// *****************************************************************
+
+.mainbody {
+  // Fixme: Consider better way to differentiate between underlined and non-underlined elements - Ck
+  .record-list,
+  .media-body {
+    a:not(.btn) {
+      text-decoration: $mainbody-link-text-decoration;
+    }
+
+    // 'Merken' etc. in result list
+    .result-links a:not(.btn) {
+      text-decoration: $result-links-text-decoration;
+    }
+  }
+}
+
+
+
+// *****************************************************************
+// ************ Hide empty containers ******************************
+// *****************************************************************
+
+// DO NEITHER INCLUDE <span> NOR <div> here:
+// Dropdown carets are empty spans
+// divs are used for slider track handles
+h1,
+h2,
+h3,
+h4,
+label,
+.label {
+  // Empty labels collapse automatically (not available in IE8)
+  &:empty {
+    display: none;
+  }
+}
+
+
+// *****************************************************************
+// ************ Tooltips *******************************************
+// *****************************************************************
+
+// the original tooltips are black BG and very narrow, see customVariables
+.tooltip-inner {
+  padding: $tooltip-inner-padding;
+}
+
+
+// *****************************************************************
+// ************ Helper Classes *************************************
+// *****************************************************************
+
+// Screen reader-hidden content
+// Override nav li position for screen reader content (in)visibility
+.nav > li.sr-only {
+  position: absolute;
+}
+
+// Class to replace 'class="hidden-sm hidden-md hidden-lg"'
+.hidden-sm-up {
+  @media (min-width: $screen-sm-min) {
+    display: none;
+  }
+}
+
+// Class to replace 'class="hidden-sm hidden-md"'
+.hidden-sm-md {
+  @media (min-width: $screen-sm-min) and (max-width: $screen-md-max) {
+    display: none;
+  }
+}
+
+.hidden-xs-sm {
+  @media (max-width: $screen-sm-max) {
+    display: none;
+  }
+}
+
+// Class to replace 'class="hidden-xs hidden-md hidden-lg"'
+.visible-sm-only {
+  @media (max-width: $screen-xs-max) {
+    display: none;
+  }
+
+  @media (min-width: $screen-md-min) {
+    display: none;
+  }
+}
+
+// Class to replace 'class="hidden-xs hidden-lg"'
+.visible-sm-md-only {
+  @media (max-width: $screen-xs-max) {
+    display: none;
+  }
+
+  @media (min-width: $screen-lg-min) {
+    display: none;
+  }
+}
+
+// Items visible on XS and sr-only on all other devices
+.visible-xs-sr-only {
+  @media (min-width: $screen-sm-min) {
+    @include sr-only;
+  }
+}
+
+// Items visible on MD/Desktop and sr-only on all other devices
+.visible-md-up-sr-only {
+  @media (max-width: $screen-sm-max) {
+    @include sr-only;
+  }
+}
+
+
+// Flex container for wrapping flex elements, such als header
+.flex-container {
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+  }
+
+  // We need to reverse order of the header child elements (searchbox + navbar) on anything but mobile for the mobile menu to work as xpected
+  header & {
+    @media (min-width: $screen-sm-min) {
+      > *:first-child {
+        order: 2;
+      }
+
+      > *:nth-child(2) {
+        order: 1;
+      }
+    }
+  }
+}
+
+// Inline: force inline display
+.inline {
+  display: inline;
+
+  .template-name-editlist & {
+    display: inherit;
+  }
+}
+
+// Floats
+.left {
+  float: left !important;
+}
+
+.right {
+  float: right !important;
+}
+
+
+// NO Gutter/Padding at all
+.no-gutter-all {
+  padding: 0 !important;
+}
+
+// No LEFT and RIGHT gutters
+.no-gutter {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  > [class^='col-'] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+// NO gutter TOP and BOTTOM (keep !important)
+.no-gutter-tp-btm {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
+// NO gutter BOTTOM
+.no-gutter-btm {
+  padding-bottom: 0;
+}
+
+// NO gutter LEFT
+.no-gutter-l {
+  padding-left: 0;
+}
+
+// NO gutter TOP
+.no-gutter-t {
+  padding-top: 0;
+}
+
+// NO gutter RIGHT
+.no-gutter-r {
+  padding-right: 0 !important;
+}
+
+// Gutter LEFT
+.gutter-l,
+.no-gutter-r.gutter-l {
+  padding-left: ($grid-gutter-width * .5);
+}
+
+// Gutter BOTTOM
+.gutter-btm {
+  padding-bottom: ($grid-gutter-width * .5);
+}
+
+// Gutter RIGHT
+.gutter-r {
+  padding-right: ($grid-gutter-width * .5);
+}
+
+// Gutter TOP
+.gutter-top {
+  padding-top: ($grid-gutter-width * .5);
+}
+
+// Margin BOTTOM
+.margin-btm {
+  margin-bottom: ($grid-gutter-width * .5);
+}
+
+// Margin LEFT
+.margin-l {
+  margin-left: ($grid-gutter-width * .5);
+}
+
+// Margin LEFT on MOBILE only
+.margin-l-xs {
+  @media (max-width: $screen-xs-max) {
+    margin-left: ($grid-gutter-width * .5);
+  }
+}
+
+// Margin LEFT on MOBILE only
+.margin-r-xs {
+  @media (max-width: $screen-xs-max) {
+    margin-right: ($grid-gutter-width * .5);
+  }
+}
+
+// Margin RIGHT
+.margin-r {
+  margin-right: ($grid-gutter-width * .5);
+}
+
+// Margin TOP
+.margin-t {
+  margin-top: ($grid-gutter-width * .5);
+}
+
+.margin-t-half {
+  margin-top: ($grid-gutter-width * .25);
+}
+
+// NO margin BOTTOM
+.no-margin-btm {
+  margin-bottom: 0;
+}
+
+.margin-btm {
+  margin-bottom: ($grid-gutter-width * .5);
+}
+
+.margin-btm-half {
+  margin-bottom: ($grid-gutter-width * .25);
+}
+
+// NO margin LEFT
+.no-margin-l {
+  margin-left: 0;
+}
+
+// NO margin RIGHT
+.no-margin-r {
+  margin-right: 0;
+}
+
+// NO margin TOP
+.no-margin-t,
+.sidebar h4.no-margin-t {
+  margin-top: 0;
+}
+
+// No-cover - prevent no cover images from being easily clickable
+// and loading in lightbox, used in record - cover
+.nocover {
+  cursor: default;
+}
+
+
+// NO bullets for LIs
+// How to: Apply style to parent UL!
+.no-bullet {
+  padding-left: 0;
+
+  li {
+    list-style-type: none;
+  }
+}
+
+
+//// Width 100%
+.w-100,
+.form-control.w-100 {
+  width: 100%;
+}
+
+// Color helper classes for development
+.border {
+  &.red {
+    border: 1px solid $brand-danger;
+  }
+
+  &.yellow {
+    border: 1px solid $state-warning-bg;
+  }
+
+  &.orange {
+    border: 1px solid $brand-warning;
+  }
+
+  &.green {
+    border: 1px solid $brand-success;
+  }
+
+  &.blue {
+    border: 1px solid $brand-info;
+  }
+}

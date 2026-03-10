@@ -1,0 +1,90 @@
+<!-- finc: record-tab - hierarchytree -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds hierarchyTreeSelect #14068
+ * changes btn-default to btn-transparent
+ * uses <p> and aria for alerts
+configured in: {}
+ */
+?>
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb());
+  $hierarchyTreeList = $this->tab->getTreeList();
+  $activeTree = $this->tab->getActiveTree();
+  $translations = $this->jsTranslations()->getJSONFromArray(
+      [
+        'showTree' => 'hierarchy_show_tree',
+        'hideTree' => 'hierarchy_hide_tree'
+      ]
+  );
+
+  $this->inlineScript(
+      \Laminas\View\Helper\HeadScript::SCRIPT,
+      "var hierarchySettings = {\n"
+      . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
+      . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
+      . "};\n"
+      . "VuFind.addTranslations($translations);\n",
+      'SET'
+  );
+  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'vendor/jsTree/jstree.min.js');
+  $this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'hierarchyTree.js');
+  echo $this->inlineScript();
+?>
+<?php if (count($hierarchyTreeList) > 1): ?>
+  <div id="treeSelector">
+    <?php /* finc: adds hierarchyTreeSelect #14068 */ ?>
+    <strong><?=$this->transEsc('hierarchyTreeSelect')?></strong><br>
+
+    <?php foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
+      <?php if($activeTree == $hierarchy): ?>
+        <i class="fa fa-sitemap" aria-hidden="true"></i> <?=$this->escapeHtml($hierarchyTitle)?>
+      <?php else: ?>
+        <i class="fa fa-sitemap text-muted" aria-hidden="true"></i> <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchy]))?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+<?php if ($activeTree): ?>
+  <div id="hierarchyTreeHolder">
+    <?php if ($this->tab->searchActive()): ?>
+      <div id="treeSearch" class="form-inline hidden">
+        <input type="text" id="treeSearchText" class="form-control search-query" value="">
+        <select class="form-control" id="treeSearchType" name="type">
+          <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
+          <option value="Title"><?=$this->transEsc('Title')?></option>
+        </select>
+        <?php /* finc: changes btn-default to btn-transparent */ ?>
+        <input type="submit" class="btn btn-transparent" value="<?=$this->transEscAttr('Search') ?>">
+        <?=$this->icon('spinner', ['class' => 'hidden', 'id' => 'treeSearchLoadingImg']) ?>
+      </div>
+      <?php /* finc: uses  <p> and aria for alerts */ ?>
+      <p id="treeSearchNoResults" class="alert alert-danger hidden" aria-live="polite"><?=$this->transEsc('nohit_heading')?></p>
+      <p id="treeSearchLimitReached" class="alert alert-danger hidden" aria-live="polite"><?=$this->translate('tree_search_limit_reached_html', ['%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()])?></p>
+    <?php endif; ?>
+    <div id="hierarchyLoading" class="hide"><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></div>
+    <div id="hierarchyTree" class="hierarchy-tree">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenRecordId">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($activeTree)?>" class="hiddenHierarchyId">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenHierarchySource">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->treeContext ?? 'Record')?>" class="hiddenContext">
+      <?php if ($this->layout()->getTemplate() != 'layout/lightbox'): ?>
+        <noscript>
+          <?php if ($this->config()->nonJavascriptSupportEnabled()): ?>
+            <ul class="fa-ul">
+              <?=$this->tab->renderTree($this->url('home'))?>
+            </ul>
+          <?php else: ?>
+            <?=$this->transEsc('Please enable JavaScript.')?>
+          <?php endif; ?>
+        </noscript>
+      <?php endif; ?>
+    </div>
+  </div>
+<?php endif; ?>
+<!-- finc: record-tab - hierarchytree - END -->

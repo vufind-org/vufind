@@ -1,0 +1,36 @@
+<!-- finc: record - checkbox -->
+<?php
+/**
+* origin: vufind/BS3
+ *
+* called by view helper/controller:
+ *
+* usage:
+ * shows checkboxes in cart AND result list
+ *
+* modified for finc:
+ * adds php for more specific aria-label #18754
+ * adds aria-label and -describedby and space in front of form attribute
+ * removes additional result number description, finc's checkbox description is more specific #19676
+ *
+* TODO:
+ * it would be useful to add a switch that makes checkbox IDs unique for both, result list AND cart. As it is, cart and result list entries get the same IDs which results in W3C errors and is most likely not accessible (see also cart/content.phtml and RecordDriver/.../list-entry.phtml)
+ *
+configured in: {}
+ */
+?>
+<?php /* finc: adds php for more specific aria-label #18754 */ ?>
+<?php $label = isset($this->context) ? 'select_item_' . $this->context : 'select_item'; ?>
+<label class="record-checkbox hidden-print">
+  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>
+      <?php /* finc: adds aria-label and -describedby and space in front of form attribute */ ?>
+      aria-describedby="<?=$this->id?>"
+      aria-label="<?=$this->transEscAttr($label)?>"
+  >
+  <span class="checkbox-icon"></span>
+  <?php /* finc: removes additional result number description, finc's checkbox description is more specific #19676
+  <?php if (strlen($this->number ?? '') > 0): ?><span class="sr-only"><?=$this->transEsc('result_checkbox_label', ['%%number%%' => $this->number]) ?></span><?php endif; ?>
+  */ ?>
+</label>
+<input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
+<!-- finc: record - cart-buttons - END -->

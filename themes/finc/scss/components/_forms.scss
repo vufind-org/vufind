@@ -1,0 +1,356 @@
+// Use this file to style all forms-related elements
+// Form elements such as labels that require special styling may be defined in the element-related style sheets
+
+// *****************************************************************
+// ************ Basic styles ***************************************
+// ************ Styles applying to several elements ****************
+// *****************************************************************
+
+// See also 'select.form-control' below
+.form-control {
+  box-shadow: $form-control-box-shadow;
+  height: $form-control-height;
+
+  @media (max-width: $screen-xs-max) {
+    max-width: $form-control-xs-max-width;
+  }
+}
+
+
+// *****************************************************************
+// ************ Fieldsets ******************************************
+// *****************************************************************
+
+fieldset {
+  border: $fielset-default-border;
+
+  // Advanced Search - make fieldsets fit in a row (see last-of-type below)
+  .template-name-advanced & {
+    margin-top: $fieldset-advanced-srch-margin-top;
+    padding-bottom: $fieldset-advanced-srch-padding-bottom;
+    padding-left: $fieldset-advanced-srch-padding-left;
+    padding-right: $fieldset-advanced-srch-padding-right;
+
+    // Advanced Search - Date Range fieldset
+    &.range {
+      margin-left: $fieldset-date-range-margin-left;
+      margin-right: $fieldset-date-range-margin-right;
+      width: $fieldset-date-range-width;
+
+      @media (max-width: $screen-sm-max) {
+        margin-left: $fieldset-date-range-xs-sm-margin-left;
+        width: $fieldset-date-range-xs-sm-width;
+      }
+    }
+  }
+
+  // Advanced search top-most fieldset (sits within '.adv-search' div)
+  // Keep this entry _below_ the general fieldset settings for adv. search for overwriting
+  .adv-search & {
+    border: $fieldset-advanced-srch-search-terms-border;
+    // keep !important
+    float: $fieldset-advanced-srch-search-terms-float;
+    margin-top: $fieldset-advanced-srch-search-terms-margin-top;
+    padding-bottom: $fieldset-advanced-srch-search-terms-padding-bottom;
+    padding-left: $fieldset-advanced-srch-search-terms-padding-left;
+    width: $fieldset-advanced-srch-search-terms-width;
+
+    @media (max-width: $screen-xs-max) {
+      margin-bottom: $fieldset-advanced-srch-search-terms-xs-margin-bottom;
+      padding-bottom: $fieldset-advanced-srch-search-terms-xs-padding-bottom;
+    }
+  }
+
+  // Edit favorites lists (...MyResearch/Edit)
+  &.list-edit-group {
+    border: $fieldset-edit-favorites-list-border;
+    padding: $fieldset-edit-favorites-list-padding;
+
+    @media (max-width: $screen-xs-max) {
+      float: $fieldset-edit-favorites-list-xs-float;
+    }
+  }
+
+  .form-edit-list & {
+    border: 0;
+    float: none;
+    padding: 0;
+  }
+}
+
+
+// *****************************************************************
+// ************ Legends ********************************************
+// *****************************************************************
+
+// E.g.: 'Limit to' in Advanced search, recent acquisitons, edit favs
+legend {
+  border: $legend-border;
+  font-size: $legend-font-size;
+  margin-bottom: $legend-margin-bottom;
+  padding-left: $legend-padding-left;
+  padding-right: $legend-padding-right;
+  width: $legend-width;
+
+  // Recent acquisitions search form (search/NewItem)
+  .form-search-newitem & {
+    padding-left: $legend-padding-left-recent-acquisitions;
+  }
+
+  // Edit favorites list
+  .form-edit-list & {
+    font-size: $fieldset-edit-favorites-list-legend-font-size;
+    margin-left: $fieldset-edit-favorites-list-legend-margin-left;
+  }
+}
+
+
+// *****************************************************************
+// ************ Labels *********************************************
+// *****************************************************************
+// For colored labels such as '.text-warning', see icons-and-status-colors.scss
+
+label {
+  form & {
+    font-weight: $label-font-weight;
+  }
+
+  // remove padding in advanced search labels
+  #advSearchForm .mainbody & {
+    padding-left: $label-adv-search-form-padding-left;
+    padding-right: $label-adv-search-form-padding-right;
+  }
+
+  // advanced search input and select labels
+  .adv-input &,
+  .adv-select & {
+    display: $label-adv-search-form-display;
+  }
+
+  // Edit favorites list
+  .form-edit-list .radio & {
+    padding-left: $label-edit-favorites-list-padding-left;
+  }
+}
+
+
+// *****************************************************************
+// ************ Inputs *********************************************
+// *****************************************************************
+
+input {
+  // Same variable used for textarea as well!
+  margin-right: $input-textarea-margin-right;
+
+  // Set max-width to make sure boxes don't bleed over
+  // the edge on XS (e.g. acquisitionpda, source_id:3) - same
+  // variable used on textarea and select
+  @media (max-width: $screen-xs-max) {
+    max-width: $input-select-textarea-xs-max-width;
+  }
+
+  &[type='checkbox'],
+  &[type='radio'] {
+    margin-top: $input-top-margin;
+
+    // Improve input accessibility
+    &:focus,
+    &:hover {
+      @include outline(2px);
+    }
+  }
+
+  &[type='email'],
+  &[type='text'],
+  &[type='search'] {
+    border: $input-email-text-border;
+    padding: $input-email-text-padding;
+  }
+
+  &[type='text'],
+  &[type='search'] {
+    &:focus,
+    &:hover {
+      @include outline($outline-default-style, 2px, $input-border-focus);
+
+      // Searchform input and other header input fields
+      header &,
+      #searchForm & {
+        box-shadow: $input-header-search-form-box-shadow;
+        outline-offset: $input-header-search-form-border-outline-offset;
+      }
+    }
+
+    // Searchform input and other header input fields
+    header &,
+    #searchForm & {
+      border: $input-header-search-form-border;
+    }
+  }
+
+  // red-bordered input field, when empty, requires "form" for specifity, CK
+  // create enough space for red border
+  // show red border only when submitted empty or when in focus
+  &:invalid {
+    box-shadow: inherit;
+  }
+
+  &:focus {
+    &:invalid,
+    &:required:invalid {
+      border-color: $input-invalid-focus-border-color;
+      box-shadow: $input-invalid-focus-box-shadow;
+    }
+  }
+
+  // Edit favorites list
+  .form-edit-list .radio & {
+    margin-left: $input-radio-edit-favorites-list-margin-left;
+    position: $input-radio-edit-favorites-list-position;
+  }
+}
+
+
+// *****************************************************************
+// ************ Selects ********************************************
+// *****************************************************************
+// Select - for 'limit' and 'sort'-select widths see below
+
+// Remove browser styles on select boxes and add custom styles (below)
+select,
+select.form-control {
+
+  @include select-element-custom-look;
+
+  header & {
+    border: $select-in-header-border;
+  }
+
+  &:focus,
+  &:hover {
+    @include outline($outline-default-style, 1px, $input-border-focus);
+  }
+}
+
+select {
+  // Set max-width to make sure boxes don't bleed over
+  // the edge on XS (e.g. acquisitionpda, source_id:3) - same
+  // variable used on textarea and input
+  @media (max-width: $screen-xs-max) {
+    max-width: $input-select-textarea-xs-max-width;
+  }
+
+  .searchForm & {
+    @media (min-width: $screen-sm-min) {
+      // prevent adv search button from breaking onto new line
+      max-width: $select-search-form-sm-max-width;
+    }
+  }
+
+  // Remove down-arrow icons in 'limit to' (language, format) select boxes in adv. search
+  .limiter-boxes &,
+    // Remove down-arrow icons in 'new items'/'Neuerwerbungen select box
+  .form-search-newitem & {
+    background-image: $select-remove-standard-down-arrow-background-image;
+    height: $select-remove-standard-down-arrow-height;
+  }
+}
+
+// *****************************************************************
+// ************ Checkboxes *****************************************
+// *****************************************************************
+
+
+// *****************************************************************
+// ************ Radio buttons **************************************
+// *****************************************************************
+
+// Edit favorites list
+.form-edit-list {
+  // container for radio buttons
+  .radio {
+    &.inline {
+      display: block;
+    }
+  }
+}
+
+
+// *****************************************************************
+// ************ Textarea *******************************************
+// *****************************************************************
+
+textarea {
+  // Same variable used for input as well!
+  margin-right: $input-textarea-margin-right;
+
+  // Set max-width to make sure boxes don't bleed over
+  // the edge on XS (e.g. acquisitionpda, source_id:3) - same
+  // variable used on input and select
+  @media (max-width: $screen-xs-max) {
+    max-width: $input-select-textarea-xs-max-width;
+  }
+}
+
+
+// *****************************************************************
+// ************ Validator ******************************************
+// *****************************************************************
+
+.has-error .control-label,
+.has-error .help-block,
+.sms-error .control-label,
+.sms-error .help-block {
+  color: $validator-color;
+}
+
+
+// Required sign in forms
+.required {
+  color: $brand-danger;
+}
+
+
+// *****************************************************************
+// ************ Zend forms *****************************************
+// *****************************************************************
+// Fixme: Find examples and check, if default 'required' behaviour wouldn't be sufficient - CK
+#dds-form {
+
+  label[data-required='true'][for]::after {
+    content: ' *';
+  }
+
+  .form-group {
+    li {
+      color: $brand-danger;
+    }
+  }
+}
+
+
+// *****************************************************************
+// ************ Particular form elements ***************************
+// *****************************************************************
+
+// Range slider in sidebar
+.facet-range-form {
+  padding: $facet-range-form-padding;
+}
+
+
+// *****************************************************************
+// ************ Record Forms in Profile Section ********************
+// *****************************************************************
+
+#cancelILLRequest,
+#cancelHold,
+#cancelStorageRetrievalRequest,
+#renewals {
+  .result .checkbox {
+    // display checkboxes on mobile too
+    @media (max-width: $screen-xs-max) {
+      display: block;
+    }
+  }
+}

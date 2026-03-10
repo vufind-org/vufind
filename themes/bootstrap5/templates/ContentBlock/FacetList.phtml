@@ -9,9 +9,12 @@
 <?php if (!empty($facetList)): ?>
   <div class="search-home-facets">
     <?php foreach ($facetList as $field => $details): ?>
-      <?php $isHierarchy = in_array($field, $hierarchicalFacets ?? []); ?>
+      <?php
+        $isHierarchy = in_array($field, $hierarchicalFacets ?? []);
+        $useTwoColumns = in_array($field, $twoColumnFacets ?? [], true);
+      ?>
       <?php $labelHeading = $this->transEsc('home_browse_by_facet', ['%%facet%%' => $this->translate($details['label'])]); ?>
-      <div class="home-facet <?=$this->escapeHtmlAttr($field) ?><?=$isHierarchy ? ' facet-tree' : ''?>">
+      <div class="home-facet <?=$this->escapeHtmlAttr($field) ?><?=$isHierarchy ? ' facet-tree' : ''?><?=$useTwoColumns ? ' two-columns' : ''?>">
         <h2><?=$labelHeading?></h2>
         <div class="home-facet-container">
           <ul class="home-facet-list">
@@ -27,9 +30,9 @@
               <?php
                 $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch, $format);
 
-                // Special case: two columns for LC call numbers...
-                $maxListLength = $field == 'callnumber-first'
-                  ? $columnSize * 2 : $columnSize;
+                // Two-column facets (configured in facets.ini: [HomePage_Settings] two_column_facets):
+                $useTwoColumns = in_array($field, $twoColumnFacets ?? [], true);
+                $maxListLength = $useTwoColumns ? $columnSize * 2 : $columnSize;
 
                 // Special case: custom URLs for collections...
                 $moreUrl = $field == 'hierarchy_top_title'
@@ -56,8 +59,6 @@
                 <?php if ($i >= $maxListLength): // list too long? show more link! ?>
                   <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc('more_options_ellipsis')?></strong></a></li>
                   <?php break; ?>
-                <?php elseif ($i % $columnSize === 0): // end of column? insert break! ?>
-                  </ul><ul class="home-facet-list">
                 <?php endif; ?>
               <?php endforeach; ?>
             <?php endif; ?>

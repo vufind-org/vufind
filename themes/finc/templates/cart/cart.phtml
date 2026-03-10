@@ -1,0 +1,112 @@
+<!-- finc: cart - cart -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * uses h1 for correct header structure
+ * uses .cart class to style content below
+ * adds classname w-100 for linebreak after 'Select Page' #11813
+ * improves label for checkbox-select-all, changes token to 'select_page_cart' #19676
+ * removes double value="1" of buttons
+ * removes dropdown-toggle for print button
+ * adds roles 'menu', 'presentation' (to mark <li> as irrelevant for content) and 'menuitem' for correct accessibility
+configured in: {}
+ */
+?>
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Book Bag'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
+?>
+<?php /* finc: uses h1 for correct header structure */ ?>
+<h1><?=$this->transEsc('Book Bag') ?></h1>
+<?=$this->flashmessages()?>
+<?php /* finc: uses .cart class to style content below */ ?>
+<form class="form-inline cart" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
+  <input type="hidden" id="dropdown_value">
+  <?php if (!$this->cart()->isEmpty()): ?>
+    <div class="cart-controls clearfix">
+      <?php /* finc: adds classname w-100 for linebreak after 'Select Page' #11813 */ ?>
+      <div class="checkbox pull-left flip w-100">
+        <label>
+          <input type="checkbox" name="selectAll" class="checkbox-select-all">
+          <?php /* finc: improves label for checkbox-select-all, changes token to 'select_page_cart' #19676 */ ?>
+          <?=$this->transEsc('select_page_cart')?>
+        </label>
+      </div>
+      <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <?php /* finc: removes double value="1" here and the following buttons;
+                 finc adds 'sr-only' spans and aria-hides the standard translations on most of the following items, to avoid redundancy;
+                 make sure, this is identical to 'myresearch/bulk-action-buttons.phtml'
+                 and 'search/bulk-action-buttons.phtml', CK */ ?>
+        <button type="submit" class="toolbar-btn btn-type-save" name="saveCart" value="1">
+          <span class="sr-only"><?=$this->transEscAttr('bookbag_save_selected')?></span>
+          <span aria-hidden="true"><?=$this->transEsc('Save')?></span>
+        </button>
+      <?php endif; ?>
+      <?php /* finc: adds sr-only spans and aria-hides standard translation to avoid redundancy */ ?>
+      <button type="submit" class="toolbar-btn btn-type-email" name="email" value="1">
+        <span class="sr-only"><?=$this->transEscAttr('bookbag_email_selected')?></span>
+        <span aria-hidden="true"><?=$this->transEsc('Email') ?></span>
+      </button>
+      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+        <?php /* finc: adds sr-only spans and aria-hides standard translation to avoid redundancy */ ?>
+        <button type="submit" class="toolbar-btn btn-type-export" name="export" value="1">
+          <span class="sr-only"><?=$this->transEscAttr('bookbag_export')?></span>
+          <span aria-hidden="true"><?=$this->transEsc('Export')?></span>
+        </button>
+      <?php endif; ?>
+      <?php /* finc: removes dropdown-toggle for print button;
+               finc adds sr-only spans and aria-hides standard translation to avoid redundancy */ ?>
+      <button type="submit" class="toolbar-btn btn-type-print" name="print" value="1">
+        <span class="sr-only"><?=$this->transEscAttr('bookbag_print')?></span>
+        <span aria-hidden="true"><?=$this->transEsc('Print')?></span>
+      </button>
+      <div class="btn-group" id="cartDelete">
+        <?php /* finc: adds sr-only spans and aria-hides standard translation to avoid redundancy */ ?>
+        <button type="submit" name="delete" class="toolbar-btn btn-type-delete dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
+          <span class="sr-only"><?=$this->transEscAttr('bookbag_delete_selected')?></span>
+          <span aria-hidden="true"><?=$this->transEsc('Delete') ?></span>
+        </button>
+        <?php /* finc: adds roles 'menu', 'presentation' (to mark <li> as irrelevant for content) and 'menuitem' for correct accessibility - CK */ ?>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
+          <li role="presentation"><a role="menuitem" id="cart-confirm-delete"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li role="presentation"><a role="menuitem"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="toolbar-btn btn-type-empty dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
+          <?php /* finc: No need for the 'sr-only'/'aria-hidden' construct here, description should work as it is, CK */ ?>
+          <?=$this->transEsc('Empty Book Bag')?>
+        </button>
+        <?php /* finc: adds roles 'menu', 'presentation' (to mark <li> as irrelevant for content) and 'menuitem' for correct accessibility - CK */ ?>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
+          <li role="presentation"><a role="menuitem" id="cart-confirm-empty"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+          <li role="presentation"><a role="menuitem" id="cart-refuse-empty"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+        </ul>
+      </div>
+    </div>
+  <?php endif; ?>
+  <?=$this->render('cart/contents.phtml')?>
+</form>
+
+<?php
+  $script = <<<'JS'
+  function submitFormWithButton(link, name) {
+    $('#dropdown_value').attr('name', name).val(1);
+    $(link).closest('form').submit();
+  }
+  $("#cart-confirm-delete").click(function($e) {
+      submitFormWithButton(this, 'delete');
+  });
+  $("#cart-confirm-empty").click(function($e) {
+      submitFormWithButton(this, 'empty');
+  });
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<!-- finc: cart - cart - END -->

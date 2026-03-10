@@ -1,0 +1,36 @@
+<!-- finc: RecordDriver - DefaultRecord - data-additionals -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if (!empty($data) && is_array($data)): ?>
+  <?php foreach ($data as $additional) : ?>
+    <?php if (isset($additional['identifier'])): ?>
+      <?php if(isset($additional['id']) && $url = $this->escapeHtmlAttr($this->recordLinker()->getRecordLink($additional['id'],'id'))): ?>
+        <?php if (isset($additional['label']) && !empty($additional['label'])): ?>
+          <a href="<?=$url?>"><?=$this->escapeHtml($additional['label'])?></a><?=$this->escapeHtml($additional['suffix'])?>
+        <?php else: ?>
+          <a href="<?=$url?>"><?=$this->escapeHtml($additional['text'])?></a>
+        <?php endif; ?>
+        <?php unset($url) ?>
+      <?php elseif (isset($additional['related_records'])): ?>
+        <?=$this->render(
+          'RecordDriver/DefaultRecord/data-relatedRecords',
+          [
+            'data' => $additional['related_records'],
+            'driver' => $this->driver,
+            'label' => $additional['text'],
+          ]
+        ) ?>
+      <?php else: ?>
+        <?=$this->escapeHtml($additional['text'])?>
+      <?php endif; ?>
+    <?php endif; ?>
+  <?php endforeach; ?>
+<?php endif; ?>
+<!-- finc: RecordDriver - DefaultRecord - data-additionals - END -->

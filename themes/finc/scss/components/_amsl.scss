@@ -1,0 +1,36 @@
+// Use this for all AMSL element styles (record view)
+
+// amsl/sources-list - home
+#sources-list {
+  line-height: $amsl-sources-list-line-height;
+  // align to left edge
+  padding-left: $amsl-sources-list-padding-left;
+
+  // remove list style on top level as sources have a number!
+  li {
+    list-style: $amsl-sources-list-li-top-level-list-style;
+    padding-bottom: $amsl-sources-list-li-top-level-list-padding-bottom;
+
+    // use list style on child elements
+    li {
+      list-style: initial;
+      padding-bottom: 0;
+    }
+  }
+}
+
+.template-dir-amsl.template-name-sources-list {
+  .panel-body span {
+    margin: $amsl-sources-list-panel-body-span-margin;
+  }
+}
+
+// #17407 change text of button when expanded / collapsed
+#collapse-all-toggler:not(.expanded) .text-expanded {
+  display: none;
+}
+
+#collapse-all-toggler.expanded .text-collapsed {
+  display: none;
+}
+

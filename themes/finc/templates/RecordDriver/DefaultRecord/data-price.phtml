@@ -1,0 +1,11 @@
+<!-- finc: RecordDriver - DefaultRecord - data-price -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?=(strlen($price = $data) > 0) ? $this->safeMoneyFormat($price) : ''?>

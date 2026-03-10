@@ -1,0 +1,74 @@
+// Use this for all admin-panel/translate-feature-related styles
+
+// Translate feature (Admin panel)
+#set-translation-form {
+  margin-top: $translation-form-margin-top;
+}
+
+#set-translation label {
+  font-weight: $translation-form-label-font-weight;
+}
+
+.checkbox-inline input[type='checkbox'] {
+  margin-top: $translation-form-input-checkbox-margin-top;
+}
+
+#language-table_filter {
+  text-align: $translation-form-language-table-filter-text-align;
+}
+
+#language-table,
+#set-translation {
+  thead {
+    background-color: $translation-form-tables-thead-background-color;
+    color: $translation-form-tables-thead-color;
+  }
+
+  tr th {
+    // prevent sort icon from breaking
+    padding-bottom: $translation-form-tables-th-padding-bottom;
+    padding-top: $translation-form-tables-th-padding-top;
+    white-space: $translation-form-tables-th-white-space;
+  }
+}
+
+
+.sorting,
+.sorting_asc,
+.sorting_desc {
+  cursor: $translation-form-sorting-cursor;
+
+  .fa-fw::before {
+    display: inline;
+  }
+}
+
+
+.sorting_asc,
+.sorting_desc {
+  color: $translation-form-sorting-asc-desc-color;
+
+  .fa-fw::before {
+    color: inherit;
+  }
+}
+
+.sorting {
+  color: $translation-form-sorting-color;
+
+  .fa-fw {
+    position: relative;
+
+    &::before {
+      content: $translation-form-sorting-icon;
+    }
+  }
+}
+
+.sorting_asc .fa-fw::before {
+  content: $translation-form-sorting-asc-icon;
+}
+
+.sorting_desc .fa-fw::before {
+  content: $translation-form-sorting-desc-icon;
+}

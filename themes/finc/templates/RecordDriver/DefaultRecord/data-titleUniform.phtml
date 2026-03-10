@@ -1,0 +1,25 @@
+<!-- finc: RecordDriver - DefaultRecord - data-titleUniform -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if (!empty($data)): ?>
+  <?php if (is_array($data)): ?>
+    <?php if (isset($data['titleUniform'])): ?>
+      <a href="<?= $this->record($this->driver)->getLink('titleUniform', $data['titleUniform']) ?>">
+    <?php endif; ?>
+    <?= $this->escapeHtml($data['title']) ?>
+    <?php if (isset($data['titleUniform'])): ?>
+      </a>
+    <?php endif; ?>
+    <?php if (isset($data['lang'])): ?> &#x27E8;<?= $this->escapeHtml($data['lang']) ?>&#x27E9;<?php endif; ?>
+  <?php else: ?>
+    <a href="<?=$this->record($this->driver)->getLink('title', $data)?>"><?=$this->escapeHtml($data)?></a>
+  <?php endif; ?>
+<?php endif; ?>
+<!-- finc: RecordDriver - DefaultRecord - data-titleUniform - END -->

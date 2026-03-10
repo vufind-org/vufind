@@ -1,0 +1,47 @@
+<!-- finc: search - searchTabs -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * check isset($searchTabs)
+ * adds aria-label #20123
+ * uses specific $href #20123
+ * adds span for screenreader #20123
+configured in: {}
+ */
+?>
+<?php /* finc: checks isset($searchTabs) */ ?>
+<?php if (isset($searchTabs) && count($searchTabs) > 0): ?>
+  <?php /* finc: adds aria-label #20123 */ ?>
+  <ul class="nav nav-tabs" aria-label="<?=$this->transEscAttr('Selected')?>">
+    <?php foreach ($searchTabs as $tab): ?>
+        <?php if ($this->permission()->allowDisplay($tab['permission'])): ?>
+          <li<?=$tab['selected'] ? ' class="active"' : ''?><?=$this->showCounts ? ' data-show-counts' : ''?>>
+            <?php /* finc: uses specific $href #20123 */ ?>
+            <?php
+              $href =$tab['selected']
+                ? 'javascript:'
+                : $this->escapeHtmlAttr($tab['url'])
+            ?>
+            <a href="<?= $href ?>" data-source="<?=$this->escapeHtmlAttr($tab['class'])?>">
+              <?php /* finc: adds span for screenreader #20123 */ ?>
+              <?php if ($tab['selected'] === true): ?>
+                <span class="sr-only">
+                  <?=$this->transEsc('Selected')?>
+                </span>
+              <?php endif; ?>
+              <?=$this->transEsc($tab['label']); ?>
+            </a>
+          </li>
+        <?php elseif ($block = $this->permission()->getAlternateContent($tab['permission'])): ?>
+          <?=$block?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+  </ul>
+  <?php if ($this->showCounts): ?>
+    <?php $this->headScript()->appendFile('resultcount.js'); ?>
+  <?php endif; ?>
+<?php endif; ?>
+<!-- finc: search - searchTabs - END -->

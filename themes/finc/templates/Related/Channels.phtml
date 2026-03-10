@@ -1,0 +1,24 @@
+<!-- finc: Related - Channels -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * uses <p> and aria-live for alerts #17950, #21622
+ * FIXME: remove file in finc, if the changes are available in VuFind; create PR if not yet done
+configured in: {}
+ */
+?>
+
+<?php
+    $driver = $this->related->getDriver();
+    $link = $this->url('channels-record')
+        . '?id=' . urlencode($driver->getUniqueId())
+        . '&source=' . urlencode($driver->getSourceIdentifier());
+?>
+<?php /* finc: uses <p> and aria-live for alerts #17950, #21622 */ ?>
+<p class="channels-alert alert alert-info" aria-live="polite">
+  <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->transEsc('channel_expand')?></a>
+</p>
+<!-- finc: Related - Channels - END -->

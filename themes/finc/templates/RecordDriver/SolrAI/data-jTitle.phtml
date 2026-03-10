@@ -1,0 +1,45 @@
+<!-- finc: RecordDriver - SolrAI - data-jTitle -->
+<?php
+/**
+origin: finc/RecordDriver/SolrAI/
+called by view helper/controller:
+usage:
+modified for finc-SolrAI:
+ * finc-SolrAI specific template
+configured in: {}
+ */
+?>
+<?php $jtitle = []; ?>
+<?php if (!(empty($data))): ?>
+  <?php $issns = $this->driver->tryMethod('getISSNs'); ?>
+  <?php ob_start(); ?>
+  <?php if (!empty($issns)): ?>
+    <a href="<?=$this->record($this->driver)->getLink('isn', $issns)?>">
+      <?=$this->escapeHtml($data)?>
+    </a>
+  <?php else: ?>
+    <?=$this->escapeHtml($data)?>
+  <?php endif; ?>
+  <?php
+    $jtitle[] = trim(preg_replace('/\s+<\//', '</', ob_get_contents()));
+    ob_end_clean();
+  ?>
+<?php endif; ?>
+<?php
+// please note: direction of iteration will be displayed
+$methods = ['getVolume', 'getPublishDateSort', 'getIssues', 'getPages'];
+foreach ($methods as $method) {
+  if (!(empty($retval = $this->driver->tryMethod($method)))) {
+    $jtitle[] = ($method == 'getPages')
+      ? $this->transEsc('p.') . ' ' . $this->escapeHtml($retval)
+      : $this->escapeHtml($retval);
+  }
+}
+?>
+<?php /* finc: adds schema tag for parent publication #13850 - VE */ ?>
+<span property="isPartOf" typeof="Periodical" resource="#periodical">
+  <span property="name">
+    <?=implode(', ', $jtitle)?>
+  </span>
+</span>
+<!-- finc: RecordDriver - SolrAi - data-jTitle - END -->

@@ -1,0 +1,72 @@
+== Benutzergesteuerte Erwerbung ==
+
+Name: <?= $lastname ?>, <?= $firstname ?>
+
+Lesekarte-Nr.: <?= $username ?>
+
+Email: <?= $email ?>
+
+<?=isset($group) ? "Benutzergruppe: ". $group : ""?>
+
+hat folgenden Titel bestellt:
+
+<?= $title ?>
+
+<?php if ($author): ?>
+    von <?php foreach ($author as $au): ?><?= $au ?> <?php endforeach; ?>
+<?php endif; ?>
+
+Link: <?= $this->serverUrl($this->recordLinker()->getUrl($driver)) ?>
+
+für das Fachgebiet: <?= $this->transEsc('PDA::fos_' . $field_of_study) ?>
+
+------------------------------------------
+
+<?php if ($statement): ?>Begründung des Benutzers:
+
+    <?= $statement ?>
+<?php endif; ?>
+
+------------------------------------------
+
+<?php if ($price): ?>
+    Preis: <?= $this->safeMoneyFormat($price) ?>
+
+<?php endif; ?>
+<?php if ($publisher): ?>
+    Verlag: <?php foreach ($publisher as $pub): ?><?= $pub ?> <?php endforeach; ?>
+
+<?php endif; ?>
+<?php if ($format): ?>
+    Format: <?php foreach ($format as $form): ?><?= $this->transEsc($form) ?> <?php endforeach; ?>
+
+<?php endif; ?>
+<?php if ($language): ?>
+    Sprache: <?php foreach ($language as $lang): ?><?= $this->transEsc($lang) ?> <?php endforeach; ?>
+
+<?php endif; ?>
+<?php if ($publishDate): ?>
+    veröffentlicht: <?php foreach ($publishDate as $date): ?><?= $date ?> <?php endforeach; ?>
+
+<?php endif; ?>
+<?php if ($isbn): ?>
+    ISBN/ISN: <?php foreach ($isbn as $isn): ?><?= $isn ?> <?php endforeach; ?>
+
+<?php endif; ?>
+<?php if ($physical): ?>
+    Beschreibung: <?php foreach ($physical as $desc): ?><?= $desc ?> <?php endforeach; ?>
+
+<?php endif; ?>
+<?php if ($footnote): ?>
+    Fussnote: <?php foreach ($footnote as $ftn): ?><?= $ftn ?> <?php endforeach; ?>
+
+<?php endif; ?>
+<?php if ($source_id): ?>
+    Quelle: <?= $this->transEsc('sid_' . $source_id) ?>
+
+<?php endif; ?>
+
+
+------------------------------------------
+
+Zeitpunkt der Bestellung: <?= $timestamp ?>

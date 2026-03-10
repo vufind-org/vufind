@@ -1,0 +1,12 @@
+<?=$this->doctype('XHTML5')?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?=$this->layout()->userLang ?>" xml:lang="<?=$this->layout()->userLang ?>">
+  <head>
+    <?php $this->setupThemeResources(); ?>
+    <?=$this->headMeta()?>
+    <?=$this->headTitle() ?>
+    <?=$this->headLink()->setStylesheet('help.css')  ?>
+  </head>
+  <body>
+    <?=$this->layout()->content?>
+  </body>
+</html>

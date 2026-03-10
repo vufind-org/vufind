@@ -1,0 +1,70 @@
+<?=$this->doctype('HTML5')?>
+<html>
+<head>
+  <?php /* <meta http-equiv="content-type" content="text/html; charset=utf-8"> TEST IF THIS WORKS, fixme CK */ ?>
+  <title><?=$this->translate("Zeitschriftenbestellung")?></title>
+</head>
+<body style="font-family: Arial, Verdana, sans-serif;">
+<table width="820" border="0">
+  <tr valign="top">
+    <td width="275">
+      <strong>Signatur:</strong><br>
+      <?=$this->callnumber?>
+    </td>
+    <td width="275">
+      <strong>Heft / Jahrgang / Band:</strong><br>
+      <?=$this->issue?> / <?=$this->year?> / <?=$this->volume?>
+    </td>
+    <td width="50">
+      &nbsp;
+    </td>
+    <td width="220" rowspan="3" align="center" valign="top">
+      <strong><?=$this->callnumber?></strong><br>
+      Jahrgang / Band / Heft:<br>
+      <strong><?=$this->year?> / <?=$this->volume?> / <?=$this->issue?> </strong><br>
+      <strong><?=$this->record['title']?></strong><br><br>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td colspan="2">
+      <strong>Titel:</strong> <?=$this->record['title']?><br>
+      <strong>Standort:</strong> <?=$this->pickUpLocation?><br>
+      <?php if (isset($this->itemStatus['item_notes'])): ?>
+        <strong>Anmerkungen zum Exemplar:</strong>
+        <ul>
+          <?php foreach ($this->itemStatus['item_notes'] as $note): ?>
+            <li><?=$note?></li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+    </td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="bottom">
+    <td colspan="2">
+      <?php if (!empty($this->comment)): ?>
+        <p>
+          <strong>Kommentar des Benutzers:</strong><br>
+          <?=$this->comment?>
+        </p>
+      <?php endif; ?>
+      <p>
+        <strong>wurde bestellt von:</strong><br>
+        <?php /*<strong>Email:</strong> <?=$this->patron['email']?><br>*/ ?>
+        <strong>Name:</strong> <?=$this->patron['lastname']?>, <?=$this->patron['firstname']?><br>
+        <strong>Benutzerkarte:</strong> <?=$this->patron['cat_username']?><br>
+      </p>
+    </td>
+    <td>&nbsp;</td>
+    <td align="center" valign="top" style="font-size: 16px">
+      <strong><?=$this->patron['lastname']?>, <?=$this->patron['firstname']?></strong><br>
+      <strong><?=$this->patron['cat_username']?></strong>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

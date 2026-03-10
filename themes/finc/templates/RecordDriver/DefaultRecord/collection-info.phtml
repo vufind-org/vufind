@@ -1,0 +1,83 @@
+<!-- finc: recordDriver - DefaultRecord - collection-info -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * removes span + class for accessibility
+ * we want to get rid of trailing special chars in the title and limit its length to 100 chars
+ * changes div to p for alerts; adds aria-live
+ * creates table below 'collapse in'; requires adaptation of collection_record.js to keep accordion open
+ * uses 'Description' instead of 'more_info_toggle'
+ * uses 'collapse in' to initially hide the content
+ * adds code for responsive data table here
+ * adds span #18276
+configured in: {}
+ */
+?>
+<?php $this->headScript()->appendFile('collection_record.js'); ?>
+<div class="media">
+  <?php
+    $QRCode = $this->record($this->driver)->getQRCode("core");
+    $coverDetails = $this->record($this->driver)->getCoverDetails('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
+    $cover = $coverDetails['html'];
+    $preview = $this->record($this->driver)->getPreviews();
+  ?>
+  <?php if ($QRCode || $cover || $preview): ?>
+    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+      <?php /* Display thumbnail if appropriate: */ ?>
+      <?php if($cover): ?>
+        <?=$cover?>
+      <?php endif; ?>
+
+      <?php /* Display qrcode if appropriate: */ ?>
+      <?php if($QRCode): ?>
+        <?php /* finc: removes span + class for accessibility */ ?>
+          <br><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>">
+      <?php endif; ?>
+
+      <?php if ($preview): ?><?=$preview?><?php endif; ?>
+    </div>
+  <?php endif; ?>
+  <div class="media-body">
+
+    <?php /* finc: we want to get rid of trailing special chars in the title and limit its length to 100 chars */ ?>
+    <h2><?=$this->escapeHtml(preg_replace('/(\s[\/\.:]\s*)*$/', '', $this->truncate($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection(), 100)))?></h2>
+
+    <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
+    <?php if ($summary): ?>
+      <p><?=$this->escapeHtml($summary)?></p>
+    <?php endif; ?>
+
+    <?php /* Display the lists that this record is saved to */ ?>
+    <?php /* finc: changes div to p for alerts; adds aria-live */ ?>
+    <p class="savedLists" id="savedLists" aria-live="polite">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </p>
+
+    <?php /* finc: creates table below 'collapse in'; requires adaptation of collection_record.js to keep accordion open - CK */ ?>
+    <a id="moreInfoToggle" href="#" class="accordion-toggler collapsed hidden" data-toggle="collapse" data-target="#collectionInfo" aria-expanded="true">
+      <?php /* finc: uses 'Description' instead of 'more_info_toggle' */ ?>
+      <?=$this->transEsc('Description')?>
+    </a>
+    <?php /* Display Main Details */ ?>
+    <?php
+      $formatter = $this->recordDataFormatter();
+      $fields = $formatter->getData($driver, $formatter->getDefaults('collection-info'));
+    ?>
+    <?php if (!empty($fields)): ?>
+      <?php /* finc: uses 'collapse in' to initially hide the content,
+               finc adds code for responsive data table here - CK */ ?>
+      <table id="collectionInfo" class="table table-striped table-resp-data collapse in">
+        <?php /* finc: adds span #18276 */ ?>
+        <caption><span class="sr-only"><?=$this->transEsc('Bibliographic Details')?></span></caption>
+        <?php foreach ($fields as $current): ?>
+          <tr><th><?=$this->transEsc($current['label'])?>:</th><td data-title="<?= $this->transEscAttr($current['label']) ?>:"><?=$current['value']?></td></tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endif; ?>
+    <?php /* End Main Details */ ?>
+  </div>
+</div>
+<!-- finc: recordDriver - DefaultRecord - collection-info - END -->

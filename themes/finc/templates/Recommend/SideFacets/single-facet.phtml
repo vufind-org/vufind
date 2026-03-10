@@ -1,0 +1,111 @@
+<!-- finc: Recommend - SideFacets - single-facet -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * mark special untranslated terms with language tags #18509
+ * adds skip-to feature + accessibility code #18933
+ * adds hint for page reload as title #18993
+ * adds if with id for skip-to feature
+ * adds span inside a-element for explanatory sr-only text to facets #19934
+ * adds explanatory sr-only text to facets #19934
+ * adds span for screenreader #18993
+ * simplifies if by using $hasSubLinks #17934
+ * adds title for exclude facets #19392
+ * adds span for screenreaders for exclude facets #19392
+configured in: {}
+ */
+?>
+<?php
+  $toggleUrl = $this->facet['isApplied']
+    ? $this->urlBase . $this->url->removeFacet($this->group, $this->facet['value'], $this->facet['operator'])
+    : $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], $this->facet['operator']);
+
+  $hasSubLinks = $this->exclude && !$this->facet['isApplied'];
+
+  $classList = ['facet', 'js-facet-item'];
+  if ($this->facet['isApplied']) {
+    $classList[] = 'active';
+  }
+  if ($this->facet['operator'] == 'OR') {
+    $classList[] = 'facetOR';
+  }
+  if ($this->facet['operator'] == 'AND') {
+    $classList[] = 'facetAND';
+  }
+
+  $displayText = '-';
+  if (!empty($this->facet['displayText'])) {
+    $displayText = $this->escapeHtml($this->facet['displayText']);
+  } elseif (!empty($this->facet['value'])) {
+    $displayText = $this->escapeHtml($this->facet['value']);
+  }
+
+  // finc: mark special untranslated terms with language tags #18509
+  $displayText = $this->sideFacet()->getLanguageTag($displayText, 'span', $this->layout()->userLang);
+
+  if ($this->facet['operator'] == 'OR') {
+    $displayText =
+      '<i class="fa ' . ($this->facet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o') . '" aria-hidden="true"></i>'
+      . $displayText;
+  }
+?>
+<?php if ($hasSubLinks): ?>
+  <div class="<?=implode(' ', $classList) ?>">
+<?php else: ?>
+    <a
+      <?php /* finc: adds if with id for skip-to feature #18993 */ ?>
+      <?php if ($this->facet['isApplied']): ?>id="<?=$this->sideFacet()->setAppliedFacet($this->transEscAttr('Skip to facet', ['%%filter_name%%' => $this->facet['displayText']])) ?>"<?php endif; ?>
+      href="<?=$toggleUrl ?>"
+      class="<?=implode(' ', $classList) ?>"
+      data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>"
+      data-count="<?=$this->facet['count'] ?>"
+      <?php /* finc: adds hint for page reload as title #18993 */ ?>
+      title="<?php if($this->facet['isApplied']): ?><?=$this->transEscAttr('applied_filter') ?> - <?=$this->transEscAttr('page_reload_on_deselect_hint', ['%%filter_name%%' => $this->facet['displayText']])?><?php else: ?><?=$this->transEsc('page_reload_on_select_hint', ['%%filter_name%%' => $this->facet['displayText']])?><?php endif;?>"
+      data-lightbox-ignore
+    >
+<?php endif; ?>
+
+  <?php if ($hasSubLinks): ?>
+    <a class="text"
+      href="<?=$toggleUrl ?>"
+      data-lightbox-ignore
+      data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>"
+      data-count="<?=$this->facet['count'] ?>"
+      <?php /* finc: adds hint for page reload as title #18993 */ ?>
+      title="<?php if($this->facet['isApplied']): ?><?=$this->transEscAttr('applied_filter') ?> - <?=$this->transEscAttr('page_reload_on_deselect_hint', ['%%filter_name%%' => $this->facet['displayText']])?> <?=$this->escapeHtmlAttr($this->facet['displayText']) ?><?php else: ?><?=$this->transEsc('page_reload_on_select_hint', ['%%filter_name%%' => $this->facet['displayText']])?><?php endif;?>"
+    >
+      <?=$displayText ?>
+      <?php /* finc: adds span inside a-element for explanatory sr-only text to facets #19934 */ ?>
+      <span class="sr-only">
+        <?php if($this->facet['isApplied']): ?>(<?=$this->transEsc('applied_filter')?> - <?=$this->transEsc('page_reload_on_deselect_hint', ['%%filter_name%%' => $this->facet['displayText']])?> <?=$this->escapeHtmlAttr($this->facet['displayText']) ?>)<?php else: ?>(<?=$this->transEsc('page_reload_on_select_hint', ['%%filter_name%%' => $this->facet['displayText']])?>)<?php endif;?>
+      </span>
+    </a>
+  <?php else: ?>
+    <span class="text">
+      <?php /* finc: adds explanatory sr-only text to facets #19934 */ ?>
+      <?=$displayText ?><span class="sr-only"><?php if($this->facet['isApplied']): ?>(<?=$this->transEsc('applied_filter')?> - <?=$this->transEsc('page_reload_on_deselect_hint', ['%%filter_name%%' => $this->facet['displayText']])?>)<?php else: ?>(<?=$this->transEsc('page_reload_on_select_hint', ['%%filter_name%%' => $this->facet['displayText']])?>)<?php endif;?></span>
+    </span>
+  <?php endif; ?>
+
+  <?php if (!$this->facet['isApplied']): ?>
+    <span class="badge">
+      <?php /* finc: adds span for screenreader #18993 */ ?>
+      <?=$this->localizedNumber($this->facet['count']) ?><span class="sr-only"><?=$this->transEsc('results') ?></span>
+    </span>
+  <?php endif; ?>
+
+  <?php /* finc: simplify if by using $hasSubLinks #17934 */ ?>
+  <?php if ($hasSubLinks): ?>
+    <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
+    <?php /* finc: adds title for exclude facets #19392 */ ?>
+    <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude" title="<?= $this->transEscAttr('exclude_filter', ['%%filter_name%%' => $this->facet['displayText']]) ?>, <?= $this->transEscAttr('page_reload_on_exclude_hint', ['%%filter_name%%' => $this->facet['displayText']]) ?>">
+      <i class="fa fa-times" aria-hidden="true"></i>
+      <?php /* finc: adds span for screenreaders for exclude facets #19392 */ ?>
+      <span class="sr-only"><?=$this->transEsc('exclude_filter', ['%%filter_name%%' => $this->facet['displayText']]) ?>, <?= $this->transEsc('page_reload_on_exclude_hint', ['%%filter_name%%' => $this->facet['displayText']]) ?></span>
+    </a>
+  <?php endif; ?>
+<?=$hasSubLinks ? '</div>' : '</a>'; ?>
+<!-- finc: Recommend - SideFacets - single-facet - END -->

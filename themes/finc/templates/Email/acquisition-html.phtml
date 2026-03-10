@@ -1,0 +1,38 @@
+<?=$this->doctype('HTML5')?>
+<html>
+<head>
+  <?php /* <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"> TEST IF THIS WORKS, fixme CK */ ?>
+  <title>Erwerbungsvorschlag</title>
+</head>
+<body style="font-family: Arial, Verdana, sans-serif;">
+<h1>Erwerbungsvorschlag</h1>
+<table>
+  <tr valign="top">
+    <td>
+      Name: <strong><?=$lastname?>, <?=$firstname?></strong><br>
+      Lesekarte-Nr.: <strong><?=$username?></strong><br>
+      E-mail: <a href="mailto:<?=$email?>"><?=$email?></a><br>
+      <?=(isset($group) && !empty($group)) ? "Benutzergruppe: " . $group . "<br>" : ""?>
+    </td>
+    <td>&nbsp;</td>
+    <td>
+      hat folgenden Titel zur Erwerbung empfohlen:<br>
+      <br>
+      <strong><?=$proposal?></strong><br>
+      <br>
+      Begründung für Empfehlung:
+      <br><br>
+      <strong><?=$statement?></strong>
+      <br><br><br>
+      für das Fachgebiet: <strong><?=$this->transEsc("PDA::fos_" . $field_of_study)?></strong><br>
+      <br>
+    </td>
+  </tr>
+  <tr valign="top">
+    <td colspan="3">
+      Zeitpunkt der Bestellung: <?=$timestamp?>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,165 @@
+// Use this for all _general_ button styles
+// For Search Form buttons         see search.scss
+// For Header Navigation buttons   see header-navbar.scss
+// For Add-to-Bookbag buttons      see bookbag.scss
+// For bulk-action-buttons         see bulk-action-buttons.scss
+
+
+// *****************************************************************
+// ************ General buttons ************************************
+// *****************************************************************
+
+// link buttons inherits default link text decoration from $link-text-decoration
+.btn {
+  text-decoration: $btn-text-decoration;
+}
+
+// Buttons have a DEFAULT HEIGHT of 38px, the same
+// as '$navigation-element-default-height' for select boxes and other elements
+
+
+// *****************************************************************
+// ************ Specific buttons ***********************************
+// *****************************************************************
+
+// Default and secondary buttons
+.btn-default.active,
+.btn-secondary.active {
+  &:focus,
+  &:hover {
+    background-color: $btn-active-hover-bg;
+  }
+}
+
+// Info buttons
+.btn-info {
+  &:focus,
+  &:hover {
+    background-color: $btn-info-hover-bg;
+  }
+
+  &.active {
+    &:focus,
+    &:hover {
+      background-color: $btn-info-active-hover-bg;
+    }
+  }
+}
+
+// Primary buttons
+.btn-primary,
+.btn-primary.active {
+  &:focus,
+  &:hover {
+    background-color: $btn-primary-hover-bg;
+    color: $btn-primary-hover-color;
+  }
+
+  // On datalightbox:
+  &[disabled="disabled"] {
+    color: $btn-primary-disabled-color;
+  }
+}
+
+.btn-primary.disabled {
+  &:focus,
+  &:hover {
+    background-color: $btn-primary-disabled-hover-bg;
+    color: $btn-primary-disabled-hover-color;
+  }
+}
+
+// Secondary buttons
+.btn-secondary {
+  &:focus,
+  &:hover {
+    border: 1px solid $btn-secondary-border-color;
+  }
+}
+
+// Transparent buttons (button with border and darker text on light or white BGs)
+.btn-transparent {
+  @include button-variant($btn-transparent-color, $btn-transparent-bg, $btn-transparent-border);
+
+  &:focus,
+  &:hover {
+    color: lighten($btn-transparent-color, 80%);
+  }
+
+  &.active {
+    color: $btn-transparent-active-color;
+
+    &:focus,
+    &:hover {
+      background-color: $btn-transparent-active-color;
+      color: $black;
+    }
+  }
+}
+
+// Success buttons
+.btn-success.active {
+  &:focus,
+  &:hover {
+    background-color: $btn-success-active-hover-bg;
+  }
+}
+
+// Toolbar buttons, cart buttons ...
+// for more on bookbag button in Record View (sidebar), see bookbag.scss
+.toolbar-btn,
+.record-nav .cart-add,
+.record-nav .cart-remove,
+.reset-filters-btn {
+  border-radius: $toolbar-button-radius;
+}
+
+// Add focus highlighting to bookbag toolbar dropdown buttons
+.toolbar-btn {
+  background-color: $btn-toolbar-detail-background-color;
+  color: $btn-toolbar-detail-color;
+
+  &:focus,
+  &:hover {
+    color: $btn-toolbar-detail-color-hover;
+    outline: 1px solid $outline-default-color;
+  }
+}
+
+// need this for setting height to container li-element of bookbag,
+// otherwise the following staffview-button will be in a wrong position #23192
+.bookbag-menu {
+  overflow: auto;
+
+  // add marign for keep hover outline visible
+  a {
+    margin: 1px;
+  }
+}
+
+// set differnet style for toolbar buttons in list of results and favorites
+.template-name-results,
+.template-dir-myresearch {
+  .toolbar-btn {
+    background-color: $btn-toolbar-list-background-color;
+    color: $btn-toolbar-list-color;
+  }
+}
+
+// More/Less Button in facets
+// Keep as detailed to overwrite BS styles
+.sidebar {
+  .more-btn.facet,
+  .less-btn.facet {
+    padding: $sidebar-item-padding;
+    text-align: $sidebar-more-button-text-align;
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-md-max) {
+      padding: $sidebar-item-padding-sm;
+    }
+
+    i.fa {
+      display: $sidebar-more-button-icon-display;
+    }
+  }
+}

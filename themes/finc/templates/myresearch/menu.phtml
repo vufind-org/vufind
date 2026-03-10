@@ -1,0 +1,251 @@
+<!-- finc: myresearch - menu -->
+<?php
+
+/**
+* origin: VuFind/Bootstrap3
+* called by view helper/controller: MyResearchController
+* usage:
+   * renders side menu of profile/myresearch menu
+* modified for finc:
+ * adds $routeExists for guard menu against missing route exception #23260
+ * needs to add .facet-group class and classes on sub items for borders
+ * myresearch menu as list #19734 and wraps it in '<nav>' container
+ * specifies current page menu entry in following elements #19941
+ * uses the same structure for every item in menu: .flex, .flex-col, .active, aria-current="page" #24014
+ * adds media ready to pickup, permanent loans, historic loans
+ * uses checkCapability() instead of checkFunction(), adds '$routeExists('myresearch-loanhistory')' #23260
+ * adds preferences sub menu with items "profile", "change password", "change pin" and "logout"
+ * adds '.lists-heading' for styling purposes
+ * removes 'user-list-link' in a-element
+ * adds fa-star for all lists
+ * adds '.lists' class to favorites badges for correct styling
+ * adds aria helpers
+* configured in: --
+ */
+?>
+<?php
+  $user = $this->auth()->isLoggedIn();
+  $patron = $user ? $this->auth()->getILSPatron() : false;
+  $capabilityParams = $patron ? ['patron' => $patron] : [];
+  $ilsOnline = ('ils-none' !== $this->ils()->getOfflineMode());
+
+  // finc: adds $routeExists for guard menu against missing route exception #23260
+  $routeExists = function($route) {
+    try {
+      $this->url($route);
+      return true;
+    } catch (Exception $e) {
+      return false;
+    }
+  };
+?>
+<?php /* finc: changes btn-link to btn-default */ ?>
+<button class="close-offcanvas btn btn-default" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
+<?php /* finc: changes h3 to h2 */ ?>
+<h2><?=$this->transEsc('Your Account')?></h2>
+<?php /* finc: needs to add .facet-group class and classes on sub items for borders
+         finc shows myresearch menu as list #19734 and wraps it in '<nav>' container, CK
+         finc specifies current page menu entry in following elements #19941
+         finc uses the same structure for every item in menu: .flex, .flex-col, .active, aria-current="page" #24014
+         <li class="facet">
+          <a href="<?=$this->url('testUrl')?>" class="flex<?=$this->active == 'test' ? ' active' : ''?>"
+            <?=$this->active == 'test' ? ' aria-current="page"' : ''?>
+          >
+            <span class="flex-col"><i class="fa fa-fw fa-test" aria-hidden="true"></i> <?=$this->transEsc('Test')?></span>
+            <span class="test-status status hidden"><?=$this->icon('spinner') ?></span>
+          </a>
+         </li>
+ */ ?>
+
+<nav class="myresearch-menu">
+  <ul class="account-menu facet-group">
+  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyTransactions', $capabilityParams)): ?>
+    <li class="facet">
+      <a href="<?=$this->url('myresearch-checkedout')?>" class="flex checkedout<?=$this->active == 'checkedout' ? ' active' : ''?>"
+        <?=$this->active == 'checkedout' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-book" aria-hidden="true"></i> <?=$this->transEsc('Checked Out Items')?></span>
+        <span class="checkedout-status status hidden"><?=$this->icon('spinner') ?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php /* finc: adds media ready to pickup */ ?>
+  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyMediaReadyToPickup', $capabilityParams) && $routeExists('myresearch-mediareadytopickup')): ?>
+    <li class="facet">
+      <a href="<?=$this->url('myresearch-mediareadytopickup')?>" class="flex<?=$this->active == 'mediareadytopickup' ? ' active' : ''?>"
+        <?=$this->active == 'mediareadytopickup' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-book" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Ready For Collection')?></span>
+        <span class="mediareadytopickup-status status hidden"><?=$this->icon('spinner') ?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php /* finc: adds permanent loans */ ?>
+  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyPermanentLoans', $capabilityParams) && $routeExists('myresearch-permanentloans')): ?>
+    <li class="facet">
+      <a href="<?=$this->url('myresearch-permanentloans')?>" class="flex checkedout<?=$this->active == 'permanentloans' ? ' active' : ''?>"
+        <?=$this->active == 'permanent' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-book" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Permanent Checked Out Items')?></span>
+        <span class="permanentloans-status status hidden"><?=$this->icon('spinner') ?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php /* finc: adds historic loans */ ?>
+  <?php /* finc: uses checkCapability() instead of checkFunction(), adds '$routeExists('myresearch-loanhistory')' #23260 */ ?>
+  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyTransactionHistory', $capabilityParams) && $routeExists('myresearch-loanhistory')): ?>
+    <li class="facet">
+      <a href="<?=$this->url('myresearch-historicloans')?>"<?=$this->active == 'historicloans' ? ' class="active" aria-current="page"' : ''?>>
+        <span class="flex-col"><i class="fa fa-fw fa-history" aria-hidden="true"></i> <?=$this->transEsc('Loan History')?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyHolds', $capabilityParams)): ?>
+    <li class="facet">
+      <a href="<?=$this->url('holds-list')?>" class="flex<?=$this->active == 'holds' ? ' active' : ''?>"
+        <?=$this->active == 'holds' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Holds and Recalls')?></span>
+        <span class="holds-status status hidden"><?=$this->icon('spinner') ?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php if ($ilsOnline && $this->ils()->checkFunction('StorageRetrievalRequests', $capabilityParams)): ?>
+    <li class="facet">
+      <a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="flex<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>"
+        <?=$this->active == 'storageRetrievalRequests' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-archive" aria-hidden="true"></i> <?=$this->transEsc('Storage Retrieval Requests')?></span>
+        <span class="storageretrievalrequests-status status hidden"><?=$this->icon('spinner') ?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php /* finc: uses checkCapability() instead of checkFunction() #23260 */ ?>
+    <?php if ($ilsOnline && $this->ils()->checkCapability('getMyILLRequests', $capabilityParams)): ?>
+    <li class="facet">
+      <a href="<?=$this->url('myresearch-illrequests')?>" class="flex<?=$this->active == 'ILLRequests' ? ' active' : ''?>"
+        <?=$this->active == 'ILLRequests' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-exchange" aria-hidden="true"></i> <?=$this->transEsc('Interlibrary Loan Requests')?></span>
+        <span class="illrequests-status status hidden"><?=$this->icon('spinner') ?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php if ($ilsOnline && $this->ils()->checkCapability('getMyFines', $capabilityParams)): ?>
+    <li class="facet">
+      <a href="<?=$this->url('myresearch-fines')?>" class="flex<?=$this->active == 'fines' ? ' active' : ''?>"
+        <?=$this->active == 'fines' ? ' aria-current="page"' : ''?>
+      >
+        <?php
+          // Use a "fines" icon based on the configured default currency symbol:
+          $currency = strtolower($this->config()->get('config')->Site->defaultCurrency ?? 'usd');
+        ?>
+        <span class="flex-col"><i class="fa fa-fw fa-<?=$this->escapeHtmlAttr($currency)?>" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('Fines')?></span>
+        <span class="fines-status status hidden"><?=$this->icon('spinner') ?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php if ($this->overdrive()->showMyContentLink()):?>
+    <li class="facet">
+      <a href="<?=$this->url('overdrive-mycontent')?>" class="flex<?=$this->active == 'dgcontent' ? ' active' : ''?>"
+        <?=$this->active == 'dgcontent' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-download" aria-hidden="true"></i> <?=$this->transEsc('Overdrive Content')?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
+    <li class="facet">
+      <a href="<?=$this->url('search-history')?>?require_login" class="flex<?=$this->active == 'history' ? ' active' : ''?>"
+        <?=$this->active == 'history' ? ' aria-current="page"' : ''?>
+      >
+        <span class="flex-col"><i class="fa fa-fw fa-search" aria-hidden="true"></i> <?=$this->transEsc('history_saved_searches')?></span>
+      </a>
+    </li>
+  <?php endif; ?>
+  </ul>
+</nav>
+
+<?php /* finc: adds preferences sub menu with items "profile", "change password", "change pin" and "logout" */ ?>
+<?php if ($this->auth()->isLoggedIn()): ?>
+  <h3><?=$this->transEsc('Preferences')?></h3>
+  <nav class="myresearch-menu">
+    <ul class="account-menu facet-group">
+      <li class="facet">
+        <a href="<?=$this->url('myresearch-profile')?>" class="flex<?=$this->active == 'profile' ? ' active' : ''?>"
+          <?=$this->active == 'profile' ? ' aria-current="page"' : ''?>
+        >
+          <span class="flex-col"><i class="fa fa-fw fa-user" aria-hidden="true"></i> <?=$this->transEsc('Profile')?></span>
+        </a>
+      </li>
+      <?php if ($this->auth()->getManager()->supportsPasswordChange() && $routeExists('myresearch-changepassword')): ?>
+        <li class="facet">
+          <a href="<?=$this->url('myresearch-changepassword')?>" class="flex<?=$this->active == 'newpassword' ? ' active' : ''?>"
+            <?=$this->active == 'newpassword' ? ' aria-current="page"' : ''?>
+          >
+            <span class="flex-col"><i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password')?></span>
+          </a>
+        </li>
+      <?php endif; ?>
+      <?php if ($this->ils()->checkCapability('changeUserPin') && $routeExists('myresearch-setpin')): ?>
+        <li class="facet">
+          <a href="<?=$this->url('myresearch-setpin')?>" class="flex<?=$this->active == 'setpin' ? ' active' : ''?>"
+            <?=$this->active == 'setpin' ? ' aria-current="page"' : ''?>
+          >
+            <span class="flex-col"><i class="fa fa-fw fa-key" aria-hidden="true"></i> <?=$this->transEsc('LiberoAccount::change_user_pin')?></span>
+          </a>
+        </li>
+      <?php endif; ?>
+      <li class="facet">
+        <a href="<?=$this->url('myresearch-logout')?>" class="action flex">
+          <span class="flex-col"><i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <?=$this->transEsc("Log Out")?></span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+<?php endif; ?>
+
+<?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
+  <?php /* finc: adds '.lists-heading' for styling purposes */ ?>
+  <h3 class="list-heading"><?=$this->transEsc('Your Lists')?></h3>
+  <?php /* finc: changes menu into list */ ?>
+  <nav class="myresearch-menu">
+    <ul class="facet-group">
+      <li class="facet">
+        <?php /* finc: adds aria-current */ ?>
+        <a href="<?=$this->url('myresearch-favorites')?>" class="flex<?=$this->active == 'favorites' ? ' active' : ''?>"
+          <?=$this->active == 'favorites' ? ' aria-current="page"' : ''?>
+        >
+          <span class="flex-col"><i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->transEsc('Your Favorites')?></span>
+        </a>
+      </li>
+      <?php $lists = $user->getLists() ?>
+      <?php
+        // Use a variable so that we can output this nicely without whitespace that would get underlined:
+        $publicInd = '<i class="fa fa-globe" title="' . $this->transEscAttr('public_list_indicator') . '">'
+          . '</i> <span class="sr-only">(' . $this->transEsc('public_list_indicator') . ')</span>';
+      ?>
+      <?php foreach ($lists as $list): ?>
+        <li class="facet">
+          <?php /* finc: removes 'user-list-link' in a-element */ ?>
+          <a class="flex<?=$this->active == 'list' . $list['id'] ? ' active' : ''?>" href="<?=$this->url('userList', ['id' => $list['id']])?>"
+            <?=$this->active == 'list' . $list['id'] ? ' aria-current="page"' : ''?>
+          >
+            <?php /* finc: adds fa-star for all lists; add space between $list['title'] and $publicInd #26263 */ ?>
+            <span class="user-list-link flex-col"><i class="fa fa-fw fa-star" aria-hidden="true"></i> <?=$this->escapeHtml($list['title'])?>&nbsp;<?=$list['public'] ? $publicInd : ''?></span>
+            <?php /* finc: adds '.lists' class to favorites badges for correct styling */ ?>
+            <span class="badge lists"><?=$list->cnt ?></span>
+          </a>
+        </li>
+      <?php endforeach; ?>
+      <li class="facet">
+        <a href="<?=$this->url('editList', ['id' => 'NEW'])?>" class="flex<?=$this->active == 'editlist/NEW' ? ' active' : ''?>"
+          <?=$this->active == 'editlist/NEW' ? ' aria-current="page"' : ''?>
+        >
+          <span class="flex-col"><i class="fa fa-fw fa-plus" aria-hidden="true"></i> <?=$this->transEsc('Create a List') ?></span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+<?php endif ?>
+<!-- finc: myresearch - menu - END -->

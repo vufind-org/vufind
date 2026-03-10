@@ -1,0 +1,21 @@
+<!-- finc: Recommend - RemoveFilters -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * uses <p> and aria-live for alerts #17950, #21622
+ * FIXME: remove file in finc, if the changes are available in VuFind; create PR if not yet done
+configured in: {}
+ */
+?>
+
+<?php if ($this->recommend->hasFilters()): ?>
+  <?php /* finc: uses <p> and aria-live for alerts #17950, #21622 */ ?>
+  <p class="alert alert-info" aria-live="polite">
+    <?=$this->transEsc('nohit_active_filters')?> 
+    <a href="<?=$this->recommend->getFilterlessUrl()?>"><?=$this->transEsc('nohit_query_without_filters')?></a>
+  </p>
+<?php endif; ?>
+<!-- finc: Recommend - RemoveFilters - END -->

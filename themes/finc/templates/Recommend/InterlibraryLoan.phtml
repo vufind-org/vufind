@@ -1,0 +1,20 @@
+<!-- finc: templates - Recommend - InterlibraryLoan -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+ * finc-specific template
+configured in: {}
+ */
+?>
+<?php
+  $href = $this->recommend->href;
+  $text = $this->transEsc('Interlibrary loan recommendation');
+?>
+<div class="alert alert-info">
+  <p><?= $text ?></p>
+  <?=$this->externalLink($href, $href, [], true) ?>
+</div>
+<!-- finc: templates - Recommend - InterlibraryLoan - END -->

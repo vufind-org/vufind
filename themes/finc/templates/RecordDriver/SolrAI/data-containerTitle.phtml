@@ -1,0 +1,43 @@
+<!-- finc: RecordDriver - SolrAI - data-containerTitle -->
+<?php
+/**
+origin: finc/RecordDriver/DefaultRecord/data-containerTitle.phtml
+called by view helper/controller:
+usage:
+modified for finc-SolrAI:
+ * specific journalLink generation
+ * tries to link via issn
+ * uses $journalLink instead of $linkEsc
+ * moves $ref down
+configured in: {}
+ */
+?>
+<?php /* compare with finc/RecordDriver/DefaultRecord/data-containerTitle.phtml during updates */ ?>
+<?php
+  // finc: uses tryMethod() for special error handling
+  $containerSource = $this->driver->tryMethod('getSourceIdentifier');
+  $containerID = $this->driver->tryMethod('getContainerRecordID');
+  // finc-SolrAI: $ref moved down
+  // $ref = $this->driver->tryMethod('getContainerReference');
+
+  // finc-SolrAI: specific journalLink generation
+  $issns = $this->driver->tryMethod('getISSNs');
+  $journalLink = '';
+
+  // finc-SolrAI: try container id as link - VuFind native behaviour
+  if ($containerID) {
+    $journalLink = $this->escapeHtmlAttr($this->recordLinker()->getUrl("$containerSource|$containerID", $data, 'JournalTitle'));
+  } // finc-SolrAI: try to link via issn - finc-SolrAI adapted behaviour
+  elseif (!empty($issns)) {
+    $journalLink = $this->record($this->driver)->getLink('isn', $issns);
+  } // finc-SolrAI: default take the journal title as link - VuFind native behaviur
+  else {
+    $journalLink = $this->record($this->driver)->getLink('journaltitle', $data);
+  }
+?>
+<?php /* finc-SolrAI uses $journalLink instead of $linkEsc */ ?>
+<a href="<?=$journalLink?>"><?=$this->escapeHtml($data)?></a>
+<?php /* finc-SolrAI moves $ref here */ ?>
+<?php $ref = $this->driver->tryMethod('getContainerReference'); ?>
+<?=empty($ref) ? '' : $this->escapeHtml($ref)?>
+<!-- finc: RecordDriver - SolrAi - data-containerTitle - END -->

@@ -1,0 +1,169 @@
+// Use this for all search control element styles
+// Search controls are the elements on top of the result list, including limit and sort by
+
+// *****************************************************************
+// ************ Search controls for result list ********************
+// *****************************************************************
+
+// set display to flex or other
+.search-header {
+  display: $search-controls-container-display-type;
+}
+
+.search-stats {
+  flex-grow: $search-stats-flex-grow;
+  margin-bottom: 1em;
+}
+
+//// Push hits count down to align with limit and sort select boxes
+.hits-count {
+  padding-top: $hits-count-top-padding;
+}
+
+// The container structure for limit and sort is
+// .search-controls
+//   .limit
+//     form.limit-form
+//       .limit-inner
+//         select#limit
+//   .sort.right
+//     form.search-sort.text-right
+//       .sort-inner
+//         select#sort_options_...
+
+.limit,
+.sort {
+  margin-bottom: $limit-sort-bottom-margin;
+
+  // the following are important for identical labels' positioning
+  label {
+    line-height: $limit-sort-label-line-height;
+    margin-bottom: $limit-sort-label-margin-bottom;
+    padding-right: $limit-sort-label-padding-right;
+  }
+
+  select {
+    margin-bottom: $limit-sort-select-margin-bottom;
+  }
+
+  @media (max-width: $screen-sm-max) {
+    button,
+    label,
+    select {
+      display: $limit-sort-button-label-select-display-xs-sm;
+    }
+
+    select {
+      // overwrite bootstrap3
+      margin-bottom: $limit-sort-select-margin-bottom-xs-sm;
+      margin-right: $limit-sort-select-margin-right-xs-sm;
+    }
+  }
+}
+
+// For INLINE, left-floated 'hits per page' and 'sort by' selectors use 'float: left' here
+// Note that the outer sort container is right-floated while the inner (form) one gets left-floated
+.limit,
+.search-sort {
+  float: $limit-search-sort-float;
+}
+
+.limit {
+  margin-right: $limit-margin-right;
+
+  @media (max-width: $screen-xs-max) {
+    margin-right: $limit-margin-right-xs;
+  }
+
+  @media (max-width: $screen-sm-max) {
+    float: $limit-float-xs-sm;
+  }
+
+  label {
+    text-align: $limit-label-text-align;
+  }
+}
+
+.sort {
+  float: $sort-container-float;
+
+  @media (max-width: $screen-sm-max) {
+    float: $sort-container-float;
+  }
+
+  // limit the width of the select field if necessary - for more select details, see FORMS scss
+  select {
+    max-width: $sort-select-max-width;
+
+    @media only screen and (max-width: 410px) {
+      max-width: $sort-select-max-width-below-410px;
+    }
+  }
+}
+
+// inner sort by-form element
+.search-sort {
+  display: $sort-inner-form-display;
+  text-align: $sort-select-text-align;
+}
+
+// 'limit-inner' and 'sort-inner' contain the select elements _and_ buttons for '.limit' and '.sort'
+.limit-inner,
+.sort-inner {
+  display: $limit-sort-inner-element-display;
+
+  // Place the refresh button next to the select box
+  @media (max-width: $screen-sm-max) {
+    display: $limit-sort-inner-element-display-xs-sm-display;
+  }
+
+  // top align buttons and select boxes
+  .btn {
+    vertical-align: top;
+  }
+}
+
+// advanced search terms and links
+.content_adv_search_links {
+  .btn {
+    margin-bottom: $adv-search-links-button-margin-bottom;
+
+    @media (max-width: $form-control-xs-max-width) {
+      width: 100%;
+    }
+  }
+}
+
+// *****************************************************************
+// ************ Search tools for result list ***********************
+// *****************************************************************
+// This is the ribbon with RSS, mail etc, which is hidden in many instances
+// see search/results.phtml for more
+
+// Pagination & Searchtools get the same centered display
+.searchtools {
+  @include content-centered-display-as-table;
+
+  @media print {
+    display: none;
+  }
+
+  // Display searchtools-links as buttons on XS, SM
+  a {
+    @media (max-width: $screen-sm-max) {
+      background-color: $search-tools-links-background-color-xs-sm;
+      border: $search-tools-links-border-xs-sm;
+      color: $search-tools-links-color-xs-sm;
+      // align on top of each other
+      display: $search-tools-links-display-xs-sm;
+      margin-bottom: $search-tools-links-margin-bottom-xs-sm;
+      padding: $search-tools-links-padding-xs-sm;
+      text-align: $search-tools-links-text-align-xs-sm;
+      touch-action: $search-tools-links-touch-action-xs-sm;
+      vertical-align: $search-tools-links-vertical-align-xs-sm;
+      white-space: $search-tools-links-white-space-xs-sm;
+    }
+  }
+}
+
+

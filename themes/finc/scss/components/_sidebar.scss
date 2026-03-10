@@ -1,0 +1,434 @@
+// Use this for sidebar styles incl facets
+
+// *****************************************************************
+// ************ General ********************************************
+// *****************************************************************
+
+
+.sidebar {
+  // #13625 avoid ugly linebreaks with overlong words, RL
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -o-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  // Add top padding to sidebar and '.mainbody' for better looks
+  // (see also result-list.scss);
+  padding-top: $mainbody-sidebar-top-padding;
+
+  @media (max-width: $screen-xs-max) {
+    padding-top: $mainbody-sidebar-top-padding-xs;
+  }
+
+
+  a {
+    text-decoration: $sidebar-facet-link-text-decoration;
+  }
+
+
+  // Sidebar width, when off-canvas is _off_;
+  // For more on off-canvas see offcanvas.scss
+  body:not(.offcanvas) & {
+    @media (max-width: $screen-xs-max) {
+      width: 100%;
+    }
+  }
+
+  // pull content to right border for sidebar right
+  &.right {
+    @include pull-sidebar-to-right($margin-right-width);
+
+    // Remove right-hand borders for right-side facets only,
+    // ONLY works when sidebar butts right border
+    .facet-group .facet,
+    .facet-group .title,
+    .facet-group .collapse,
+    .facet-group .collapsing,
+    .facet-group > .facet {
+      @include right-border-on-sidebar($border-right-width);
+    }
+  }
+
+  // Selected/active filters on top
+  .facet.active,
+    // 'a.active' is for My Account
+  a.active {
+    background-color: $brand-warning;
+    color: $sidebar-facet-active-color;
+
+    // color the icon too
+    .fa {
+      color: inherit;
+    }
+
+    // for :visited states see visitedLinks.scss
+  }
+
+  // try to have word breaks for better looks
+  .facet {
+    -ms-word-break: $sidebar-facet-word-break;
+    // fallback for hyphens: auto (Chrome on Desktop and bug on Mozilla for capitalized words)
+    word-break: $sidebar-facet-word-break;
+
+    a {
+      text-decoration: $sidebar-facet-link-text-decoration;
+    }
+
+    a,
+    .text {
+      -ms-word-break: $sidebar-facet-word-break;
+      word-break: $sidebar-facet-word-break;
+
+      // special case: on sm-size AND search result facets
+      @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+        -ms-word-break: $sidebar-facet-word-break-sm;
+        word-break: $sidebar-facet-word-break-sm;
+      }
+    }
+
+    // descriptive text inside active facet;
+    // push in to align with other items
+    &.active {
+      .text {
+        padding-left: $sidebar-facet-active-text-inside-padding-left;
+      }
+    }
+  }
+}
+
+
+// Style result list facets and myresearch-menu facets to have the same height;
+// both have a very similar structure:
+//
+// <ul ... class="facet-group"
+//   <li class="facet'
+//
+// or
+//
+// <div ... class="facet-group"
+//   <a class="title"
+//
+// keep '.facet-group' for specifity
+.facet-group {
+  // RESET PADDING and apply it to facet inner items
+  .facet,
+    // '.title' applies to the h3 headings
+  .title {
+    // Apply padding to elements _inside_ the facet for useability
+    // See also '.myresearch-menu' below
+    // RESET padding to '0' here!
+    padding: $sidebar-facet-title-padding;
+  }
+
+  .facet {
+    text-decoration: none;
+  }
+
+  // uses ul and li structure instead #17934, #24809
+  // VuFind 10 is using this structure already, FIXME: clean SCSS with VF10 upgarde, if finc uses the BS version with this PR
+  // https://github.com/vufind-org/vufind/pull/3108/
+  .facet__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+
+  // Re-APPLY PADDING HERE to facet inner items
+  a,
+  .text,
+  .badge,
+  .checkbox,
+  .help-link,
+  .title {
+    // Add facet item padding to items
+    padding: $sidebar-item-padding;
+  }
+
+
+  // Focus and hover behaviour for facet titles
+  .title {
+    background-color: $sidebar-facet-title-background-color;
+    color: $sidebar-facet-title-color;
+
+    &:hover,
+    &:focus {
+      @include outline($outline-default-size);
+
+      background-color: $sidebar-facet-title-background-color-focus-hover;
+      color: $sidebar-facet-title-color-focus-hover;
+    }
+  }
+
+  // Active facets on top of standard facets
+  .facetOR.active {
+    // Style active facets to get proper left padding
+    .text {
+      text-indent: $sidebar-or-facet-text-indent;
+    }
+  }
+
+  // Style myaccount sidebar menues to get the same look as facets
+  .facet {
+    .myresearch-menu & {
+      padding: $sidebar-facet-my-account-padding;
+    }
+
+    a:not(.exclude) {
+      width: $sidebar-facet-my-account-link-width;
+
+      &:not(:last-of-type) {
+        // overwrite values from BS with more sensible values
+        padding: $sidebar-item-padding;
+      }
+    }
+  }
+}
+
+// just for applied filters in advanced search
+.template-name-advanced {
+  .facet-group {
+    label.facet {
+      // Border for sidebar: after advanced search select facet in sidebar, then go to edit adv search
+      border-left: $border-default-styles;
+      border-right: $border-default-styles;
+      padding-left: 2.8rem;
+    }
+
+    // Height of input box shown when advanced search is repeated with previously chosen facets
+    input[type='checkbox'] {
+      height: $advanced-search-facet-input-height;
+    }
+  }
+}
+
+// Create hover-effect
+.facet,
+.facet a {
+  color: $sidebar-item-color;
+
+  &:hover:not(.button),
+  &:focus:not(.button) {
+    background: $sidebar-item-hover-bg;
+    color: $sidebar-item-hover-color;
+
+    .active-filters & {
+      background: $sidebar-item-active-hover-bg;
+    }
+  }
+
+  // Active facet hover color
+  &.active:hover:not(.button),
+  &.active:focus:not(.button) {
+    background: $sidebar-item-active-hover-bg;
+    color: $sidebar-facet-active-hover-color;
+
+    // color icon too
+    .fa {
+      color: inherit;
+    }
+  }
+}
+
+//// Result List ol, ul that contains li.result or facet group / side facets that contains li.facet
+.record-list,
+.facet-group > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+// adapt style for h3 in sidebar
+#myresearch-sidebar {
+  h3 {
+    font-size: $font-size-base;
+    margin: 0;
+  }
+
+  .facet-group:not(.active-filters) h3 {
+    @media (max-width: $screen-xs-max) {
+      padding-left: 0;
+    }
+  }
+}
+
+
+// *****************************************************************
+// ************ Exclude-Facets + badges + item counts **************
+// *****************************************************************
+
+// Style the Exclude Icons and Links;
+// the structure is
+//
+// <a class="exclude"
+//   <i class="fa ...">
+//   <span class="sr-only">
+//
+.exclude {
+  // Accessibility: Apply negative 'margin-left' and
+  // overwrite 'padding-left' below for propper tappable item
+  margin-left: $sidebar-exclude-facet-margin-left;
+  // Should be 38px tall for tapping;
+  // requires re-application of facet padding on facet inner items, see above
+  min-height: $sidebar-exclude-facet-min-height;
+
+  // Remove standard left-padding for better tabbability
+  // keep '.facet' for specifity
+  .facet & {
+    padding-left: $sidebar-exclude-facet-padding-left;
+  }
+
+  &:focus,
+  &:hover {
+    @include outline(1px);
+
+    color: $badge-link-hover-color;
+  }
+
+  // x item
+  i {
+    color: $badge-link-color;
+
+    &:focus,
+    &:hover {
+      color: $badge-link-hover-color;
+    }
+  }
+
+}
+
+// '.itemCount' is used instead of the newer '.badge' syntax in oder myaccount menus
+.itemCount {
+  &:focus,
+  &:hover {
+    color: $badge-link-hover-color;
+
+    .active & {
+      color: $brand-secondary;
+    }
+  }
+}
+
+// '.badge' is used in result list for the number of items in facets
+// and in newer myaccount menu items
+.badge {
+  font-size: $sidebar-facet-badge-font-size;
+  // use same height for all badges
+  height: 20px;
+  // remove right padding to align with accordion arrows
+  padding-right: $sidebar-facet-badge-padding-right;
+
+  &.btn-danger,
+  &.btn-info,
+  &.btn-success,
+  &.btn-transparent,
+  &.btn-warning {
+    &:focus,
+    &:hover {
+      color: $btn-badge-hover-color;
+    }
+  }
+
+  // Numbers in MyAccount sidebar
+  // Here's an example for _three items_ next to each other in the 'checked-out items' facet
+  // <span class="checkedout-status status">
+  //   <span class="badge ok" data-toggle="tooltip" title="" data-original-title="Ausgeliehene Medien">5</span>
+  //   <span class="badge warn" data-toggle="tooltip" title="" data-original-title="Bald fällige Ausleihen">1</span>
+  //   <span class="badge overdue" data-toggle="tooltip" title="" data-original-title="Überfällige Ausleihen">2</span>
+  // </span>
+  &.ok,
+  &.overdue,
+  &.warn {
+    .myresearch-menu & {
+      color: $sidebar-facet-active-hover-color;
+      display: $sidebar-facet-badge-my-research-icons-display;
+      font-size: $sidebar-facet-badge-my-research-icons-font-size;
+      // unset height attribute from .facet .badge {} definition for better looks
+      max-height: $sidebar-facet-badge-my-research-icons-max-height;
+      padding: $sidebar-facet-badge-my-research-icons-padding;
+    }
+  }
+
+  &.ok {
+    .myresearch-menu .active .status & {
+      background-color: $state-success-bg;
+    }
+  }
+
+  &.overdue {
+    .myresearch-menu & {
+      background: $state-danger-bg;
+    }
+
+    .myresearch-menu .active .status & {
+      background-color: $state-danger-bg;
+    }
+  }
+
+
+  &.lists {
+    // add exception for Favorites badges in My Account;
+    // based on the other badges such as '.ok', '.overdue' etc. they are styled as '.badge.lists'
+    padding-right: $sidebar-my-account-lists-badge-right-padding;
+    padding-top: $sidebar-my-account-lists-badge-top-padding;
+  }
+
+
+  // light color on dark, when active (Facets + My Account) - we need the parent for specificity
+  .facet.active > &,
+  .sidebar a.active > & {
+    background-color: $sidebar-facet-badge-background-color;
+    color: $sidebar-facet-active-hover-color;
+  }
+}
+
+// special item count displays with colored backgrounds
+.has-error .form-control,
+.sms-error .form-control {
+  border: $sidebar-facet-badge-has-error-border;
+
+  &:focus,
+  &:hover {
+    border: $sidebar-facet-badge-has-error-border-focus-over;
+  }
+}
+
+
+// *****************************************************************
+// ************ More-Toggle ****************************************
+// *****************************************************************
+
+// More-Toggle (for variable, see customVariables.scss)
+.narrow-toggle {
+  text-align: $narrow-toggle-text-alignment;
+}
+
+
+// *****************************************************************
+// ************ Toolbar in Record view / Detail view ***************
+// *****************************************************************
+// For Offcanvas back button in sidebar see offcanvas.scss
+
+.nav-stacked.nav > li > a {
+  @media (min-width: $screen-sm-min) {
+    padding-right: 0;
+  }
+}
+
+// Override record.scss value here to keep it consistent with .nav .btn-bookbag-toggle a
+.record-nav > li > a,
+.record-nav > li a {
+  padding: $record-view-toolbar-button-padding;
+}
+
+.record-nav > li > a {
+  @media (max-width: $screen-xs-max) {
+    text-align: left;
+  }
+}
+
+// add some space for public list notice with icon
+.public-list {
+  margin: 1em 0;
+}

@@ -1,0 +1,50 @@
+<!-- finc: recommend - ebscoresults -->
+<?php
+    
+/**
+origin: finc
+called by view helper/controller:
+usage: shows 'EBSCO' section in sidebar ('Treffer in Fachdatenbanken' or similar)
+modified for finc:
+ * finc-specific template
+ * Design should follow structure of recommend - sidefacets - CK
+ * uses ul list structure and custom more link based on finc's normal facet design
+configured in: --
+*/
+?>
+<?php $data = $this->recommend->getResult(); ?>
+<?php if (!empty($data['results']) && is_array($data['results']) && count($data['results']) > 0): ?>
+
+  <?php /* Design should follow structure of recommend - sidefacets - CK */
+        /* finc: uses list design - CK */
+  ?>
+  <div class="facet-group" id="side-panel-ebsco">
+    <h3>
+      <a class="title" aria-expanded="true" id="control-for-side-collapse-ebsco" data-toggle="collapse" href="#side-collapse-ebsco">
+        <?=$this->transEsc('Ebsco::title_hits_databases') ?> <span class="sr-only"><?=$this->transEsc('facet_select_hint') ?></span>
+      </a>
+    </h3>
+    <ul id="side-collapse-ebsco" class="collapse in">
+      <?php foreach ($data['results'] as $result): ?>
+        <li class="facet">
+          <?= $this->externalLink(
+              $this->escapeHtmlAttr($result['url']),
+              $this->truncate($this->translate('Ebsco::'.$result['database']), 90)
+          ) ?>
+          <span class="badge">
+            <?= $this->escapeHtml($result['hits']) ?>
+          </span>
+        </li>
+      <?php endforeach; ?>
+      <li class="facet">
+        <?= $this->externalLink(
+          $data['hits_total_url'],
+          '<span class="text">' . $this->translate('more') . '&nbsp;... </span>',
+          ['class' => 'facet narrow-toggle more-facets'],
+          true
+        ) ?>
+      </li>
+    </ul>
+  </div>
+<?php endif; ?>
+<!-- finc: recommend - ebscoresults - END -->

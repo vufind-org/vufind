@@ -1,0 +1,20 @@
+<!-- finc: RecordDriver - DefaultRecord - data-imprint -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<div itemscope itemtype="http://schema.org/publisher">
+  <?php if (is_array($data)): ?>
+    <?php foreach ($data as $dataField): ?>
+      <span property="publisher" typeof="Organization"><?=$dataField?></span>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <span property="publisher" typeof="Organization"><?=$data?></span>
+  <?php endif; ?>
+</div>
+<!-- finc: RecordDriver - DefaultRecord - data-imprint - END -->

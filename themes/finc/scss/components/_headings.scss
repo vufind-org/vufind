@@ -1,0 +1,121 @@
+// Use this file for all h1 to h6 elements only
+
+// *****************************************************************
+// ************ h1 *************************************************
+// *****************************************************************
+h1 {
+  font-size: $h1-font-size;
+
+  //// remove top margin to align with sidebars etc., except advanced search on XS
+  &:first-of-type {
+    margin-top: $h1-first-of-type-margin-top;
+  }
+
+  .template-dir-cart.template-name-cart .container &,
+  .template-dir-content.template-name-content &,
+  .template-dir-myresearch.template-name-editlist &,
+  .template-dir-search.template-name-newitem &,
+  .template-dir-search.template-name-reserves & {
+    @media (max-width: $screen-xs-max) {
+      padding-top: ($grid-gutter-width * .5);
+    }
+  }
+
+  .template-name-results & {
+    @media print {
+      clip: unset;
+      display: block;
+      position: unset;
+    }
+  }
+}
+
+
+// *****************************************************************
+// ************ h2 *************************************************
+// *****************************************************************
+h2 {
+  font-size: $h2-font-size;
+
+  .sidebar & {
+    font-size: $h2-font-size-sidebar;
+
+    @media (max-width: $screen-xs-max) {
+      margin-left: $h2-margin-left-sidebar-xs;
+    }
+
+    @media (max-width: $screen-sm-max) {
+      font-size: $h2-font-size-sidebar-xs-sm;
+      margin-top: $h2-margin-left-sidebar-xs-sm-margin-top;
+    }
+
+    @media (min-width: $screen-sm-min) {
+      &:first-of-type {
+        margin-top: $h2-first-of-type-margin-top-sidebar-sm-up;
+      }
+    }
+  }
+
+  //// Search results
+  .result-body &,
+  .media-body & {
+    margin: 0;
+  }
+
+  // Place this to the left on xs-only
+  .active-filters & {
+    @media (max-width: $screen-xs-max) {
+      display: inline-flex;
+      font-size: 1.3rem;
+      margin-top: 0;
+    }
+
+    @media screen and (max-width: 420px) {
+      width: 100%;
+    }
+
+    @media screen and (min-width: 421px) and (max-width: $screen-xs-max) {
+      width: 43%;
+    }
+  }
+}
+
+// *****************************************************************
+// ************ h3 *************************************************
+// *****************************************************************
+h3 {
+  font-size: 1.5rem;
+
+  // H3 for favorites lists in MyAccount;
+  // keep '#myresearch-sidebar '& for specifity
+  &.lists-heading {
+    #myresearch-sidebar & {
+      // Align with content in facet elements
+      margin-bottom: .25rem;
+      margin-left: 1.5rem;
+    }
+  }
+}
+
+
+// *****************************************************************
+// ************ h4 *************************************************
+// *****************************************************************
+h4 {
+  font-size: $h4-font-size;
+
+  // H4 atop Sidebar - align to limit and sort
+  .sidebar & {
+    margin-top: $h4-margin-top-sidebar;
+
+    @media (max-width: $screen-sm-max) {
+      text-align: $h4-text-align-sidebar-xs-sm;
+    }
+
+    // keep level with left-hand content
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      font-size: $h4-font-size-sidebar-sm-only;
+      margin-top: $h4-margin-top-sidebar-sm-only;
+    }
+  }
+}

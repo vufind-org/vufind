@@ -1,0 +1,18 @@
+<!-- finc: recordDriver - DefaultRecord - record-icon-text  -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if ($iconClass): ?>
+  <div class="access-icon hidden-print">
+    <span>
+      <span class="sr-only"><?=$this->translate("Available_Via")?></span> <?=$this->translate("($iconClass)")?>
+    </span>
+  </div>
+<?php endif; ?>
+<!-- finc: recordDriver - DefaultRecord - record-icon-text - END -->

@@ -1,0 +1,15 @@
+<!-- finc: RecordDriver - SolrLido - data-institutions -->
+<?php
+/**
+origin: finc/RecordDriver/SolrLido/
+called by view helper/controller:
+usage:
+modified for finc-SolrLido:
+ * finc-SolrLido specific template
+configured in: {}
+ */
+?>
+<?php foreach ($data as $index => $institution): ?>
+  <?=($index > 0 ? '<br>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
+<?php endforeach; ?>
+<!-- finc: RecordDriver - SolrLido - data-institutions - END -->

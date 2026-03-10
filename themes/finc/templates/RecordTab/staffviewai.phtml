@@ -1,0 +1,55 @@
+<!-- finc: recordtab - staffviewai -->
+<?php
+/**
+origin: finc/RecordTab/staffviewarray.phtml
+called by view helper/controller:
+usage:
+modified for finc-staffviewai:
+ * adds 'openURL', 'SOLR', 'fullrecord' #9934
+configured in: {}
+ */
+?>
+<?php /* compare with finc/RecordTab/staffviewarray.phtml during updates */ ?>
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+?>
+<?php /* finc: adds code for responsive data table here - CK */ ?>
+<table class="citation table table-striped table-resp-data">
+  <?php foreach ($this->driver->getRawData() as $field => $values): ?>
+    <tr>
+      <th><?=$this->escapeHtml($field)?></th>
+      <td data-title="<?= $this->escapeHtml($field) ?>:">
+        <?php foreach ((array)$values as $value): ?>
+          <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br>
+        <?php endforeach; ?>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+  <?php /* finc-staffviewai adds 'openURL', 'SOLR', 'fullrecord' #9934 */ ?>
+  <?php if ($openURL = $this->driver->getOpenUrl()): ?>
+    <tr>
+      <th><?=$this->escapeHtml('openURL')?></th>
+      <td data-title="<?= $this->escapeHtml('openURL') ?>:">
+        <?=$this->escapeHtml($openURL)?><br>
+      </td>
+    </tr>
+  <?php endif; ?>
+  <?php $fields = $this->driver->getRawData();
+  if (!empty($fields)): ?>
+    <tr>
+      <th><?=$this->translate('SOLR')?></th>
+      <td data-title="<?= $this->escapeHtml('SOLR') ?>:"></td>
+    </tr>
+    <?php ksort($fields);
+    foreach ($fields as $key => $values): ?>
+      <?php if ($key === 'fullrecord') continue; ?>
+      <tr>
+        <th><?=$this->escapeHtml($key)?></th>
+        <td data-title="<?= $this->escapeHtml($key) ?>:"><?=$this->escapeHtml(is_array($values) ? implode(', ', $values) : $values)?></td>
+      </tr>
+    <?php endforeach ?>
+  <?php endif; ?>
+  <?php /* finc-staffviewai adds 'openURL', 'SOLR', 'fullrecord' #9934 - END */ ?>
+</table>
+<!-- finc: recordtab - staffviewai - END -->

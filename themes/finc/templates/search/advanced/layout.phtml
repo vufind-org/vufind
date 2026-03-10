@@ -1,0 +1,313 @@
+<!-- finc: search - advanced - layout -->
+<?php
+/**
+* origin: vufind/BS3
+* called by view helper/controller:
+* usage:
+* modified for finc:
+ * re-enables searchbox #22361
+ * adds offcanvas behaviour for xs #17601
+ * uses h1 instaed of h2 #13547
+ * keeps icon inside link for consistent functionality
+ * replaces in href '#' with 'javascript:void(0);'
+ * adds class="btn btn-default" #19418
+ * changes 'fa-plus-circle' to 'fa-plus'
+ * adds roles, aria-label #19418
+ * removes label in favor of more detailed labelling #19418
+ * uses fieldset and label for more consistent formatting - check again in VF 7 or 8.x
+ * removes redudant aria-label #19693
+ * adds label #19418
+ * adds ID #19418 AND corrects ID string to 'search_type' in #26300
+ * removes redudant aria-label #19693
+ * replaces in href '#' with 'javascript:void(0);' #11272
+ * adds span for screenreader #13547
+ * moving entire original icon tag inside link WILL BUST removal-button functionality
+ * uses span instead of i; removes classname fa fa-plus-circle #11813
+ * replaces in href '#' with 'javascript:void(0);'
+ * adds class="btn btn-default" #19418
+ * adds 'for="search_bool<?=$group ?>"' to label #18209
+ * replaces in href '#' with 'javascript:void(0);' #11272
+ * adds class="btn btn-default" #19418
+ * uses 'btn-transparent' instead of 'btn-default'
+ * introduce 'fnd-btn'-class to swap submit and clear buttons for consistency #11813
+ * adds id 'myresearch-sidebar' #17908
+ * uses aside for sidebar #23430
+ * adds button 'navigate_back' #17601
+ * adds class facet for consistent styling #23846
+ * styling for applied filters: uses h3 instead of div, adds ul, adds li around label #23846
+ * configured in: {}
+ */
+?>
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('Advanced Search'));
+
+  // Disable top search box -- this page has a special layout.
+  // finc: reenables searchbox by commenting out following line #22361
+  // $this->layout()->searchbox = false;
+
+  // Set up breadcrumbs:
+  $searchCrumb = $this->searchMemory()->getLastSearchLink($this->transEsc('Search')) ?: $this->transEsc('Search');
+  $this->layout()->breadcrumbs = "<li>$searchCrumb</li> ";
+  $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Advanced') . '</li>';
+
+  // Set up saved search details:
+  if (isset($this->saved) && is_object($this->saved)) {
+    $searchDetails = $this->saved->getParams()->getQuery();
+    if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+        // Not an advanced query -- ignore it.
+        $searchDetails = $groups = false;
+    } else {
+        $groups = $searchDetails->getQueries();
+    }
+    $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
+    $checkboxFilters = array_filter(
+        $this->saved->getParams()->getCheckboxFacets(),
+        function ($current) {
+            return $current['selected'];
+        }
+    );
+    $searchFilters = $this->saved->getParams()->getFilterList(true);
+    $hiddenFilters = $this->saved->getParams()->getHiddenFilters();
+  } else {
+    $hasDefaultsApplied = $searchDetails = $checkboxFilters = $searchFilters = $groups = false;
+    $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true);
+  }
+
+  // Step 1: Load the javascript
+  $this->headScript()->appendFile(
+      $this->advancedSearchJsOverride ?? 'advanced_search.js'
+  );
+  // Step 2: Build the page
+  $this->headScript()->appendScript(
+      $this->partial(
+          $this->buildPageOverride ?? 'search/advanced/build_page.phtml',
+          ['options' => $this->options, 'searchDetails' => $searchDetails]
+      )
+  );
+
+  // Collect previous search queries
+  $setSearchGroups = [];
+  $setGroupCount = 0;
+  $setQueries = [];
+  if (isset($searchDetails) && is_object($searchDetails)) {
+    foreach ($searchDetails->getQueries() as $group => $searchGroup) {
+      $setSearchGroups[$group] = $searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator();
+      if ($setGroupCount < $group) {
+        $setGroupCount = $group;
+      }
+      if (!isset($setQueries[$group])) {
+        $setQueries[$group] = [];
+      }
+      foreach ($searchGroup->getQueries() as $search) {
+        $setQueries[$group][] = $search;
+      }
+    }
+  }
+?>
+
+<?=$this->flashmessages()?>
+<div role="search">
+  <form name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
+    <?php foreach ($hiddenFilters as $key => $filter): ?>
+      <?php foreach ($filter as $value): ?>
+        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>">
+      <?php endforeach; ?>
+    <?php endforeach; ?>
+    <div class="<?=$this->layoutClass('mainbody')?>">
+      <?php $lastSort = $this->searchMemory()->getLastSort($this->searchClassId); ?>
+      <?php if (!empty($lastSort)): ?>
+        <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>">
+      <?php endif; ?>
+      <div class="clearfix">
+        <?php /* finc: adds offcanvas behaviour for xs #17601 */ ?>
+        <span class="offcanvas-toggler">
+          <a class="search-filter-toggle btn btn-primary visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" aria-label="<?=$this->transEscAttr('sidebar_expand')?>">
+            <?=$this->transEsc('offcanvas-toggler-search-tips')?>
+          </a>
+        </span>
+        <?php /* finc: uses h1 instaed of h2 #13547 */ ?>
+        <h1 class="pull-left flip"><?=$this->transEsc('Advanced Search')?></h1>
+        <div id="groupJoin" class="form-inline pull-right flip">
+          <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
+          <select id="groupJoinOptions" name="join" class="form-control">
+            <option value="AND"<?php if($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?php endif; ?>><?= $this->transEsc('group_AND') ?></option>
+            <option value="OR"<?php if($searchDetails && $searchDetails->getOperator() == 'OR'):?> selected<?php endif; ?>><?= $this->transEsc('group_OR') ?></option>
+          </select>
+        </div>
+      </div>
+      <span id="groupPlaceHolder" class="hidden">
+        <?php /* finc: keeps icon inside link for consistent functionality */ ?>
+        <?php /* finc: replaces in href '#' with 'javascript:void(0);' */ ?>
+        <?php /* finc: adds class="btn btn-default" #19418 */ ?>
+        <a href="javascript:void(0);" class="btn btn-default" role="button">
+          <?php /* finc: changes 'fa-plus-circle' to 'fa-plus' */ ?>
+          <i class="fa fa-plus" aria-hidden="true"></i>
+          <?= $this->transEsc('add_search_group') ?>
+        </a>
+      </span>
+      <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
+      <div class="no-js">
+        <?php if(!empty($this->formOverride)): ?>
+          <?=$this->formOverride ?>
+        <?php else: ?>
+          <?php for($group = 0; $group < 3 || $group <= $setGroupCount; $group++): ?>
+            <?php if($group == 0): ?>
+              <div id="new_group_template">
+            <?php endif; ?>
+            <?php /* finc: adds roles, aria-label #19418 */ ?>
+            <div id="group<?=$group ?>" class="adv-group" role="group" aria-label="<?=$this->transEscAttr('adv_search_searchgroup')?> <?=$group?>">
+              <div class="adv-group-terms">
+                <?php /* finc: removes label in favor of more detailed labelling #19418 */ ?>
+                <?php /* <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label> */ ?>
+                <?php for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
+                  <?php if($group == 0 && $search == 0): ?>
+                    <div id="new_search_template">
+                  <?php endif; ?>
+                  <div id="search<?=$group . '_' . $search ?>" class="adv-search">
+                    <?php /* finc: uses fieldset and label for more consistent formatting - check again in VF 7 or 8.x */ ?>
+                    <fieldset>
+                      <legend class="sr-only">
+                        <?=$this->transEsc("adv_search_searchfield")?> <?=$search + 1?>
+                      </legend>
+                      <div class="adv-input">
+                        <label for="search_lookfor<?=$group . '_' . $search?>">
+                          <?=$this->transEsc("search_terms")?>:
+                        </label>
+                        <?php /* finc: removes redudant aria-label #19693 */ ?>
+                        <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group . '_' . $search ?>" class="adv-term-input form-control" type="text"<?php if (isset($setQueries[$group][$search])): ?> value="<?=$this->escapeHtmlAttr($setQueries[$group][$search]->getString())?>"<?php endif; ?>>
+                      </div>
+                      <div class="adv-select">
+                        <?php /* finc: adds label #19418 */ ?>
+                        <label for="search_type<?=$group . '_' . $search?>"><?=$this->transEsc("Search type")?>:</label>
+                        <?php /* finc: adds ID #19418 AND corrects ID string to 'search_type' in #26300 */
+                              /* finc: removes redudant aria-label #19693 */ ?>
+                        <select id="search_type<?=$group . '_' . $search?>" class="adv-term-type form-control" name="type<?=$group ?>[]">
+                          <?php foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                            <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?php if (isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()): ?> selected<?php endif; ?>><?=$this->transEsc($searchDesc)?></option>
+                          <?php endforeach; ?>
+                        </select>
+                      </div>
+                      <?php /* finc: replaces in href '#' with 'javascript:void(0);' #11272 */ ?>
+                      <a href="javascript:void(0);" class="adv-term-remove hidden">
+                        <?php /* finc: adds span for screenreader #13547 */ ?>
+                        <span class="sr-only"><?=$this->transEsc("remove_adv_search_field")?></span>
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                      </a>
+                    </fieldset>
+                  </div>
+                  <?php if($group == 0 && $search == 0): ?>
+                      </div>
+                    <?php /* finc: moves entire original icon tag inside link WILL BUST removal-button functionality!
+                            (As this will also 'shift search_place_holder') Therefore keep 'search_place_holder' separate and move icon only !
+                    */ ?>
+                    <div class="float-left">
+                      <?php /* finc: uses span instead of i; removes classname fa fa-plus-circle #11813 */ ?>
+                      <span class="search_place_holder hidden" aria-hidden="true"></span>
+                      <?php /* finc: replaces in href '#' with 'javascript:void(0);' */ ?>
+                      <?php /* finc: adds class="btn btn-default" #19418 */ ?>
+                      <a href="javascript:void(0);" class="btn btn-default add_search_link hidden" role="button">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        <?=$this->transEsc("add_search")?>
+                      </a>
+                    </div>
+                  <?php endif; ?>
+                <?php endfor; ?>
+              </div>
+              <div class="adv-group-match">
+                <?php /* finc: adds 'for="search_bool<?=$group ?>"' to label #18209 */ ?>
+                <label class="search_bool" for="search_bool<?=$group ?>"><?=$this->transEsc("search_match")?>:&nbsp;</label>
+                <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
+                  <option value="AND"<?php if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_AND")?></option>
+                  <option value="OR"<?php if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_OR")?></option>
+                  <option value="NOT"<?php if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_NOT")?></option>
+                </select>
+              </div>
+              <?php /* finc: replaces in href '#' with 'javascript:void(0);' #11272 */ ?>
+              <?php /* finc: adds class="btn btn-default" #19418 */ ?>
+              <a href="javascript:void(0);" class="btn btn-default adv-group-close hidden" role="button"><i class="fa fa-close"></i> <?=$this->transEsc("del_search")?></a>
+            </div>
+            <?php if($group == 0): ?>
+              </div>
+            <?php endif; ?>
+          <?php endfor; ?>
+        <?php endif; ?>
+      </div>
+      <div class="adv-submit">
+        <?php /* finc: uses 'btn-transparent' instead of 'btn-default' */ ?>
+        <input class="clear-btn btn btn-transparent" type="button" value="<?= $this->transEscAttr('Clear')?>">
+        <?php /* finc: introduces 'fnd-btn'-class to swap submit and clear buttons for consistency #11813 */ ?>
+        <input class="fnd-btn btn btn-primary" type="submit" value="<?= $this->transEscAttr('Find')?>">
+      </div>
+      <?php if (isset($this->extraAdvancedControls)): ?>
+        <div class="clearfix">
+          <?=$this->extraAdvancedControls ?>
+        </div>
+        <div class="adv-submit">
+          <?php /* finc: uses 'btn-transparent' instead of 'btn-default' */ ?>
+          <input class="clear-btn btn btn-transparent" type="button" value="<?= $this->transEscAttr('Clear')?>">
+          <?php /* finc: introduces 'fnd-btn'-class to swap submit and clear buttons for consistency #11813 */ ?>
+          <input class="fnd-btn btn btn-primary" type="submit" value="<?= $this->transEscAttr('Find')?>">
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <?php /* finc: adds id 'myresearch-sidebar' #17908 */ ?>
+    <?php /* finc: uses aside for sidebar #23430 */ ?>
+    <aside class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+      <?php /* finc: adds button 'navigate_back' #17601 */ ?>
+      <button class="close-offcanvas btn btn-primary" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
+      <?php if ($hasDefaultsApplied): ?>
+        <input type="hidden" name="dfApplied" value="1">
+      <?php endif ?>
+      <?php if ($checkboxFilters || $searchFilters): ?>
+        <h2><?=$this->transEsc("adv_search_filters")?></h2>
+        <div class="facet-group">
+          <?php /* finc: adds class facet for consistent styling #23846 */ ?>
+          <label class="facet checkbox">
+            <input type="checkbox" checked="checked" class="checkbox-select-all">
+            <?=$this->transEsc("adv_search_select_all")?>
+          </label>
+        </div>
+
+        <?php if ($checkboxFilters): ?>
+          <div class="checkboxFilter">
+            <?php foreach ($checkboxFilters as $data): ?>
+              <div class="checkbox-filter">
+                <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($data['filter'])?>"> <?=$this->transEsc($data['desc'])?></label>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
+        <?php foreach ($searchFilters as $field => $data): ?>
+          <div class="facet-group">
+            <?php /* finc: styling for applied filters: uses h3 instead of div, adds ul #23846 */ ?>
+            <h3 class="title"><?=$this->transEsc($field)?></h3>
+            <ul>
+            <?php foreach ($data as $value): ?>
+              <?php /* finc: styling for applied filters addss li around label #23846 */ ?>
+              <li><label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"'> <?=$this->escapeHtml($value['displayText'])?></label></li>
+            <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+      <h2><?=$this->transEsc("Search Tips")?></h2>
+      <div class="facet-group">
+        <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=advsearch&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Advanced Search")?></a>
+        <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Search Operators")?></a>
+      </div>
+    </aside>
+  </form>
+</div>
+<?php
+$script = <<<JS
+$('#groupPlaceHolder a').click(function(e) {
+  addGroup(null, null, null, true);
+  return false;
+})
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+<!-- finc: search - advanced - layout - END -->

@@ -1,0 +1,55 @@
+// Use this for all general alerts styles + maintenance aside/alerts
+
+// Light Text on Dark BG
+.alert {
+
+  a {
+    color: $state-light-text-on-dark;
+    text-decoration: $state-link-text-decoration;
+  }
+
+  &.alert-warning a {
+    color: $state-link-alert-warning-color;
+  }
+
+  // Alerts inside the Holdings tab
+  .holding-info & {
+    margin-left: $state-inside-holding-info-margin-left;
+    margin-right: $state-inside-holding-info-margin-right;
+    margin-top: $state-inside-holding-info-margin-top;
+  }
+}
+
+// Alert Text Colors
+.alert-danger,
+.alert-info,
+.alert-success {
+  clear: both;
+  color: $state-light-text-on-dark;
+
+  &:hover {
+    color: $state-light-text-on-dark;
+  }
+}
+
+// Accessibility
+.alert-danger,
+.alert-info,
+.alert-success,
+.alert-warning {
+  a:focus,
+  a:hover {
+    background-color: $state-link-hover-bg;
+    color: $state-link-hover-color;
+  }
+}
+
+// Maintenance alert (notifications/maintenance.phtml)
+.maintenance-aside {
+  background-color: $maintenance-aside-bg-color;
+  border: $maintenance-aside-border-styles;
+  color: $maintenance-aside-content-color;
+  margin-bottom: $maintenance-aside-margin-bottom;
+  margin-top: $maintenance-aside-margin-top;
+  padding: $maintenance-aside-padding;
+}

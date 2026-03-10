@@ -104,11 +104,79 @@ input[type="search"]::-webkit-search-decoration {
 }
 
 .searchHomeContent { @include clearfix(); }
-.home-facet-list {
-  padding-left: 0;
-  padding-right: 1rem;
-  list-style: none;
+
+.home-facet {
+  @media (min-width: 768px) {
+    flex: 0 1 100%;
+  }
 }
+
+.search-home-facets,
+.home-facet-container {
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.home-facet-container {
+  padding-right: $home-facet-container-right-padding; // Defines padding for better visual division
+  padding-left: $home-facet-container-left-padding; // Defines padding for better visual division
+
+  @media (min-width: 768px) {
+    height: $home-facet-container-height; // determines the height of the visual division line (see variables.scss for more info)
+    margin-bottom: $home-facet-container-bottom-margin; // determines the bottom margin
+  }
+}
+
+// Defines the layout of all uls with class 'home-facet-list'; variables can be overwritten in 'variables.scss':
+.home-facet-list {
+  list-style: $home-facet-list-list-style; // Defines the list style (default = 'none')
+  overflow: $home-facet-list-column-overflow; // Defines what's to be done if there are more entries than fit the columns
+  padding-left: $home-facet-list-left-padding; // Overwrites default left-padding for <ul>s
+  padding-right: $home-facet-list-right-padding; // Defines right padding for better visual division
+
+  @media (min-width: 768px) {
+    border-right: $home-facet-list-border-right-style; // Defines visual division between 'home-facet-list ' containers for devices >=768px (containers are stacked on smaller devices)
+    height: $home-facet-list-column-height; // Defines the height of each list column, see variables.scss; The number of entries per <ul> is currently defined in module/VuFind/src/VuFind/ContentBlock/FacetList.php (e.g.: '$columnSize = 10')
+  }
+
+  // Defines the number of columns of default/normal 'ul.home-facet-list' elements; variables can be overwritten in 'variables.scss':
+  .home-facet:not(.two-columns) & {
+    column-count: $home-facet-list-column-count-default; // This is the default
+    width: $home-facet-list-column-width-default; // Makes sure single column has same width as double column (required for border)
+  }
+
+  // When 'two-columns' is used, the affected 'home-facet-list' gets a default column-count of 2 on devices >=992px; these values can be overwritten in 'variables.scss':
+  .home-facet.two-columns & {
+    column-count: $home-facet-list-non-default-column-count; // Defines maximum number of cols to be used on devices >=1200px; see variables.scss
+    column-fill: $home-facet-list-column-fill; // Defines, how the columns will be filled: 'auto' fills up to max height and the breaks into new column, 'balance' attempts to distribute available entries evenly across the max. number of columns; value is set in variables.scss
+    column-gap: $home-facet-list-column-gap; // Defines the gap between the columns, if more than one
+    column-rule: $home-facet-list-non-default-column-rule; // Defines column rule between the <li> columns for non-default facet lists, such as '.callnumber-first' on devices >=992px
+
+    @media (max-width: 767px) {
+      column-count: $home-facet-list-column-count-xs; // Defaults to '1'; can be defined in 'variables.scss'
+    }
+
+    @media (min-width: 768px) {
+      flex: 0 1 100%;
+    }
+
+    @media (min-width: 768px) and (max-width: 991px) {
+      column-count: $home-facet-list-column-count-sm; // Defaults to '1'; can be defined in 'variables.scss'
+    }
+
+    @media (min-width: 992px) and (max-width: 1199px) {
+      column-count: $home-facet-list-column-count-md; // Defaults to '2'; can be defined in 'variables.scss'
+      column-rule: $home-facet-list-column-rule-md; // Defaults to '1 px solid grey'; can be defined in 'variables.scss'
+    }
+  }
+}
+
+.search-home-facets .home-facet:last-of-type {
+  border-right: $home-facet-list-last-of-type-border-right-style; // removes visual division between containers for last container
+}
+
+
 // Reset styling of hierarchical facets on the home page:
 .home-facet.facet-tree li {
   line-height: inherit;

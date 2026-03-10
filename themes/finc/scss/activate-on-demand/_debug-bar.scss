@@ -1,0 +1,78 @@
+// ONLY FOR DEVELEOPMENT
+// put following container somewhere in your templates to apply styles (e.g. layout.phtml, footer.phtml)
+// <div class="debug-bar"></div>
+
+@mixin plugin-debug-bar {
+  $bg-opacity: .8;
+
+  .debug-bar {
+    background: rgba(#000, $bg-opacity);
+    bottom: 0;
+    color: $white;
+    left: 0;
+    position: fixed;
+    right: 0;
+    text-align: center;
+    z-index: 10000;
+
+    &::before {
+      content: 'undefined';
+    }
+
+    &::after {
+      font-size: 12px;
+    }
+
+    @media (min-width: $screen-xs-min){
+      background-color: rgba(#6eacff, $bg-opacity);
+
+      &::before {
+        content: 'XS (Phone/Mobile): ' + $screen-xs-min + ' – ' + ($screen-xs-max);
+      }
+
+      &::after {
+        content: '\A $screen-xs / $screen-xs-min – $screen-xs-max';
+        white-space: pre;
+      }
+    }
+
+    @media (min-width: $screen-sm-min){
+      background-color: rgba(#d5008f, $bg-opacity);
+
+      &::before {
+        content: 'SM (Tablet): ' + $screen-sm-min + ' – ' + ($screen-sm-max);
+      }
+
+      &::after {
+        content: '\A $screen-sm / $screen-sm-min – $screen-sm-max';
+        white-space: pre;
+      }
+    }
+
+    @media (min-width: $screen-md-min){
+      background-color: rgba(#20b2aa, $bg-opacity);
+
+      &::before {
+        content: 'MD (Desktop): ' + $screen-md-min + ' – ' + ($screen-md-max);
+      }
+
+      &::after {
+        content: '\A $screen-md / $screen-md-min – $screen-md-max';
+        white-space: pre;
+      }
+    }
+
+    @media (min-width: $screen-lg-min){
+      background-color: rgba(#f4a460, $bg-opacity);
+
+      &::before {
+        content: 'LG (Wide desktop): from ' + $screen-lg-min;
+      }
+
+      &::after {
+        content: '\A from $screen-lg / $screen-lg-min';
+        white-space: pre;
+      }
+    }
+  }
+}

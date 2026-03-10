@@ -1,0 +1,53 @@
+<form id="set-translation-form" method="post"
+      action="<?= $this->url('admin/i18n', ['action' => 'save']) ?>"
+      data-lightbox-onclose="VuFind.refreshPage">
+    <h1><?= $this->transEsc('admin_i18n_edit_translation') ?></h1>
+
+    <table id="set-translation"
+           class="table table-striped table-condensed table-responsive">
+        <thead>
+        <tr>
+            <th>
+                <?= $this->transEsc('admin_i18n_header_lang') ?>:
+            </th>
+            <th>
+                <?= $this->transEsc('admin_i18n_header_domain') ?>
+            </th>
+            <th>
+                <?= $this->transEsc('admin_i18n_header_token') ?>
+            </th>
+            <th>
+                <?= $this->transEsc('admin_i18n_header_default_value') ?>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><?= $this->language ?></td>
+            <td><?= $this->domain ?></td>
+            <td><?= $this->token ?></td>
+            <td><?= htmlspecialchars($this->defaultValue) ?></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <input type="hidden" name="locale" value="<?= $this->locale ?>">
+    <input type="hidden" name="domain" value="<?= $this->domain ?>">
+    <input type="hidden" name="token" value="<?= $this->token ?>">
+    <input type="hidden" name="default_value"
+           value="<?= htmlspecialchars($this->defaultValue) ?>">
+    <label for="lang-trans-string">
+        <?= $this->transEsc('admin_i18n_header_value') ?>
+    </label>
+    <textarea id="lang-trans-string" name="value"
+              class="w-100"><?= htmlspecialchars($value) ?></textarea>
+
+    <button type="submit" form="set-translation-form"
+            class="btn btn-primary margin-t">
+        <?= $this->transEsc('admin_i18n_save_translation_button_label') ?>
+    </button>
+    <button type="submit" form="set-translation-form" name="reset"
+            class="btn btn-primary margin-t">
+        <?= $this->transEsc('admin_i18n_reset_translation_button_label') ?>
+    </button>
+</form>

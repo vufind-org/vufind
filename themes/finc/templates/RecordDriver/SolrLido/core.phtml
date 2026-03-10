@@ -1,0 +1,117 @@
+<!-- finc: RecordDriver - SolrLido - core -->
+<?php
+/**
+origin: finc/RecordDriver/DefaultRecord/core.phtml
+called by view helper/controller:
+usage:
+modified for finc-SolrLido:
+ * uses 'core-lido' instead of 'core'
+configured in: {}
+ */
+?>
+<?php /* compare with finc/RecordDriver/DefaultRecord/core.phtml during updates */ ?>
+<?php $this->metadata()->generateMetatags($this->driver);?>
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <?php /* finc: uses VF5.1 offcanvas toggler here, if you have a custom sidebar - CK */ ?>
+  <?= $this->render('RecordDriver/DefaultRecord/offcanvas-toggler'); ?>
+  <?php
+    $QRCode = $this->record($this->driver)->getQRCode("core");
+    // finc: uses 'medium' thumbnail instead of 'large'
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('medium'));
+    $cover = $coverDetails['html'];
+    $preview = ($this->previewOverride ?? false)
+      ? $this->previewOverride : $this->record($this->driver)->getPreviews();
+  ?>
+  <?php if ($QRCode || $cover || $preview): ?>
+    <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
+      <?php /* Display thumbnail if appropriate: */ ?>
+      <?php if($cover): ?>
+        <?=$cover?>
+      <?php endif; ?>
+
+      <?php /* Display qrcode if appropriate: */ ?>
+      <?php if($QRCode): ?>
+        <?php /* finc: removes span + class for accessibility */ ?>
+          <br><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>">
+      <?php endif; ?>
+
+      <?php // if you have a preview tab but want to move or remove the preview link
+         // from this area of the record view, this can be split into
+         // getPreviewData() (should stay here) and
+         // getPreviewLink() (can go in your desired tab) ?>
+      <?php if ($preview): ?>
+        <div class="record-previews">
+          <?=$preview?>
+        </div>
+      <?php endif; ?>
+    </div>
+  <?php /* finc: uses special code for style-based icons or covers here */ ?>
+  <?php elseif ($this->record($this->driver)->showStyleBasedIcons()): ?>
+    <?php /* BOF - finc-specific StyleBasedIcons */ ?>
+    <div class="media-left <?= $this->escapeHtmlAttr($coverDetails['size']) ?> img-col">
+      <?= $this->record($this->driver)->getRecordIcon() ?>
+    </div>
+  <?php endif; ?>
+  <div class="media-body">
+
+    <?php /* finc: We want to get rid of trailing special chars in the title and limit its length to 100 chars;
+             finc keeps schema name tag here!! #13861 - CK
+             finc adds empty lang (='undefined') tag */ ?>
+    <h1 property="name" lang=""><?=$this->record($this->driver)->getTitleHtml()?></h1>
+    <?php foreach ($this->driver->tryMethod('getFullTitlesAltScript', [], []) as $altTitle): ?>
+      <div class="title-alt">
+        <?=$this->escapeHtml($altTitle)?>
+      </div>
+    <?php endforeach; ?>
+
+    <?php if(!empty($this->extraControls)): ?>
+      <?=$this->extraControls['actionControls'] ?? ''?>
+      <?=$this->extraControls['availabilityInfo'] ?? ''?>
+    <?php endif; ?>
+
+    <?php if ($this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
+      <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+    <?php endif; ?>
+
+    <?php /* finc: removes summary from core #18307 */ /*
+    <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+    <?php if ($summary): ?>
+      <p><?=$this->truncate($summary, 300)?></p>
+
+      <?php if(strlen($summary) > 300): ?>
+        <p><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Description'))?>#tabnav"><?=$this->transEsc('Full description')?></a></p>
+      <?php endif; ?>
+    <?php endif; ?>
+    */ ?>
+
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php /* Display the lists that this record is saved to */ ?>
+      <?php /* finc: changes div to p for alerts; adds aria-live */ ?>
+      <p class="savedLists" aria-live="polite">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </p>
+    <?php endif; ?>
+
+    <?php /* Display Main Details */ ?>
+    <?php
+      $formatter = $this->recordDataFormatter();
+      /* finc-SolrLido uses 'core-lido' instead of 'core' */
+      $coreFields = $formatter->getData($driver, $formatter->getDefaults('core-lido'));
+    ?>
+    <?php if (!empty($coreFields)): ?>
+      <?php /* finc: adds code for responsive data table here - CK */ ?>
+      <table class="table table-striped table-resp-data">
+        <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
+        <?php foreach ($coreFields as $current): ?>
+          <tr>
+            <th><?=$this->transEsc($current['label'])?>:</th>
+            <?php /* finc: adds empty lang (='undefined') tag */ ?>
+            <td lang="" data-title="<?=$this->transEscAttr($current['label'])?>:"><?=$current['value']?></td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endif; ?>
+    <?php /* End Main Details */ ?>
+  </div>
+</div>
+<!-- finc: RecordDriver - SolrLido - core - END -->

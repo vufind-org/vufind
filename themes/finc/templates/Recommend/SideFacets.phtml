@@ -1,0 +1,99 @@
+<!-- finc: recommend - sidefacets -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * changes btn-link to btn-primary
+ * adds $this->sideFacet()->displayAllowedFacetValues() #7624
+ * adds h3 and aria coding #19695
+ * uses 'href' instead of 'data-target' for keyboard usability #25103
+ * adds span for screenreader #19934
+ * Facet-group-button keeps id for enabling skip-linking "refine my results" #25945 *
+configured in: {}
+ */
+?>
+<?php
+  $this->headScript()->appendFile('facets.js');
+
+  // Save results/options to $this so they are available to sub-templates:
+  $this->results = $results = $this->recommend->getResults();
+  $this->options = $options = $results->getOptions();
+  $collapsedFacets = $this->recommend->getCollapsedFacets();
+  $forceUncollapsedFacets = [];
+
+  // Make sure facets with active selections are not collapsed:
+  $filterList = $results->getParams()->getFilterList(true);
+  foreach ($filterList as $field => $filters) {
+    foreach ($filters as $filter) {
+      $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
+      if ($index !== false) {
+        unset($collapsedFacets[$index]); // Open if we have a match
+        $forceUncollapsedFacets[] = $filter['field'];
+      }
+    }
+  }
+
+  $hierarchicalFacets = $this->recommend->getHierarchicalFacets();
+  if ($hierarchicalFacets) {
+    // jstree.min.js used to be injected by hierarchical-facet.js, but with deferred
+    // processing it's called too late to append anything to the headers.
+    $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  }
+?>
+<?php /* finc: changes btn-link to btn-primary */ ?>
+<button class="close-offcanvas btn btn-primary" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>
+<?php
+  $checkboxFilters = $this->recommend->getCheckboxFacetSet();
+  $hasVisibleCheckboxes = false;
+  if (count($checkboxFilters) > 0) {
+    foreach ($checkboxFilters as $current) {
+      if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
+        $hasVisibleCheckboxes = true;
+        break;
+      }
+    }
+  }
+?>
+<?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
+  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+<?php endif; ?>
+<?php if ($hasVisibleCheckboxes): ?>
+  <div class="checkboxFilter">
+    <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
+  </div>
+<?php endif; ?>
+<?= $this->sideFacetExtraControls ?? '' ?>
+<?php /* finc: adds $this->sideFacet()->displayAllowedFacetValues() #7624 */ ?>
+<?php $sideFacetSet = $this->sideFacet()->displayAllowedFacetValues($this->recommend->getFacetSet()); ?>
+<?php $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
+<?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
+<?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
+  <?php foreach ($sideFacetSet as $title => $cluster): ?>
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
+      <?php /* finc: adds h3 and aria coding #19695 */ ?>
+      <h3>
+        <?php /* finc: Facet-group-button keeps id for enabling skip-linking "refine my results" #25945 */ ?>
+        <button class="title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" id="control-for-side-collapse-<?=$this->escapeHtmlAttr($title)?>">
+          <?php /* finc: adds span for screenreader #19934 */ ?>
+          <?=$this->transEsc($cluster['label'])?> <span class="sr-only"><?=$this->transEsc('facet_select_hint') ?></span>
+        </button>
+      </h3>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if (!in_array($title, $collapsedFacets)): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+        <?=
+          $this->context($this)->renderInContext(
+              'Recommend/SideFacets/facet.phtml',
+              [
+                  'facet' => $title,
+                  'cluster' => $cluster,
+                  'collapsedFacets' => $collapsedFacets
+              ]
+          );
+        ?>
+      </div>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "registerSideFacetTruncation();", 'SET');?>
+<!-- finc: recommend - sidefacets - END -->

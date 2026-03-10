@@ -1,0 +1,22 @@
+<!-- finc: RecordDriver - FincMissing - record-icon -->
+<?php
+/**
+origin: finc/RecordDriver/DefaultRecord/record-icon.phtml
+called by view helper/controller:
+usage:
+ * renders an icon for missing records in FincMissing/result-list.phtml
+ * this is used for bulk printing display
+ * (e.g. have a record in favorites that doesn't exist anymore,
+ * then select all in page and select 'print')
+modified for finc-FincMissing:
+ * shows  icon and span here without if-else-condition
+configured in: {}
+ */
+?>
+<?php /* compare with finc/RecordDriver/DefaultRecord/record-icon.phtml during updates */ ?>
+<span class="access-icon hidden-print">
+  <?php /* finc-FincMissing: shows  icon and span here without if-conditions */ ?>
+  <i class="fa fa-times-circle" aria-hidden="true"></i>
+  <span class="visible-md-up-sr-only"> <?=$this->transEsc("Missing Record")?></span>
+</span>
+<!-- finc: RecordDriver - FincMissing - record-icon - END -->

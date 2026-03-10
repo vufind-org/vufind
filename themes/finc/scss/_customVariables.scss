@@ -1,0 +1,1541 @@
+// Use this file to set variables for your theme or re-define variables from parent themes
+// see variables.scss for default values
+
+// *****************************************************************
+// ************ Imports ********************************************
+// *****************************************************************
+//@import '../../bootstrap5/scss/bootstrap';
+
+// Import parent theme variables to have them all available here
+//@import '../../bootstrap5/scss/vendor/bootstrap/variables';
+@import '../../bootstrap5/scss/vendor/font-awesome/fontawesome';
+@import 'components/functions';
+
+
+// *****************************************************************
+// **** 00 **** Common colors referenced elsewhere in the code *****
+// *****************************************************************
+
+$white: #fff !default;
+$ghost: #fafafa !default;
+$snow: #f9f9f9 !default; // use $snow preferentially, rather than $ghost, $vapor ...
+$vapor: #f6f6f6 !default;
+$white-smoke: #f5f5f5 !default;
+$silver: #efefef !default;
+$smoke: #eee !default;
+$gainsboro: #ddd !default;
+$iron: #ccc !default;
+$base: #aaa !default;
+$aluminum: #999 !default;
+$jumbo: #888 !default;
+$monsoon: #777 !default;
+$steel: #666 !default;
+$charcoal: #555 !default;
+$tuatara: #444 !default;
+$oil: #333 !default;
+$jet: #222 !default;
+$black: #000 !default;
+
+$red: #f00 !default;
+
+// Reset filters button, this color is hard-coded into Bootstrap for '.toolbar-btn',
+// '.record-nav .cart-add', '.record-nav .cart-remove', '.reset-filters-btn' and the bulk action buttons
+$lightgrey-transparent: rgba(0, 0, 0, .05);
+
+
+// *****************************************************************
+// **** 05 **** Re-define BS Screen Widths for use in finc *********
+// *****************************************************************
+// copies from bootstrap3/scss/vendor/bootstrap/variables
+
+//== Media queries breakpoints
+//
+//## Define the breakpoints at which your layout will change, adapting to different screen sizes.
+
+$screen-xs-min:              480px !default;
+$screen-sm-min:              768px !default;
+$screen-md-min:              992px !default;
+$screen-lg-min:              1200px !default;
+
+// So media queries don't overlap when required, provide a maximum
+$screen-xs-max:              ($screen-sm-min - 1) !default;
+$screen-sm-max:              ($screen-md-min - 1) !default;
+$screen-md-max:              ($screen-lg-min - 1) !default;
+
+
+// *****************************************************************
+// **** A0 **** Theme basic colors *********************************
+// *****************************************************************
+
+$brand-primary: #204563 !default;
+$brand-secondary: #e7e7e7 !default;
+$brand-danger: #cc4b37 !default; // darker red = #a94442
+$brand-danger-transparent: transparentize($brand-danger, .1) !default; // used e.g. for invalid form fields
+$brand-info: #083152 !default;
+$brand-success: #085218 !default; // darker green = #3c763d
+$brand-warning: #f08a24 !default;
+$traffic-light-yellow: #ff0 !default;
+$road-sign-yellow: #fdda16 !default;
+// Global background color for active items (e.g., navs or dropdowns).
+$component-active-bg: $brand-primary !default;
+
+
+// Disabled colors
+// for 'button disabled' colors see below
+$default-disabled-color: $gainsboro !default;
+$pagination-disabled-color: $default-disabled-color !default;
+
+// overlay colors (modal & offcanvas)
+$overlay-color: rgba($black, 0.3) !default;
+
+
+// *****************************************************************
+// **** A3 **** Font-related settings ******************************
+// *****************************************************************
+
+//
+// FONT variables here
+// but definitions and imports of new fonts via @font-face exclusively in _customFonts.scss
+//
+
+//// Base font size
+$font-size-base: 1rem !default; // = 16px browser default
+//// We use these to define default font stacks
+$font-family-sans-serif: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif !default;
+$font-family-serif: Georgia, Cambria, 'Times New Roman', Times, serif !default;
+$font-family-monospace: Consolas, 'Liberation Mono', Courier, monospace !default;
+
+//// SET FONT SIZES using the following pattern! This is the only way, font sizes will be adapted proportionally
+//// font-size: ($font-size-base * 1.5)
+//// OR us the em-calculator function below, like so: font-size: em(14)
+//// There are also the variables $font-size-large and $...small which are calculated
+//// $font-size-base * 1.25 --> ~18px and $font-size-base * 0.85 --> ~12px
+
+$font-size-breadcrumbs: ($font-size-base * .85) !default;
+
+// Default line height
+$line-height-base: 1.5 !default;
+
+
+// *****************************************************************
+// **** A5 **** General dimensions *********************************
+// *****************************************************************
+
+// WCAG 2.1 for AA requires a minimum viewport size of 320px
+// -- we therefore need to define the corresponding variables
+// The most common viewport width for narrow devices however, seems to be 360px
+// Please note, that $screen-xs-min = $screen-xs = 480px
+$screen-wcag-mini-viewports-min: 320px !default;
+$screen-wcag-above-mini-below-xs-viewports-min: 360px !default;
+$screen-wcag-mini-viewports-max: $screen-wcag-above-mini-below-xs-viewports-min - 1px !default;
+$screen-wcag-above-mini-below-xs-viewports-max: 479px !default;
+
+// Set the default width up to which Offcanvas settings should apply
+$offcanvas-default-max-width: $screen-xs-max !default; // Use '$screen-sm-max' for installations where XS = SM;
+
+
+// The general gutter width (padding between columns) is calculated
+// like so: '$grid-gutter-width * .5'
+// which gives you the left or right gutter width; this can be taken
+// further by using '$grid-gutter-width * .5' etc
+$grid-gutter-width: 30px !default;
+$half-gutter: ($grid-gutter-width * .5) !default;
+$quarter-gutter: ($grid-gutter-width * .25) !default;
+
+// Navigation elements default height:
+// This height _must_ be adapted to the button height
+// (.btn, .search-filter-toggle {}), which changes with
+// default font size; apply to navigation elements such as select dropdowns
+$navigation-element-default-height: 38px !default;
+
+// Top-padding for #content -> .row first-of-type (and .sidebar)
+// - change this value to change both;
+// sidebar gets an additional padding on half the content-top-padding
+// for better horizontal alignment
+$content-top-padding: $grid-gutter-width * .5 !default;
+$content-top-padding-edit-list-xs: $grid-gutter-width * .5 !default;
+$mainbody-sidebar-top-padding: $content-top-padding !default;
+$mainbody-sidebar-top-padding-xs: 0 !default;
+
+// Table cell padding - adjust in themes to avoid content jumps when switching tabs
+// $table-cell-padding: 5px !default;
+
+// Thumbnail sizes for media items: search results, list entries, record views
+$thumbnail-width-small: 60px !default;
+$thumbnail-width-medium: 100px !default;
+$thumbnail-width-large: 160px !default;
+
+
+// *****************************************************************
+// **** B0 **** Radii **********************************************
+// *****************************************************************
+
+// Get rid of all round corners
+$border-radius-base: 0 !default;
+$border-radius-large: 0 !default;
+$border-radius-small: 0 !default;
+
+$pager-border-radius: 0 !default;
+
+$badge-border-radius: 0 !default;
+
+$modal-close-br: 0 !default;
+
+// labels.scss uses no variables, therefore it must overwrite values in compiled.scss!!
+// more on Labels, below
+// Fixme when done more elegantly in BS
+$label-radius: 0 !default;
+
+// Define radii for bulk action toolbar, add-to-/remove-from, reset-filter and other buttons, see buttons.scss
+$toolbar-button-radius: 0 !default;
+
+
+// *****************************************************************
+// **** B5 **** Border styles **************************************
+// *****************************************************************
+
+$border-color: $iron !default;
+
+// Note that the nav-tabs have a different border color,
+// use the following variable in your SCSS to change it
+// $nav-tabs-border-color: $gainsboro !default; // defined in BS _variables.scss
+
+// Default border styles
+$border-default-styles: 1px solid $border-color !default; // $border-color defined in customColors.scss
+$border-default-white: 1px solid $white !default;
+
+// Width and position of Sidebar border (see customMixins.scss)
+// change to "0" and "-15px" only for sidebar on the right, butting on right border
+$border-right-width: 1px !default;
+$margin-right-width: inherit !default;
+
+
+// *****************************************************************
+// **** C0 **** Default anchor/link styles general *****************
+// *****************************************************************
+$link-color: $brand-primary !default;
+$link-hover-color: darken($link-color, 15%) !default;
+$link-text-decoration: underline !default;
+$link-hover-decoration: $link-text-decoration !default;
+$link-on-dark-bg-color: invert($link-color) !default;
+
+// see also '$state-link-hover-color' below
+
+$mainbody-link-text-decoration: $link-text-decoration !default;
+
+
+// *****************************************************************
+// **** C5 **** Button styles **************************************
+// *****************************************************************
+$padding-x: 6px !default;
+$padding-y: 12px !default;
+$btn-padding-x: $padding-x !default;
+$btn-padding-y: $padding-y !default;
+$border-radius: 0 !default;
+$btn-border-radius-base: $border-radius !default;
+
+
+$btn-default-color: $oil !default;
+
+$btn-text-decoration: none !default;
+
+// Use darker text color when default-buttons are used on white BG (new class: bth-transparent
+// for updateCart in search results, date-range slider in sidebar and adv search
+// NOTE that the hover states use the default color too!
+
+// $btn-primary-color: $btn-primary-color !default; // already defined this way in BS _variables, use this variable to change it
+// $btn-primary-bg: $brand-primary !default; // already defined this way in BS _variables, use this variable to change it
+$btn-primary-color: $white !default;
+$btn-primary-bg: $brand-primary !default;
+$btn-primary-hover-bg: $brand-secondary !default;
+$btn-primary-hover-color: $brand-primary !default;
+$btn-primary-disabled-color: $brand-secondary !default;
+$btn-primary-disabled-hover-bg: $brand-secondary !default;
+$btn-primary-disabled-hover-color: $brand-primary !default;
+
+$btn-secondary-border-color: $steel !default;
+
+$btn-success-active-hover-bg: $brand-success !default;
+
+$btn-transparent-color: $steel !default;
+$btn-transparent-active-color: $white !default;
+$btn-transparent-bg: transparent !default;
+$btn-transparent-border: $border-color !default;
+
+$button-title-hover-bg: $brand-secondary !default;
+
+$btn-language-hover-bg: $brand-primary !default;
+$btn-language-active-hover-bg: $steel !default;
+$btn-language-hover-color: $white !default;
+
+$btn-active-hover-bg: $iron !default;
+$btn-badge-hover-color: $brand-secondary !default;
+$btn-info-hover-bg: lighten($brand-info, 25%) !default;
+$btn-info-hover-color: $black !default;
+$btn-info-active-hover-bg: lighten($brand-info, 20%) !default;
+
+// Close modal button
+$modal-close-bg: $white !default;
+$modal-close-bg-hover: $white !default;
+$modal-close-color: $btn-default-color !default;
+$modal-close-color-hover: $brand-danger !default;
+
+// Navbar toggler
+$navbar-default-toggle-hover-bg: $white !default;
+
+// Accordion/collapse toggler
+$toggler: $snow !default;
+$toggler-active: lighten($snow, 1%) !default;
+
+
+// Navbar button sizes
+$btn-header-nav-padding-sm: 6px 2px !default;
+$btn-header-nav-focus-hover-background-color: $component-active-bg !default;
+$btn-header-nav-focus-hover-color: $white !default;
+$btn-header-nav-focus-hover-outline: 1px $white dotted !default;
+
+// Padding for toolbar (sidebar) buttons in record view/detail view
+// for 'Add-to-Bookbag', see below
+$record-view-toolbar-button-padding: .5rem !default;
+
+// Align tops of elements to adv search button-content in same row
+// (e.g. header: searchbox content + navigation on right-hand side)
+$button-top-padding: 6px !default;
+
+// For radii, see above
+
+// TOOLBAR buttons
+/// in record DETAIL
+$btn-toolbar-detail-background-color: transparent !default;
+$btn-toolbar-detail-color: $brand-primary !default;
+$btn-toolbar-detail-color-hover: $link-hover-color !default;
+
+/// in LIST of result and favorites
+$btn-toolbar-list-background-color: rgba(0,0,0,0.05) !default;
+$btn-toolbar-list-color: $charcoal !default;
+
+// *****************************************************************
+// **** D0 **** Feedback state colors ******************************
+// ************ Alert colors ***************************************
+// *****************************************************************
+// NOTE: alerts are defined like so '$alert-success-bg: $state-success-bg;'
+// - therefore changing state colors will change the corresponding alerts too
+$state-light-text-on-dark: $white !default;
+
+$state-success-text: $state-light-text-on-dark !default;
+$state-success-bg: $brand-success !default;
+//$state-success-border: darken(adjust-hue($state-success-bg, -10), 5%) !default;
+
+$state-info-text: $state-light-text-on-dark !default;
+$state-info-bg: $brand-info !default;
+// $state-info-border: darken(adjust-hue($state-info-bg, -10), 7%) !default;
+
+$state-warning-text: $state-light-text-on-dark !default;
+$state-warning-bg: $brand-warning !default;
+$alert-warning-bkg: $brand-warning !default;
+// $state-warning-border: darken(adjust-hue($state-warning-bg, -10), 5%) !default;
+
+$state-danger-text: $state-light-text-on-dark !default; // NOTE: this renders the text white -- requires red background! Used for remove-searchgroup button (adv search) and overdues
+$state-danger-bg: $brand-danger !default;
+// $state-danger-border: darken(adjust-hue($state-danger-bg, -10), 5%) !default;
+
+// Links inside individual alert type boxes
+$state-link-alert-warning-color: $oil !default;
+
+$state-link-hover-bg: $white !default;
+$state-link-hover-color: $black !default;
+
+// Maintenance alert/aside
+$maintenance-aside-bg-color: $alert-warning-bkg !default;
+$maintenance-aside-border-styles: 2px solid $brand-danger !default;
+$maintenance-aside-content-color: $brand-danger !default;
+$maintenance-aside-margin-bottom: .5rem !default;
+$maintenance-aside-margin-top: 1.25rem !default;
+$maintenance-aside-padding: 1rem 1rem 0 1rem !default;
+
+
+
+
+// *****************************************************************
+// **** D5 **** Highlighter in search results colors ***************
+// *****************************************************************
+// activate and change BG here
+// mark,
+// .mark {
+//    background-color: $state-warning-bg;
+// }
+
+
+// *****************************************************************
+// **** E0 **** Tooltips colors ************************************
+// *****************************************************************
+// default bg is black
+$tooltip-color: $snow !default;
+$tooltip-bg: lighten($brand-primary, 20%) !default;
+$tooltip-arrow-color: $tooltip-bg !default;
+$tooltip-inner-padding: .75em !default;
+
+
+// *****************************************************************
+// **** E5 **** Badge styles ***************************************
+// *****************************************************************
+
+// Badges are used for elements in MyAccount menu that hold the hit numbers and for the numbers listed in the result list.
+$badge-font-weight: normal !default;
+$badge-bg: transparent !default;
+$badge-color: $jet !default;
+$badge-link-color: $brand-danger !default;
+$badge-link-hover-color: saturate($brand-danger, 50%) !default;
+// sidebar badge icon colors
+$sidebar-badge-fa-color: darken($brand-secondary, 40%) !default;
+
+
+// *****************************************************************
+// **** F0 **** Alerts/Feedback state ******************************
+// *****************************************************************
+
+$state-link-text-decoration: $link-text-decoration !default;
+
+$state-inside-holding-info-margin-left: 1rem !default;
+$state-inside-holding-info-margin-right: 1rem !default;
+$state-inside-holding-info-margin-top: 1rem !default;
+
+
+// *****************************************************************
+// **** F5 **** Outlines (focus, accessibility etc.) ***************
+// *****************************************************************
+// override default bootstrap accessibility plugin scss variables
+// there is a mixin @mixin outline($size) {outline: $outline-default-style $size $outline-default-color;}
+$outline-default-color: $black !default;
+$outline-default-size: 1px !default;
+$outline-default-style: solid !default;
+
+
+// *****************************************************************
+// **** G0 **** Form elements **************************************
+// *****************************************************************
+
+// Validator colors
+$validator-color: $brand-danger !default;
+
+$form-control-box-shadow: none !default;
+$form-control-height: $navigation-element-default-height !default;
+$form-control-xs-max-width: em(400px) !default;
+
+
+// ************ Form elements: Fieldsets ***************************
+$fielset-default-border: $border-default-styles !default;
+
+// Adv Search fieldsets general
+$fieldset-advanced-srch-margin-top: $grid-gutter-width !default;
+$fieldset-advanced-srch-padding-bottom: ($grid-gutter-width * .5) !default;
+$fieldset-advanced-srch-padding-left: ($grid-gutter-width * .5) !default;
+$fieldset-advanced-srch-padding-right: ($grid-gutter-width * .5) !default;
+// Adv Search top-most fieldset with search terms
+$fieldset-advanced-srch-search-terms-border: 0 !default;
+$fieldset-advanced-srch-search-terms-float: unset !default;
+$fieldset-advanced-srch-search-terms-margin-top: 0 !default;
+$fieldset-advanced-srch-search-terms-padding-bottom: 0 !default;
+$fieldset-advanced-srch-search-terms-padding-left: 0 !default;
+$fieldset-advanced-srch-search-terms-width: unset !default;
+$fieldset-advanced-srch-search-terms-xs-margin-bottom: $half-gutter !default;
+$fieldset-advanced-srch-search-terms-xs-padding-bottom: 5px !default;
+
+// Edit favorites list
+$fieldset-edit-favorites-list-border: 0 !default;
+$fieldset-edit-favorites-list-padding: 0 15px !default;
+$fieldset-edit-favorites-list-xs-float: none !default;
+$fieldset-edit-favorites-list-legend-font-size: $font-size-base !default;
+$fieldset-edit-favorites-list-legend-margin-left: -14px !default;
+
+// Adv Search Date Range slider
+$fieldset-date-range-margin-left: ($grid-gutter-width * .5) !default;
+$fieldset-date-range-margin-right: 0 !default;
+$fieldset-date-range-width: 30.25% !default;
+$fieldset-date-range-xs-sm-margin-left: 0 !default;
+$fieldset-date-range-xs-sm-width: auto !default;
+
+// Range Slider form in sidebar
+$facet-range-form-padding: 1rem !default;
+
+
+// ************ Form elements: Legends *****************************
+$legend-border: 0 !default;
+$legend-font-size: ($font-size-base * 1.25) !default;
+$legend-margin-bottom: 0 !default;
+
+$legend-padding-left: ($grid-gutter-width * .5) !default;
+$legend-padding-right: ($grid-gutter-width * .5) !default;
+$legend-width: auto !default;
+
+// Recent acquisitions search form (search/NewItem)
+$legend-padding-left-recent-acquisitions: 0 !default;
+
+
+// ************ Form elements: Labels ******************************
+$label-font-weight: normal !default;
+
+$label-adv-search-form-padding-left: 0 !default;
+$label-adv-search-form-padding-right: 0 !default;
+$label-adv-search-form-display: block !default;
+
+$label-edit-favorites-list-padding-left: 0 !default;
+
+
+// ************ Form elements: Inputs ******************************
+// Default Bootstrap variable for input focus color (BS default is #66afe9)
+$input-border-focus: $brand-primary !default;
+// Inputs with labels -- top margin for better alignment
+$input-top-margin: .2rem !default;
+// Input AND textarea elements
+$input-textarea-margin-right: 2px !default;
+// Invalid input highlighting on focus
+$input-invalid-focus-border-color: $brand-danger-transparent !default;
+$input-invalid-focus-box-shadow: 0 0 2px 1px $brand-danger-transparent !default;
+// Max width on xs to prevent bleed for input, select, textarea
+$input-select-textarea-xs-max-width: 100% !default;
+// Styles for type='email' and type='text'
+$input-email-text-border: $border-default-styles !default;
+$input-email-text-padding: ($grid-gutter-width * .25) !default;
+// Styles for inputs in header and search form
+$input-header-search-form-border: $border-default-white !default;
+$input-header-search-form-box-shadow: none !default;
+$input-header-search-form-border-outline-offset: -1px !default;
+
+$input-radio-edit-favorites-list-margin-left: 1.4rem !default;
+$input-radio-edit-favorites-list-position: relative !default;
+
+
+// ************ Form elements: Selects *****************************
+$select-bg-color: $snow !default;
+
+// The next two settings are used to remove the standard select down arrow
+$select-remove-standard-down-arrow-background-image: none !default;
+$select-remove-standard-down-arrow-height: auto !default;
+// The next settings replaces the select down arrow
+$select-default-arrow: url('../../finc/images/arrow_down.svg') !default;
+$select-default-border-styles: $border-default-styles !default;
+$select-default-border-radius: 0 !default;
+$select-default-height: $form-control-height !default;
+$select-default-min-width: 5em !default;
+$select-default-padding: em(4px) em(20px) em(4px) em(7px) !default;
+
+$select-in-header-border: 0 !default;
+$select-search-form-sm-max-width: 140px !default;
+
+
+// *****************************************************************
+// **** H0 **** Non-form Labels (result list etc.) *****************
+// *****************************************************************
+// The following is for labels in the result list, such as
+// item format (e-book, book, ... - ['.result-formats .format'])
+// or the labels in status (accessible as ... ['.status .label'])
+// PLS NOTE: The labels.scss from Bootstrap does not have the '!default'
+// flags it may therefore be important to use !important in the instances to overwrite
+// radius is defined in '$label-radius', above
+$label-result-format-status-display: inline-block !default; // Default is inline
+$label-result-format-status-font-weight: normal !default; // Default is bold
+$label-result-format-status-margin-top: .75em !default; // for default see  bootstrap's _labels.scss
+$label-result-format-status-padding: .5em !default; // for default see  bootstrap's _labels.scss
+// for radius, see above, this is a radius NOT using variables in Bootstrap:
+
+
+// *****************************************************************
+// **** H5 **** Dropdowns ******************************************
+// *****************************************************************
+// Dropdown background is used for ALL dropdowns, incl. the language selector;
+// originally defined under BS _variables.scss, and used in _dropdowns.scss;
+// you could use values such as:
+
+//// $dropdown-link-hover-color: lighten($brand-primary, 15%);
+//// $dropdown-link-hover-bg: lighten($brand-primary, 50%);
+
+// Other variables include
+
+//// $dropdown-link-active-color;
+//// $dropdown-link-active-bg;
+//// $dropdown-link-color ...
+
+$dropdown-bottom-padding: 0 !default;
+$dropdown-top-padding: 0 !default;
+$dropdown-box-shadow: none !default;
+
+
+// ************ RVK Notation Dropdown ******************************
+$dropdown-rvk-toggler-color: inherit !default;
+$dropdown-rvk-toggler-text-decoration: inherit !default;
+$dropdown-rvk-toggler-text-decoration-active-focus-hover: inherit !default;
+$dropdown-rvk-toggler-icon-content: $fa-var-angle-down !default;
+$dropdown-rvk-toggler-icon-font-family: 'FontAwesome', sans-serif !default;
+$dropdown-rvk-toggler-icon-padding-left: 2px !default;
+
+$dropdown-rvk-list-padding-inline-start: 1.5em !default;
+$dropdown-rvk-list-padding-inline-start-xs-sm: 0 !default;
+$dropdown-rvk-list-remove-bullet-points-list-style-type: none !default;
+$dropdown-rvk-list-item-icon-content: $fa-var-level-down !default;
+$dropdown-rvk-list-item-icon-font-family: 'FontAwesome', sans-serif !default;
+$dropdown-rvk-list-item-icon-margin-right: .5em !default;
+
+
+// *****************************************************************
+// **** I0 **** Accordions/Collapse elements ***********************
+// *****************************************************************
+$accordion-toggler-display: block !default;
+$accordion-toggler-padding: ($grid-gutter-width * .5) !default;
+$accordion-toggler-text-align: left !default;
+$accordion-toggler-width: 100% !default;
+
+// Add accordion open/close icons here
+$accordion-toggler-icon-content-closed: '\f107' !default;
+$accordion-toggler-icon-content-expanded: '\f106' !default;
+$accordion-toggler-icon-content-expanded-color: darken($brand-secondary, 10%) !default;
+$accordion-toggler-icon-float: right !default;
+$accordion-toggler-icon-font-family: FontAwesome, sans-serif !default;
+
+
+// *****************************************************************
+// **** I5 **** Slick slider elements ******************************
+// ************ Carousels ******************************************
+// ************ Channels *******************************************
+// *****************************************************************
+
+// ************ Slick slider elements ******************************
+$slick-arrow-hover-color: $red !default;
+// Pull channels prev + next buttons in
+$slick-prev-left-position: 1rem !default;
+$slick-prev-left-position-xs-sm: 0 !default;
+$slick-next-right-position: 1rem !default;
+$slick-next-right-position-xs-sm: 0 !default;
+
+// Icon size
+$slick-next-prev-icon-font-size: 38px !default;
+
+
+// ************ Carousels ******************************************
+
+$similar-items-carousel-tab-active-margin-bottom: 2rem !default;
+$similar-items-carousel-tab-active-margin-top: 1rem !default;
+
+
+$carousel-control-elements-color: $brand-primary !default;
+$carousel-control-elements-text-shadow: none !default;
+
+$carousel-control-elements-left-margin: -1rem !default;
+$carousel-control-elements-right-margin: -1rem !default;
+$carousel-control-elements-left-right-background-image: none !default;
+$carousel-control-elements-left-right-background-image-hover-background-image: none !default;
+$carousel-control-elements-left-right-background-image-hover-color: lighten($brand-primary, 2%) !default;
+
+$carousel-control-inner-left-margin: -1rem !default;
+$carousel-item-padding: 0 2rem !default;
+
+$similar-items-carousel-indicators-bottom-distance: -3rem !default;
+$similar-items-carousel-indicators-li-border-color: $brand-primary !default;
+$similar-items-carousel-indicators-li-border-radius: 0 !default;
+$similar-items-carousel-indicators-li-box-shadow: none !default;
+$similar-items-carousel-indicators-li-height: $font-size-base * 1.5 !default;
+$similar-items-carousel-indicators-li-width: $font-size-base * 1.5 !default;
+$similar-items-carousel-indicators-active-box-shadow: none !default;
+
+
+$similar-items-carousel-pause-button-border: 1px solid $brand-primary !default;
+$similar-items-carousel-pause-button-border-radius: 0 !default;
+$similar-items-carousel-pause-button-top-distance: -25px !default;
+$similar-items-carousel-pause-button-left-distance: 1rem !default;
+$similar-items-carousel-pause-button-z-index: 6000 !default;
+
+
+// *****************************************************************
+// **** J0 **** Tables *********************************************
+// *****************************************************************
+
+$table-border: 1px solid $brand-secondary !default;
+$table-elements-border-top: 0 !default;
+$table-layout: auto !default;
+$table-in-tabs-width: 100% !default;
+
+
+// *****************************************************************
+// **** J5 **** Headings *******************************************
+// *****************************************************************
+
+$h1-font-size: 2rem !default;
+// remove top margin to align with sidebars etc
+$h1-first-of-type-margin-top: 0 !default;
+
+
+$h2-font-size: 1.75rem !default;
+$h2-font-size-sidebar: 1.5rem !default;
+$h2-font-size-sidebar-xs-sm: 1.25rem !default;
+
+$h2-margin-left-sidebar-xs: $grid-gutter-width * .5 !default;
+$h2-margin-left-sidebar-xs-sm-margin-top: 1.75rem !default;
+$h2-first-of-type-margin-top-sidebar-sm-up: 0 !default;
+
+
+$h3-font-size: 1.5rem !default;
+// H3 for favorites lists in MyAccount;
+$h3-margin-bottom-fav-lists: .25rem !default;
+$h3-margin-left-fav-lists: 1.5rem !default;
+
+
+$h4-font-size: 1.25rem !default;
+$h4-font-size-sidebar-sm-only: $font-size-base + to-rem(2px) !default;
+// H4 atop Sidebar - align to limit and sort
+$h4-margin-top-sidebar: 0 !default;
+$h4-margin-top-sidebar-sm-only: ($grid-gutter-width * .5) !default;
+
+$h4-text-align-sidebar-xs-sm: center !default;
+
+
+// *****************************************************************
+// **** K0 **** Body and main container colors *********************
+// *****************************************************************
+
+$body-bg: $snow !default;
+//// Main content are bg
+$main-bg: $white !default;
+
+
+// *****************************************************************
+// **** K5 **** Header and navbar  *********************************
+// *****************************************************************
+
+// Header and header elements colors
+$header-bg-color: $gainsboro !default;
+
+$navbar-bg-color: $header-bg-color !default;
+// BG color of the Hamburger dropdown on XS - make same color as active Hamburger menu
+$navbar-bg-color-xs: $navbar-default-toggle-hover-bg !default;
+$navbar-xs-openend-margin-bottom: 1rem !default;
+$navbar-fixed-bg-color: $header-bg-color !default;
+
+// Bootstrap theme gives '.navbar-fixed-top' and '.navbar-fixed-bottom' a top or bottom border of 1px:
+// set this variable in your theme according to your preferences
+$navbar-fixed-top-border-bottom-width: 0 !default;
+
+// Header, navbar and breadcrumbs default margin for centered design - change here for full width
+$header-navbar-breadcrumbs-margin: 0 auto !default;
+$container-for-navbar-display-as: flex !default;
+$container-for-navbar-flex-direction-xs: column !default;
+
+// Navbar gets a minimum-height of 50px by default, activate and change here!
+// For fixed navbars ('navbar-fixed-top' in 'header.phtml'), the body requires
+// a padding-bottom of the same height as the navbar because of postition.fixed
+// When using 'affix' instead of 'navbar-fixed-top',
+// set '$navbar-height', '$navbar-height-xs' and '$navbar-height-sm' to '=0'
+// or set the paddings-top under 'body' in compiled.scss to '=0'; see also the comment in header.phtml
+$navbar-height: 112px !default; // = 7 x 1rem //80px !default;
+$navbar-height-sm: $navbar-height !default;
+
+// Set navbar-height for small devices, USE px as rem will throw an error in conjunction with _variables.scss
+$navbar-height-xs: $navbar-height + 14px !default;
+$navbar-max-height-xs: $navbar-height + 32px !default;
+
+$navbar-opened-on-xs-position: absolute !default;
+
+// Define hamburger menu (xs)
+$hamburger-menu-icon-font-size: 150% !default;
+$hamburger-menu-margin-bottom: 0 !default;
+$hamburger-menu-margin-right: 0 !default;
+$hamburger-menu-margin-top: 0 !default;
+
+$hamburger-menu-flex: 0 1 auto !default;
+$hamburger-menu-margin-left-xs: 0 !default;
+$hamburger-menu-margin-right-xs: 0 !default;
+
+// This is for the menu items in the header incl. language, My account etc
+$header-menu-flex-sm-up: 1 0 35% !default;
+$header-menu-flex-adv-srch-sm-up: 1 0 100% !default;
+$header-menu-flex-order-sm-up: 3 !default;
+$header-menu-padding-top-sm-up: 6px !default;
+
+
+$library-name-float: left !default;
+$library-name-padding: ($grid-gutter-width * .25) ($grid-gutter-width * .5) ($grid-gutter-width * .25) 0 !default;
+$library-name-height-xs: auto !default;
+$library-name-padding-right-sm: ($grid-gutter-width * .25) !default;
+$library-name-focus-hover-outline-offset: -2px !default;
+
+$library-name-img-height-sm: $navigation-element-default-height !default;
+$library-name-img-height-max-width-sm: inherit !default;
+
+
+$language-selector-dropdown-margin-right: 15px !default;
+$language-selector-dropdown-menu-background-color: $navbar-bg-color !default;
+$language-selector-dropdown-menu-border: 0 !default;
+$language-selector-dropdown-menu-min-width: auto !default;
+$language-selector-dropdown-menu-link-color: $link-color !default;
+$language-selector-dropdown-menu-btn-padding-left: 4 !default;
+$language-selector-dropdown-menu-btn-padding-right: 4 !default;
+$language-selector-dropdown-menu-btn-focus-hover-background-color: $brand-primary !default;
+
+$language-selector-one-language-only-display: block !default;
+$language-selector-one-language-only-margin-top: 0 !default;
+$language-selector-one-language-only-position: relative !default;
+
+$language-selector-one-language-only-btn-background: transparent !default;
+$language-selector-one-language-only-btn-background-color-xs: $navbar-bg-color-xs !default;
+$language-selector-one-language-only-btn-color: $brand-primary !default;
+
+$language-selector-one-language-only-btn-float-sm: right !default;
+$language-selector-one-language-only-btn-float-md: right !default;
+
+$language-selector-one-language-only-btn-padding-sm: 6px 0 !default;
+$language-selector-one-language-only-btn-padding-md: 6px !default;
+$language-selector-one-language-only-btn-padding-left-xs: 18px !default;
+$language-selector-one-language-only-btn-width-xs: 100% !default;
+$language-selector-one-language-only-btn-text-align-xs: left !default;
+
+// Exclamation triangle in header navigation (My Account)
+$icon-exclamation-triangle-in-header-padding: 0 !default;
+
+
+// *****************************************************************
+// **** L5 **** Search box ************************************
+// *****************************************************************
+// Make search box container flexible - values should complement those
+// of #header-collapse (i.e. the right-hand side navigation elements)
+$search-container-right-padding: 0 !default;
+$search-container-sm-max-left-padding: 0 !default;
+$search-container-sm-up-flex: 0 1 auto !default;
+$search-container-sm-only-flex: content !default;
+$search-container-sm-up-width: auto !default;
+$search-container-margin-bottom-xs: 1rem !default;
+
+// '.searchForm' is the class of the entire form itself
+$search-form-display: flex !default;
+$search-form-flex-wrap: wrap !default;
+$search-form-justify-content: flex-start !default;
+$search-form-margin-bottom: 0 !default;
+$search-form-margin-top: 0 !default;
+$search-form-padding-top: 0 !default;
+
+$search-form-sm-up-width: 100% !default;
+// if you want to change the display from 'flex' to, say,
+// 'block' for sm only devices, set this to 'block' or whatever
+$search-form-sm-only-display-no-flex: flex !default;
+
+// The '.searchForm' input field is the actual search input, the select element is for 'media type'
+$search-form-input-type-sm-max-display: flex !default;
+$search-form-input-type-sm-max-flex-grow: 2 !default;
+$search-form-input-type-sm-max-flex-shrink: 2 !default;
+
+$search-form-input-only-sm-max-flex-basis: 50% !default;
+$search-form-select-only-sm-max-flex-basis: 20% !default;
+$search-form-select-only-min-width-on-xxs-devices: unset !default;
+
+// Pls. beware that the next two settings affect the active-filters' buttons too
+// (reset in 'header-active-filters.scss' -> button[id^='dropdown-toggle-'])
+$search-form-btn-form-control-vertical-align: top !default;
+$search-form-btn-form-control-float-xs: left !default;
+
+$search-form-advanced-search-button-border: 1px solid $oil !default;
+
+
+// *****************************************************************
+// **** M0 **** Content box ****************************************
+// *****************************************************************
+
+// currently reused:
+// * avanced search term
+// * active filters
+
+$content-box-display: block !default;
+$content-box-margin-bottom: 1rem !default;
+$content-box-padding: 1rem !default;
+$content-box-border: 1px solid $brand-primary !default;
+$content-box-background-color: inherit !default;
+
+
+// *****************************************************************
+// **** M5 **** Advanced Search ************************************
+// *****************************************************************
+
+// Advanced Search Terms
+// Pls. note:
+// In most instance we have MOVED the advanced search TERMS INTO the BREADCRUMBS area
+// in order to keep the header ok on small devices. If this is the case in your instance,
+// you can ignore the '$adv_search_terms...' settings.
+// FIXME: REMOVE THE FOLLOWING SECTIONS + all RELATED VARIABLES when
+//  all instances have the new search terms display on top of search results - CK
+$adv-search-terms-bg: $brand-secondary !default;
+$adv-search-terms-border: 1px solid $brand-primary !default;
+$adv-search-terms-bottom-margin: 0 !default;
+$adv-search-terms-padding: .5em !default;
+$adv-search-terms-width: 100% !default;
+
+$adv-search-remove-btn-height: unset !default;
+$adv-search-remove-btn-top-margin: 26px !default;
+$adv-search-remove-btn-opacity: unset !default;
+$adv-search-remove-btn-width: 44px !default;
+
+// Advanced Search Links
+$adv-search-links-border: 1px solid $brand-primary !default;
+$adv-search-links-list-style: none !default;
+$adv-search-links-margin: 0 !default;
+$adv-search-links-padding: 0 !default;
+$adv-search-links-top-margin-sm: 5px !default;
+
+$adv-search-links-anchor-top-border: 0 !default;
+$adv-search-links-anchor-display: inline !default;
+$adv-search-links-anchor-padding-left: .5em !default;
+
+$adv-search-links-anchor-border-bottom-sm-up: 0 !default;
+$adv-search-links-anchor-border-right-sm-up: 1px solid $brand-primary !default;
+$adv-search-links-anchor-display-sm-up: inline !default;
+$adv-search-links-anchor-padding-right-sm-up: .5em !default;
+$adv-search-links-sm-to-md-max-max-width: 470px !default;
+
+// Advanced Search Box Container in Result List
+$adv-search-box-display: flex !default;
+$adv-search-box-margin-bottom: $content-box-margin-bottom !default;
+$adv-search-box-padding: $content-box-padding !default;
+$adv-search-box-border: $content-box-border !default;
+$adv-search-box-background-color: $content-box-background-color !default;
+
+
+// *****************************************************************
+// **** N0 **** Active filters in header ***************************
+// *****************************************************************
+// Outer container for filter names and reset button;
+// in searchbox without squashing right-hand menu;
+$active-filters-outer-container-display: $content-box-display !default;
+$active-filters-outer-container-margin-bottom: $content-box-margin-bottom !default;
+$active-filters-outer-container-padding: $content-box-padding !default;
+
+$active-filters-outer-container-border: $content-box-border !default;
+$active-filters-outer-container-background-color: $content-box-background-color !default;
+
+
+// Define padding of filters' container for better alignment
+$active-filters-filter-padding-left: 0 !default;
+
+
+// Variables for 'Active filters' and 'Remove all filters' in Header
+// Use orange and black for sufficient color contrast
+$search-filter-remove-all-color: $black !default;
+$search-filter-remove-all-bg: $brand-warning !default;
+$search-filter-remove-all-float: right !default;
+
+$search-filter-text-decoration: none !default;
+
+// show-all-filters-toggler
+$search-filter-all-filters-toggle: left !default;
+
+// Give these the same look on focus/hover as 'Remove all'
+$search-filter-remove-hover-bg: $search-filter-remove-all-bg !default;
+$search-filter-remove-hover-color: $search-filter-remove-all-color !default;
+
+// Note: the background value in BS3 is '$list-group-active-bg' = '$component-active-bg' = '$brand-primary';
+// we insert new value here to make it overwritable in themes
+$search-filter-values-remove-bg: $brand-primary !default;
+$search-filter-values-remove-color: $white !default;
+
+$search-filters-margin-bottom: 4px !default;
+$search-filters-padding: .5rem 5px !default;
+
+
+$search-filter-remove-button-vertical-align: middle !default;
+$search-filter-remove-button-text-display: inline-block !default;
+$search-filter-remove-button-text-max-width: 200px !default;
+$search-filter-remove-button-text-overflow: hidden !default;
+$search-filter-remove-button-text-text-overflow: ellipsis !default;
+$search-filter-remove-button-text-white-space: nowrap !default;
+
+$search-filter-remove-icon: '\f00d' !default;
+$search-filter-remove-icon-display: inline-block !default;
+$search-filter-remove-icon-hover-color: $red !default;
+$search-filter-remove-icon-top-margin: -2px !default;
+$search-filter-remove-icon-vertical-align: top !default;
+$search-filter-remove-icon-in-dropdown-distance-from-right: 1rem !default;
+$search-filter-remove-icon-in-dropdown-padding: 0 !default;
+$search-filter-remove-icon-in-dropdown-position: absolute !default;
+
+// Unset the vertical alignment from BS to align dropdowns AND indiv. buttons
+// The relevant definition is '.searchForm .btn {vertical-align: top;}'
+$search-filter-dropdown-button-vertical-align: unset !default;
+$search-filter-dropdown-button-float: none !default;
+
+// *****************************************************************
+// **** N5 **** Breadcrumbs ****************************************
+// *****************************************************************
+
+$breadcrumb-bg: $brand-primary !default;
+// Default is 'white'
+$breadcrumb-color: $btn-primary-color !default;
+$breadcrumb-link-text-decoration: $link-text-decoration;
+
+// Link color for '.active' breadcrumb (last item in list)
+// For yellow, you can activate something like
+// $breadcrumb-active-color: $road-sign-yellow !default;
+// Default is button color
+$breadcrumb-active-color: $btn-primary-color !default;
+
+$breadcrumb-divider-color: $breadcrumb-color !default;
+
+$breadcrumb-anchor-hover-bg: transparent !default;
+$breadcrumb-anchor-hover-color: darken($breadcrumb-color, 10%) !default;
+
+// Separator between breadcrumb elements, use this variable to change it
+// $breadcrumb-separator: '/' !default;
+$breadcrumbs-advanced-results-top-padding: .6rem !default;
+$breadcrumbs-bottom-margin: 0 !default;
+// Hide breadcrumbs divider on xs
+$breadcrumbs-divider-display-xs: none !default;
+// take 2 px off for borders
+$breadcrumbs-left-padding: ($grid-gutter-width * .5 - 2px) !default;
+$breadcrumbs-top-margin: 0 !default;
+$breadcrumbs-top-padding: 10px !default;
+
+
+// *****************************************************************
+// **** O0 **** Main content block *********************************
+// *****************************************************************
+
+$content-xs-padding-top: 1.5rem !default;
+
+
+// *****************************************************************
+// **** O5 **** Result list, Favorites and other lists *************
+// *****************************************************************
+// This is for all lists that use the result list view or elements thereof.
+// For Search Control, Bulk Elements, Pagination, see below
+
+// sets padding on '.result-body' to prevent text from running into Add to Favorites etc
+$result-body-right-padding-sm-up: 1rem !default;
+
+// Media container
+$result-list-record-result-media-container-xs-sm-padding-left: 0 !default;
+$result-list-record-result-media-container-xs-sm-padding-right: 0 !default;
+
+// Result entry
+$result-list-result-hyphens: auto !default;
+$result-list-result-padding-top: ($grid-gutter-width * .5) !default;
+$result-list-result-padding-bottom: ($grid-gutter-width * .5) !default;
+$result-list-result-padding-left: 0 !default;
+$result-list-result-width: 100% !default;
+// Alternating colors in search results
+$result-list-result-nth-of-type-2-background-color: $brand-secondary !default;
+
+$result-list-result-title-font-size: ($font-size-base * 1.25) !default;
+$result-list-result-title-xs-font-size: $font-size-base !default;
+$result-list-result-title-sm-font-size: $font-size-base + to-rem(2px) !default;
+$result-list-result-title-font-weight: normal !default;
+
+// Record entry-related links in result list, incl. QR codes, public favorites lists etc.
+$result-links-fa-icons-text-align: left !default;
+$result-links-text-decoration: none !default;
+
+// Favorites list in MyAccount
+
+// Favorites lists: list description
+$favorites-list-desc-margin-top: 1rem !default;
+
+// Favorites lists: Edit favorites entry
+$result-links-favorites-edit-delete-tool-a-margin-top: 1em !default;
+$result-links-favorites-edit-delete-tool-a-xs-sm-margin-top: 0 !default;
+$result-links-favorites-edit-delete-tool-a-submenu-margin-top: 0 !default;
+
+// Saved in Favorites-lists box
+$result-links-saved-in-alert-color: $state-light-text-on-dark !default;
+$result-links-saved-in-ul-list-style: circle !default;
+$result-links-saved-in-ul-list-style-position: inside !default;
+$result-links-saved-in-ul-padding: 0 !default;
+$result-links-saved-in-ul-a-color: $state-light-text-on-dark !default;
+
+// Access icons
+$result-list-access-icons-container-text-align: center !default;
+$result-list-access-icons-container-width: 17% !default;
+$result-list-access-icons-container-width-xs: 25% !default;
+
+$result-list-access-icon-color: $brand-primary !default;
+$result-list-access-icon-text-align: center !default;
+$result-list-access-icon-i-font-size: 4.5em !default;
+$result-list-access-icon-i-width: 100% !default;
+
+$result-list-access-icon-inner-font-size: 1rem !default;
+$result-list-access-icon-inner-padding-top: .75rem !default;
+$result-list-access-icon-inner-text-align: center !default;
+$result-list-access-icon-inner-width: auto !default;
+$result-list-access-icon-inner-display-xs: block !default;
+
+// Format labels; media that cannot be found by Solr get a '.format.unknown' label which is redundant, we hide it by default
+$result-list-format-unknown-display: none !default;
+
+
+
+
+// *****************************************************************
+// **** P0 **** Search control elements ****************************
+// *****************************************************************
+// use 'unset' if you want to avoid flex display
+$search-stats-flex-grow: unset !default;
+// Set display type for the containing element;
+// use 'block' if you want to avoid flex display
+$search-controls-container-display-type: block !default;
+$hits-count-top-padding: .5em !default;
+$limit-search-sort-float: left !default;
+$limit-sort-bottom-margin: 5px !default;
+$sort-container-float: right !default;
+
+// Set this to '0' if you want to align the result list items under 'hits per page' etc
+$result-item-left-padding: 0 !default;
+
+$limit-sort-label-line-height: normal !default;
+$limit-sort-label-margin-bottom: 0 !default;
+$limit-sort-label-padding-right: 0 !default;
+
+$limit-sort-select-margin-bottom: 5px !default;
+$limit-sort-select-margin-bottom-xs-sm: 0 !default;
+$limit-sort-select-margin-right-xs-sm: em(3px) !default;
+
+$limit-sort-button-label-select-display-xs-sm: block !default;
+
+$limit-margin-right: ($grid-gutter-width * .5) !default;
+$limit-margin-right-xs: 0 !default;
+$limit-float-xs-sm: $limit-search-sort-float !default;
+$limit-label-text-align: left !default;
+
+$sort-select-max-width: 12em !default;
+$sort-select-max-width-below-410px: 9em !default;
+$sort-select-text-align: right !default;
+
+$sort-inner-form-display: block !default;
+$limit-sort-inner-element-display: inline-block !default;
+$limit-sort-inner-element-display-xs-sm-display: flex !default;
+
+$search-tools-links-background-color-xs-sm: $white !default;
+$search-tools-links-border-xs-sm: 1px solid $iron !default;
+$search-tools-links-color-xs-sm: $oil !default;
+$search-tools-links-display-xs-sm: block !default;
+$search-tools-links-margin-bottom-xs-sm: 5px !default;
+$search-tools-links-padding-xs-sm: 6px 12px !default;
+$search-tools-links-text-align-xs-sm: center !default;
+$search-tools-links-touch-action-xs-sm: manipulation !default;
+$search-tools-links-vertical-align-xs-sm: middle !default;
+$search-tools-links-white-space-xs-sm: nowrap !default;
+
+$adv-search-links-button-margin-bottom: em(3px) !default;
+
+
+// *****************************************************************
+// **** P5 **** Pagination (results)/pager (records) ***************
+// *****************************************************************
+
+$pager-margin-bottom: 0 !default;
+$pager-margin-top-xs: em(40px) !default;
+
+$pager-bg: $silver !default;
+$pager-hover-bg: $brand-primary !default;
+$pager-hover-color: $black !default;
+$pager-border: $border-default-styles !default;
+$pager-border-radius: 0 !default;
+
+$pager-text-decoration: none !default;
+
+
+// *****************************************************************
+// **** Q0 **** Bookbag ********************************************
+// *****************************************************************
+
+$book-bag-list-item-margin-bottom: .5em !default;
+// change the following to adjust the styling of the add-to-bookbag item to match the other items
+// the default '$record-view-toolbar-button-padding' can be adjusted above
+$book-bag-add-to-in-sidebar-toggler-background: transparent !default;
+$book-bag-add-to-in-sidebar-toggler-border-radius: 0 !default;
+$book-bag-add-to-in-sidebar-toggler-color: $brand-primary !default;
+$record-view-toolbar-button-padding-add-to-bookbag: 1.2rem !default;
+$book-bag-add-to-in-sidebar-toggler-padding: $record-view-toolbar-button-padding $record-view-toolbar-button-padding-add-to-bookbag !default;
+$book-bag-add-to-in-sidebar-toggler-text-align-xs: left !default;
+$book-bag-add-to-in-sidebar-toggler-text-decoration: none !default;
+$book-bag-add-to-in-sidebar-toggler-width: 100% !default;
+
+$book-bag-add-to-icon-content: '\f067' !default;
+$book-bag-remove-from-icon-content: '\f068' !default;
+
+
+// *****************************************************************
+// **** Q5 **** Bulk Action Toolbar ********************************
+// *****************************************************************
+
+$bulk-action-buttons-element-clear: both !default;
+$bulk-action-buttons-element-padding-bottom: ($grid-gutter-width * .5) !default;
+$bulk-action-buttons-element-padding-left: $result-item-left-padding !default;
+$bulk-action-buttons-element-padding-top: ($grid-gutter-width * .5) !default;
+
+$bulk-action-buttons-element-btn-group-sm-md-margin-left: -($grid-gutter-width * .5) !default;
+$bulk-action-buttons-element-btn-group-sm-margin-right: -($grid-gutter-width * .5) !default;
+$bulk-action-buttons-element-add-to-bookbag-sm-max-width: 163px !default;
+
+$bulk-action-record-view-checkbox-container-float: left !default;
+$bulk-action-record-view-checkbox-container-margin-right: .5em !default;
+$bulk-action-record-view-checkbox-input-margin-top: $input-top-margin !default;
+
+
+// *****************************************************************
+// **** R0 **** Sidebar elements ***********************************
+// *****************************************************************
+
+// Sidebar item padding
+$sidebar-item-padding: .75em 1em !default;
+$sidebar-item-padding-sm: .75em .5em !default;
+
+// More/Less button in sidebar
+$sidebar-more-button-text-align: left !default;
+// Replace this with 'none' in themes where the icons should be hidden
+$sidebar-more-button-icon-display: inline-block !default;
+
+
+// Menu in MyAccount, selected facets
+$sidebar-facet-active-background-color: $brand-warning !default;
+$sidebar-facet-active-color: $black !default;
+$sidebar-facet-active-hover-color: $btn-primary-color !default;
+$sidebar-facet-active-text-inside-padding-left: 1.25em !default;
+$sidebar-facet-active-text-inside-padding-left-sm: 1em !default;
+$sidebar-or-facet-text-indent: -3px !default;
+$sidebar-facet-my-account-padding: 0 !default;
+$sidebar-facet-my-account-link-width: 100% !default;
+$sidebar-exclude-facet-margin-left: -1.5rem !default;
+$sidebar-exclude-facet-min-height: $navigation-element-default-height !default;
+$sidebar-exclude-facet-padding-left: 1em !default;
+
+$sidebar-facet-title-padding: 0 !default;
+$sidebar-facet-title-background-color: $brand-secondary !default;
+$sidebar-facet-title-background-color-focus-hover: $button-title-hover-bg !default;
+$sidebar-facet-title-color: $link-color !default;
+$sidebar-facet-title-color-focus-hover: $link-hover-color !default;
+
+// '.badge' in My Account requires a different right and top-padding from standard badges as in facets
+$sidebar-my-account-lists-badge-right-padding: 0 !default;
+$sidebar-my-account-lists-badge-top-padding: 0 !default;
+
+
+$sidebar-my-account-danger-success-warning-background: transparent !default;
+$sidebar-my-account-danger-success-warning-padding: 0 !default;
+
+// Sidebar item hover effect (doesn't exist in VF out-of-the-box); active is for selected facets
+$sidebar-item-color: $link-color !default;
+$sidebar-item-hover-color: $link-hover-color !default;
+$sidebar-item-hover-bg: $brand-secondary !default;
+$sidebar-item-active-hover-bg: $brand-primary !default;
+
+
+// Text alignment 'more'-toggles in sidebar;
+// default is center. If center alignment is desired, comment out this next line
+// and the '.narrow-toggle ...' in compiled.scss
+$narrow-toggle-text-alignment: left !default;
+
+
+$sidebar-facet-word-break: break-word !default;
+$sidebar-facet-word-break-sm: initial !default;
+$sidebar-facet-link-text-decoration: none !default;
+
+$sidebar-facet-badge-font-size: 1em !default;
+$sidebar-facet-badge-padding-right: 2px !default;
+
+
+$sidebar-facet-badge-my-research-icons-display: inline-table !default;
+$sidebar-facet-badge-my-research-icons-font-size: 90% !default;
+$sidebar-facet-badge-my-research-icons-max-height: unset !default;
+$sidebar-facet-badge-my-research-icons-padding: 3px 7px !default;
+
+$sidebar-facet-badge-background-color: transparent !default;
+$sidebar-facet-badge-has-error-border: 1px solid $brand-danger !default;
+$sidebar-facet-badge-has-error-border-focus-over: $sidebar-facet-badge-has-error-border !default;
+
+
+// BG of bell and clock icons Warning signs in MyAccount sidebar/header navigation
+$icon-with-text-success-color: $brand-success !default;
+$icon-with-text-warning-color: $brand-warning !default;
+
+// Height of input box shown when advanced search is repeated with previously chosen facets
+$advanced-search-facet-input-height: unset !default;
+
+
+// *****************************************************************
+// **** S0 **** Record tabs ****************************************
+// *****************************************************************
+$record-tabs-padding-left: 1em !default;
+$record-tabs-padding-left-xs: 0 !default;
+$record-tabs-nav-text-decoration: none !default;
+
+$record-tabs-tab-content-padding: ($grid-gutter-width * .5) !default;
+$record-tabs-tab-content-a-word-break: break-word !default;
+$record-tabs-tab-content-a-active-display: inline-block !default;
+$record-tabs-tab-content-a-active-width: 100% !default;
+
+$record-tabs-holdings-collapse-padding-left: ($grid-gutter-width * .5) !default;
+$record-tabs-holdings-tab-pane-ul-margin-top: 1em !default;
+$record-tabs-holdings-tab-pane-ul-padding-left: 0 !default;
+$record-tabs-holdings-tab-pane-li-margin-bottom: .5em !default;
+
+$record-tabs-availability-column-a-xs-sm-display: block !default;
+$record-tabs-availability-column-a-xs-sm-margin-top: 6px !default;
+$record-tabs-availability-column-a-xs-sm-word-break: break-word !default;
+
+// Options for creating break after each item in Availability; see record-tabs.scss
+// For inline or inline-block display, change these variables in the instances
+$record-tabs-availability-column-a-span-after-content: '\a' !default;
+$record-tabs-availability-column-a-span-after-white-space: pre  !default;
+
+// *****************************************************************
+// **** S5 **** Off-canvas *****************************************
+// *****************************************************************
+
+// Back-button in opened off-canvas sidebar (on LEFT)
+$off-canvas-left-close-icon-content: '\00a0\f105' !default;
+// Off-canvas toggler button in normal pages (sidebar on LEFT)
+$off-canvas-left-open-icon-content: '\f100\00a0' !default;
+
+// Back-button in opened off-canvas sidebar (on RIGHT)
+$off-canvas-right-close-icon-content: '\f104\00a0' !default;
+// Off-canvas toggler button in normal pages (sidebar on RIGHT)
+$off-canvas-right-open-icon-content: '\00a0\f101' !default;
+
+// Book cover/icon on right for SM up on Off-canvas LEFT
+$off-canvas-left-media-icon-on-right-sm-up-float: right !default;
+$off-canvas-left-media-icon-on-right-sm-up-margin-left: $grid-gutter-width * .5 !default;
+$off-canvas-left-media-icon-on-right-sm-up-margin-right: 0 !default;
+$off-canvas-left-media-icon-on-right-sm-up-padding-right: 0 !default;
+
+// Padding to make left/right sidebar button edges visible
+$off-canvas-active-sidebar-padding: 2px !default;
+
+// Z-Index of overlay
+$off-canvas-overlay-z-index: 3 !default;
+
+
+// *****************************************************************
+// **** T0 **** Modal/lightbox *************************************
+// *****************************************************************
+$modal-lg: 900px !default;
+$modal-md: 600px !default;
+$modal-sm: 300px !default;
+
+// Prevent transparent lightbox bug
+$modal-dialog-mainbody-left-float: none !default;
+
+
+$modal-dialog-input-max-width-sm-up: em(400px) !default;
+$modal-dialog-max-width-lg-up: em(900px) !default;
+$modal-dialog-max-width-sm-up: 85% !default;
+// Reduce size of modal to keep close-button visible
+$modal-dialog-max-width-xs: 80% !default;
+$modal-dialog-min-width-sm-up: $modal-md !default;
+$modal-dialog-width-md-up: $modal-lg !default;
+$modal-dialog-width-sm-up: auto !default;
+
+$modal-dialog-open-overflow: initial !default;
+
+// Close button - see also the section 'Buttons' above
+$modal-dialog-close-button-border: 0 !default;
+$modal-dialog-close-button-left: auto !default;
+$modal-dialog-close-button-opacity: unset !default;
+$modal-dialog-close-button-right: 0 !default;
+$modal-dialog-close-button-right-sm-up: -60px !default;
+$modal-dialog-close-button-left-sm-up-rtl: -60px !default;
+$modal-dialog-close-button-focus-hover-opacity: unset !default;
+
+
+// *****************************************************************
+// **** T5 **** Footer elements ************************************
+// *****************************************************************
+$footer-border-top: 0 !default;
+$footer-padding-top: ($grid-gutter-width * .75) !default;
+$footer-ul-padding-left: ($grid-gutter-width * .5) !default;
+
+$footer-poweredby-padding: ($grid-gutter-width * .5) !default;
+$footer-poweredby-img-height: em(28px) !default;
+$footer-poweredby-img-margin-left: ($grid-gutter-width * .25) !default;
+$footer-poweredby-img-margin-right: ($grid-gutter-width * .25) !default;
+$footer-poweredby-font-size: small !default;
+
+$footer-link-text-decoration: $link-text-decoration !default;
+
+
+// *****************************************************************
+// **** U0 **** Home page ******************************************
+// *****************************************************************
+$home-page-margin-top: 1em !default;
+$browse-container-padding-top: 1em !default;
+$browse-container-xs-margin-top: 2rem !default;
+
+$home-page-well-xs-background-color: transparent !default;
+$home-page-well-xs-border: 0 !default;
+$home-page-well-xs-box-shadow: none !default;
+$home-page-well-xs-min-height: ($grid-gutter-width * .5) !default;
+$home-page-well-xs-padding: 0 !default;
+
+$home-page-browse-suggest-2-columns-only-last-child-float: left !default;
+$home-page-browse-item-active-focus-hover-background-color: $brand-primary !default;
+$home-page-browse-item-active-focus-hover-text-decoration: underline !default;
+
+// HOME FACET LAYOUT
+// The following variables are used to define the layout of the outer facet container ('.home-facet-container') on the home page:
+// Defines the visual division of facet container columns
+//$home-facet-container-left-padding: .25rem !default; // Defines left padding for better visual division
+//$home-facet-container-right-padding: 1rem !default; // Defines right padding for better visual division
+
+//$home-facet-container-height: 100% !default; // Set this to 100% to make visual division line between the containers go full height, when a ul split into two columns has the setting 'column-fill: balance;'; reduce as needed
+
+// The following variables are used to define the layout of ul lists ('ul.home-facet-list') inside the '.home-facet-container' elements:
+//$home-facet-list-border-right-style: 1px solid grey !default; // Defines the border between the facet list containers
+//$home-facet-list-last-of-type-border-right-style: 0 !default; // Defines the border of the last facet list container
+
+//$home-facet-list-column-count-default: 1; // Defines the default number of columns into which a default 'ul.home-facet-list' will be split for devices
+//$home-facet-list-column-width-default: 100%; // Defines the width of a default 'ul.home-facet-list'; e.g.: 100% makes sure single column has same width as double column (see 'callnumber-first' below)
+
+//$home-facet-list-column-count-md: 2 !default; // Defines the maximum number of columns into which a facet list can be split for MD sized devices
+//$home-facet-list-column-rule-md: 1px solid grey !default;
+//$home-facet-list-column-count-sm: 1 !default; // Defines the maximum number of columns into which a facet list can be split for SM sized devices
+//$home-facet-list-column-count-xs: 1 !default; // Defines the maximum number of columns into which a facet list can be split for XS sized devices
+
+//$home-facet-list-non-default-column-count: 2 !default; // Defines the maximum number of columns into which a non-default facet list, such as '.callnumber-first' will be split for devices >=992px
+//$home-facet-list-non-default-column-rule: 1px solid grey !default; // Defines column rule between the <li> columns for non-default facet lists, such as '.callnumber-first' on devices >=992px
+
+//$home-facet-list-column-fill: auto !default; // Set this to 'balance' to distribute available <li>entries evenly across the max. number of columns, set this to 'auto' for distribution that fills first column and places remaining entries in 2nd column etc.
+
+//$home-facet-list-column-gap: 1rem !default; // Defines the gap between <li>columns if more than one
+//$home-facet-list-column-height: auto !default; // Defines the height of each <li>column before the column breaks, 1rem should roughly equal one line
+//$home-facet-list-column-overflow: clip !default; // Defines what's to be done if there are more <li>entries than fit the columns
+
+//$home-facet-list-left-padding: 0 !default; // Overwrites the default left padding for uls (2rem)
+//$home-facet-list-list-style: none !default; // Removes list style bullets from <li>
+//$home-facet-list-right-padding: 1rem !default; // Adds greater visual separation
+
+
+
+// *****************************************************************
+// **** U5 **** Hierarchy Tree/JS tree *****************************
+// *****************************************************************
+
+$jstree-tree-selector-border-bottom: $border-default-styles !default;
+$jstree-tree-selector-margin-bottom: 1em !default;
+$jstree-tree-selector-padding-bottom: 1em !default;
+
+$jstree-tree-selector-item-margin-right: 2em !default;
+$jstree-tree-selector-item-last-of-type-margin-right: 0 !default;
+
+$jstree-tree-holder-border-right: 0 !default;
+
+$jstree-container-ul-padding-left: 0 !default;
+
+// Top-most JS tree icon
+$jstree-topmost-icon-closed-content: '\f0da' !default;
+$jstree-topmost-icon-float: left !default;
+$jstree-topmost-icon-font-size: 150% !default;
+$jstree-topmost-icon-hover-before-color: $jumbo !default;
+$jstree-topmost-icon-margin-left: 0 !default;
+$jstree-topmost-icon-margin-top: -5px !default;
+$jstree-topmost-icon-min-width: 18px !default; // do NOT translate into em
+$jstree-topmost-icon-open-content: '\f0d7' !default;
+$jstree-topmost-icon-padding: 0 !default;
+$jstree-topmost-icon-width: 0 !default;
+
+
+$jstree-facet-node-line-height: 1.75 !default;
+$jstree-facet-node-list-style: none !default;
+$jstree-facet-node-padding-left: 1.5em !default;
+
+$jstree-children-ul-margin-top: .75em !default;
+$jstree-children-ul-padding-left: 0 !default;
+
+// FontAwesome Unicode fa-file-o
+$jstree-children-li-before-icon-content: '\f016' !default;
+$jstree-children-li-before-icon-display: inline-block !default;
+$jstree-children-li-before-icon-font-family: FontAwesome, sans-serif !default;
+$jstree-children-li-left-padding: $jstree-facet-node-padding-left !default;
+$jstree-children-li-before-icon-width: $jstree-children-li-left-padding !default;
+
+$jstree-anchor-hyphens: auto !default;
+$jstree-anchor-padding-left: 0 !default;
+$jstree-anchor-white-space: normal !default;
+
+
+$jstree-clicked-padding-bottom: .25em !default;
+$jstree-clicked-padding-right: .5em !default;
+$jstree-clicked-padding-top: .3em !default;
+
+
+$jstree-clicked-color: $steel !default;
+$jstree-clicked-background-color: transparent !default;
+$jstree-clicked-hover-color: $black !default;
+$jstree-clicked-hover-focus-color: $jstree-clicked-hover-color !default;
+
+
+// *****************************************************************
+// **** V0 **** Resolver links, 'traffic lights' *******************
+// *****************************************************************
+
+$resolver-links-show-availability-display: inline !default;
+
+$traffic-light-display: inline !default;
+$traffic-light-padding: 0 !default;
+$traffic-light-vertical-align: middle !default;
+
+// temporary, will be overwritten by first, second, third items below
+$traffic-light-inner-items-background-color: $silver !default;
+$traffic-light-inner-items-border-top: 3px solid transparent !default;
+$traffic-light-inner-items-display: inline-block !default;
+$traffic-light-inner-items-height: 1em !default;
+$traffic-light-inner-items-margin: 0 -3px 0 0 !default;
+$traffic-light-inner-items-padding-right: .5rem !default;
+$traffic-light-inner-items-width: 1em !default;
+$traffic-light-inner-items-last-margin-right: .5em !default;
+
+$traffic-light-access-denied-inner-first-background-color: $brand-danger !default;
+$traffic-light-access-denied-inner-second-background-color: $gainsboro !default;
+$traffic-light-access-denied-inner-last-background-color: $gainsboro !default;
+
+$traffic-light-access-limited-inner-first-background-color: $gainsboro !default;
+$traffic-light-access-limited-inner-second-background-color: $traffic-light-yellow !default;
+$traffic-light-access-limited-inner-last-background-color: $gainsboro !default;
+
+$traffic-light-access-open-inner-first-background-color: $gainsboro !default;
+$traffic-light-access-open-inner-second-background-color: $gainsboro !default;
+$traffic-light-access-open-inner-last-background-color: $brand-success !default;
+
+
+// *****************************************************************
+// **** V5 **** Admin panel for translations ***********************
+// *****************************************************************
+$translation-form-margin-top: 2em !default;
+$translation-form-label-font-weight: bold !default;
+$translation-form-input-checkbox-margin-top: 0 !default;
+$translation-form-language-table-filter-text-align: right !default;
+
+$translation-form-tables-thead-background-color: $brand-secondary !default;
+$translation-form-tables-thead-color: $charcoal !default;
+$translation-form-tables-th-padding-bottom: .75rem !default;
+$translation-form-tables-th-padding-top: 1rem !default;
+$translation-form-tables-th-white-space: nowrap !default;
+
+$translation-form-sorting-cursor: pointer !default;
+$translation-form-sorting-asc-desc-color: $brand-primary !default;
+$translation-form-sorting-color: lighten($charcoal, 5%) !default;
+$translation-form-sorting-icon: '\f0dc' !default;
+$translation-form-sorting-asc-icon: '\f0de' !default;
+$translation-form-sorting-desc-icon: '\f0dd' !default;
+
+
+// *****************************************************************
+// **** W0 **** AMSL sources ***************************************
+// *****************************************************************
+
+$amsl-sources-list-line-height: 1.5 !default;
+$amsl-sources-list-padding-left: 0 !default;
+$amsl-sources-list-li-top-level-list-style: none !default;
+$amsl-sources-list-li-top-level-list-padding-bottom: .5em !default;
+$amsl-sources-list-panel-body-span-margin: 10px 15px 10px 0 !default;
+
+
+// *****************************************************************
+// **** Z5 **** Activate On Demand - Plugins ***********************
+// *****************************************************************
+
+$activate-on-demand-bulkaction-visible-xs: false !default;
+$activate-on-demand-visited-links: false !default;
+$activate-on-demand-sidebar-filter-hide-checkbox: true !default;
+// TODO: automatic detection by environment var
+$activate-on-demand-debug-bar: false !default;

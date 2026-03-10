@@ -1,0 +1,35 @@
+<!-- finc: RecordDriver - SolrMarc - data-bk -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if (!(empty($data))): ?>
+  <?php $i = 0; foreach ($data as $item): ?>
+    <?= ($i++ == 0) ? '' : '<br>'; ?>
+    <?php //ToDo: add link to embed bk notation search via search type on upcoming solr field
+    /*
+    <a title="<?=$this->escapeHtmlAttr($item["bk"])?>" href="<?=$this->record($this->driver)->getLink('bk', $item["bk"])?>" rel="nofollow">
+      <?=trim($this->escapeHtml($item["bk"]))?>
+    </a>
+    */ ?>
+    <?php //ToDo: remove after adding search link ↑ ?>
+    <?=trim($this->escapeHtml($item["bk"]))?>
+    <?php
+      if (isset($item["names"])) {
+        $output = '';
+        $j = 0;
+        foreach ($item["names"] as $name) {
+          $output .= ($j++ == 0) ? '' : ', ';
+          $output .= $this->escapeHtml($name);
+        }
+        echo $output;
+      }
+    ?>
+  <?php endforeach; ?>
+<?php endif; ?>
+<!-- finc: RecordDriver - SolrMarc - data-bk - END -->

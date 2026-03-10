@@ -1,0 +1,33 @@
+<!-- finc: myresearch - account -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * uses 'User Account' here
+ * uses 'form-button-submit' here
+configured in: {}
+ */
+?>
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('User Account'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Account') . '</li>';
+?>
+<?php /* finc: uses 'User Account' here */ ?>
+<h2><?=$this->transEsc('Create New Account')?></h2>
+<?=$this->flashmessages()?>
+
+<form method="post" name="accountForm" id="accountForm" class="form-user-create" data-toggle="validator" role="form">
+  <?=$this->auth()->getCreateFields()?>
+  <?=$this->captcha()->html($this->useCaptcha) ?>
+  <div class="form-group">
+    <a class="back-to-login btn btn-link" href="<?=$this->url('myresearch-userlogin') ?>"><i class="fa fa-chevron-left" aria-hidden="true"></i> <?=$this->transEsc('navigate_back')?></a>
+    <?php /* finc: uses 'form-button-submit' here */ ?>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('form-button-submit')?>">
+  </div>
+</form>
+<!-- finc: myresearch - account - END -->

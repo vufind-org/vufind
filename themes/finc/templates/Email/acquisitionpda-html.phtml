@@ -1,0 +1,147 @@
+<?=$this->doctype('HTML5')?>
+<html>
+<head>
+  <?php /* <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"> TEST IF THIS WORKS, fixme CK */ ?>
+  <title>Benutzergesteuerte Erwerbung</title>
+</head>
+<body style="font-family: Arial, Verdana, sans-serif;">
+<h1 style="padding:10px 0;">Benutzergesteuerte Erwerbung</h1>
+<table width="800" border="0">
+  <tr valign="top">
+    <td width="390">
+      Name: <strong><?=$lastname?>, <?=$firstname?></strong><br>
+      Lesekarte-Nr.: <strong><?=$username?></strong><br>
+      Email: <a href="mailto:<?=$email?>"><?=$email?></a><br>
+      <?=(isset($group) && !empty($group)) ? "Benutzergruppe: " . $group . "<br>" : ""?>
+      <br>
+      <?php if ($statement): ?>
+        Begründung des Benutzers:
+        <br><br>
+        <span style="font-size: 12px"><?=$statement?></span>
+        <br><br>
+      <?php endif; ?>
+    </td>
+    <td width="20">&nbsp;</td>
+    <td width="390">
+      hat folgenden Titel bestellt:<br>
+      <br>
+      <strong><?=$title?></strong><br>
+      <?php if ($author): ?>von
+        <?php foreach ($author as $auth): ?>
+          <?=$auth?>
+        <?php endforeach; ?>
+      <?php endif; ?><br>
+      <br>
+      Link: <a href="<?=$this->serverUrl($this->escapeHtmlAttr($this->recordLinker()->getUrl($driver)))?>" title="<?=$title?>"><?=$this->serverUrl($this->recordLinker()->getUrl($driver))?></a><br>
+      Katalog-ID: <a href="<?=$this->serverUrl($this->escapeHtmlAttr($this->recordLinker()->getUrl($driver)))?>"
+                     title="<?=$title?>"><?=$id?></a><br>
+      <br>
+      für das Fachgebiet: <?=$this->transEsc('PDA::fos_' . $field_of_study)?><br>
+      <br>
+      <table>
+        <?php if ($price): ?>
+          <tr>
+            <td width="100" style="font-size: 11px">Preis:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?=$this->safeMoneyFormat($price)?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($publisher): ?>
+          <tr>
+            <td style="font-size: 11px">Verlag:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?php foreach ($publisher as $pub): ?>
+                <?=$pub?>
+              <?php endforeach; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($format): ?>
+          <tr>
+            <td style="font-size: 11px">Format:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?php foreach ($format as $for): ?>
+                <?=$this->transEsc($for)?>
+              <?php endforeach; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($language): ?>
+          <tr>
+            <td style="font-size: 11px">Sprache:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?php foreach ($language as $lang): ?>
+                <?=$this->transEsc($lang)?>
+              <?php endforeach; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($publishDate): ?>
+          <tr>
+            <td style="font-size: 11px">veröffentlicht:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?php foreach ($publishDate as $date): ?>
+                <?=$date?>
+              <?php endforeach; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($isbn): ?>
+          <tr>
+            <td style="font-size: 11px">ISBN/ISN:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?php foreach ($isbn as $isn): ?>
+                <?=$isn?>
+              <?php endforeach; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($physical): ?>
+          <tr>
+            <td style="font-size: 11px">Beschreibung:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?php foreach ($physical as $phys): ?>
+                <?=$phys?>
+              <?php endforeach; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($footnote): ?>
+          <tr>
+            <td style="font-size: 11px">Fussnote:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?php foreach ($footnote as $foot): ?>
+                <?=$foot?>
+              <?php endforeach; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+        <?php if ($source_id): ?>
+          <tr>
+            <td style="font-size: 11px">Quelle:</td>
+            <td width="5">&nbsp;</td>
+            <td style="font-size: 11px">
+              <?=$this->transEsc('sid_' . $source_id)?>
+            </td>
+          </tr>
+        <?php endif; ?>
+      </table>
+    </td>
+  </tr>
+  <tr valign="top">
+    <td width="800" colspan="3">
+      Zeitpunkt der Bestellung: <?=$timestamp?>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

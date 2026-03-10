@@ -1,0 +1,151 @@
+// Use this for all hierarchy-tree element styles (record view)
+
+// *****************************************************************
+// ************ Tree-Selector (more than 1 tree) *******************
+// *****************************************************************
+
+// '#treeSelector' is the ID of a container that will ONLY be rendered in record view
+// when there is _more than one_ tree, e.g. search for 'Allgemeine Staatengeschichte'
+// and/or check 'Record/0-1118241363'
+#treeSelector {
+  border-bottom: $jstree-tree-selector-border-bottom;
+  margin-bottom: $jstree-tree-selector-margin-bottom;
+  padding-bottom: $jstree-tree-selector-padding-bottom;
+
+  // this is to style the individual items in a tree selector
+  .item {
+    margin-right: $jstree-tree-selector-item-margin-right;
+
+    &:last-of-type {
+      margin-right: $jstree-tree-selector-item-last-of-type-margin-right;
+    }
+  }
+}
+
+// *****************************************************************
+// ************ Tree as such ***************************************
+// *****************************************************************
+
+// 'hierarchyTreeHolder' is the container that holds each individual tree
+#hierarchyTreeHolder {
+  border-right: $jstree-tree-holder-border-right;
+}
+
+// 'hierarchyTree' is the direct child of 'hierarchyTreeHolder'
+#hierarchyTree {
+  // 'jstree-container-ul' wraps the top-most tree list element, like so
+  // <div id="hierarchyTree" ...
+  //   <ul class="jstree-container-ul" ...
+  //     <li class="jstree-node jstree-open jstree-last" ...
+  //       <i class="jstree-icon jstree-ocl" ...
+  //       <a class"jstree-anchor" ...
+  //       <ul class="jstree-children" ...
+  //         <li class="jstree-node jstree-leaf" ...
+
+  // keep 'hierarchyTree' parent for specifity
+  .jstree-container-ul {
+    padding-left: $jstree-container-ul-padding-left;
+  }
+
+  // This styles the top-most open/close icon;
+  // in finc, we make dropdown-icon wider for usability.
+  // Keep parent classes for specifity
+  .jstree-closed > .jstree-ocl,
+  .jstree-open > .jstree-ocl {
+    &::before {
+      float: $jstree-topmost-icon-float;
+      font-size: $jstree-topmost-icon-font-size;
+      margin-left: $jstree-topmost-icon-margin-left;
+      margin-top: $jstree-topmost-icon-margin-top;
+      min-width: $jstree-topmost-icon-min-width;
+      padding: $jstree-topmost-icon-padding;
+      width: $jstree-topmost-icon-width;
+    }
+
+    &:hover::before,
+    &:focus::before {
+      color: $jstree-topmost-icon-hover-before-color;
+    }
+  }
+
+  // This styles the actual top-most open/close icon;
+  // in most cases, this may only be visible when the context tree is opened in a modal
+  .jstree-open > .jstree-ocl::before {
+    content: $jstree-topmost-icon-open-content;
+    font-family: 'FontAwesome';
+  }
+
+  .jstree-closed > .jstree-ocl::before {
+    content: $jstree-topmost-icon-closed-content;
+    font-family: 'FontAwesome';
+  }
+
+
+  li.jstree-facet,
+  li.jstree-node {
+    line-height: $jstree-facet-node-line-height;
+    list-style: $jstree-facet-node-list-style;
+    padding-left: $jstree-facet-node-padding-left;
+  }
+
+  // Align child elements under open/close toggle
+  .jstree-children {
+    margin-top: $jstree-children-ul-margin-top;
+    padding-left: $jstree-children-ul-padding-left;
+  }
+
+  // Children's icon
+  // Jstree-leaf items' icon
+  li li::before {
+    // FontAwesome Unicode fa-file-o
+    content: $jstree-children-li-before-icon-content;
+    display: $jstree-children-li-before-icon-display;
+    font-family: $jstree-children-li-before-icon-font-family;
+    // same as padding-left set on li, above
+    margin-left: -$jstree-children-li-left-padding;
+    //same as padding-left set on li, above
+    width: $jstree-children-li-left-padding;
+  }
+
+  // '.jstree-anchor' is used on ALL anchors inside the tree -- i.e. top-most and child elements
+  // prevent tree LIs from overspilling on small!
+  .jstree-anchor {
+    hyphens: $jstree-anchor-hyphens;
+    padding-left: $jstree-anchor-padding-left;
+    white-space: $jstree-anchor-white-space;
+  }
+
+  // Current item
+  .jstree-clicked {
+    background-color: $jstree-clicked-background-color;
+    color: $jstree-clicked-color;
+    padding-bottom: $jstree-clicked-padding-bottom;
+    padding-right: $jstree-clicked-padding-right;
+    padding-top: $jstree-clicked-padding-top;
+
+    &:hover,
+    &:focus {
+      color: $jstree-clicked-hover-color;
+    }
+  }
+}
+
+// do not show empty jstree icon
+.jstree-default .jstree-leaf .jstree-icon {
+  display: none;
+}
+
+// ***************************************************************************************** */
+// TODO move following styles to seprate component (_collection-view.scss) in finc or de_105 */
+// TODO upcoming refs #22979 */
+
+.collection-control {
+  display: inline-block;
+  float: left;
+  margin-top: 6px;
+  width: 49%;
+}
+
+#moreInfoToggle.collapsed {
+  margin-bottom: 2em;
+}

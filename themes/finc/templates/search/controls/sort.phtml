@@ -1,0 +1,33 @@
+<!-- finc: search - controls - sort -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds div with 'sort-inner'
+ * DOES NOT use class 'form-control' as it messes up the select box
+ * adds button for accessibility #18016
+configured in: {}
+ */
+?>
+<?php $list = $this->params->getSortList(); if (!empty($list)): ?>
+  <form class="search-sort" action="<?=$this->currentPath()?>" method="get" name="sort">
+    <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/']);?>
+    <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
+    <?php /* finc: adds div with 'sort-inner' */ ?>
+    <div class="sort-inner">
+      <?php /* finc: DOES NOT use class 'form-control' as it messes up the select box */ ?>
+      <select id="sort_options_1" name="sort" class="jumpMenu">
+        <?php foreach ($list as $sortType => $sortData): ?>
+          <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
+        <?php endforeach; ?>
+      </select>
+      <?php /* finc: adds button for accessibility #18016 */ ?>
+      <button type="submit" class="btn btn-primary" aria-label="<?=$this->transEscAttr("Set")?>">
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+      </button>
+    </div>
+  </form>
+<?php endif; ?>
+<!-- finc: search - controls - sort - END -->

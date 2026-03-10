@@ -1,0 +1,55 @@
+<?=$this->doctype('HTML5')?>
+<html>
+<head>
+  <?php /* <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"> TEST IF THIS WORKS, fixme CK */ ?>
+  <title>Fehlermeldung durch Benutzer</title>
+</head>
+<body style="font-family: Arial, Verdana, sans-serif;">
+<h1 style="padding:10px 0;">Fehlermeldung durch Benutzer</h1>
+<table width="800" border="0">
+  <?php if ($reply_requested): ?>
+    <?php if (isset($lastname) && isset($firstname)): ?>
+      <tr>
+        <td width="30%">Name:</td>
+        <td width="70%"><strong><?=$lastname?>, <?=$firstname?></strong></td>
+      </tr>
+    <?php endif; ?>
+    <?php if (isset($email)): ?>
+      <tr>
+        <td width="30%">Email:</td>
+        <td width="70%"><a href="mailto:<?=$email?>"><?=$email?></a></td>
+      </tr>
+      <tr>
+        <td width="100%" colspan="2"><strong>Um Rückmeldung wird gebeten.</strong></td>
+      </tr>
+    <?php endif; ?>
+  <?php endif; ?>
+  <?php if ($comment): ?>
+    <tr>
+      <td width="30%">Meldung des Benutzers::</td>
+      <td width="70%"><span style="font-size: 12px"><?=$comment?></span></td>
+    </tr>
+  <?php endif; ?>
+  <tr>
+    <td width="30%">Gemeldeter Titel:</td>
+    <td width="70%">
+      <strong><?=$title?></strong><br>
+      <?php if ($author): ?>von
+        <?php foreach ($author as $auth): ?>
+          <?=$auth?>
+        <?php endforeach; ?>
+      <?php endif; ?><br>
+      <br>
+      Link: <a href="<?=$this->serverUrl($this->escapeHtmlAttr($this->recordLinker()->getUrl($driver)))?>" title="<?=$title?>"><?=$this->serverUrl($this->recordLinker()->getUrl($driver))?></a><br>
+      Katalog-ID: <a href="<?=$this->serverUrl($this->escapeHtmlAttr($this->recordLinker()->getUrl($driver)))?>"
+                     title="<?=$title?>"><?=$id?></a><br>
+    </td>
+  </tr>
+  <tr valign="top">
+    <td width="100%" colspan="2">
+      Zeitpunkt der Meldung: <?=$timestamp?>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

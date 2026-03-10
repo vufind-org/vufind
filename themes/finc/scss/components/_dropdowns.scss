@@ -1,0 +1,99 @@
+// Use this for all general dropdown styles
+// For AMSL collapse-all-toggler see amsl.scss
+
+// *****************************************************************
+// ************ Dropdown-menu elements *****************************
+// *****************************************************************
+
+// remove padding as it creates space above/below menu items (e.g. language selector)
+// remove box shadow
+.dropdown-menu {
+  box-shadow: $dropdown-box-shadow;
+  padding-bottom: $dropdown-bottom-padding;
+  padding-top: $dropdown-top-padding;
+
+
+  // HOVERABLE DROPDOWNS - make DDs hoverable
+  // Add the dropdown-on-hover class to the parent li container!
+  // OR use on all (see commented-out part below)
+  // Menu will show on hover
+  .dropdown-on-hover:hover & {
+    @media (min-width: $screen-sm-min) {
+      display: block;
+    }
+  }
+
+  // OR use on ALL dropdowns like so
+  //.dropdown:hover .dropdown-menu {
+  //  display: block;
+  //}
+}
+
+
+// Dropdown toggler color
+// WARNING: Potential Breaking Change, e.g. bookbag delete button with dropdown
+// - could result in white text on white background
+// To manage, pls. use variable '$btn-transparent-active-color' in custom themes and define color there
+// FIXME: MOVE TO buttons or dropdowns section
+.open .btn-transparent.dropdown-toggle {
+  &[aria-expanded="true"] {
+    color: $btn-transparent-active-color;
+  }
+
+  &:active,
+  &:focus,
+  &:hover {
+    color: $btn-transparent-active-color;
+  }
+}
+
+// The 'delete'-dropdown in favorites list
+.open > .dropdown-menu {
+  .template-dir-myresearch.template-name-mylist .result-links & {
+    float: none;
+    position: relative;
+  }
+}
+
+
+// *****************************************************************
+// ************ RVK Notation Dropdown ******************************
+// *****************************************************************
+
+// See #18132 and data-rvkNotation.phtml; sample record: Record/0-021939896 or
+// https://staging.finc.info/vufind2/de_540/Record/0-1350997935
+.toggle {
+  color: $dropdown-rvk-toggler-color;
+  text-decoration: $dropdown-rvk-toggler-text-decoration;
+
+  &:active,
+  &:focus,
+  &:hover {
+    text-decoration: $dropdown-rvk-toggler-text-decoration-active-focus-hover;
+  }
+
+  &::after {
+    content: $dropdown-rvk-toggler-icon-content;
+    font-family: $dropdown-rvk-toggler-icon-font-family;
+    padding-left: $dropdown-rvk-toggler-icon-padding-left;
+  }
+}
+
+.notation ul {
+  padding-inline-start: $dropdown-rvk-list-padding-inline-start;
+
+  @media (max-width: $screen-sm-max) {
+    padding-inline-start: $dropdown-rvk-list-padding-inline-start-xs-sm;
+  }
+
+  li {
+    list-style-type: $dropdown-rvk-list-remove-bullet-points-list-style-type;
+  }
+
+  li:nth-of-type(1)::before {
+    content: $dropdown-rvk-list-item-icon-content;
+    font-family: $dropdown-rvk-list-item-icon-font-family;
+    margin-right: $dropdown-rvk-list-item-icon-margin-right;
+  }
+}
+

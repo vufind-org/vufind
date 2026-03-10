@@ -1,0 +1,61 @@
+<!-- finc: ajax - resolverLink -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * specific traffic light, CK #7986
+ * translate service type #21738
+ * specific coverage, CK #5334
+configured in: {}
+ */
+?>
+<?php if (!empty($link['href'])): ?>
+  <div class="flex">
+    <?php /* finc-specific traffic light, CK #7986 */ ?>
+    <div class="show-availability">
+      <span class="sr-only">
+        <?=$this->translate('Availability')?>: <?=$this->transEsc('resolver_link_access_' . $link['access'])?>
+      </span>
+      <div aria-hidden="true"<?php if (!empty($link['access'])): ?> data-toggle="tooltip" title="<?=$this->transEscAttr('resolver_link_access_' . $link['access'])?>" class="traffic-light access-<?=$link['access']?>"<?php endif;?>>
+        <span class="first"></span>
+        <span class="second"></span>
+        <span class="last"></span>
+      </div>
+    </div>
+    <?php /* finc: specific traffic light, CK #7986 - END */ ?>
+    <div>
+      <?= $this->externalLink(
+        $this->escapeHtmlAttr($link['href']),
+        $link['title'] ?? '',
+        [
+          // translate service type #21738
+          'title' => $link['service_type'] ? $this->transEsc($link['service_type']) : '',
+          'class' => !empty($link['access']) ? 'access-' . $link['access'] : ''
+        ]
+      ) ?>
+      <?php /* finc: specific coverage, CK #5334 */ ?>
+      <small>
+        <?= isset($link['coverage']) ? $this->escapeHtml($link['coverage']) : '' ?>
+        <?= isset($link['coverageHref'])
+          ? $this->externalLink($link['coverageHref'], $this->translate('Readme'))
+          : '' ?>
+      </small>
+      <?php /* finc: specific coverage, CK #5334 - END */ ?>
+    </div>
+  </div>
+<?php else: ?>
+  <?=isset($link['title'])?$this->escapeHtml($link['title']):''?> <?=isset($link['coverage'])?$this->transEsc($link['coverage']):''?>
+<?php endif; ?>
+<?php if (!empty($link['notes'])): ?>
+  <span class="openurl-notes">
+    <?=$this->escapeHtml($link['notes'])?>
+  </span>
+<?php endif; ?>
+<?php if (!empty($link['authentication'])): ?>
+  <span class="openurl-authentication-notes">
+    <?=$this->escapeHtml($link['authentication'])?>
+  </span>
+<?php endif; ?>
+<!-- finc: ajax - resolverLink - END -->

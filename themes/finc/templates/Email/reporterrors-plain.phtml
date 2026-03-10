@@ -1,0 +1,38 @@
+== Fehlermeldung durch Benutzer ==
+
+<?php if ($reply_requested): ?>
+    <?php if (isset($lastname) && isset($firstname)): ?>
+
+Name: <?=$lastname?>, <?=$firstname?>
+
+    <?php endif; ?>
+    <?php if (isset($email)): ?>
+
+Email: <?=$email?>
+
+Um Rückmeldung wird gebeten.
+
+
+    <?php endif; ?>
+<?php endif; ?>
+
+Gemeldeter Titel:
+
+<?= $title ?>
+
+<?php if ($author): ?>
+    von <?php foreach ($author as $au): ?><?= $au ?> <?php endforeach; ?>
+<?php endif; ?>
+
+Link: <?= $this->serverUrl($this->recordLinker()->getUrl($driver)) ?>
+
+------------------------------------------
+
+<?php if ($comment): ?>
+    Meldung des Benutzers:
+    <?= $comment ?>
+<?php endif; ?>
+
+------------------------------------------
+
+Zeitpunkt der Meldung: <?= $timestamp ?>

@@ -1,0 +1,25 @@
+
+== Erwerbungsvorschlag ==
+
+Der Benutzer: <?=$lastname ?>, <?=$firstname ?>
+
+Benutzerkarte: <?=$username ?>
+
+E-Mail-Adresse: <?=$email ?>
+
+<?=(isset($group) && !empty($group)) ? "Benutzergruppe: ". $group : ""?>
+
+
+hat folgenden Titel zur Erwerbung empfohlen:
+
+<?=$proposal ?>
+
+
+Begründung für Empfehlung:
+
+<?=$statement ?>
+
+
+für den Fachbereich: <?=$this->transEsc("PDA::fos_" . $field_of_study)?>
+
+<?=isset($timestamp) ? "Zeitpunkt: " . $timestamp : "" ?>

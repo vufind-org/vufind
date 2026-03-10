@@ -1,0 +1,149 @@
+// Use this for all finc-specific mixins
+
+// *****************************************************************
+// ************ Borders ********************************************
+// *****************************************************************
+
+// For Default border style see Variables: $border-default-styles
+// Right-hand border on Sidebar? Only activate when border butts right border, leave commented out for standard border
+@mixin right-border-on-sidebar($border-right-width) {
+  // For $border-right-width:  SEE customVariables
+  border-right-width: $border-right-width;
+}
+
+// Activate when Sidebar ought to be pulled to the right edge/border
+@mixin pull-sidebar-to-right($margin-right-width) {
+  // for $margin-right-width:  SEE customVariables
+  margin-right: $margin-right-width;
+}
+
+// *****************************************************************
+// ************ Pagination and search tools alignment **************
+// *****************************************************************
+
+// Pagination (Search results) AND searchtools (Search results)
+// Default is left, we use centered alignment. If left is desired,
+// comment out next mixing and '.pagination ...'  and 'searchtools ...' in compiled.scss
+@mixin content-centered-display-as-table {
+  display: table;
+  margin: 1.5em auto;
+}
+
+// *****************************************************************
+// ************ Select elements - custom look **********************
+// *****************************************************************
+@mixin select-element-custom-look {
+  // prevent standard look in Firefox and Chrome
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
+  background-position: 100% center;
+  background-repeat: no-repeat;
+  background-color: $select-bg-color;
+  // This is the litte down arrow
+  background-image: $select-default-arrow;
+  border: $select-default-border-styles;
+  border-radius: $select-default-border-radius;
+  height: $select-default-height;
+  min-width: $select-default-min-width;
+  padding: $select-default-padding;
+
+  // Prevent pre-filters dropdown from taking up too much space on very small devices
+  @media (max-width: 380px) {
+    min-width: $search-form-select-only-min-width-on-xxs-devices;
+  }
+}
+
+// *****************************************************************
+// ************ Accessibility: Outline, sr-only ... ****************
+// *****************************************************************
+
+// Outline Mixin -- complements BS outline mixin in partials/mixin but does not rewrite it
+@mixin outline(
+  $size: $outline-default-size,
+  $color: $outline-default-color,
+  $style: $outline-default-style) {
+  outline: $style $size $color;
+}
+
+// sr-only mixin: use to show items to screen readers only without having to add sr-only class
+@mixin sr-only {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: auto;
+}
+
+// *****************************************************************
+// ************ Responsive data tables *****************************
+// *****************************************************************
+// This breaks table down into more readable chunks on small devices
+@mixin table-resp-data {
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+    width: 100%;
+  }
+
+  // Hide table headers/footers but avoid display: none; for accessibility
+  thead tr,
+  tfoot tr > th,
+  tr th {
+    border: 0;
+    left: -9999px;
+    position: absolute;
+    top: -9999px;
+  }
+
+  tr {
+    border: $border-default-styles;
+    border-bottom: 0;
+    margin-bottom: 6px;
+
+    &:last-of-type {
+      border-bottom: $border-default-styles;
+    }
+  }
+
+  // remove ghost borders
+  &.table {
+    border-color: transparent;
+  }
+
+  tbody > tr > td,
+  td {
+    // Make td behave like a "row", add padding for "columns"
+    border: 0;
+    border-bottom: $border-default-styles;
+    padding-left: calc(50% + 10px);
+    position: relative;
+    text-align: left;
+    white-space: normal;
+  }
+
+  td::before {
+    // make data titles behave like table headers // top+left values mimic padding
+    content: attr(data-title);
+    font-weight: bold;
+    left: 6px;
+    overflow: hidden; // required for Ellipsis
+    padding-right: 10px;
+    position: absolute;
+    text-align: left;
+    text-overflow: ellipsis; // required for Ellipsis
+    top: 6px; // required for Ellipsis (was top: 6px)
+    white-space: nowrap; // required for Ellipsis
+    width: calc(50% - 20px); // required for Ellipsis
+  }
+
+  // Insert nbsp on XS to prevent empty, collapsing cells
+  td::after {
+    content: '\00a0';
+  }
+}

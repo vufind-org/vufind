@@ -1,0 +1,165 @@
+<!-- finc: header -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds 'navbar-fixed-top'
+ * moves aria-hidden from button to icon; adds aria-label
+ * custom header
+ * class 'btn' was added to the following a-elements in #13547
+ * element 'span' was added to the following elements in #9844
+ * BARF bookbag #1999
+ * uses 'fa-clipboard' instead of 'fa-suitcase'
+ * accessibility fixes in site header #17720
+ * adapts langmenu #23496
+ * needs id="langmenu"; adapts langmenu #17599
+ * more accessibility rework #17908
+ * removes class 'navbar' #17830
+ * removes role="search"
+configured in: {}
+ */
+?>
+<?php $account = $this->auth()->getManager(); ?>
+<?php /* finc: This navbar is the sticky element in the header - CK; you can use 'affix' as an alternative to  'navbar-fixed-top' like so:
+ <div data-spy="affix" data-offset-top="1" class="navbar">
+ Do not use 'navbar-fixed-top' and 'affix' at the same time. When using 'affix', set the variables for
+ '$navbar-height', '$navbar-height-xs' and '$navbar-height-sm' in _customVariables.scss to '=0'
+ or set the paddings-top under 'body' in compiled.scss to '=0'
+ */ ?>
+<?php /* finc: adds 'navbar-fixed-top' */ ?>
+<div class="banner container navbar navbar-fixed-top">
+  <?php /* finc: This element only holds the mobile toggler and the navbar-brand/library name - CK */ ?>
+  <div class="navbar-header">
+    <?php /* finc: moves aria-hidden from button to icon; adds aria-label */ ?>
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse" aria-label="<?=$this->transEscAttr("mobile_toggle_navigation_text")?>">
+      <i class="fa fa-bars" aria-hidden="true"></i>
+    </button>
+    <a class="navbar-brand lang-<?=$this->layout()->userLang ?>" href="<?=$this->url('home')?>" aria-label="<?=$this->transEscAttr('Home')?>">
+      <?php /* finc: custom header - make sure that one variant of Library name is readable on any device - CK*/ ?>
+      <span class="hidden-sm-up"><?=$this->transEsc("LibraryName")?></span>
+      <img src="<?=$this->imageLink('headerlogo.png')?>" class="hidden-xs" alt="Logo <?=$this->transEscAttr('LibraryName')?>" aria-hidden="true">
+      <?php /* finc: custom header - END */ ?>
+    </a>
+  </div>
+  <?php if (!isset($this->layout()->renderingError)): ?>
+    <div class="collapse navbar-collapse" id="header-collapse">
+      <?php /* finc: right-hand navbar section - see flex-container in SCSS:
+              we need this order on XS: navbar-right searchbox
+              but reverse it on anything but mobile */
+            /* <nav> element implies role="navigation" - we use aria-label to clarify - CK */
+      ?>
+      <?php /* finc: adds class 'btn' to the following a-elements in #13547 */ ?>
+      <?php /* finc: adds element 'span' to the following elements in #9844 */ ?>
+      <nav aria-label="<?=$this->transEscAttr('main_navigation')?>">
+        <ul class="nav navbar-nav navbar-right flip">
+          <?php if ($this->feedback()->tabEnabled()): ?>
+            <li>
+              <?php /* finc: BARF bookbag #1999 */?>
+              <a id="feedbackLink" data-lightbox href="<?=$this->url('feedback-home')?>" class="btn" aria-label="<?=$this->transEscAttr("Feedback")?>"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+            </li>
+          <?php endif; ?>
+          <?php $cart = $this->cart(); if ($cart->isActive()): ?>
+            <li id="cartSummary">
+              <?php /* finc: uses 'fa-clipboard' instead of 'fa-suitcase' */?>
+              <a id="cartItems" class="btn" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
+                <i class="fa fa-clipboard" aria-hidden="true"></i> <span role="status"><span class="sr-only"><?=$this->transEsc('Book Bag')?>:</span> <strong><?=count($cart->getItems())?></strong> <span class="cart-label"><?=$this->transEsc('items')?></span><span class="sr-only full<?=!$cart->isFull() ? ' hidden' : '' ?>">(<?=$this->transEsc('bookbag_full_msg')?>)</span></span>
+              </a>
+            </li>
+          <?php endif; ?>
+          <?php if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+            <li class="logoutOptions<?php if($account->dropdownEnabled()): ?> with-dropdown<?php endif ?><?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+              <?php /* finc: accessibility fixes in site header #17720 */ ?>
+              <a class="btn" href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>"><i id="account-icon" class="fa fa-home" aria-hidden="true"></i> <span class="hidden-sm-md"><?=$this->transEsc("Your Account")?></span><span class="visible-sm-md-only"><?=$this->transEsc("Account")?></span>
+              </a>
+            </li>
+            <?php if($account->dropdownEnabled()): ?>
+              <li id="login-dropdown" class="dropdown<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+                <a href="#" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>
+                <div class="dropdown-menu">
+                  <?=$this->render('myresearch/menu'); ?>
+                </div>
+              </li>
+            <?php endif; ?>
+            <li class="logoutOptions<?php if(!$account->isLoggedIn()): ?> hidden<?php endif ?>">
+              <a href="<?=$this->url('myresearch-logout')?>" class="logout btn"><i class="fa fa-sign-out" aria-hidden="true"></i> <span><?=$this->transEsc("Log Out")?></span></a>
+            </li>
+            <li id="loginOptions"<?php if($account->isLoggedIn()): ?> class="hidden"<?php endif ?>>
+              <?php if ($account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                <a class="btn" href="<?=$this->url('myresearch-userlogin')?>"><i class="fa fa-sign-in" aria-hidden="true"></i> <span><?=$this->transEsc("Institutional Login")?></span></a>
+              <?php else: ?>
+                <a class="btn" href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><i class="fa fa-sign-in" aria-hidden="true"></i> <span><?=$this->transEsc("Login")?></span></a>
+              <?php endif; ?>
+            </li>
+          <?php endif; ?>
+
+          <?php if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+            <li class="theme dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <?php foreach ($this->layout()->themeOptions as $current): ?>
+                  <li<?=$current['selected'] ? ' class="active"' : ''?>>
+                    <a href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['ui' => $current['name']])) ?>" rel="nofollow">
+                      <?=$this->transEsc($current['desc']) ?>
+                    </a>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            </li>
+          <?php endif; ?>
+
+          <?php /* finc: adapts langmenu #23496 */ ?>
+          <?php 
+            $allLangs = $this->layout()->allLangs;
+            $userLang = $this->layout()->userLang;
+          ?>
+          <?php if (count($allLangs) > 1): ?>
+            <li class="language dropdown">
+              <a href="#" class="btn dropdown-toggle<?=count($allLangs) == 2 ? ' hidden' : ''?>" data-toggle="dropdown" aria-controls="langmenu" aria-expanded="false">
+                <?=$this->transEsc("Language")?> <strong class="caret"></strong>
+              </a>
+              <?php /* finc: needs id="langmenu"; adapts langmenu #17599 */ ?>
+              <ul id="langmenu" class="dropdown-menu<?=count($allLangs) == 2 ? ' oneLanguage' : ''?>">
+                <?php foreach ($allLangs as $langCode => $langName): ?>
+                  <?php /* finc: more accessibility rework #17908 */ ?>
+                  <?php if ($langCode !== $userLang) : ?>
+                    <li>
+                      <a class="btn" href="<?=$this->escapeHtmlAttr($this->url()->addQueryParameters(['lng' => $langCode])) ?>" rel="nofollow">
+                        <?php /* finc: accessibility fixes in site header #17720 */ ?>
+                        <span class="visible-sm-md-only">
+                          <?=$langCode?>
+                        </span>
+                        <span class="hidden-sm-md">
+                          <?=$this->displayLanguageOption($langName)?>
+                        </span>
+                      </a>
+                    </li>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </ul>
+              <?php /* finc: adapts langmenu #23496 - END */ ?>
+            </li>
+          <?php endif; ?>
+        </ul>
+      </nav>
+    </div>
+  <?php endif; ?>
+  <?php /* finc: searchbox: we use searchbox here so it becomes part of the sticky header,
+        we need to place this after the navbar-right for anything but mobile  - see flex-container in SCSS:*/ ?>
+  <?php if ($this->layout()->searchbox !== false): ?>
+  <?php /* finc: removes class 'navbar' #17830 */ ?>
+    <div class="search container">
+      <?php /* finc: removes role="search" here - must be place on form element surrounding the search box - CK */ ?>
+      <div class="nav searchbox hidden-print">
+        <?=$this->layout()->searchbox ?>
+      </div>
+    </div>
+  <?php endif; ?>
+  <?php /* finc: searchbox - END */ ?>
+</div>
+<?php /* finc: If you want to use searchbox in a separate row, insert it here as in bootstrap theme - CK */ ?>
+
+<?php /* finc: If you want to use searchbox in a separate row, insert it here as in bootstrap theme - CK */ ?>
+<?=$this->render('notifications/maintenance.phtml')?>
+<!-- finc: header - END -->

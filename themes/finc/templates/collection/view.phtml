@@ -1,0 +1,129 @@
+<!-- finc: collection - view -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+ * renders collection record view
+modified for finc:
+ * moves offcanvas-toggler #22956
+ * removes class 'solo', adds else with class="mainbody left" #22956
+ * moves toolbar for top area; adds id for accessibility; uses nav for sidebar #23430
+ * uses '.mainbody' class, so we do NOT get full width display (see TUF with closed record details, collection has to move up) #22956
+ * changes 'name' to 'id' #22956
+ * adds class 'collection' #22956
+ * adds current tab to breadcrumbs if applicable
+ * adds <nav> wrapper for sidebar
+ * shows  sidebar (rendered as tab) outside of '.mainbody' class #22956
+ * adds aria-hidden="true"
+configured in: {}
+ */
+?>
+<?php
+  // Set up standard record scripts:
+  $this->headScript()->appendFile("record.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  // Activate Syndetics Plus if necessary:
+  if ($this->syndeticsPlus()->isActive()) {
+    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  }
+  // Add any extra scripts the tabs require:
+  foreach ($this->tabsExtraScripts as $script) {
+    $this->headScript()->appendFile($script);
+  }
+
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+    $this->headLink()->appendAlternate($this->recordLinker()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Set flag for special cases relating to full-width hierarchy tree tab:
+  $tree = (strtolower($this->activeTab) == 'hierarchytree');
+
+  // Set up breadcrumbs:
+  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
+  if (!empty($lastSearch)) {
+      $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+  } else {
+      $this->layout()->breadcrumbs = '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> ';
+  }
+  $this->layout()->breadcrumbs .= '<li class="active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
+?>
+
+<?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+  <?=$this->render('record/prev-next.phtml'); ?>
+<?php endif; ?>
+
+<?php /* finc: adds offcanvas-toggler here #22956 */ ?>
+<span class="offcanvas-toggler">
+  <a class="search-filter-toggle top visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?= $this->transEscAttr('sidebar_expand') ?>">
+    <?=$this->transEsc('offcanvas-toggler-record-view')?>
+  </a>
+</span>
+
+<?php /* finc: does not pull the toolbar in here but below, CK #22956 */ ?>
+<?php /* <?=$this->record($this->driver)->getToolbar()?> */ ?>
+
+<div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <?php /* finc: removes class 'solo', adds else with class="mainbody left" #22956 */ ?>
+  <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?>"<?php else: ?> class="mainbody left"<?php endif; ?>>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+    <?=$this->flashmessages()?>
+    <?=$this->record($this->driver)->getCollectionMetadata()?>
+  </div>
+</div>
+
+<?php /* finc: pulls the first toolbar for top area here; adds id for accessibility; uses 'nav' for sidebar #23430 */ ?>
+<nav class="<?= $this->layoutClass('sidebar') ?>" id="myresearch-sidebar" aria-label="<?= $this->transEscAttr('sidebar_expand_collections') ?>">
+  <?= $this->record($this->driver)->getToolbar() ?>
+</nav>
+
+<?php /* finc: uses '.mainbody' class, so we do NOT get full width display (see TUF with closed record details, collection has to move up) #22956 */ ?>
+<div class="collection-hierarchy mainbody">
+    <?php if (count($this->tabs) > 0): ?>
+      <?php /* finc: changes 'name' to 'id' #22956 */ ?>
+      <a id="tabnav"></a>
+      <?php /* finc: adds class 'collection' #22956 */ ?>
+      <div class="record-tabs collection">
+        <ul class="nav nav-tabs">
+          <?php foreach ($this->tabs as $tab => $obj): ?>
+            <?php
+              $desc = $obj->getDescription();
+              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tabClasses = [ 'record-tab', $tabName ];
+              if (0 === strcasecmp($this->activeTab, $tab)) {
+                if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
+                  $tabClasses[] = 'active';
+                }
+                $tabClasses[] = 'initiallyActive';
+                // add current tab to breadcrumbs if applicable:
+                $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+                $activeTabObj = $obj;
+              }
+              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
+              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
+            ?>
+            <li class="<?=implode(' ', $tabClasses)?>" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+              <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
+                <?=$this->transEsc($desc)?>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+  </div>
+
+  <?php /* finc: shows  sidebar (rendered as tab) outside of '.mainbody' class #22956 */ ?>
+  <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
+    <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
+      <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+    </div>
+  <?php endif; ?>
+
+  <?php /* finc: adds aria-hidden="true" */ ?>
+  <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
+
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
+<!-- finc: collection - view - END -->

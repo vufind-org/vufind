@@ -1,0 +1,131 @@
+<!-- finc: recordtab - holdingsils - standard -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds $checkEmailHold
+ * removes transEsc("Copy") and number from TH, #13606
+ * adds class 'availability-column'
+ * adds code for responsive data table - CK #17621
+ * adds class .hidden-print
+ * additional insert, newspaper orders via mail - CK #6096
+ * uses empty status and transEsc 'Unavailable'
+ * removes classname small #14450
+ * keeps nbsp + ndash or due date text will bump into alert
+ * price tags can be anywhere but seem to be required for product
+ * adds "Volume Holdings"
+configured in: {}
+ */
+?>
+<?php /* This is a new file introduced in VF5 - it originated from the old holdingsils file, for history, check there, CK */ ?>
+<?php if (strlen($holding['barcode'] ?? '') > 0): ?>
+  <?php
+    $check = $holding['check'] ?? false;
+    $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
+    $checkILLRequest = $holding['checkILLRequest'] ?? false;
+    // finc: adds $checkEmailHold #6096 - CK
+    $checkEmailHold = (isset($holding['checkEmailHold']) && $holding['checkEmailHold']);
+  ?>
+  <tr vocab="http://schema.org/" typeof="Offer">
+    <?php /* finc: removes transEsc("Copy") and number from TH, #13606 - VE */ /*
+    <th class="copy-number"><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($holding['number'])?>
+      <?php if ($holding['enumchron'] ?? false): ?>
+        <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
+      <?php endif; ?>
+    </th>
+    */ ?>
+    <?php /* finc: adds class 'availability-column' */ ?>
+    <?php /* finc: adds code for responsive data table - CK #17621 */ ?>
+    <td data-title="<?= $this->transEscAttr('Availability') ?>" class="availability-column">
+      <?php if ($holding['reserve'] == "Y"): ?>
+        <link property="availability" href="http://schema.org/InStoreOnly">
+        <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br>
+      <?php endif; ?>
+      <?php if ($holding['use_unknown_message'] ?? false): ?>
+        <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
+      <?php else: ?>
+        <?php if ($holding['availability'] ?? false): ?>
+          <?php /* Begin Available Items (Holds) */ ?>
+          <?php /* finc: adds break before and after span */ ?>
+          <br><span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock"></span><br>
+          <?php if ($holding['link'] ?? false): ?>
+            <?php /* finc: adds class .hidden-print CK */ ?>
+            <a class="<?=$check ? 'checkRequest ' : ''?>placehold hidden-print" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+          <?php endif; ?>
+          <?php if ($holding['storageRetrievalRequestLink'] ?? false): ?>
+            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+          <?php endif; ?>
+          <?php if ($holding['ILLRequestLink'] ?? false): ?>
+            <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+          <?php endif; ?>
+          <?php /* finc: additional insert, newspaper orders via mail - CK #6096 */ ?>
+          <?php if (isset($holding['emailHoldLink']) && $holding['emailHoldLink']): ?>
+            <a class="<?= $checkEmailHold ? 'checkEmailHold ' : '' ?>placeEmailHold " data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['emailHoldLink']))?>">
+              <i class="fa fa-flag"></i>&nbsp;<?= $this->transEsc($checkEmailHold ? "EmailHold::email_hold_check_text" : "EmailHold::email_hold_place_text") ?>
+            </a>
+          <?php endif; ?>
+          <?php /* finc-specific insert - #6096 - END */ ?>
+        <?php else: ?>
+          <?php /* Begin Unavailable Items (Recalls) */ ?>
+          <?php /* finc: uses empty status and transEsc 'Unavailable', CK */ ?>
+          <?php /* finc: adds break before and after span */ ?>
+          <br><span class="text-danger"><?=empty($holding['status']) ? $this->transEsc("Unavailable") : $this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span><br>
+          <?php /* finc: removes classname small #14450 */ ?>
+          <?php if ($holding['returnDate'] ?? false): ?>&ndash; <span><?=$this->escapeHtml($holding['returnDate'])?></span><?php endif; ?>
+          <?php if ($holding['duedate'] ?? false): ?>
+            <?php /* finc: keeps nbsp + ndash or due date text will bump into alert, CK */ ?>
+            <?php /* finc: removes classname small #14450 */ ?>
+            &nbsp;&ndash; <span><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($holding['duedate'])?></span>
+          <?php endif; ?>
+          <?php if (($holding['requests_placed'] ?? 0) > 0): ?>
+            <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($holding['requests_placed'])?></span>
+          <?php endif; ?>
+          <?php if ($holding['link'] ?? false): ?>
+            <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+          <?php endif; ?>
+          <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
+        <?php endif; ?>
+      </td>
+      <?php /* finc: adds code for responsive data table - CK #17621 */ ?>
+      <td data-title="<?= $this->transEscAttr('Notes') ?>" class="notes">
+        <?php if (isset($holding['item_notes'])): ?>
+          <div class="item-notes">
+            <b><?=$this->transEsc("Item Notes")?>:</b>
+            <ul>
+              <?php foreach ($holding['item_notes'] as $item_note): ?>
+                <li><?=$this->escapeHtml($item_note) ?></li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endif; ?>
+      <?php endif; ?>
+      <?php /* Embed item structured data: library, barcode, call number */ ?>
+      <?php if ($holding['location'] ?? false): ?>
+        <meta property="seller" content="<?=$this->escapeHtmlAttr($holding['location'])?>">
+      <?php endif; ?>
+      <?php if ($holding['barcode'] ?? false): ?>
+        <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($holding['barcode'])?>">
+      <?php endif; ?>
+      <?php if ($holding['callnumber'] ?? false): ?>
+        <meta property="sku" content="<?=$this->escapeHtmlAttr($holding['callnumber'])?>">
+      <?php endif; ?>
+      <?php /* Declare that the item is to be borrowed, not for sale */ ?>
+      <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut">
+      <link property="itemOffered" href="#record">
+      <?php /* finc: price tags can be anywhere but seem to be required for product */ ?>
+      <meta property="price" content="0">
+      <meta property="priceCurrency" content="€">
+      <?php /* finc: adds "Volume Holdings" */ ?>
+      <?php if (isset($holding['textfields'])): foreach ($holding['textfields'] as $textFieldName => $textFields): ?>
+        <span>
+        <?php foreach ($textFields as $current): ?>
+          <?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName)) ?>: <?= $this->escapeHtml($current) ?><br>
+        <?php endforeach; ?>
+        </span>
+      <?php endforeach; endif; ?>
+    </td>
+  </tr>
+<?php endif; ?>
+<!-- finc: recordtab - holdingsils - standard - END -->

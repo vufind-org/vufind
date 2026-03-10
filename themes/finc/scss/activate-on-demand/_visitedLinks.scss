@@ -1,0 +1,69 @@
+@mixin plugin-visited-links {
+  // You may also copy it to your theme and fine-tune it further (e.g. 'a:not(.btn):not(.text) ....'
+
+  // By changing these variables in your own theme, you can override the !defaults
+  // This _does not_ re-style visited facets, filters, alerts
+  $a-visited-color: $steel !default;
+  $a-visited-color-standard-link-color: $steel !default;
+  $state-link-hover-color: $black !default;
+  $a-visited-color-alerts: $jet !default;
+  $a-visited-color-active-facets: $a-visited-color-alerts !default;
+
+  // define text-decoration and visited link color _for all but_ buttons, facets and breadcrumbs
+  a:not(.btn):not(.text) {
+    text-decoration: $link-text-decoration;
+
+    // set different color for links already visited
+    &:visited {
+      color: $a-visited-color;
+
+      .breadcrumb &,
+      .nav &,
+      .alert &,
+      .savedLists & {
+        color: unset;
+
+        &:focus,
+        &:hover {
+          color: $a-visited-color;
+        }
+      }
+
+      .alert &,
+      .savedLists & {
+        &:focus,
+        &:hover {
+          color: $a-visited-color-alerts;
+        }
+      }
+
+      &.active {
+        .facet & {
+          color: $a-visited-color-active-facets;
+
+          &:focus,
+          &:hover {
+            color: $sidebar-facet-active-hover-color;
+          }
+        }
+      }
+    }
+  }
+
+  // Selected/active filters on top
+  .sidebar .facet.active,
+  .sidebar a.active {
+
+    &:visited {
+      // keep important
+      color: $sidebar-facet-active-color !important;
+
+      &:focus,
+      &:hover {
+        // keep important
+        color: $sidebar-facet-active-hover-color !important;
+      }
+    }
+  }
+}
+

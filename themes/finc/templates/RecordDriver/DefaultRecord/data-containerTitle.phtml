@@ -1,0 +1,25 @@
+<!-- finc: RecordDriver - DefaultRecord - data-containerTitle -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * adds $data, 'JournalTitle' #21657
+ * uses tryMethod() for special error handling
+configured in: {}
+ */
+?>
+<?php
+  // finc: uses tryMethod() for special error handling
+  $containerSource = $this->driver->tryMethod('getSourceIdentifier');
+  $containerID = $this->driver->tryMethod('getContainerRecordID');
+  $ref = $this->driver->tryMethod('getContainerReference');
+  $linkEsc = $containerID
+    // finc: adds $data, 'JournalTitle' #21657
+    ? $this->escapeHtmlAttr($this->recordLinker()->getUrl("$containerSource|$containerID", $data, 'JournalTitle'))
+    : $this->record($this->driver)->getLink('journaltitle', $data);
+?>
+<a href="<?=$linkEsc?>"><?=$this->escapeHtml($data)?></a>
+<?=empty($ref) ? '' : $this->escapeHtml($ref)?>
+<!-- finc: RecordDriver - DefaultRecord - data-containerTitle - END -->

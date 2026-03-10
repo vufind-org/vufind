@@ -1,0 +1,197 @@
+// New Stylesheet for finc (VF6.x up)
+// HOW TO: Create a theme-named SCSS for your house and import that file into compiled.scss
+
+// *****************************************************************
+// **************************** Imports ****************************
+// *****************************************************************
+
+// Make sure imports are grouped correctly so variables can be loaded!
+@import 'customVariables';
+
+// Import Bootstrap here
+@import '../../bootstrap5/scss/bootstrap';
+@import 'customMixins';
+@import 'common';
+@import 'components/accordions-collapse-elements';
+@import 'components/alerts';
+@import 'components/bookbag';
+@import 'components/breadcrumbs';
+@import 'components/bulk-action-buttons';
+@import 'components/buttons';
+@import 'components/carousel-similar-items-channels-slider';
+@import 'components/dropdowns';
+@import 'components/footer';
+@import 'components/forms';
+@import 'components/header-active-filters';
+@import 'components/header-navbar';
+@import 'components/headings';
+@import 'components/hierarchy-tree';
+@import 'components/home-page';
+@import 'components/hotfixes';
+@import 'components/labels';
+@import 'components/media-styled-based-account-icons-and-status-colors';
+@import 'components/modal';
+@import 'components/offcanvas';
+@import 'components/pagination';
+@import 'components/record';
+@import 'components/record-tabs';
+@import 'components/resolver-links';
+@import 'components/result-list';
+@import 'components/search';
+@import 'components/search-control-elements';
+@import 'components/sidebar';
+@import 'components/tables';
+// @import 'components/admin-panel';
+// @import 'components/amsl';
+
+// *****************************************************************
+// ************ Activate On Demand - Plugins ***********************
+// *****************************************************************
+
+// see Variables at 'Activate On Demand - Plugins' Section in Custom Variables
+
+// 1. To make bulk action buttons visible on small devices (Accessibility)
+@import 'activate-on-demand/bulkaction-visible-xs';
+@if $activate-on-demand-bulkaction-visible-xs {
+  @include plugin-bulkaction-visible-xs;
+}
+// 2. To make visited links use a different color
+@import 'activate-on-demand/visitedLinks';
+@if $activate-on-demand-visited-links {
+  @include plugin-visited-links;
+}
+// 3. Hide Checkboxes in facets in siedebar on tables sizes
+@import 'activate-on-demand/sidebar-filter-hide-checkbox';
+@if $activate-on-demand-sidebar-filter-hide-checkbox {
+  @include plugin-sidebar-filter-hide-checkbox;
+}
+// 4. Show BS3 breakepoint debug bar
+@import 'activate-on-demand/debug-bar';
+@if $activate-on-demand-debug-bar {
+  @include plugin-debug-bar;
+}
+// 5. .............
+
+// *****************************************************************
+// ********** HTML basics ******************************************
+// *****************************************************************
+// Use this section to style your document body/html
+// including top-padding to accommodate for navbar height
+
+// Allow us to use sections that act as rows
+section {
+  @include make-row;
+}
+
+// Prevent content from jumping when changing tabs in record view
+html {
+  overflow-y: scroll;
+}
+
+body {
+  // fix modals adding a padding-right #13625
+  padding-right: 0 !important;
+
+  // Add top-padding to body to accommodate fixed navbar; -- padding should equal navbar-height --
+  // the home page, however, has a lower navbar because there is no breadcrumbs there
+  // for mobile
+  padding-top: $navbar-height-xs;
+
+  // for XS
+  @media (max-width: $screen-xs-max) {
+    padding-top: 8.5rem;
+  }
+
+  // for tablet
+  @media (min-width: $screen-sm-min) {
+    padding-top: $navbar-height-sm;
+  }
+
+  // for large
+  @media (min-width: $screen-md-min) {
+    padding-top: $navbar-height;
+  }
+
+  // for print
+  @media print {
+    padding-top: 0;
+  }
+}
+
+// *****************************************************************
+// ********** Main Content Container (.main, .container, footer ...*
+// *****************************************************************
+
+.main .container,
+.main .container-fluid,
+footer {
+  // sets background and adds border for main content, also applies to footer
+  background-color: $main-bg;
+  border: $border-default-styles;
+  padding-bottom: $grid-gutter-width * .75;
+
+  @media print {
+    border: 0;
+    padding: 0;
+  }
+}
+
+// *****************************************************************
+// ************ .mainbody container ********************************
+// *****************************************************************
+// .mainbody is the container for the entire search results block,
+// the structure is
+// .main
+//   #content.container
+//     .mainbody.search-results-col
+// it does _not_ include the sidebar
+.mainbody {
+  // Add top padding to sidebar and .mainbody content
+  // for better looks, for sidebar see sidebar.scss;
+  padding-top: $mainbody-sidebar-top-padding;
+
+  @media (max-width: $screen-xs-max) {
+    padding-top: $mainbody-sidebar-top-padding-xs;
+    width: 100%;
+  }
+}
+
+#content {
+  // Push content below header
+  @media (max-width: $screen-xs-max) {
+    padding-top: $content-xs-padding-top;
+  }
+}
+
+
+// *****************************************************************
+// ********** Document Delivery Service (DDS) **********************
+// *****************************************************************
+// Error field
+.error-field {
+  color: $brand-danger;
+  // font-size: ($font-size-base * .95);
+  font-weight: 500;
+  line-height: 200%;
+}
+
+// *****************************************************************
+// ********** xxxx) **********************
+// *****************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

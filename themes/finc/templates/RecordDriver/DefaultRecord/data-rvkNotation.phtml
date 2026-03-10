@@ -1,0 +1,32 @@
+<!-- finc: RecordDriver - DefaultRecord - data-rvkNotation -->
+<?php
+/**
+origin: finc; partial copied from /finc/templates/RecordTab/topics.phtml
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php foreach ($data as $i => $item): ?>
+  <div>
+    <span>
+      <a href="<?=$this->record($this->driver)->getLink('rvk', $item['rvk'])?>">
+        <?=$item['rvk']?>
+      </a>
+    </span>
+
+    <?php if(isset($item['name'])): ?>
+      <a class="toggle" role="button" data-toggle="collapse" href="#collapse_rvk_<?=$i?>" aria-expanded="false" aria-controls="collapse_rvk_<?=$i?>">
+        <?=$item['name']?>
+      </a>
+    <?php endif; ?>
+
+    <?php if(isset($item['level']) && is_array($item['level'])): ?>
+      <div id="collapse_rvk_<?=$i?>" class="collapse notation">
+        <?=$this->render('Helpers/nestedList.phtml', ['array' => $item['level']]); ?>
+      </div>
+    <?php endif; ?>
+  </div>
+<?php endforeach; ?>
+<!-- finc: RecordDriver - DefaultRecord - data-rvkNotation - END -->

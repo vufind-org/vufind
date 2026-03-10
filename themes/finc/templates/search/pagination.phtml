@@ -1,0 +1,63 @@
+<!-- finc: templates - search - pagination -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * shows  pagination only if there is a minimum of 2 pages #18917
+ * uses aria-label in nav instead of ul
+ * removes role="none" of li-elements
+configured in: {}
+ */
+?>
+<?php /* finc: shows pagination only if there is a minimum of 2 pages #18917 */ ?>
+<?php if ($this->pageCount > 1): ?>
+  <?php /* Adapted to the requirements of https://a11y-style-guide.com/style-guide/section-navigation.html#kssref-navigation-pagination - CK */ ?>
+  <?php /* finc: uses aria-label in nav instead of ul */ ?>
+  <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
+    <?php /* finc: removes role="none" of li-elements */ ?>
+    <ul class="pagination">
+    <?php if (isset($this->previous)): ?>
+      <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
+        <li>
+          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEscAttr('page_first')?>" aria-disabled="true">[1]</a>
+        </li>
+      <?php endif; ?>
+      <li>
+        <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+          <?=$this->transEsc('Prev')?>
+        </a>
+      </li>
+    <?php endif; ?>
+
+    <?php if (count($this->pagesInRange) > 1): ?>
+      <?php foreach ($this->pagesInRange as $page): ?>
+        <?php if ($page != $this->current): ?>
+          <li>
+            <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>" aria-label="<?=$this->transEscAttr('page_no', ['%%page%%' => $page])?>"><?=$page?></a>
+          </li>
+        <?php else: ?>
+          <li class="active" aria-current="page"><span><?=$page?></span></li>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php if (isset($this->next)): ?>
+      <li>
+        <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>" aria-label="<?=$this->transEscAttr('page_next')?>">
+          <?=$this->transEsc('Next');?>
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+      </li>
+      <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
+        <li>
+          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEscAttr('page_last')?>">[<?=$this->pageCount?>]</a>
+        </li>
+      <?php endif; ?>
+    <?php endif; ?>
+  </ul>
+  </nav>
+<?php endif; ?>
+<!-- finc: templates - search - pagination - END -->

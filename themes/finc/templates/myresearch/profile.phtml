@@ -1,0 +1,97 @@
+<!-- finc: myresearch - profile -->
+<?php
+/**
+* origin: vufind/BS3
+* called by view helper/controller:
+* usage:
+* modified for finc:
+ * does not use 'Your Account' offcanvas-toggler here #22293
+ * uses offcanvas-toggler-myresearch #22293
+ * uses h1 instead of h2
+ * Removes part of template responsible for rendering user data from VuFind
+ * database as in finc we only store name/surname/email in database which is
+ * identical to profile data from the ILS shown below. Also gone are action
+ * buttons for password/e-mail change and account deletion as this is all handled
+ * by the ILS as well.
+ * Removes sub-heading and library card selector (should never be used in finc)
+ * shows e-mail here
+ * uses section for sidebar #23430, adds aria-label
+configured in: {}
+ */
+?>
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+
+    // Template for use by the renderArray helper:
+    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
+?>
+
+<?php /* finc: DOES NOT use 'Your Account' offcanvas-toggler here #22293
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+  <?=$this->transEsc('Your Account') ?>
+</a>
+*/ ?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <?php /* finc: uses offcanvas-toggler-myresearch #22293 */ ?>
+  <?=$this->render('RecordDriver/DefaultRecord/offcanvas-toggler-myresearch'); ?>
+  
+  <?php /* finc: uses h1 instead of h2 */ ?>
+  <h1><?=$this->transEsc('Your Profile')?></h1>
+  <?=$this->flashmessages();?>
+
+  <?php
+    /* finc-specific:
+     * Removed part of template responsible for rendering user data from VuFind
+     * database as in finc we only store name/surname/email in database which is
+     * identical to profile data from the ILS shown below. Also gone are action
+     * buttons for password/e-mail change and account deletion as this is all handled
+     * by the ILS as well. */
+  ?>
+
+  <?php if (is_array($this->profile)): ?>
+    <?php /* finc: removesd sub-heading and library card selector (should never be used in finc).
+    <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+    <p>
+      <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
+    </p>
+    */ ?>
+
+    <?php /* Table works without further responsiveness code inserted - CK */ ?>
+    <table class="table table-striped">
+      <?=
+        $this->renderArray(
+            $arrTemplate,
+            $this->profile,
+            [
+              $this->transEsc('First Name') => 'firstname',
+              $this->transEsc('Last Name') => 'lastname',
+              $this->transEsc('Address') . ' 1' => 'address1',
+              $this->transEsc('Address') . ' 2' => 'address2',
+              $this->transEsc('Zip') => 'zip',
+              $this->transEsc('City') => 'city',
+              $this->transEsc('Country') => 'country',
+              // finc: shows  e-mail here
+              $this->transEsc('Email') => 'email',
+              $this->transEsc('Phone Number') => 'phone',
+              $this->transEsc('Mobile Number') => 'mobile_phone',
+              $this->transEsc('Group') => 'group',
+              $this->transEsc('patron_account_expires') => 'expiration_date'
+            ]
+        );
+      ?>
+    </table>
+  <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
+    <?=$this->partial($this->patronLoginView);?>
+  <?php endif; ?>
+</div>
+
+<?php /* finc: uses section for sidebar #23430, adds aria-label */ ?>
+<section class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" aria-label="<?=$this->transEscAttr('MyAccountSidebar') ?>">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile'])?>
+</section>
+<!-- finc: myresearch - profile - END -->

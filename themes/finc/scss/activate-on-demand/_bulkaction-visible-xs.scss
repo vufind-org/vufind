@@ -1,0 +1,26 @@
+@mixin plugin-bulkaction-visible-xs {
+  // Bulk Action Buttons and result list checkboxes get hidden on
+  // mobile in Bootstrap Theme - show them again.
+  // In finc-based themes import this SCSS partial or copy it to your own theme
+
+  @media (max-width: 767px) {
+    .bulkActionButtons,
+    .result .checkbox,
+    .result .record-checkbox,
+    .result .record-number {
+      display: table;
+    }
+
+    .result .checkbox,
+    .result .record-checkbox,
+    .result .record-number {
+      margin-right: .5em;
+    }
+
+    .result,
+    .bulk-action-buttons,
+    .bulkActionButtons {
+      padding-left: 0;
+    }
+  }
+}

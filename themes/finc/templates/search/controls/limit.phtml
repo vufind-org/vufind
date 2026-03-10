@@ -1,0 +1,38 @@
+<!-- finc: search - controls - limit -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * DOES NOT use class 'form-inline' as it messes up the select box
+ * removes classname 'search-result-limit'
+ * adds div with 'limit-inner'
+ * DOES NOT use class 'form-control' as it messes up the select box
+ * adds button for accessibility #18016
+configured in: {}
+ */
+?>
+<?php $limitList = $this->params->getLimitList(); ?>
+<?php if (count($limitList) > 1): ?>
+  <?php /* finc: DOES NOT use class 'form-inline' as it messes up the select box */
+        /* finc: removes classname 'search-result-limit' */ ?>
+  <form class="limit-form" action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" method="get">
+    <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/']);?>
+    <label for="limit"><?=$this->transEsc('Results per page')?></label>
+    <?php /* finc: adds div with 'limit-inner' */ ?>
+    <div class="limit-inner">
+      <?php /* finc: DOES NOT use class 'form-control' as it messes up the select box */ ?>
+      <select id="limit" name="limit" class="jumpMenu">
+        <?php foreach ($limitList as $limitVal => $limitData): ?>
+          <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=$limitData['selected']?' selected="selected"':''?>><?=$this->escapeHtml($limitData['desc'])?></option>
+        <?php endforeach; ?>
+      </select>
+      <?php /* finc: adds button for accessibility #18016 */ ?>
+      <button type="submit" class="btn btn-primary" aria-label="<?=$this->transEscAttr("Set")?>">
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+      </button>
+    </div>
+  </form>
+<?php endif; ?>
+<!-- finc: search - controls - limit - END -->

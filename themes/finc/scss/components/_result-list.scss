@@ -1,0 +1,188 @@
+// Use this for result list styles
+// For Check boxes for bulk actions and bulk action buttons, see bulk-action-buttons.scss
+// Pls. note that the result elements are also used in several myaccount views, such as 'Favorites'
+
+.result-body {
+  @media (min-width: $screen-sm-min) {
+    padding-right: $result-body-right-padding-sm-up;
+  }
+}
+
+// *****************************************************************
+// ************ Media container ************************************
+// *****************************************************************
+
+.record,
+.result {
+  // make sure that results items use max. available space on XS
+  .media {
+    @media (max-width: $screen-sm-max) {
+      padding-left: $result-list-record-result-media-container-xs-sm-padding-left;
+      padding-right: $result-list-record-result-media-container-xs-sm-padding-right;
+    }
+  }
+}
+
+.result {
+  hyphens: $result-list-result-hyphens;
+  // Results padding
+  padding-top: $result-list-result-padding-top;
+  padding-bottom: $result-list-result-padding-bottom;
+  padding-left: $result-list-result-padding-left;
+  // make full width, otherwise ugly look
+  width: $result-list-result-width;
+
+  // remove padding for print
+  @media print {
+    padding: 0;
+  }
+
+  // Alternating colors in search results
+  &:nth-of-type(2n) {
+    background-color: $result-list-result-nth-of-type-2-background-color;
+  }
+
+  .title {
+    // overwrites VF-BS-Theme setting
+    font-size: $result-list-result-title-font-size;
+    // overwrites VF-BS-Theme setting
+    font-weight: $result-list-result-title-font-weight;
+
+    // reset font size for xs
+    @media (max-width: $screen-xs-max) {
+      font-size: $result-list-result-title-xs-font-size;
+    }
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      font-size: $result-list-result-title-sm-font-size;
+    }
+  }
+
+  // Make add-to-cart icon same color as link
+  .cart-link-icon {
+    color: inherit;
+  }
+}
+
+// added for grouping of title and author #24265
+// can be reomoved if we are using the BS version which is including that block
+.result-body,
+.media-body {
+  h2 {
+    font-size: unset;
+    line-height: $line-height-base;
+    margin: 0;
+
+    .authors {
+      display: block;
+    }
+  }
+}
+
+// Record entry-related links in result list, incl. QR codes, public favorites lists etc.
+.result-links {
+  // make sure icons ('add to bookbag', 'add to favs', 'context') align
+  // align 'add to favs' with 'bookbag' (note: bookbag icon is rendered via '.btn-type-add::before')
+  .fa-fw {
+    text-align: $result-links-fa-icons-text-align;
+  }
+
+  // Favorites list in MyAccount: Edit favorites entry
+  .edit.tool,
+  .del-button {
+    a {
+      margin-top: $result-links-favorites-edit-delete-tool-a-margin-top;
+
+      @media (max-width: $screen-sm-max) {
+        margin-top: $result-links-favorites-edit-delete-tool-a-xs-sm-margin-top;
+      }
+    }
+
+    // This is the delete-dropdown with 'yes' or 'no' selectors
+    li a {
+      margin-top: $result-links-favorites-edit-delete-tool-a-submenu-margin-top;
+    }
+  }
+
+  // Delete from favorites
+  // Harmonize behaviour to the edit button
+  .dropdown-toggle {
+    &:focus {
+      @include outline(1px);
+    }
+  }
+
+  // set width to book bag icon
+  .btn-type-add::before,
+  .btn-type-minus::before {
+    margin-right: 0;
+    width: 1.3em;
+  }
+}
+
+// 'Saved in Favorites' box in result list
+.savedLists {
+  &.alert {
+    color: $result-links-saved-in-alert-color;
+  }
+
+  ul {
+    list-style: $result-links-saved-in-ul-list-style;
+    list-style-position: $result-links-saved-in-ul-list-style-position;
+    padding: $result-links-saved-in-ul-padding;
+
+    a {
+      color: $result-links-saved-in-ul-a-color;
+    }
+  }
+}
+
+// Access icons
+// make space for icons
+.media-left {
+  text-align: $result-list-access-icons-container-text-align;
+  width: $result-list-access-icons-container-width;
+
+  @media (max-width: $screen-xs-max) {
+    width: $result-list-access-icons-container-width-xs;
+  }
+
+  //// remove left padding for print
+  @media print {
+    padding-left: 0;
+  }
+}
+
+
+.access-icon {
+  color: $result-list-access-icon-color;
+  text-align: $result-list-access-icon-text-align;
+
+  i {
+    font-size: $result-list-access-icon-i-font-size;
+    width: $result-list-access-icon-i-width;
+  }
+
+  span {
+    font-size: $result-list-access-icon-inner-font-size;
+    padding-top: $result-list-access-icon-inner-padding-top;
+    text-align: $result-list-access-icon-inner-text-align;
+    width: $result-list-access-icon-inner-width;
+
+    @media screen and (max-width: $screen-xs-max) {
+      display: $result-list-access-icon-inner-display-xs;
+    }
+  }
+}
+
+// Favorites lists: list description on top
+.list-desc {
+  margin-top: $favorites-list-desc-margin-top;
+}
+
+// Format labels; media that cannot be found by Solr
+// get a '.format.unknown' label which is redundant
+// and may be confusing, we hide it #26226
+.format.unknown {
+  display: $result-list-format-unknown-display;
+}

@@ -1,0 +1,29 @@
+<!-- finc: Recommend - AlphaBrowseLink -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * uses  <p> and aria-live for alerts #17950, #21622
+ * FIXME: remove file in finc, if the changes are available in VuFind; create PR if not yet done
+configured in: {}
+ */
+?>
+
+<?php
+    $index = $this->recommend->getIndex();
+    $from = $this->recommend->getQuery();
+    $link = $this->translate(
+        'alphabrowselink_html',
+        [
+            '%%index%%' => $this->transEsc('browse_' . $index),
+            '%%from%%' => $this->escapeHtml($from),
+            '%%url%%' => $this->url('alphabrowse-home')
+              . '?from=' . urlencode($from) . '&amp;source=' . urlencode($index)
+        ]
+    );
+?>
+<?php /* finc: uses <p> and aria-live for alerts #17950, #21622 */ ?>
+<p class="alert alert-info" aria-live="polite"><?=$link?></p>
+<!-- finc: Recommend - AlphaBrowseLink - END -->

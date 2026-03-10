@@ -1,0 +1,17 @@
+<!-- finc: RecordDriver - solrMarc data-indexOfGermanPrints -->
+<?php
+/**
+origin: finc/RecordDriver/SolrMarc/
+called by view helper/controller:
+usage:
+modified for finc-SolrMarc:
+ * finc-SolrMarc specific template introduced in #9557 - CK
+configured in: {}
+ */
+?>
+<?php if (!empty($data)): ?>
+  <span property="germanPrintsIndexNumber">
+    <?=$this->escapeHtml($data[0])?>
+  </span>
+<?php endif; ?>
+<!-- finc: RecordDriver - solrMarc data-indexOfGermanPrints - END -->

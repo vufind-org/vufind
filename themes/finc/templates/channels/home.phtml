@@ -1,0 +1,23 @@
+<!-- finc: templates - channels - home -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * styles h1 as sr-only #17596
+configured in: {}
+ */
+?>
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Channels'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Channels') . '</li>';
+?>
+<?php /* finc: styles h1 as sr-only #17596 */?>
+<h1 class="sr-only"><?=$this->transEsc('channel_explore')?></h1>
+
+<?=$this->render('channels/channelList.phtml')?>
+<!-- finc: templates - channels - home - END -->

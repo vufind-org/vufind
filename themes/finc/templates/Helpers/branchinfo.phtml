@@ -1,0 +1,98 @@
+<!-- finc: helpers - branchinfo -->
+<?php
+/**
+* origin: finc
+*
+* called by view helper/controller:
+*
+* usage:
+*   - renders info on the holding branch(es) in access tab of record view,
+*   - example record: any locally available medium
+*
+* modified for finc:
+*
+* configured in: {}
+*/
+?>
+<div class="holding-info">
+  <?php /*
+        Don't use Tables here!
+        Keep the accordion-toggler class! It makes the link appear as an accordion header - CK
+        */
+  ?>
+  <a href="#<?= $info['branchno'] ?>" class="accordion-toggler" data-toggle="collapse" aria-expanded="false"><?= $this->transEsc('Address-Contact-Hours') ?></a>
+  <div id="<?= $info['branchno'] ?>" class="collapse" aria-expanded="false">
+    <div class="branch-address col-xs-12 col-sm-6">
+      <strong><?= $info['branch'] ?></strong><br>
+      <?= $info['streetaddress'] ?><br>
+      <?= $info['postalcode'] ?> <?= $info['city'] ?>
+    </div>
+    <div class="branch-contact col-xs-12 col-sm-6">
+      <?php if (isset($info['tel'])): ?>
+        <?php if (is_array($info['tel'])): ?>
+          <?php foreach ($info['tel'] as $tel): ?>
+            <?= $this->transEsc('Tel') ?>: <?= $tel ?><br>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <?= $this->transEsc('Tel') ?>: <?= $info['tel'] ?><br>
+        <?php endif; ?>
+      <?php endif; ?>
+      <?php if (isset($info['fax'])): ?>
+        <?= $this->transEsc('Fax') ?>: <?= $info['fax'] ?><br>
+      <?php endif; ?>
+      <?php if (
+                isset($info['email'])
+                && is_array($info['email'])
+                && count($info['email']) > 0
+            ): ?>
+        <?php foreach ($info['email'] as $email): ?>
+          <?= $this->transEsc('Email') ?>: <?= $email ?><br>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <?= $this->transEsc('Email') ?>: <?= $info['email'] ?><br>
+      <?php endif; ?>
+      <?php if (isset($info['url'])): ?>
+        <a href="<?= $info['url'] ?>" title="<?= $info['branch'] ?>">
+          <?php if (isset($info['branch'])): ?>
+            <?= $this->transEsc('Link to') ?>
+          <?php else: ?>
+            <?= $info['url'] ?>
+          <?php endif; ?>
+        </a>
+      <?php endif; ?>
+    </div>
+    <div class="branch-hours col-xs-12">
+      <?php if (
+          isset($info['openinghours'])
+          && is_array($info['openinghours'])
+          && count($info['openinghours']) > 0
+      ): ?>
+          <?php if (isset($info['branchpart'])): ?>
+          <strong><?= $info['branchpart'] ?></strong>
+          <?php endif; ?>
+          <?php if ($info['branchno'] != 'zw02'): ?>
+              <?= $this->transEsc('Opening hours') ?><br>
+          <?php endif; ?>
+          <?php foreach ($info['openinghours'] as $line): ?>
+              <?= $line['days'] ?>: <?= $line['open'] ?> &ndash; <?= $line['close'] ?><br>
+          <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+  </div>
+  <div class="row">
+    <?php if (isset($info['note'])): ?>
+      <p class="branch-note alert alert-info">
+        <?php if (is_array($info['note'])): ?>
+          <?php foreach ($info['note'] as $notes): ?>
+            <?= $notes ?>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <?= $info['note'] ?>
+        <?php endif; ?>
+      </p>
+    <?php endif; ?>
+  </div>
+</div>
+
+<?= $this->headScript() ?>
+<!-- finc: helpers - branchinfo - END -->

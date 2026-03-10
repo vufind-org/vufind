@@ -1,0 +1,59 @@
+// Use this for all bookbag-related styles
+// For 'Add to Bookbag' in bulk action buttons see buttons.scss
+
+
+// *****************************************************************
+// ************ Add-to-bookbag icons *******************************
+// *****************************************************************
+
+// overwrite add-to-bookbag icons
+.btn-type-add::before {
+  content: $book-bag-add-to-icon-content;
+}
+
+// overwrite remove-from-bookbag icons
+.btn-type-minus::before {
+  content: $book-bag-remove-from-icon-content;
+}
+
+// override text-align center for set position for bookbag in list of results
+.btn-bookbag-toggle {
+  text-align: unset;
+}
+
+// *****************************************************************
+// ************ Add-to-bookbag in Sidebar **************************
+// *****************************************************************
+
+// Add-to-Bookbag Buttons in SIDEBAR (Record view/details view)
+.sidebar .btn-bookbag-toggle {
+  width: $book-bag-add-to-in-sidebar-toggler-width;
+
+  // Keep padding same as '.record-nav > li > a'
+  // otherwise 'Add to Bookbag' in Record View will be out of line
+  a {
+    background: $book-bag-add-to-in-sidebar-toggler-background;
+    border-radius: $book-bag-add-to-in-sidebar-toggler-border-radius;
+    // make 'Add to Bookbag' in Record View look the same as other links
+    color: $book-bag-add-to-in-sidebar-toggler-color;
+    padding: $book-bag-add-to-in-sidebar-toggler-padding;
+    // lend this the same look as the other links
+    text-decoration: $book-bag-add-to-in-sidebar-toggler-text-decoration;
+
+    @media (max-width: $screen-sm-max) {
+      padding: $record-view-toolbar-button-padding $record-view-toolbar-button-padding $record-view-toolbar-button-padding $record-view-toolbar-button-padding-add-to-bookbag;
+      text-align: left;
+    }
+  }
+}
+
+
+
+// *****************************************************************
+// ************ Bookbag in Lighbox/on sep. Page ********************
+// *****************************************************************
+
+// Items list in bookbag
+.cart ul li {
+  margin-bottom: $book-bag-list-item-margin-bottom;
+}

@@ -1,0 +1,125 @@
+// Use this for all carousel and channel element styles
+
+// *****************************************************************
+// ************ Carousels ******************************************
+// *****************************************************************
+
+.similar-tab.active {
+  // Make room for indicator buttons
+  margin-bottom: $similar-items-carousel-tab-active-margin-bottom;
+  // Make room for Pause button
+  margin-top: $similar-items-carousel-tab-active-margin-top;
+}
+
+.carousel-pause-button,
+.carousel-pause-button.focus {
+  border-radius: $similar-items-carousel-pause-button-border-radius;
+  border: $similar-items-carousel-pause-button-border;
+  left: $similar-items-carousel-pause-button-left-distance;
+  top: $similar-items-carousel-pause-button-top-distance;
+  z-index: $similar-items-carousel-pause-button-z-index;
+}
+
+.carousel-control {
+  color: $carousel-control-elements-color;
+  text-shadow: $carousel-control-elements-text-shadow;
+
+  &.left,
+  &.right {
+    background-image: $carousel-control-elements-left-right-background-image;
+
+    &:focus {
+      background-image: $carousel-control-elements-left-right-background-image-hover-background-image;
+      color: $carousel-control-elements-left-right-background-image-hover-color;
+    }
+
+    &:hover {
+      background-image: $carousel-control-elements-left-right-background-image-hover-background-image;
+      color: $carousel-control-elements-left-right-background-image-hover-color;
+    }
+  }
+
+  &.left {
+    margin-left: $carousel-control-elements-left-margin;
+  }
+
+  &.right {
+    margin-right: $carousel-control-elements-right-margin;
+  }
+}
+
+.carousel-inner {
+  margin-left: $carousel-control-inner-left-margin;
+}
+
+#similar-items-carousel .item {
+  padding: $carousel-item-padding;
+}
+
+
+// ID selector required for specificity
+#similar-items-carousel .carousel-indicators {
+  bottom: $similar-items-carousel-indicators-bottom-distance;
+
+  li {
+    border-color: $similar-items-carousel-indicators-li-border-color;
+    border-radius: $similar-items-carousel-indicators-li-border-radius;
+    box-shadow: $similar-items-carousel-indicators-li-box-shadow;
+    height: $similar-items-carousel-indicators-li-height;
+    width: $similar-items-carousel-indicators-li-width;
+  }
+}
+
+.carousel-indicators .active {
+  box-shadow: $similar-items-carousel-indicators-active-box-shadow;
+}
+
+
+// *****************************************************************
+// ************ Channels *******************************************
+// *****************************************************************
+.slick-arrow:not(.slick-disabled).slick-next,
+.slick-arrow:not(.slick-disabled).slick-prev {
+  &:focus::before,
+  &:hover::before {
+    @include outline(dotted, 2px, $input-border-focus);
+
+    color: $slick-arrow-hover-color;
+  }
+}
+
+.slick-next,
+.slick-prev {
+  // increase size for accessibility, keep !important
+  height: $navigation-element-default-height !important;
+  width: $navigation-element-default-height !important;
+  // raise icon over book covers
+  z-index: 3000;
+
+  // Icon size
+  &::before,
+  &::before {
+    // keep !important
+    font-size: $slick-next-prev-icon-font-size !important;
+  }
+}
+
+.slick-next {
+  // keep !important
+  right: $slick-next-right-position !important;
+
+  @media (max-width: $screen-sm-max) {
+    right: $slick-next-right-position-xs-sm !important;
+  }
+}
+
+.slick-prev {
+  // keep !important
+  left: $slick-prev-left-position !important;
+
+
+  @media (max-width: $screen-sm-max) {
+    left: $slick-prev-left-position-xs-sm !important;
+  }
+}
+

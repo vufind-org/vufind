@@ -1,0 +1,88 @@
+// Use this for all record tabs element styles (record view)
+
+// *****************************************************************
+// ************ Record tabs general ********************************
+// *****************************************************************
+
+// Add padding-left to tabs area
+.record-tabs {
+  padding-left: $record-tabs-padding-left;
+
+  @media (max-width: $screen-xs-max) {
+    padding-left: $record-tabs-padding-left-xs;
+  }
+
+  .nav-tabs a {
+    text-decoration: $record-tabs-nav-text-decoration;
+  }
+}
+
+// Add left and right borders
+.tab-content {
+  border-bottom: 1px solid $nav-tabs-border-color;
+  border-left: 1px solid $nav-tabs-border-color;
+  border-right: 1px solid $nav-tabs-border-color;
+  padding: $record-tabs-tab-content-padding;
+
+  // make long ai-Links break to prevent overspilling content on XS
+  a {
+    word-break: $record-tabs-tab-content-a-word-break;
+  }
+
+  // Tab-content active needs to display as 'inline-block'
+  // to show the border correctly (or content will bleed over)
+  > .active {
+    display: $record-tabs-tab-content-a-active-display;
+    // make tables inside tabs use full width
+    width: $record-tabs-tab-content-a-active-width;
+  }
+}
+
+.record-tab.active {
+  .load-tab-content {
+    display: none;
+  }
+}
+
+// *****************************************************************
+// ************ Holdings/access tab ********************************
+// *****************************************************************
+
+.holdings-tab {
+  // Collapsible element - branch info, opening hours etc
+  .collapse.in {
+    padding-left: $record-tabs-holdings-collapse-padding-left;
+  }
+
+  // increase 'line height' for links to improve readability
+  &.tab-pane {
+    ul {
+      margin-top: $record-tabs-holdings-tab-pane-ul-margin-top;
+      padding-left: $record-tabs-holdings-tab-pane-ul-padding-left;
+    }
+
+    li {
+      margin-bottom: $record-tabs-holdings-tab-pane-li-margin-bottom;
+    }
+  }
+}
+
+// Format items in availability column (td) of the tables in the holdings tab for XS
+.availability-column {
+  a {
+    @media (max-width: $screen-sm-max) {
+      display: $record-tabs-availability-column-a-xs-sm-display;
+      margin-top: $record-tabs-availability-column-a-xs-sm-margin-top;
+      word-break: $record-tabs-availability-column-a-xs-sm-word-break;
+    }
+  }
+
+  // add newline after every span and every link
+  a,
+  span {
+    &::after {
+      content: $record-tabs-availability-column-a-span-after-content;
+      white-space: $record-tabs-availability-column-a-span-after-white-space;
+    }
+  }
+}

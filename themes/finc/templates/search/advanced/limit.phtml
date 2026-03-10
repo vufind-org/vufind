@@ -1,0 +1,35 @@
+<!-- finc: search - advanced - limit -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * specific defaultLimit
+ * adds label 'Limit To'
+configured in: {}
+ */
+?>
+<?php
+    // Set up convenience variables:
+    $limitList = $this->options->getLimitOptions();
+
+    // If a previous limit was used, make that the default; otherwise, use the "default default"
+    $lastLimit = $this->searchMemory()->getLastLimit($this->options->getSearchClassId());
+    $defaultLimit = empty($lastLimit) ? $this->options->getDefaultLimit() : $lastLimit;
+    // finc-specific defaultLimit
+    $this->headScript()->appendScript("var defaultLimit = $defaultLimit");
+?>
+<?php if (count($limitList) > 1): ?>
+  <fieldset class="limits">
+    <legend><?=$this->transEsc('Results per page')?></legend>
+    <?php /* finc: adds label 'Limit To' */ ?>
+    <label for="limit"><?=$this->transEsc('Limit To')?></label>
+    <select id="limit" name="limit" class="form-control">
+      <?php foreach ($limitList as $limitVal): ?>
+        <option value="<?=$this->escapeHtmlAttr($limitVal)?>" <?=($limitVal == $defaultLimit) ? 'selected="selected"' : ''?>><?=$this->escapeHtml($limitVal)?></option>
+      <?php endforeach; ?>
+    </select>
+  </fieldset>
+<?php endif; ?>
+<!-- finc: search - advanced - limit - END -->

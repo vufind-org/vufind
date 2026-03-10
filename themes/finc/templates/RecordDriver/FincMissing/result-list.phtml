@@ -1,0 +1,82 @@
+<!-- finc: RecordDriver - FincMissing - result-list -->
+<?php
+/**
+origin: finc/RecordDriver/DefaultRecord/result-list.phtml
+called by view helper/controller:
+usage:
+ * renders missing records in FincMissing/result-list.phtml
+ * this is used for bulk printing display only
+ ** (e.g. have a record in favorites that doesn't exist anymore,
+ ** then select all in page and select 'print')
+ * removes all elements here that we don't need for Missing Items!
+ ** compare the rest with RecordDriver/defaultRecord/result-list
+ modified for finc-FincMissing:
+ * does not use $describedById
+ * adds class 'missing'
+ * does not use links as they would lead nowhere, uses span instead
+ * does not display authors
+ * does not display formats nor previews nor other details
+ * does not display any interaction buttons
+configured in: {}
+ */
+?>
+<?php /* compare with finc/RecordDriver/DefaultRecord/result-list.phtml during updates */ ?>
+<?php
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLinker()->getUrl($this->driver));
+  $cover = $coverDetails['html'];
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  /* finc-FincMissing does not use $describedById */ /*
+  $describedById = $this->record($this->driver)->getTitleDescribedById(); */
+  if ($cover):
+    ob_start(); ?>
+    <?php /* finc: adds aria-hidden */ ?>
+    <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>" aria-hidden="true">
+      <?=$cover ?>
+    </div>
+    <?php $thumbnail = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
+  <?php /* finc: shows  finc style-based icons */ ?>
+<?php elseif ($this->record($this->driver)->showStyleBasedIcons()): ?>
+  <?php ob_start(); ?>
+  <?php /* finc-FincMissing adds class 'missing' */ ?>
+  <div class="media-<?=$thumbnailAlignment?> record-icon missing">
+    <?=$this->record($this->driver)->getRecordIcon()?>
+  </div>
+  <?php $thumbnail = ob_get_contents(); ?>
+  <?php ob_end_clean(); ?>
+  <?php /* finc: shows  finc style-based icons - END */ ?>
+<?php endif; ?>
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+<div class="media">
+  <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <?php endif ?>
+  <div class="media-body">
+    <div class="result-body">
+      <?php /* finc: adds h2-element for title and author #24265
+        forward compatibility with VuFind10 PR2958 */ ?>
+      <h2>
+        <?php /* finc-FincMissing does not use links for missing records as they would lead nowhere, uses span instead - CK */ ?>
+        <?php /* finc-FincMissing does not use $describedById */ ?>
+        <span href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="title getFull" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>" lang="">
+          <?=$this->record($this->driver)->getTitleHtml()?>
+        </span>
+        <?php /* finc-FincMissing: We don't display authors */ ?>
+      </h2>
+
+      <?php /* finc-FincMissing: We don't display formats nor previews nor other details for missing records - CK */ ?>
+
+    </div>
+    <div class="result-links hidden-print">
+      <?php /* finc-FincMissing: We don't display any interaction buttons for missing records - CK */ ?>
+
+      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
+    </div>
+  </div>
+  <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <?php endif ?>
+</div>
+<!-- finc: RecordDriver - FincMissing - result-list - END -->

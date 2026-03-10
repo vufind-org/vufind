@@ -1,0 +1,16 @@
+<!-- finc: RecordDriver - DefaultRecord - data-link -->
+<?php
+/**
+origin: finc
+called by view helper/controller:
+usage:
+modified for finc:
+configured in: {}
+ */
+?>
+<?php if (is_array($data)): ?>
+  <a href="<?=$data['url']?>"><?=$data['text']?></a>
+<?php else: ?>
+  <a href="<?=$data?>"><?=$data?></a>
+<?php endif; ?>
+<!-- finc: RecordDriver - DefaultRecord - data-link - END -->

@@ -1,0 +1,28 @@
+<!-- finc: RecordTab - toc -->
+<?php
+/**
+origin: vufind/BS3
+called by view helper/controller:
+usage:
+modified for finc:
+ * uses recordDataFormatter #19336
+ * mostly custom finc
+configured in: {}
+ */
+?>
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb());
+    // finc: uses recordDataFormatter #19336; rest is mostly custom finc
+    $formatter = $this->recordDataFormatter();
+    $mainFields = $formatter->getData($this->driver, $formatter->getDefaults('toc'));
+?>
+<?php if (!empty($mainFields)): ?>
+  <?php foreach ($mainFields as $current): ?>
+    <strong><?=$this->transEsc($current['label'])?>: </strong>
+    <?=$current['value']?>
+  <?php endforeach; ?>
+<?php else: ?>
+  <?=$this->transEsc('Table of Contents unavailable')?>.
+<?php endif; ?>
+<!-- finc: RecordTab - toc - END -->
