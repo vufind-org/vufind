@@ -113,6 +113,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $escapeHtml
         );
         return [
+            'assetManager' => $this->getAssetManager($view),
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $this->createMock(\VuFind\Auth\Manager::class),
                 $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
@@ -323,14 +324,14 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $url->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class))
             ->setRouteMatch($match);
 
-        // Create a view object with a set of helpers:
-        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $url);
-
         $pluginManager = $view->getHelperPluginManager();
+        $pluginManager->setService('url', $url);
+
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $url);
         foreach ($helpers as $key => $value) {
             $pluginManager->setService($key, $value);
         }
-        
+
         $container->set(\Laminas\View\HelperPluginManager::class, $pluginManager);
         $formatter = $factory($container, RecordDataFormatter::class);
 
