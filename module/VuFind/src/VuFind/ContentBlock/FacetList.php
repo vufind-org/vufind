@@ -31,7 +31,10 @@ namespace VuFind\ContentBlock;
 
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
+
+use function is_array;
 
 /**
  * FacetList content block.
@@ -44,6 +47,8 @@ use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
  */
 class FacetList implements ContentBlockInterface
 {
+    use ExplodeSettingTrait;
+
     /**
      * Number of values to put in each column of results.
      *
@@ -124,33 +129,19 @@ class FacetList implements ContentBlockInterface
      * Get list of facet fields that should be displayed in two columns on the homepage
      * (configured via facets.ini -> [HomePage_Settings] -> two_column_facets).
      *
-     * @param Config $facetConfig Facet configuration object.
+     * @param array $facetConfig Facet configuration settings.
      *
      * @return string[]
      */
-    protected function getTwoColumnFacets(Config $facetConfig): array
+    protected function getTwoColumnFacets(array $facetConfig): array
     {
-        $raw = $facetConfig->HomePage_Settings->two_column_facets ?? null;
-        
-        if ($raw === null) {
-            return [];
+        $raw = $facetConfig['HomePage_Settings']['two_column_facets'] ?? [];
+        if (!is_array($raw)) {
+            $raw = $this->explodeListSetting((string)$raw);
         }
-        
-        if (is_array($raw)) {
-            $items = $raw;
-        } else {
-            $items = preg_split('/\s*,\s*/', (string)$raw);
-            if ($items === false) {
-                $items = [];
-            }
-        }
-        
-        $items = array_map('trim', $items);
-        $items = array_filter($items, static fn($value): bool => $value !== '');
-      
-        return array_values(array_unique($items));
+        return array_values(array_unique(array_filter($raw)));
     }
-  
+
     /**
      * Return context variables used for rendering the block's template.
      *
@@ -169,7 +160,7 @@ class FacetList implements ContentBlockInterface
             'hierarchicalFacets' => $this->getHierarchicalFacets($facetConfig),
             'hierarchicalFacetSortOptions' =>
                 $this->getHierarchicalFacetSortSettings($facetConfig),
-            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig),
+            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig->toArray()),
             'results' => $results,
         ];
     }
