@@ -24,12 +24,13 @@
  * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 
 namespace VuFind\Condition\Handler;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 /**
  * Condition handler plugin manager
@@ -38,7 +39,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
  * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
@@ -49,7 +50,15 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'date' => Date::class,
+        'date_time' => DateTime::class,
+        'env' => Env::class,
+        'filetype' => Filetype::class,
+        'logged_in' => LoggedIn::class,
+        'route' => Route::class,
         'string' => StringHandler::class,
+        'time' => Time::class,
+        'url_path' => UrlPath::class,
+        'user_ip' => UserIp::class,
     ];
 
     /**
@@ -59,7 +68,15 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Date::class => InvokableFactory::class,
+        DateTime::class => InvokableFactory::class,
+        Env::class => InvokableFactory::class,
+        Filetype::class => InvokableFactory::class,
+        LoggedIn::class => AutowiringFactory::class,
+        Route::class => AutowiringFactory::class,
         StringHandler::class => InvokableFactory::class,
+        Time::class => InvokableFactory::class,
+        UrlPath::class => AutowiringFactory::class,
+        UserIp::class => AutowiringFactory::class,
     ];
 
     /**

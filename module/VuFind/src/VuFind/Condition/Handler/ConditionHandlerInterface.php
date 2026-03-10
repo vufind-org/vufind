@@ -24,7 +24,7 @@
  * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 
 namespace VuFind\Condition\Handler;
@@ -38,7 +38,7 @@ use VuFind\Exception\ConditionException;
  * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 interface ConditionHandlerInterface
 {

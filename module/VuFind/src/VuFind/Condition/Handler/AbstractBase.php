@@ -26,7 +26,7 @@
  * @author   Nathan Collins <colli372@msu.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 
 namespace VuFind\Condition\Handler;
@@ -43,7 +43,7 @@ use function is_array;
  * @author   Nathan Collins <colli372@msu.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 abstract class AbstractBase implements ConditionHandlerInterface
 {

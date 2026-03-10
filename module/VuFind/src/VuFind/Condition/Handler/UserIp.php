@@ -1,7 +1,7 @@
 <?php
 
 /**
- * String condition handler (used for tests).
+ * User ip condition handler.
  *
  * PHP version 8
  *
@@ -31,12 +31,11 @@
 
 namespace VuFind\Condition\Handler;
 
-use VuFind\Exception\ConditionException;
-
-use function is_string;
+use VuFind\Net\UserIpReader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * String condition handler (used for tests).
+ * User ip condition handler.
  *
  * @category VuFind
  * @package  Condition_Handler
@@ -45,24 +44,30 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
-class StringHandler extends AbstractBase
+class UserIp extends AbstractBase
 {
+    /**
+     * Constructor.
+     *
+     * @param UserIpReader $userIpReader User ip reader
+     */
+    public function __construct(
+        #[Autowire(service: UserIpReader::class)]
+        protected UserIpReader $userIpReader,
+    ) {
+    }
+
     /**
      * Get base value to check.
      *
      * @param array $condition Optionally used for handler specific parameters
      *
      * @return string
-     * @throws ConditionException
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getBaseValue(array $condition): string
     {
-        $string = $condition['string'] ?? null;
-        if (!is_string($string)) {
-            throw new ConditionException(
-                'String condition handler requires key "string" of type string specifying the value to check.'
-            );
-        }
-        return $string;
+        return $this->userIpReader->getUserIp();
     }
 }
