@@ -93,9 +93,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             return $this->createMock($service);
         });
         $record->setDbServiceManager($serviceManager);
+        $authManager = $this->createMock(\VuFind\Auth\Manager::class);
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
-                $this->createMock(\VuFind\Auth\Manager::class),
+                $authManager,
                 $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
             ),
             'context' => $context,
@@ -126,7 +127,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'searchTabs' => $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
             'transEsc' => $transEsc,
             'translate' => $translate,
-            'usertags' => new \VuFind\View\Helper\Root\UserTags(),
+            'usertags' => new \VuFind\View\Helper\Root\UserTags(
+                new \VuFind\Config\AccountCapabilities(
+                    $this->createMock(\VuFind\Config\Config::class),
+                    fn() => $authManager
+                )
+            ),
         ];
     }
 
