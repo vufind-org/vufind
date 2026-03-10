@@ -213,10 +213,14 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $memory->method('getLastSearchId')->willReturn(-123);
 
         $translate = $extraHelpers['translate'] ?? $this->createMock(Translate::class);
-        $translate->method('__invoke')->willReturnArgument(0);
+        if (!isset($extraHelpers['translate'])) {
+            $translate->method('__invoke')->willReturnArgument(0);
+        }
 
         $truncate = $extraHelpers['truncate'] ?? $this->createMock(Truncate::class);
-        $truncate->method('__invoke')->willReturnArgument(0);
+        if (!isset($extraHelpers['truncate'])) {
+            $truncate->method('__invoke')->willReturnArgument(0);
+        }
 
         $escapeHtml = $this->createMock(EscapeHtml::class);
         $escapeHtml->method('__invoke')->willReturnCallback(function ($str) {
