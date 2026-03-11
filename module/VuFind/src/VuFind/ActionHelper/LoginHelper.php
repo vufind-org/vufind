@@ -107,7 +107,7 @@ class LoginHelper implements HelperInterface
         // Store the current URL as a login followup action
         $this->followupHelper->store($extras);
         if (!empty($msg)) {
-            $this->flashMessenger->addMessage($msg, 'error');
+            $this->flashMessenger->addErrorMessage($msg);
         }
 
         // Set a flag indicating that we are forcing login:
@@ -132,7 +132,7 @@ class LoginHelper implements HelperInterface
      *
      * @return array|ResponseInterface|null
      */
-    protected function catalogLogin(
+    public function catalogLogin(
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): array|ResponseInterface|null {
@@ -155,15 +155,14 @@ class LoginHelper implements HelperInterface
                 throw new \Exception('Unexpected ILS credential submission.');
             }
             // Check for multiple ILS target selection
-            $target = $postParams['target'] ?? null;
+            $target = $postParams['target'] ?? '';
             if ($target) {
                 $username = "$target.$username";
             }
             try {
                 if ('email' === $this->getILSLoginMethod($target)) {
                     $routeMatch = $request->getAttribute('route-match');
-                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
-                        : 'myresearch-profile';
+                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName() : 'myresearch-profile';
                     $routeParams = $routeMatch ? $routeMatch->getParams() : [];
                     $this->ilsAuthenticator
                         ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
@@ -180,8 +179,8 @@ class LoginHelper implements HelperInterface
                 $this->flashMessenger->addErrorMessage('ils_connection_failed');
             }
         } elseif (
-            ('ILS' === $queryParams['auth_method'] ?? null)
-            && ($hash = $queryParams['hash'] ?? null)
+            ('ILS' === ($queryParams['auth_method'] ?? null))
+            && ($hash = ($queryParams['hash'] ?? null))
         ) {
             try {
                 $patron = $this->ilsAuthenticator->processEmailLoginHash($hash);
@@ -203,7 +202,7 @@ class LoginHelper implements HelperInterface
             return $this->forwardHelper->forwardTo($request, $response, 'myresearch/cataloglogin');
         }
 
-        // Send value (either false or patron array) back to caller:
+        // Send patron array back to caller:
         return $patron;
     }
 
