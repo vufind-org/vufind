@@ -1,5 +1,10 @@
 <ul>
 <?php foreach ($submenuItems as $item): ?>
+  <?php
+    if ($item['excludeFromSiteMapPage'] ?? false) {
+      continue;
+    }
+  ?>
   <?php $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? null) ?>
   <?php if (isset($item['label']) && ($href || isset($item['submenuItems']))): ?>
     <li>
