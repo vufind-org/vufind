@@ -28,33 +28,33 @@ styles:
 #               see https://vufind.org/wiki/development:plugins:condition_handlers
 notices:
 # Example 1
-  - style: warning
-    content: The library is closed today!
+#  - style: warning
+#    content: The library is closed today!
 # Example 2 (Notices will only be displayed for languages de, es and en. For es it will fall back to en)
-  - style: success
-    position: header
-    translations:
-      de: Willkommen in unserem Katalog!
-      es:
-      en: Welcome to our catalog!
+#  - style: success
+#    position: header
+#    translations:
+#      de: Willkommen in unserem Katalog!
+#      es:
+#      en: Welcome to our catalog!
 # Example 3
-  - style: info
-    content: >
-      ## This is the catalog of our library
-
-      -------------------------------------
-
-      You can
-
-      * **search** for books
-
-      * **request** books
-
-      * create **favorite** lists
-    contentType: markdown
-  - style: success
-    content: Merry Christmas!
-    conditions:
-      - type: date
-        checkedValues: "/-12-2[4-6]/"
-        comparator: "regex"
+#  - style: info
+#    content: >
+#      ## This is the catalog of our library
+#
+#      -------------------------------------
+#
+#      You can
+#
+#      * **search** for books
+#
+#      * **request** books
+#
+#      * create **favorite** lists
+#    contentType: markdown
+#  - style: success
+#    content: Merry Christmas!
+#    conditions:
+#      - type: date
+#        checkedValues: "/-12-2[4-6]/"
+#        comparator: "regex"
