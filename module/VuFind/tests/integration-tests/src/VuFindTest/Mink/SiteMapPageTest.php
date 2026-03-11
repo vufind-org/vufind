@@ -58,6 +58,9 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
                     'Site' => [
                         'siteMapPageEnabled' => true,
                     ],
+                    'Feedback' => [
+                        'tab_enabled' => true,
+                    ],
                 ],
             ]
         );
@@ -189,6 +192,21 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringEndsWith(
             '/Content/askLibrary',
             $this->findCss($page, '#content')->findLink('Ask a Librarian')->getAttribute('href')
+        );
+
+        // Item with siteMapPageTemplate is rendered using that template.
+        $this->assertInstanceOf(
+            Element::class,
+            $this->findCss($page, '#content')->findLink('Feedback')
+        );
+        $this->assertNull(
+            $this->findCss($page, '#content')->findLink('Feedback')->getAttribute('id')
+        );
+
+        // Item with excludeFromSiteMapPage: true not is shown.
+        $this->assertStringNotContainsString(
+            'Language',
+            $this->findCssAndGetText($page, '#content')
         );
     }
 

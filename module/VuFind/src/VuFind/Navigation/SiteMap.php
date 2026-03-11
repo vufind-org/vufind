@@ -29,6 +29,7 @@
 
 namespace VuFind\Navigation;
 
+use Laminas\View\Renderer\RendererInterface;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Exception\BadConfig;
 
@@ -51,10 +52,12 @@ class SiteMap extends AbstractMenu
     /**
      * Constructor
      *
-     * @param array $sectionConfig Site map configuration
+     * @param array             $sectionConfig Site map configuration
+     * @param RendererInterface $renderer      View renderer
      */
     public function __construct(
-        array $sectionConfig
+        array $sectionConfig,
+        protected RendererInterface $renderer,
     ) {
         $this->addRequiredSettings(
             [
@@ -178,6 +181,19 @@ class SiteMap extends AbstractMenu
                 }
                 if (isset($processedGroups[$pluginGroupName])) {
                     throw new BadConfig('Group key clash in configuration: ' . $pluginGroupName);
+                }
+                foreach ($pluginGroup['MenuItems'] ?? [] as $key => $item) {
+                    if ($templateToUse = $item['siteMapPageTemplate'] ?? $item['template'] ?? null) {
+                        // Templates from included sections require a plugin
+                        // specific context so they are rendered at this stage.
+                        $context = [
+                            'sectionPlugin' => $plugin,
+                            ...$plugin->getSectionContext(),
+                            ...$item,
+                        ];
+                        $pluginGroup['MenuItems'][$key]['__html']
+                            = $this->renderer->render($templateToUse, $context);
+                    }
                 }
                 $processedGroups[$pluginGroupName] = $pluginGroup;
             }

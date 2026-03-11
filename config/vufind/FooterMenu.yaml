@@ -18,6 +18,7 @@
 #   - checkMethod: the name of a FooterMenu section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
 #   - attributes: additional attributes for the menu item's <a> tag
+#   - excludeFromSiteMapPage: set true to exclude item from the site map page
 #
 # You can use checkMethod: alwaysFail to disable specific inherited groups or items
 # in local configuration. If you wish to completely override the default

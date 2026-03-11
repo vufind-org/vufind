@@ -6,23 +6,32 @@
   <?php endif; ?>
   <?php foreach ($group['MenuItems'] as $item): ?>
     <?php
-      $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? null);
-      $hasSubmenuItems = isset($item['submenuItems']);
+      if ($item['excludeFromSiteMapPage'] ?? false) {
+        continue;
+      }
     ?>
-    <?php if (isset($item['label']) && ($href || $hasSubmenuItems)): ?>
-      <?php $label = $this->makeLink($this->translate($item['label']), $href); ?>
-      <?php if ($hasSubmenuItems): ?>
-        <?php if ($groupHasLabel): ?>
-          <li><?= $label ?>
+    <?php if (isset($item['__html'])): ?>
+      <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $item['__html'], options: ['escapeContent' => false]) ?>
+    <?php else: ?>
+      <?php
+        $href = isset($item['route']) ? $this->url($item['route'], $item['routeParams'] ?? []) : ($item['url'] ?? null);
+        $hasSubmenuItems = isset($item['submenuItems']);
+      ?>
+      <?php if (isset($item['label']) && ($href || $hasSubmenuItems)): ?>
+        <?php $label = $this->makeLink($this->translate($item['label']), $href, $item['attributes'] ?? []); ?>
+        <?php if ($hasSubmenuItems): ?>
+          <?php if ($groupHasLabel): ?>
+            <li><?= $label ?>
+          <?php else: ?>
+            <h2><?= $label ?></h2>
+          <?php endif; ?>
+          <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
+          <?php if ($groupHasLabel): ?>
+            </li>
+          <?php endif; ?>
         <?php else: ?>
-          <h2><?= $label ?></h2>
+          <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $label, options: ['escapeContent' => false]) ?>
         <?php endif; ?>
-        <?= $this->render('Section/SiteMap/SiteMap-submenuItems.phtml', ['submenuItems' => $item['submenuItems']]) ?>
-        <?php if ($groupHasLabel): ?>
-          </li>
-        <?php endif; ?>
-      <?php else: ?>
-        <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $label, options: ['escapeContent' => false]) ?>
       <?php endif; ?>
     <?php endif; ?>
   <?php endforeach; ?>
