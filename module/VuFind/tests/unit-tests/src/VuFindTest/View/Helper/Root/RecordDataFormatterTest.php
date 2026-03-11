@@ -29,6 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Resolver\TemplatePathStack;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use VuFind\Escaper\Escaper;
@@ -38,6 +40,7 @@ use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 use VuFind\View\Helper\Root\SchemaOrg;
+use VuFind\View\Helper\Root\Url;
 
 use function count;
 
@@ -76,16 +79,21 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      *
      * @param ContainerInterface $container       Mock service container
      * @param SchemaOrg          $schemaOrgHelper schema.org helper
+     * @param PhpRenderer        $view            View renderer
+     * @param Url                $url             URL helper
      *
      * @return array
      */
-    protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
-    {
+    protected function getViewHelpers(
+        ContainerInterface $container,
+        SchemaOrg $schemaOrgHelper,
+        PhpRenderer $view,
+        Url $url
+    ): array {
         $translate = new \VuFind\View\Helper\Root\Translate();
         $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
         $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, $escapeHtml);
         $helperArray = compact('translate', 'transEsc', 'escapeHtml');
-        $view = $this->getPhpRenderer($helperArray);
         $context = new \VuFind\View\Helper\Root\Context($view);
         $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
@@ -93,11 +101,23 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             return $this->createMock($service);
         });
         $record->setDbServiceManager($serviceManager);
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
+
+        $recordLinker = new \VuFind\View\Helper\Root\RecordLinker(
+            $this->getMockRecordRouter(),
+            $memory,
+            $url,
+            new \VuFind\Search\Options\PluginManager($container),
+            $translate,
+            new \VuFind\View\Helper\Root\Truncate(),
+            $escapeHtml
+        );
 
         $authManager = $this->createMock(\VuFind\Auth\Manager::class);
         $authManager->method('loginEnabled')->willReturn(true);
         $authManager->method('inPrivacyMode')->willReturn(false);
         return [
+            'assetManager' => $this->getAssetManager($view),
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $authManager,
                 $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
@@ -121,7 +141,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => $record,
-            'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
+            'recordLinker' => $recordLinker,
             'schemaOrg' => $schemaOrgHelper,
             'searchMemory' => $this->getSearchMemoryViewHelper(),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
@@ -297,20 +317,33 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $this->addConfigRelatedServicesToContainer($container);
 
-        // Create a view object with a set of helpers:
-        $helpers = $this->getViewHelpers($container, $schemaOrgHelper);
-        $view = $this->getPhpRenderer($helpers);
-        $container->set(\Laminas\View\HelperPluginManager::class, $view->getHelperPluginManager());
-        $formatter = $factory($container, RecordDataFormatter::class);
+        // Create resolver and view
+        $resolver = new TemplatePathStack();
+        $resolver->setPaths([
+            $this->getPathForTheme('root'),
+            $this->getPathForTheme('bootstrap5'),
+        ]);
+        $view = new PhpRenderer();
+        $view->setResolver($resolver);
 
         // Mock out the router to avoid errors:
         $match = new \Laminas\Router\RouteMatch([]);
         $match->setMatchedRouteName('foo');
-        $view->plugin('url')
-            ->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class))
+        $url = new Url();
+        $url->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class))
             ->setRouteMatch($match);
 
-        // Inject the view object into all of the helpers:
+        $pluginManager = $view->getHelperPluginManager();
+        $pluginManager->setService('url', $url);
+
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $url);
+        foreach ($helpers as $key => $value) {
+            $pluginManager->setService($key, $value);
+        }
+
+        $container->set(\Laminas\View\HelperPluginManager::class, $pluginManager);
+        $formatter = $factory($container, RecordDataFormatter::class);
+
         foreach ($helpers as $helper) {
             if (method_exists($helper, 'setView')) {
                 $helper->setView($view);

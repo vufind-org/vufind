@@ -74,15 +74,26 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
         $record->method('getLinkDetails')->willReturn([['url' => 'http://driver-url']]);
+        $router = new \VuFind\Record\Router(new \VuFind\Config\Config([]));
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
+        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
+        $url->method('__invoke')->willReturn('test/url');
+        $searchOptionsManager = $this->createMock(\VuFind\Search\Options\PluginManager::class);
+        $translate = $this->createMock(\VuFind\View\Helper\Root\Translate::class);
+        $truncate = $this->createMock(\VuFind\View\Helper\Root\Truncate::class);
+        $escapeHtml = $this->createMock(\Laminas\View\Helper\EscapeHtml::class);
 
         $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
-            ->setConstructorArgs(
-                [
-                    new \VuFind\Record\Router(
-                        new \VuFind\Config\Config([])
-                    ),
-                ]
-            )->getMock();
+            ->setConstructorArgs([
+                $router,
+                $memory,
+                $url,
+                $searchOptionsManager,
+                $translate,
+                $truncate,
+                $escapeHtml,
+            ])
+            ->getMock();
         $recordLinker->method('getUrl')->willReturn('test/url');
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
