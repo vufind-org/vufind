@@ -60,7 +60,6 @@ return [
             'VuFind\View\Helper\Root\Recommend' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Record' => 'VuFind\View\Helper\Root\RecordFactory',
             'VuFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
-            'VuFind\View\Helper\Root\RecordLinker' => 'VuFind\View\Helper\Root\RecordLinkerFactory',
             'VuFind\View\Helper\Root\Relais' => 'VuFind\View\Helper\Root\RelaisFactory',
             'VuFind\View\Helper\Root\Related' => 'VuFind\View\Helper\Root\RelatedFactory',
             'VuFind\View\Helper\Root\ResultFeed' => 'VuFind\View\Helper\Root\ResultFeedFactory',
@@ -85,7 +84,6 @@ return [
             'VuFind\View\Helper\Root\Truncate' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Url' => 'VuFind\View\Helper\Root\UrlFactory',
             'VuFind\View\Helper\Root\UserList' => 'VuFind\View\Helper\Root\UserListFactory',
-            'VuFind\View\Helper\Root\UserTags' => 'VuFind\View\Helper\Root\UserTagsFactory',
 
             'Laminas\View\Helper\EscapeHtmlAttr' => 'VuFind\View\Helper\Root\EscapeHtmlAttrFactory',
             'Laminas\View\Helper\ServerUrl' => 'VuFind\View\Helper\Root\ServerUrlFactory',
