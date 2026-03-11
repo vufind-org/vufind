@@ -29,8 +29,7 @@
 
 namespace VuFind\Condition\Handler;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-use VuFind\ServiceManager\Factory\AutowiringFactory;
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 
 /**
  * Condition handler plugin manager
@@ -43,6 +42,23 @@ use VuFind\ServiceManager\Factory\AutowiringFactory;
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
+
     /**
      * Default plugin aliases.
      *
@@ -58,23 +74,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'time' => Time::class,
         'url_path' => UrlPath::class,
         'user_ip' => UserIp::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Date::class => InvokableFactory::class,
-        DateTime::class => InvokableFactory::class,
-        Env::class => InvokableFactory::class,
-        Filetype::class => InvokableFactory::class,
-        LoggedIn::class => AutowiringFactory::class,
-        StringHandler::class => InvokableFactory::class,
-        Time::class => InvokableFactory::class,
-        UrlPath::class => AutowiringFactory::class,
-        UserIp::class => AutowiringFactory::class,
     ];
 
     /**
