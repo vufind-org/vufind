@@ -30,6 +30,7 @@
 namespace VuFindTest\Condition\Handler;
 
 use VuFind\Condition\Handler\Filetype;
+use VuFindTest\Feature\FixtureTrait;
 
 /**
  * Filetype handler test
@@ -42,36 +43,7 @@ use VuFind\Condition\Handler\Filetype;
  */
 class FiletypeTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Test file path
-     *
-     * @var string
-     */
-    protected string $testFile;
-
-    /**
-     * Set up test environment
-     *
-     * @return void
-     */
-    protected function setUp(): void
-    {
-        $this->testFile = tempnam(sys_get_temp_dir(), 'vufind_filetype_test');
-        parent::setUp();
-    }
-
-    /**
-     * Clean up test environment
-     *
-     * @return void
-     */
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        if (file_exists($this->testFile)) {
-            unlink($this->testFile);
-        }
-    }
+    use FixtureTrait;
 
     /**
      * Test true condition for a missing file.
@@ -80,49 +52,44 @@ class FiletypeTest extends \PHPUnit\Framework\TestCase
      */
     public function testTrueMatchingForMissingFile(): void
     {
-        if (file_exists($this->testFile)) {
-            unlink($this->testFile);
-        }
         $filetypeHandler = new Filetype();
         $this->assertTrue($filetypeHandler->checkCondition([
             'type' => 'filetype',
             'comparator' => '=',
             'checkedValues' => '',
-            'file' => $this->testFile,
+            'file' => '/non/existing/file',
         ]));
     }
 
     /**
-     * Test true condition.
+     * Test true condition for directory.
      *
      * @return void
      */
-    public function testTrueMatching(): void
+    public function testTrueMatchingForDir(): void
     {
-        file_put_contents($this->testFile, 'test content');
+        $filetypeHandler = new Filetype();
+        $this->assertTrue($filetypeHandler->checkCondition([
+            'type' => 'filetype',
+            'comparator' => '=',
+            'checkedValues' => 'dir',
+            'file' => $this->getFixtureDir(),
+        ]));
+    }
+
+    /**
+     * Test true condition for file.
+     *
+     * @return void
+     */
+    public function testTrueMatchingForFile(): void
+    {
         $filetypeHandler = new Filetype();
         $this->assertTrue($filetypeHandler->checkCondition([
             'type' => 'filetype',
             'comparator' => '=',
             'checkedValues' => 'file',
-            'file' => $this->testFile,
-        ]));
-    }
-
-    /**
-     * Test false condition.
-     *
-     * @return void
-     */
-    public function testFalseMatching(): void
-    {
-        file_put_contents($this->testFile, 'test content');
-        $filetypeHandler = new Filetype();
-        $this->assertFalse($filetypeHandler->checkCondition([
-            'type' => 'filetype',
-            'comparator' => '=',
-            'checkedValues' => 'dir',
-            'file' => $this->testFile,
+            'file' => $this->getFixtureDir() . '/misc/testFile.txt',
         ]));
     }
 
