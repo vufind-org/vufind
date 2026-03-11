@@ -35,7 +35,7 @@ use VuFind\Net\UserIpReader;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * User ip condition handler.
+ * User IP condition handler.
  *
  * @category VuFind
  * @package  Condition_Handler
