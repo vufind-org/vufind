@@ -29,7 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\Config\AccountCapabilities;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Tag view helper
@@ -40,32 +41,32 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class UserTags extends AbstractHelper
+class UserTags
 {
     /**
      * Tag mode (enabled or disabled)
      *
      * @var string
      */
-    protected $mode;
+    protected string $mode;
 
     /**
      * List tag mode (enabled or disabled)
      *
      * @var string
      */
-    protected $listMode;
+    protected string $listMode;
 
     /**
      * Constructor
      *
-     * @param string $mode     Tag mode (enabled or disabled)
-     * @param string $listMode List tag mode (enabled or disabled)
+     * @param AccountCapabilities $capabilities Account capabilities service
      */
-    public function __construct($mode = 'enabled', $listMode = 'disabled')
+    #[Autowire()]
+    public function __construct(AccountCapabilities $capabilities)
     {
-        $this->mode = $mode;
-        $this->listMode = $listMode;
+        $this->mode = $capabilities->getTagSetting();
+        $this->listMode = $capabilities->getListTagSetting();
     }
 
     /**
@@ -86,5 +87,15 @@ class UserTags extends AbstractHelper
     public function getListMode()
     {
         return $this->listMode;
+    }
+
+    /**
+     * Make helper invokable
+     *
+     * @return static
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 }
