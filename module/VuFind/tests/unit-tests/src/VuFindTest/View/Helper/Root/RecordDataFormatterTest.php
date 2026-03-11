@@ -132,7 +132,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'translate' => $translate,
             'usertags' => new \VuFind\View\Helper\Root\UserTags(
                 new \VuFind\Config\AccountCapabilities(
-                    $this->createMock(\VuFind\Config\Config::class),
+                    new \VuFind\Config\Config([]),
                     fn () => $authManager
                 )
             ),
