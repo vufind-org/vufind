@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User ip condition handler.
+ * User IP condition handler.
  *
  * PHP version 8
  *
