@@ -28,7 +28,7 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\AjaxHandler;
+namespace VuFindTest\ActionHelper;
 
 use Generator;
 use Laminas\Diactoros\Response;

@@ -27,7 +27,7 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\AjaxHandler;
+namespace VuFindTest\ActionHelper;
 
 use Closure;
 use Generator;
