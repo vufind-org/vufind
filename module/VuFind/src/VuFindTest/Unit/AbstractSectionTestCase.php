@@ -29,9 +29,10 @@
 
 namespace VuFindTest\Unit;
 
-use Laminas\Http\Request;
+use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\View\Model\ViewModel;
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
@@ -467,6 +468,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     ): SiteMap {
         $config ??= $this->getDefaultYamlConfig('SiteMap.yaml');
         $this->mockYamlReaderFiles['SiteMap.yaml'] = $config;
+
+        $mockViewRenderer = $this->createMock(PhpRenderer::class);
+        // We are only testing that the templates are getting rendered, not the
+        // actual templates themselves.
+        $mockViewRenderer->method('render')->willReturn('<li></li>');
+        $container->set('ViewRenderer', $mockViewRenderer);
 
         $siteMap = (new SiteMapFactory())($container, SiteMap::class);
         $this->setSectionPlugin($container, $siteMap, 'siteMap');

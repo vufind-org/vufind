@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2025.
+ * Copyright (C) The National Library of Finland 2025-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -50,12 +50,19 @@ class Autowire
      * @param ?string $config     Configuration to inject as an array (mutually exclusive with $service)
      * @param ?string $configType Configuration type (for $config; valid values are 'array' (default), 'object'
      * and 'yaml')
+     * @param ?string $path       Slash-separated path to extract from configuration
+     * @param ?string $explode    Delimiter to use to convert a configuration string to an array (not applied to any
+     * default value)
+     * @param mixed   $default    Default configuration value
      * @param ?string $service    Service to inject (mutually exclusive with $config)
      * @param ?string $container  Container or plugin manager to use to get the service
      */
     public function __construct(
         public readonly ?string $config = null,
         public readonly ?string $configType = null,
+        public readonly ?string $path = null,
+        public readonly ?string $explode = null,
+        public readonly mixed $default = null,
         public readonly ?string $service = null,
         public readonly ?string $container = null,
     ) {
@@ -67,7 +74,9 @@ class Autowire
                 throw new LogicException('#[Autowire] attribute cannot contain both config and container.');
             }
         } elseif (null !== $configType) {
-            throw new LogicException('#[Autowire] attribute cannot contain configType without config.');
+            throw new LogicException(
+                '#[Autowire] attribute cannot contain configType without config.'
+            );
         }
     }
 }

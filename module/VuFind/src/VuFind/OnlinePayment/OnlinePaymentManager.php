@@ -292,7 +292,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         // Check if user's current credentials match (typical case):
         $catPassword = $this->ilsAuthenticator->getCatPasswordForUser($user);
         if (
-            mb_strtolower($user->getCatUsername(), 'UTF-8') === mb_strtolower($payment->getCatUsername(), 'UTF-8')
+            mb_strtolower($user->getCatUsername() ?? '', 'UTF-8') === mb_strtolower($payment->getCatUsername(), 'UTF-8')
             && ($patron = $this->ils->patronLogin($user->getCatUsername(), $catPassword))
         ) {
             // Success!

@@ -11,6 +11,7 @@
             'label' => $this->displayLanguageOption($langName),
             'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
             'selected' => $this->userLang == $langCode,
+            'setQueryParams' => ['lng' => $langCode],
           ];
       },
       array_keys($this->allLangs),

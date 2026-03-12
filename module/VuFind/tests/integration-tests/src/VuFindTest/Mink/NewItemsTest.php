@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Session;
 use VuFindTest\Feature\DemoDriverTestTrait;
 
 /**
@@ -46,6 +47,19 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
     use DemoDriverTestTrait;
 
     /**
+     * Load the new item page.
+     *
+     * @param Session $session Mink session
+     *
+     * @return Element
+     */
+    protected function loadNewItemPage(Session $session): Element
+    {
+        $session->visit($this->getVuFindUrl() . '/Search/NewItem');
+        return $session->getPage();
+    }
+
+    /**
      * Submit a new item search and return the resulting page object.
      *
      * @param int    $buttonIndex    Index of range button to press
@@ -57,9 +71,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         int $buttonIndex = 1,
         string $expectedRanges = 'Yesterday Past 5 Days Past 30 Days'
     ): Element {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/NewItem');
-        $page = $session->getPage();
+        $page = $this->loadNewItemPage($this->getMinkSession());
         // Confirm custom ranges display correctly:
         $this->assertSame(
             $expectedRanges,
@@ -204,6 +216,35 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringEndsWith(
             '/Search/Results?lookfor=&type=AllFields',
             $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test that when disabled a 'Page not found' message is shown and status
+     * code 404 is returned.
+     *
+     * @return void
+     */
+    public function testDisabledPage(): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'NewItem' => [
+                        'method' => 'disabled',
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->loadNewItemPage($session);
+        $this->assertEquals(
+            404,
+            $session->getStatusCode()
+        );
+        $this->assertStringContainsString(
+            'Page not found',
+            $this->findCssAndGetText($page, '#content')
         );
     }
 }

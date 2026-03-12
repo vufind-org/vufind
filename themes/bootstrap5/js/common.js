@@ -169,6 +169,15 @@ var VuFind = (function VuFind() {
         document.getElementById(elem.dataset.clickSetChecked).checked = true;
         event.preventDefault();
       }
+      if (elem.hasAttribute('data-click-set-query-params')) {
+        const setParams = new URLSearchParams(elem.dataset.clickSetQueryParams);
+        const url = new URL(window.location.href);
+        for (const [key, value] of setParams) {
+          url.searchParams.set(key, value);
+        }
+        window.location.href = url.toString();
+        event.preventDefault();
+      }
       if (elem.hasAttribute('data-toggle-aria-expanded')) {
         elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
         event.preventDefault();

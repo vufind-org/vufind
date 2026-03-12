@@ -235,6 +235,10 @@ class SearchController extends AbstractSolrSearch
      */
     public function newitemAction()
     {
+        if ($this->newItems()->getMethod() === 'disabled') {
+            return $this->createHttpNotFoundModel($this->getResponse());
+        }
+
         // Search parameters set?  Process results.
         if ($this->params()->fromQuery('range') !== null) {
             return $this->forwardTo('Search', 'NewItemResults');

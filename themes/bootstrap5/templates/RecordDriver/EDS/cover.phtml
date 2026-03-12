@@ -3,9 +3,9 @@
   $includeLinkInMarkup = $this->link && $cover !== false;
 ?>
 <?php if ($includeLinkInMarkup): ?>
-  <a href="<?=$this->escapeHtmlAttr($this->link)?>" class="record-cover-link">
+  <a href="<?=$this->escapeHtmlAttr($this->link)?>" class="record-cover-container record-cover-link">
 <?php else: ?>
-  <div aria-hidden="true">
+  <div class="record-cover-container" aria-hidden="true">
 <?php endif; ?>
 <?php /* Display thumbnail if appropriate: */ ?>
 <?php if ($cover): ?>

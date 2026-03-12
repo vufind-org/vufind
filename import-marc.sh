@@ -149,6 +149,7 @@ then
   SOLRJ_DIR="$VUFIND_HOME/solr/vendor/.solrj"
 fi
 
+REGENERATE_SOLRJ_DIR=0
 if [ -d "$SOLRJ_DIR" ]
 then
   # validate the .solrj symlinks in case an upgrade has messed something up:

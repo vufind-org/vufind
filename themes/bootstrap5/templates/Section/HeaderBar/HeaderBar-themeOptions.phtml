@@ -9,7 +9,7 @@
       function ($item) {
           $item['label'] = $item['desc'];
           $item['url'] = $this->url()->addQueryParameters(['ui' => $item['name']]);
-
+          $item['setQueryParams'] = ['ui' => $item['name']];
           return $item;
       },
       $this->layout()->themeOptions

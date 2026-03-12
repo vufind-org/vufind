@@ -108,7 +108,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      */
     protected function getBaseUrl($key, $ids)
     {
-        $url = "https://secure.syndetics.com/index.aspx?client={$key}";
+        $url = "https://www.syndetics.com/index.aspx?client={$key}";
         $ident = '';
         if (isset($ids['isbn']) && $ids['isbn']->isValid()) {
             $isbn = $ids['isbn']->get13();
