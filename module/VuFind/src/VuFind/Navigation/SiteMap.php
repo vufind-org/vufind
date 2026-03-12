@@ -121,6 +121,55 @@ class SiteMap extends AbstractMenu
     }
 
     /**
+     * Get processed and filtered menu configuration with groups and items to
+     * display.
+     *
+     * @return array
+     */
+    public function getMenu(): array
+    {
+        if (!isset($this->menu)) {
+            $menu = [];
+            foreach (parent::getMenu() as $key => $group) {
+                if (!empty($filtered = $this->filterAvailableForSiteMap($group))) {
+                    $menu[$key] = $filtered;
+                }
+            }
+            $this->menu = $menu;
+        }
+        return $this->menu;
+    }
+
+    /**
+     * Get available items for the site map page.
+     *
+     * @param array $menuArray Items or item to filter
+     *
+     * @return array
+     */
+    protected function filterAvailableForSiteMap(array $menuArray): array
+    {
+        if ($menuArray['excludeFromSiteMapPage'] ?? false) {
+            return [];
+        }
+        foreach (['MenuItems', 'submenuItems'] as $itemsKey) {
+            if (isset($menuArray[$itemsKey])) {
+                foreach ($menuArray[$itemsKey] as $i => $item) {
+                    $menuArray[$itemsKey][$i] = $this->filterAvailableForSiteMap($item);
+                    if (empty($menuArray[$itemsKey][$i])) {
+                        unset($menuArray[$itemsKey][$i]);
+                    }
+                }
+                if (empty($menuArray[$itemsKey])) {
+                    // Filter items without menu or submenu items to display.
+                    return [];
+                }
+            }
+        }
+        return $menuArray;
+    }
+
+    /**
      * Process and filter groups.
      *
      * @param array $groups Groups to process and filter

@@ -10,6 +10,7 @@
 #   - MenuItems: items shown in the menu - required
 #   - checkMethod: the name of a HeaderBar section plugin method to perform
 #     a check whether to show the group. If omitted, group will always display.
+#   - excludeFromSiteMapPage: set true to exclude group from the site map page
 #
 # Array keys for every menu item could be:
 #   - checkMethod: the name of a HeaderBar section plugin method to perform

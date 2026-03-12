@@ -5,11 +5,6 @@
     <ul>
   <?php endif; ?>
   <?php foreach ($group['MenuItems'] as $item): ?>
-    <?php
-      if ($item['excludeFromSiteMapPage'] ?? false) {
-        continue;
-      }
-    ?>
     <?php if (isset($item['__html'])): ?>
       <?= $this->makeTag($groupHasLabel ? 'li' : 'h2', $item['__html'], options: ['escapeContent' => false]) ?>
     <?php else: ?>
