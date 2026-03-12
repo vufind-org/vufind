@@ -48,7 +48,7 @@
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
     <div class="form-group">
       <label class="form-label"><?=$this->transEsc('rating_prompt')?>:</label>
-      <h3 class="visually-hidden" aria-label="<?=$this->transEsc('rating_instructions_screenreader')?>"></h3>
+      <div class="visually-hidden"><?=$this->transEsc('rating_instructions_screenreader')?></div>
       <?=$this->component('star-rating', ['ratingData' => $this->currentRating]);?>
     </div>
     <div class="form-group">
