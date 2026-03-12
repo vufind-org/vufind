@@ -73,7 +73,6 @@ trait AutowireTrait
         }
 
         // Check for containers in constructor parameter attributes:
-        $params = [];
         foreach ($reflectionParameters as $reflectionParameter) {
             $attributes = $reflectionParameter->getAttributes(Autowire::class);
             $autowireArgs = ($attributes[0] ?? null)?->getArguments();
