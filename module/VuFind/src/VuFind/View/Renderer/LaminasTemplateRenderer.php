@@ -114,7 +114,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function renderErrorPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params
+        array $params = [],
     ): ResponseInterface {
         $params['display_exceptions'] = $this->displayExceptions;
         return $this->renderTemplate(
@@ -137,7 +137,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function renderNotFoundPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params = []
+        array $params = [],
     ): ResponseInterface {
         return $this->renderTemplate(
             $request,
@@ -222,7 +222,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function getLayout(ServerRequestInterface $request): ModelInterface
     {
         if (!($result = $request->getAttribute('view-model'))) {
-            throw new InvalidArgumentException("Attribute 'view-model' required in request");
+            throw new InvalidArgumentException("Request must include the 'view-model' attribute");
         }
         return $result;
     }
@@ -238,16 +238,6 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     {
         $layout = $request->getParsedBody()['layout'] ?? $request->getQueryParams()['layout'] ?? null;
         return 'lightbox' === $layout || 'layout/lightbox' === $this->getLayout($request)->getTemplate();
-    }
-
-    /**
-     * Get view renderer.
-     *
-     * @return RendererInterface
-     */
-    protected function getViewRenderer(): RendererInterface
-    {
-        return $this->viewRenderer;
     }
 
     /**
