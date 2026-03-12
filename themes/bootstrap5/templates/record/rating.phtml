@@ -28,7 +28,7 @@
   <?=$this->component('page-title', ['title' => $this->translate($ratingData['count'] === 1 ? 'rating_summary_single' : 'rating_summary', ['%%count%%' => $ratingData['count']])]);?>
   <div class="rating-breakdown">
     <?php foreach ($ratingData['groups'] as $group => $groupCount): ?>
-      <div class="rating-breakdown-stars">
+      <div class="rating-breakdown-stars" title="<?=$groupTitleTransEscAttr[$group]?>">
         <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['count' => 1, 'rating' => $group / 5 * 100]]);?>
       </div>
       <div class="rating-breakdown-percentage">
