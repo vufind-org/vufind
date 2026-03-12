@@ -87,6 +87,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             'unit-test-child2'
                 => new ConfigFile($this->getFixturePath('configs/inheritance/unit-test-child2.ini')),
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
+            'ini-file-with-include' => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test.ini')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
             'dir-config-with-inheritance'
                 => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
@@ -438,6 +439,37 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(10, $config['Section1']['j']);
         $this->assertArrayNotHasKey('Section3', $config);
+    }
+
+    /**
+     * Test loading of INI config with include statements.
+     *
+     * @return void
+     */
+    public function testIniConfigWithIncludeStatement(): void
+    {
+        $config = $this->getConfig('ini-file-with-include');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    'a' => 1,
+                    'b' => 2,
+                ],
+                'Section2' => [
+                    'c' => 3,
+                    'd' => 4,
+                    'e' => 5,
+                ],
+                'Section3' => [
+                    'f' => 6,
+                    'g' => 7,
+                    'h' => 8,
+                    'i' => 9,
+                    'j' => 10,
+                ],
+            ],
+            $config
+        );
     }
 
     /**
