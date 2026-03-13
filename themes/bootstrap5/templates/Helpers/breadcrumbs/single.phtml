@@ -1,10 +1,14 @@
 <?php
-  $attrs = ['class' => 'breadcrumb-item'];
-  if ($active) {
-    $attrs['class'] .= ' active';
-    $attrs['aria-current'] = 'page';
+  $liAttrs = ['class' => 'breadcrumb-item'];
+  if ($this->active) {
+    $liAttrs['class'] .= ' active';
+    $liAttrs['aria-current'] = 'page';
   }
-  $aStart = $href ? '<a href="' . $this->escapeHtmlAttr($href) . '">' : '';
-  $aEnd = $href ? '</a>' : '';
+  $linkAttrs = ['href' => $this->href];
+  if ($this->title !== null) {
+    $linkAttrs['title'] = $this->title;
+  }
+  $aStart = $this->href ? '<a ' . $this->htmlAttributes($linkAttrs) . '>' : '';
+  $aEnd = $this->href ? '</a>' : '';
 ?>
-<li<?=$this->htmlAttributes($attrs)?>><?=$aStart . $this->escapeHtml($text) . $aEnd ?></li>
+<li<?=$this->htmlAttributes($liAttrs)?>><?=$aStart . $this->escapeHtml($this->text) . $aEnd ?></li>
