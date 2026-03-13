@@ -63,24 +63,26 @@ class LaminasTemplateRendererTest extends TestCase
      */
     public static function renderTemplateProvider(): Generator
     {
-        yield 'default action, no lightbox' => [null, false];
-        yield 'default action, lightbox' => [null, true];
-        yield 'custom action' => ['Custom/Test/action', false];
+        yield 'default action, no lightbox' => [null, null, false];
+        yield 'default action, lightbox' => [null, null, true];
+        yield 'custom action' => ['Foo/action', 'foo/action', false];
+        yield 'custom action with template name inflection' => ['Custom/Foo/action', 'foo/action', false];
     }
 
     /**
      * Test renderTemplate method.
      *
-     * @param ?string $action     Action name override
-     * @param bool    $inLightbox Are we in lightbox?
+     * @param ?string $action           Action id, or null for default
+     * @param ?string $expectedTemplate Expected template based on action id, or null for default
+     * @param bool    $inLightbox       Are we in lightbox?
      *
      * @return void
      */
     #[DataProvider('renderTemplateProvider')]
-    public function testRenderTemplate(?string $action, bool $inLightbox): void
+    public function testRenderTemplate(?string $action, ?string $expectedTemplate, bool $inLightbox): void
     {
         $content = 'This is HTML!';
-        $layout = $this->getLayout($inLightbox, 'test/action');
+        $layout = $this->getLayout($inLightbox, $expectedTemplate ?? 'test/action');
         $renderer = $this->getRenderer($layout, $content);
         $request = (new ServerRequest())
             ->withAttribute('view-model', $layout)
