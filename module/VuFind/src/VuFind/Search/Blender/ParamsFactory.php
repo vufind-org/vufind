@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
 {
     /**
-     * Configuration file to read Blender settings from
+     * Configuration file to read Blender settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -55,7 +55,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
     protected $blenderIni = 'Blender';
 
     /**
-     * Configuration file to read Blender mappings settings from
+     * Configuration file to read Blender mappings settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -64,7 +64,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
     protected $blenderMappingsYaml = 'BlenderMappings';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

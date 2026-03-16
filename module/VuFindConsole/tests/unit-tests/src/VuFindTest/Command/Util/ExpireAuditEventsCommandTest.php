@@ -44,14 +44,14 @@ use VuFindConsole\Command\Util\ExpireAuditEventsCommand;
 class ExpireAuditEventsCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireAuditEventsCommand::class;
 
     /**
-     * Name of a valid service class to test with
+     * Name of a valid service class to test with.
      *
      * @var string
      */

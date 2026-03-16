@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for access_token table
+ * Entity model for access_token table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for access_token table
+ * Entity model for access_token table.
  *
  * @category VuFind
  * @package  Database

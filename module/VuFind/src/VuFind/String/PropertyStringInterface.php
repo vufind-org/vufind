@@ -41,7 +41,7 @@ namespace VuFind\String;
 interface PropertyStringInterface extends \ArrayAccess, \Stringable
 {
     /**
-     * Set string value
+     * Set string value.
      *
      * @param string $str String value
      *
@@ -50,14 +50,14 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     public function setString(string $str): static;
 
     /**
-     * Get string value
+     * Get string value.
      *
      * @return string
      */
     public function getString(): string;
 
     /**
-     * Set HTML string
+     * Set HTML string.
      *
      * @param string $html HTML
      *
@@ -66,7 +66,7 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     public function setHtml(string $html): static;
 
     /**
-     * Get HTML string
+     * Get HTML string.
      *
      * Note: This could contain anything and must be sanitized for display unless marked trusted
      * (see setHtmlTrusted/isHtmlTrusted).
@@ -76,7 +76,7 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     public function getHtml(): ?string;
 
     /**
-     * Set flag for trusted HTML
+     * Set flag for trusted HTML.
      *
      * @param bool $trusted Is the HTML content trusted?
      *
@@ -85,14 +85,14 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     public function setHtmlTrusted(bool $trusted): static;
 
     /**
-     * Get flag for trusted HTML
+     * Get flag for trusted HTML.
      *
      * @return ?bool
      */
     public function isHtmlTrusted(): ?bool;
 
     /**
-     * Add an identifier
+     * Add an identifier.
      *
      * @param string $id Identifier
      *
@@ -101,7 +101,7 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     public function addId(string $id): static;
 
     /**
-     * Set identifiers
+     * Set identifiers.
      *
      * @param array $ids Identifiers
      *
@@ -110,7 +110,7 @@ interface PropertyStringInterface extends \ArrayAccess, \Stringable
     public function setIds(array $ids): static;
 
     /**
-     * Get identifiers
+     * Get identifiers.
      *
      * @return ?array
      */

@@ -103,7 +103,7 @@ class QueryGroup extends AbstractQuery
     }
 
     /**
-     * Copy constructor
+     * Copy constructor.
      *
      * @return void
      */

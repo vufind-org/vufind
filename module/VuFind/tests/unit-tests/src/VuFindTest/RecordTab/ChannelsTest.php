@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels Test Class
+ * Channels Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordTab\Channels;
 
 /**
- * Channels Test Class
+ * Channels Test Class.
  *
  * @category VuFind
  * @package  Tests

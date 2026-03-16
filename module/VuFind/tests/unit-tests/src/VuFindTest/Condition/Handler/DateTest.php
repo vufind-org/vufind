@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Date handler test
+ * Date handler test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Condition\Handler;
 use VuFind\Condition\Handler\Date;
 
 /**
- * Date handler test
+ * Date handler test.
  *
  * @category VuFind
  * @package  Tests

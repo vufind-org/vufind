@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FOLIO ILS driver test
+ * FOLIO ILS driver test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\Http\Response;
 use VuFind\ILS\Driver\Folio;
 
 /**
- * FOLIO ILS driver test
+ * FOLIO ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -63,35 +63,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test data for simulated HTTP responses (reset by each test)
+     * Test data for simulated HTTP responses (reset by each test).
      *
      * @var array
      */
     protected $fixtureSteps = [];
 
     /**
-     * Current fixture step
+     * Current fixture step.
      *
      * @var int
      */
     protected $currentFixtureStep = 0;
 
     /**
-     * Current fixture name
+     * Current fixture name.
      *
      * @var string
      */
     protected $currentFixture = 'none';
 
     /**
-     * Driver under test
+     * Driver under test.
      *
      * @var Folio
      */
     protected $driver = null;
 
     /**
-     * Replace makeRequest to inject test returns
+     * Replace makeRequest to inject test returns.
      *
      * @param string       $method  GET/POST/PUT/DELETE/etc
      * @param string       $path    API path (with a leading /)
@@ -149,7 +149,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Generate a new Folio driver to return responses set in a json fixture
+     * Generate a new Folio driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      * Uses session cache
@@ -185,7 +185,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Request a token where one does not exist (RTR authentication)
+     * Request a token where one does not exist (RTR authentication).
      *
      * @return void
      */
@@ -196,7 +196,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Request a token where one does not exist (legacy authentication)
+     * Request a token where one does not exist (legacy authentication).
      *
      * @return void
      */
@@ -212,7 +212,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check a valid token retrieved from session cache
+     * Check a valid token retrieved from session cache.
      *
      * @return void
      */
@@ -224,7 +224,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check and renew an invalid token retrieved from session cache (RTR authentication)
+     * Check and renew an invalid token retrieved from session cache (RTR authentication).
      *
      * @return void
      */
@@ -238,7 +238,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check and renew an invalid token retrieved from session cache (legacy authentication)
+     * Check and renew an invalid token retrieved from session cache (legacy authentication).
      *
      * @return void
      */
@@ -293,7 +293,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an unsuccessful patron login with default settings
+     * Test an unsuccessful patron login with default settings.
      *
      * @return void
      */
@@ -305,7 +305,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test patron login with Okapi (RTR authentication)
+     * Test patron login with Okapi (RTR authentication).
      *
      * @return void
      */
@@ -333,7 +333,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test patron login with Okapi (Legacy authentication)
+     * Test patron login with Okapi (Legacy authentication).
      *
      * @return void
      */
@@ -364,7 +364,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold
+     * Test successful place hold.
      *
      * @return void
      */
@@ -390,7 +390,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold (using an old version of mod-circulation)
+     * Test successful place hold (using an old version of mod-circulation).
      *
      * @return void
      */
@@ -416,7 +416,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold with no expiration date
+     * Test successful place hold with no expiration date.
      *
      * @return void
      */
@@ -440,7 +440,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful place hold with invalid expiration date
+     * Test unsuccessful place hold with invalid expiration date.
      *
      * @return void
      */
@@ -465,7 +465,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold using request type fallback
+     * Test successful place hold using request type fallback.
      *
      * @return void
      */
@@ -497,7 +497,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful place hold
+     * Test unsuccessful place hold.
      *
      * @return void
      */
@@ -524,7 +524,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful place hold when the first method
-     * of getting the mod-circulation version fails with an error
+     * of getting the mod-circulation version fails with an error.
      *
      * @return void
      */
@@ -552,7 +552,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold when the first method
      * of getting the mod-circulation version returns
-     * invalid JSON
+     * invalid JSON.
      *
      * @return void
      */
@@ -578,7 +578,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful renewal
+     * Test successful renewal.
      *
      * @return void
      */
@@ -606,7 +606,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, no items
+     * Test successful call to holds, no items.
      *
      * @return void
      */
@@ -623,7 +623,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, one available item
+     * Test successful call to holds, one available item.
      *
      * @return void
      */
@@ -652,7 +652,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, one available item placed for a proxy
+     * Test successful call to holds, one available item placed for a proxy.
      *
      * @return void
      */
@@ -682,7 +682,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, one in_transit item
+     * Test successful call to holds, one in_transit item.
      *
      * @return void
      */
@@ -711,7 +711,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, item in queue, position x
+     * Test successful call to holds, item in queue, position x.
      *
      * @return void
      */
@@ -741,7 +741,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable when no excludeHoldLocationsCompareMode
-     * config value is set
+     * config value is set.
      *
      * @return void
      */
@@ -757,7 +757,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calls to isHoldable with the exact compare mode
+     * Test calls to isHoldable with the exact compare mode.
      *
      * @return void
      */
@@ -777,7 +777,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calls to isHoldable when using regex mode
+     * Test calls to isHoldable when using regex mode.
      *
      * @return void
      */
@@ -798,7 +798,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable to verify handling of invalid regex
-     * when in regex compare mode
+     * when in regex compare mode.
      *
      * @return void
      */
@@ -823,7 +823,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable that verify that the excludeHoldLocationsCompareMode
-     * config is case insensitive
+     * config is case insensitive.
      *
      * @return void
      */
@@ -848,7 +848,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable using exact mode with invalid
-     * location values and parameter values to isHoldable
+     * location values and parameter values to isHoldable.
      *
      * @return void
      */
@@ -975,7 +975,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding with HRID-based lookup
+     * Test getHolding with HRID-based lookup.
      *
      * @return void
      */
@@ -1093,7 +1093,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldings with multiple ids
+     * Test getHoldings with multiple ids.
      *
      * @return void
      */
@@ -1342,7 +1342,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPagedResults with less than the limit value returned
+     * Test getPagedResults with less than the limit value returned.
      *
      * @return void
      */
@@ -1370,7 +1370,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPagedResults with greater than the limit value returned
+     * Test getPagedResults with greater than the limit value returned.
      *
      * @return void
      */
@@ -1398,7 +1398,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPagedResults with results equal to the limit value returned
+     * Test getPagedResults with results equal to the limit value returned.
      *
      * @return void
      */

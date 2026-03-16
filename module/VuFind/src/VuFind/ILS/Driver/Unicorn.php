@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SirsiDynix Unicorn ILS Driver (VuFind side)
+ * SirsiDynix Unicorn ILS Driver (VuFind side).
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function sprintf;
 use function strlen;
 
 /**
- * SirsiDynix Unicorn ILS Driver (VuFind side)
+ * SirsiDynix Unicorn ILS Driver (VuFind side).
  *
  * IMPORTANT: To use this driver you need to download the SirsiDynix API driver.pl
  * from http://code.google.com/p/vufind-unicorn/ and install it on your Sirsi
@@ -63,42 +63,42 @@ class Unicorn extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Host
+     * Host.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * Port
+     * Port.
      *
      * @var string
      */
     protected $port;
 
     /**
-     * Name of API program
+     * Name of API program.
      *
      * @var string
      */
     protected $search_prog;
 
     /**
-     * Full URL to API (alternative to host/port/search_prog)
+     * Full URL to API (alternative to host/port/search_prog).
      *
      * @var string
      */
     protected $url;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -155,7 +155,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -195,7 +195,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in VoyagerRestful.ini
      *
@@ -219,7 +219,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -236,7 +236,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -292,7 +292,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -344,7 +344,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -381,7 +381,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -400,7 +400,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -423,7 +423,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -486,7 +486,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -544,7 +544,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -583,7 +583,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -641,7 +641,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -688,7 +688,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -708,7 +708,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -769,7 +769,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -846,7 +846,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -873,7 +873,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -899,7 +899,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -925,7 +925,7 @@ class Unicorn extends AbstractBase implements
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -1222,7 +1222,7 @@ class Unicorn extends AbstractBase implements
 
     /**
      * Format the given unix time stamp to a human readable format. The format is
-     * configurable in Unicorn.ini
+     * configurable in Unicorn.ini.
      *
      * @param int $time Unix time stamp.
      *

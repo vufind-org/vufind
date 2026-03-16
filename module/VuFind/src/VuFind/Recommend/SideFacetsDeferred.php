@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SideFacetsDeferred Recommendations Module
+ * SideFacetsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SideFacetsDeferred Recommendations Module
+ * SideFacetsDeferred Recommendations Module.
  *
  * This class provides recommendations displaying facets beside search results
  * after the search results have been displayed
@@ -57,7 +57,7 @@ class SideFacetsDeferred extends SideFacets
     }
 
     /**
-     * Get active facets (key => display string)
+     * Get active facets (key => display string).
      *
      * @return array
      */

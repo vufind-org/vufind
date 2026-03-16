@@ -41,35 +41,35 @@ namespace VuFind\Recommend;
 abstract class AbstractSummonRecommend implements RecommendInterface
 {
     /**
-     * Database details
+     * Database details.
      *
      * @var \VuFind\Search\Summon\Results
      */
     protected $results;
 
     /**
-     * Request parameter to pull query from
+     * Request parameter to pull query from.
      *
      * @var string
      */
     protected $requestParam = 'lookfor';
 
     /**
-     * User query
+     * User query.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */

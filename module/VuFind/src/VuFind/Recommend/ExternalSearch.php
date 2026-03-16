@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExternalSearch Recommendation Module
+ * ExternalSearch Recommendation Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * ExternalSearch Recommendation Module
+ * ExternalSearch Recommendation Module.
  *
  * @category VuFind
  * @package  Recommendations
@@ -41,21 +41,21 @@ namespace VuFind\Recommend;
 class ExternalSearch implements RecommendInterface
 {
     /**
-     * Link text
+     * Link text.
      *
      * @var string
      */
     protected $linkText;
 
     /**
-     * URL template string
+     * URL template string.
      *
      * @var string
      */
     protected $template;
 
     /**
-     * Search query
+     * Search query.
      *
      * @var string
      */

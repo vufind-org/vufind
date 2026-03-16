@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\View\FlashMessenger\FlashMessengerInterface;
 use function is_array;
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -60,7 +60,7 @@ class Flashmessages extends AbstractHelper
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FlashMessengerInterface $flashMessenger Flash messenger controller helper
      */
@@ -69,7 +69,7 @@ class Flashmessages extends AbstractHelper
     }
 
     /**
-     * Get the CSS class to correspond with a messenger namespace
+     * Get the CSS class to correspond with a messenger namespace.
      *
      * @param string $ns Namespace
      *

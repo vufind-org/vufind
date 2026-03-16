@@ -48,7 +48,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\MockSearchCommandTrait;
 
     /**
-     * Get a mock backend
+     * Get a mock backend.
      *
      * @param string $id ID of fake backend.
      *

@@ -57,28 +57,28 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     use TranslatorAwareTrait;
 
     /**
-     * Turnstile service
+     * Turnstile service.
      *
      * @var ?Turnstile
      */
     protected $turnstile = null;
 
     /**
-     * Current event description for logging
+     * Current event description for logging.
      *
      * @var string
      */
     protected $eventDesc = '??';
 
     /**
-     * Client details for logging
+     * Client details for logging.
      *
      * @var string
      */
     protected $clientLogDetails;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array          $config                     Rate limiter configuration
      * @param string         $clientIp                   Client's IP address
@@ -112,7 +112,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if rate limiter is enabled
+     * Check if rate limiter is enabled.
      *
      * @return bool|string False if disabled, true if enabled and enforcing,
      * 'report_only' if enabled for logging only (not enforcing the limits)
@@ -124,7 +124,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if the given event is allowed
+     * Check if the given event is allowed.
      *
      * @param EventInterface $event Event
      *
@@ -266,7 +266,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Try to find a policy that matches an event
+     * Try to find a policy that matches an event.
      *
      * @param MvcEvent $event Event
      *
@@ -314,7 +314,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if an event matches a filter
+     * Check if an event matches a filter.
      *
      * @param MvcEvent $event  Event
      * @param array    $filter Filter from configuration
@@ -349,7 +349,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Log a verbose debug message if configured
+     * Log a verbose debug message if configured.
      *
      * @param string $msg Message
      *
@@ -363,7 +363,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Get a response message for too many requests
+     * Get a response message for too many requests.
      *
      * @param MvcEvent $event  Request event
      * @param array    $result Rate limiter result
@@ -385,7 +385,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if the request is from a crawler
+     * Check if the request is from a crawler.
      *
      * @param MvcEvent $event Request event
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for the RecordsHelper
+ * Unit tests for the RecordsHelper.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Record\Loader;
 use VuFind\RecordDriver\AbstractBase;
 
 /**
- * Unit tests for the RecordsHelper
+ * Unit tests for the RecordsHelper.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ use VuFind\RecordDriver\AbstractBase;
 class RecordsHelperTest extends TestCase
 {
     /**
-     * Test getDrivers with empty array
+     * Test getDrivers with empty array.
      *
      * @return void
      */
@@ -66,7 +66,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers with valid records
+     * Test getDrivers with valid records.
      *
      * @return void
      */
@@ -117,7 +117,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers with records missing id field
+     * Test getDrivers with records missing id field.
      *
      * @return void
      */
@@ -153,7 +153,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers with records using default search backend
+     * Test getDrivers with records using default search backend.
      *
      * @return void
      */
@@ -189,7 +189,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Data provider for ajax configuration tests
+     * Data provider for ajax configuration tests.
      *
      * @return \Iterator<(int | string), mixed>
      */
@@ -204,7 +204,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test collectRequestStats when ajax is enabled
+     * Test collectRequestStats when ajax is enabled.
      *
      * @param array $configData Configuration data
      *
@@ -247,7 +247,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test collectRequestStats when ajax is disabled
+     * Test collectRequestStats when ajax is disabled.
      *
      * @return void
      */
@@ -269,7 +269,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test collectRequestStats with empty records array
+     * Test collectRequestStats with empty records array.
      *
      * @return void
      */
@@ -290,7 +290,7 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test getDrivers maintains correct order from loadBatch
+     * Test getDrivers maintains correct order from loadBatch.
      *
      * @return void
      */

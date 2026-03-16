@@ -185,7 +185,7 @@ trait LiveDatabaseTrait
     }
 
     /**
-     * Get a container with Doctrine dependencies included
+     * Get a container with Doctrine dependencies included.
      *
      * @return \VuFindTest\Container\MockContainer
      */

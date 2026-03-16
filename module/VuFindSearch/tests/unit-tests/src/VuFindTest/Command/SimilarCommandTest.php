@@ -46,7 +46,7 @@ use VuFindSearch\ParamBag;
 class SimilarCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */
@@ -111,7 +111,7 @@ class SimilarCommandTest extends TestCase
     }
 
     /**
-     * Test that the command throws an exception results are requested before execute
+     * Test that the command throws an exception results are requested before execute.
      *
      * @return void
      */
@@ -123,7 +123,7 @@ class SimilarCommandTest extends TestCase
     }
 
     /**
-     * Test for getArguments method
+     * Test for getArguments method.
      *
      * @return void
      */
@@ -137,7 +137,7 @@ class SimilarCommandTest extends TestCase
     }
 
     /**
-     * Get test SimilarCommand Object
+     * Get test SimilarCommand Object.
      *
      * @return SimilarCommand
      */
@@ -151,7 +151,7 @@ class SimilarCommandTest extends TestCase
     }
 
     /**
-     * Get test backend Object
+     * Get test backend Object.
      *
      * @return Backend
      */

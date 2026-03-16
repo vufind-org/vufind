@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Pagination Helper
+ * ILS Pagination Helper.
  *
  * This class helps build paginators for ILS-provided data.
  *
@@ -35,7 +35,7 @@ namespace VuFind\ILS;
 use function in_array;
 
 /**
- * ILS Pagination Helper
+ * ILS Pagination Helper.
  *
  * This class helps build paginators for ILS-provided data.
  *
@@ -141,7 +141,7 @@ class PaginationHelper
     }
 
     /**
-     * Build a paginator with the paging options and ILS results if necessary
+     * Build a paginator with the paging options and ILS results if necessary.
      *
      * @param array $pageOptions Paging options and parameters (returned by the
      * getOptions method)

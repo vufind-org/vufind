@@ -59,7 +59,7 @@ class ZoteroController extends AbstractBase implements LoggerAwareInterface, Tra
     use TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm               Service manager
      * @param SessionContainer        $sessionContainer Session container

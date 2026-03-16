@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for the RenewalsHelper
+ * Unit tests for the RenewalsHelper.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\View\FlashMessenger\FlashMessengerInterface;
 use function is_array;
 
 /**
- * Unit tests for the RenewalsHelper
+ * Unit tests for the RenewalsHelper.
  *
  * @category VuFind
  * @package  Tests
@@ -353,7 +353,7 @@ class RenewalsHelperTest extends TestCase
     }
 
     /**
-     * Test processing renewals when ILS returns false
+     * Test processing renewals when ILS returns false.
      *
      * @return void
      */

@@ -114,7 +114,7 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @param string $expectedFilename   Fixture file matching key
      * @param string $keyPattern         Match pattern to use in key
@@ -139,7 +139,7 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testInvalidCover()
+     * Data provider for testInvalidCover().
      *
      * @return \Iterator
      */

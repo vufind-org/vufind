@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine identifier linker
+ * BrowZine identifier linker.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function in_array;
 use function is_array;
 
 /**
- * BrowZine identifier linker
+ * BrowZine identifier linker.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -52,7 +52,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service $searchService       Search service
      * @param array   $config              Configuration settings
@@ -223,7 +223,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     }
 
     /**
-     * Get an array of DOI services and their configuration
+     * Get an array of DOI services and their configuration.
      *
      * @return array
      */
@@ -233,7 +233,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     }
 
     /**
-     * Get an array of ISSN services and their configuration
+     * Get an array of ISSN services and their configuration.
      *
      * @return array
      */

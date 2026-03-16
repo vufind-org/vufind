@@ -45,7 +45,7 @@ use function defined;
 class IpAddressUtils
 {
     /**
-     * Normalize an IP address or a beginning of it to an IPv6 address
+     * Normalize an IP address or a beginning of it to an IPv6 address.
      *
      * @param string $ip  IP Address
      * @param bool   $end Whether to make a partial address  an "end of range"

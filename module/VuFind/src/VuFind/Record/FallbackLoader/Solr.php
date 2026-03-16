@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr record fallback loader
+ * Solr record fallback loader.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Service;
 
 /**
- * Solr record fallback loader
+ * Solr record fallback loader.
  *
  * @category VuFind
  * @package  Record
@@ -46,14 +46,14 @@ use VuFindSearch\Service;
 class Solr extends AbstractFallbackLoader
 {
     /**
-     * Record source
+     * Record source.
      *
      * @var string
      */
     protected $source = 'Solr';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourceServiceInterface $resourceService Resource database service
      * @param RecordIdUpdater          $recordIdUpdater Record ID updater service

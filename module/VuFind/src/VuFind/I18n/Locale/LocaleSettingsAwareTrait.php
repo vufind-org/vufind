@@ -50,7 +50,7 @@ trait LocaleSettingsAwareTrait
     protected LocaleSettings $localeSettings;
 
     /**
-     * Set locale settings
+     * Set locale settings.
      *
      * @param LocaleSettings $localeSettings Locale Settings
      *

@@ -84,7 +84,7 @@ class CopyStringCommand extends AbstractCommand
     }
 
     /**
-     * Add a line to a language file
+     * Add a line to a language file.
      *
      * @param string $filename File to update
      * @param string $key      Name of language key

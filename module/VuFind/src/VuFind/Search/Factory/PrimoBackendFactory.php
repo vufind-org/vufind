@@ -67,28 +67,28 @@ class PrimoBackendFactory extends AbstractBackendFactory
     protected LoggerInterface $logger;
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var Config
      */
     protected Config $primoConfig;
 
     /**
-     * Primo backend class
+     * Primo backend class.
      *
      * @var string
      */
     protected string $backendClass = Backend::class;
 
     /**
-     * Primo REST API connector class
+     * Primo REST API connector class.
      *
      * @var string
      */
     protected string $restConnectorClass = RestConnector::class;
 
     /**
-     * CDI attribute mappings
+     * CDI attribute mappings.
      *
      * @var array
      */
@@ -124,7 +124,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     ];
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -253,7 +253,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */
@@ -276,7 +276,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a OnCampus Listener
+     * Get a OnCampus Listener.
      *
      * @return InjectOnCampusListener
      */
@@ -286,7 +286,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a PrimoPermissionHandler
+     * Get a PrimoPermissionHandler.
      *
      * @return ?PrimoPermissionHandler
      */
@@ -307,7 +307,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get HTTP options for the client
+     * Get HTTP options for the client.
      *
      * @param string $url URL being requested
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * File-based session handler
+ * File-based session handler.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function function_exists;
 use function strlen;
 
 /**
- * File-based session handler
+ * File-based session handler.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -46,14 +46,14 @@ use function strlen;
 class File extends AbstractBase
 {
     /**
-     * Path to session file
+     * Path to session file.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Config $config Session configuration ([Session] section of
      * config.ini)

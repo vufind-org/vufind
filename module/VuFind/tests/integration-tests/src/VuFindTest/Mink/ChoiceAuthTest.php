@@ -207,7 +207,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test login on record page with ILS and SSO authentication
+     * Test login on record page with ILS and SSO authentication.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AbstractJsStrings helper for passing transformed text to Javascript
+ * AbstractJsStrings helper for passing transformed text to Javascript.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * AbstractJsStrings helper for passing transformed text to Javascript
+ * AbstractJsStrings helper for passing transformed text to Javascript.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,14 +41,14 @@ namespace VuFind\View\Helper\Root;
 abstract class AbstractJsStrings
 {
     /**
-     * Strings to convey (key = js key, value = value to map)
+     * Strings to convey (key = js key, value = value to map).
      *
      * @var array
      */
     protected $strings = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $varName Variable name to store values
      */
@@ -67,7 +67,7 @@ abstract class AbstractJsStrings
     }
 
     /**
-     * Transform strings before JSON encoding
+     * Transform strings before JSON encoding.
      *
      * @param string|array $str String to transform
      * @param string       $key JSON object key
@@ -91,7 +91,7 @@ abstract class AbstractJsStrings
     }
 
     /**
-     * Generate JSON from an array
+     * Generate JSON from an array.
      *
      * @param array $strings Strings to convey (key = js key, value = value to map)
      *
@@ -107,7 +107,7 @@ abstract class AbstractJsStrings
     }
 
     /**
-     * Generate JSON from the internal strings
+     * Generate JSON from the internal strings.
      *
      * @return string
      */

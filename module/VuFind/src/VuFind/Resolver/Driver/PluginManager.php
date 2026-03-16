@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Resolver driver plugin manager
+ * Resolver driver plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Resolver\Driver;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Resolver driver plugin manager
+ * Resolver driver plugin manager.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -78,7 +78,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

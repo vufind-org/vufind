@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides A-Z Databases Controller
+ * LibGuides A-Z Databases Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * LibGuides A-Z Databases Controller
+ * LibGuides A-Z Databases Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -45,7 +45,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class LibGuidesAZController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

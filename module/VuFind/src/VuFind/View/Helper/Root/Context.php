@@ -48,7 +48,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Context
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RendererInterface $view View renderer
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver plugin manager
+ * ILS driver plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\ILS\Driver;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * ILS driver plugin manager
+ * ILS driver plugin manager.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -115,7 +115,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

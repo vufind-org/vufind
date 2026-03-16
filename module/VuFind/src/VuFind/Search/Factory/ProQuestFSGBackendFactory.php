@@ -60,21 +60,21 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     protected LoggerInterface $logger;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
     protected Config $config;
 
     /**
-     * ProQuestFSG configuration
+     * ProQuestFSG configuration.
      *
      * @var Config
      */
     protected Config $proQuestFSGConfig;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -136,7 +136,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

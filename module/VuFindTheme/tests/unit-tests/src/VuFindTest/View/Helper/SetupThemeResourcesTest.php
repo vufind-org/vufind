@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\SetupThemeResources;
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * QRCode Controller
+ * QRCode Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\QRCode\Loader;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * Generates qrcodes
+ * Generates qrcodes.
  *
  * @category VuFind
  * @package  Controller
@@ -46,21 +46,21 @@ use VuFind\Session\Settings as SessionSettings;
 class QRCodeController extends \Laminas\Mvc\Controller\AbstractActionController
 {
     /**
-     * QR Code loader
+     * QR Code loader.
      *
      * @var Loader
      */
     protected $loader = false;
 
     /**
-     * Session settings
+     * Session settings.
      *
      * @var SessionSettings
      */
     protected $sessionSettings = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader          $loader QR Code Loader
      * @param SessionSettings $ss     Session settings
@@ -72,7 +72,7 @@ class QRCodeController extends \Laminas\Mvc\Controller\AbstractActionController
     }
 
     /**
-     * Send QRCode data for display in the view
+     * Send QRCode data for display in the view.
      *
      * @return \Laminas\Http\Response
      */
@@ -89,7 +89,7 @@ class QRCodeController extends \Laminas\Mvc\Controller\AbstractActionController
     }
 
     /**
-     * Return the default 'qrcode not found' information
+     * Return the default 'qrcode not found' information.
      *
      * @return \Laminas\Http\Response
      */

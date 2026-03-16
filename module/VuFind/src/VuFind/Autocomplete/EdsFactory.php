@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
+ * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
+ * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class EdsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

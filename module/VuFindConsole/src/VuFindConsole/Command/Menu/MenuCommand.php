@@ -71,7 +71,7 @@ class MenuCommand extends Command
     protected string $exitCommand = 'Exit Command';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array         $config         Menu configuration
      * @param PluginManager $commandManager Plugin manager for internal console commands
