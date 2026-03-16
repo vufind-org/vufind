@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DateTime handler test
+ * DateTime handler test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Condition\Handler;
 use VuFind\Condition\Handler\DateTime;
 
 /**
- * DateTime handler test
+ * DateTime handler test.
  *
  * @category VuFind
  * @package  Tests

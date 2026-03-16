@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Condition handler plugin manager
+ * Condition handler plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Condition\Handler;
 use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 
 /**
- * Condition handler plugin manager
+ * Condition handler plugin manager.
  *
  * @category VuFind
  * @package  Condition_Handler
@@ -60,7 +60,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

@@ -290,7 +290,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * String handler test
+ * String handler test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Condition\Handler;
 use VuFind\Condition\Handler\StringHandler;
 
 /**
- * String handler test
+ * String handler test.
  *
  * @category VuFind
  * @package  Tests

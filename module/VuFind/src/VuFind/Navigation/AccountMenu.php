@@ -468,7 +468,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Create icon name for fines item
+     * Create icon name for fines item.
      *
      * @return string
      */

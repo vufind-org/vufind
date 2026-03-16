@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SiteMap section plugin
+ * SiteMap section plugin.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function in_array;
 use function is_array;
 
 /**
- * SiteMap section plugin
+ * SiteMap section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -50,7 +50,7 @@ use function is_array;
 class SiteMap extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array             $sectionConfig Site map configuration
      * @param RendererInterface $renderer      View renderer
@@ -251,7 +251,7 @@ class SiteMap extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */

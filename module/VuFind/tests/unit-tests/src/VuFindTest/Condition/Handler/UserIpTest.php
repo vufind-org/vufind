@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LoggedIn handler test
+ * LoggedIn handler test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Condition\Handler\UserIp;
 use VuFind\Net\UserIpReader;
 
 /**
- * LoggedIn handler test
+ * LoggedIn handler test.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Environment variable handler test
+ * Environment variable handler test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Condition\Handler;
 use VuFind\Condition\Handler\Env;
 
 /**
- * Environment variable handler test
+ * Environment variable handler test.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     protected string $envVar = 'VUFIND_ENV_TEST_VAR';
 
     /**
-     * Clean up test environment
+     * Clean up test environment.
      *
      * @return void
      */

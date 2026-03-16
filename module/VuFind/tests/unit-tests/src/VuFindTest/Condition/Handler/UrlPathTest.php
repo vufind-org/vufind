@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UrlPath handler test
+ * UrlPath handler test.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Condition\Handler\UrlPath;
 use VuFind\Http\PhpEnvironment\Request;
 
 /**
- * UrlPath handler test
+ * UrlPath handler test.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for condition handlers
+ * Interface for condition handlers.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Condition\Handler;
 use VuFind\Exception\ConditionException;
 
 /**
- * Interface for condition handlers
+ * Interface for condition handlers.
  *
  * @category VuFind
  * @package  Condition_Handler

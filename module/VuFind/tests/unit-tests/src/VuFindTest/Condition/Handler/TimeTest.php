@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Time handler test
+ * Time handler test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Condition\Handler;
 use VuFind\Condition\Handler\Time;
 
 /**
- * Time handler test
+ * Time handler test.
  *
  * @category VuFind
  * @package  Tests

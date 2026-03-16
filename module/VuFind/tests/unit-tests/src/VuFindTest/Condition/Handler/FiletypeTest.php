@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Filetype handler test
+ * Filetype handler test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Condition\Handler\Filetype;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Filetype handler test
+ * Filetype handler test.
  *
  * @category VuFind
  * @package  Tests
