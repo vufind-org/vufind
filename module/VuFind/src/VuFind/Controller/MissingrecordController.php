@@ -47,7 +47,7 @@ class MissingrecordController extends AbstractBase
      */
     public function homeAction()
     {
-        $this->flashMessenger()->addMessage('Cannot find record', 'error');
+        $this->flashMessenger()->addErrorMessage('Cannot find record');
         return $this->createViewModel();
     }
 }

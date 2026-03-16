@@ -311,7 +311,7 @@ class InstallController extends AbstractBase
             $msg = 'VuFind requires PHP version ' . $this->getMinimalPhpVersion()
                 . ' or newer; you are running ' . phpversion()
                 . '. Please upgrade.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -323,7 +323,7 @@ class InstallController extends AbstractBase
                 . ' this. For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -335,7 +335,7 @@ class InstallController extends AbstractBase
                 . ' For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -347,7 +347,7 @@ class InstallController extends AbstractBase
                 . ' this. For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -358,7 +358,7 @@ class InstallController extends AbstractBase
                 . ' For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -369,7 +369,7 @@ class InstallController extends AbstractBase
                 . ' For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -397,19 +397,19 @@ class InstallController extends AbstractBase
 
         if (!preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()
-                ->addMessage('Database name must be alphanumeric.', 'error');
+                ->addErrorMessage('Database name must be alphanumeric.');
         } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()
-                ->addMessage('Database user must be alphanumeric.', 'error');
+                ->addErrorMessage('Database user must be alphanumeric.');
         } elseif ($skip || $this->formWasSubmitted()) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
                 $this->flashMessenger()
-                    ->addMessage('Password fields must not be blank.', 'error');
+                    ->addErrorMessage('Password fields must not be blank.');
             } elseif ($newpass != $newpassConf) {
                 $this->flashMessenger()
-                    ->addMessage('Password fields must match.', 'error');
+                    ->addErrorMessage('Password fields must match.');
             } else {
                 // Connect to database:
                 try {
@@ -443,7 +443,7 @@ class InstallController extends AbstractBase
                     }
                     return $this->redirect()->toRoute('install-home');
                 } catch (\Exception $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->flashMessenger()->addErrorMessage($e->getMessage());
                 }
             }
         }
@@ -680,7 +680,7 @@ class InstallController extends AbstractBase
         $userConfirmation = $this->params()->fromPost('fix-user-table', 'Unset');
         if ($userConfirmation == 'No') {
             $msg = 'Security upgrade aborted.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->flashMessenger()->addErrorMessage($msg);
             return $this->redirect()->toRoute('install-home');
         }
 
@@ -689,10 +689,8 @@ class InstallController extends AbstractBase
             $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
             $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
         } catch (\Throwable $e) {
-            $this->flashMessenger()->addMessage(
-                'Cannot connect to database; please configure database before fixing security.',
-                'error'
-            );
+            $this->flashMessenger()
+                ->addErrorMessage('Cannot connect to database; please configure database before fixing security.');
             return $this->redirect()->toRoute('install-home');
         }
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
@@ -748,7 +746,7 @@ class InstallController extends AbstractBase
                 }
             }
             $msg = count($userRows) . ' user row(s) encrypted.';
-            $this->flashMessenger()->addMessage($msg, 'info');
+            $this->flashMessenger()->addInfoMessage($msg);
         }
         $cardService = $this->getDbService(UserCardServiceInterface::class);
         $cardRows = $cardService->getInsecureRows();
@@ -759,7 +757,7 @@ class InstallController extends AbstractBase
                 $cardService->persistEntity($row);
             }
             $msg = count($cardRows) . ' user_card row(s) encrypted.';
-            $this->flashMessenger()->addMessage($msg, 'info');
+            $this->flashMessenger()->addInfoMessage($msg);
         }
         return $this->redirect()->toRoute('install-home');
     }
@@ -796,7 +794,7 @@ class InstallController extends AbstractBase
         // Bail out if we've fixed the problem:
         $result = $this->checkSslCerts();
         if ($result['status'] == true) {
-            $this->flashMessenger()->addMessage('SSL configuration fixed.', 'info');
+            $this->flashMessenger()->addInfoMessage('SSL configuration fixed.');
             return $this->redirect()->toRoute('install-home');
         }
 

@@ -321,6 +321,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @return array       Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -379,6 +380,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {

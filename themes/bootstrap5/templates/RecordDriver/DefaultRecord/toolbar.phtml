@@ -34,7 +34,9 @@
     <?php endif; ?>
 
     <li>
-      <a class="print-record toolbar-btn icon-link" href="<?=$this->url()->addQueryParameters(['print' => true])?>" rel="nofollow">
+      <a class="print-record toolbar-btn icon-link" href="<?=$this->url()->addQueryParameters(['print' => true])?>" rel="nofollow"
+        data-click-set-query-params="print=1"
+      >
         <?=$this->icon('print', 'icon-link__icon') ?>
         <span class="icon-link__label">
           <?=$this->transEsc('Print')?>

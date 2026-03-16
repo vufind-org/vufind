@@ -93,6 +93,9 @@ class ServiceInitializer implements InitializerInterface
         if ($instance instanceof \Psr\Log\LoggerAwareInterface) {
             $instance->setLogger($sm->get(\VuFind\Log\Logger::class));
         }
+        if ($instance instanceof \VuFind\I18n\Locale\LocaleSettingsAwareInterface) {
+            $instance->setLocaleSettings($sm->get(\VuFind\I18n\Locale\LocaleSettings::class));
+        }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
             $instance->setTranslator($sm->get(\Laminas\Mvc\I18n\Translator::class));
         }

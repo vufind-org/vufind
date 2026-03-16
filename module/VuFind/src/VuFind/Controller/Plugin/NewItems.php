@@ -76,6 +76,8 @@ class NewItems extends AbstractPlugin
      * @param FlashMessenger             $flash   Flash messenger
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getBibIDsFromCatalog($catalog, $params, $range, $dept, $flash)
     {
@@ -98,7 +100,7 @@ class NewItems extends AbstractPlugin
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $flash->addMessage('too_many_new_items', 'info');
+            $flash->addInfoMessage('too_many_new_items');
         }
 
         return $bibIDs;
@@ -128,6 +130,8 @@ class NewItems extends AbstractPlugin
      * Get fund list.
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getFundList()
     {

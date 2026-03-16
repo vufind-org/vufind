@@ -116,7 +116,7 @@ class FeedbackController extends AbstractAdmin
             : $this->getParam('idsAll', true);
 
         if (!is_array($ids) || empty($ids)) {
-            $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
+            $this->flashMessenger()->addErrorMessage('bulk_noitems_advice');
             return $this->redirect()->toUrl($originUrl);
         }
         if (!$confirm) {
@@ -124,15 +124,14 @@ class FeedbackController extends AbstractAdmin
         }
         $delete = $this->getDbService(FeedbackServiceInterface::class)->deleteByIdArray($ids);
         if (0 == $delete) {
-            $this->flashMessenger()->addMessage('feedback_delete_failure', 'error');
+            $this->flashMessenger()->addErrorMessage('feedback_delete_failure');
             return $this->redirect()->toUrl($originUrl);
         }
-        $this->flashMessenger()->addMessage(
+        $this->flashMessenger()->addSuccessMessage(
             [
                 'msg' => 'feedback_delete_success',
                 'tokens' => ['%%count%%' => $delete],
-            ],
-            'success'
+            ]
         );
         return $this->redirect()->toUrl($originUrl);
     }
@@ -231,15 +230,9 @@ class FeedbackController extends AbstractAdmin
             // Fall through to display an error message
         }
         if ($success) {
-            $this->flashMessenger()->addMessage(
-                'feedback_status_update_success',
-                'success'
-            );
+            $this->flashMessenger()->addSuccessMessage('feedback_status_update_success');
         } else {
-            $this->flashMessenger()->addMessage(
-                'feedback_status_update_failure',
-                'error'
-            );
+            $this->flashMessenger()->addErrorMessage('feedback_status_update_failure');
         }
         return $this->redirect()->toRoute(
             'admin/feedback',

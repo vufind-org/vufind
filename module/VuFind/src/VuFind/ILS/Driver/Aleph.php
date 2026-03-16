@@ -10,8 +10,7 @@
  * last update: 7.11.2007
  * tested with X-Server Aleph 18.1.
  *
- * TODO: login, course information, getNewItems, duedate in holdings,
- * https connection to x-server, ...
+ * TODO: login, course information, https connection to x-server, ...
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -1714,6 +1713,7 @@ class Aleph extends AbstractBase implements
      * @return array       Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {

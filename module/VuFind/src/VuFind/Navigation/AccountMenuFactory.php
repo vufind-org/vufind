@@ -64,8 +64,10 @@ class AccountMenuFactory extends AbstractMenuFactory
         $requestedName,
         ?array $options = null
     ) {
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+
         // Only load the connector if we need to show
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('Overdrive');
+        $config = $configManager->getConfigArray('Overdrive');
         $connector = null;
         if (($config['Overdrive']['showMyContent'] ?? '') != 'never') {
             $connector = $container->get(
@@ -83,6 +85,7 @@ class AccountMenuFactory extends AbstractMenuFactory
                 $container->get(\VuFind\ILS\Connection::class),
                 $container->get(\VuFind\Auth\ILSAuthenticator::class),
                 $connector,
+                $configManager->getConfigArray('config'),
                 ...($options ?? []),
             ]
         );

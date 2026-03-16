@@ -30,6 +30,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Exception\InvalidArgumentException;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\ContentBlock\TemplateBased;
 
@@ -76,11 +77,11 @@ class Content extends AbstractHelper
     /**
      * Search for a translated template and render it using a temporary context.
      *
-     * @param string $pageName    Name of the page
-     * @param string $pathPrefix  Path where the template should be located
-     * @param array  $context     Optional array of context variables
-     * @param array  $pageDetails Optional output variable for additional info
-     * @param string $pattern     Optional file system pattern to search page
+     * @param string  $pageName    Name of the page
+     * @param string  $pathPrefix  Path where the template should be located
+     * @param array   $context     Optional array of context variables
+     * @param ?array  $pageDetails Optional output variable for additional info
+     * @param ?string $pattern     Optional file system pattern to search page
      *
      * @return string            Rendered template output
      */
@@ -104,5 +105,27 @@ class Content extends AbstractHelper
             'ContentBlock/TemplateBased.phtml',
             $context + $pageDetails
         );
+    }
+
+    /**
+     * Apply encoding to the content based on the provided content type.
+     *
+     * @param string $contentType Content type (text, html, or markdown)
+     * @param string $content     Content
+     *
+     * @return string
+     */
+    public function handleContentType(string $contentType, string $content): string
+    {
+        if (empty($content)) {
+            return '';
+        }
+        $view = $this->getView();
+        return match ($contentType) {
+            'text' => $view->plugin('escapeHtml')($content),
+            'html' => $content,
+            'markdown' => $view->plugin('markdown')($view->plugin('escapeHtml')($content))->getContent(),
+            default => throw new InvalidArgumentException('Invalid content type: ' . $contentType),
+        };
     }
 }

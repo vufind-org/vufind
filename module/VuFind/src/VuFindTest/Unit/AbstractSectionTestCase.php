@@ -29,9 +29,10 @@
 
 namespace VuFindTest\Unit;
 
-use Laminas\Http\Request;
+use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\View\Model\ViewModel;
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
@@ -50,6 +51,8 @@ use VuFind\Navigation\FooterMenu;
 use VuFind\Navigation\FooterMenuFactory;
 use VuFind\Navigation\HeaderBar;
 use VuFind\Navigation\HeaderBarFactory;
+use VuFind\Navigation\SiteMap;
+use VuFind\Navigation\SiteMapFactory;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
@@ -162,6 +165,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $this->getAdminMenu($container);
         $this->getFooterMenu($container);
         $this->getHeaderBar($container);
+        $this->getSiteMap($container);
     }
 
     /**
@@ -448,5 +452,31 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             'checkThemeOptions' => $value,
             'checkAllLangs' => $value,
         ];
+    }
+
+    /**
+     * Get a mock SiteMap.
+     *
+     * @param MockContainer $container Mock container
+     * @param ?array        $config    Configuration to use, null for default configuration
+     *
+     * @return SiteMap
+     */
+    protected function getSiteMap(
+        MockContainer $container,
+        ?array $config = null
+    ): SiteMap {
+        $config ??= $this->getDefaultYamlConfig('SiteMap.yaml');
+        $this->mockYamlReaderFiles['SiteMap.yaml'] = $config;
+
+        $mockViewRenderer = $this->createMock(PhpRenderer::class);
+        // We are only testing that the templates are getting rendered, not the
+        // actual templates themselves.
+        $mockViewRenderer->method('render')->willReturn('<li></li>');
+        $container->set('ViewRenderer', $mockViewRenderer);
+
+        $siteMap = (new SiteMapFactory())($container, SiteMap::class);
+        $this->setSectionPlugin($container, $siteMap, 'siteMap');
+        return $siteMap;
     }
 }

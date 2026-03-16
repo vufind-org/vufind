@@ -2,8 +2,9 @@
   // Set page title.
   $this->headTitle($this->translate('Search Home'));
 
-  // Disable top search box -- this page has a special layout.
+  // Disable top search box and notices -- this page has a special layout.
   $this->layout()->searchbox = false;
+  $this->layout()->disableDefaultNotices = true;
 
   // Set default value if necessary:
   if (!isset($this->searchClassId)) {
@@ -20,5 +21,7 @@
     <?=$this->assetManager()->outputInlineScriptString('$("#searchForm_lookfor").focus();'); ?>
   <?=$this->slot('search-home-hero')->end() ?>
 </div>
+
+<?=$this->notices()->renderNoticesForPosition('default')?>
 
 <?=implode('', array_map([$this, 'contentBlock'], $blocks ?? []))?>

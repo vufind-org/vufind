@@ -167,7 +167,7 @@ class LibraryCardsController extends AbstractBase
             );
 
             // Success Message
-            $this->flashMessenger()->addMessage('Library Card Deleted', 'success');
+            $this->flashMessenger()->addSuccessMessage('Library Card Deleted');
             // Redirect to MyResearch library cards
             return $this->redirect()->toRoute('librarycards-home');
         }
@@ -224,11 +224,11 @@ class LibraryCardsController extends AbstractBase
             );
             if (!$patron) {
                 $this->flashMessenger()
-                    ->addMessage('authentication_error_invalid', 'error');
+                    ->addErrorMessage('authentication_error_invalid');
             }
         } catch (ILSException $e) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_technical', 'error');
+                ->addErrorMessage('authentication_error_technical');
         }
 
         $this->setFollowupUrlToReferer(false);
@@ -252,7 +252,7 @@ class LibraryCardsController extends AbstractBase
         $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
         if (!$redirectUrl) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_technical', 'error');
+                ->addErrorMessage('authentication_error_technical');
             return $this->redirect()->toRoute('librarycards-home');
         }
         return $this->redirect()->toUrl($redirectUrl);
@@ -271,8 +271,7 @@ class LibraryCardsController extends AbstractBase
         try {
             $this->getAuthManager()->connectLibraryCard($this->getRequest(), $user);
         } catch (\Exception $ex) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage($ex->getMessage());
+            $this->flashMessenger()->addErrorMessage($ex->getMessage());
         }
         return $this->redirect()->toRoute('librarycards-home');
     }
@@ -295,7 +294,7 @@ class LibraryCardsController extends AbstractBase
 
         if (!$username) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_blank', 'error');
+                ->addErrorMessage('authentication_error_blank');
             return false;
         }
 

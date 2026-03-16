@@ -53,6 +53,11 @@ class Section extends AbstractHelper
     /**
      * Section context key.
      */
+    public const SECTION_PLUGIN_KEY = '__sectionPlugin';
+
+    /**
+     * Section context key.
+     */
     public const SECTION_CONTEXT_KEY = '__sectionContext';
 
     /**
@@ -146,6 +151,7 @@ class Section extends AbstractHelper
     {
         $sectionContext = $this->section->getSectionContext();
         $mergedContext = array_merge($sectionContext, $context);
+        $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
         $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
         if ($this->getView()->resolver()->resolve($this->template)) {

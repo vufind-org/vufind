@@ -100,6 +100,10 @@ VuFind.register('covers', function covers() {
   function checkImgSize(img) {
     if (img.getBoundingClientRect().width < 2) {
       img.classList.add('hidden');
+      let recordCoverContainer = img.closest('.record-cover-container');
+      if (recordCoverContainer !== null) {
+        recordCoverContainer.classList.add('hidden');
+      }
     }
     img.dataset.loaded = 'true';
   }

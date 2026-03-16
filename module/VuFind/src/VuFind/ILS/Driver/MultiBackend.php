@@ -331,6 +331,8 @@ class MultiBackend extends AbstractMultiDriver
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     *
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {

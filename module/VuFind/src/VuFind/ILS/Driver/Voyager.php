@@ -2135,6 +2135,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     *
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -2212,6 +2214,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      *
      * @throws ILSException
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {

@@ -148,7 +148,7 @@ class ILLRequests extends AbstractRequestBase
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
                 if (!in_array($info, $this->getValidIds())) {
-                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
+                    $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
             }
@@ -158,7 +158,7 @@ class ILLRequests extends AbstractRequestBase
                 ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->addMessage('ill_request_cancel_fail', 'error');
+                $flashMsg->addErrorMessage('ill_request_cancel_fail');
             } else {
                 $failed = 0;
                 foreach ($cancelResults['items'] ?? [] as $item) {
@@ -182,7 +182,7 @@ class ILLRequests extends AbstractRequestBase
                 return $cancelResults;
             }
         } else {
-            $flashMsg->addMessage('ill_request_empty_selection', 'error');
+            $flashMsg->addErrorMessage('ill_request_empty_selection');
         }
         return [];
     }
