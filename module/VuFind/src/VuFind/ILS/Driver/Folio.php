@@ -121,6 +121,13 @@ class Folio extends AbstractAPI implements
     protected $dateConverter;
 
     /**
+     * Auth method
+     *
+     * @var string
+     */
+    protected $authMethod = null;
+
+    /**
      * Default availability messages, in case they are not defined in Folio.ini
      *
      * @var string[]
@@ -150,13 +157,16 @@ class Folio extends AbstractAPI implements
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param callable               $sessionFactory Factory function returning
      * SessionContainer object
+     * @param str                    $authMethod     Authentication method
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory,
+        string $authMethod
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
+        $this->authMethod = $authMethod;
     }
 
     /**
@@ -1544,6 +1554,41 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get the CQL query template for retrieving the patron's information.
+     *
+     * This supports both a single CQL query configured for all auth methods, and
+     * method-specific CQL queries, which can be configured by including the auth
+     * method name as a key in the `cql_by_auth_method` array in the User section of
+     * the config file. If method-specific CQL is configured, the driver will use
+     * the query for the selected auth method if it exists, and fall back to the
+     * general CQL query if not. If neither is configured, it will fall back to a
+     * default query that looks for the username and password in the fields
+     * specified by username_field and password_field in the config file, or username
+     * and password if those fields are not specified.
+     *
+     * @param string $usernameField The field to use for the username in the CQL query
+     * @param string $passwordField The field to use for password in the CQL query
+     *
+     * @return string The patron lookup CQL query with placeholders.
+     */
+    protected function getLoginCql($usernameField, $passwordField)
+    {
+        $cql = $this->config['User']['cql_by_auth_method'][$this->authMethod]
+            ?? $this->config['User']['cql']
+            ?? '%%username_field%% == "%%username%%"' .
+                    ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
+        $placeholders = [
+            '%%username_field%%',
+            '%%password_field%%',
+        ];
+        $values = [
+            $usernameField,
+            $passwordField,
+        ];
+        return str_replace($placeholders, $values, $cql);
+    }
+
+    /**
      * Support method for patronLogin(): authenticate the patron with a CQL looup.
      * Returns the CQL query for retrieving more information about the user.
      *
@@ -1557,27 +1602,31 @@ class Folio extends AbstractAPI implements
         // Construct user query using barcode, username, etc.
         $usernameField = $this->config['User']['username_field'] ?? 'username';
         $passwordField = $this->config['User']['password_field'] ?? false;
-        $cql = $this->config['User']['cql']
-            ?? '%%username_field%% == "%%username%%"'
-            . ($passwordField ? ' and %%password_field%% == "%%password%%"' : '');
+        $cql = $this->getLoginCql($usernameField, $passwordField);
         $placeholders = [
-            '%%username_field%%',
-            '%%password_field%%',
             '%%username%%',
             '%%password%%',
         ];
         $values = [
-            $usernameField,
-            $passwordField,
             $this->escapeCql($username),
             $this->escapeCql($password ?? ''),
         ];
-        return str_replace($placeholders, $values, $cql);
+        $cql_expanded = str_replace($placeholders, $values, $cql);
+
+        $cql_redacted = str_replace($this->escapeCql($password), 'XXXX', $cql_expanded);
+        if ($this->config['User']['debug_login'] ?? false) {
+            $this->debug('FOLIO patron login CQL: ' . $cql_redacted);
+            $this->debug('Environment: ' . json_encode($_SERVER));
+        }
+        return $cql_expanded;
     }
 
     /**
      * Given a CQL query, fetch a single user; if we get an unexpected count, treat
      * that as an unsuccessful login by returning null.
+     *
+     * Note that the `json_decode` then the `json_encode` in the debug statement
+     * is used to ensure that the JSON output appears in on line of the log file.
      *
      * @param string $query CQL query
      *
@@ -1587,6 +1636,9 @@ class Folio extends AbstractAPI implements
     {
         $response = $this->makeRequest('GET', '/users', compact('query'));
         $json = json_decode($response->getBody());
+        if ($this->config['User']['debug_login'] ?? false) {
+            $this->debug('FOLIO response body: ' . json_encode($json));
+        }
         return count($json->users ?? []) === 1 ? $json->users[0] : null;
     }
 
