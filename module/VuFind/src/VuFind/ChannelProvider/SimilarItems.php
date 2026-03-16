@@ -61,7 +61,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
     protected $maxRecordsToExamine;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service $searchService Search service
      * @param RouteHelper           $routeHelper   Route helper

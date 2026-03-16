@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class TemplateBasedFactory
+ * Class TemplateBasedFactory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * TemplateBased factory
+ * TemplateBased factory.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class TemplateBasedFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

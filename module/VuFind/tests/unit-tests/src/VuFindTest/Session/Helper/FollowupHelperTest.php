@@ -45,7 +45,7 @@ use VuFind\Session\Helper\FollowupHelper;
 class FollowupHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test clear behavior
+     * Test clear behavior.
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class FollowupHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retrieve
+     * Test retrieve.
      *
      * @return void
      */
@@ -76,7 +76,7 @@ class FollowupHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retrieve and clear
+     * Test retrieve and clear.
      *
      * @return void
      */
@@ -91,7 +91,7 @@ class FollowupHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that lightboxParent query parameter is removed from stored URL
+     * Test that lightboxParent query parameter is removed from stored URL.
      *
      * @return void
      */
@@ -108,7 +108,7 @@ class FollowupHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test storing with override URL
+     * Test storing with override URL.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class FollowupHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test storing extras
+     * Test storing extras.
      *
      * @return void
      */
@@ -143,7 +143,7 @@ class FollowupHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a FollowupHelper instance for testing
+     * Get a FollowupHelper instance for testing.
      *
      * @param string $url URL for ServerUrlHelper to report
      *
@@ -158,7 +158,7 @@ class FollowupHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock ServerUrlHelper
+     * Get a mock ServerUrlHelper.
      *
      * @param string $url URL for helper to report
      *

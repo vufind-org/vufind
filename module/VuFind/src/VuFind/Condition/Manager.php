@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Condition Manager
+ * VuFind Condition Manager.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * VuFind Condition Manager
+ * VuFind Condition Manager.
  *
  * @category VuFind
  * @package  Condition
@@ -52,7 +52,7 @@ class Manager implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HandlerPluginManager $handlerPluginManager Handler plugin manager
      */

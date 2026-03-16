@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class KohaILSDITest
+ * Class KohaILSDITest.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\KohaILSDI;
 
 /**
- * Class KohaILSDITest
+ * Class KohaILSDITest.
  *
  * @category VuFind
  * @package  VuFindTest\ILS\Driver
@@ -55,7 +55,7 @@ class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test toKohaDate method
+     * Test toKohaDate method.
      *
      * @return void
      * @throws \ReflectionException

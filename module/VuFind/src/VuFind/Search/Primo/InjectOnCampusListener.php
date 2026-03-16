@@ -49,7 +49,7 @@ class InjectOnCampusListener
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Is user on campus or not? (null will trigger a lookup to determine status)
+     * Is user on campus or not? (null will trigger a lookup to determine status).
      *
      * @var ?bool
      */
@@ -83,7 +83,7 @@ class InjectOnCampusListener
     }
 
     /**
-     * Determines, which value is needed for the onCampus parameter
+     * Determines, which value is needed for the onCampus parameter.
      *
      * @return bool
      */

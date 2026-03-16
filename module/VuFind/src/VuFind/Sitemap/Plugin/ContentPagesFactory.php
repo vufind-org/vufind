@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content pages generator plugin factory
+ * Content pages generator plugin factory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Content pages generator plugin factory
+ * Content pages generator plugin factory.
  *
  * @category VuFind
  * @package  Sitemap
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class ContentPagesFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

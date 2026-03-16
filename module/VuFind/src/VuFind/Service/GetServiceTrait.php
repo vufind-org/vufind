@@ -43,14 +43,14 @@ use Psr\Container\ContainerInterface;
 trait GetServiceTrait
 {
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected $serviceLocator;
 
     /**
-     * Retrieve a service
+     * Retrieve a service.
      *
      * @param class-string<T> $name Name of service to retrieve
      *

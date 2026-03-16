@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDataFormatter Test Class
+ * RecordDataFormatter Test Class.
  *
  * PHP version 8
  *
@@ -45,7 +45,7 @@ use VuFind\View\Helper\Root\Url;
 use function count;
 
 /**
- * RecordDataFormatter Test Class
+ * RecordDataFormatter Test Class.
  *
  * @category VuFind
  * @package  Tests

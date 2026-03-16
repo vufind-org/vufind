@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function array_key_exists;
 use function count;
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -51,7 +51,7 @@ use function count;
 class HeaderBar extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array          $sectionConfig  Menu configuration
      * @param array          $config         Main configuration
@@ -143,7 +143,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -181,7 +181,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show feedback item
+     * Check whether to show feedback item.
      *
      * @return bool
      */
@@ -191,7 +191,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show cart item
+     * Check whether to show cart item.
      *
      * @return bool
      */
@@ -201,7 +201,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show account item
+     * Check whether to show account item.
      *
      * @return bool
      */
@@ -211,7 +211,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show theme options item
+     * Check whether to show theme options item.
      *
      * @return bool
      */
@@ -222,7 +222,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show all languages item
+     * Check whether to show all languages item.
      *
      * @return bool
      */

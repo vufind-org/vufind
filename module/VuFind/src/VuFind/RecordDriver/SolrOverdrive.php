@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Record Driver for SolrOverdrive Records
+ * VuFind Record Driver for SolrOverdrive Records.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\DigitalContent\OverdriveConnector;
 use function in_array;
 
 /**
- * VuFind Record Driver for SolrOverdrive Records
+ * VuFind Record Driver for SolrOverdrive Records.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -55,21 +55,21 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Overdrive Connector
+     * Overdrive Connector.
      *
      * @var OverdriveConnector $connector Overdrive Connector
      */
     protected $connector;
 
     /**
-     * Overdrive Configuration Object
+     * Overdrive Configuration Object.
      *
      * @var object
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Config             $mainConfig   VuFind main configuration
      * @param ?Config             $recordConfig Record-specific configuration
@@ -86,7 +86,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Supports OpenURL
+     * Supports OpenURL.
      *
      * @return bool
      */
@@ -96,7 +96,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Supports coins OpenURL
+     * Supports coins OpenURL.
      *
      * @return bool
      */
@@ -106,7 +106,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Available Digital Formats
+     * Get Available Digital Formats.
      *
      * Return the digital download formats that are available for linking to.
      *
@@ -137,7 +137,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Formats
+     * Get Formats.
      *
      * Returns an array of digital formats for this resource.
      *
@@ -168,7 +168,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Get an array of all the formats associated with the record with metadata
      * associated with it. This array is designed to be used in a template.
-     * The key for each entry is the translatable token for the format name
+     * The key for each entry is the translatable token for the format name.
      *
      * @return array
      * @throws \Exception
@@ -211,7 +211,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Returns links for showing previews
+     * Returns links for showing previews.
      *
      * @return array      an array of links
      * @throws \Exception
@@ -249,7 +249,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Overdrive Access
+     * Get Overdrive Access.
      *
      * Pass-through to the connector to determine whether logged-in user
      * has access to Overdrive actions
@@ -262,7 +262,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Is Logged in
+     * Is Logged in.
      *
      * Returns whether the current user is logged in
      *
@@ -274,7 +274,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Overdrive ID
+     * Get Overdrive ID.
      *
      * Returns the Overdrive ID (or resource ID) for the current item. Note: for
      * records in marc format, this may be different than the Solr Record ID
@@ -301,7 +301,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Returns the availability for the current record
+     * Returns the availability for the current record.
      *
      * @return object|bool returns an object with the info in it (see URL above)
      * or false if there was a problem.
@@ -314,7 +314,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Returns a boolean indicating if patron actions are supported
+     * Returns a boolean indicating if patron actions are supported.
      *
      * @return bool
      */
@@ -324,7 +324,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Is Checked Out
+     * Is Checked Out.
      *
      * Is this resource already checked out to the user?
      *
@@ -396,7 +396,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Bread Crumb
+     * Get Bread Crumb.
      *
      * @return string
      */
@@ -407,7 +407,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Marc Reader
+     * Get Marc Reader.
      *
      * Override the base marc trait to return an empty marc reader object if no MARC
      * is available.
@@ -422,7 +422,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Title Section
+     * Get Title Section.
      *
      * @return string
      */
@@ -496,7 +496,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Is Marc Based Record
+     * Is Marc Based Record.
      *
      * Return whether this is a marc-based record.
      *
@@ -531,7 +531,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Formatted Raw Data
+     * Get Formatted Raw Data.
      *
      * Returns the raw data formatted for staff display tab
      *
@@ -590,7 +590,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Permanent Link to the resource on your institution's OverDrive site
+     * Get Permanent Link to the resource on your institution's OverDrive site.
      *
      * @return array the permanent link to the resource
      */

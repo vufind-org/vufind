@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites aspect of the Search Multi-class (Params)
+ * Favorites aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Favorites;
 use Laminas\Stdlib\Parameters;
 
 /**
- * Search Favorites Parameters
+ * Search Favorites Parameters.
  *
  * @category VuFind
  * @package  Search_Favorites

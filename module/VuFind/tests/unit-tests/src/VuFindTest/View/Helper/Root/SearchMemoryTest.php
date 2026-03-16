@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SearchMemory view helper Test Class
+ * SearchMemory view helper Test Class.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFind\Search\UrlQueryHelper;
 use VuFind\View\Helper\Root\SearchMemory;
 
 /**
- * SearchMemory view helper Test Class
+ * SearchMemory view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -205,7 +205,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetLastSearchParams()
+     * Data provider for testGetLastSearchParams().
      *
      * @return \Iterator
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Proxy URL view helper
+ * Proxy URL view helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use function intval;
 
 /**
- * Proxy URL view helper
+ * Proxy URL view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,14 +52,14 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config VuFind configuration
      * @param ?CacheAdapter         $cache  Cache for web service responses

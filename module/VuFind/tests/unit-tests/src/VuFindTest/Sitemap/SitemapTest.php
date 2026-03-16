@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sitemap Test Class
+ * Sitemap Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Sitemap;
 use VuFind\Sitemap\Sitemap;
 
 /**
- * Sitemap Test Class
+ * Sitemap Test Class.
  *
  * @category VuFind
  * @package  Tests

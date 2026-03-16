@@ -45,7 +45,7 @@ trait ResourceSortTrait
     /**
      * Apply a sort parameter to a query on the resource table. Returns an
      * array with two keys: 'orderByClause' (the actual ORDER BY) and
-     * 'extraSelect' (extra values to add to SELECT, if necessary)
+     * 'extraSelect' (extra values to add to SELECT, if necessary).
      *
      * @param string $sort  Field to use for sorting (may include
      *                      'desc' qualifier)

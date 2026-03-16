@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class NonceGenerator
+ * Class NonceGenerator.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ namespace VuFind\Security;
 class NonceGenerator
 {
     /**
-     * Generated nonce (number used once)
+     * Generated nonce (number used once).
      *
      * @var string
      */

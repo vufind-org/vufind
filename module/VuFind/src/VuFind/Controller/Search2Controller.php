@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search2 Controller
+ * Search2 Controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Search2 Controller
+ * Search2 Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -43,7 +43,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class Search2Controller extends AbstractSolrSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

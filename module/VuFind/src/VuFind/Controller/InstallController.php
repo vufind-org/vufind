@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Install Controller
+ * Install Controller.
  *
  * PHP version 8
  *
@@ -79,7 +79,7 @@ class InstallController extends AbstractBase
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -548,7 +548,7 @@ class InstallController extends AbstractBase
     }
 
     /**
-     * Support method to test the search service
+     * Support method to test the search service.
      *
      * @return void
      * @throws \Exception
@@ -866,7 +866,7 @@ class InstallController extends AbstractBase
     }
 
     /**
-     * Display summary of installation status
+     * Display summary of installation status.
      *
      * @return mixed
      */
@@ -918,7 +918,7 @@ class InstallController extends AbstractBase
     }
 
     /**
-     * Get composer.json data as array
+     * Get composer.json data as array.
      *
      * @return array
      */

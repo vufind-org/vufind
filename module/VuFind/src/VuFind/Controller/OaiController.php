@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OAI Module Controller
+ * OAI Module Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\Config;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
- * OAIController Class
+ * OAIController Class.
  *
  * Controls the OAI server
  *

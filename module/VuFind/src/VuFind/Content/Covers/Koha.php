@@ -43,7 +43,7 @@ use function in_array;
 class Koha extends \VuFind\Content\AbstractCover
 {
     /**
-     * Base URL for Koha covers
+     * Base URL for Koha covers.
      *
      * @var string
      */
@@ -58,7 +58,7 @@ class Koha extends \VuFind\Content\AbstractCover
     protected $thumbnailSizes = ['small', 'medium'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url Base URL for Koha covers
      */

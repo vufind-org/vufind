@@ -44,7 +44,7 @@ use VuFindSearch\ParamBag;
 class ParamBagTest extends TestCase
 {
     /**
-     * Test "contains"
+     * Test "contains".
      *
      * @return void
      */
@@ -58,7 +58,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "hasParam"
+     * Test "hasParam".
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "remove"
+     * Test "remove".
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "merge with all"
+     * Test "merge with all".
      *
      * @return void
      */
@@ -114,7 +114,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test deduplication
+     * Test deduplication.
      *
      * @return void
      */
@@ -135,7 +135,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test disabling deduplication
+     * Test disabling deduplication.
      *
      * @return void
      */

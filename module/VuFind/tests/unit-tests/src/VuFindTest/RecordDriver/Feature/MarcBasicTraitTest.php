@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Driver Marc Traits Test Class
+ * Record Driver Marc Traits Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTest\RecordDriver\MarcBasicTraitTestHarness;
 
 /**
- * Record Driver Marc Traits Test Class
+ * Record Driver Marc Traits Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -107,7 +107,7 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create mock record
+     * Create mock record.
      *
      * @param string $fixture Record metadata fixture
      *

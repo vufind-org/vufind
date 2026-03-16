@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for LibGuides record collection
+ * Unit tests for LibGuides record collection.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\LibGuides\Response\RecordCollection;
 
 /**
- * Unit tests for LibGuides record collection
+ * Unit tests for LibGuides record collection.
  *
  * @category VuFind
  * @package  Search

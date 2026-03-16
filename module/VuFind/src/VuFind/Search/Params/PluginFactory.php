@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search params plugin factory
+ * Search params plugin factory.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Search params plugin factory
+ * Search params plugin factory.
  *
  * @category VuFind
  * @package  Search
@@ -44,7 +44,7 @@ use VuFind\Config\ConfigManagerInterface;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

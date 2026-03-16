@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Asset manager view helper (for pre-processing, combining when appropriate, etc.)
+ * Asset manager view helper (for pre-processing, combining when appropriate, etc.).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Asset manager view helper (for pre-processing, combining when appropriate, etc.)
+ * Asset manager view helper (for pre-processing, combining when appropriate, etc.).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -75,7 +75,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     protected bool $allowArbitraryScriptAttributesByDefault = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo     $themeInfo Theme information service
      * @param AssetPipeline $pipeline  Asset pipeline helper
@@ -128,7 +128,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Forcibly prepend a stylesheet, removing it from any existing position
+     * Forcibly prepend a stylesheet, removing it from any existing position.
      *
      * @param string $href                  Stylesheet href
      * @param string $media                 Media

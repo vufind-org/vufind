@@ -69,14 +69,14 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     protected LoggerInterface $logger;
 
     /**
-     * LibGuides configuration
+     * LibGuides configuration.
      *
      * @var Config
      */
     protected Config $libGuidesConfig;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -169,7 +169,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

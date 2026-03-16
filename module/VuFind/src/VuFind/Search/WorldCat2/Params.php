@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat v2 Search Parameters
+ * WorldCat v2 Search Parameters.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\WorldCat2;
 use VuFindSearch\ParamBag;
 
 /**
- * WorldCat v2 Search Parameters
+ * WorldCat v2 Search Parameters.
  *
  * @category VuFind
  * @package  Search_WorldCat2

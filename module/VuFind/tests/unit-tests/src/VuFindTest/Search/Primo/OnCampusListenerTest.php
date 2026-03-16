@@ -138,7 +138,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the listener if default permission rule applies
+     * Test the listener if default permission rule applies.
      *
      * @return void
      */
@@ -162,7 +162,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener if default permission rule applies and default permission
-     * is not enough to get Primo results
+     * is not enough to get Primo results.
      *
      * @return void
      */
@@ -182,7 +182,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener if certain rule applies (user is inside a configured
-     * network)
+     * network).
      *
      * @return void
      */
@@ -203,7 +203,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the listener if certain rule applies (user is outside of any configured
-     * network)
+     * network).
      *
      * @return void
      */
@@ -223,7 +223,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the listener if no permission controller exists
+     * Test the listener if no permission controller exists.
      *
      * @return void
      */

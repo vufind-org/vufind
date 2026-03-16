@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,7 +48,7 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     protected string $createOptions;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?string $key     API key (null if disabled)
      * @param array   $options Configuration options (supported option: 'create_options_js').

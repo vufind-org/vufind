@@ -45,7 +45,7 @@ use Laminas\View\Helper\Layout;
 class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $sidebarOnLeft Does the sidebar go on the left?
      * @param bool $offcanvas     Is offcanvas menu active?

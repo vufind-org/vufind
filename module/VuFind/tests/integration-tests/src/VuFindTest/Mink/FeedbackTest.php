@@ -118,7 +118,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testFeedbackForm
+     * Data provider for testFeedbackForm.
      *
      * @return \Iterator
      */

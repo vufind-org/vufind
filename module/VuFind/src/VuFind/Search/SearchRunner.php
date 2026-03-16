@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search Runner
+ * VuFind Search Runner.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function is_array;
 use function is_callable;
 
 /**
- * VuFind Search Runner
+ * VuFind Search Runner.
  *
  * @category VuFind
  * @package  Search
@@ -79,7 +79,7 @@ class SearchRunner
     protected $searchId = 0;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager $resultsManager Results manager
      * @param ?EventManager  $events         Event manager (optional)

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Controller
+ * Record Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Config\Config;
 
 /**
- * Record Controller
+ * Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -48,7 +48,7 @@ class RecordController extends AbstractRecord
     use StorageRetrievalRequestsTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param Config                  $config VuFind configuration

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindSearch\Backend\Solr\SimilarBuilder;
 use VuFindSearch\ParamBag;
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * @category VuFind
  * @package  Search
@@ -64,7 +64,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test builder with an existing limit
+     * Test builder with an existing limit.
      *
      * @return void
      */

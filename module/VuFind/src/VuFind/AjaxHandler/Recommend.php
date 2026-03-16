@@ -51,28 +51,28 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Recommendation plugin manager
+     * Recommendation plugin manager.
      *
      * @var RecommendManager
      */
     protected $pluginManager;
 
     /**
-     * Solr search results object
+     * Solr search results object.
      *
      * @var Results
      */
     protected $results;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings   $ss       Session settings
      * @param RecommendManager  $pm       Recommendation plugin manager

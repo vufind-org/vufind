@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Theme config view helper
+ * Theme config view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Theme config view helper
+ * Theme config view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -55,7 +55,7 @@ class ThemeConfig
     }
 
     /**
-     * Returns config by path
+     * Returns config by path.
      *
      * Examples:
      * - 'less' => all of less section

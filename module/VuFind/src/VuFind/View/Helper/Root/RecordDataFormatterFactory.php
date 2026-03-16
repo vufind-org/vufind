@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for record driver data formatting view helper
+ * Factory for record driver data formatting view helper.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use function get_class;
 
 /**
- * Factory for record driver data formatting view helper
+ * Factory for record driver data formatting view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,7 +52,7 @@ use function get_class;
 class RecordDataFormatterFactory implements FactoryInterface
 {
     /**
-     * Schema.org view helper
+     * Schema.org view helper.
      *
      * @var SchemaOrg
      */
@@ -78,7 +78,7 @@ class RecordDataFormatterFactory implements FactoryInterface
     protected DefaultRecordSpec $defaultRecordSpec;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

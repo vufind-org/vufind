@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary implementation for PRISM
+ * Metadata vocabulary implementation for PRISM.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary implementation for PRISM
+ * Metadata vocabulary implementation for PRISM.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -42,7 +42,7 @@ class PRISM extends AbstractBase
 {
     /**
      * Mapping from Highwire Press to VuFind fields
-     * see https://www.idealliance.org/prism-metadata
+     * see https://www.idealliance.org/prism-metadata.
      *
      * @var array
      */

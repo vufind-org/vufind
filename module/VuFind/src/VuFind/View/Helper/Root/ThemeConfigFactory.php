@@ -1,11 +1,11 @@
 <?php
 
 /**
- * RecordTab helper factory.
+ * Theme Config helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2025.
+ * Copyright (C) Villanova University 2020.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,8 @@
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -36,18 +37,19 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * RecordTab helper factory.
+ * Icon helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordTabsFactory implements FactoryInterface
+class ThemeConfigFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,10 +70,9 @@ class RecordTabsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        return new $requestedName(
-            $configManager->getConfigArray('config'),
-            $container->get(\VuFind\RecordTab\TabManager::class)
-        );
+
+        $themeInfo = $container->get(\VuFindTheme\ThemeInfo::class);
+
+        return new $requestedName($themeInfo);
     }
 }

@@ -43,14 +43,14 @@ use VuFindConsole\Command\Util\ExpireSearchesCommand;
 class ExpireSearchesCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireSearchesCommand::class;
 
     /**
-     * Name of a valid service class to test with
+     * Name of a valid service class to test with.
      *
      * @var string
      */
