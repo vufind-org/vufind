@@ -46,7 +46,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class ForwardHelper implements HelperInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ActionPluginManager $actionPluginManager Action plugin manager
      */

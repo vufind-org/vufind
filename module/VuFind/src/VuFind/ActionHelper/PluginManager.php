@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Action helper plugin manager
+ * Action helper plugin manager.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\AbstractPluginManager;
 use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 
 /**
- * Action helper plugin manager
+ * Action helper plugin manager.
  *
  * @category VuFind
  * @package  Action_Helper
@@ -44,14 +44,14 @@ use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 class PluginManager extends AbstractPluginManager
 {
     /**
-     * An object type that the created instance must be instanced of
+     * An object type that the created instance must be instanced of.
      *
      * @var ?string
      */
     protected $instanceOf = HelperInterface::class;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

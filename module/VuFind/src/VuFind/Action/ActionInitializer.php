@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Action initializer
+ * Action initializer.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Http\RouteHelper;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Action initializer
+ * Action initializer.
  *
  * @category VuFind
  * @package  Action

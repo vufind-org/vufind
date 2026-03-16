@@ -50,28 +50,28 @@ use VuFind\Http\RouteHelper;
 abstract class AbstractAction implements ActionInterface
 {
     /**
-     * Current request
+     * Current request.
      *
      * @var ?ServerRequestInterface $request
      */
     protected ?ServerRequestInterface $request = null;
 
     /**
-     * Current response
+     * Current response.
      *
      * @var ?ResponseInterface $response
      */
     protected ?ResponseInterface $response = null;
 
     /**
-     * Route helper
+     * Route helper.
      *
      * @var ?RouteHelper
      */
     protected ?RouteHelper $routeHelper = null;
 
     /**
-     * Action helper plugin manager
+     * Action helper plugin manager.
      *
      * @var ?HelperPluginManager
      */

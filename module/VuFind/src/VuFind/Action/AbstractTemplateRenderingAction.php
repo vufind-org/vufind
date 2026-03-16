@@ -47,7 +47,7 @@ use VuFind\View\Renderer\TemplateRendererInterface;
 abstract class AbstractTemplateRenderingAction extends AbstractAction
 {
     /**
-     * Template renderer
+     * Template renderer.
      *
      * @var ?TemplateRendererInterface
      */

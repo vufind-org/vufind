@@ -259,7 +259,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     }
 
     /**
-     * Inflect a name to a normalized value
+     * Inflect a name to a normalized value.
      *
      * @param string $name Name to inflect
      *

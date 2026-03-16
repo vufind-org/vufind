@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Action plugin manager
+ * Action plugin manager.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\ServiceManager\Factory\AutowiringFactory;
 use function count;
 
 /**
- * Action plugin manager
+ * Action plugin manager.
  *
  * @category VuFind
  * @package  Action
@@ -87,7 +87,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

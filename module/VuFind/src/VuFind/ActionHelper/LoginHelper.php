@@ -54,7 +54,7 @@ use VuFind\View\FlashMessenger\FlashMessengerInterface;
 class LoginHelper implements HelperInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RouteHelper             $routeHelper      Route helper
      * @param FollowupHelper          $followupHelper   Follow-up helper
@@ -207,7 +207,7 @@ class LoginHelper implements HelperInterface
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *

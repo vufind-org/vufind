@@ -45,7 +45,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class RedirectHelper implements HelperInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RouteHelper $routeHelper Route helper
      */

@@ -65,7 +65,7 @@ class ActionDispatchListener
     }
 
     /**
-     * Attach listeners to an event manager
+     * Attach listeners to an event manager.
      *
      * @param EventManagerInterface $eventManager Event manager
      * @param int                   $priority     Event priority
