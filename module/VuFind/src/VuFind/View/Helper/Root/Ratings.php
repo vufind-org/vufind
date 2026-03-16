@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Ratings\RatingsService;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Ratings view helper
@@ -40,13 +41,14 @@ use VuFind\Ratings\RatingsService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Ratings extends \Laminas\View\Helper\AbstractHelper
+class Ratings
 {
     /**
      * Config constructor.
      *
      * @param RatingsService $service Ratings service
      */
+    #[Autowire()]
     public function __construct(protected RatingsService $service)
     {
     }
