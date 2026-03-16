@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -44,7 +43,7 @@ use VuFind\Favorites\FavoritesService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class UserList extends AbstractHelper
+class UserList
 {
     /**
      * Constructor
@@ -103,5 +102,15 @@ class UserList extends AbstractHelper
     public function userCanEditList(?UserEntityInterface $user, UserListEntityInterface $list): bool
     {
         return $this->favoritesService->userCanEditList($user, $list);
+    }
+
+    /**
+     * Make helper invokable
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

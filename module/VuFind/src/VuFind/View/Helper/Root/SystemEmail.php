@@ -38,21 +38,14 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemEmail extends \Laminas\View\Helper\AbstractHelper
+class SystemEmail
 {
-    /**
-     * System email
-     *
-     * @var string
-     */
-    protected $email;
-
     /**
      * Constructor
      *
      * @param string $email System email
      */
-    public function __construct($email)
+    public function __construct(protected string $email)
     {
         $this->email = $email;
     }
