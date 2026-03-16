@@ -56,7 +56,6 @@ class RecordTabs
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
-        #[Autowire()]
         protected TabManager $tabManager,
         #[Autowire(container: 'ViewHelperManager')]
         protected RecordLinker $recordLinker,
