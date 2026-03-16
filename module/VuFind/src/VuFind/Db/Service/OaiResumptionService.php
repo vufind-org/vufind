@@ -164,7 +164,7 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Generate a random token using random_bytes and bin2hex
+     * Generate a random token using random_bytes and bin2hex.
      *
      * @return string
      */

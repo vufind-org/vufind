@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Tag Controller
+ * Admin Tag Controller.
  *
  * PHP version 8
  *
@@ -51,14 +51,14 @@ use function is_array;
 class TagsController extends AbstractAdmin
 {
     /**
-     * Params
+     * Params.
      *
      * @var array
      */
     protected $params;
 
     /**
-     * Tag Details
+     * Tag Details.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -71,7 +71,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Manage Tags
+     * Manage Tags.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -89,7 +89,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * List Tags
+     * List Tags.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -113,7 +113,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Delete Tags
+     * Delete Tags.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -245,7 +245,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Confirm Delete by Id
+     * Confirm Delete by Id.
      *
      * @param array  $ids       A list of resource tag Ids
      * @param string $originUrl An origin url
@@ -278,7 +278,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Confirm Tag Delete by Filter
+     * Confirm Tag Delete by Filter.
      *
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
@@ -314,7 +314,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Gets a list of unique resources based on the url params
+     * Gets a list of unique resources based on the url params.
      *
      * @return array[]
      */
@@ -328,7 +328,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Gets a list of unique tags based on the url params
+     * Gets a list of unique tags based on the url params.
      *
      * @return array[]
      */
@@ -342,7 +342,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Gets a list of unique users based on the url params
+     * Gets a list of unique users based on the url params.
      *
      * @return array[]
      */
@@ -356,7 +356,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Converts empty params and "ALL" to null
+     * Converts empty params and "ALL" to null.
      *
      * @param string $value A parameter to check
      *

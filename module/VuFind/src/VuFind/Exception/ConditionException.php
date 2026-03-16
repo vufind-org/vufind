@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Condition Exception
+ * Condition Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Condition Exception
+ * Condition Exception.
  *
  * @category VuFind
  * @package  Exceptions

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionProvider Username Test Class
+ * PermissionProvider Username Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
- * PermissionProvider Username Test Class
+ * PermissionProvider Username Test Class.
  *
  * @category VuFind
  * @package  Tests

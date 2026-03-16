@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Authenticator Test Class
+ * ILS Authenticator Test Class.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use VuFind\ILS\Connection as ILSConnection;
 use VuFindTest\Container\MockDbServicePluginManager;
 
 /**
- * ILS Authenticator Manager Test Class
+ * ILS Authenticator Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -233,7 +233,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get an authenticator
+     * Get an authenticator.
      *
      * @param ?Manager            $manager    Auth manager (null for default mock)
      * @param ?ILSConnection      $connection ILS connection (null for default mock)
@@ -272,7 +272,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
      * @return MockObject&UserEntityInterface
      */
@@ -282,7 +282,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock auth manager
+     * Get a mock auth manager.
      *
      * @param array $methods Methods to mock
      *
@@ -297,7 +297,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock ILS connection
+     * Get a mock ILS connection.
      *
      * @return MockObject&ILSConnection
      */

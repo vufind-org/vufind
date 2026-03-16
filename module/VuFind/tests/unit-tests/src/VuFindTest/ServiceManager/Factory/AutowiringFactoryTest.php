@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AutowiringFactory Test Class
+ * AutowiringFactory Test Class.
  *
  * PHP version 8
  *
@@ -52,7 +52,7 @@ use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass2;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidConfigType;
 
 /**
- * AutowiringFactory Test Class
+ * AutowiringFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -65,7 +65,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Data provider for testAutoWiring
+     * Data provider for testAutoWiring.
      *
      * @return \Iterator<string, array>
      */
@@ -114,7 +114,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock container
+     * Get mock container.
      *
      * @return ContainerInterface
      */

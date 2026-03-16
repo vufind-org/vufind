@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CspHeaderGenerator test
+ * CspHeaderGenerator test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Security;
 use VuFind\Security\CspHeaderGenerator;
 
 /**
- * CspHeaderGenerator test
+ * CspHeaderGenerator test.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,14 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Nonce generator mock
+     * Nonce generator mock.
      *
      * @var \PHPUnit\Framework\MockObject&\VuFind\Security\NonceGenerator
      */
     protected $nonceGenerator;
 
     /**
-     * Set up the tests
+     * Set up the tests.
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a basic ReportTo header configuration
+     * Test a basic ReportTo header configuration.
      *
      * @return void
      */
@@ -83,7 +83,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a ReportTo header configuration with two endpoints and three urls
+     * Test a ReportTo header configuration with two endpoints and three urls.
      *
      * @return void
      */
@@ -115,7 +115,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a basic Network Error Logging header configuration
+     * Test a basic Network Error Logging header configuration.
      *
      * @return void
      */
@@ -136,7 +136,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a Network Error Logging header configuration with custom params
+     * Test a Network Error Logging header configuration with custom params.
      *
      * @return void
      */
@@ -159,7 +159,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a Network Error Logging header configuration with falsy values
+     * Test a Network Error Logging header configuration with falsy values.
      *
      * @return void
      */
@@ -183,7 +183,7 @@ class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build the CspHeaderGenerator object
+     * Build the CspHeaderGenerator object.
      *
      * @param array $configData The contentsecuritypolicy.ini config data as an array
      *

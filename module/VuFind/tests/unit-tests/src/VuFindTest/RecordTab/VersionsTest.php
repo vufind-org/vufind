@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Versions Test Class
+ * Versions Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\Config;
 use VuFind\RecordTab\Versions;
 
 /**
- * Versions Test Class
+ * Versions Test Class.
  *
  * @category VuFind
  * @package  Tests

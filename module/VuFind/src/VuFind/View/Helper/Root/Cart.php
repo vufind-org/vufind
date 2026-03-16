@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart view helper
+ * Cart view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Cart view helper
+ * Cart view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Cart
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Cart $cart Cart model
      */

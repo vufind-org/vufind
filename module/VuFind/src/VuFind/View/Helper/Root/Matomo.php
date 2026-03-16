@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Matomo web analytics view helper for Matomo versions >= 4
+ * Matomo web analytics view helper for Matomo versions >= 4.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function intval;
 use function is_array;
 
 /**
- * Matomo web analytics view helper for Matomo versions >= 4
+ * Matomo web analytics view helper for Matomo versions >= 4.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -47,35 +47,35 @@ use function is_array;
 class Matomo extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Matomo URL (empty if disabled)
+     * Matomo URL (empty if disabled).
      *
      * @var string
      */
     protected $url;
 
     /**
-     * Matomo Site ID
+     * Matomo Site ID.
      *
      * @var int
      */
     protected $siteId;
 
     /**
-     * Search prefix (see config.ini for details)
+     * Search prefix (see config.ini for details).
      *
      * @var string
      */
     protected $searchPrefix;
 
     /**
-     * Whether to disable cookies (see config.ini for details)
+     * Whether to disable cookies (see config.ini for details).
      *
      * @var bool
      */
     protected $disableCookies;
 
     /**
-     * Whether to use custom variables to track additional information
+     * Whether to use custom variables to track additional information.
      *
      * @var bool
      */
@@ -83,21 +83,21 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Mappings from data fields to custom dimensions for tracking additional
-     * information
+     * information.
      *
      * @var array
      */
     protected $customDimensions;
 
     /**
-     * Request object
+     * Request object.
      *
      * @var \Laminas\Http\PhpEnvironment\Request
      */
     protected $request;
 
     /**
-     * Router object
+     * Router object.
      *
      * @var \Laminas\Router\Http\RouteMatch
      */
@@ -112,21 +112,21 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     protected $timestamp;
 
     /**
-     * Tracker initialization context ('', 'lightbox', 'accordion' or 'tabs')
+     * Tracker initialization context ('', 'lightbox', 'accordion' or 'tabs').
      *
      * @var string
      */
     protected $context = '';
 
     /**
-     * Additional parameters
+     * Additional parameters.
      *
      * @var array
      */
     protected $params = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config                $config  VuFind configuration
      * @param \Laminas\Router\Http\TreeRouteStack  $router  Router
@@ -181,7 +181,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Search
+     * Track a Search.
      *
      * @param Results $results Search Results
      *
@@ -202,7 +202,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Combined Search
+     * Track a Combined Search.
      *
      * @param Results $results         Search Results
      * @param array   $combinedResults Combined Search Results
@@ -230,7 +230,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Record View
+     * Track a Record View.
      *
      * @param RecordDriverBase $recordDriver Record Driver
      *
@@ -251,7 +251,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Generic Page View
+     * Track a Generic Page View.
      *
      * @return string Tracking Code
      */
@@ -270,7 +270,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Search Results if on a Results Page
+     * Get Search Results if on a Results Page.
      *
      * @return ?Results Search results or null if not on a search page
      */
@@ -295,7 +295,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Combined Search Results if on a Results Page
+     * Get Combined Search Results if on a Results Page.
      *
      * @return ?array Array of search results or null if not on a combined search
      * page
@@ -318,7 +318,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Record Driver if on a Record Page
+     * Get Record Driver if on a Record Page.
      *
      * @return ?RecordDriverBase Record driver or null if not on a record page
      */
@@ -345,7 +345,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get custom data for search results
+     * Get custom data for search results.
      *
      * @param Results $results Search results
      *
@@ -379,7 +379,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get custom data for record page
+     * Get custom data for record page.
      *
      * @param RecordDriverBase $recordDriver Record driver
      *
@@ -415,7 +415,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get custom data for lightbox actions
+     * Get custom data for lightbox actions.
      *
      * @return array Associative array of custom data
      */
@@ -427,7 +427,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get custom data for a generic page view
+     * Get custom data for a generic page view.
      *
      * @return array Associative array of custom data
      */
@@ -439,7 +439,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the Initialization Part of the Tracking Code
+     * Get the Initialization Part of the Tracking Code.
      *
      * @return string JavaScript Code Fragment
      */
@@ -464,7 +464,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the Finalization Part of the Tracking Code
+     * Get the Finalization Part of the Tracking Code.
      *
      * @return string JavaScript Code Fragment
      */
@@ -490,7 +490,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the URL for the current page
+     * Get the URL for the current page.
      *
      * @return string
      */
@@ -511,7 +511,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Convert a custom data array to JavaScript code
+     * Convert a custom data array to JavaScript code.
      *
      * @param array $customData Custom data
      *
@@ -547,7 +547,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Convert a custom data array to JavaScript dimensions code
+     * Convert a custom data array to JavaScript dimensions code.
      *
      * @param array $customData Custom data
      *
@@ -571,7 +571,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Site Search Tracking Code
+     * Get Site Search Tracking Code.
      *
      * @param Results $results    Search results
      * @param array   $customData Custom data
@@ -596,7 +596,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get site search tracking code for combined search
+     * Get site search tracking code for combined search.
      *
      * @param Results $results         Search results
      * @param array   $combinedResults Combined search results
@@ -632,7 +632,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Page View Tracking Code
+     * Get Page View Tracking Code.
      *
      * @param array $customData Custom data
      *
@@ -685,7 +685,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Matomo tracker URL
+     * Get Matomo tracker URL.
      *
      * @return string
      */
@@ -695,7 +695,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Matomo tracker JS URL
+     * Get Matomo tracker JS URL.
      *
      * @return string
      */
@@ -705,7 +705,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get name of JS init function
+     * Get name of JS init function.
      *
      * @return string
      */

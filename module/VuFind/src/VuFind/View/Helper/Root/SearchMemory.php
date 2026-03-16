@@ -48,7 +48,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class SearchMemory
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Memory        $memory       Search memory service
      * @param Url           $url          Url view helper
@@ -66,7 +66,7 @@ class SearchMemory
     }
 
     /**
-     * Invoke the helper
+     * Invoke the helper.
      *
      * @return static
      */
@@ -94,7 +94,7 @@ class SearchMemory
     }
 
     /**
-     * If a previous search is recorded in the session, return its URL
+     * If a previous search is recorded in the session, return its URL.
      *
      * @return string|null
      */
@@ -188,7 +188,7 @@ class SearchMemory
     }
 
     /**
-     * Retrieve the parameters of the last search by the search class
+     * Retrieve the parameters of the last search by the search class.
      *
      * @param string $searchClassId Search class
      *
@@ -215,7 +215,7 @@ class SearchMemory
     }
 
     /**
-     * Get current search id
+     * Get current search id.
      *
      * @return ?int
      */
@@ -225,7 +225,7 @@ class SearchMemory
     }
 
     /**
-     * Get current search
+     * Get current search.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -235,7 +235,7 @@ class SearchMemory
     }
 
     /**
-     * Get last search id
+     * Get last search id.
      *
      * @return ?int
      */
@@ -245,7 +245,7 @@ class SearchMemory
     }
 
     /**
-     * Get last search
+     * Get last search.
      *
      * @return ?\VuFind\Search\Base\Results
      */

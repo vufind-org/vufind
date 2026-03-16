@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Check Request is Valid" AJAX handler
+ * "Check Request is Valid" AJAX handler.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use function is_array;
 
 /**
- * "Check Request is Valid" AJAX handler
+ * "Check Request is Valid" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -45,7 +45,7 @@ use function is_array;
 class CheckRequestIsValid extends AbstractIlsAndUserAction
 {
     /**
-     * Status messages
+     * Status messages.
      *
      * @var array
      */

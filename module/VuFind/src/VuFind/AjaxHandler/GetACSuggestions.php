@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Autocomplete Suggestions" AJAX handler
+ * "Get Autocomplete Suggestions" AJAX handler.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Autocomplete\Suggester;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Autocomplete Suggestions" AJAX handler
+ * "Get Autocomplete Suggestions" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -46,7 +46,7 @@ use VuFind\Session\Settings as SessionSettings;
 class GetACSuggestions extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings $ss        Session settings
      * @param Suggester       $suggester Autocomplete suggester

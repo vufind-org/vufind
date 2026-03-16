@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Office 365 Log Handler Test Class
+ * Office 365 Log Handler Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Monolog\LogRecord;
 use VuFind\Log\Handler\Office365Handler;
 
 /**
- * Office 365 Log Handler Test Class
+ * Office 365 Log Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use VuFind\Log\Handler\Office365Handler;
 class Office365Test extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test handler functionality
+     * Test handler functionality.
      *
      * @return void
      */

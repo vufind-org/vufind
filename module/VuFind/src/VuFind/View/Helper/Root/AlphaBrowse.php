@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AlphaBrowse view helper
+ * AlphaBrowse view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\Url;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * AlphaBrowse view helper
+ * AlphaBrowse view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class AlphaBrowse
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Url   $url     URL helper
      * @param array $options Additional configuration options
@@ -58,7 +58,7 @@ class AlphaBrowse
     }
 
     /**
-     * Get link to browse results (or null if no valid URL available)
+     * Get link to browse results (or null if no valid URL available).
      *
      * @param string $source AlphaBrowse index currently being used
      * @param array  $item   Item to link to

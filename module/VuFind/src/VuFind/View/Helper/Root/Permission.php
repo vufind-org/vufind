@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission helper
+ * Permission helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Role\PermissionManager;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Permission helper
+ * Permission helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -47,7 +47,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Permission
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PermissionManager       $permissionManager       Manager to decide if a permission has been granted or
      * not
@@ -78,7 +78,7 @@ class Permission
     }
 
     /**
-     * Determine if a local block inside the template should be displayed
+     * Determine if a local block inside the template should be displayed.
      *
      * @param string $context Name of the permission rule
      *
@@ -105,7 +105,7 @@ class Permission
     }
 
     /**
-     * Get content to display in place of blocked content
+     * Get content to display in place of blocked content.
      *
      * @param string $context Name of the permission rule
      *

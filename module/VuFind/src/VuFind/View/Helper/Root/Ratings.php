@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ratings view helper
+ * Ratings view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Ratings\RatingsService;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Ratings view helper
+ * Ratings view helper.
  *
  * @category VuFind
  * @package  View_Helpers

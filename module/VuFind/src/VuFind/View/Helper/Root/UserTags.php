@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tag view helper
+ * Tag view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Tag view helper
+ * Tag view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,21 +44,21 @@ use VuFind\ServiceManager\Factory\Autowire;
 class UserTags
 {
     /**
-     * Tag mode (enabled or disabled)
+     * Tag mode (enabled or disabled).
      *
      * @var string
      */
     protected string $mode;
 
     /**
-     * List tag mode (enabled or disabled)
+     * List tag mode (enabled or disabled).
      *
      * @var string
      */
     protected string $listMode;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AccountCapabilities $capabilities Account capabilities service
      */
@@ -70,7 +70,7 @@ class UserTags
     }
 
     /**
-     * Get mode
+     * Get mode.
      *
      * @return string
      */
@@ -80,7 +80,7 @@ class UserTags
     }
 
     /**
-     * Get list mode
+     * Get list mode.
      *
      * @return string
      */
@@ -90,7 +90,7 @@ class UserTags
     }
 
     /**
-     * Make helper invokable
+     * Make helper invokable.
      *
      * @return static
      */

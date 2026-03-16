@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Linkify Test Class
+ * Linkify Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 use VuFind\View\Helper\Root\Linkify;
 
 /**
- * Linkify Test Class
+ * Linkify Test Class.
  *
  * @category VuFind
  * @package  Tests

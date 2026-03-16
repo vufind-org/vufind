@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Component view helper
+ * Component view helper.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\Renderer\RendererInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Component view helper
+ * Component view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -53,7 +53,7 @@ class Component
     protected array $cssClassCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RendererInterface $view View renderer
      */
@@ -64,7 +64,7 @@ class Component
     }
 
     /**
-     * Expand path and render template
+     * Expand path and render template.
      *
      * @param string $name   Component name that matches a template
      * @param array  $params Data for the component template

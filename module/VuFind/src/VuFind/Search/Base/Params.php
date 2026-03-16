@@ -75,14 +75,14 @@ class Params
     protected QueryInterface $query;
 
     /**
-     * Page number
+     * Page number.
      *
      * @var int
      */
     protected int $page = 1;
 
     /**
-     * Sort setting
+     * Sort setting.
      *
      * @var ?string
      */
@@ -96,56 +96,56 @@ class Params
     protected bool $skipRssSort = false;
 
     /**
-     * Result limit
+     * Result limit.
      *
      * @var int
      */
     protected int $limit = 20;
 
     /**
-     * Search type (basic or advanced)
+     * Search type (basic or advanced).
      *
      * @var string
      */
     protected string $searchType  = 'basic';
 
     /**
-     * Shards
+     * Shards.
      *
      * @var array
      */
     protected array $selectedShards = [];
 
     /**
-     * View
+     * View.
      *
      * @var ?string
      */
     protected ?string $view = null;
 
     /**
-     * Previously-used view (loaded in from session)
+     * Previously-used view (loaded in from session).
      *
      * @var ?string
      */
     protected ?string $lastView = null;
 
     /**
-     * Search options
+     * Search options.
      *
      * @var \VuFind\Search\Base\Options
      */
     protected \VuFind\Search\Base\Options $options;
 
     /**
-     * Main facet configuration
+     * Main facet configuration.
      *
      * @var array
      */
     protected array $facetConfig = [];
 
     /**
-     * Extra facet labels
+     * Extra facet labels.
      *
      * @var array
      */
@@ -168,42 +168,42 @@ class Params
     protected array $defaultFacetLabelCheckboxSections = [];
 
     /**
-     * Checkbox facet configuration
+     * Checkbox facet configuration.
      *
      * @var array
      */
     protected array $checkboxFacets = [];
 
     /**
-     * Whether to fetch result counts for checkbox facets
+     * Whether to fetch result counts for checkbox facets.
      *
      * @var bool
      */
     protected bool $fetchCheckboxFacetCounts = false;
 
     /**
-     * Applied filters
+     * Applied filters.
      *
      * @var array
      */
     protected array $filterList = [];
 
     /**
-     * Pre-assigned filters
+     * Pre-assigned filters.
      *
      * @var array
      */
     protected array $hiddenFilters = [];
 
     /**
-     * Facets in "OR" mode
+     * Facets in "OR" mode.
      *
      * @var array
      */
     protected array $orFacets = [];
 
     /**
-     * Override Query
+     * Override Query.
      *
      * @var ?string
      */
@@ -231,14 +231,14 @@ class Params
     protected array $searchContextParameters = [];
 
     /**
-     * Query adapter
+     * Query adapter.
      *
      * @var ?QueryAdapterInterface
      */
     protected ?QueryAdapterInterface $queryAdapter = null;
 
     /**
-     * Default query adapter class
+     * Default query adapter class.
      *
      * @var string
      */
@@ -253,7 +253,7 @@ class Params
     protected bool $isSpecializedSearch = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
@@ -307,7 +307,7 @@ class Params
     }
 
     /**
-     * Get query adapter
+     * Get query adapter.
      *
      * @return QueryAdapterInterface
      */
@@ -320,7 +320,7 @@ class Params
     }
 
     /**
-     * Set query adapter
+     * Set query adapter.
      *
      * @param QueryAdapterInterface $queryAdapter Query adapter
      *
@@ -332,7 +332,7 @@ class Params
     }
 
     /**
-     * Copy constructor
+     * Copy constructor.
      *
      * @return void
      */
@@ -357,7 +357,7 @@ class Params
     }
 
     /**
-     * Pull the search parameters
+     * Pull the search parameters.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -382,7 +382,7 @@ class Params
     }
 
     /**
-     * Pull shard parameters from the request or set defaults
+     * Pull shard parameters from the request or set defaults.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -413,7 +413,7 @@ class Params
     }
 
     /**
-     * Pull the page size parameter or set to default
+     * Pull the page size parameter or set to default.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -451,7 +451,7 @@ class Params
     }
 
     /**
-     * Pull the page parameter
+     * Pull the page parameter.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -596,7 +596,7 @@ class Params
     }
 
     /**
-     * Get the value for which type of sorting to use
+     * Get the value for which type of sorting to use.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -625,7 +625,7 @@ class Params
     }
 
     /**
-     * Get the value for which results view to use
+     * Get the value for which results view to use.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -657,7 +657,7 @@ class Params
     }
 
     /**
-     * Return the default sorting value
+     * Return the default sorting value.
      *
      * @return string
      */
@@ -668,7 +668,7 @@ class Params
     }
 
     /**
-     * Return the current limit value
+     * Return the current limit value.
      *
      * @return int
      */
@@ -678,7 +678,7 @@ class Params
     }
 
     /**
-     * Change the value of the limit
+     * Change the value of the limit.
      *
      * @param int $l New limit value.
      *
@@ -690,7 +690,7 @@ class Params
     }
 
     /**
-     * Change the page
+     * Change the page.
      *
      * @param int $p New page value.
      *
@@ -702,7 +702,7 @@ class Params
     }
 
     /**
-     * Get the page value
+     * Get the page value.
      *
      * @return int
      */
@@ -712,7 +712,7 @@ class Params
     }
 
     /**
-     * Return the sorting value
+     * Return the sorting value.
      *
      * @return ?string
      */
@@ -767,7 +767,7 @@ class Params
 
     /**
      * Return the selected search handler (null for complex searches which have no
-     * single handler)
+     * single handler).
      *
      * @return ?string
      */
@@ -779,7 +779,7 @@ class Params
     }
 
     /**
-     * Return the search type (i.e. basic or advanced)
+     * Return the search type (i.e. basic or advanced).
      *
      * @return string
      */
@@ -789,7 +789,7 @@ class Params
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */
@@ -799,7 +799,7 @@ class Params
     }
 
     /**
-     * Set the value for which search view we use
+     * Set the value for which search view we use.
      *
      * @param string $v New view setting
      *
@@ -1047,7 +1047,7 @@ class Params
     }
 
     /**
-     * Get facet operator for the specified field
+     * Get facet operator for the specified field.
      *
      * @param string $field Field name
      *
@@ -1080,7 +1080,7 @@ class Params
     }
 
     /**
-     * Enable or disable fetching of checkbox facet counts
+     * Enable or disable fetching of checkbox facet counts.
      *
      * @param bool $enable Whether to enable counts
      *
@@ -1375,7 +1375,7 @@ class Params
     }
 
     /**
-     * Return checkbox facets without any processing
+     * Return checkbox facets without any processing.
      *
      * @return array
      */
@@ -1887,7 +1887,7 @@ class Params
     }
 
     /**
-     * Store settings to a minified object
+     * Store settings to a minified object.
      *
      * @param Minified $minified Minified Search Object
      *
@@ -1991,7 +1991,7 @@ class Params
     }
 
     /**
-     * Translate a string (or string-castable object)
+     * Translate a string (or string-castable object).
      *
      * @param string|object|array $target  String to translate or an array of text
      * domain and string to translate
@@ -2008,7 +2008,7 @@ class Params
     }
 
     /**
-     * Set the override query
+     * Set the override query.
      *
      * @param ?string $q Override query (null to clear)
      *
@@ -2020,7 +2020,7 @@ class Params
     }
 
     /**
-     * Get the override query
+     * Get the override query.
      *
      * @return ?string
      */
@@ -2131,7 +2131,7 @@ class Params
     }
 
     /**
-     * Check whether a specific facet supports filtering
+     * Check whether a specific facet supports filtering.
      *
      * @param string $facet The facet to check
      *
@@ -2155,7 +2155,7 @@ class Params
     }
 
     /**
-     * Get HiddenSorting patterns matching the given sort
+     * Get HiddenSorting patterns matching the given sort.
      *
      * @param ?string $sort Sort
      *

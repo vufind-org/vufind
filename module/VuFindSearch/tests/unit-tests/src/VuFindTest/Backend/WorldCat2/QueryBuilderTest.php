@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for WorldCat2 query builder
+ * Unit tests for WorldCat2 query builder.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 /**
- * Unit tests for WorldCat2 query builder
+ * Unit tests for WorldCat2 query builder.
  *
  * @category VuFind
  * @package  Search

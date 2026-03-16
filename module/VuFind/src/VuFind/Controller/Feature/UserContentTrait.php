@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User Content trait
+ * User Content trait.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use function in_array;
 
 /**
- * User Content trait
+ * User Content trait.
  *
  * @category VuFind
  * @package  Controller

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class WebRecordFormatterFactory
+ * Class WebRecordFormatterFactory.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ namespace VuFindApi\Formatter;
 class WebRecordFormatterFactory extends RecordFormatterFactory
 {
     /**
-     * Record fields configuration file name
+     * Record fields configuration file name.
      *
      * @var string
      */

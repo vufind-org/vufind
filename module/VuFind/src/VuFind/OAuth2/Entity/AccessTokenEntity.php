@@ -50,7 +50,7 @@ class AccessTokenEntity implements AccessTokenEntityInterface, \JsonSerializable
     use EntityTrait;
 
     /**
-     * Serialize to a JSON string
+     * Serialize to a JSON string.
      *
      * @return mixed
      */

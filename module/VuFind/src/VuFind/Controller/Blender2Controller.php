@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blended Search 2 Controller
+ * Blended Search 2 Controller.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Controller;
 
 /**
- * Blended Search 2 Controller
+ * Blended Search 2 Controller.
  *
  * @category VuFind
  * @package  Controller

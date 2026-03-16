@@ -59,7 +59,7 @@ trait PreviousUniqueIdTrait
     }
 
     /**
-     * Set previous unique ID
+     * Set previous unique ID.
      *
      * @param string $id ID to set
      *

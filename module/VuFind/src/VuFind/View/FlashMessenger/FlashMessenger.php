@@ -47,42 +47,42 @@ use Laminas\Stdlib\SplQueue;
 class FlashMessenger implements FlashMessengerInterface
 {
     /**
-     * Default messages namespace
+     * Default messages namespace.
      *
      * @var string
      */
     public const NAMESPACE_DEFAULT = 'default';
 
     /**
-     * Success messages namespace
+     * Success messages namespace.
      *
      * @var string
      */
     public const NAMESPACE_SUCCESS = 'success';
 
     /**
-     * Warning messages namespace
+     * Warning messages namespace.
      *
      * @var string
      */
     public const NAMESPACE_WARNING = 'warning';
 
     /**
-     * Error messages namespace
+     * Error messages namespace.
      *
      * @var string
      */
     public const NAMESPACE_ERROR = 'error';
 
     /**
-     * Info messages namespace
+     * Info messages namespace.
      *
      * @var string
      */
     public const NAMESPACE_INFO = 'info';
 
     /**
-     * Lazily instantiated session container
+     * Lazily instantiated session container.
      *
      * @var ?Container
      */
@@ -98,7 +98,7 @@ class FlashMessenger implements FlashMessengerInterface
     }
 
     /**
-     * Add a message with "error" type
+     * Add a message with "error" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *
@@ -110,7 +110,7 @@ class FlashMessenger implements FlashMessengerInterface
     }
 
     /**
-     * Add a message with "info" type
+     * Add a message with "info" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *
@@ -122,7 +122,7 @@ class FlashMessenger implements FlashMessengerInterface
     }
 
     /**
-     * Add a message with "success" type
+     * Add a message with "success" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *
@@ -134,7 +134,7 @@ class FlashMessenger implements FlashMessengerInterface
     }
 
     /**
-     * Add a message with "warning" type
+     * Add a message with "warning" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *

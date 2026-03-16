@@ -47,7 +47,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
     use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

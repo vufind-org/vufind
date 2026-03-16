@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for schema.org view helper
+ * Factory for schema.org view helper.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for schema.org view helper
+ * Factory for schema.org view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -49,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class SchemaOrgFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use function sprintf;
 use function strlen;
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -58,14 +58,14 @@ class Citation implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Citation details
+     * Citation details.
      *
      * @var array
      */
     protected $details = [];
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */
@@ -101,7 +101,7 @@ class Citation implements TranslatorAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Converter $dateConverter Date converter
      * @param Partial   $partial       Partial view helper
@@ -261,7 +261,7 @@ class Citation implements TranslatorAwareInterface
     }
 
     /**
-     * Retrieve a citation in a particular format
+     * Retrieve a citation in a particular format.
      *
      * Returns the citation in the format specified
      *

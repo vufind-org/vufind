@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ConsortialVuFindDeferred Recommendations Module
+ * ConsortialVuFindDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * ConsortialVuFindDeferred Recommendations Module
+ * ConsortialVuFindDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the ConsortialVuFind module.
  *
@@ -48,7 +48,7 @@ namespace VuFind\Recommend;
 class ConsortialVuFindDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Number of expected module parameters (from .ini config)
+     * Number of expected module parameters (from .ini config).
      *
      * @var int
      */

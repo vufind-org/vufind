@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Search history label" view helper
+ * "Search history label" view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * "Search history label" view helper
+ * "Search history label" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,21 +41,21 @@ namespace VuFind\View\Helper\Root;
 class HistoryLabel extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Label configuration
+     * Label configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Translation helper
+     * Translation helper.
      *
      * @var TransEsc
      */
     protected $translator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array    $config     Label configuration
      * @param TransEsc $translator Translation helper

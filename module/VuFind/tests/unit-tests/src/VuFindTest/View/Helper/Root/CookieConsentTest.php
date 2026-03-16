@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cookie Consent View Helper Test Class
+ * Cookie Consent View Helper Test Class.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\View\Helper\Root\Url;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Cookie Consent View Helper Test Class
+ * Cookie Consent View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     use FixtureTrait;
 
     /**
-     * Test inactive helper
+     * Test inactive helper.
      *
      * @return void
      */
@@ -66,7 +66,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test helper without consent
+     * Test helper without consent.
      *
      * @return void
      */
@@ -95,7 +95,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test helper with consent
+     * Test helper with consent.
      *
      * @return void
      */
@@ -138,7 +138,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test helper with non-matching consent revision
+     * Test helper with non-matching consent revision.
      *
      * @return void
      */
@@ -171,7 +171,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a CookieConsent helper
+     * Create a CookieConsent helper.
      *
      * @param array  $config            Main configuration
      * @param array  $cookies           Cookies
@@ -194,7 +194,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             public $rtl = false;
 
             /**
-             * Set layout template or retrieve "layout" view model
+             * Set layout template or retrieve "layout" view model.
              *
              * If no arguments are given, grabs the "root" or "layout" view model.
              * Otherwise, attempts to set the template for that view model.
@@ -239,7 +239,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get expected params for the render call
+     * Get expected params for the render call.
      *
      * @param string $consentConfigName Consent config fixture name
      * @param array  $config            Main config
@@ -412,7 +412,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get cookie consent configuration
+     * Get cookie consent configuration.
      *
      * @param string $filename Consent config fixture name
      *
@@ -427,7 +427,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get cookie manager
+     * Get cookie manager.
      *
      * @param array $config  Main configuration
      * @param array $cookies Cookies

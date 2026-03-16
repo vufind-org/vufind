@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for user_list table
+ * Entity model interface for user_list table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for user_list table
+ * Entity model interface for user_list table.
  *
  * @category VuFind
  * @package  Database
@@ -89,14 +89,14 @@ interface UserListEntityInterface extends EntityInterface
     public function getDescription(): ?string;
 
     /**
-     * Get list type
+     * Get list type.
      *
      * @return string
      */
     public function getType(): string;
 
     /**
-     * Set list type
+     * Set list type.
      *
      * @param string $type Type of the user list
      *

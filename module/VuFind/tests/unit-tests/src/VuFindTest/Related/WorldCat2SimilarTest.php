@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat v2 Similar Related Items Test Class
+ * WorldCat v2 Similar Related Items Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Related\WorldCat2Similar;
 use VuFindSearch\ParamBag;
 
 /**
- * WorldCat v2 Similar Related Items Test Class
+ * WorldCat v2 Similar Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -78,7 +78,7 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetResults()
+     * Data provider for testGetResults().
      *
      * @return \Iterator
      */

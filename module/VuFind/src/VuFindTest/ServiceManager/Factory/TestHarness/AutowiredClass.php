@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Url;
 
 /**
- * Autowiring factory test class
+ * Autowiring factory test class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ use VuFind\View\Helper\Root\Url;
 class AutowiredClass
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array      $config          Configuration
      * @param array      $configArray     Configuration (same as $config)

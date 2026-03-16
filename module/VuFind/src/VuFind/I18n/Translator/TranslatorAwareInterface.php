@@ -45,7 +45,7 @@ use Laminas\Translator\TranslatorInterface;
 interface TranslatorAwareInterface
 {
     /**
-     * Set a translator
+     * Set a translator.
      *
      * @param TranslatorInterface $translator Translator
      *

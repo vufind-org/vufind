@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * @category VuFind
  * @package  Authorization
@@ -50,14 +50,14 @@ class PermissionManager
     use AuthorizationServiceAwareTrait;
 
     /**
-     * List config
+     * List config.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config configuration
      */
@@ -67,7 +67,7 @@ class PermissionManager
     }
 
     /**
-     * Determine if the user is authorized in a certain context or not
+     * Determine if the user is authorized in a certain context or not.
      *
      * @param string $permission Permission
      * @param mixed  $context    Context for the permission behavior (optional)
@@ -100,7 +100,7 @@ class PermissionManager
     }
 
     /**
-     * Check if a permission rule exists
+     * Check if a permission rule exists.
      *
      * @param string $permission Permission
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Condition handler plugin manager
+ * Condition handler plugin manager.
  *
  * PHP version 8
  *
@@ -24,21 +24,21 @@
  * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 
 namespace VuFind\Condition\Handler;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 
 /**
- * Condition handler plugin manager
+ * Condition handler plugin manager.
  *
  * @category VuFind
  * @package  Condition_Handler
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
@@ -49,18 +49,32 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'date' => Date::class,
+        'date_time' => DateTime::class,
+        'env' => Env::class,
+        'filetype' => Filetype::class,
+        'logged_in' => LoggedIn::class,
         'string' => StringHandler::class,
+        'time' => Time::class,
+        'url_path' => UrlPath::class,
+        'user_ip' => UserIp::class,
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        Date::class => InvokableFactory::class,
-        StringHandler::class => InvokableFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

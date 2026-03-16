@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Retrieve search params" view helper
+ * "Retrieve search params" view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Search\Params\PluginManager;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * "Retrieve search params" view helper
+ * "Retrieve search params" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class SearchParams
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager $manager Search manager
      */
@@ -55,7 +55,7 @@ class SearchParams
     }
 
     /**
-     * Wrapper to the options plugin manager
+     * Wrapper to the options plugin manager.
      *
      * @param string $type The search type of the object to retrieve
      *

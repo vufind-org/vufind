@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record tab view helper
+ * Record tab view helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 use function in_array;
 
 /**
- * Record tab view helper
+ * Record tab view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,7 +46,7 @@ use function in_array;
 class RecordTabs
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array        $config       Config
      * @param TabManager   $tabManager   Tab Manager
@@ -121,7 +121,7 @@ class RecordTabs
     }
 
     /**
-     * Make helper invokable
+     * Make helper invokable.
      *
      * @return static
      */

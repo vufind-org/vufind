@@ -146,7 +146,7 @@ class UrlQueryHelperFactory
     }
 
     /**
-     * Construct the UrlQueryHelper
+     * Construct the UrlQueryHelper.
      *
      * @param Params $params VuFind search parameters
      * @param array  $config Config options

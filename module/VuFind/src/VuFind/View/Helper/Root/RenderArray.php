@@ -44,7 +44,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class RenderArray
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Translate  $translate  Translate view helper
      * @param EscapeHtml $escapeHtml EscapeHtml view helper

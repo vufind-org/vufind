@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record driver data formatting view helper
+ * Record driver data formatting view helper.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function is_array;
 use function is_callable;
 
 /**
- * Record driver data formatting view helper
+ * Record driver data formatting view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -63,7 +63,7 @@ class RecordDataFormatter
     protected ?RecordDriver $driver = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SpecsManager $specsManager Specs plugin manager
      * @param Record       $recordHelper Record view helper
