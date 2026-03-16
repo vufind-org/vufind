@@ -122,7 +122,7 @@ class RecordTabs
     }
 
     /**
-     * Make helper invokable (returns itself for method chaining)
+     * Make helper invokable
      *
      * @return static
      */
