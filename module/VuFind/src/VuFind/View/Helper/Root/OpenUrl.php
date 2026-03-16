@@ -29,9 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Resolver\Driver\PluginManager;
-use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Config\Config;
+use VuFind\Resolver\Driver\PluginManager;
 
 use function count;
 use function in_array;
@@ -48,7 +47,6 @@ use function is_callable;
  */
 class OpenUrl
 {
-
     /**
      * Current RecordDriver
      *
@@ -69,7 +67,7 @@ class OpenUrl
      * @param Context       $context       Context helper
      * @param array         $openUrlRules  VuFind OpenURL rules
      * @param PluginManager $pluginManager Resolver plugin manager
-     * @param Config        $vufindConfig  VuFind OpenURL config
+     * @param Config        $config        VuFind OpenURL config
      */
     public function __construct(
         protected Context $context,
@@ -217,7 +215,7 @@ class OpenUrl
         $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
-        return ($this->context)->renderInContext('Helpers/openurl.phtml', $params);
+        return $this->context->renderInContext('Helpers/openurl.phtml', $params);
     }
 
     /**
@@ -293,7 +291,7 @@ class OpenUrl
     {
         // special case if no rules are defined at all assume that any record is
         // valid for openUrls
-        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+        if (!$this->openUrlRules || count($this->openUrlRules) < 1) {
             return true;
         }
         foreach ($this->openUrlRules as $rules) {
