@@ -120,4 +120,14 @@ class RecordTabs
     {
         return array_merge(...array_values($this->tabManager->getExtraScripts()));
     }
+
+    /**
+     * Make helper invokable (returns itself for method chaining)
+     *
+     * @return static
+     */
+    public function __invoke()
+    {
+        return $this;
+    }
 }
