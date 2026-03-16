@@ -1,7 +1,7 @@
 <?php
 
 /**
- * String condition handler (used for tests).
+ * Filetype condition handler.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Exception\ConditionException;
 use function is_string;
 
 /**
- * String condition handler (used for tests).
+ * Filetype condition handler.
  *
  * @category VuFind
  * @package  Condition_Handler
@@ -45,7 +45,7 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
-class StringHandler extends AbstractBase
+class Filetype extends AbstractBase
 {
     /**
      * Get base value to check.
@@ -57,12 +57,17 @@ class StringHandler extends AbstractBase
      */
     protected function getBaseValue(array $condition): string
     {
-        $string = $condition['string'] ?? null;
-        if (!is_string($string)) {
+        $filePath = $condition['file'] ?? null;
+        if (!is_string($filePath)) {
             throw new ConditionException(
-                'String condition handler requires key "string" of type string specifying the value to check.'
+                'Filetype condition handler requires key "file" of type'
+                . ' string specifying the path to the file to check.'
             );
         }
-        return $string;
+        $fileType = @filetype($filePath);
+        if ($fileType === false) {
+            return '';
+        }
+        return $fileType;
     }
 }

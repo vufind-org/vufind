@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Condition handler plugin manager
+ * Logged in condition handler.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\Condition\Handler;
 
-use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Condition handler plugin manager
+ * Logged in condition handler.
  *
  * @category VuFind
  * @package  Condition_Handler
@@ -40,50 +41,30 @@ use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:condition_handlers Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class LoggedIn extends AbstractBase
 {
     /**
-     * Default plugin aliases.
+     * Constructor.
      *
-     * @var array
-     */
-    protected $aliases = [
-        'date' => Date::class,
-        'date_time' => DateTime::class,
-        'env' => Env::class,
-        'filetype' => Filetype::class,
-        'logged_in' => LoggedIn::class,
-        'string' => StringHandler::class,
-        'time' => Time::class,
-        'url_path' => UrlPath::class,
-        'user_ip' => UserIp::class,
-    ];
-
-    /**
-     * Constructor
-     *
-     * Make sure plugins are properly initialized.
-     *
-     * @param mixed $configOrContainerInstance Configuration or container instance
-     * @param array $v3config                  If $configOrContainerInstance is a
-     * container, this value will be passed to the parent constructor.
+     * @param AuthManager $authManager Authentication manager
      */
     public function __construct(
-        $configOrContainerInstance = null,
-        array $v3config = []
+        #[Autowire(service: AuthManager::class)]
+        protected AuthManager $authManager,
     ) {
-        $this->addAbstractFactory(AbstractAutowiringFactory::class);
-        parent::__construct($configOrContainerInstance, $v3config);
     }
 
     /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * Get base value to check.
+     *
+     * @param array $condition Optionally used for handler specific parameters
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getExpectedInterface()
+    protected function getBaseValue(array $condition): string
     {
-        return ConditionHandlerInterface::class;
+        return ($this->authManager->getIdentity() === null) ? 'false' : 'true';
     }
 }
