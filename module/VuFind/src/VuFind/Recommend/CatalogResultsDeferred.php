@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CatalogResultsDeferred Recommendations Module
+ * CatalogResultsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * CatalogResultsDeferred Recommendations Module
+ * CatalogResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the CatalogResults module.
  *

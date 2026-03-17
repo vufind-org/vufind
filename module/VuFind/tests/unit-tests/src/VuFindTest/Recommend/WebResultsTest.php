@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WebResults Test Class
+ * WebResults Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Recommend\WebResults;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * WebResults Test Class
+ * WebResults Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CookieConsent view helper
+ * CookieConsent view helper.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function in_array;
 use function is_string;
 
 /**
- * CookieConsent view helper
+ * CookieConsent view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,28 +52,28 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     use TranslatorAwareTrait;
 
     /**
-     * Consent cookie name
+     * Consent cookie name.
      *
      * @var string
      */
     protected $consentCookieName;
 
     /**
-     * Consent cookie expiration time (days)
+     * Consent cookie expiration time (days).
      *
      * @var int
      */
     protected $consentCookieExpiration;
 
     /**
-     * Server name
+     * Server name.
      *
      * @var string
      */
     protected $hostName = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array             $config            Main configuration
      * @param array             $consentConfig     Cookie consent configuration
@@ -93,7 +93,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Return this object
+     * Return this object.
      *
      * @return \VuFind\View\Helper\Root\CookieConsent
      */
@@ -103,7 +103,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Render cookie consent initialization script
+     * Render cookie consent initialization script.
      *
      * @return string
      */
@@ -125,7 +125,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Check if the cookie consent mechanism is enabled
+     * Check if the cookie consent mechanism is enabled.
      *
      * @return bool
      */
@@ -135,7 +135,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get controlled VuFind services (services integrated into VuFind)
+     * Get controlled VuFind services (services integrated into VuFind).
      *
      * @return array
      */
@@ -153,7 +153,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Check if a cookie category is accepted
+     * Check if a cookie category is accepted.
      *
      * Checks the consent cookie for accepted category information
      *
@@ -173,7 +173,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Check if a VuFind service is allowed
+     * Check if a VuFind service is allowed.
      *
      * @param string $service Service
      *
@@ -193,7 +193,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get information about user's given consent
+     * Get information about user's given consent.
      *
      * The following fields are guaranteed to be returned if consent has been given:
      *
@@ -240,7 +240,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get configuration for the consent dialog
+     * Get configuration for the consent dialog.
      *
      * @return array
      */
@@ -420,7 +420,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get placeholders for strings
+     * Get placeholders for strings.
      *
      * @return array
      */
@@ -439,7 +439,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get placeholders for description translations
+     * Get placeholders for description translations.
      *
      * @return array
      */
@@ -454,7 +454,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get current host name
+     * Get current host name.
      *
      * @return string
      */
@@ -467,7 +467,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get current consent revision
+     * Get current consent revision.
      *
      * @return int
      */
@@ -477,7 +477,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get current consent data
+     * Get current consent data.
      *
      * @return array
      */

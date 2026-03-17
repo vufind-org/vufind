@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recommendation module plugin factory
+ * Recommendation module plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * Recommendation module plugin factory
+ * Recommendation module plugin factory.
  *
  * @category VuFind
  * @package  Recommendations
@@ -41,7 +41,7 @@ namespace VuFind\Recommend;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

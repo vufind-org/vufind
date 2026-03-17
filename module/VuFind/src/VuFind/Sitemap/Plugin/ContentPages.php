@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content pages generator plugin
+ * Content pages generator plugin.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function in_array;
 use function strlen;
 
 /**
- * Content pages generator plugin
+ * Content pages generator plugin.
  *
  * @category VuFind
  * @package  Sitemap
@@ -49,35 +49,35 @@ use function strlen;
 class ContentPages extends AbstractGeneratorPlugin
 {
     /**
-     * Theme informations
+     * Theme informations.
      *
      * @var ThemeInfo
      */
     protected $themeInfo;
 
     /**
-     * Router
+     * Router.
      *
      * @var RouteStackInterface
      */
     protected $router;
 
     /**
-     * Base URL for site
+     * Base URL for site.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Main VuFind configuration (config.ini)
+     * Main VuFind configuration (config.ini).
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Patterns of files to be included
+     * Patterns of files to be included.
      *
      * @see https://github.com/webmozarts/glob
      *
@@ -95,7 +95,7 @@ class ContentPages extends AbstractGeneratorPlugin
     ];
 
     /**
-     * Patterns of files to be ignored when searching for content pages
+     * Patterns of files to be ignored when searching for content pages.
      *
      * @see https://github.com/webmozarts/glob
      *
@@ -107,7 +107,7 @@ class ContentPages extends AbstractGeneratorPlugin
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo           $themeInfo Theme info
      * @param RouteStackInterface $router    Router
@@ -197,7 +197,7 @@ class ContentPages extends AbstractGeneratorPlugin
     }
 
     /**
-     * Check if the given file should be excluded from sitemap
+     * Check if the given file should be excluded from sitemap.
      *
      * @param string $filename Filename
      *

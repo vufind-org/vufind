@@ -56,7 +56,7 @@ class GeneratorTools
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Laminas configuration
+     * Laminas configuration.
      *
      * @var array
      */

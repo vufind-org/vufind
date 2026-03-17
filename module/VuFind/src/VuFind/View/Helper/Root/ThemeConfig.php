@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Theme config view helper
+ * Theme config view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFindTheme\ThemeInfo;
 
 /**
- * Theme config view helper
+ * Theme config view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,14 +44,14 @@ use VuFindTheme\ThemeInfo;
 class ThemeConfig extends AbstractHelper
 {
     /**
-     * ThemeInfo object to access themeConfig
+     * ThemeInfo object to access themeConfig.
      *
      * @var ThemeInfo
      */
     protected $themeInfo;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo $themeInfo ThemeInfo
      */
@@ -61,7 +61,7 @@ class ThemeConfig extends AbstractHelper
     }
 
     /**
-     * Returns config by path
+     * Returns config by path.
      *
      * Examples:
      * - 'less' => all of less section

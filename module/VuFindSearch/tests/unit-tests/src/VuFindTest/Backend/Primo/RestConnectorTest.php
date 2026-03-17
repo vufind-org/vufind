@@ -58,7 +58,7 @@ class RestConnectorTest extends TestCase
     protected $response;
 
     /**
-     * Test default timeout value
+     * Test default timeout value.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function intval;
 use function is_array;
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * This class provides recommendations displaying facets beside search results
  *
@@ -54,42 +54,42 @@ use function is_array;
 class SideFacets extends AbstractFacets
 {
     /**
-     * Year-only date facet configuration
+     * Year-only date facet configuration.
      *
      * @var array
      */
     protected $dateFacets = [];
 
     /**
-     * Day/month/year date facet configuration
+     * Day/month/year date facet configuration.
      *
      * @var array
      */
     protected $fullDateFacets = [];
 
     /**
-     * Generic range facet configuration
+     * Generic range facet configuration.
      *
      * @var array
      */
     protected $genericRangeFacets = [];
 
     /**
-     * Numeric range facet configuration
+     * Numeric range facet configuration.
      *
      * @var array
      */
     protected $numericRangeFacets = [];
 
     /**
-     * Main facet configuration
+     * Main facet configuration.
      *
      * @var array
      */
     protected $mainFacets = [];
 
     /**
-     * Checkbox facet configuration
+     * Checkbox facet configuration.
      *
      * @var array
      */
@@ -118,35 +118,35 @@ class SideFacets extends AbstractFacets
     protected $showInLightboxSettings = [];
 
     /**
-     * Settings controlling how many values to display before "show more."
+     * Settings controlling how many values to display before "show more.".
      *
      * @var array
      */
     protected $showMoreSettings = [];
 
     /**
-     * Collapsed facet setting
+     * Collapsed facet setting.
      *
      * @var bool|string
      */
     protected $collapsedFacets = false;
 
     /**
-     * Hierarchical facet setting
+     * Hierarchical facet setting.
      *
      * @var array
      */
     protected $hierarchicalFacets = [];
 
     /**
-     * Hierarchical facet sort options
+     * Hierarchical facet sort options.
      *
      * @var array
      */
     protected $hierarchicalFacetSortOptions = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager           Configuration manager
      * @param ?HierarchicalFacetHelper              $hierarchicalFacetHelper Helper for handling
@@ -403,7 +403,7 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Return the list of facets configured to be collapsed
+     * Return the list of facets configured to be collapsed.
      *
      * @return array
      */
@@ -419,7 +419,7 @@ class SideFacets extends AbstractFacets
 
     /**
      * Return the list of facets configured to be collapsed
-     * defaults to 6
+     * defaults to 6.
      *
      * @param string $facetName Name of the facet to get
      * @param int    $default   Value to use if configuration is absent/invalid
@@ -442,7 +442,7 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Return settings for showing more results in the lightbox
+     * Return settings for showing more results in the lightbox.
      *
      * @param string $facetName Name of the facet to get
      *
@@ -492,7 +492,7 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Return the list of facets configured to be hierarchical
+     * Return the list of facets configured to be hierarchical.
      *
      * @return array
      */
@@ -502,7 +502,7 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Return the list of configured hierarchical facet sort options
+     * Return the list of configured hierarchical facet sort options.
      *
      * @return array
      */
@@ -512,7 +512,7 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * Get the result count for a checkbox facet
+     * Get the result count for a checkbox facet.
      *
      * @param string $facet Facet
      *

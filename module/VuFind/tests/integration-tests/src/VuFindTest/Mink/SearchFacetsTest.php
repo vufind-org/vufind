@@ -62,7 +62,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected $genreMoreSelector = '#side-collapse-genre_facet .more-facets';
 
     /**
-     * Get filtered search
+     * Get filtered search.
      *
      * @param string $building Building filter to use
      * @param string $format   Optional format filter to use
@@ -81,7 +81,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function for simple facet application test
+     * Helper function for simple facet application test.
      *
      * @param Element $page        Mink page object
      * @param array   $facets      Facets to apply (title and expected counts)
@@ -169,7 +169,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function for testing facets lists in lightbox
+     * Helper function for testing facets lists in lightbox.
      *
      * @param Element $page                 Mink page object
      * @param string  $openLightboxSelector CSS selector for control to open lightbox
@@ -186,19 +186,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         bool $exclusionActive = false,
         bool $expectMultiSelect = false
     ): void {
-        $this->clickCss($page, $openLightboxSelector);
-        $this->waitForPageLoad($page);
-        // This test has been known to intermittently fail due to the lightbox failing to open,
-        // possibly due to a click failing to register via Mink. This try/catch retry seems to
-        // solve the problem.
-        try {
-            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
-        } catch (\Exception $e) {
-            $this->logWarning('Lightbox failed to open; trying again...');
-            $this->clickCss($page, $openLightboxSelector);
-            $this->waitForPageLoad($page);
-            $nextPageButton = $this->findCss($page, '#modal .js-facet-next-page');
-        }
+        $nextPageButton = $this->openLightboxAndFindCss($page, $openLightboxSelector, '#modal .js-facet-next-page');
         $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
         $nextPageButton->click();
@@ -271,7 +259,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testApplyFacet
+     * Data provider for testApplyFacet.
      *
      * @return array
      */
@@ -376,7 +364,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test applying a facet to filter results (deferred facet sidebar)
+     * Test applying a facet to filter results (deferred facet sidebar).
      *
      * @param bool   $deferred    Are deferred facets enabled?
      * @param bool   $orFacets    Are OR facets enabled?
@@ -430,7 +418,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test expanding facets into the lightbox
+     * Test expanding facets into the lightbox.
      *
      * @return void
      */
@@ -457,7 +445,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test filtering and unfiltering the expanded facets in the lightbox
+     * Test filtering and unfiltering the expanded facets in the lightbox.
      *
      * @return void
      */
@@ -475,11 +463,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
-        // from the list:
-        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $inputSelector = '#modal input[data-name="contains"]';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
+        $this->findCssAndSetValue($page, $inputSelector, 'd');
         $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
@@ -518,7 +505,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test filtering and sorting the expanded facets in the lightbox
+     * Test filtering and sorting the expanded facets in the lightbox.
      *
      * @return void
      */
@@ -535,11 +522,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
-        // from the list:
-        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $inputSelector = '#modal input[data-name="contains"]';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $inputSelector);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction" from the list:
+        $this->findCssAndSetValue($page, $inputSelector, 'd');
         $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
@@ -618,7 +604,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test expanding facets into the lightbox
+     * Test expanding facets into the lightbox.
      *
      * @return void
      */
@@ -640,8 +626,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
         $this->facetLightboxListProcedure($page, '#side-collapse-genre_facet .all-facets', $limit);
         $this->clickCss($page, '#side-collapse-genre_facet .more-btn');
-        $this->clickCss($page, '#side-collapse-genre_facet .all-facets');
-        $this->clickCss($page, '#modal .js-facet-item.active');
+        $activeFacet = $this->openLightboxAndFindCss(
+            $page,
+            '#side-collapse-genre_facet .all-facets',
+            '#modal .js-facet-item.active'
+        );
+        $activeFacet->click();
         // facet removed
         $this->unFindCss($page, $this->activeFilterSelector);
     }
@@ -696,14 +686,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $lightboxFacetSelector = '#modal #facet-list-count .js-facet-item';
+        $this->openLightboxAndFindCss($page, $this->genreMoreSelector, $lightboxFacetSelector);
+        $items = $page->findAll('css', $lightboxFacetSelector);
         $this->assertCount($limit - 1, $items); // (-1 is for the filtered value)
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
+        $items = $page->findAll('css', $lightboxFacetSelector);
         $this->assertCount($limit * 2 - 1, $items);
         $this->assertSame(
             'Weird IDs 9 results 9 '
@@ -719,7 +709,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test multiselection in facet lightbox
+     * Test multiselection in facet lightbox.
      *
      * @return void
      */
@@ -739,9 +729,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
-        $this->clickCss($page, $this->genreMoreSelector);
-        $modal = $this->findCss($page, '#modal');
-        $this->assertIsObject($modal);
+        $modal = $this->openLightboxAndFindCss($page, $this->genreMoreSelector, '#modal');
         // Make sure the filter control is available in the modal before proceeding; otherwise,
         // timing issues in activateMultiFilterSelection can break the test.
         $this->findCss($page, '#modal .js-user-selection-multi-filters');
@@ -873,7 +861,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testHierarchicalFacetSort
+     * Data provider for testHierarchicalFacetSort.
      *
      * @return array
      */
@@ -937,7 +925,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that we can persist uncollapsed state of collapsed facets
+     * Test that we can persist uncollapsed state of collapsed facets.
      *
      * @return void
      */
@@ -976,7 +964,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test retain current filters default behavior
+     * Test retain current filters default behavior.
      *
      * @return void
      */
@@ -995,7 +983,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test retaining filters on home page
+     * Test retaining filters on home page.
      *
      * @return void
      */
@@ -1034,7 +1022,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test "never retain filters" configurable behavior
+     * Test "never retain filters" configurable behavior.
      *
      * @return void
      */
@@ -1086,7 +1074,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test disabled "always display reset filters" configurable behavior
+     * Test disabled "always display reset filters" configurable behavior.
      *
      * @return void
      */
@@ -1109,7 +1097,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test enabled "always display reset filters" configurable behavior
+     * Test enabled "always display reset filters" configurable behavior.
      *
      * @return void
      */
@@ -1136,7 +1124,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test resetting to a default filter state
+     * Test resetting to a default filter state.
      *
      * @return void
      */
@@ -1233,7 +1221,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testCheckboxFacets
+     * Data provider for testCheckboxFacets.
      *
      * @return array
      */
@@ -1262,7 +1250,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test checkbox facet selection
+     * Test checkbox facet selection.
      *
      * @param array $checkFacets   Facet checkboxes to check
      * @param int   $expectedCount Expected result count
@@ -1343,7 +1331,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testCheckboxFacets
+     * Data provider for testCheckboxFacets.
      *
      * @return array
      */
@@ -1358,7 +1346,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test checkbox facets
+     * Test checkbox facets.
      *
      * @param bool $deferred Are deferred facets enabled?
      * @param bool $counts   Are checkbox facet counts enabled?
@@ -1419,7 +1407,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRangeFacets
+     * Data provider for testRangeFacets.
      *
      * @return array
      */
@@ -1435,7 +1423,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test range facets
+     * Test range facets.
      *
      * @param string $multiselection Use multi-facet selection?
      *
@@ -1572,7 +1560,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testMultiSelectOnAdvancedSearch()
+     * Data provider for testMultiSelectOnAdvancedSearch().
      *
      * @return array[]
      */
@@ -1663,7 +1651,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test persistence across page reload of the checkbox state for multi facet selection
+     * Test persistence across page reload of the checkbox state for multi facet selection.
      *
      * @return void
      */
@@ -1693,7 +1681,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test setting "checked" for multi facet selection, the feature is checked by default
+     * Test setting "checked" for multi facet selection, the feature is checked by default.
      *
      * @return void
      */
@@ -1716,7 +1704,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test setting "always" for multi facet selection, the feature is enabled but the checkbox is hidden
+     * Test setting "always" for multi facet selection, the feature is enabled but the checkbox is hidden.
      *
      * @return void
      */

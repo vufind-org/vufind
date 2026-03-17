@@ -234,7 +234,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test record driver object
+     * Get test record driver object.
      *
      * @param string $id     Record ID
      * @param string $source Record source
@@ -250,7 +250,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test router object
+     * Get test router object.
      *
      * @param array $config Configuration.
      *

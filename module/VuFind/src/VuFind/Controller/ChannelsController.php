@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels Controller
+ * Channels Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\ChannelProvider\ChannelLoader;
 
 /**
- * Channels Class
+ * Channels Class.
  *
  * Controls the alphabetical browsing feature
  *
@@ -46,14 +46,14 @@ use VuFind\ChannelProvider\ChannelLoader;
 class ChannelsController extends AbstractBase
 {
     /**
-     * Channel loader
+     * Channel loader.
      *
      * @var ChannelLoader
      */
     protected $loader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ChannelLoader           $loader Channel loader
      * @param ServiceLocatorInterface $sm     Top-level service manager (needed for

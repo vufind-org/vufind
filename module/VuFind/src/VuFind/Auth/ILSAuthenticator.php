@@ -56,14 +56,14 @@ class ILSAuthenticator implements DbServiceAwareInterface
     use DbServiceAwareTrait;
 
     /**
-     * Authentication manager
+     * Authentication manager.
      *
      * @var Manager
      */
     protected $authManager = null;
 
     /**
-     * Cache for ILS account information (keyed by username)
+     * Cache for ILS account information (keyed by username).
      *
      * @var array
      */
@@ -84,14 +84,14 @@ class ILSAuthenticator implements DbServiceAwareInterface
     protected $encryptionKey = null;
 
     /**
-     * Audit event service (optional)
+     * Audit event service (optional).
      *
      * @var ?AuditEventServiceInterface
      */
     protected ?AuditEventServiceInterface $auditEventService = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Closure             $authManagerCallback Auth manager callback
      * @param Closure             $cipherFactory       BlockCipher object factory (takes algorithm as argument)
@@ -162,7 +162,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
 
     /**
      * This is a central function for encrypting and decrypting so that
-     * logic is all in one location
+     * logic is all in one location.
      *
      * @param ?string $text    The text to be encrypted or decrypted
      * @param bool    $encrypt True if we wish to encrypt text, False if we wish to
@@ -389,7 +389,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
     }
 
     /**
-     * Send email authentication link
+     * Send email authentication link.
      *
      * @param string               $email        Email address
      * @param string               $route        Route for the login link
@@ -435,7 +435,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
     }
 
     /**
-     * Process email login
+     * Process email login.
      *
      * @param string $hash Login hash
      *
@@ -460,7 +460,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
     }
 
     /**
-     * Update current user account with the patron information
+     * Update current user account with the patron information.
      *
      * @param string $catUsername Catalog username
      * @param string $catPassword Catalog password
@@ -480,7 +480,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
     }
 
     /**
-     * Get authentication manager
+     * Get authentication manager.
      *
      * @return Manager
      */

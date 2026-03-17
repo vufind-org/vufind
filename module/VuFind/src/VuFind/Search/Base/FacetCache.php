@@ -49,7 +49,7 @@ abstract class FacetCache
     use \VuFind\Log\VarDumperTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Results                  $results                 Search results object
      * @param CacheManager             $cacheManager            Cache manager

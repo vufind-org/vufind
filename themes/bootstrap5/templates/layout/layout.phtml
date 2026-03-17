@@ -157,6 +157,9 @@
     <?=$this->breadcrumbs()->render()?>
     <div role="main" class="main">
       <div id="content" class="container">
+        <?php if (!($this->layout()->disableDefaultNotices ?? false)): ?>
+          <?=$this->notices()->renderNoticesForPosition('default')?>
+        <?php endif; ?>
         <?=$this->layout()->content ?>
       </div>
     </div>

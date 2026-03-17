@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translate view helper
+ * Translate view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Translate view helper
+ * Translate view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ class Translate extends \Laminas\View\Helper\AbstractHelper implements \VuFind\I
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Translate a string
+     * Translate a string.
      *
      * @param string|object|array $str             String to translate or an array of text
      *                                             domain and string to translate

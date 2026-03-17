@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy driver plugin manager
+ * Hierarchy driver plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Hierarchy\Driver;
 
 /**
- * Hierarchy driver plugin manager
+ * Hierarchy driver plugin manager.
  *
  * @category VuFind
  * @package  Hierarchy_Drivers

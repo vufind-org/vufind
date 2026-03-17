@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat Controller (legacy -- redirects to WorldCat v2 controller)
+ * WorldCat Controller (legacy -- redirects to WorldCat v2 controller).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Controller;
 
 /**
- * WorldCat Controller (legacy -- redirects to WorldCat v2 controller)
+ * WorldCat Controller (legacy -- redirects to WorldCat v2 controller).
  *
  * @category VuFind
  * @package  Controller

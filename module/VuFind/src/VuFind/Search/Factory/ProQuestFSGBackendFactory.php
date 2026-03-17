@@ -55,21 +55,21 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     protected $logger;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * ProQuestFSG configuration
+     * ProQuestFSG configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $proQuestFSGConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -123,7 +123,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

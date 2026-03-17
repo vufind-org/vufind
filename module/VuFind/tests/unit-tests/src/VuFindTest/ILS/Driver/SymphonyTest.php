@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\Symphony;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\ILS\Driver\Symphony;
 class SymphonyTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Driver object
+     * Driver object.
      *
      * @var Symphony
      */

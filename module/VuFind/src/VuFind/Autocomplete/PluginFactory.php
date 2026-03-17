@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Autocomplete handler plugin factory
+ * Autocomplete handler plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Autocomplete handler plugin factory
+ * Autocomplete handler plugin factory.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -41,7 +41,7 @@ namespace VuFind\Autocomplete;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

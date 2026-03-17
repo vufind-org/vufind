@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CollectionHierarchyTree Test Class
+ * CollectionHierarchyTree Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\CollectionHierarchyTree;
 
 /**
- * CollectionHierarchyTree Test Class
+ * CollectionHierarchyTree Test Class.
  *
  * @category VuFind
  * @package  Tests

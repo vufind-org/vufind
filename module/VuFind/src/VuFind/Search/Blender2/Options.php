@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender2 aspect of the Search Multi-class (Options)
+ * Blender2 aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Search\Blender2;
 
 /**
- * Blender2 Search Options
+ * Blender2 Search Options.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -43,7 +43,7 @@ namespace VuFind\Search\Blender2;
 class Options extends \VuFind\Search\Blender\Options
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -52,7 +52,7 @@ class Options extends \VuFind\Search\Blender\Options
     protected $searchIni = 'Blender2';
 
     /**
-     * Configuration file to read facet settings from
+     * Configuration file to read facet settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *

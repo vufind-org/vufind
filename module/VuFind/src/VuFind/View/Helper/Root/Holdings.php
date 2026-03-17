@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View helper to support ILS holdings display
+ * View helper to support ILS holdings display.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use function strlen;
 
 /**
- * View helper to support ILS holdings display
+ * View helper to support ILS holdings display.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ use function strlen;
 class Holdings extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Configuration
+     * Configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config Configuration
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_callable;
 use function is_string;
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -49,6 +49,11 @@ use function is_string;
 class Section extends AbstractHelper
 {
     use ClassBasedTemplateRendererTrait;
+
+    /**
+     * Section context key.
+     */
+    public const SECTION_PLUGIN_KEY = '__sectionPlugin';
 
     /**
      * Section context key.
@@ -146,6 +151,7 @@ class Section extends AbstractHelper
     {
         $sectionContext = $this->section->getSectionContext();
         $mergedContext = array_merge($sectionContext, $context);
+        $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
         $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
         if ($this->getView()->resolver()->resolve($this->template)) {

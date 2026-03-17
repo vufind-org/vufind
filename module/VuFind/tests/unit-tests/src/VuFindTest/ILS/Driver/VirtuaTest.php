@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     use ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -75,7 +75,7 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testing getMyProfile
+     * Data provider for testing getMyProfile.
      *
      * @return Generator
      */
@@ -168,7 +168,7 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get my profile
+     * Test get my profile.
      *
      * @param array $profiles Profiles mocking db select
      * @param array $expected Expected results
@@ -186,7 +186,7 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Generate a new driver to return responses set in a json fixture
+     * Generate a new driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      *

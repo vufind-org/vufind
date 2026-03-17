@@ -71,8 +71,8 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     public function testGetBibIDsFromCatalogWithIDLimit()
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
-        $flash->expects($this->once())->method('addMessage')
-            ->with('too_many_new_items', 'info');
+        $flash->expects($this->once())->method('addInfoMessage')
+            ->with('too_many_new_items');
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(

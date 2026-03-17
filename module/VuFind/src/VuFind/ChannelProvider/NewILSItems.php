@@ -37,6 +37,8 @@ namespace VuFind\ChannelProvider;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use NewSearchItems
  */
 class NewILSItems extends AbstractILSChannelProvider
 {

@@ -1,0 +1,10 @@
+<?php $account = $this->auth()->getManager(); ?>
+<?php if ($account->getIdentity()): ?>
+  <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>">
+    <?=$this->transEsc('Your Account')?>
+  </a>
+<?php else: ?>
+  <a href="<?= $this->url('myresearch-userlogin') ?>">
+    <?=$this->transEsc($this->auth()->hasSessionInitiator() ? 'Institutional Login' : 'Login')?>
+  </a>
+<?php endif; ?>

@@ -48,7 +48,7 @@ use function in_array;
 trait IlsAwareTrait
 {
     /**
-     * ILS connection
+     * ILS connection.
      *
      * @var \VuFind\ILS\Connection
      */
@@ -62,21 +62,21 @@ trait IlsAwareTrait
     protected $ilsBackends = [];
 
     /**
-     * Hold logic
+     * Hold logic.
      *
      * @var \VuFind\ILS\Logic\Holds
      */
     protected $holdLogic = null;
 
     /**
-     * Title hold logic
+     * Title hold logic.
      *
      * @var \VuFind\ILS\Logic\TitleHolds
      */
     protected $titleHoldLogic = null;
 
     /**
-     * Attach an ILS connection and related logic to the driver
+     * Attach an ILS connection and related logic to the driver.
      *
      * @param \VuFind\ILS\Connection       $ils            ILS connection
      * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler

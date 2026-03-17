@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTTP POST log handler
+ * HTTP POST log handler.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Monolog\LogRecord;
 use function is_array;
 
 /**
- * This class extends the Monolog Logging to sent POST messages over HTTP
+ * This class extends the Monolog Logging to sent POST messages over HTTP.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -51,14 +51,14 @@ class PostHandler extends AbstractProcessingHandler
     use VerbosityTrait;
 
     /**
-     * Content type header
+     * Content type header.
      *
      * @var string Content type
      */
     protected $contentType = 'application/x-www-form-urlencoded';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url    URL to open as a stream
      * @param Client $client Pre-configured http client
@@ -68,7 +68,7 @@ class PostHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Set content type
+     * Set content type.
      *
      * @param int $type content type string
      *
@@ -80,7 +80,7 @@ class PostHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Get data for raw body
+     * Get data for raw body.
      *
      * @param array $event event data
      *
@@ -94,7 +94,7 @@ class PostHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Writes the record down to the log
+     * Writes the record down to the log.
      *
      * @param LogRecord $record LogRecord
      *

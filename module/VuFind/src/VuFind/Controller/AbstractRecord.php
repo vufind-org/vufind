@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Record Controller
+ * VuFind Record Controller.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ use function is_array;
 use function is_object;
 
 /**
- * VuFind Record Controller
+ * VuFind Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -57,49 +57,49 @@ use function is_object;
 class AbstractRecord extends AbstractBase
 {
     /**
-     * Array of available tab options
+     * Array of available tab options.
      *
      * @var array
      */
     protected $allTabs = null;
 
     /**
-     * Default tab to display (configured at record driver level)
+     * Default tab to display (configured at record driver level).
      *
      * @var string
      */
     protected $defaultTab = null;
 
     /**
-     * Default tab to display (fallback used if no record driver configuration)
+     * Default tab to display (fallback used if no record driver configuration).
      *
      * @var string
      */
     protected $fallbackDefaultTab = 'Holdings';
 
     /**
-     * Array of background tabs
+     * Array of background tabs.
      *
      * @var array
      */
     protected $backgroundTabs = null;
 
     /**
-     * Array of extra scripts for tabs
+     * Array of extra scripts for tabs.
      *
      * @var array
      */
     protected $tabsExtraScripts = null;
 
     /**
-     * Type of record to display
+     * Type of record to display.
      *
      * @var string
      */
     protected $sourceId = 'Solr';
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var AbstractRecordDriver
      */
@@ -122,7 +122,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Add a comment
+     * Add a comment.
      *
      * @return mixed
      */
@@ -183,16 +183,16 @@ class AbstractRecord extends AbstractBase
                 $ratingsService->saveRating($driver, $user->getId(), intval($rating));
             }
 
-            $this->flashMessenger()->addMessage('add_comment_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('add_comment_success');
         } else {
-            $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
+            $this->flashMessenger()->addErrorMessage('add_comment_fail_blank');
         }
 
         return $this->redirectToRecord('', 'UserComments');
     }
 
     /**
-     * Delete a comment
+     * Delete a comment.
      *
      * @return mixed
      */
@@ -212,15 +212,15 @@ class AbstractRecord extends AbstractBase
             \VuFind\Db\Service\CommentsServiceInterface::class
         );
         if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user)) {
-            $this->flashMessenger()->addMessage('delete_comment_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('delete_comment_success');
         } else {
-            $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
+            $this->flashMessenger()->addErrorMessage('delete_comment_failure');
         }
         return $this->redirectToRecord('', 'UserComments');
     }
 
     /**
-     * Add a tag
+     * Add a tag.
      *
      * @return mixed
      */
@@ -242,7 +242,7 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $this->getService(TagsService::class)->linkTagsToRecord($driver, $user, $tags);
-            $this->flashMessenger()->addMessage(['msg' => 'add_tag_success'], 'success');
+            $this->flashMessenger()->addSuccessMessage(['msg' => 'add_tag_success']);
             return $this->redirectToRecord();
         }
 
@@ -253,7 +253,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Delete a tag
+     * Delete a tag.
      *
      * @return mixed
      */
@@ -279,12 +279,11 @@ class AbstractRecord extends AbstractBase
                 $user,
                 [$tag]
             );
-            $this->flashMessenger()->addMessage(
+            $this->flashMessenger()->addSuccessMessage(
                 [
                     'msg' => 'tags_deleted',
                     'tokens' => ['%count%' => 1],
                 ],
-                'success'
             );
         }
 
@@ -292,7 +291,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Display and add ratings
+     * Display and add ratings.
      *
      * @return mixed
      */
@@ -424,7 +423,7 @@ class AbstractRecord extends AbstractBase
                 . '<a href="' . $listUrl . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
         ];
-        $this->flashMessenger()->addMessage($message, 'success');
+        $this->flashMessenger()->addSuccessMessage($message);
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getAndClearFollowupUrl()) {
@@ -437,7 +436,7 @@ class AbstractRecord extends AbstractBase
 
     /**
      * Save action - Allows the save template to appear,
-     *   passes containingLists & nonContainingLists
+     *   passes containingLists & nonContainingLists.
      *
      * @return mixed
      */
@@ -568,10 +567,10 @@ class AbstractRecord extends AbstractBase
                     $view->subject,
                     $cc
                 );
-                $this->flashMessenger()->addMessage('email_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('email_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -633,10 +632,10 @@ class AbstractRecord extends AbstractBase
                     ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
-                $this->flashMessenger()->addMessage('sms_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('sms_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -670,7 +669,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Export the record
+     * Export the record.
      *
      * @return mixed
      */
@@ -685,7 +684,7 @@ class AbstractRecord extends AbstractBase
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
                 $this->flashMessenger()
-                    ->addMessage('export_invalid_format', 'error');
+                    ->addErrorMessage('export_invalid_format');
             }
             $view->setTemplate('record/export-menu');
             return $view;
@@ -744,7 +743,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Special action for RDF export
+     * Special action for RDF export.
      *
      * @return mixed
      */
@@ -755,7 +754,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Show explanation for why a record was found and how its relevancy is computed
+     * Show explanation for why a record was found and how its relevancy is computed.
      *
      * @return mixed
      */
@@ -850,7 +849,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Get default tab for a given driver
+     * Get default tab for a given driver.
      *
      * @return string
      */

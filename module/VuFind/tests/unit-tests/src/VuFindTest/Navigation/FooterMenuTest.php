@@ -45,15 +45,30 @@ use VuFindTest\Unit\AbstractSectionTestCase;
 class FooterMenuTest extends AbstractSectionTestCase
 {
     /**
+     * Test that the default configuration file matches the default
+     * configuration returned by the section class.
+     *
+     * @return void
+     */
+    public function testDefaultConfiguration(): void
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getFooterMenu($container)->getSectionConfig(),
+            $this->getFooterMenu($container, FooterMenu::getDefaultMenuConfig())->getSectionConfig()
+        );
+    }
+
+    /**
      * Test that the menu is the default menu if configuration is missing.
      *
      * @return void
      */
-    public function testMissingConfiguration()
+    public function testMissingConfiguration(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getFooterMenu($container)->getMenu(),
+            $this->getFooterMenu($container, [])->getMenu(),
             $this->getFooterMenu($container, FooterMenu::getDefaultMenuConfig())->getMenu()
         );
     }
@@ -63,7 +78,7 @@ class FooterMenuTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testDefaultMenuAllCheckMethodsReturnFalse()
+    public function testDefaultMenuAllCheckMethodsReturnFalse(): void
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $plugin = $this->getFooterMenu(
@@ -79,7 +94,7 @@ class FooterMenuTest extends AbstractSectionTestCase
     }
 
     /**
-     * Data provider for testRequiredConfiguration
+     * Data provider for testRequiredConfiguration.
      *
      * @return \Iterator<string, array>
      */

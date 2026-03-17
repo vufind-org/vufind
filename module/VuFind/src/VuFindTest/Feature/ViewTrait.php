@@ -115,7 +115,7 @@ trait ViewTrait
     }
 
     /**
-     * Get mock SearchMemory view helper
+     * Get mock SearchMemory view helper.
      *
      * @param ?\VuFind\Search\Memory $memory Optional search memory
      *
@@ -134,7 +134,7 @@ trait ViewTrait
     }
 
     /**
-     * Create the cleanHtml helper
+     * Create the cleanHtml helper.
      *
      * @return CleanHtml
      */
@@ -143,7 +143,7 @@ trait ViewTrait
         // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
         $cacheOptions = new class () extends AdapterOptions {
             /**
-             * Get cache dir
+             * Get cache dir.
              *
              * @return string
              */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database Form Handler Test Class
+ * Database Form Handler Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Form\Form;
 use VuFind\Form\Handler\Database;
 
 /**
- * Database Form Handler Test Class
+ * Database Form Handler Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database Session Handler Test Class
+ * Database Session Handler Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Session\Database;
 
 /**
- * Database Session Handler Test Class
+ * Database Session Handler Test Class.
  *
  * @category VuFind
  * @package  Tests

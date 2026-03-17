@@ -109,7 +109,7 @@
     text-shadow: 0 1px 0 $black;
   }
   @include media-breakpoint-up(sm) {
-    height: 300px;
+    min-height: 300px;
     padding: 7rem calc(50vw - 50%); // Align searchbox with container
   }
 }

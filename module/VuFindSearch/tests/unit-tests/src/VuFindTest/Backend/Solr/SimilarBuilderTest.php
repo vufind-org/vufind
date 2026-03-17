@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\Backend\Solr;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * @category VuFind
  * @package  Search

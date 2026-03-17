@@ -82,7 +82,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get associative array of storage state
+     * Get associative array of storage state.
      *
      * @return array
      */
@@ -116,7 +116,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for menu configuration tests
+     * Data provider for menu configuration tests.
      *
      * @return \Iterator
      */
@@ -235,7 +235,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testAccountIcon
+     * Data provider for testAccountIcon.
      *
      * @return \Iterator
      */
@@ -314,7 +314,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Abstracted test to set storage and check if the icon is correct
+     * Abstracted test to set storage and check if the icon is correct.
      *
      * @param array  $storage    Array of storage values to test
      * @param string $checkClass Icon class to check
@@ -347,7 +347,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test status badges
+     * Test status badges.
      *
      * @return void
      */
@@ -446,7 +446,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Utility method to login
+     * Utility method to login.
      *
      * @param string $user     Username
      * @param string $password Password

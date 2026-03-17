@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Empty Search Object
+ * Empty Search Object.
  *
  * PHP version 8
  *
@@ -55,7 +55,7 @@ class Results extends BaseResults
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing all
      * of the desired facet fields; set to null to get all configured values.
