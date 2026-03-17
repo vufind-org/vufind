@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JsTranslations view helper Test Class
+ * JsTranslations view helper Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTest\Feature\TranslatorTrait;
 use VuFindTest\Feature\ViewTrait;
 
 /**
- * JsTranslations view helper Test Class
+ * JsTranslations view helper Test Class.
  *
  * @category VuFind
  * @package  Tests

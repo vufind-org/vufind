@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Account menu
+ * Account menu.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use function count;
 use function in_array;
 
 /**
- * Account menu
+ * Account menu.
  *
  * @category VuFind
  * @package  Navigation
@@ -154,7 +154,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -267,7 +267,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show favorites item
+     * Check whether to show favorites item.
      *
      * @return bool
      */
@@ -277,7 +277,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show checkedout item
+     * Check whether to show checkedout item.
      *
      * @return bool
      */
@@ -287,7 +287,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show historicloans item
+     * Check whether to show historicloans item.
      *
      * @return bool
      */
@@ -297,7 +297,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show holds item
+     * Check whether to show holds item.
      *
      * @return bool
      */
@@ -307,7 +307,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show storageRetrievalRequests item
+     * Check whether to show storageRetrievalRequests item.
      *
      * @return bool
      */
@@ -317,7 +317,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show ILLRequests item
+     * Check whether to show ILLRequests item.
      *
      * @return bool
      */
@@ -327,7 +327,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show fines item
+     * Check whether to show fines item.
      *
      * @return bool
      */
@@ -337,7 +337,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show librarycards item
+     * Check whether to show librarycards item.
      *
      * @return bool
      */
@@ -348,7 +348,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show overdrive item
+     * Check whether to show overdrive item.
      *
      * @return bool
      */
@@ -358,7 +358,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show searchhistory item
+     * Check whether to show searchhistory item.
      *
      * @return bool
      */
@@ -368,7 +368,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show logout item
+     * Check whether to show logout item.
      *
      * @return bool
      */
@@ -389,7 +389,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show user content (comments, ratings, tags)
+     * Check whether to show user content (comments, ratings, tags).
      *
      * @return bool
      */
@@ -407,7 +407,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check ILS connection capability
+     * Check ILS connection capability.
      *
      * @param string $capability Name of then ILS method to check
      *
@@ -420,7 +420,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check ILS function capability
+     * Check ILS function capability.
      *
      * @param string $function The name of the ILS function to check.
      *
@@ -433,7 +433,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether the ILS connection is available
+     * Check whether the ILS connection is available.
      *
      * @return bool
      */
@@ -443,7 +443,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Get params for checking ILS capability/function
+     * Get params for checking ILS capability/function.
      *
      * @return array
      */
@@ -458,7 +458,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Get authenticated user
+     * Get authenticated user.
      *
      * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
@@ -468,7 +468,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Create icon name for fines item
+     * Create icon name for fines item.
      *
      * @return string
      */

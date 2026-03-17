@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Helper - New Items Support Methods
+ * VuFind Helper - New Items Support Methods.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search;
 use function intval;
 
 /**
- * Helper to perform new items-related actions
+ * Helper to perform new items-related actions.
  *
  * @category VuFind
  * @package  Search
@@ -43,7 +43,7 @@ use function intval;
 class NewItemsHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config Configuration
      */
@@ -92,7 +92,7 @@ class NewItemsHelper
     }
 
     /**
-     * Get method setting
+     * Get method setting.
      *
      * @return string
      */
@@ -102,7 +102,7 @@ class NewItemsHelper
     }
 
     /**
-     * Get range settings
+     * Get range settings.
      *
      * @return array
      */

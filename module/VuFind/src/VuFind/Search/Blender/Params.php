@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Search Parameters
+ * Blender Search Parameters.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * Blender Search Parameters
+ * Blender Search Parameters.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -54,14 +54,14 @@ use function is_callable;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
-     * Current filters not supported by a backend
+     * Current filters not supported by a backend.
      *
      * @var array
      */
     protected array $unsupportedFilters = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
@@ -86,7 +86,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Pull the search parameters
+     * Pull the search parameters.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -182,7 +182,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Get the value for which type of sorting to use
+     * Get the value for which type of sorting to use.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -450,7 +450,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Add default filters to the given params
+     * Add default filters to the given params.
      *
      * @param BaseParams $params    Params
      * @param string     $backendId Backend ID
@@ -484,7 +484,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Proxy a method call to parent class and all backend params classes
+     * Proxy a method call to parent class and all backend params classes.
      *
      * @param string $method Method
      * @param array  $params Method parameters
@@ -501,7 +501,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a facet field name
+     * Translate a facet field name.
      *
      * @param string $field     Facet field
      * @param string $backendId Backend ID
@@ -515,7 +515,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Check if the filter is a special Blender filter
+     * Check if the filter is a special Blender filter.
      *
      * @param string $filter Filter
      *
@@ -528,7 +528,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a filter
+     * Translate a filter.
      *
      * @param string $filter    Filter
      * @param string $backendId Backend ID
@@ -639,7 +639,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a search type
+     * Translate a search type.
      *
      * @param string $type      Search type
      * @param string $backendId Backend ID
@@ -653,7 +653,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Translate a sort option
+     * Translate a sort option.
      *
      * @param string $sort      Sort option
      * @param string $backendId Backend ID

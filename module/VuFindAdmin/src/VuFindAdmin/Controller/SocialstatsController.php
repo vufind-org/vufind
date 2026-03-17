@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Social Statistics Controller
+ * Admin Social Statistics Controller.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ use VuFind\Tags\TagsService;
 class SocialstatsController extends AbstractAdmin
 {
     /**
-     * Social statistics reporting
+     * Social statistics reporting.
      *
      * @return \Laminas\View\Model\ViewModel
      */

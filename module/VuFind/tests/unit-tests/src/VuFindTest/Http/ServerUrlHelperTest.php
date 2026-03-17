@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ServerUrlHelper Test Class
+ * ServerUrlHelper Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\Helper\ServerUrl;
 use VuFind\Http\ServerUrlHelper;
 
 /**
- * ServerUrlHelper Test Class
+ * ServerUrlHelper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Specific $_SERVER fields to backup before tests and restore after
+     * Specific $_SERVER fields to backup before tests and restore after.
      *
      * @var array
      */
@@ -66,7 +66,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test helper's getBaseUrl method
+     * Test helper's getBaseUrl method.
      *
      * @param string $https    $_SERVER['HTTPS'] value
      * @param string $host     $_SERVER['HTTP_HOST'] value
@@ -101,7 +101,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test helper's getCurrentUrl method
+     * Test helper's getCurrentUrl method.
      *
      * @param string $https       $_SERVER['HTTPS'] value
      * @param string $host        $_SERVER['HTTP_HOST'] value
@@ -124,7 +124,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test helper's getUrlForPath method
+     * Test helper's getUrlForPath method.
      *
      * @param string $https    $_SERVER['HTTPS'] value
      * @param string $host     $_SERVER['HTTP_HOST'] value
@@ -189,7 +189,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return an instance of ServerUrlHelper
+     * Return an instance of ServerUrlHelper.
      *
      * @return ServerUrlHelper
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * KohaILSDI ILS Driver
+ * KohaILSDI ILS Driver.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * VuFind Driver for Koha, using web APIs (ILSDI)
+ * VuFind Driver for Koha, using web APIs (ILSDI).
  *
  * Minimum Koha Version: 3.18.6
  *
@@ -64,28 +64,28 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Web services host
+     * Web services host.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * ILS base URL
+     * ILS base URL.
      *
      * @var string
      */
     protected $ilsBaseUrl;
 
     /**
-     * Location codes
+     * Location codes.
      *
      * @var array
      */
     protected $locations;
 
     /**
-     * Codes of locations available for pickup
+     * Codes of locations available for pickup.
      *
      * @var array
      */
@@ -94,28 +94,28 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     /**
      * Codes of locations always should be available
      *   - For example reference material or material
-     *     not for loan
+     *     not for loan.
      *
      * @var array
      */
     protected $availableLocationsDefault;
 
     /**
-     * Default location code
+     * Default location code.
      *
      * @var string
      */
     protected $defaultLocation;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
@@ -129,14 +129,14 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     protected $validatePasswords;
 
     /**
-     * Authorised values category for location, defaults to 'LOC'
+     * Authorised values category for location, defaults to 'LOC'.
      *
      * @var string
      */
     protected $locationAuthorisedValuesCategory;
 
     /**
-     * Default terms for block types, can be overridden by configuration
+     * Default terms for block types, can be overridden by configuration.
      *
      * @var array
      */
@@ -148,28 +148,28 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     ];
 
     /**
-     * Display comments for patron debarments, see KohaILSDI.ini
+     * Display comments for patron debarments, see KohaILSDI.ini.
      *
      * @var array
      */
     protected $showBlockComments;
 
     /**
-     * Should we show permanent location (or current)
+     * Should we show permanent location (or current).
      *
      * @var bool
      */
     protected $showPermanentLocation;
 
     /**
-     * Should we show homebranch instead of holdingbranch
+     * Should we show homebranch instead of holdingbranch.
      *
      * @var bool
      */
     protected $showHomebranch;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -372,7 +372,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Field
+     * Get Field.
      *
      * Check $contents is not "", return it; else return $default.
      *
@@ -391,7 +391,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Koha ILSDI API
      *
@@ -443,7 +443,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Make Ilsdi Request Array
+     * Make Ilsdi Request Array.
      *
      * Makes a request to the Koha ILSDI API
      *
@@ -512,7 +512,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * To Koha Date
+     * To Koha Date.
      *
      * Turns a display date into a date format expected by Koha.
      *
@@ -564,7 +564,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -662,7 +662,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in KohaILSDI.ini
      *
@@ -683,7 +683,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -806,7 +806,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -1037,7 +1037,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -1057,7 +1057,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }*/
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1177,7 +1177,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1217,7 +1217,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1260,7 +1260,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, Koha requires the patron details and
      * an item ID. This function returns the item id as a string. This
@@ -1279,7 +1279,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -1316,7 +1316,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1397,7 +1397,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
      * checked out and then returned), for a specific patron.
@@ -1477,7 +1477,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1537,7 +1537,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Koha requires the patron details and
      * an item id. This function returns the item id as a string which
@@ -1554,7 +1554,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -1596,7 +1596,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1633,7 +1633,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -1650,7 +1650,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -1709,7 +1709,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = dept. name.
@@ -1735,7 +1735,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
@@ -1762,7 +1762,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * @throws ILSException
      * @return array An associative array with key = ID, value = name.
@@ -1788,7 +1788,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -1850,7 +1850,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1894,7 +1894,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * This method changes patron's password
      *

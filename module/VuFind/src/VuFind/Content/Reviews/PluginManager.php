@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Reviews content loader plugin manager
+ * Reviews content loader plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Content\Reviews;
 use VuFind\Content\Deprecated;
 
 /**
- * Reviews content loader plugin manager
+ * Reviews content loader plugin manager.
  *
  * @category VuFind
  * @package  Content

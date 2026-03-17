@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Search tabs" view helper
+ * "Search tabs" view helper.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\Search\UrlQueryHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * "Search tabs" view helper
+ * "Search tabs" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -54,7 +54,7 @@ class SearchTabs implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Cached hidden filter url params
+     * Cached hidden filter url params.
      *
      * @var array
      */
@@ -68,7 +68,7 @@ class SearchTabs implements LoggerAwareInterface
     protected $currentHiddenFilterParamsDisabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager    $results      Search results plugin manager
      * @param Url              $url          URL helper
@@ -96,7 +96,7 @@ class SearchTabs implements LoggerAwareInterface
     }
 
     /**
-     * Determine information about search tabs
+     * Determine information about search tabs.
      *
      * @param string $activeSearchClass The search class ID of the active search
      * @param string $query             The current search query
@@ -184,7 +184,7 @@ class SearchTabs implements LoggerAwareInterface
     }
 
     /**
-     * Get the tab configuration
+     * Get the tab configuration.
      *
      * @param \VuFind\Search\Base\Params $params Search parameters
      *
@@ -203,7 +203,7 @@ class SearchTabs implements LoggerAwareInterface
     }
 
     /**
-     * Get an array of hidden filters
+     * Get an array of hidden filters.
      *
      * @param string $searchClassId         Active search class
      * @param bool   $returnDefaultsIfEmpty Whether to return default tab filters if
@@ -226,7 +226,7 @@ class SearchTabs implements LoggerAwareInterface
     }
 
     /**
-     * Get current hidden filters as a string suitable for search URLs
+     * Get current hidden filters as a string suitable for search URLs.
      *
      * @param string $searchClassId            Active search class
      * @param bool   $ignoreHiddenFilterMemory Whether to ignore hidden filters in search memory
@@ -349,7 +349,7 @@ class SearchTabs implements LoggerAwareInterface
     }
 
     /**
-     * Build a hidden filter query fragment from the given filters
+     * Build a hidden filter query fragment from the given filters.
      *
      * @param Results $results Search results
      * @param array   $filters Filters

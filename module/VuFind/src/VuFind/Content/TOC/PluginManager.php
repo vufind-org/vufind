@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TOC content loader plugin manager
+ * TOC content loader plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Content\TOC;
 
 /**
- * TOC content loader plugin manager
+ * TOC content loader plugin manager.
  *
  * @category VuFind
  * @package  Content

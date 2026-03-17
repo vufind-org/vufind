@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AccountCapabilities view helper
+ * AccountCapabilities view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\AccountCapabilities as Helper;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * AccountCapabilities view helper
+ * AccountCapabilities view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class AccountCapabilities
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Helper $helper Capabilities helper
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Breadcrumb trail view helper
+ * Breadcrumb trail view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Model\ViewModel;
 
 /**
- * Breadcrumb trail view helper
+ * Breadcrumb trail view helper.
  *
  * @category VuFind
  * @package  View_Helpers

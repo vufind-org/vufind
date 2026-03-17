@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for user_resource table
+ * Entity model for user_resource table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for user_resource table
+ * Entity model for user_resource table.
  *
  * @category VuFind
  * @package  Database
@@ -105,7 +105,7 @@ class UserResource implements UserResourceEntityInterface
     protected ?UserListEntityInterface $list = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

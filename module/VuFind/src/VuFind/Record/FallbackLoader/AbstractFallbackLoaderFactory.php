@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract record fallback loader factory
+ * Abstract record fallback loader factory.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\RecordIdUpdater;
 
 /**
- * Abstract record fallback loader factory
+ * Abstract record fallback loader factory.
  *
  * @category VuFind
  * @package  Record
@@ -49,7 +49,7 @@ use VuFind\Record\RecordIdUpdater;
 class AbstractFallbackLoaderFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

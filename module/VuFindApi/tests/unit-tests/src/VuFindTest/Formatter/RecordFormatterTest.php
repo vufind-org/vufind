@@ -92,7 +92,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock ServerUrlHelper
+     * Get a mock ServerUrlHelper.
      *
      * @return ServerUrlHelper
      */

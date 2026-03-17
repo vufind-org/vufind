@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author aspect of the Search Multi-class (Results)
+ * Author aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrAuthor;
 use VuFind\Search\Solr\Results as SolrResults;
 
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -43,7 +43,7 @@ use VuFind\Search\Solr\Results as SolrResults;
 class Results extends SolrResults
 {
     /**
-     * Options for UrlQueryHelper
+     * Options for UrlQueryHelper.
      *
      * @return array
      */

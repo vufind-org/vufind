@@ -311,7 +311,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test record driver object
+     * Get test record driver object.
      *
      * @param string $id     Record ID
      * @param string $source Record source

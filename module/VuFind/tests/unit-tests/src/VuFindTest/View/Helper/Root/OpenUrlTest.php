@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenUrl Test Class
+ * OpenUrl Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\Config;
 use VuFind\View\Helper\Root\OpenUrl;
 
 /**
- * OpenUrl Test Class
+ * OpenUrl Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +49,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Configuration array providing basic settings for testing OpenUrlRules
+     * Configuration array providing basic settings for testing OpenUrlRules.
      *
      * @var array
      */
@@ -92,7 +92,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test checkContext() with no URL set (everything should be false!)
+     * Test checkContext() with no URL set (everything should be false!).
      *
      * @return void
      */
@@ -107,7 +107,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkExcludedRecordRules() with rule not applying (isActive() will return
-     * TRUE!!)
+     * TRUE!!).
      *
      * @return void
      */
@@ -121,7 +121,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkExcludedRecordRules() with matching rule (isActive() will return
-     * FALSE!!)
+     * FALSE!!).
      *
      * @return void
      */
@@ -156,7 +156,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkSupportedRecordRules() with no matching rule (isActive() will return
-     * FALSE!!)
+     * FALSE!!).
      *
      * @return void
      */
@@ -190,7 +190,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkSupportedRecordRules() with matching rule (isActive() will return
-     * TRUE!!)
+     * TRUE!!).
      *
      * @return void
      */
@@ -261,7 +261,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get the object to test
+     * Get the object to test.
      *
      * @param array  $rules       JSON-decoded array containing rules (optional)
      * @param array  $config      Configuration settings (optional)

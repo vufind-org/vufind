@@ -43,7 +43,7 @@ namespace VuFind\View\FlashMessenger;
 interface FlashMessengerInterface
 {
     /**
-     * Add a message with "error" type
+     * Add a message with "error" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *
@@ -52,7 +52,7 @@ interface FlashMessengerInterface
     public function addErrorMessage(string|array $message): static;
 
     /**
-     * Add a message with "info" type
+     * Add a message with "info" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *
@@ -61,7 +61,7 @@ interface FlashMessengerInterface
     public function addInfoMessage(string|array $message): static;
 
     /**
-     * Add a message with "success" type
+     * Add a message with "success" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *
@@ -70,7 +70,7 @@ interface FlashMessengerInterface
     public function addSuccessMessage(string|array $message): static;
 
     /**
-     * Add a message with "warning" type
+     * Add a message with "warning" type.
      *
      * @param string|array $message Message as a string, or a complex message as an array
      *

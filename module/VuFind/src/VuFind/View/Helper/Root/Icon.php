@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Icon view helper
+ * Icon view helper.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function in_array;
 use function is_string;
 
 /**
- * Icon view helper
+ * Icon view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,35 +48,35 @@ use function is_string;
 class Icon
 {
     /**
-     * Default icon set
+     * Default icon set.
      *
      * @var string
      */
     protected $defaultSet;
 
     /**
-     * Default icon template
+     * Default icon template.
      *
      * @var string
      */
     protected $defaultTemplate;
 
     /**
-     * Transforming map
+     * Transforming map.
      *
      * @var array
      */
     protected $iconMap;
 
     /**
-     * Prevent extra work by only appending the stylesheet once
+     * Prevent extra work by only appending the stylesheet once.
      *
      * @var bool
      */
     protected $styleAppended = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array             $config Icon configuration
      * @param StorageInterface  $cache  Cache instance
@@ -159,7 +159,7 @@ class Icon
     }
 
     /**
-     * Create a unique key for icon names and extra attributes
+     * Create a unique key for icon names and extra attributes.
      *
      * @param string $name  Icon name or key from theme.config.php
      * @param array  $attrs Additional HTML attributes for the HTML tag
@@ -176,7 +176,7 @@ class Icon
     }
 
     /**
-     * Returns inline HTML for icon
+     * Returns inline HTML for icon.
      *
      * @param string       $name  Which icon?
      * @param array|string $attrs Additional HTML attributes

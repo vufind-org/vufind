@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for Summon record collection
+ * Unit tests for Summon record collection.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Summon\Response\RecordCollection;
 
 /**
- * Unit tests for Summon record collection
+ * Unit tests for Summon record collection.
  *
  * @category VuFind
  * @package  Search

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Results Object Test
+ * EDS Results Object Test.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
 /**
- * EDS Results Object Test
+ * EDS Results Object Test.
  *
  * @category VuFind
  * @package  Tests

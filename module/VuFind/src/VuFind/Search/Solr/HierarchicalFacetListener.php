@@ -60,21 +60,21 @@ class HierarchicalFacetListener
     protected array $displayStyles;
 
     /**
-     * Hierarchy level separators
+     * Hierarchy level separators.
      *
      * @var array
      */
     protected array $separators;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
     protected array $translatedFacets = [];
 
     /**
-     * Text domains for translated facets
+     * Text domains for translated facets.
      *
      * @var array
      */
@@ -126,7 +126,7 @@ class HierarchicalFacetListener
     }
 
     /**
-     * Format hierarchical facets accordingly
+     * Format hierarchical facets accordingly.
      *
      * @param EventInterface $event Event
      *
@@ -147,7 +147,7 @@ class HierarchicalFacetListener
     }
 
     /**
-     * Process hierarchical facets and format them accordingly
+     * Process hierarchical facets and format them accordingly.
      *
      * @param EventInterface $event Event
      *
@@ -198,7 +198,7 @@ class HierarchicalFacetListener
     }
 
     /**
-     * Format a facet field according to the settings
+     * Format a facet field according to the settings.
      *
      * @param string $facet Facet field
      * @param string $value Facet value

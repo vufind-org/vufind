@@ -203,7 +203,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the facet formatter
+     * Test the facet formatter.
      *
      * @return void
      */
@@ -262,7 +262,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the facet formatter with filtering turned on
+     * Test the facet formatter with filtering turned on.
      *
      * @return void
      */

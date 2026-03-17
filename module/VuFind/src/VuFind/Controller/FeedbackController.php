@@ -38,7 +38,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Feedback form class
+     * Feedback form class.
      *
      * @var string
      */
@@ -157,7 +157,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check if sender email is blocked
+     * Check if sender email is blocked.
      *
      * @param Form $form Form
      *
@@ -170,7 +170,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check if sender email is ignored
+     * Check if sender email is ignored.
      *
      * @param Form $form Form
      *
@@ -183,7 +183,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check if an email address matches any of the given patterns
+     * Check if an email address matches any of the given patterns.
      *
      * @param Form  $form     Form
      * @param array $patterns Patterns (substring or regexp)

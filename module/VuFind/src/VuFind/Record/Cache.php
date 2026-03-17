@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Cache
+ * Record Cache.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 
 /**
- * Record Cache
+ * Record Cache.
  *
  * @category VuFind
  * @package  Record
@@ -62,7 +62,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     protected $cachableSources = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordFactory          $recordFactoryManager Record driver plugin manager
      * @param Config                 $cacheConfig          RecordCache.ini contents
@@ -77,7 +77,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Create a new or update an existing cache entry
+     * Create a new or update an existing cache entry.
      *
      * @param string $recordId Record id
      * @param string $source   Source name
@@ -163,7 +163,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the context for controlling cache behaviour
+     * Set the context for controlling cache behaviour.
      *
      * @param string $context Cache context
      *
@@ -201,7 +201,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Convenience method for checking if cache is used as primary data data source
+     * Convenience method for checking if cache is used as primary data data source.
      *
      * @param string $source Record source
      *
@@ -215,7 +215,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Convenience method for checking if cache is used as fallback data source
+     * Convenience method for checking if cache is used as fallback data source.
      *
      * @param string $source Record source
      *
@@ -229,7 +229,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Check whether a record source is cacheable
+     * Check whether a record source is cacheable.
      *
      * @param string $source Record source
      *
@@ -243,7 +243,7 @@ class Cache implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Helper function to get records from cached source-specific record data
+     * Helper function to get records from cached source-specific record data.
      *
      * @param RecordEntityInterface $cachedRecord Record data
      *

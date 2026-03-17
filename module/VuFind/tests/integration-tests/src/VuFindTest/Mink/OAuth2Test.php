@@ -52,7 +52,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
-     * Whether a key pair has been created
+     * Whether a key pair has been created.
      *
      * @var bool
      */
@@ -95,7 +95,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get OAuth2Server.yaml overrides
+     * Get OAuth2Server.yaml overrides.
      *
      * @param string $redirectUri Redirect URI
      *
@@ -132,7 +132,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Set up a test
+     * Set up a test.
      *
      * @param string $redirectUri Redirect URI
      *
@@ -153,7 +153,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testOAuth2Authorization
+     * Data provider for testOAuth2Authorization.
      *
      * @return \Iterator
      */
@@ -548,7 +548,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Create a public/private key pair
+     * Create a public/private key pair.
      *
      * @return void
      */
@@ -615,7 +615,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Restore any previous public/private key pair
+     * Restore any previous public/private key pair.
      *
      * @return void
      */

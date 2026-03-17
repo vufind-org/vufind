@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search\Results Plugin Manager Test Class
+ * Search\Results Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Search\Results;
 use VuFind\Search\Results\PluginManager;
 
 /**
- * Search\Results Plugin Manager Test Class
+ * Search\Results Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

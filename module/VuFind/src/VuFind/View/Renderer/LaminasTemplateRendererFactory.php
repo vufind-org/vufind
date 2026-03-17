@@ -1,11 +1,11 @@
 <?php
 
 /**
- * RecordTab helper factory.
+ * Laminas template renderer factory.
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2025.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,44 +21,38 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @package  View
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\View\Renderer;
 
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Exception;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\ServerUrlHelper;
+use VuFindTheme\InjectTemplateListener;
 
 /**
- * RecordTab helper factory.
+ * Laminas template renderer factory.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @package  View
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class RecordTabsFactory implements FactoryInterface
+class LaminasTemplateRendererFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
      * @param null|array         $options       Extra options (optional)
      *
      * @return object
-     *
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     * creating a service.
-     * @throws ContainerException&\Throwable if any other error occurs
      */
     public function __invoke(
         ContainerInterface $container,
@@ -66,12 +60,15 @@ class RecordTabsFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $container->get('config');
         return new $requestedName(
-            $configManager->getConfigArray('config'),
-            $container->get(\VuFind\RecordTab\TabManager::class)
+            $container->get(ServerUrlHelper::class),
+            $container->get('ViewRenderer'),
+            $container->get('ViewManager'),
+            $container->get(InjectTemplateListener::class),
+            $config['view_manager'] ?? [],
         );
     }
 }

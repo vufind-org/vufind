@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for fallback loaders
+ * Abstract base class for fallback loaders.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RecordDriver\Feature\PreviousUniqueIdInterface;
 use VuFindSearch\Service;
 
 /**
- * Abstract base class for fallback loaders
+ * Abstract base class for fallback loaders.
  *
  * @category VuFind
  * @package  Record
@@ -47,14 +47,14 @@ use VuFindSearch\Service;
 abstract class AbstractFallbackLoader implements FallbackLoaderInterface
 {
     /**
-     * Record source
+     * Record source.
      *
      * @var string
      */
     protected $source = DEFAULT_SEARCH_BACKEND;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourceServiceInterface $resourceService Resource database service
      * @param RecordIdUpdater          $recordIdUpdater Record ID updater service

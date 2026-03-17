@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JsIcons helper for passing icon HTML to Javascript
+ * JsIcons helper for passing icon HTML to Javascript.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * JsIcons helper for passing icon HTML to Javascript
+ * JsIcons helper for passing icon HTML to Javascript.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,7 +42,7 @@ namespace VuFind\View\Helper\Root;
 class JsIcons extends AbstractJsStrings
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Icon   $iconHelper Icon helper
      * @param string $varName    Variable name to store icons
@@ -55,7 +55,7 @@ class JsIcons extends AbstractJsStrings
     }
 
     /**
-     * Generate Icon from string
+     * Generate Icon from string.
      *
      * @param string $icon String to transform
      * @param string $key  JSON object key

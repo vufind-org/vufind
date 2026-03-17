@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content View Helper Test Class
+ * Content View Helper Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Markdown;
 
 /**
- * Content View Helper Test Class
+ * Content View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests

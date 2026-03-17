@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base62 Test Class
+ * Base62 Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Crypt;
 use VuFind\Crypt\Base62;
 
 /**
- * Base62 Test Class
+ * Base62 Test Class.
  *
  * @category VuFind
  * @package  Tests

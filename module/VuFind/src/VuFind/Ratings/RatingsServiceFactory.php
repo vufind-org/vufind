@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ratings service factory
+ * Ratings service factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Record\ResourcePopulator;
 
 /**
- * Ratings service
+ * Ratings service.
  *
  * @category VuFind
  * @package  Ratings
@@ -48,7 +48,7 @@ use VuFind\Record\ResourcePopulator;
 class RatingsServiceFactory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service container
      * @param string             $name      Requested service name (unused)

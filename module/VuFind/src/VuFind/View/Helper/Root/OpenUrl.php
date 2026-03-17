@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenUrl view helper
+ * OpenUrl view helper.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * OpenUrl view helper
+ * OpenUrl view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,21 +48,21 @@ use function is_callable;
 class OpenUrl
 {
     /**
-     * Current RecordDriver
+     * Current RecordDriver.
      *
      * @var \VuFind\RecordDriver
      */
     protected $recordDriver;
 
     /**
-     * OpenURL context ('results', 'record' or 'holdings')
+     * OpenURL context ('results', 'record' or 'holdings').
      *
      * @var string
      */
     protected $area;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Context       $context       Context helper
      * @param array         $openUrlRules  VuFind OpenURL rules
@@ -78,7 +78,7 @@ class OpenUrl
     }
 
     /**
-     * Set up context for helper
+     * Set up context for helper.
      *
      * @param \VuFind\RecordDriver $driver The current record driver
      * @param string               $area   OpenURL context ('results', 'record'
@@ -141,7 +141,7 @@ class OpenUrl
     }
 
     /**
-     * Public method to render the OpenURL template
+     * Public method to render the OpenURL template.
      *
      * @param bool $imagebased Indicates if an image based link
      * should be displayed or not (null for system default)
@@ -219,7 +219,7 @@ class OpenUrl
     }
 
     /**
-     * Public method to check ImageBased Linking mode
+     * Public method to check ImageBased Linking mode.
      *
      * @return string|bool false if image based linking is not active,
      * config image_based_linking_mode otherwise (default = 'both')
@@ -236,7 +236,7 @@ class OpenUrl
     }
 
     /**
-     * Public method to check if ImageBased Linking is enabled
+     * Public method to check if ImageBased Linking is enabled.
      *
      * @return bool
      */
@@ -246,7 +246,7 @@ class OpenUrl
     }
 
     /**
-     * Public method to check whether OpenURLs are active for current record
+     * Public method to check whether OpenURLs are active for current record.
      *
      * @return bool
      */
@@ -307,7 +307,7 @@ class OpenUrl
 
     /**
      * Check if "exclude" rules from the OpenUrlRules.json file apply to
-     * the current record
+     * the current record.
      *
      * @param array $resolverDriverRules Array of rules for a specific resolverDriver
      *
@@ -325,7 +325,7 @@ class OpenUrl
 
     /**
      * Check if "include" rules from the OpenUrlRules.json file apply to
-     * the current record
+     * the current record.
      *
      * @param array $resolverDriverRules Array of rules for a specific resolverDriver
      *
@@ -407,7 +407,7 @@ class OpenUrl
 
     /**
      * Checks if rules from the OpenUrlRules.json file apply to the current
-     * record
+     * record.
      *
      * @param array $ruleset Array of rules to be checked
      *

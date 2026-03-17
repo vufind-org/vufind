@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MoreByAuthorSolr Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Related\MoreByAuthorSolr;
 use VuFindSearch\Query\Query;
 
 /**
- * MoreByAuthorSolr Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests

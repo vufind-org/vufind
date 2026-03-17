@@ -63,35 +63,35 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
     protected $maxRecordsToExamine;
 
     /**
-     * Browse index to search
+     * Browse index to search.
      *
      * @var string
      */
     protected $browseIndex;
 
     /**
-     * Solr field to use for search seed
+     * Solr field to use for search seed.
      *
      * @var string
      */
     protected $solrField;
 
     /**
-     * How many rows to show before the selected value
+     * How many rows to show before the selected value.
      *
      * @var int
      */
     protected $rowsBefore;
 
     /**
-     * The search backend to query
+     * The search backend to query.
      *
      * @var string
      */
     protected $source;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service $searchService Search service
      * @param RouteHelper           $routeHelper   Route helper

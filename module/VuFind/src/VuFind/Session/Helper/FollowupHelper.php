@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Session Helper - Followup
+ * VuFind Session Helper - Followup.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ use VuFind\Http\ServerUrlHelper;
 class FollowupHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Container       $session         Session container
      * @param ServerUrlHelper $serverUrlHelper Server URL helper

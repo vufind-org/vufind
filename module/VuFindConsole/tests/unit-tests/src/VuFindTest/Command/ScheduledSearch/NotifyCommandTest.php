@@ -62,7 +62,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected $container;
 
     /**
-     * Setup method
+     * Setup method.
      *
      * @return void
      */
@@ -431,7 +431,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a minified search object
+     * Get a minified search object.
      *
      * @param ?callable $optionsCallback Callback to set expectations on options object
      * @param ?callable $paramsCallback  Callback to set expectations on params object

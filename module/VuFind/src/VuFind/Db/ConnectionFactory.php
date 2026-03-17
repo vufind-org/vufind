@@ -55,7 +55,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     use SecretTrait;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
@@ -76,7 +76,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     protected string $wrapperClass = \VuFind\Db\Connection::class;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Config             $config    VuFind configuration (provided when used
      * as service; omitted when used as factory)
@@ -91,7 +91,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Create an object (glue code for FactoryInterface compliance)
+     * Create an object (glue code for FactoryInterface compliance).
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

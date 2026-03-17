@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for payment table
+ * Entity model for payment table.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Type\PaymentStatus;
 use function in_array;
 
 /**
- * Entity model for payment table
+ * Entity model for payment table.
  *
  * @category VuFind
  * @package  Database

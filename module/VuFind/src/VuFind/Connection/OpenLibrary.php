@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Open Library Utilities
+ * Open Library Utilities.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Connection;
 use function count;
 
 /**
- * Open Library Utilities
+ * Open Library Utilities.
  *
  * Class for accessing helpful Open Library APIs.
  *
@@ -45,14 +45,14 @@ use function count;
 class OpenLibrary
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Http\Client $client HTTP client
      */
@@ -64,7 +64,7 @@ class OpenLibrary
     /**
      * Returns an array of elements for each work matching the
      *    parameters. An API call will be made for each subjectType until
-     *    data is returned
+     *    data is returned.
      *
      * @param string $subject        The subject term to be looked for
      * @param string $publishedIn    Date range in the form YYYY-YYYY
@@ -175,7 +175,7 @@ class OpenLibrary
 
     /**
      * Support function to return a normalised version of the search string
-     *     for use in the API url
+     *     for use in the API url.
      *
      * @param string $subject Search string to normalise
      *

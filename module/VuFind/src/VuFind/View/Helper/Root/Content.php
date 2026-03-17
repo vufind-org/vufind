@@ -48,7 +48,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Content
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TemplateBased $templateBasedBlock TemplateBased instance to resolve translated pages.
      * @param Context       $contextHelper      Context View Helper instance to resolve translated pages.

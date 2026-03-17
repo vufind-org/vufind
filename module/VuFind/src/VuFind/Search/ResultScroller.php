@@ -56,14 +56,14 @@ use function is_array;
 class ResultScroller
 {
     /**
-     * Maximum number of last searches to track
+     * Maximum number of last searches to track.
      *
      * @var int
      */
     public const LAST_SEARCH_LIMIT = 10;
 
     /**
-     * Currently active scroll data
+     * Currently active scroll data.
      *
      * @var \stdClass
      */
@@ -111,7 +111,7 @@ class ResultScroller
     }
 
     /**
-     * Add data to session for a search
+     * Add data to session for a search.
      *
      * @param Results $searchObject Search object
      *
@@ -143,7 +143,7 @@ class ResultScroller
     }
 
     /**
-     * Make room for a new entry in the session storage as necessary
+     * Make room for a new entry in the session storage as necessary.
      *
      * @return void
      */
@@ -165,7 +165,7 @@ class ResultScroller
 
     /**
      * Return a modified results array to help scroll the user through the current
-     * page of results
+     * page of results.
      *
      * @param array $retVal Return values (in progress)
      * @param int   $pos    Current position within current page
@@ -182,7 +182,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where the user is on the cusp of
-     * the previous page of results
+     * the previous page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -223,7 +223,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where the user is on the cusp of
-     * the next page of results
+     * the next page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -264,7 +264,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the previous page of results
+     * from the previous page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -308,7 +308,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the next page of results
+     * from the next page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -352,7 +352,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the first page of results
+     * from the first page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -389,7 +389,7 @@ class ResultScroller
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the last page of results
+     * from the last page of results.
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -506,7 +506,7 @@ class ResultScroller
     }
 
     /**
-     * Build and return the scroll data array
+     * Build and return the scroll data array.
      *
      * @param array      $retVal     Return values (in progress)
      * @param BaseRecord $driver     Driver for the record currently being displayed

@@ -49,7 +49,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepositoryInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
@@ -73,7 +73,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
     }
 
     /**
-     * Create a new authentication code
+     * Create a new authentication code.
      *
      * @return AuthCodeEntityInterface
      */
