@@ -41,18 +41,7 @@ namespace VuFind\View\Helper\Root;
 class SystemEmail
 {
     /**
-<<<<<<< HEAD
-     * Constructor
-=======
-     * System email.
-     *
-     * @var string
-     */
-    protected $email;
-
-    /**
      * Constructor.
->>>>>>> dev-12.0
      *
      * @param string $email System email
      */

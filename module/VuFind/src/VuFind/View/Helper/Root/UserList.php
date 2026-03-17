@@ -105,7 +105,7 @@ class UserList
     }
 
     /**
-     * Make helper invokable
+     * Make helper invokable.
      *
      * @return static
      */

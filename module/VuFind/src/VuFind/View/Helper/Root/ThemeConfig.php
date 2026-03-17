@@ -44,7 +44,7 @@ use VuFindTheme\ThemeInfo;
 class ThemeConfig
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo $themeInfo ThemeInfo
      */
