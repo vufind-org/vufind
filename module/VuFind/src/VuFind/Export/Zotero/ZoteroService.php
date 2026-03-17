@@ -226,7 +226,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
             $this->logError(
                 "GET request for '$callbackUrl' failed (expected HTTP 200): " .
                 $vufindResponse->getStatusCode() . ': ' . $vufindResponse->getReasonPhrase() .
-                "; HTTP response headers: " . json_encode($vufindResponse->getHeaders())
+                '; HTTP response headers: ' . json_encode($vufindResponse->getHeaders())
             );
             throw new ZoteroException('Export request failed');
         }
