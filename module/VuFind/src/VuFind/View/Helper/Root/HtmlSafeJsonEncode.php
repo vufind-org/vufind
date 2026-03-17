@@ -32,7 +32,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\HelperPluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * HTML-safe JSON encoding.
@@ -43,8 +44,19 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HtmlSafeJsonEncode extends AbstractHelper
+class HtmlSafeJsonEncode
 {
+    /**
+     * Constructor
+     *
+     * @param HelperPluginManager $viewHelperManager View Helper Manager
+     */
+    public function __construct(
+        #[Autowire(service: 'ViewHelperManager')]
+        protected HelperPluginManager $viewHelperManager
+    ) {
+    }
+
     /**
      * JSON-encode $value in an HTML-safe manner.
      *
@@ -61,7 +73,7 @@ class HtmlSafeJsonEncode extends AbstractHelper
             JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
         );
         return $outerEscaper
-            ? ($this->getView()->plugin($outerEscaper))($json)
+            ? ($this->viewHelperManager->get($outerEscaper))($json)
             : $json;
     }
 }

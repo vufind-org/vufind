@@ -35,6 +35,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
+use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 
 use function sprintf;
@@ -57,6 +58,27 @@ trait ClassBasedTemplateRendererTrait
      * @var array
      */
     protected $templateCache = [];
+
+    /**
+     * View renderer.
+     *
+     * @var RendererInterface
+     */
+    protected $viewRenderer;
+
+    /**
+     * View resolver.
+     *
+     * @var ResolverInterface
+     */
+    protected $viewResolver;
+
+    /**
+     * Context helper.
+     *
+     * @var Context
+     */
+    protected Context $contextHelper;
 
     /**
      * Recursively locate a template that matches the provided class name
@@ -100,6 +122,60 @@ trait ClassBasedTemplateRendererTrait
     }
 
     /**
+     * Set the context helper.
+     *
+     * @param Context $context Context helper
+     *
+     * @return void
+     */
+    public function setContextHelper(Context $context): void
+    {
+        $this->contextHelper = $context;
+    }
+
+    /**
+     * Get the context helper.
+     *
+     * @throws RuntimeException If context helper is not set
+     * @return Context
+     */
+    protected function getContextHelper(): Context
+    {
+        if (null === $this->contextHelper) {
+            throw new RuntimeException('Context helper not set in ' . __CLASS__);
+        }
+        return $this->contextHelper;
+    }
+
+    /**
+     * Get the view renderer.
+     *
+     * @throws RuntimeException If view renderer is not set
+     * @return RendererInterface
+     */
+    public function getViewRenderer(): RendererInterface
+    {
+        if (null === $this->viewRenderer) {
+            throw new RuntimeException('View renderer not set in ' . __CLASS__);
+        }
+        return $this->viewRenderer;
+    }
+
+    /**
+     * Get the view resolver.
+     *
+     * @throws RuntimeException If view resolver is not set
+     * @return ResolverInterface
+     */
+    public function getViewResolver(): ResolverInterface
+    {
+        if (null === $this->viewResolver) {
+            throw new RuntimeException('View resolver not set in ' . __CLASS__);
+        }
+        return $this->viewResolver;
+    }
+
+    /**
      * Render a template associated with the provided class name, applying to
      * specified context variables.
      *
@@ -109,8 +185,8 @@ trait ClassBasedTemplateRendererTrait
      * @param bool   $throw     If true (default), an exception is thrown if the
      * template is not found. Otherwise an empty string is returned.
      *
-     * @return string
      * @throws RuntimeException
+     * @return string
      */
     protected function renderClassTemplate(
         $template,
@@ -118,10 +194,9 @@ trait ClassBasedTemplateRendererTrait
         $context = [],
         $throw = true
     ) {
-        // Set up the needed context in the view:
-        $view = $this->getView();
-        $contextHelper = $view->plugin('context');
-        $oldContext = $contextHelper($view)->apply($context);
+        $viewRenderer = $this->getViewRenderer();
+        $contextHelper = $this->getContextHelper();
+        $oldContext = $contextHelper($viewRenderer)->apply($context);
 
         // Find and render the template:
         $classTemplate = $this->getCachedClassTemplate($template, $className);
@@ -133,10 +208,10 @@ trait ClassBasedTemplateRendererTrait
             );
         }
 
-        $html = $classTemplate ? $view->render($classTemplate) : '';
+        $html = $classTemplate ? $viewRenderer->render($classTemplate) : '';
 
         // Restore the original context before returning the result:
-        $contextHelper($view)->restore($oldContext);
+        $contextHelper($viewRenderer)->restore($oldContext);
         return $html;
     }
 
@@ -156,7 +231,7 @@ trait ClassBasedTemplateRendererTrait
                 = $this->resolveClassTemplate(
                     $template,
                     $className,
-                    $this->getView()->resolver()
+                    $this->getViewResolver()
                 );
         }
         return $this->templateCache[$className][$template];

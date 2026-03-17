@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HtmlSafeJsonEncode View Helper Test Class.
+ * HtmlSafeJsonEncode View Helper Test Class
  *
  * PHP version 8
  *
@@ -30,10 +30,11 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\HelperPluginManager;
 use VuFind\View\Helper\Root\HtmlSafeJsonEncode;
 
 /**
- * HtmlSafeJsonEncode View Helper Test Class.
+ * HtmlSafeJsonEncode View Helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -46,17 +47,15 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Get helper to test.
+     * Get helper to test
      *
-     * @param array $plugins Array of extra plugins for renderer
+     * @param HelperPluginManager $viewHelperManager View Helper Manager
      *
      * @return HtmlSafeJsonEncode
      */
-    protected function getHelper(array $plugins = []): HtmlSafeJsonEncode
+    protected function getHelper(?HelperPluginManager $viewHelperManager = null): HtmlSafeJsonEncode
     {
-        $helper = new HtmlSafeJsonEncode();
-        $helper->setView($this->getPhpRenderer($plugins));
-        return $helper;
+        return new HtmlSafeJsonEncode($viewHelperManager ?? $this->createMock(HelperPluginManager::class));
     }
 
     /**
@@ -67,14 +66,19 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     public function testDefaultEscaping(): void
     {
         $escapeHtmlAttr = $this->createMock(EscapeHtmlAttr::class);
-        $escapeHtmlAttr->expects($this->once())->method('__invoke')
-            ->with('1')
-            ->willReturn('1');
-        $this->assertEquals('1', ($this->getHelper(compact('escapeHtmlAttr')))(1));
+        $escapeHtmlAttr->expects($this->once())->method('__invoke')->with('1')->willReturn('1');
+
+        $viewHelperManager = $this->createMock(HelperPluginManager::class);
+        $viewHelperManager->expects($this->once())
+            ->method('get')
+            ->with('escapeHtmlAttr')
+            ->willReturn($escapeHtmlAttr);
+
+        $this->assertEquals('1', ($this->getHelper($viewHelperManager))(1));
     }
 
     /**
-     * Data provider for JSON encoding tests.
+     * Data provider for JSON encoding tests
      *
      * @return \Iterator
      */
