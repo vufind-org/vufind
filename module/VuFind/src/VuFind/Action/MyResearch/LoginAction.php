@@ -35,7 +35,7 @@ use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Action\Helper\ForwardHelper;
+use VuFind\ActionHelper\ForwardHelper;
 use VuFind\Auth\Manager as AuthManager;
 
 /**
@@ -51,7 +51,7 @@ use VuFind\Auth\Manager as AuthManager;
 class LoginAction extends AbstractTemplateRenderingAction
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AuthManager $authManager Authentication manager
      */

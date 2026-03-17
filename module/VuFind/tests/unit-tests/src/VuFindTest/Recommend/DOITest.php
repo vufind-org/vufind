@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI recommendation module Test Class
+ * DOI recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\DOI;
 
 /**
- * DOI recommendation module Test Class
+ * DOI recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -126,7 +126,7 @@ class DOITest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param \VuFind\Search\Solr\Results $results  results object
      * @param string                      $settings settings

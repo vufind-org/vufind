@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for the ReservesHelper
+ * Unit tests for the ReservesHelper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service;
 
 /**
- * Unit tests for the ReservesHelper
+ * Unit tests for the ReservesHelper.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +49,7 @@ use VuFindSearch\Service;
 class ReservesHelperTest extends TestCase
 {
     /**
-     * Test constructor throws exception when useIndex is true but searchService is null
+     * Test constructor throws exception when useIndex is true but searchService is null.
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test constructor succeeds when useIndex is true and searchService is provided
+     * Test constructor succeeds when useIndex is true and searchService is provided.
      *
      * @return void
      */
@@ -77,7 +77,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test constructor succeeds when useIndex is false and searchService is null
+     * Test constructor succeeds when useIndex is false and searchService is null.
      *
      * @return void
      */
@@ -91,7 +91,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test useIndex returns correct value
+     * Test useIndex returns correct value.
      *
      * @return void
      */
@@ -106,7 +106,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test useIndex returns false
+     * Test useIndex returns false.
      *
      * @return void
      */
@@ -120,7 +120,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using catalog (ILS driver)
+     * Test findReserves using catalog (ILS driver).
      *
      * @return void
      */
@@ -145,7 +145,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using Solr index with results
+     * Test findReserves using Solr index with results.
      *
      * @return void
      */
@@ -221,7 +221,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using Solr index with no results
+     * Test findReserves using Solr index with no results.
      *
      * @return void
      */
@@ -258,7 +258,7 @@ class ReservesHelperTest extends TestCase
     }
 
     /**
-     * Test findReserves using catalog with null parameters
+     * Test findReserves using catalog with null parameters.
      *
      * @return void
      */

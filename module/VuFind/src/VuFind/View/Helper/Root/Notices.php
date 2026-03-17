@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Notices view helper
+ * Notices view helper.
  *
  * PHP version 8
  *
@@ -58,7 +58,7 @@ class Notices implements TranslatorAwareInterface
     protected array $defaultStyleClasses = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param NoticeManager $noticeManager Notice manager
      * @param PhpRenderer   $renderer      PhpRenderer

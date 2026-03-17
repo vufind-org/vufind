@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Zotero Export Service
+ * Zotero Export Service.
  *
  * PHP version 8
  *
@@ -50,7 +50,7 @@ use function count;
 use function is_array;
 
 /**
- * Zotero Export Service
+ * Zotero Export Service.
  *
  * Class for authenticating with Zotero using OAuth.
  *
@@ -67,7 +67,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
     use TranslatorAwareTrait;
 
     /**
-     * Access token type
+     * Access token type.
      *
      * @var string
      */
@@ -94,7 +94,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
     }
 
     /**
-     * Handle an export request
+     * Handle an export request.
      *
      * @param UserEntityInterface $user        User
      * @param string              $callbackUrl Export callback URL for fetching the actual records
@@ -132,7 +132,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
     }
 
     /**
-     * Handle OAuth authorization callback
+     * Handle OAuth authorization callback.
      *
      * @param UserEntityInterface $user   User
      * @param array               $params Query parameters

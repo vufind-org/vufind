@@ -95,7 +95,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that merging an invalid MARC file generates an exception
+     * Test that merging an invalid MARC file generates an exception.
      *
      * @return void
      */

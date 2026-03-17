@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Horizon ILS Driver
+ * Horizon ILS Driver.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function in_array;
 use function intval;
 
 /**
- * Horizon ILS Driver
+ * Horizon ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -55,21 +55,21 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateFormat;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -337,7 +337,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -400,7 +400,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a specific
      * record. It is a proxy to getStatuses.
@@ -460,7 +460,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a collection of
      * records.
@@ -501,7 +501,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -517,7 +517,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -690,7 +690,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -724,7 +724,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -822,7 +822,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -978,7 +978,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1010,88 +1010,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Funds
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @throws ILSException
-     * @return array An associative array with key = fund ID, value = fund name.
-     */
-    public function getFunds()
-    {
-        // No funds for limiting in Horizon.
-        return [];
-    }
-
-    /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * The logic in this function follows the pattern used for the "New Additions"
-     * functionality of the Horizon staff client. New Additions was delivered with
-     * Horizon 7.4 and requires setup. Follow instructions in the "Circulation Setup
-     * Guide". The minimum setup is to set the "Track First Availability" flag for
-     * each appropriate item status.
-     *
-     * @param int     $page    Not implemented in this driver - Sybase does not have SQL
-     *                         query paging functionality.
-     * @param int     $limit   The maximum number of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  Not implemented in this driver - The contributing library
-     *                     does not use acquisitions.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        // This functionality first appeared in Horizon 7.4 - check our version
-        $hzVersionRequired = '7.4.0.0';
-        if ($this->checkHzVersion($hzVersionRequired)) {
-            // Set the Sybase or MSSQL rowcount limit (TODO: account for $page)
-            $limitsql = "set rowcount {$limit}";
-            // for Sybase ASE 12.5 : "set rowcount $limit"
-
-            // This is the actual query for IDs.
-            $newsql = '  select nb.bib# '
-                    . '    from new_bib nb '
-                    . '    join bib_control bc '
-                    . '      on bc.bib# = nb.bib# '
-                    . '     and bc.staff_only = 0 '
-                    . '   where nb.date >= '
-                    . "         datediff(dd, '01JAN1970', getdate()) - {$daysOld} "
-                    . 'order by nb.date desc ';
-
-            $results = [];
-
-            // Set the rowcount limit before executing the query for IDs
-            $this->db->query($limitsql);
-
-            // Actual query for IDs
-            try {
-                $sqlStmt = $this->db->query($newsql);
-                foreach ($sqlStmt as $row) {
-                    $results[] = $row['bib#'];
-                }
-
-                $retVal = ['count' => count($results), 'results' => []];
-                foreach ($results as $result) {
-                    $retVal['results'][] = ['id' => $result];
-                }
-
-                return $retVal;
-            } catch (\Exception $e) {
-                $this->logError($e->getMessage());
-                $this->throwAsIlsException($e);
-            }
-        }
-        return ['count' => 0, 'results' => []];
-    }
-
-    /**
-     * Check Horizon Version
+     * Check Horizon Version.
      *
      * Check the Horizon version found in the matham table to make sure it is at
      * least the required version.

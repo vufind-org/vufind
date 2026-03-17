@@ -47,7 +47,7 @@ class RetrieveBatchCommandTest extends TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Test RetrieveBatch with RetrieveBatchInterface
+     * Test RetrieveBatch with RetrieveBatchInterface.
      *
      * @return void
      */
@@ -69,7 +69,7 @@ class RetrieveBatchCommandTest extends TestCase
     }
 
     /**
-     * Test RetrieveBatch without RetrieveBatchInterface
+     * Test RetrieveBatch without RetrieveBatchInterface.
      *
      * @return void
      */
@@ -94,7 +94,7 @@ class RetrieveBatchCommandTest extends TestCase
     }
 
     /**
-     * Test getArguments method
+     * Test getArguments method.
      *
      * @return void
      */
@@ -112,7 +112,7 @@ class RetrieveBatchCommandTest extends TestCase
     }
 
     /**
-     * Test getRecordIdentifiers method
+     * Test getRecordIdentifiers method.
      *
      * @return void
      */

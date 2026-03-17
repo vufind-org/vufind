@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Helper to get path to a parent template (for including)
+ * Helper to get path to a parent template (for including).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Exception;
 use Laminas\View\Resolver\TemplatePathStack;
 
 /**
- * Helper to get path to a parent template (for including)
+ * Helper to get path to a parent template (for including).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,14 +44,14 @@ use Laminas\View\Resolver\TemplatePathStack;
 class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Inheritance stack of template folder paths
+     * Inheritance stack of template folder paths.
      *
      * @var TemplatePathStack
      */
     protected $templatePathStack;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TemplatePathStack $templateStack Inheritance stack of template paths
      */
@@ -61,7 +61,7 @@ class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Returns an template path according the configured theme
+     * Returns an template path according the configured theme.
      *
      * @param string $template    template name like 'footer.phtml'
      * @param string $targetTheme specific parent to inherit from

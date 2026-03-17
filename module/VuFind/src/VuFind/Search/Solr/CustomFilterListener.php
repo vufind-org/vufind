@@ -49,7 +49,7 @@ use VuFindSearch\Service;
 class CustomFilterListener
 {
     /**
-     * Name of parameter used to store filters
+     * Name of parameter used to store filters.
      *
      * @var string
      */

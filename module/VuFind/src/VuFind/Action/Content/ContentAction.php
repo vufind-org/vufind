@@ -65,7 +65,7 @@ class ContentAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Types/formats of content
+     * Types/formats of content.
      *
      * @var array $types
      */
@@ -114,7 +114,7 @@ class ContentAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Get response for markdown based page
+     * Get response for markdown based page.
      *
      * @param string $page    Page name/route (if applicable)
      * @param string $relPath Relative path to file with content (if applicable)
@@ -135,7 +135,7 @@ class ContentAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Get ViewModel for phtml base page
+     * Get ViewModel for phtml base page.
      *
      * @param string $page    Page name/route (if applicable)
      * @param string $relPath Relative path to file with content (if applicable)

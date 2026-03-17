@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Get the backend's unique search key field (currently only supported by Solr)
+ * Get the backend's unique search key field (currently only supported by Solr).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\Backend\BackendInterface;
 use function is_callable;
 
 /**
- * Get the backend's unique search key field (currently only supported by Solr)
+ * Get the backend's unique search key field (currently only supported by Solr).
  *
  * @category VuFind
  * @package  Search

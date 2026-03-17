@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * PHP version 8
  *
@@ -30,8 +30,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\Partial;
+use VuFind\Date\Converter;
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function function_exists;
@@ -41,7 +44,7 @@ use function sprintf;
 use function strlen;
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -50,30 +53,23 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Citation extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
+class Citation implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Citation details
+     * Citation details.
      *
      * @var array
      */
     protected $details = [];
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */
     protected $driver;
-
-    /**
-     * Date converter
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $dateConverter;
 
     /**
      * List of words to never capitalize when using title case.
@@ -105,13 +101,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Date\Converter $converter Date converter
+     * @param Converter $dateConverter Date converter
+     * @param Partial   $partial       Partial view helper
      */
-    public function __construct(\VuFind\Date\Converter $converter)
-    {
-        $this->dateConverter = $converter;
+    public function __construct(
+        protected Converter $dateConverter,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Partial $partial
+    ) {
     }
 
     /**
@@ -262,7 +261,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * Retrieve a citation in a particular format
+     * Retrieve a citation in a particular format.
      *
      * Returns the citation in the format specified
      *
@@ -308,12 +307,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $apa['doi'] = $doi;
         }
 
-        $partial = $this->getView()->plugin('partial');
         // Behave differently for books vs. journals:
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher(false);
             $apa['year'] = $this->getYear();
-            return $partial('Citation/apa.phtml', $apa);
+            return ($this->partial)('Citation/apa.phtml', $apa);
         }
 
         // If we got this far, it's the default article case:
@@ -321,7 +319,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             = $this->getAPANumbersAndDate();
         $apa['journal'] = $this->details['journal'];
         $apa['pageRange'] = $this->getPageRange();
-        return $partial('Citation/apa-article.phtml', $apa);
+        return ($this->partial)('Citation/apa-article.phtml', $apa);
     }
 
     /**
@@ -397,12 +395,11 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         }
 
         // Behave differently for books vs. journals:
-        $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
             $mla['publisher'] = $this->getPublisher($includePubPlace);
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
-            return $partial('Citation/mla.phtml', $mla);
+            return ($this->partial)('Citation/mla.phtml', $mla);
         }
         // If we got this far, we should add other journal-specific details:
         $mla['doiArticleComma'] = $doiArticleComma;
@@ -413,7 +410,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             $volPrefix,
             $yearFormat
         );
-        return $partial('Citation/mla-article.phtml', $mla);
+        return ($this->partial)('Citation/mla-article.phtml', $mla);
     }
 
     /**

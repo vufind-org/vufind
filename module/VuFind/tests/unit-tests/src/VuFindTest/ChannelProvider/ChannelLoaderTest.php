@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ChannelLoader Test Class
+ * ChannelLoader Test Class.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 
 /**
- * ChannelLoader Test Class
+ * ChannelLoader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +52,7 @@ use VuFind\Search\SearchRunner;
 class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testGetRecordContext()
+     * Data provider for testGetRecordContext().
      *
      * @return \Iterator
      */
@@ -110,7 +110,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getRecordContext
+     * Test getRecordContext.
      *
      * @param array $config              Configuration
      * @param array $expectedChannelData The channel data we expect to retrieve
@@ -160,7 +160,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
             function ($settings) {
                 return new class ($settings) extends AbstractChannelProvider {
                     /**
-                     * Constructor
+                     * Constructor.
                      *
                      * @param string $settings Initial settings to save
                      */

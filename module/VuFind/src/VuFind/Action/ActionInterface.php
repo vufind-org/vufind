@@ -29,7 +29,7 @@
 
 namespace VuFind\Action;
 
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
+use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\Http\RouteHelper;
 
 /**

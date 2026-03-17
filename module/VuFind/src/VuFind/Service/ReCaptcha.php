@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recaptcha service
+ * Recaptcha service.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function func_get_args;
 use function is_callable;
 
 /**
- * Recaptcha service
+ * Recaptcha service.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,14 +46,14 @@ use function is_callable;
 class ReCaptcha
 {
     /**
-     * Proxied helper
+     * Proxied helper.
      *
      * @var LaminasRecaptcha
      */
     protected $recaptcha;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -77,7 +77,7 @@ class ReCaptcha
     }
 
     /**
-     * Get the HTML code for the captcha
+     * Get the HTML code for the captcha.
      *
      * This method uses the public key to fetch a recaptcha form.
      *

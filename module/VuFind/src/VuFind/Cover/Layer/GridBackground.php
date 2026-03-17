@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Grid cover background layer
+ * Grid cover background layer.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Cover\Layer;
 use function strlen;
 
 /**
- * Grid cover background layer
+ * Grid cover background layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -43,7 +43,7 @@ use function strlen;
 class GridBackground extends AbstractBackgroundLayer
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)
@@ -61,7 +61,7 @@ class GridBackground extends AbstractBackgroundLayer
     }
 
     /**
-     * Turn number into pattern
+     * Turn number into pattern.
      *
      * @param int $seed Seed used to generate the pattern
      *
@@ -91,7 +91,7 @@ class GridBackground extends AbstractBackgroundLayer
 
     /**
      * Convert 16 long binary string to 8x8 color grid
-     * Reflects vertically and horizontally
+     * Reflects vertically and horizontally.
      *
      * @param resource $im       Active image resource
      * @param string   $pattern  Binary string of pattern

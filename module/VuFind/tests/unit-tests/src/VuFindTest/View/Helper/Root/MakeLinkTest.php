@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MakeLink view helper Test Class
+ * MakeLink view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\MakeLink;
 
 /**
- * MakeLink view helper Test Class
+ * MakeLink view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\View\Helper\Root\MakeLink;
 class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
-     * Get MakeLink helper with mock view
+     * Get MakeLink helper with mock view.
      *
      * @return \Laminas\View\Helper\EscapeHtml
      */
@@ -57,7 +57,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test that responds to common inputs
+     * Test that responds to common inputs.
      *
      * @return void
      */
@@ -82,7 +82,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test that helper returns unescaped text when href is falsey
+     * Test that helper returns unescaped text when href is falsey.
      *
      * @return void
      */
@@ -96,7 +96,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test that responds to common inputs
+     * Test that responds to common inputs.
      *
      * @return void
      */
@@ -145,7 +145,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test escaping with other plugins
+     * Test escaping with other plugins.
      *
      * @return void
      */
@@ -184,7 +184,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test that helper obeys options
+     * Test that helper obeys options.
      *
      * @return void
      */

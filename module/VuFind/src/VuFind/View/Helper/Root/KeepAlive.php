@@ -1,7 +1,7 @@
 <?php
 
 /**
- * KeepAlive view helper
+ * KeepAlive view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * KeepAlive view helper
+ * KeepAlive view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,14 +44,14 @@ namespace VuFind\View\Helper\Root;
 class KeepAlive extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Keep-alive interval in seconds or 0 if disabled
+     * Keep-alive interval in seconds or 0 if disabled.
      *
      * @var int
      */
     protected $interval;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param int $interval Keep-alive interval in seconds or 0 if disabled
      */

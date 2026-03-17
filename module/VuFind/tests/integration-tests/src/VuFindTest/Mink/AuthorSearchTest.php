@@ -45,7 +45,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
     use SearchFacetFilterTrait;
 
     /**
-     * Test searching for a known corporate author
+     * Test searching for a known corporate author.
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test searching for a known primary author
+     * Test searching for a known primary author.
      *
      * @return void
      */

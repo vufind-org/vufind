@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Upgrade Controller
+ * Upgrade Controller.
  *
  * PHP version 8
  *
@@ -78,14 +78,14 @@ class UpgradeController extends AbstractBase
     use Feature\SecureDatabaseTrait;
 
     /**
-     * Cookie container
+     * Cookie container.
      *
      * @var CookieContainer
      */
     protected $cookie;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var Container
      */
@@ -99,7 +99,7 @@ class UpgradeController extends AbstractBase
     protected $logsql = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm               Service manager
      * @param CookieManager           $cookieManager    Cookie manager
@@ -152,7 +152,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -582,7 +582,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Organize and run critical, blocking checks
+     * Organize and run critical, blocking checks.
      *
      * @return string|null
      */
@@ -595,7 +595,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Display summary of installation status
+     * Display summary of installation status.
      *
      * @return mixed
      */
@@ -668,7 +668,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Generate base62 encoding to migrate old shortlinks
+     * Generate base62 encoding to migrate old shortlinks.
      *
      * @throws Exception
      *
@@ -702,7 +702,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Check for insecure database settings
+     * Check for insecure database settings.
      *
      * @return string|null
      */
@@ -715,7 +715,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Check for deprecated and insecure use of blowfish encryption
+     * Check for deprecated and insecure use of blowfish encryption.
      *
      * @return string|null
      */
@@ -728,7 +728,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Lead users through the steps required to fix an insecure database
+     * Lead users through the steps required to fix an insecure database.
      *
      * @return mixed
      */
@@ -742,7 +742,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Lead users through the steps required to replace blowfish quickly and easily
+     * Lead users through the steps required to replace blowfish quickly and easily.
      *
      * @return mixed
      */

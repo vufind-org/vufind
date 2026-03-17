@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\ConfigManagerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,14 +44,14 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Config
 {
     /**
-     * Display date format
+     * Display date format.
      *
      * @var ?string
      */
     protected $displayDateFormat = null;
 
     /**
-     * Display time format
+     * Display time format.
      *
      * @var ?string
      */
@@ -124,7 +124,7 @@ class Config
 
     /**
      * Check if index record should always be displayed (i.e. also when a
-     * format-specific template is available)
+     * format-specific template is available).
      *
      * @return bool
      */
@@ -135,7 +135,7 @@ class Config
     }
 
     /**
-     * Get offcanvas sidebar side
+     * Get offcanvas sidebar side.
      *
      * @return ?string 'left', 'right' or null for no offcanvas
      */
@@ -151,7 +151,7 @@ class Config
     }
 
     /**
-     * Get date display format
+     * Get date display format.
      *
      * @return string
      */
@@ -165,7 +165,7 @@ class Config
     }
 
     /**
-     * Get time display format
+     * Get time display format.
      *
      * @return string
      */
@@ -179,7 +179,7 @@ class Config
     }
 
     /**
-     * Get date+time display format
+     * Get date+time display format.
      *
      * @param string $separator String between date and time
      *
@@ -191,7 +191,7 @@ class Config
     }
 
     /**
-     * Check if the loan type should be displayed in holdings
+     * Check if the loan type should be displayed in holdings.
      *
      * @return bool
      */
@@ -204,9 +204,9 @@ class Config
     /**
      * Return this helper instance (for method chaining).
      *
-     * @return Config
+     * @return static
      */
-    public function __invoke()
+    public function __invoke(): static
     {
         return $this;
     }

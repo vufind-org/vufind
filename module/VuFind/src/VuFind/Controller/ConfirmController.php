@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Confirm Controller
+ * Confirm Controller.
  *
  * PHP version 8
  *

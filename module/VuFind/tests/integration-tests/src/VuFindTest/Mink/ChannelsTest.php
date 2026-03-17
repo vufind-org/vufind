@@ -97,7 +97,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make sure the record page works, channels exists, search
+     * Make sure the record page works, channels exists, search.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make sure the search page works, channels exists, search
+     * Make sure the search page works, channels exists, search.
      *
      * @return void
      */
@@ -142,7 +142,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Add channels button
+     * Add channels button.
      *
      * @return void
      */
@@ -170,7 +170,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Switch to search
+     * Switch to search.
      *
      * @return void
      */
@@ -199,7 +199,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testPopovers
+     * Data provider for testPopovers.
      *
      * @return \Iterator
      */
@@ -248,7 +248,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test popover behavior by clicking back and forth between two records
+     * Test popover behavior by clicking back and forth between two records.
      *
      * @param string $query               Search query
      * @param string $record1             ID of first record
@@ -291,19 +291,56 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testDeprecatedChannel().
+     *
+     * @return \Generator<string, array>
+     */
+    public static function deprecatedChannelProvider(): \Iterator
+    {
+        yield 'New ILS Items' => ['newilsitems'];
+    }
+
+    /**
+     * Test deprecated channels.
+     *
+     * @param string $channel Name of channel to test
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('deprecatedChannelProvider')]
+    public function testDeprecatedChannel(string $channel): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => [$channel],
+                    ],
+                ],
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        // We don't expect deprecated options to yield any data at all:
+        $this->unfindCss($page, 'h2.channel-title');
+        $this->assertCount(0, $page->findAll('css', 'li.channel-item'));
+    }
+
+    /**
      * Data provider for testILSChannel().
      *
      * @return \Iterator
      */
     public static function ilsChannelProvider(): \Iterator
     {
-        yield 'New ILS Items' => ['newilsitems', 'New Items'];
         yield 'Recently Returned' => ['recentlyreturned', 'Recently Returned'];
         yield 'Trending ILS Items' => ['trendingilsitems', 'Trending Items'];
     }
 
     /**
-     * Test ILS-powered channels
+     * Test ILS-powered channels.
      *
      * @param string $channel       Name of channel to test
      * @param string $expectedTitle Expected channel title
@@ -343,7 +380,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test Solr-powered new items channel
+     * Test Solr-powered new items channel.
      *
      * @return void
      */
@@ -371,7 +408,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test Random channel
+     * Test Random channel.
      *
      * @return void
      */
@@ -401,7 +438,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test deep pagination of Facets channel
+     * Test deep pagination of Facets channel.
      *
      * @return void
      */

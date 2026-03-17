@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Short link redirect action
+ * Short link redirect action.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * Short link redirect action
+ * Short link redirect action.
  *
  * @category VuFind
  * @package  Action
@@ -56,7 +56,7 @@ class RedirectAction extends AbstractTemplateRenderingAction
     protected $redirectDelayHtml = 3;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UrLShortenerInterface $shortener      URL shortener
      * @param string                $redirectMethod Redirect mechanism to use

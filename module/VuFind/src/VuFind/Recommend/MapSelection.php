@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MapSelection Recommendations Module
+ * MapSelection Recommendations Module.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\Service;
 
 /**
- * MapSelection Recommendations Module
+ * MapSelection Recommendations Module.
  *
  * @category VuFind
  * @package  Recommendations
@@ -50,84 +50,84 @@ class MapSelection implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Basemap configuration parameters
+     * Basemap configuration parameters.
      *
      * @var array
      */
     protected $basemapOptions = [];
 
     /**
-     * Default coordinates. Order is WENS
+     * Default coordinates. Order is WENS.
      *
      * @var array
      */
     protected $defaultCoordinates = [];
 
     /**
-     * The geoField variable name
+     * The geoField variable name.
      *
      * @var string
      */
     protected $geoField = 'long_lat';
 
     /**
-     * Height of search map pane
+     * Height of search map pane.
      *
      * @var string
      */
     protected $height;
 
     /**
-     * Selected coordinates
+     * Selected coordinates.
      *
      * @var string
      */
     protected $selectedCoordinates = null;
 
     /**
-     * Search parameters
+     * Search parameters.
      *
      * @var object
      */
     protected $searchParams = null;
 
     /**
-     * Search Results coordinates
+     * Search Results coordinates.
      *
      * @var array
      */
     protected $searchResultCoords = [];
 
     /**
-     * Bbox search box coordinates
+     * Bbox search box coordinates.
      *
      * @var array
      */
     protected $bboxSearchCoords = [];
 
     /**
-     * Search service
+     * Search service.
      *
      * @var Service
      */
     protected $searchService;
 
     /**
-     * Query Object
+     * Query Object.
      *
      * @var \VuFindSearch\Query\QueryInterface
      */
     protected $searchQuery;
 
     /**
-     * Backend Parameters / Search Filters
+     * Backend Parameters / Search Filters.
      *
      * @var \VuFindSearch\ParamBag
      */
     protected $searchFilters;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service $ss                  Search service
      * @param array   $basemapOptions      Basemap Options
@@ -145,7 +145,7 @@ class MapSelection implements
     }
 
     /**
-     * SetConfig
+     * SetConfig.
      *
      * Store the configuration of the recommendation module.
      *
@@ -175,7 +175,7 @@ class MapSelection implements
     }
 
     /**
-     * Process
+     * Process.
      *
      * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
@@ -228,7 +228,7 @@ class MapSelection implements
     }
 
     /**
-     * GetSelectedCoordinates
+     * GetSelectedCoordinates.
      *
      * Return coordinates selected by user
      *
@@ -240,7 +240,7 @@ class MapSelection implements
     }
 
     /**
-     * GetDefaultCoordinates
+     * GetDefaultCoordinates.
      *
      * Return default coordinates from configuration
      *
@@ -265,7 +265,7 @@ class MapSelection implements
     }
 
     /**
-     * GetHeight
+     * GetHeight.
      *
      * Return height of map in pixels
      *
@@ -277,7 +277,7 @@ class MapSelection implements
     }
 
     /**
-     * GetSearchParams
+     * GetSearchParams.
      *
      * Return search params without filter for geographic search
      *
@@ -289,7 +289,7 @@ class MapSelection implements
     }
 
     /**
-     * GetGeoField
+     * GetGeoField.
      *
      * Return Solr field to use for geographic search
      *
@@ -301,7 +301,7 @@ class MapSelection implements
     }
 
     /**
-     * Fetch details from search service
+     * Fetch details from search service.
      *
      * @return array
      */
@@ -329,7 +329,7 @@ class MapSelection implements
     }
 
     /**
-     * Get geo field values for all search results
+     * Get geo field values for all search results.
      *
      * @return array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Short link redirect action factory
+ * Short link redirect action factory.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Config\ConfigManagerInterface;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 /**
- * Short link redirect action factory
+ * Short link redirect action factory.
  *
  * @category VuFind
  * @package  Controller
@@ -49,7 +49,7 @@ use VuFind\UrlShortener\UrlShortenerInterface;
 class RedirectActionFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

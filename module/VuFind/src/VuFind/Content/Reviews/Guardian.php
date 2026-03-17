@@ -43,7 +43,7 @@ use function strlen;
 class Guardian extends \VuFind\Content\AbstractBase
 {
     /**
-     * Guardian Reviews
+     * Guardian Reviews.
      *
      * This method is responsible for connecting to the Guardian and abstracting
      * reviews for the specific ISBN.

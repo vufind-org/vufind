@@ -71,42 +71,42 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
     /**
-     * Output interface
+     * Output interface.
      *
      * @var OutputInterface
      */
     protected $output = null;
 
     /**
-     * Useful date format value
+     * Useful date format value.
      *
      * @var string
      */
     protected $iso8601 = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * URL helper
+     * URL helper.
      *
      * @var \Laminas\View\Helper\Url
      */
     protected $urlHelper;
 
     /**
-     * Number of results to retrieve when performing searches
+     * Number of results to retrieve when performing searches.
      *
      * @var int
      */
     protected $limit = 50;
 
     /**
-     * Sort order to use when performing searches
+     * Sort order to use when performing searches.
      *
      * @var string
      */
     protected $sort = 'first_indexed desc';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SecretCalculator       $secretCalculator Secret calculator
      * @param PhpRenderer            $renderer         View renderer

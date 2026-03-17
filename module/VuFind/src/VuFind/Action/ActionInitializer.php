@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Action initializer
+ * Action initializer.
  *
  * PHP version 8
  *
@@ -31,12 +31,12 @@ namespace VuFind\Action;
 
 use Laminas\ServiceManager\Initializer\InitializerInterface;
 use Psr\Container\ContainerInterface;
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
+use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\Http\RouteHelper;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * Action initializer
+ * Action initializer.
  *
  * @category VuFind
  * @package  Action

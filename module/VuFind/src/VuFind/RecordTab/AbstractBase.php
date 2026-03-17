@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record tab abstract base class
+ * Record tab abstract base class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 
 /**
- * Record tab abstract base class
+ * Record tab abstract base class.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -49,21 +49,21 @@ abstract class AbstractBase implements
 
     /**
      * Permission that must be granted to access this module (null for no
-     * restriction)
+     * restriction).
      *
      * @var string
      */
     protected $accessPermission = null;
 
     /**
-     * Record driver associated with the tab
+     * Record driver associated with the tab.
      *
      * @var ?\VuFind\RecordDriver\AbstractBase
      */
     protected $driver = null;
 
     /**
-     * User request associated with the tab (false for none)
+     * User request associated with the tab (false for none).
      *
      * @var \Laminas\Http\Request|bool
      */
@@ -122,7 +122,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Set the record driver
+     * Set the record driver.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
@@ -135,7 +135,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get the record driver
+     * Get the record driver.
      *
      * @return \VuFind\RecordDriver\AbstractBase
      * @throws \Exception
@@ -149,7 +149,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Set the user request
+     * Set the user request.
      *
      * @param \Laminas\Http\Request $request Request
      *
@@ -162,7 +162,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get the user request (or false if unavailable)
+     * Get the user request (or false if unavailable).
      *
      * @return \Laminas\Http\Request|bool
      */

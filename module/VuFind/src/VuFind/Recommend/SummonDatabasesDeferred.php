@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonDatabasesDeferred Recommendations Module
+ * SummonDatabasesDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SummonDatabasesDeferred Recommendations Module
+ * SummonDatabasesDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the SummonDatabases
  * module.

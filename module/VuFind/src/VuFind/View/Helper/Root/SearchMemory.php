@@ -30,8 +30,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\Search\Memory;
+use VuFind\Search\Params\PluginManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * View helper for remembering recent user searches/parameters.
@@ -43,23 +45,34 @@ use VuFind\Search\Memory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchMemory extends AbstractHelper
+class SearchMemory
 {
     /**
-     * Search memory
+     * Constructor.
      *
-     * @var Memory
+     * @param Memory        $memory       Search memory service
+     * @param Url           $url          Url view helper
+     * @param EscapeHtml    $escapeHtml   EscapeHtml view helper
+     * @param PluginManager $searchParams Search Params plugin manager
      */
-    protected $memory;
+    public function __construct(
+        protected Memory $memory,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml,
+        protected PluginManager $searchParams
+    ) {
+    }
 
     /**
-     * Constructor
+     * Invoke the helper.
      *
-     * @param Memory $memory Search memory
+     * @return static
      */
-    public function __construct(Memory $memory)
+    public function __invoke(): static
     {
-        $this->memory = $memory;
+        return $this;
     }
 
     /**
@@ -75,14 +88,13 @@ class SearchMemory extends AbstractHelper
     public function getLastSearchLink($link, $prefix = '', $suffix = '')
     {
         if ($url = $this->getLastSearchUrl()) {
-            $escaper = $this->getView()->plugin('escapeHtml');
-            return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>' . $suffix;
+            return $prefix . '<a href="' . ($this->escapeHtml)($url) . '">' . $link . '</a>' . $suffix;
         }
         return '';
     }
 
     /**
-     * If a previous search is recorded in the session, return its URL
+     * If a previous search is recorded in the session, return its URL.
      *
      * @return string|null
      */
@@ -100,8 +112,7 @@ class SearchMemory extends AbstractHelper
                 }
             }
 
-            $urlHelper = $this->getView()->plugin('url');
-            $url = $urlHelper($lastSearch->getOptions()->getSearchAction());
+            $url = ($this->url)($lastSearch->getOptions()->getSearchAction());
             $queryHelper = $lastSearch->getUrlQuery();
             // Try to append page number and page size from search context parameters saved in params object
             $searchContext = $params->getSavedSearchContextParameters();
@@ -173,12 +184,11 @@ class SearchMemory extends AbstractHelper
     public function getEditLink($searchClassId, $action, $value)
     {
         $query = compact('searchClassId') + [$action => $value];
-        $url = $this->getView()->plugin('url');
-        return $url('search-editmemory', [], compact('query'));
+        return ($this->url)('search-editmemory', [], compact('query'));
     }
 
     /**
-     * Retrieve the parameters of the last search by the search class
+     * Retrieve the parameters of the last search by the search class.
      *
      * @param string $searchClassId Search class
      *
@@ -190,14 +200,13 @@ class SearchMemory extends AbstractHelper
         $queryParams = $lastUrl ? parse_url($lastUrl, PHP_URL_QUERY) : '';
         $request = new \Laminas\Stdlib\Parameters();
         $request->fromString($queryParams ?? '');
-        $paramsPlugin = $this->getView()->plugin('searchParams');
-        $params = $paramsPlugin($searchClassId);
+        $params = $this->searchParams->get($searchClassId);
         // Make sure the saved URL represents search results from $searchClassId;
         // if the user jumps from search results of one backend to a record of a
         // different backend, we don't want to display irrelevant filters. If there
         // is a backend mismatch, don't initialize the parameter object!
         if ($lastUrl) {
-            $expectedPath = $this->view->url($params->getOptions()->getSearchAction());
+            $expectedPath = ($this->url)($params->getOptions()->getSearchAction());
             if (str_starts_with($lastUrl, $expectedPath)) {
                 $params->initFromRequest($request);
             }
@@ -206,7 +215,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get current search id
+     * Get current search id.
      *
      * @return ?int
      */
@@ -216,7 +225,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get current search
+     * Get current search.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -226,7 +235,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get last search id
+     * Get last search id.
      *
      * @return ?int
      */
@@ -236,7 +245,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get last search
+     * Get last search.
      *
      * @return ?\VuFind\Search\Base\Results
      */

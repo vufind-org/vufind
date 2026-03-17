@@ -412,8 +412,8 @@ $config = [
             'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
             'VuFind\Action\ActionDispatchListener' => 'VuFind\ServiceManager\Factory\AutowiringFactory',
-            'VuFind\Action\Helper\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Action\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\ActionHelper\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\DeveloperSettings\DeveloperSettingsService' => 'VuFind\DeveloperSettings\DeveloperSettingsServiceFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
@@ -428,6 +428,8 @@ $config = [
             'VuFind\Cart' => 'VuFind\CartFactory',
             'VuFind\ChannelProvider\ChannelLoader' => 'VuFind\ChannelProvider\ChannelLoaderFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Condition\Manager' => 'VuFind\ServiceManager\Factory\AutowiringFactory',
+            'VuFind\Condition\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Config\AccountCapabilities' => 'VuFind\Config\AccountCapabilitiesFactory',
             'VuFind\Config\ConfigManager' => 'VuFind\Config\ConfigManagerFactory',
             'VuFind\Config\Upgrade' => 'VuFind\Config\UpgradeFactory',
@@ -572,7 +574,7 @@ $config = [
             'VuFind\UrlShortener\UrlShortenerInterface' => 'VuFind\UrlShortener\ServiceFactory',
             'VuFind\Validator\SessionCsrf' => 'VuFind\Validator\SessionCsrfFactory',
             'VuFind\View\FlashMessenger\FlashMessenger' => 'VuFind\View\FlashMessenger\FlashMessengerFactory',
-            'VuFind\View\Renderer\LaminasTemplateRenderer' => 'VuFind\View\Renderer\LaminasTemplateRendererFactory',
+            'VuFind\View\Renderer\LaminasTemplateRenderer' => 'VuFind\ServiceManager\Factory\AutowiringFactory',
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
@@ -737,17 +739,13 @@ $config = [
         // pluggable components:
         'plugin_managers' => [
             'action' => [ /* see VuFind\Action\PluginManager for details */],
-            'action_helper' => [
-                /* see VuFind\Action\Helper\PluginManager for details */
-                'abstract_factories' => [
-                    \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
-                ],
-            ],
+            'actionhelper' => [ /* see VuFind\ActionHelper\PluginManager for details */ ],
             'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
             'captcha' => [ /* see VuFind\Captcha\PluginManager for defaults */ ],
             'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
+            'condition_handler' => [ /* see VuFind\Condition\Handlers\PluginManager for defaults */ ],
             'config_handler' => [ /* see VuFind\Config\Handler\PluginManager for defaults */ ],
             'content' => [ /* see VuFind\Content\PluginManager for defaults */ ],
             'content_authornotes' => [ /* see VuFind\Content\AuthorNotes\PluginManager for defaults */ ],

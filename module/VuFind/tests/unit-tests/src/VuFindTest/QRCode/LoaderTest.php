@@ -1,7 +1,7 @@
 <?php
 
 /**
- * QR Code Loader Test Class
+ * QR Code Loader Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTheme\ThemeInfo;
 use function strlen;
 
 /**
- * QR Code Loader Test Class
+ * QR Code Loader Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ChangeTrackerService Test Class
+ * ChangeTrackerService Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Db\Service;
 use VuFind\Db\Service\ChangeTrackerService;
 
 /**
- * ChangeTrackerService Test Class
+ * ChangeTrackerService Test Class.
  *
  * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
@@ -72,7 +72,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test change tracking
+     * Test change tracking.
      *
      * @return void
      */

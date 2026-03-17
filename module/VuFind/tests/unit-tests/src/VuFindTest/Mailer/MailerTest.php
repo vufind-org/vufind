@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindTest\Container\MockContainer;
 use function count;
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -224,7 +224,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject in the body
+     * Test sending an email with subject in the body.
      *
      * @return void
      */
@@ -250,7 +250,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject not allowed in the body
+     * Test sending an email with subject not allowed in the body.
      *
      * @return void
      */
@@ -334,7 +334,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we only accept one recipient by default
+     * Test that we only accept one recipient by default.
      *
      * @return void
      */
@@ -401,7 +401,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sendLink
+     * Test sendLink.
      *
      * @return void
      */
@@ -447,7 +447,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sendRecord
+     * Test sendRecord.
      *
      * @return void
      */
@@ -508,7 +508,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create mailer with a mock transport
+     * Create mailer with a mock transport.
      *
      * @param ?callable $callback Mock send method result callback
      *

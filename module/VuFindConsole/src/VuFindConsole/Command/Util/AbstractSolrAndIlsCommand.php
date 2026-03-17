@@ -44,14 +44,14 @@ use VuFind\Solr\Writer;
 abstract class AbstractSolrAndIlsCommand extends AbstractSolrCommand
 {
     /**
-     * ILS connection
+     * ILS connection.
      *
      * @var Connection
      */
     protected $catalog;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Writer      $solr Solr writer
      * @param Connection  $ils  ILS connection object

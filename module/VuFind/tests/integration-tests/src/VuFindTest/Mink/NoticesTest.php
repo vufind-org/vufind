@@ -242,4 +242,77 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $notice = $this->findCssAndGetText($page, '#content > .notices .test-class');
         $this->assertSame('Test Content', $notice);
     }
+
+    /**
+     * Test notices with conditions.
+     *
+     * @return void
+     */
+    public function testNoticesWithConditions(): void
+    {
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearCache('yaml');
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'success',
+                                'content' => 'Valid',
+                                'conditions' => [
+                                    [
+                                        'type' => 'string',
+                                        'comparator' => '=',
+                                        'checkedValues' => ['foo', 'bar', 'test'],
+                                        'string' => 'test',
+                                    ],
+                                    [
+                                        'type' => 'date',
+                                        'comparator' => 'regex',
+                                        'checkedValues' => '/.*/',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'style' => 'warning',
+                                'content' => 'Not shown',
+                                'conditions' => [
+                                    [
+                                        'type' => 'date',
+                                        'comparator' => '<',
+                                        'checkedValues' => '2000-01-01',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'style' => 'danger',
+                                'content' => 'Invalid',
+                                'conditions' => [
+                                    [
+                                        'type' => 'string',
+                                        'comparator' => '=',
+                                        'checkedValues' => 'test',
+                                    ],
+                                ],
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // Test that notice with met conditions is shown
+        $this->findCss($page, '#content > .notices .alert-success');
+
+        // Test that notice with unmet conditions is hidden
+        $this->unFindCss($page, '#content > .notices .alert-warning');
+
+        // Test that notice with invalid conditions is hidden
+        $this->unFindCss($page, '#content > .notices .alert-danger');
+    }
 }

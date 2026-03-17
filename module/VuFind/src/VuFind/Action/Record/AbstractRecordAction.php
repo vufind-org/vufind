@@ -33,7 +33,7 @@ namespace VuFind\Action\Record;
 
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Action\Helper\LoginHelper;
+use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -61,49 +61,49 @@ use function is_object;
 abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
 {
     /**
-     * Array of available tab options
+     * Array of available tab options.
      *
      * @var array
      */
     protected $allTabs = null;
 
     /**
-     * Default tab to display (configured at record driver level)
+     * Default tab to display (configured at record driver level).
      *
      * @var string
      */
     protected $defaultTab = null;
 
     /**
-     * Default tab to display (fallback used if no record driver configuration)
+     * Default tab to display (fallback used if no record driver configuration).
      *
      * @var string
      */
     protected $fallbackDefaultTab = 'Holdings';
 
     /**
-     * Array of background tabs
+     * Array of background tabs.
      *
      * @var array
      */
     protected $backgroundTabs = null;
 
     /**
-     * Array of extra scripts for tabs
+     * Array of extra scripts for tabs.
      *
      * @var array
      */
     protected $tabsExtraScripts = null;
 
     /**
-     * Type of record to display
+     * Type of record to display.
      *
      * @var string
      */
     protected $sourceId = 'Solr';
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var AbstractRecordDriver
      */
@@ -197,7 +197,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Get default tab for a given driver
+     * Get default tab for a given driver.
      *
      * @return string
      */

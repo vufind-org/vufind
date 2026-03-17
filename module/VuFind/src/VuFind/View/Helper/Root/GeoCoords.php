@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeoCoords view helper
+ * GeoCoords view helper.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\Base\Options;
 use function is_array;
 
 /**
- * GeoCoords view helper
+ * GeoCoords view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,21 +52,21 @@ class GeoCoords extends \Laminas\View\Helper\AbstractHelper
     protected $enabled;
 
     /**
-     * Default coordinates
+     * Default coordinates.
      *
      * @var string
      */
     protected $coords;
 
     /**
-     * Get geoField variable name
+     * Get geoField variable name.
      *
      * @var string
      */
     protected $geoField = 'long_lat';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $coords Default coordinates
      */

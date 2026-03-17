@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Turnstile Test Class
+ * Turnstile Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RateLimiter\Turnstile\Turnstile;
 use VuFindHttp\HttpService;
 
 /**
- * Turnstile Test Class
+ * Turnstile Test Class.
  *
  * @category VuFind
  * @package  Tests

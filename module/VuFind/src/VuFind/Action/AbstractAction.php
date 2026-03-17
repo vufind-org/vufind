@@ -33,9 +33,9 @@ use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use VuFind\Action\Helper\HelperInterface;
-use VuFind\Action\Helper\PluginManager as HelperPluginManager;
-use VuFind\Action\Helper\RedirectHelper;
+use VuFind\ActionHelper\HelperInterface;
+use VuFind\ActionHelper\PluginManager as HelperPluginManager;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
 
 /**
@@ -50,28 +50,28 @@ use VuFind\Http\RouteHelper;
 abstract class AbstractAction implements ActionInterface
 {
     /**
-     * Current request
+     * Current request.
      *
      * @var ?ServerRequestInterface $request
      */
     protected ?ServerRequestInterface $request = null;
 
     /**
-     * Current response
+     * Current response.
      *
      * @var ?ResponseInterface $response
      */
     protected ?ResponseInterface $response = null;
 
     /**
-     * Route helper
+     * Route helper.
      *
      * @var ?RouteHelper
      */
     protected ?RouteHelper $routeHelper = null;
 
     /**
-     * Action helper plugin manager
+     * Action helper plugin manager.
      *
      * @var ?HelperPluginManager
      */
@@ -258,14 +258,6 @@ abstract class AbstractAction implements ActionInterface
      * @param string $name        Name of the route
      * @param array  $routeParams Path parameters
      * @param array  $queryParams Query parameters
-     *
-     * @see \Laminas\Router\RouteInterface::assemble()
-     *
-     * @throws \Laminas\View\Exception\RuntimeException If no RouteStackInterface was provided
-     * @throws \Laminas\View\Exception\RuntimeException If no RouteMatch was provided
-     * @throws \Laminas\View\Exception\RuntimeException If RouteMatch didn't contain a matched route name
-     * @throws \Laminas\View\Exception\InvalidArgumentException If the params object was not an array or Traversable
-     * object.
      *
      * @return string Url For the link href attribute
      */

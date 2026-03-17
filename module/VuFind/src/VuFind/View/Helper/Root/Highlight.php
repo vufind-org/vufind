@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Highlight view helper
+ * Highlight view helper.
  *
  * PHP version 8
  *
@@ -29,12 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 use function is_array;
 
 /**
- * Highlight view helper
+ * Highlight view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,17 +40,17 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Highlight extends AbstractHelper
+class Highlight
 {
     /**
-     * Start tag for highlighting
+     * Start tag for highlighting.
      *
      * @var string
      */
     protected $startTag = '<span class="highlight">';
 
     /**
-     * End tag for highlighting
+     * End tag for highlighting.
      *
      * @var string
      */
@@ -60,7 +58,7 @@ class Highlight extends AbstractHelper
 
     /**
      * Adds a span tag with class "highlight" around a specific phrase for
-     * highlighting
+     * highlighting.
      *
      * @param string $haystack String to highlight
      * @param mixed  $needle   Array of words to highlight (null for none)

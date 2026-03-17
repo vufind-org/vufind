@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Index Plugin Test Class
+ * Index Plugin Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Sitemap\Plugin\Index;
 use VuFind\Sitemap\Plugin\Index\AbstractIdFetcher;
 
 /**
- * Index Plugin Test Class
+ * Index Plugin Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -94,7 +94,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock ID fetcher
+     * Get a mock ID fetcher.
      *
      * @return AbstractIdFetcher
      */

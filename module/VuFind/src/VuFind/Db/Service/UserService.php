@@ -52,7 +52,7 @@ class UserService extends AbstractDbService implements
     UserSessionPersistenceInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManager       $entityManager        Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager  VuFind entity plugin manager

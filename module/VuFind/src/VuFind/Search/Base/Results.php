@@ -58,14 +58,14 @@ use function is_object;
 abstract class Results
 {
     /**
-     * Search parameters
+     * Search parameters.
      *
      * @var \VuFind\Search\Base\Params
      */
     protected \VuFind\Search\Base\Params $params;
 
     /**
-     * Total number of results available
+     * Total number of results available.
      *
      * @var ?int
      */
@@ -79,7 +79,7 @@ abstract class Results
     protected string $backendId;
 
     /**
-     * Override (only for use in very rare cases)
+     * Override (only for use in very rare cases).
      *
      * @var ?int
      */
@@ -87,21 +87,21 @@ abstract class Results
 
     /**
      * Array of results (represented as Record Driver objects) retrieved on latest
-     * search
+     * search.
      *
      * @var ?array
      */
     protected ?array $results = null;
 
     /**
-     * Any errors reported by the search backend
+     * Any errors reported by the search backend.
      *
      * @var ?array
      */
     protected ?array $errors = null;
 
     /**
-     * An ID number for saving/retrieving search
+     * An ID number for saving/retrieving search.
      *
      * @var ?int
      */
@@ -122,56 +122,56 @@ abstract class Results
     protected ?int $notificationFrequency = null;
 
     /**
-     * Query start time
+     * Query start time.
      *
      * @var ?float
      */
     protected ?float $queryStartTime = null;
 
     /**
-     * Query end time
+     * Query end time.
      *
      * @var ?float
      */
     protected ?float $queryEndTime = null;
 
     /**
-     * Query time (total)
+     * Query time (total).
      *
      * @var ?float
      */
     protected ?float $queryTime = null;
 
     /**
-     * Helper objects
+     * Helper objects.
      *
      * @var array
      */
     protected array $helpers = [];
 
     /**
-     * Spelling suggestions
+     * Spelling suggestions.
      *
      * @var ?array
      */
     protected ?array $suggestions = null;
 
     /**
-     * Recommendations
+     * Recommendations.
      *
      * @var array
      */
     protected array $recommend = [];
 
     /**
-     * URL query helper factory
+     * URL query helper factory.
      *
      * @var ?UrlQueryHelperFactory
      */
     protected ?UrlQueryHelperFactory $urlQueryHelperFactory = null;
 
     /**
-     * Hierarchical facet helper
+     * Hierarchical facet helper.
      *
      * @var ?HierarchicalFacetHelperInterface
      */
@@ -192,7 +192,7 @@ abstract class Results
     protected ?array $extraSearchBackendDetails = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
@@ -208,7 +208,7 @@ abstract class Results
     }
 
     /**
-     * Copy constructor
+     * Copy constructor.
      *
      * @return void
      */
@@ -253,7 +253,7 @@ abstract class Results
     }
 
     /**
-     * Options for UrlQueryHelper
+     * Options for UrlQueryHelper.
      *
      * @return array
      */
@@ -329,7 +329,7 @@ abstract class Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
@@ -614,7 +614,7 @@ abstract class Results
     }
 
     /**
-     * Get the scores of the results
+     * Get the scores of the results.
      *
      * @return array
      */
@@ -625,7 +625,7 @@ abstract class Results
     }
 
     /**
-     * Getting the highest relevance of all the results
+     * Getting the highest relevance of all the results.
      *
      * @return ?float
      */
@@ -756,7 +756,7 @@ abstract class Results
     }
 
     /**
-     * Get URL query helper factory
+     * Get URL query helper factory.
      *
      * @return UrlQueryHelperFactory
      */
@@ -769,7 +769,7 @@ abstract class Results
     }
 
     /**
-     * Set URL query helper factory
+     * Set URL query helper factory.
      *
      * @param UrlQueryHelperFactory $factory UrlQueryHelperFactory object
      *
@@ -781,7 +781,7 @@ abstract class Results
     }
 
     /**
-     * Set hierarchical facet helper
+     * Set hierarchical facet helper.
      *
      * @param HierarchicalFacetHelperInterface $helper Hierarchical facet helper
      *
@@ -794,7 +794,7 @@ abstract class Results
     }
 
     /**
-     * Get complete facet counts for several index fields
+     * Get complete facet counts for several index fields.
      *
      * @param array   $facetfields  name of the Solr fields to return facets for
      * @param bool    $removeFilter Clear existing filters from selected fields (true)
@@ -859,7 +859,7 @@ abstract class Results
     }
 
     /**
-     * Get the extra search details
+     * Get the extra search details.
      *
      * @return ?array
      */

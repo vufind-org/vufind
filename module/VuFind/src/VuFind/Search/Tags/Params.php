@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tags aspect of the Search Multi-class (Params)
+ * Tags aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Tags;
 use Laminas\Stdlib\Parameters;
 
 /**
- * Search Tags Parameters
+ * Search Tags Parameters.
  *
  * @category VuFind
  * @package  Search_Tags
@@ -60,7 +60,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Pull the search parameters
+     * Pull the search parameters.
      *
      * @param Parameters $request Parameter object representing user
      * request.

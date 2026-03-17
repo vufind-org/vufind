@@ -69,7 +69,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test getHiddenFilters()
+     * Test getHiddenFilters().
      *
      * @return void
      */
@@ -128,7 +128,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTabConfig() and getTabFilterConfig()
+     * Test getTabConfig() and getTabFilterConfig().
      *
      * @return void
      */
@@ -143,7 +143,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test extractClassName()
+     * Test extractClassName().
      *
      * @return void
      */
@@ -157,7 +157,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test filtersMatch()
+     * Test filtersMatch().
      *
      * @return void
      */
@@ -203,7 +203,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create a SearchTabsHelper
+     * Create a SearchTabsHelper.
      *
      * @param string $config  Which config set to use
      * @param array  $filters Active filters for a simulated request
@@ -220,6 +220,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         $configManager = $this->createMock(ConfigManagerInterface::class);
 
         $mockSolrOptions = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $mockSolrOptions->method('getSearchIni')->willReturn('searches');
         $mockSolr = $this->createMock(\VuFind\Search\Solr\Results::class);
         $mockSolr->method('getParams')
             ->willReturn(

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record formatter for API responses
+ * Record formatter for API responses.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindApi\Controller\ApiException;
 use function is_object;
 
 /**
- * Record formatter for API responses
+ * Record formatter for API responses.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -48,7 +48,7 @@ use function is_object;
 class RecordFormatter extends BaseFormatter
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array               $recordFields    Record field definitions
      * @param HelperPluginManager $helperManager   View helper plugin manager
@@ -62,7 +62,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get dedup IDs
+     * Get dedup IDs.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -81,7 +81,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get extended subject headings
+     * Get extended subject headings.
      *
      * @param \VuFind\RecordDriver\SolrDefault $record Record driver
      *
@@ -96,7 +96,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get full record for a record as XML
+     * Get full record for a record as XML.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -112,7 +112,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get raw data for a record as an array
+     * Get raw data for a record as an array.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -129,7 +129,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get relative link to record page
+     * Get relative link to record page.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -143,7 +143,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get relative link to record page
+     * Get relative link to record page.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -156,7 +156,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get absolute link to record page
+     * Get absolute link to record page.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -172,7 +172,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get URLs
+     * Get URLs.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -185,7 +185,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get fields from a record as an array
+     * Get fields from a record as an array.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      * @param array                             $fields Fields to get
@@ -237,7 +237,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Return record field specs for the API specification
+     * Return record field specs for the API specification.
      *
      * @return array
      */

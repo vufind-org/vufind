@@ -31,13 +31,17 @@ namespace VuFindTest\Feature;
 
 use Laminas\Cache\Storage\Adapter\AdapterOptions;
 use Laminas\Cache\Storage\StorageInterface;
+use Laminas\View\Helper\EscapeHtml;
 use Laminas\View\Renderer\PhpRenderer;
 use Psr\Container\ContainerInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Search\Memory;
+use VuFind\Search\Params\PluginManager;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
+use VuFind\View\Helper\Root\Url;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\View\Helper\AssetManager;
 use VuFindTheme\View\Helper\AssetManagerFactory;
@@ -115,26 +119,33 @@ trait ViewTrait
     }
 
     /**
-     * Get mock SearchMemory view helper
+     * Get mock SearchMemory view helper.
      *
-     * @param ?\VuFind\Search\Memory $memory Optional search memory
+     * @param ?Memory        $memory       Optional search memory
+     * @param ?Url           $url          URL helper
+     * @param ?EscapeHtml    $escapeHtml   EscapeHtml helper
+     * @param ?PluginManager $searchParams SearchParams helper
      *
      * @return SearchMemory
      */
-    protected function getSearchMemoryViewHelper($memory = null): SearchMemory
-    {
+    protected function getSearchMemoryViewHelper(
+        ?Memory $memory = null,
+        ?Url $url = null,
+        ?EscapeHtml $escapeHtml = null,
+        ?PluginManager $searchParams = null
+    ): SearchMemory {
         if (null === $memory) {
-            $memory = $this->getMockBuilder(\VuFind\Search\Memory::class)
-                ->disableOriginalConstructor()->getMock();
-            $memory->expects($this->any())
-                ->method('getLastSearchId')
-                ->willReturn(-123);
+            $memory = $this->createMock(Memory::class);
+            $memory->method('getLastSearchId')->willReturn(-123);
         }
-        return new \VuFind\View\Helper\Root\SearchMemory($memory);
+        $url ??= $this->createMock(Url::class);
+        $escapeHtml ??= $this->createMock(EscapeHtml::class);
+        $searchParams ??= $this->createMock(PluginManager::class);
+        return new SearchMemory($memory, $url, $escapeHtml, $searchParams);
     }
 
     /**
-     * Create the cleanHtml helper
+     * Create the cleanHtml helper.
      *
      * @return CleanHtml
      */
@@ -143,7 +154,7 @@ trait ViewTrait
         // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
         $cacheOptions = new class () extends AdapterOptions {
             /**
-             * Get cache dir
+             * Get cache dir.
              *
              * @return string
              */

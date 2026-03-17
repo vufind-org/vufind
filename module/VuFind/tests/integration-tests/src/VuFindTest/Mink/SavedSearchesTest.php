@@ -349,7 +349,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that notifications are accessible via the search toolbar
+     * Test that notifications are accessible via the search toolbar.
      *
      * @return void
      */

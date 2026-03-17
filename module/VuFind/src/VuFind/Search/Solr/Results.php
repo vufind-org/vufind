@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr aspect of the Search Multi-class (Results)
+ * Solr aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindSearch\Query\QueryInterface;
 use function count;
 
 /**
- * Solr Search Parameters
+ * Solr Search Parameters.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -106,7 +106,7 @@ class Results extends \VuFind\Search\Base\Results
     protected ?string $cursorMark = null;
 
     /**
-     * Highest relevance of all the results
+     * Highest relevance of all the results.
      *
      * @var ?float
      */
@@ -175,7 +175,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Getting the highest relevance of all the results
+     * Getting the highest relevance of all the results.
      *
      * @return ?float
      */
@@ -342,7 +342,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
@@ -372,7 +372,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get complete facet counts for several index fields
+     * Get complete facet counts for several index fields.
      *
      * @param array   $facetfields  name of the Solr fields to return facets for
      * @param bool    $removeFilter Clear existing filters from selected fields (true)

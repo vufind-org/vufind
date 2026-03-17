@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search Object Options Test
+ * Summon Search Object Options Test.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Search\Summon\Options;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Summon Search Object Options Test
+ * Summon Search Object Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -217,7 +217,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param array $config Configuration to get from config manager
      *

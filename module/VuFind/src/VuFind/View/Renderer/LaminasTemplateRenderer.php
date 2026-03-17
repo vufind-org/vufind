@@ -38,6 +38,7 @@ use Laminas\View\Renderer\RendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\ServerUrlHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\InjectTemplateListener;
 
 use function strlen;
@@ -54,45 +55,31 @@ use function strlen;
 class LaminasTemplateRenderer implements TemplateRendererInterface
 {
     /**
-     * Display exceptions?
-     *
-     * @var bool
-     */
-    protected bool $displayExceptions;
-
-    /**
-     * Template for 404 errors
-     *
-     * @var string
-     */
-    protected string $notFoundTemplate;
-
-    /**
-     * Template for errors
-     *
-     * @var string
-     */
-    protected string $errorTemplate;
-
-    /**
      * Constructor.
      *
      * @param ServerUrlHelper        $serverUrlHelper        Server URL helper
      * @param RendererInterface      $viewRenderer           View renderer
      * @param ViewManager            $viewManager            View manager
      * @param InjectTemplateListener $injectTemplateListener Template injection listener (for prefixes)
-     * @param array                  $viewManagerConfig      View manager configuration
+     * @param bool                   $displayExceptions      Display exceptions?
+     * @param string                 $notFoundTemplate       Template for 404 errors
+     * @param string                 $errorTemplate          Template for errors
      */
+    #[Autowire()]
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
+        #[Autowire(service: 'ViewRenderer')]
         protected RendererInterface $viewRenderer,
+        #[Autowire(service: 'ViewManager')]
         protected ViewManager $viewManager,
         protected InjectTemplateListener $injectTemplateListener,
-        protected array $viewManagerConfig,
+        #[Autowire(service: 'config', path: 'view_manager/display_exceptions', default: false)]
+        protected bool $displayExceptions,
+        #[Autowire(service: 'config', path: 'view_manager/not_found_template', default: 'error/404')]
+        protected string $notFoundTemplate,
+        #[Autowire(service: 'config', path: 'view_manager/exception_template', default: 'error/index')]
+        protected string $errorTemplate,
     ) {
-        $this->displayExceptions = $viewManagerConfig['display_exceptions'] ?? false;
-        $this->notFoundTemplate = $viewManagerConfig['not_found_template'] ?? 'error/404';
-        $this->errorTemplate = $viewManagerConfig['exception_template'] ?? 'error/index';
     }
 
     /**
@@ -127,7 +114,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function renderErrorPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params
+        array $params = [],
     ): ResponseInterface {
         $params['display_exceptions'] = $this->displayExceptions;
         return $this->renderTemplate(
@@ -150,7 +137,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function renderNotFoundPage(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params = []
+        array $params = [],
     ): ResponseInterface {
         return $this->renderTemplate(
             $request,
@@ -235,7 +222,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function getLayout(ServerRequestInterface $request): ModelInterface
     {
         if (!($result = $request->getAttribute('view-model'))) {
-            throw new InvalidArgumentException("Attribute 'view-model' required in request");
+            throw new InvalidArgumentException("Request must include the 'view-model' attribute");
         }
         return $result;
     }
@@ -251,16 +238,6 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     {
         $layout = $request->getParsedBody()['layout'] ?? $request->getQueryParams()['layout'] ?? null;
         return 'lightbox' === $layout || 'layout/lightbox' === $this->getLayout($request)->getTemplate();
-    }
-
-    /**
-     * Get view renderer.
-     *
-     * @return RendererInterface
-     */
-    protected function getViewRenderer(): RendererInterface
-    {
-        return $this->viewRenderer;
     }
 
     /**
@@ -282,7 +259,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     }
 
     /**
-     * Inflect a name to a normalized value
+     * Inflect a name to a normalized value.
      *
      * @param string $name Name to inflect
      *

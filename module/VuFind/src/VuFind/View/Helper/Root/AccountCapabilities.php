@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AccountCapabilities view helper
+ * AccountCapabilities view helper.
  *
  * PHP version 8
  *
@@ -30,9 +30,10 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\AccountCapabilities as Helper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * AccountCapabilities view helper
+ * AccountCapabilities view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,23 +41,17 @@ use VuFind\Config\AccountCapabilities as Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AccountCapabilities extends \Laminas\View\Helper\AbstractHelper
+class AccountCapabilities
 {
     /**
-     * Capabilities helper
-     *
-     * @var Helper
-     */
-    protected $helper;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param Helper $helper Capabilities helper
      */
-    public function __construct(Helper $helper)
-    {
-        $this->helper = $helper;
+    public function __construct(
+        #[Autowire]
+        protected Helper $helper
+    ) {
     }
 
     /**

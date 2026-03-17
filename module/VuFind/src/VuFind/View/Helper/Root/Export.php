@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Export view helper
+ * Export view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Export view helper
+ * Export view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,14 +41,14 @@ namespace VuFind\View\Helper\Root;
 class Export extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * VuFind Export Tools
+     * VuFind Export Tools.
      *
      * @var \VuFind\Export
      */
     protected $export;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Export $export Export tools
      */

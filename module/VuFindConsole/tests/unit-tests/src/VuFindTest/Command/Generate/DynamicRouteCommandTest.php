@@ -114,7 +114,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock generator tools object
+     * Get a mock generator tools object.
      *
      * @param array $methods Methods to mock
      *
@@ -129,7 +129,7 @@ class DynamicRouteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock container object
+     * Get a mock container object.
      *
      * @param array $methods Methods to mock
      *

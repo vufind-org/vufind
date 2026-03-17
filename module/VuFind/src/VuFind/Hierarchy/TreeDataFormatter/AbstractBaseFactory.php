@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class AbstractBaseFactory
+ * Class AbstractBaseFactory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class AbstractBaseFactory
+ * Class AbstractBaseFactory.
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

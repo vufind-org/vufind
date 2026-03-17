@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Asserts that user has a verified email
+ * Asserts that user has a verified email.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Lmc\Rbac\Assertion\AssertionInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
- * Asserts that user has a verified email
+ * Asserts that user has a verified email.
  *
  * @category VuFind
  * @package  Authorization
@@ -44,7 +44,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 class HasVerifiedEmailAssertion implements AssertionInterface
 {
     /**
-     * Check if user has verified email to display developer settings
+     * Check if user has verified email to display developer settings.
      *
      * @param string  $permission Permission
      * @param ?object $identity   Identity to check

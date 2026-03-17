@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFindSearch\Query\Query;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Blender config
+     * Blender config.
      *
      * @var array
      */
@@ -76,7 +76,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mappings
+     * Mappings.
      *
      * @var array
      */
@@ -190,7 +190,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS API configuration
+     * EDS API configuration.
      *
      * @var array
      */
@@ -206,7 +206,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS configuration
+     * EDS configuration.
      *
      * @var array
      */
@@ -218,7 +218,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var array
      */
@@ -230,7 +230,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Blender configuration
+     * Blender configuration.
      *
      * @var array
      */
@@ -243,7 +243,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mock config manager
+     * Mock config manager.
      *
      * @var object
      */
@@ -1059,7 +1059,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get params classes for an array of backends
+     * Get params classes for an array of backends.
      *
      * @return array
      */
@@ -1089,7 +1089,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params class
+     * Get Params class.
      *
      * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults

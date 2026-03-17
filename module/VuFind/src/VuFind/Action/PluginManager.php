@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Action plugin manager
+ * Action plugin manager.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\ServiceManager\Factory\AutowiringFactory;
 use function count;
 
 /**
- * Action plugin manager
+ * Action plugin manager.
  *
  * @category VuFind
  * @package  Action
@@ -52,7 +52,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @var array
      */
-    protected $aliases = [];
+    protected $aliases = [
+    ];
 
     /**
      * Category aliases from default case to the actual case used.
@@ -89,7 +90,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -120,6 +121,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     {
         parent::configure($config);
         $this->categoryAliases = ($config['category_aliases'] ?? []) + $this->categoryAliases;
+        if ($namespaces = $config['autodiscovery_namespaces'] ?? null) {
+            $this->autoDiscoveryNamespaces = $namespaces;
+        }
         return $this;
     }
 

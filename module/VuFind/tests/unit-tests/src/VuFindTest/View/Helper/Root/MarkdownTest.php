@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class MarkdownTest
+ * Class MarkdownTest.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use League\CommonMark\GithubFlavoredMarkdownConverter;
 use VuFind\View\Helper\Root\Markdown;
 
 /**
- * Markdown Test Class
+ * Markdown Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -66,7 +66,7 @@ class MarkdownTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test basic markdown conversion
+     * Test basic markdown conversion.
      *
      * @return void
      */

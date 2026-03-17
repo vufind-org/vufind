@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenLibrarySubjectsDeferred recommendation module Test Class
+ * OpenLibrarySubjectsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\OpenLibrarySubjectsDeferred;
 
 /**
- * OpenLibrarySubjectsDeferred recommendation module Test Class
+ * OpenLibrarySubjectsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Recommend\OpenLibrarySubjectsDeferred;
 class OpenLibrarySubjectsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */
