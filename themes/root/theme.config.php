@@ -76,7 +76,6 @@ return [
             'VuFind\View\Helper\Root\Summaries' => 'VuFind\View\Helper\Root\ContentLoaderFactory',
             'VuFind\View\Helper\Root\Summon' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\SystemEmail' => 'VuFind\View\Helper\Root\SystemEmailFactory',
-            'VuFind\View\Helper\Root\ThemeConfig' => 'VuFind\View\Helper\Root\ThemeConfigFactory',
             'VuFind\View\Helper\Root\TransEscAttr' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\TransEscWithPrefix' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Translate' => 'Laminas\ServiceManager\Factory\InvokableFactory',
