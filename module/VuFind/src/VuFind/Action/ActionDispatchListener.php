@@ -31,6 +31,7 @@ namespace VuFind\Action;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Http\Response as LaminasResponse;
+use Laminas\Http\Response\Stream as LaminasResponseStream;
 use Laminas\Mvc\Application;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Psr7Bridge\Psr7Response;
@@ -108,7 +109,7 @@ class ActionDispatchListener
         $response = Psr7Response::fromLaminas($laminasResponse);
         try {
             $result = $action($request, $response);
-            $this->updateLaminasResponse($laminasResponse, $result);
+            $laminasResponse = $this->updateLaminasResponse($laminasResponse, $result);
             $e->setResult($laminasResponse);
         } catch (Throwable $ex) {
             $e->setName(MvcEvent::EVENT_DISPATCH_ERROR);
@@ -131,10 +132,18 @@ class ActionDispatchListener
      * @param LaminasResponse   $laminasResponse Laminas response
      * @param ResponseInterface $psr7Response    PSR-7 response
      *
-     * @return void
+     * @return LaminasResponse
      */
-    protected function updateLaminasResponse(LaminasResponse $laminasResponse, ResponseInterface $psr7Response): void
-    {
+    protected function updateLaminasResponse(
+        LaminasResponse $laminasResponse,
+        ResponseInterface $psr7Response
+    ): LaminasResponse {
+        $uri = $psr7Response->getBody()->getMetadata('uri');
+        $tempOrMemory = $uri === Psr7Response::URI_TEMP || $uri === Psr7Response::URI_MEMORY;
+        if (!$tempOrMemory) {
+            // Result is a stream, so we need to use the Stream class for it:
+            $laminasResponse = new LaminasResponseStream();
+        }
         $laminasResponse->setVersion($psr7Response->getProtocolVersion());
         $laminasResponse->setStatusCode($psr7Response->getStatusCode());
         $laminasResponse->setReasonPhrase($psr7Response->getReasonPhrase());
@@ -144,11 +153,11 @@ class ActionDispatchListener
             $laminasHeaders->addHeaderLine($name, $value);
         }
 
-        $uri = $psr7Response->getBody()->getMetadata('uri');
-        if ($uri === Psr7Response::URI_TEMP || $uri === Psr7Response::URI_MEMORY) {
+        if ($tempOrMemory) {
             $laminasResponse->setContent((string)$psr7Response->getBody());
         } else {
-            throw new \Exception('Unexpected URI in PSR-7 metadata');
+            $laminasResponse->setStream(fopen($uri, 'rb'));
         }
+        return $laminasResponse;
     }
 }
