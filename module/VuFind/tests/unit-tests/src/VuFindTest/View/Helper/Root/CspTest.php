@@ -52,6 +52,8 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
+                        'development' => true,
+                        'production' => true,
                         'testing' => true,
                     ],
                 ],
@@ -136,6 +138,8 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
+                        'development' => false,
+                        'production' => false,
                         'testing' => false,
                     ],
                 ],
