@@ -32,6 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Helper\Url;
+use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\ResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Config;
@@ -44,7 +45,6 @@ use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\SearchTabs;
-use Laminas\View\Renderer\PhpRenderer;
 use VuFindTheme\ThemeInfo;
 
 use function is_array;
@@ -370,7 +370,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             false,
             false
         );
-        
+
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml', $linkUrl);
         $this->assertEquals($expected, $record->getLink('bar', 'foo'));
     }

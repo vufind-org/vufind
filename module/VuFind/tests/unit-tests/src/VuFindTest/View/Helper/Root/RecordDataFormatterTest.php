@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDataFormatter Test Class
+ * RecordDataFormatter Test Class.
  *
  * PHP version 8
  *
@@ -47,7 +47,7 @@ use VuFind\View\Helper\Root\Url;
 use function count;
 
 /**
- * RecordDataFormatter Test Class
+ * RecordDataFormatter Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -126,8 +126,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $truncate,
             $escapeHtml
         );
-
-
 
         $authManager = $this->createMock(\VuFind\Auth\Manager::class);
         $authManager->method('loginEnabled')->willReturn(true);

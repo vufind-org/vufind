@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HtmlSafeJsonEncode View Helper Test Class
+ * HtmlSafeJsonEncode View Helper Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\HelperPluginManager;
 use VuFind\View\Helper\Root\HtmlSafeJsonEncode;
 
 /**
- * HtmlSafeJsonEncode View Helper Test Class
+ * HtmlSafeJsonEncode View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Get helper to test
+     * Get helper to test.
      *
      * @param HelperPluginManager $viewHelperManager View Helper Manager
      *
@@ -78,7 +78,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for JSON encoding tests
+     * Data provider for JSON encoding tests.
      *
      * @return \Iterator
      */

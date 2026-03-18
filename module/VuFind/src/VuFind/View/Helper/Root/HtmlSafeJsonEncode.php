@@ -47,7 +47,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class HtmlSafeJsonEncode
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HelperPluginManager $viewHelperManager View Helper Manager
      */
