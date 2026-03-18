@@ -1,0 +1,20 @@
+<?php
+  $consentGiven = (bool)$this->cookieConsent()->getConsentInformation();
+  $consentConfigJson = json_encode($this->consentConfig);
+?>
+<div class="cookie-consent-wrapper">
+  <div class="cookie-consent js-cookie-consent<?=$consentGiven ? ' hidden' : ' js-loaded'?>" role="region" aria-label="<?=$this->transEscAttr('Cookie Settings')?>" tabindex="-1">
+    <?php if (!$consentGiven): ?>
+      <?=$this->render('CookieConsent/cookie-consent-overlay.phtml')?>
+      <?php // Set focus for discoverability with screen readers: ?>
+      <?=$this->assetManager()->outputInlineScriptString('document.querySelector(".js-cookie-consent").focus();'); ?>
+    <?php else: ?>
+      <div class="cookie-consent__overlay">
+        <div class="load-indicator">
+          <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
+        </div>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
+<?php echo $this->assetManager()->outputInlineScriptString("window.addEventListener('load', function() { VuFind.cookie.setupConsent($consentConfigJson); });");

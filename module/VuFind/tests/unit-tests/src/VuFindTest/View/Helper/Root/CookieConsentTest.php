@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,12 +29,14 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\Http\Headers;
 use Laminas\View\Helper\EscapeHtmlAttr;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\LoginTokenManager;
 use VuFind\Cookie\CookieManager;
+use VuFind\Http\PhpEnvironment\Request;
 use VuFind\View\Helper\Root\CookieConsent;
 use VuFind\View\Helper\Root\Url;
 use VuFindTest\Feature\FixtureTrait;
@@ -85,7 +87,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             ->willReturn('rendered_template');
 
         $this->assertTrue($helper->isEnabled());
-        $this->assertSame('rendered_template', $helper->render());
+        $this->assertSame('rendered_template', $helper->render('bottom'));
         $this->assertSame(
             ['matomo' => ['matomo']],
             $helper->getControlledVuFindServices()
@@ -114,27 +116,23 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 [
                     'categories' => ['essential', 'matomo'],
                     'consentId' => 'foo123',
-                    'consentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
-                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+                    'consentTimestamp' => gmdate('Y-m-d\TH:i:s.v\Z'),
+                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s.v\Z'),
                     'revision' => 0,
                 ]
             ),
         ];
-        $expectedParams = $this->getExpectedRenderParams(
-            'CookieConsent.yaml',
-            $config,
-            $cookies
-        );
+        $expectedParams = $this->getExpectedRenderParams($cookies);
         $helper = $this->getCookieConsent($config, $cookies);
 
         $helper->getView()->expects($this->once())
             ->method('render')
-            ->with('Helpers/cookie-consent.phtml', $expectedParams)
+            ->with('CookieConsent/cookie-consent.phtml', $expectedParams)
             ->willReturn('rendered_template');
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
-        $this->assertSame('rendered_template', $helper->render());
+        $this->assertSame('rendered_template', $helper->render('bottom'));
     }
 
     /**
@@ -171,18 +169,40 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test helper with a bot.
+     *
+     * @return void
+     */
+    public function testHelperWithBot(): void
+    {
+        $helper = $this->getCookieConsent([], userAgent: 'I am a bot');
+        $this->assertFalse($helper->isEnabled());
+    }
+
+    /**
+     * Test rendering without position.
+     *
+     * @return void
+     */
+    public function testHelperWithoutPosition(): void
+    {
+        $helper = $this->getCookieConsent([]);
+        $this->assertSame('', $helper->render());
+    }
+
+    /**
      * Create a CookieConsent helper.
      *
-     * @param array  $config            Main configuration
-     * @param array  $cookies           Cookies
-     * @param string $consentConfigName Consent config fixture name
+     * @param array  $config    Main configuration
+     * @param array  $cookies   Cookies
+     * @param string $userAgent User agent string
      *
      * @return CookieConsent
      */
     protected function getCookieConsent(
         array $config,
         array $cookies = [],
-        string $consentConfigName = 'CookieConsent.yaml'
+        string $userAgent = 'I could be a real user'
     ): CookieConsent {
         $url = $this->createMock(Url::class);
         $url->method('__invoke')->willReturn('http://localhost/first/vufind');
@@ -227,12 +247,18 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $mockLoginTokenManager->method('getCookieName')->willReturn('loginToken');
         $mockLoginTokenManager->method('getCookieLifetime')->willReturn(321);
 
+        $headers = Headers::fromString('User-Agent: ' . $userAgent);
+        $mockRequest = $this->createMock(Request::class);
+        $mockRequest->method('getHeaders')
+            ->willReturn($headers);
+
         $helper = new CookieConsent(
             $config,
-            $this->getConsentConfig($consentConfigName),
+            $this->getConsentConfig(),
             $this->getCookieManager($config, $cookies),
             new \VuFind\Date\Converter(),
-            $mockLoginTokenManager
+            $mockLoginTokenManager,
+            $mockRequest
         );
         $helper->setView($view);
         return $helper;
@@ -241,173 +267,69 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     /**
      * Get expected params for the render call.
      *
-     * @param string $consentConfigName Consent config fixture name
-     * @param array  $config            Main config
-     * @param array  $cookies           Cookies
+     * @param array $cookies Cookies
      *
      * @return array
      */
-    protected function getExpectedRenderParams(
-        string $consentConfigName,
-        array $config,
-        array $cookies
-    ): array {
-        $consentConfig = $this->getConsentConfig($consentConfigName);
-        $language = [
-            'default' => 'en',
-            'autoDetect' => false,
-            'translations' => [
-                'en' => [
-                    'consentModal' => [
-                        'title' => 'popup_title_html',
-                        'description' => 'popup_description_html',
-                        'revisionMessage' => 'popup_revision_message_html',
-                        'acceptAllBtn' => 'Accept All Cookies',
-                        'acceptNecessaryBtn' => 'Accept Only Essential Cookies',
-                    ],
-                    'preferencesModal' => [
-                        'title' => 'cookie_settings_html',
-                        'savePreferencesBtn' => 'Save Settings',
-                        'acceptAllBtn' => 'Accept All Cookies',
-                        'acceptNecessaryBtn' => 'Accept Only Essential Cookies',
-                        'closeIconLabel' => 'close',
-                        'flipButtons' => false,
-                        'sections' => [
-                            [
-                                'description' => 'category_description_html',
-                            ],
-                            [
-                                'title' => 'essential_cookies_title_html',
-                                'description'
-                                    => 'essential_cookies_description_html',
-                                'linkedCategory' => 'essential',
-                                'cookieTable' => [
-                                    'headers' => [
-                                        'name' => 'Name',
-                                        'domain' => 'Domain',
-                                        'desc' => 'Description',
-                                        'exp' => 'Expiration',
-                                    ],
-                                    'body' => [
-                                        [
-                                            'name' => 'cc_cookie',
-                                            'domain' => 'localhost',
-                                            'desc'
-                                                => 'cookie_description_consent_html',
-                                            'exp' => ' 182 days',
-                                        ],
-                                        [
-                                            'name' => 'vufindsession',
-                                            'domain' => 'localhost',
-                                            'desc' => 'cookie_description_session'
-                                                . '_html',
-                                            'exp' => 'expiration_session',
-                                        ],
-                                        [
-                                            'name' => 'evercookie',
-                                            'domain' => 'localhost',
-                                            'desc' => 'Forever',
-                                            'exp' => 'expiration_never',
-                                        ],
-                                        [
-                                            'name' => 'custom',
-                                            'domain' => 'localhost',
-                                            'desc' => 'Weird expiration',
-                                            'exp' => '12-13 months',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            [
-                                'title' => 'analytics_cookies_title_html',
-                                'description'
-                                    => 'analytics_cookies_description_html',
-                                'linkedCategory' => 'matomo',
-                                'cookieTable' => [
-                                    'headers' => [
-                                        'name' => 'Name',
-                                        'domain' => 'Domain',
-                                        'desc' => 'Description',
-                                        'exp' => 'Expiration',
-                                    ],
-                                    'body' => [
-                                        [
-                                            'name' => '_pk_id.* (third_party_html)',
-                                            'domain' => 'localhost',
-                                            'desc' => 'cookie_description_matomo_id_'
-                                                . 'html',
-                                            'exp' => ' 13 months',
-                                        ],
-                                    ],
-                                ],
-                                'autoClear' => [
-                                    'cookies' => [
-                                        0 => [
-                                            'Name' => '/^_pk_/',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
+    protected function getExpectedRenderParams(array $cookies): array
+    {
+        $categoryConfig = [
+            'essential' => [
+                'Title' => 'CookieConsent::essential_cookies_title_html',
+                'Description' => 'CookieConsent::essential_cookies_description_html',
+                'DefaultEnabled' => true,
+                'Essential' => true,
             ],
-            'rtl' => false,
-        ];
-        return [
-            'consentConfig' => $consentConfig,
-            'consentCookieName' => 'cc_cookie',
-            'consentCookieExpiration' => 182,
-            'placeholders' => [
-                '{{consent_cookie_name}}' => 'cc_cookie',
-                '{{consent_cookie_expiration}}' => 182,
-                '{{current_host_name}}' => 'localhost',
-                '{{vufind_cookie_domain}}' => 'localhost',
-                '{{vufind_session_cookie}}' => 'vufindsession',
-                '{{vufind_login_token_cookie_name}}' => 'loginToken',
-                '{{vufind_login_token_cookie_expiration}}' => 321,
-            ],
-            'cookieManager' => $this->getCookieManager($config, $cookies),
-            'consentDialogConfig' => [
-                'autoClearCookies' => true,
-                'manageScriptTags' => true,
-                'hideFromBots' => true,
-                'cookie' => [
-                    'name' => 'cc_cookie',
-                    'domain' => 'localhost',
-                    'path' => '/first',
-                    'expiresAfterDays' => 182,
-                    'sameSite' => 'Lax',
-                ],
-                'revision' => 0,
-                'guiOptions' => [
-                    'consentModal' => [
-                        'layout' => 'bar',
-                        'position' => 'bottom center',
-                        'transition' => 'slide',
-                    ],
-                    'preferencesModal' => [
-                        'layout' => 'box',
-                        'transition' => 'none',
-                    ],
-                ],
-                'language' => $language,
-                'categories' => [
-                    'essential' => [
-                        'enabled' => true,
-                        'readOnly' => true,
-                    ],
-                    'matomo' => [
-                        'enabled' => false,
-                        'readOnly' => false,
-                    ],
-                ],
-            ],
-            'controlledVuFindServices' => [
-                'matomo' => [
+            'matomo' => [
+                'Title' => 'CookieConsent::analytics_cookies_title_html',
+                'Description' => 'CookieConsent::analytics_cookies_description_html',
+                'DefaultEnabled' => false,
+                'Essential' => false,
+                'ControlVuFindServices' => [
                     'matomo',
                 ],
+                'AutoClearCookies' => [
+                    [
+                        'Name' => '/^_pk_/',
+                    ],
+                ],
             ],
+        ];
+        $jsCategoryConfig = $categoryConfig;
+        foreach ($jsCategoryConfig as &$category) {
+            unset($category['Title']);
+            unset($category['Description']);
+        }
+        unset($category);
+        $consentInformation = null;
+        if ($cookie = $cookies['cc_cookie'] ?? null) {
+            $consentInformation = json_decode($cookie, true);
+            foreach ($consentInformation['categories'] as $category) {
+                $consentInformation['categoriesTranslated'][] = substr($categoryConfig[$category]['Title'], 15);
+            }
+            $dateConverter = new \VuFind\Date\Converter();
+            $consentInformation['lastConsentDateTime'] = $dateConverter->convertToDisplayDateAndTime(
+                'Y-m-d\TH:i:s.vP',
+                str_replace('Z', '+00:00', $consentInformation['lastConsentTimestamp'])
+            );
+            $consentInformation['domain'] = 'localhost';
+            $consentInformation['path'] = '/first';
+        }
+        return [
+            'consentConfig' => [
+                'cookieName' => 'cc_cookie',
+                'autoClearCookies' => true,
+                'refreshPage' => true,
+                'revision' => 0,
+                'cookieExpirationDays' => 182,
+                'categoryConfig' => $jsCategoryConfig,
+                'controlledVuFindServices' => [
+                    'matomo' => [
+                        'matomo',
+                    ],
+                ],
+            ],
+            'consentInformation' => $consentInformation,
         ];
     }
 

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2023.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -49,7 +49,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCookieConsentDisabled()
+    public function testCookieConsentDisabled(): void
     {
         // Activate Matomo:
         $this->changeConfigs(
@@ -75,7 +75,200 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testCookieConsent()
+    public function testCookieConsent(): void
+    {
+        $this->changeConsentConfigs(false);
+
+        $page = $this->getStartPage();
+        $html = $page->getHtml();
+        $this->assertStringContainsString('VuFind.cookie.setupConsent', $html);
+
+        $this->assertStringContainsString(
+            "_paq.push(['requireCookieConsent']);",
+            $html
+        );
+
+        $this->waitForCookieConsentOverlay($page);
+        $this->assertCount(2, $page->findAll('css', '.cookie-consent .cookie-consent__category'));
+        $this->assertSame(
+            'Essential Cookies',
+            $this->findCssAndGetText($page, '.cookie-consent .cookie-consent__category-checkbox')
+        );
+        $this->assertSame(
+            'Analytics Cookies',
+            $this->findCssAndGetText($page, '.cookie-consent .cookie-consent__category-checkbox', index: 1)
+        );
+
+        // Save without allowing analytics:
+        $this->clickAcceptEssential($page);
+        // Verify that there's no Matomo consent:
+        $this->waitStatement(
+            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
+        );
+        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
+        // Verify that essential cookies are allowed:
+        $this->waitStatement('VuFind.cookie.isCategoryAccepted("essential")');
+
+        // Open settings again and accept only essential cookies:
+        $this->clickSettings($page);
+        $this->waitForCookieConsentOverlay($page);
+        $this->clickCss($page, '.cookie-consent .cookie-consent__settings-toggle');
+        $this->clickSave($page);
+
+        // Verify that there's no Matomo consent:
+        $this->waitStatement(
+            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
+        );
+        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
+
+        // Open settings again and toggle analytics:
+        $this->clickSettings($page);
+        $this->waitForCookieConsentOverlay($page);
+        // Show details:
+        $this->clickCss($page, '.cookie-consent .cookie-consent__settings-toggle');
+        // Allow analytics cookies:
+        $this->clickCss($page, '.cookie-consent .cookie-consent__category-checkbox input', index: 1);
+        $this->clickSave($page);
+        // Verify that there's Matomo consent:
+        $this->waitStatement(
+            "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
+        );
+        $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
+        $this->waitStatement('window._paq.pop()');
+
+        // Open settings again and accept only essential cookies:
+        $this->clickSettings($page);
+        $this->waitForCookieConsentOverlay($page);
+        $this->clickAcceptEssential($page);
+        $this->waitStatement(
+            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
+        );
+        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
+        $this->waitStatement('window._paq.pop()');
+
+        // Open settings again and accept all cookies:
+        $this->clickSettings($page);
+        $this->waitForCookieConsentOverlay($page);
+        $this->clickAcceptAll($page);
+        $this->waitStatement(
+            "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
+        );
+        $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
+    }
+
+    /**
+     * Test cookie consent with page refresh.
+     *
+     * @return void
+     */
+    public function testCookieConsentWithRefresh(): void
+    {
+        $this->changeConsentConfigs(true);
+
+        $page = $this->getStartPage('/Content/privacy');
+        $this->assertStringContainsString(
+            'You have not yet given consent.',
+            $this->findCssAndGetText($page, '#content')
+        );
+
+        $this->waitForCookieConsentOverlay($page);
+        $this->clickAcceptEssential($page);
+
+        $this->waitForPageLoad($page);
+        $this->assertStringContainsString(
+            'State: Allow (Essential Cookies)',
+            $this->findCssAndGetText($page, '#content')
+        );
+    }
+
+    /**
+     * Get start page.
+     *
+     * @param string $path Path to load
+     *
+     * @return Element
+     */
+    protected function getStartPage(string $path = ''): Element
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl($path));
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
+     * Wait for the cookie consent overlay to be displayed.
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function waitForCookieConsentOverlay(Element $page): void
+    {
+        $this->assertSame(
+            'This site uses essential cookies to ensure its proper operation, and tracking cookies to understand how '
+            . 'you interact with it.',
+            $this->findCssAndGetText($page, '.cookie-consent .cookie-consent__title')
+        );
+    }
+
+    /**
+     * Click the "Accept All Cookies" button.
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickAcceptAll(Element $page): void
+    {
+        $this->clickCss($page, '.cookie-consent .cookie-consent__accept-all');
+    }
+
+    /**
+     * Click the "Accept Only Essential Cookies" button.
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickAcceptEssential(Element $page): void
+    {
+        $this->clickCss($page, '.cookie-consent .cookie-consent__accept-essential');
+    }
+
+    /**
+     * Click the Cookie Settings button.
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickSettings(Element $page): void
+    {
+        $this->clickCss($page, 'a[data-cc=show-preferencesModal]');
+    }
+
+    /**
+     * Click the Save button.
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickSave(Element $page): void
+    {
+        $this->clickCss($page, '.cookie-consent .cookie-consent__save-settings');
+    }
+
+    /**
+     * Set up cookie consent configuration.
+     *
+     * @param bool $refreshPage Refresh page after saving the consent?
+     *
+     * @return void
+     */
+    protected function changeConsentConfigs(bool $refreshPage): void
     {
         // Activate the cookie consent and Matomo:
         $this->changeConfigs(
@@ -97,143 +290,10 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
                 'CookieConsent' => [
                     'CookieConsent' => [
                         'HideFromBots' => false,
+                        'RefreshPage' => $refreshPage,
                     ],
                 ],
             ]
         );
-
-        $page = $this->getStartPage();
-        $html = $page->getHtml();
-        $this->assertStringContainsString('VuFind.cookie.setupConsent', $html);
-
-        $this->assertStringContainsString(
-            "_paq.push(['requireCookieConsent']);",
-            $html
-        );
-
-        // Open settings:
-        $this->clickSettings($page);
-        $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->waitStatement('$(".pm__section-title").length === 2');
-        $this->waitStatement(
-            '$(".pm__section-title")[0].innerText === "Essential Cookies"'
-        );
-        $this->waitStatement(
-            '$(".pm__section-title")[1].innerText === "Analytics Cookies"'
-        );
-
-        // Save without allowing analytics:
-        $this->clickAcceptEssential($page);
-        // Verify that there's no Matomo consent:
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
-        // Verify that essential cookies are allowed:
-        $this->waitStatement('VuFind.cookie.isCategoryAccepted("essential")');
-
-        // Open settings again and accept only essential cookies:
-        $this->clickSettings($page);
-        $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickSave($page);
-
-        // Verify that there's no Matomo consent:
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
-
-        // Open settings again and toggle analytics:
-        $this->clickSettings($page);
-        $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.section__toggle', null, 1);
-        $this->clickSave($page);
-        // Verify that there's Matomo consent:
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement('window._paq.pop()');
-
-        // Open settings again and accept only essential cookies:
-        $this->clickSettings($page);
-        $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickAcceptEssential($page);
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement('window._paq.pop()');
-
-        // Open settings again and accept all cookies:
-        $this->clickSettings($page);
-        $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickAcceptAll($page);
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
-    }
-
-    /**
-     * Get start page.
-     *
-     * @return Element
-     */
-    protected function getStartPage(): Element
-    {
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl());
-        $page = $session->getPage();
-        $this->waitForPageLoad($page);
-        return $page;
-    }
-
-    /**
-     * Click the "Accept All Cookies" button.
-     *
-     * @param Element $page Page
-     *
-     * @return void
-     */
-    protected function clickAcceptAll(Element $page): void
-    {
-        $this->clickCss($page, '.pm__btn');
-    }
-
-    /**
-     * Click the "Accept Only Essential Cookies" button.
-     *
-     * @param Element $page Page
-     *
-     * @return void
-     */
-    protected function clickAcceptEssential(Element $page): void
-    {
-        $this->clickCss($page, '.pm__btn', null, 1);
-    }
-
-    /**
-     * Click the Settings button.
-     *
-     * @param Element $page Page
-     *
-     * @return void
-     */
-    protected function clickSettings(Element $page): void
-    {
-        $this->clickCss($page, '#cm__desc a');
-    }
-
-    /**
-     * Click the Save button.
-     *
-     * @param Element $page Page
-     *
-     * @return void
-     */
-    protected function clickSave(Element $page): void
-    {
-        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
     }
 }
