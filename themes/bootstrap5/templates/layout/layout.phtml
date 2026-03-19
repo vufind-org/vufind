@@ -75,7 +75,6 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
           $this->assetManager()->appendScriptLink('cart.js');
         }
         $this->assetManager()->prependScriptString(
