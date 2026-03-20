@@ -386,6 +386,11 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnknownException()
     {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
         $mailer = $this->createMock(Mailer::class);
         $mailer->expects($this->once())->method('send')->willThrowException(
             new \VuFind\Exception\Mail(
