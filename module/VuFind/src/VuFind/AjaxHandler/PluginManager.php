@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
  * @category VuFind
  * @package  AJAX

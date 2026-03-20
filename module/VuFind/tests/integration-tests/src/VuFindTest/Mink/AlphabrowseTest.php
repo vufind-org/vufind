@@ -41,7 +41,7 @@ namespace VuFindTest\Mink;
 class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testTitleSearchNormalization
+     * Data provider for testTitleSearchNormalization.
      *
      * @return \Iterator
      */
@@ -79,7 +79,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that we can jump to a record with an ID containing slashes
+     * Test that we can jump to a record with an ID containing slashes.
      *
      * @return void
      */

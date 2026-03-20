@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ResponseFormatterTraitTest
+ * Class ResponseFormatterTraitTest.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Controller\Feature;
 use VuFind\Controller\Feature\ResponseFormatterTrait;
 
 /**
- * Class ResponseFormatterTraitTest
+ * Class ResponseFormatterTraitTest.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -45,7 +45,7 @@ class ResponseFormatterTraitTest extends \PHPUnit\Framework\TestCase
     use ResponseFormatterTrait;
 
     /**
-     * Test the getJsonResponse method
+     * Test the getJsonResponse method.
      *
      * @return void
      */
@@ -65,7 +65,7 @@ class ResponseFormatterTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the addCorsHeaders method
+     * Test the addCorsHeaders method.
      *
      * @return void
      */

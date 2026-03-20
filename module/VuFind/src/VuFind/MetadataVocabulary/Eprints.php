@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary implementation for Eprints
+ * Metadata vocabulary implementation for Eprints.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary implementation for Eprints
+ * Metadata vocabulary implementation for Eprints.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -41,7 +41,7 @@ namespace VuFind\MetadataVocabulary;
 class Eprints extends AbstractBase
 {
     /**
-     * Mapping from Eprints to VuFind fields
+     * Mapping from Eprints to VuFind fields.
      *
      * @var array
      */
@@ -56,7 +56,7 @@ class Eprints extends AbstractBase
     ];
 
     /**
-     * Special implementation to combine start / end page in eprints.pagerange
+     * Special implementation to combine start / end page in eprints.pagerange.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *

@@ -97,7 +97,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make sure the record page works, channels exists, search
+     * Make sure the record page works, channels exists, search.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make sure the search page works, channels exists, search
+     * Make sure the search page works, channels exists, search.
      *
      * @return void
      */
@@ -142,7 +142,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Add channels button
+     * Add channels button.
      *
      * @return void
      */
@@ -170,7 +170,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Switch to search
+     * Switch to search.
      *
      * @return void
      */
@@ -199,7 +199,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testPopovers
+     * Data provider for testPopovers.
      *
      * @return \Iterator
      */
@@ -248,7 +248,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test popover behavior by clicking back and forth between two records
+     * Test popover behavior by clicking back and forth between two records.
      *
      * @param string $query               Search query
      * @param string $record1             ID of first record
@@ -303,7 +303,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test ILS-powered channels
+     * Test ILS-powered channels.
      *
      * @param string $channel       Name of channel to test
      * @param string $expectedTitle Expected channel title
@@ -343,7 +343,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test Solr-powered new items channel
+     * Test Solr-powered new items channel.
      *
      * @return void
      */
@@ -371,7 +371,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test Random channel
+     * Test Random channel.
      *
      * @return void
      */
@@ -401,7 +401,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test deep pagination of Facets channel
+     * Test deep pagination of Facets channel.
      *
      * @return void
      */

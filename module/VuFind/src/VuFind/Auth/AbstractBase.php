@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract authentication base class
+ * Abstract authentication base class.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * Abstract authentication base class
+ * Abstract authentication base class.
  *
  * @category VuFind
  * @package  Authentication
@@ -68,7 +68,7 @@ abstract class AbstractBase implements
     protected $configValidated = false;
 
     /**
-     * Configuration settings
+     * Configuration settings.
      *
      * @var \VuFind\Config\Config
      */
@@ -333,7 +333,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -344,7 +344,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -386,7 +386,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Return a canned username or password policy hint when available
+     * Return a canned username or password policy hint when available.
      *
      * @param string  $type    Policy type (password or username)
      * @param ?string $pattern Current policy pattern
@@ -407,7 +407,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get a policy configuration
+     * Get a policy configuration.
      *
      * @param string $type Policy type (password or username)
      *
@@ -448,7 +448,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get username policy for a new account (e.g. minLength, maxLength)
+     * Get username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -458,7 +458,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get password policy for a new password (e.g. minLength, maxLength)
+     * Get password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

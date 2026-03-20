@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTTP download exception
+ * HTTP download exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * "Format Unavailable" Exception
+ * "Format Unavailable" Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -41,7 +41,7 @@ namespace VuFind\Exception;
 class HttpDownloadException extends \Exception implements HttpStatusInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string      $message         Exception message
      * @param string      $url             URL we tried to download

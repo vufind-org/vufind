@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Form handler plugin manager
+ * Form handler plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Form\Handler;
 
 /**
- * Form handler plugin manager
+ * Form handler plugin manager.
  *
  * @category VuFind
  * @package  Form
@@ -61,7 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

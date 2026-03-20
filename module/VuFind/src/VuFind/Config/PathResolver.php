@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration File Path Resolver
+ * Configuration File Path Resolver.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function array_key_exists;
 use function in_array;
 
 /**
- * Configuration File Path Resolver
+ * Configuration File Path Resolver.
  *
  * @category VuFind
  * @package  Config
@@ -59,7 +59,7 @@ class PathResolver
     public const DEFAULT_CONFIG_SUBDIR = 'config/vufind';
 
     /**
-     * Base directory
+     * Base directory.
      *
      * Must contain the following keys:
      *
@@ -93,7 +93,7 @@ class PathResolver
     protected array $configLocationCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param array                $baseDirectorySpec    Base directory specification

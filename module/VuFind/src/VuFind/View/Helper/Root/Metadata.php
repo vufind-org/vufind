@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata view helper
+ * Metadata view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Metadata view helper
+ * Metadata view helper.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -41,28 +41,28 @@ namespace VuFind\View\Helper\Root;
 class Metadata extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Metadata configuration entries
+     * Metadata configuration entries.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Laminas meta helper, used to embed html tags in the generated page
+     * Laminas meta helper, used to embed html tags in the generated page.
      *
      * @var \Laminas\View\Helper\HeadMeta
      */
     protected $metaHelper;
 
     /**
-     * Plugin Manager for vocabularies
+     * Plugin Manager for vocabularies.
      *
      * @var \VuFind\MetadataVocabulary\PluginManager
      */
     protected $pluginManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\MetadataVocabulary\PluginManager $pm         Plugin manager
      * @param \VuFind\Config\Config                    $config     Configuration
@@ -99,7 +99,7 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Generate all metatags for RecordDriver and add to page
+     * Generate all metatags for RecordDriver and add to page.
      *
      * Decide which Plugins to load for the given RecordDriver
      * dependent on configuration. (only by class name,

@@ -41,35 +41,35 @@ namespace VuFindTest\Integration;
 class Session extends \Behat\Mink\Session
 {
     /**
-     * Test name
+     * Test name.
      *
      * @var string
      */
     protected $testName = '';
 
     /**
-     * Coverage data directory
+     * Coverage data directory.
      *
      * @var string
      */
     protected $coverageDir = '';
 
     /**
-     * Whether Whoops error handler needs to be disabled
+     * Whether Whoops error handler needs to be disabled.
      *
      * @var bool
      */
     protected $disableWhoops = false;
 
     /**
-     * API key token to request header
+     * API key token to request header.
      *
      * @var ?string
      */
     protected ?string $apiKeyToken = null;
 
     /**
-     * Set remote code coverage configuration
+     * Set remote code coverage configuration.
      *
      * @param string $testName    Test name
      * @param string $coverageDir Coverage data directory
@@ -85,7 +85,7 @@ class Session extends \Behat\Mink\Session
     }
 
     /**
-     * Toggle HTTP header that disables Whoops
+     * Toggle HTTP header that disables Whoops.
      *
      * @param bool $disable Whether to disable Whoops
      *
@@ -97,7 +97,7 @@ class Session extends \Behat\Mink\Session
     }
 
     /**
-     * Set API key token to request header
+     * Set API key token to request header.
      *
      * @param string $token API key token
      *

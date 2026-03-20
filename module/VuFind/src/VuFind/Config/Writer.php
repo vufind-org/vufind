@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VF Configuration Writer
+ * VF Configuration Writer.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function is_int;
 use function strlen;
 
 /**
- * Class to update VuFind configuration settings
+ * Class to update VuFind configuration settings.
  *
  * @category VuFind
  * @package  Config
@@ -46,21 +46,21 @@ use function strlen;
 class Writer
 {
     /**
-     * Configuration file to write
+     * Configuration file to write.
      *
      * @var string
      */
     protected $filename;
 
     /**
-     * Content of file
+     * Content of file.
      *
      * @var string
      */
     protected $content;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string            $filename Configuration file to write
      * @param string|array|null $content  Content to load into file (set to null to
@@ -87,7 +87,7 @@ class Writer
     }
 
     /**
-     * Change/add a setting
+     * Change/add a setting.
      *
      * @param string $section Section to change/add
      * @param string $setting Setting within section to change/add
@@ -210,7 +210,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format a value
+     * Support method for buildContent -- format a value.
      *
      * @param mixed $e Value to format
      *
@@ -230,7 +230,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format a line
+     * Support method for buildContent -- format a line.
      *
      * @param string $key   Configuration key
      * @param mixed  $value Configuration value
@@ -270,7 +270,7 @@ class Writer
     }
 
     /**
-     * Support method for buildContent -- format an array into lines
+     * Support method for buildContent -- format an array into lines.
      *
      * @param string $key   Configuration key
      * @param array  $value Configuration value
@@ -297,7 +297,7 @@ class Writer
 
     /**
      * Write an ini file, adapted from
-     * http://php.net/manual/function.parse-ini-file.php
+     * http://php.net/manual/function.parse-ini-file.php.
      *
      * @param array $assoc_arr Array to output
      * @param array $comments  Comments to inject

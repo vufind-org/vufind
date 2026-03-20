@@ -54,14 +54,14 @@ class ListItems extends AbstractChannelProvider
     use BatchTrait;
 
     /**
-     * IDs of lists to display
+     * IDs of lists to display.
      *
      * @var array
      */
     protected $ids;
 
     /**
-     * Tags of lists to display
+     * Tags of lists to display.
      *
      * @var array
      */
@@ -90,7 +90,7 @@ class ListItems extends AbstractChannelProvider
     protected $initialListsToDisplay;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UserListServiceInterface             $userListService UserList database service
      * @param Url                                  $url             URL helper

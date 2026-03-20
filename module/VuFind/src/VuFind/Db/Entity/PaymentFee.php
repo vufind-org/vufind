@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for payment_fee table
+ * Entity model for payment_fee table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\Db\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Entity model for payment_fee table
+ * Entity model for payment_fee table.
  *
  * @category VuFind
  * @package  Database

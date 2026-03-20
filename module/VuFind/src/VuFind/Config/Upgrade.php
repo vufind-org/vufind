@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VF Configuration Upgrade Tool
+ * VF Configuration Upgrade Tool.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Class to upgrade previous VuFind configurations to the current version
+ * Class to upgrade previous VuFind configurations to the current version.
  *
  * @category VuFind
  * @package  Config
@@ -67,21 +67,21 @@ class Upgrade implements LoggerAwareInterface
     ];
 
     /**
-     * Parsed old configurations
+     * Parsed old configurations.
      *
      * @var array
      */
     protected array $oldConfigs = [];
 
     /**
-     * Processed new configurations
+     * Processed new configurations.
      *
      * @var array
      */
     protected array $newConfigs = [];
 
     /**
-     * Warnings generated during upgrade process
+     * Warnings generated during upgrade process.
      *
      * @var array
      */
@@ -107,7 +107,7 @@ class Upgrade implements LoggerAwareInterface
     protected array $writtenConfig = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
@@ -119,7 +119,7 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Set write mode
+     * Set write mode.
      *
      * @param bool $writeMode Write mode (true for enabling and false for disabling writing)
      *
@@ -845,7 +845,7 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Upgrade EDS or EPF
+     * Upgrade EDS or EPF.
      *
      * @param string $configName Config name
      *

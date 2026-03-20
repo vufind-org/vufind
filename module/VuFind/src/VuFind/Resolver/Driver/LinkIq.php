@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO LinkIQ Resolver Driver
+ * EBSCO LinkIQ Resolver Driver.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 /**
- * EBSCO LinkIQ Resolver Driver
+ * EBSCO LinkIQ Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -66,7 +66,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string        $baseUrl            Base URL for link resolver
      * @param GuzzleService $httpService        HTTP Service
@@ -85,7 +85,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Resolver Url for more options link
+     * Get Resolver Url for more options link.
      *
      * Transform the OpenURL as needed to get a working link to the resolver.
      *
@@ -115,7 +115,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -132,7 +132,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses a JSON response returned by a link resolver
      * and converts it to a standardised format for display

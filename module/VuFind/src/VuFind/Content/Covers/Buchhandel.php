@@ -43,21 +43,21 @@ namespace VuFind\Content\Covers;
 class Buchhandel extends \VuFind\Content\AbstractCover
 {
     /**
-     * Base URL for Buchhandel
+     * Base URL for Buchhandel.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * API token for Buchhandel
+     * API token for Buchhandel.
      *
      * @var string
      */
     protected $apiToken;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url      Base URL for Buchhandel
      * @param string $apiToken API token for Buchhandel

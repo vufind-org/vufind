@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function array_slice;
 use function count;
 
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -118,7 +118,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Default test configuration Patron Empowerment Framework (PEF)
+     * Default test configuration Patron Empowerment Framework (PEF).
      *
      * @var array
      */
@@ -144,7 +144,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Generate a new Eds driver to return responses set in a json fixture
+     * Generate a new Eds driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      * Uses session cache
@@ -431,7 +431,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getItems when invalid data is returned from EDS (i.e. not in the structure
-     * VuFind expected)
+     * VuFind expected).
      *
      * @return void
      */
@@ -1021,7 +1021,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test HTML FT with tables & mathML will be parsed correctly
+     * Test HTML FT with tables & mathML will be parsed correctly.
      *
      * @return void
      */
@@ -1035,7 +1035,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getUniqueIDOverrideForRequest for a "normal" record
+     * Test getUniqueIDOverrideForRequest for a "normal" record.
      *
      * @return void
      */
@@ -1046,7 +1046,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getUniqueIDOverrideForRequest for a catalog record
+     * Test getUniqueIDOverrideForRequest for a catalog record.
      *
      * @return void
      */
@@ -1057,7 +1057,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hasCatalog true
+     * Test hasCatalog true.
      *
      * @return void
      */
@@ -1068,7 +1068,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hasCatalog false
+     * Test hasCatalog false.
      *
      * @return void
      */
@@ -1079,7 +1079,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test pubTypeRtacEnabled for a catalog record (Book) [true]
+     * Test pubTypeRtacEnabled for a catalog record (Book) [true].
      *
      * @return void
      */
@@ -1090,7 +1090,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test pubTypeRtacEnabled for eBook record [false]
+     * Test pubTypeRtacEnabled for eBook record [false].
      *
      * @return void
      */
@@ -1101,7 +1101,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test relevancy score (present)
+     * Test relevancy score (present).
      *
      * @return void
      */
@@ -1112,7 +1112,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test relevancy score (absent)
+     * Test relevancy score (absent).
      *
      * @return void
      */

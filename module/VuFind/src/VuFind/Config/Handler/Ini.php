@@ -63,11 +63,7 @@ class Ini extends AbstractBase
      */
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
-        $path = $configLocation->getPath();
-        $data = parse_ini_file($path, true);
-        if ($data === false) {
-            throw new FileAccessException('Could not read ini file ' . $path);
-        }
+        $data = $this->loadFromFile($configLocation->getPath());
 
         $config = [];
 
@@ -99,6 +95,44 @@ class Ini extends AbstractBase
         $config['data'] = $data;
 
         return $config;
+    }
+
+    /**
+     * Load from file.
+     *
+     * @param string $path Config file path
+     *
+     * @return array
+     */
+    protected function loadFromFile(string $path): array
+    {
+        $data = parse_ini_file($path, true);
+        if ($data === false) {
+            throw new FileAccessException('Could not read ini file ' . $path);
+        }
+        return $this->handleIncludeStatements($data, pathinfo($path, PATHINFO_DIRNAME));
+    }
+
+    /**
+     * Handle include statements.
+     *
+     * @param array  $data     Config data
+     * @param string $basePath Config file base path
+     *
+     * @return array
+     */
+    protected function handleIncludeStatements(array $data, string $basePath): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->handleIncludeStatements($value, $basePath);
+            } elseif ($key === '@include') {
+                $included = $this->loadFromFile($basePath . DIRECTORY_SEPARATOR . $value);
+                unset($data['@include']);
+                $data = array_replace_recursive($data, $included);
+            }
+        }
+        return $data;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILL trait (for subclasses of AbstractRecord)
+ * ILL trait (for subclasses of AbstractRecord).
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function in_array;
 use function is_array;
 
 /**
- * ILL trait (for subclasses of AbstractRecord)
+ * ILL trait (for subclasses of AbstractRecord).
  *
  * @category VuFind
  * @package  Controller

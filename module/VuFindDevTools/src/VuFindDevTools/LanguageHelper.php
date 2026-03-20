@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Language Helper for Development Tools Controller
+ * Language Helper for Development Tools Controller.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function count;
 use function in_array;
 
 /**
- * Language Helper for Development Tools Controller
+ * Language Helper for Development Tools Controller.
  *
  * @category VuFind
  * @package  DevTools
@@ -47,21 +47,21 @@ use function in_array;
 class LanguageHelper
 {
     /**
-     * Language loader
+     * Language loader.
      *
      * @var ExtendedIni
      */
     protected $loader;
 
     /**
-     * Configured languages (code => description)
+     * Configured languages (code => description).
      *
      * @var string[]
      */
     protected $configuredLanguages;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ExtendedIni $loader Language loader
      * @param array       $langs  Configured languages (code => description)
@@ -162,7 +162,7 @@ class LanguageHelper
     }
 
     /**
-     * Get English name of language
+     * Get English name of language.
      *
      * @param string $lang Language code
      *

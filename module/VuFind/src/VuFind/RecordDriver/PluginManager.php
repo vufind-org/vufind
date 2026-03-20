@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record driver plugin manager
+ * Record driver plugin manager.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 use function is_callable;
 
 /**
- * Record driver plugin manager
+ * Record driver plugin manager.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -116,7 +116,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

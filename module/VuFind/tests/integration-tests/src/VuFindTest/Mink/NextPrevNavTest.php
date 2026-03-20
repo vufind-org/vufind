@@ -44,7 +44,7 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
      * If next_prev_navigation and first_last_navigation are set to true
      * and a search which returns no results is run
      * when a record page is visited no next prev navigation should be shown
-     * and no exception should be thrown
+     * and no exception should be thrown.
      *
      * @return void
      */

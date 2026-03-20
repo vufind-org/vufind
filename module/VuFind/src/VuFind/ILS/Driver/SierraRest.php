@@ -1,7 +1,7 @@
 <?php
 
 /**
- * III Sierra REST API driver
+ * III Sierra REST API driver.
  *
  * PHP version 8
  *
@@ -47,7 +47,7 @@ use function is_string;
 use function strlen;
 
 /**
- * III Sierra REST API driver
+ * III Sierra REST API driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -75,56 +75,56 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Fixed field number for location in holdings records
+     * Fixed field number for location in holdings records.
      *
      * @var string
      */
     public const HOLDINGS_LOCATION_FIELD = '40';
 
     /**
-     * Sierra INN-Reach Database connection
+     * Sierra INN-Reach Database connection.
      *
      * @var ?resource
      */
     protected $innReachDb = null;
 
     /**
-     * Fixed field number for item code 2 (ICODE2) in item records
+     * Fixed field number for item code 2 (ICODE2) in item records.
      *
      * @var string
      */
     public const ITEM_ICODE2_FIELD = '60';
 
     /**
-     * Fixed field number for item type (I TYPE) in item records
+     * Fixed field number for item type (I TYPE) in item records.
      *
      * @var string
      */
     public const ITEM_ITYPE_FIELD = '61';
 
     /**
-     * Fixed field number for item last checkin date (LCHKIN) in item records
+     * Fixed field number for item last checkin date (LCHKIN) in item records.
      *
      * @var string
      */
     public const ITEM_CHECKIN_DATE_FIELD = '68';
 
     /**
-     * Fixed field number for OPAC message (OPACMSG) in item records
+     * Fixed field number for OPAC message (OPACMSG) in item records.
      *
      * @var string
      */
     public const ITEM_OPAC_MESSAGE_FIELD = '108';
 
     /**
-     * Driver configuration
+     * Driver configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var \VuFind\Date\Converter
      */
@@ -138,28 +138,28 @@ class SierraRest extends AbstractBase implements
     protected $sessionFactory;
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
     /**
-     * Whether item holds are enabled
+     * Whether item holds are enabled.
      *
      * @var bool
      */
     protected $itemHoldsEnabled;
 
     /**
-     * Item codes (ICODE2 in Sierra) for which item level hold is not allowed
+     * Item codes (ICODE2 in Sierra) for which item level hold is not allowed.
      *
      * @var array
      */
     protected $itemHoldExcludedItemCodes = [];
 
     /**
-     * Item types (I TYPE in Sierra) for which item level hold is not allowed
+     * Item types (I TYPE in Sierra) for which item level hold is not allowed.
      *
      * @var array
      */
@@ -174,28 +174,28 @@ class SierraRest extends AbstractBase implements
     protected $itemHoldBibLevels = null;
 
     /**
-     * Bib levels for which title level hold is allowed
+     * Bib levels for which title level hold is allowed.
      *
      * @var array
      */
     protected $titleHoldBibLevels = [];
 
     /**
-     * Default pickup location
+     * Default pickup location.
      *
      * @var string
      */
     protected $defaultPickUpLocation = '';
 
     /**
-     * Item statuses that allow placing an hold
+     * Item statuses that allow placing an hold.
      *
      * @var array
      */
     protected $validHoldStatuses = [];
 
     /**
-     * Title hold rules
+     * Title hold rules.
      *
      * @var array
      */
@@ -225,7 +225,7 @@ class SierraRest extends AbstractBase implements
     protected $titleHoldExcludedItemTypes = [];
 
     /**
-     * Mappings from item status codes to VuFind strings
+     * Mappings from item status codes to VuFind strings.
      *
      * @var array
      */
@@ -247,54 +247,54 @@ class SierraRest extends AbstractBase implements
     ];
 
     /**
-     * Mappings from patron block codes to VuFind strings
+     * Mappings from patron block codes to VuFind strings.
      */
     protected $patronBlockMappings = [];
 
     /**
-     * Mappings from fine types to VuFind strings
+     * Mappings from fine types to VuFind strings.
      *
      * @var array
      */
     protected $fineTypeMappings = [];
 
     /**
-     * Sierra's types of fines that can be paid online
+     * Sierra's types of fines that can be paid online.
      *
      * @var array
      */
     protected $onlinePayableFineTypes = [2, 4, 5, 6];
 
     /**
-     * Mappings from fine types to tax percents (1/100ths of a percent)
+     * Mappings from fine types to tax percents (1/100ths of a percent).
      *
      * @var array
      */
     protected $feeTypeToTaxRateMappings = [];
 
     /**
-     * Product code mappings for fines
+     * Product code mappings for fines.
      *
      * @var array
      */
     protected $productCodeMappings = [];
 
     /**
-     * Status codes indicating that a hold is available for pickup
+     * Status codes indicating that a hold is available for pickup.
      *
      * @var array
      */
     protected $holdAvailableCodes = ['b', 'j', 'i'];
 
     /**
-     * Status codes indicating that a hold is in transit
+     * Status codes indicating that a hold is in transit.
      *
      * @var array
      */
     protected $holdInTransitCodes = ['t'];
 
     /**
-     * Available API version
+     * Available API version.
      *
      * Functionality requiring a specific minimum version:
      *
@@ -315,7 +315,7 @@ class SierraRest extends AbstractBase implements
     protected $apiVersion = 6;
 
     /**
-     * API base path
+     * API base path.
      *
      * This should correspond to $apiVersion above
      *
@@ -324,7 +324,7 @@ class SierraRest extends AbstractBase implements
     protected $apiBase = 'v6';
 
     /**
-     * Statistic group to use e.g. when renewing loans or placing holds
+     * Statistic group to use e.g. when renewing loans or placing holds.
      *
      * @var ?int
      */
@@ -338,7 +338,7 @@ class SierraRest extends AbstractBase implements
     protected $sortItemsByEnumChron;
 
     /**
-     * Whether to allow canceling of available holds
+     * Whether to allow canceling of available holds.
      *
      * @var bool
      */
@@ -361,7 +361,7 @@ class SierraRest extends AbstractBase implements
     protected $httpRetryCount = 2;
 
     /**
-     * Exception message regexp patterns for request errors that can be retried
+     * Exception message regexp patterns for request errors that can be retried.
      *
      * @var array
      */
@@ -373,21 +373,21 @@ class SierraRest extends AbstractBase implements
     ];
 
     /**
-     * Bib cache entry life time in seconds
+     * Bib cache entry life time in seconds.
      *
      * @var int
      */
     protected $bibCacheTTL = 300;
 
     /**
-     * Item cache entry life time in seconds
+     * Item cache entry life time in seconds.
      *
      * @var int
      */
     protected $itemCacheTTL = 300;
 
     /**
-     * Life time in seconds for cached items of a bibliographic record
+     * Life time in seconds for cached items of a bibliographic record.
      *
      * It is recommended to keep this fairly short to ensure that any recent changes
      * (such as placing a hold) are reflected correctly in holdings.
@@ -419,7 +419,7 @@ class SierraRest extends AbstractBase implements
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param callable               $sessionFactory Factory function returning
@@ -557,7 +557,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Establish INN-Reach database connection
+     * Establish INN-Reach database connection.
      *
      * @return ?resource
      */
@@ -577,7 +577,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -593,7 +593,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -612,7 +612,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -633,7 +633,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -650,7 +650,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -675,7 +675,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -693,7 +693,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -760,7 +760,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -818,7 +818,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -913,7 +913,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -925,7 +925,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -975,7 +975,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Patron Transaction History
+     * Get Patron Transaction History.
      *
      * This is responsible for retrieving all historic transactions (i.e. checked
      * out items) by a specific patron.
@@ -1052,7 +1052,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Purge Patron Transaction History
+     * Purge Patron Transaction History.
      *
      * @param array  $patron The patron array from patronLogin
      * @param ?array $ids    IDs to purge, or null for all
@@ -1109,7 +1109,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1266,7 +1266,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold. The data in $cancelDetails['details'] is taken from
      * holds' cancel_details field.
@@ -1314,7 +1314,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Update holds
+     * Update holds.
      *
      * This is responsible for changing the status of hold requests
      *
@@ -1401,7 +1401,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -1474,7 +1474,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location
      *
@@ -1496,7 +1496,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Check if request is valid
+     * Check if request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -1532,7 +1532,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -1593,7 +1593,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1786,7 +1786,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get password recovery data for a user
+     * Get password recovery data for a user.
      *
      * @param array $params Required params such as cat_username and email
      *
@@ -1948,7 +1948,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * Attempts to change patron password (PIN code)
      *
@@ -2073,7 +2073,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Extract an ID from a URL (last number)
+     * Extract an ID from a URL (last number).
      *
      * @param string $url URL containing the ID
      *
@@ -2086,7 +2086,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Extract volume from item record's varFields
+     * Extract volume from item record's varFields.
      *
      * @param array $item Item record from Sierra
      *
@@ -2105,7 +2105,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Sierra REST API
      *
@@ -2180,7 +2180,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Callback used by makeRequest
+     * Callback used by makeRequest.
      *
      * @param array  $hierarchy    Array of values to embed in the URL path of the
      * request
@@ -2316,7 +2316,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Build an API URL from a hierarchy array
+     * Build an API URL from a hierarchy array.
      *
      * @param array $hierarchy Hierarchy
      *
@@ -2417,7 +2417,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Login and retrieve authorization code for the patron
+     * Login and retrieve authorization code for the patron.
      *
      * @param array $patron Patron information
      *
@@ -2537,7 +2537,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Create a HTTP client
+     * Create a HTTP client.
      *
      * @param string $url Request URL
      *
@@ -2594,7 +2594,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get due status for a checkout
+     * Get due status for a checkout.
      *
      * @param array $checkout Checkout
      *
@@ -2620,7 +2620,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get Item Statuses
+     * Get Item Statuses.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -2794,7 +2794,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Extract the actual call number from item's call number field
+     * Extract the actual call number from item's call number field.
      *
      * @param string $callNumber Call number field
      *
@@ -2806,7 +2806,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get textual messages for orders
+     * Get textual messages for orders.
      *
      * @param array $orders Orders
      *
@@ -2836,7 +2836,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get holdings fields according to configuration
+     * Get holdings fields according to configuration.
      *
      * @param array $holdings Holdings records
      *
@@ -2949,7 +2949,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get name for a location code
+     * Get name for a location code.
      *
      * @param string $locationCode Location code
      *
@@ -2988,7 +2988,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Translate location name
+     * Translate location name.
      *
      * @param array $location Location
      *
@@ -3008,7 +3008,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Status item sort function
+     * Status item sort function.
      *
      * @param array $a First status record to compare
      * @param array $b Second status record to compare
@@ -3028,7 +3028,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Translate OPAC message
+     * Translate OPAC message.
      *
      * @param string $code OPAC message code
      *
@@ -3057,7 +3057,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get status for an item
+     * Get status for an item.
      *
      * @param array $item Item from Sierra
      *
@@ -3108,7 +3108,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Determine whether an item is holdable
+     * Determine whether an item is holdable.
      *
      * @param array $item Item from Sierra
      * @param array $bib  Bib record from Sierra
@@ -3165,7 +3165,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get patron's blocks, if any
+     * Get patron's blocks, if any.
      *
      * @param array $patron Patron
      *
@@ -3199,7 +3199,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Pickup location sort function
+     * Pickup location sort function.
      *
      * @param array $a First pickup location record to compare
      * @param array $b Second pickup location record to compare
@@ -3240,7 +3240,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Hold Error
+     * Hold Error.
      *
      * Returns a Hold Error Message
      *
@@ -3258,7 +3258,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Format an error message received from Sierra
+     * Format an error message received from Sierra.
      *
      * @param string $msg An error message string
      *
@@ -3285,7 +3285,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get record data from cache and check that it has the requested fields
+     * Get record data from cache and check that it has the requested fields.
      *
      * @param string $cacheId Cache entry ID
      * @param array  $fields  Requested fields
@@ -3310,7 +3310,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Insert record data and its field list into the cache
+     * Insert record data and its field list into the cache.
      *
      * @param string $cacheId Cache entry ID
      * @param array  $fields  Fields contained in the data
@@ -3325,7 +3325,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Fetch fields for a bib record from Sierra
+     * Fetch fields for a bib record from Sierra.
      *
      * Note: This method can return cached data
      *
@@ -3342,7 +3342,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Fetch fields for records from Sierra
+     * Fetch fields for records from Sierra.
      *
      * Note: This method can return cached data
      *
@@ -3406,7 +3406,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Fetch fields for bib records from Sierra
+     * Fetch fields for bib records from Sierra.
      *
      * Note: This method can return cached data
      *
@@ -3423,7 +3423,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Fetch fields for item records from Sierra
+     * Fetch fields for item records from Sierra.
      *
      * Note: This method can return cached data
      *
@@ -3440,7 +3440,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get all items for a bib record
+     * Get all items for a bib record.
      *
      * Note: This method can return cached data
      *
@@ -3542,7 +3542,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Check if we re using a patron-specific access token
+     * Check if we re using a patron-specific access token.
      *
      * @return bool
      */
@@ -3553,7 +3553,7 @@ class SierraRest extends AbstractBase implements
 
     /**
      * Get patron information via authentication token when using patron-specific
-     * access
+     * access.
      *
      * @param string $username The patron username
      * @param string $password The patron password
@@ -3594,7 +3594,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Authenticate a patron
+     * Authenticate a patron.
      *
      * Returns patron information on success and null on failure
      *
@@ -3666,7 +3666,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Authenticate a patron using the API version 5 endpoints
+     * Authenticate a patron using the API version 5 endpoints.
      *
      * Returns patron information on success and null on failure
      *
@@ -3719,7 +3719,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Authenticate a patron using the API version 6 patrons/auth endpoint
+     * Authenticate a patron using the API version 6 patrons/auth endpoint.
      *
      * Returns patron information on success and null on failure
      *
@@ -3758,7 +3758,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get items and their bibs for an array of transactions
+     * Get items and their bibs for an array of transactions.
      *
      * @param array $transactions Transaction list
      * @param array $patron       The patron array from patronLogin
@@ -3811,7 +3811,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Check if bib matches title hold rules
+     * Check if bib matches title hold rules.
      *
      * @param array $bib    Bibliographic record fields
      * @param array $patron An array of patron data
@@ -3865,7 +3865,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Gets title information for holds placed in an INN-Reach system
+     * Gets title information for holds placed in an INN-Reach system.
      *
      * @param $holdId the id of the hold from Sierra
      * @param $bibId  the id of the bib from Sierra
@@ -3913,7 +3913,7 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Gets title information for checked out items from INN-Reach systems
+     * Gets title information for checked out items from INN-Reach systems.
      *
      * @param $checkOutId the id of the checkout from Sierra
      * @param $bibId      the id of the bib from Sierra
@@ -3985,7 +3985,7 @@ WHERE
     }
 
     /**
-     * Get a product code for a fine
+     * Get a product code for a fine.
      *
      * @param array $fine Fine
      *

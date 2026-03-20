@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr aspect of the Search Multi-class (Params)
+ * Solr aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function is_array;
 use function sprintf;
 
 /**
- * Solr Search Parameters
+ * Solr Search Parameters.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -57,7 +57,7 @@ class Params extends \VuFind\Search\Base\Params
 
     /**
      * Search with facet.contains
-     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html.
      *
      * @var string
      */
@@ -65,49 +65,49 @@ class Params extends \VuFind\Search\Base\Params
 
     /**
      * Ignore Case when using facet.contains
-     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
+     * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html.
      *
      * @var bool
      */
     protected $facetContainsIgnoreCase = null;
 
     /**
-     * Offset for facet results
+     * Offset for facet results.
      *
      * @var int
      */
     protected $facetOffset = null;
 
     /**
-     * Prefix for facet searching
+     * Prefix for facet searching.
      *
      * @var string
      */
     protected $facetPrefix = null;
 
     /**
-     * Sorting order for facet search results
+     * Sorting order for facet search results.
      *
      * @var string
      */
     protected $facetSort = null;
 
     /**
-     * Sorting order of single facet by index
+     * Sorting order of single facet by index.
      *
      * @var array
      */
     protected $indexSortedFacets = null;
 
     /**
-     * Fields for visual faceting
+     * Fields for visual faceting.
      *
      * @var string
      */
     protected $pivotFacets = null;
 
     /**
-     * Hierarchical Facet Helper
+     * Hierarchical Facet Helper.
      *
      * @var HierarchicalFacetHelper
      */
@@ -138,14 +138,14 @@ class Params extends \VuFind\Search\Base\Params
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
-     * Virtual field name used for custom filters
+     * Virtual field name used for custom filters.
      *
      * @var string
      */
     protected $customFilterFieldName;
 
     /**
-     * Default sort aliases
+     * Default sort aliases.
      *
      * @var array
      */
@@ -160,7 +160,7 @@ class Params extends \VuFind\Search\Base\Params
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
@@ -214,7 +214,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the current filters as an array of strings ['field:filter']
+     * Return the current filters as an array of strings ['field:filter'].
      *
      * @return array $filterQuery
      */
@@ -260,7 +260,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return current facet configurations
+     * Return current facet configurations.
      *
      * @return array $facetSet
      */
@@ -360,7 +360,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Contains
+     * Set Facet Contains.
      *
      * @param string $p the new contains value
      *
@@ -372,7 +372,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Contains Ignore Case
+     * Set Facet Contains Ignore Case.
      *
      * @param bool $val the new boolean value
      *
@@ -384,7 +384,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Offset
+     * Set Facet Offset.
      *
      * @param int $o the new offset value
      *
@@ -396,7 +396,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Prefix
+     * Set Facet Prefix.
      *
      * @param string $p the new prefix value
      *
@@ -408,7 +408,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Sorting
+     * Set Facet Sorting.
      *
      * @param string $s the new sorting action value
      *
@@ -420,7 +420,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Index Facet Sorting
+     * Set Index Facet Sorting.
      *
      * @param array $s the facets sorted by index
      *
@@ -672,7 +672,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set pivot facet fields to use for visual results
+     * Set pivot facet fields to use for visual results.
      *
      * @param string $facets A comma-separated list of fields
      *
@@ -684,7 +684,7 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Get pivot facet information for visual facets
+     * Get pivot facet information for visual facets.
      *
      * @return string
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Wikipedia connection class
+ * Wikipedia connection class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function is_array;
 use function strlen;
 
 /**
- * Wikipedia connection class
+ * Wikipedia connection class.
  *
  * @category VuFind
  * @package  Connection
@@ -49,28 +49,28 @@ class Wikipedia implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * Selected language
+     * Selected language.
      *
      * @var string
      */
     protected $lang = 'en';
 
     /**
-     * Log of Wikipedia pages already retrieved
+     * Log of Wikipedia pages already retrieved.
      *
      * @var array
      */
     protected $pagesRetrieved = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Http\Client $client HTTP client
      */
@@ -80,7 +80,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * Set language
+     * Set language.
      *
      * @param string $lang Language
      *
@@ -137,7 +137,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * Extract image information from an infobox
+     * Extract image information from an infobox.
      *
      * @param string $infoboxStr Infobox text
      *
@@ -187,7 +187,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * Support method for parseWikipedia - extract infobox details
+     * Support method for parseWikipedia - extract infobox details.
      *
      * @param array $body The Wikipedia response to parse
      *
@@ -216,7 +216,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * Support method for parseWikipedia - extract first image from body
+     * Support method for parseWikipedia - extract first image from body.
      *
      * @param array $body The Wikipedia response to parse
      *
@@ -286,7 +286,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * Support method for parseWikipedia - fix up details in the body
+     * Support method for parseWikipedia - fix up details in the body.
      *
      * @param string $body The Wikipedia response to sanitize
      *
@@ -352,7 +352,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * Check for redirection in the Wikipedia response
+     * Check for redirection in the Wikipedia response.
      *
      * @param array $body Response body
      *
@@ -388,7 +388,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * Extract body text
+     * Extract body text.
      *
      * @param array  $body       Body details
      * @param string $infoboxStr Infobox found within body (if any)
@@ -410,7 +410,7 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * _parseWikipedia
+     * _parseWikipedia.
      *
      * This method is responsible for parsing the output from the Wikipedia
      * REST API.

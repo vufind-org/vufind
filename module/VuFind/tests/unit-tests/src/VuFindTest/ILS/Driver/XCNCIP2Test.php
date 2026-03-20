@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\XCNCIP2;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -61,7 +61,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test definition for testGetMyTransactions
+     * Test definition for testGetMyTransactions.
      *
      * @var array[]
      */
@@ -156,7 +156,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testGetMyFines
+     * Test definition for testGetMyFines.
      *
      * @var array[]
      */
@@ -185,7 +185,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testPatronLogin
+     * Test definition for testPatronLogin.
      *
      * @var array[]
      */
@@ -210,7 +210,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testGetMyHolds
+     * Test definition for testGetMyHolds.
      *
      * @var array[]
      */
@@ -268,7 +268,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testGetMyProfile
+     * Test definition for testGetMyProfile.
      *
      * @var array[]
      */
@@ -323,7 +323,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testGetMyStorageRetrievalRequests
+     * Test definition for testGetMyStorageRetrievalRequests.
      *
      * @var array[]
      */
@@ -362,7 +362,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testGetStatuses
+     * Test definition for testGetStatuses.
      *
      * @var array[]
      */
@@ -428,7 +428,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testGetHolding
+     * Test definition for testGetHolding.
      *
      * @var array[]
      */
@@ -489,7 +489,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testPlaceHold
+     * Test definition for testPlaceHold.
      *
      * @var array[]
      */
@@ -526,7 +526,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testPlaceStorageRetrievalRequest
+     * Test definition for testPlaceStorageRetrievalRequest.
      *
      * @var array[]
      */
@@ -566,7 +566,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testCancelHolds
+     * Test definition for testCancelHolds.
      *
      * @var array[]
      */
@@ -601,7 +601,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testCancelStorageRetrievalRequests
+     * Test definition for testCancelStorageRetrievalRequests.
      *
      * @var array[]
      */
@@ -639,7 +639,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definition for testRenewMyItems
+     * Test definition for testRenewMyItems.
      *
      * @var array[]
      */
@@ -684,7 +684,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definitions for renewing when renewals are disabled
+     * Test definitions for renewing when renewals are disabled.
      *
      * @var array
      */
@@ -727,7 +727,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definitions for getPatronBlocks tests
+     * Test definitions for getPatronBlocks tests.
      *
      * @var array
      */
@@ -742,7 +742,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test definitions for getAccountBlocks tests
+     * Test definitions for getAccountBlocks tests.
      *
      * @var array
      */
@@ -759,7 +759,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test getMyTransactions
+     * Test getMyTransactions.
      *
      * @return void
      */
@@ -783,7 +783,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test disable renewals configuration
+     * Test disable renewals configuration.
      *
      * @return void
      */
@@ -851,7 +851,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyFines
+     * Test getMyFines.
      *
      * @return void
      */
@@ -875,7 +875,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test patronLogin
+     * Test patronLogin.
      *
      * @return void
      */
@@ -894,7 +894,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyHolds
+     * Test getMyHolds.
      *
      * @return void
      */
@@ -918,7 +918,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyProfile
+     * Test getMyProfile.
      *
      * @return void
      */
@@ -942,7 +942,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyStorageRetrievalRequests
+     * Test getMyStorageRetrievalRequests.
      *
      * @return void
      */
@@ -966,7 +966,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getStatuses
+     * Test getStatuses.
      *
      * @return void
      */
@@ -985,7 +985,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getHolding
+     * Test getHolding.
      *
      * @return void
      */
@@ -1016,7 +1016,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getPickUpLocations
+     * Test getPickUpLocations.
      *
      * @return void
      */
@@ -1075,7 +1075,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test placeHold
+     * Test placeHold.
      *
      * @return void
      */
@@ -1105,7 +1105,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test placeStorageRetrievalRequest
+     * Test placeStorageRetrievalRequest.
      *
      * @return void
      */
@@ -1135,7 +1135,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test cancelHolds
+     * Test cancelHolds.
      *
      * @return void
      */
@@ -1164,7 +1164,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test cancelHolds
+     * Test cancelHolds.
      *
      * @return void
      */
@@ -1193,7 +1193,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test renewMyItems
+     * Test renewMyItems.
      *
      * @return void
      */
@@ -1222,7 +1222,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test definition for testGetRequestMethods
+     * Test definition for testGetRequestMethods.
      *
      * @var array[]
      */
@@ -1318,7 +1318,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ];
 
     /**
-     * Test methods for creating NCIP requests
+     * Test methods for creating NCIP requests.
      *
      * @return void
      */
@@ -1343,7 +1343,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 
     /**
      * Test that getCancelRequest throws exception without mandatory parameters
-     * (itemId or requestId)
+     * (itemId or requestId).
      *
      * @return void
      */
@@ -1367,7 +1367,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test method getPatronBlocks
+     * Test method getPatronBlocks.
      *
      * @return void
      * @throws \ReflectionException
@@ -1391,7 +1391,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test method getPatronBlocks
+     * Test method getPatronBlocks.
      *
      * @return void
      */
@@ -1406,7 +1406,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test method for isPatronBlocked
+     * Test method for isPatronBlocked.
      *
      * @return void
      * @throws \ReflectionException
@@ -1434,7 +1434,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test parse problem method
+     * Test parse problem method.
      *
      * @return void
      * @throws \ReflectionException
@@ -1455,7 +1455,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test other accepted HTTP status code configuration
+     * Test other accepted HTTP status code configuration.
      *
      * @return void
      */
@@ -1522,7 +1522,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test invalidateResponseCache
+     * Test invalidateResponseCache.
      *
      * @return void
      * @throws \ReflectionException
@@ -1552,7 +1552,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getBib method
+     * Test getBib method.
      *
      * @return void
      * @throws \ReflectionException
@@ -1574,7 +1574,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test init method
+     * Test init method.
      *
      * @return void
      * @throws ILSException
@@ -1634,7 +1634,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Mock fixture as HTTP client response
+     * Mock fixture as HTTP client response.
      *
      * @param string|array|null $fixture Fixture file
      *
@@ -1661,7 +1661,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Load response from file
+     * Load response from file.
      *
      * @param string $filename File name of raw HTTP response
      *
@@ -1675,7 +1675,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Configure driver for test case
+     * Configure driver for test case.
      *
      * @param array|null $config ILS driver configuration
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translate + escape view helper
+ * Translate + escape view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
- * Translate + escape view helper
+ * Translate + escape view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use Laminas\View\Helper\AbstractHelper;
 class TransEsc extends AbstractHelper
 {
     /**
-     * Translate and escape a string
+     * Translate and escape a string.
      *
      * @param string|object|array $str             String to translate or an array of text
      *                                             domain and string to translate

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class SorterFactory
+ * Class SorterFactory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class SorterFactory
+ * Class SorterFactory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class SorterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

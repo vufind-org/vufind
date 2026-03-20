@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover Controller
+ * Cover Controller.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Session\Settings as SessionSettings;
 use function in_array;
 
 /**
- * Generates covers for book entries
+ * Generates covers for book entries.
  *
  * @category VuFind
  * @package  Controller
@@ -47,35 +47,35 @@ use function in_array;
 class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
 {
     /**
-     * Cover loader
+     * Cover loader.
      *
      * @var Loader
      */
     protected $loader;
 
     /**
-     * Proxy loader
+     * Proxy loader.
      *
      * @var CachingProxy
      */
     protected $proxy;
 
     /**
-     * Session settings
+     * Session settings.
      *
      * @var SessionSettings
      */
     protected $sessionSettings = null;
 
     /**
-     * Configuration settings ([Content] section of config.ini)
+     * Configuration settings ([Content] section of config.ini).
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader          $loader Cover loader
      * @param CachingProxy    $proxy  Proxy loader
@@ -162,7 +162,7 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     }
 
     /**
-     * Send image data for display in the view
+     * Send image data for display in the view.
      *
      * @return \Laminas\Http\Response
      */
@@ -194,7 +194,7 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     }
 
     /**
-     * Return the default 'image not found' information
+     * Return the default 'image not found' information.
      *
      * @return \Laminas\Http\Response
      */

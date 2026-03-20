@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class DatabaseFactory
+ * Class DatabaseFactory.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class DatabaseFactory
+ * Class DatabaseFactory.
  *
  * @category VuFind
  * @package  Form
@@ -50,7 +50,7 @@ use Psr\Container\ContainerInterface;
 class DatabaseFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

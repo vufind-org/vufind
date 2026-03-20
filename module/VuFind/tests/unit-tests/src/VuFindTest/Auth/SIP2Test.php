@@ -60,7 +60,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the LDAP object
+     * Get a working configuration for the LDAP object.
      *
      * @return array
      */

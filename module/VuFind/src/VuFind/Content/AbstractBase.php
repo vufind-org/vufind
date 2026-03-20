@@ -64,7 +64,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
      * @param string $url URL for client to use
      *

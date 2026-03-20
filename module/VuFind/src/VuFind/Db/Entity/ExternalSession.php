@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for external_session table
+ * Entity model for external_session table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for external_session table
+ * Entity model for external_session table.
  *
  * @category VuFind
  * @package  Database

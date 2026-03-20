@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sitemap Generator Test Class
+ * Sitemap Generator Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Sitemap Generator Test Class
+ * Sitemap Generator Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
     use FixtureTrait;
 
     /**
-     * Mock container
+     * Mock container.
      *
      * @var MockContainer
      */
@@ -217,7 +217,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         $this->$expectationMethod($mockIndex);
         $generator = new class ($config, $pluginManager, $mockIndex) extends Generator {
             /**
-             * Constructor
+             * Constructor.
              *
              * @param Config        $config        Sitemap configuration settings
              * @param PluginManager $pluginManager Generator plugin manager
@@ -232,7 +232,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Generate sitemaps from all mandatory and configured plugins
+             * Generate sitemaps from all mandatory and configured plugins.
              *
              * @return array
              */

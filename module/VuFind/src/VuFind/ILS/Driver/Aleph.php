@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Aleph ILS driver
+ * Aleph ILS driver.
  *
  * PHP version 8
  *
@@ -49,7 +49,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * Aleph ILS driver
+ * Aleph ILS driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -71,56 +71,56 @@ class Aleph extends AbstractBase implements
     public const RECORD_ID_BASE_SEPARATOR = '-';
 
     /**
-     * Translator object
+     * Translator object.
      *
      * @var Aleph\Translator
      */
     protected $alephTranslator = false;
 
     /**
-     * The base URL, where the REST DLF API is running
+     * The base URL, where the REST DLF API is running.
      *
      * @var string
      */
     protected $dlfbaseurl = null;
 
     /**
-     * Aleph server
+     * Aleph server.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * Bibliographic bases
+     * Bibliographic bases.
      *
      * @var array
      */
     protected $bib;
 
     /**
-     * User library
+     * User library.
      *
      * @var string
      */
     protected $useradm;
 
     /**
-     * Item library
+     * Item library.
      *
      * @var string
      */
     protected $admlib;
 
     /**
-     * X server user name
+     * X server user name.
      *
      * @var string
      */
     protected $wwwuser;
 
     /**
-     * X server user password
+     * X server user password.
      *
      * @var string
      */
@@ -134,28 +134,28 @@ class Aleph extends AbstractBase implements
     protected $xserver_enabled;
 
     /**
-     * X server port (defaults to 80)
+     * X server port (defaults to 80).
      *
      * @var int
      */
     protected $xport;
 
     /**
-     * DLF REST API port
+     * DLF REST API port.
      *
      * @var int
      */
     protected $dlfport;
 
     /**
-     * Statuses considered as available
+     * Statuses considered as available.
      *
      * @var array
      */
     protected $available_statuses;
 
     /**
-     * List of patron hoe libraries
+     * List of patron hoe libraries.
      *
      * @var array
      */
@@ -177,21 +177,21 @@ class Aleph extends AbstractBase implements
     protected $debug_enabled;
 
     /**
-     * Preferred pickup locations
+     * Preferred pickup locations.
      *
      * @var array
      */
     protected $preferredPickUpLocations;
 
     /**
-     * Patron id used when no specific patron defined
+     * Patron id used when no specific patron defined.
      *
      * @var string
      */
     protected $defaultPatronId;
 
     /**
-     * Mapping of z304 address elements in Aleph to getMyProfile attributes
+     * Mapping of z304 address elements in Aleph to getMyProfile attributes.
      *
      * @var array
      */
@@ -214,7 +214,7 @@ class Aleph extends AbstractBase implements
         . '(?<position>[0-9]+) in queue;/';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      * @param ?\VuFind\Cache\Manager $cacheManager  Cache manager (optional)
@@ -531,7 +531,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -620,7 +620,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -659,7 +659,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -781,7 +781,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * @param array $user   The patron array from patronLogin
      * @param array $params Parameters
@@ -796,7 +796,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -896,7 +896,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -913,7 +913,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $details['details'] is determined by getRenewDetails().
@@ -951,7 +951,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1024,7 +1024,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * @param array $holdDetails A single hold array from getMyHolds
      * @param array $patron      Patron information from patronLogin
@@ -1043,7 +1043,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -1083,7 +1083,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1139,7 +1139,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1252,7 +1252,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1358,7 +1358,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported.
      *
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Contains most of the same values passed to
@@ -1391,7 +1391,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -1589,7 +1589,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -1635,7 +1635,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in VoyagerRestful.ini
      *
@@ -1676,7 +1676,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1695,7 +1695,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -1723,7 +1723,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -1737,7 +1737,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -1751,7 +1751,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -1765,7 +1765,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *

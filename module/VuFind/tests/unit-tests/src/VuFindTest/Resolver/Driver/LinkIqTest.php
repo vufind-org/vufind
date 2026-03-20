@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LinkIq resolver driver test
+ * LinkIq resolver driver test.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * LinkIq resolver driver test
+ * LinkIq resolver driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +52,7 @@ class LinkIqTest extends \PHPUnit\Framework\TestCase
     use TranslatorTrait;
 
     /**
-     * Resolver base URL
+     * Resolver base URL.
      *
      * @var string
      */
@@ -70,7 +70,7 @@ class LinkIqTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test LinkIq
+     * Test LinkIq.
      *
      * @param ?string $moreOptionsBaseUrl     Base URL for "More options" link
      * @param string  $moreOptionsExpectedUrl Expected "More options" link in results

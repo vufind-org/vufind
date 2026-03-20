@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default Controller
+ * Default Controller.
  *
  * PHP version 8
  *
@@ -189,7 +189,7 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
-     * Handle search history display && purge
+     * Handle search history display && purge.
      *
      * @return mixed
      */
@@ -229,7 +229,7 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
-     * New item search form
+     * New item search form.
      *
      * @return mixed
      */
@@ -349,7 +349,7 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
-     * New item facet list
+     * New item facet list.
      *
      * @return mixed
      */
@@ -364,7 +364,7 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
-     * New item result list
+     * New item result list.
      *
      * @return mixed
      */
@@ -384,7 +384,7 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
-     * Course reserves
+     * Course reserves.
      *
      * @return mixed
      */
@@ -577,7 +577,7 @@ class SearchController extends AbstractSolrSearch
 
     /**
      * Provide OpenSearch suggestions as specified at
-     * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
+     * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0.
      *
      * @return \Laminas\Http\Response
      */

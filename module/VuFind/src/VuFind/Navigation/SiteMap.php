@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SiteMap section plugin
+ * SiteMap section plugin.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function in_array;
 use function is_array;
 
 /**
- * SiteMap section plugin
+ * SiteMap section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -50,7 +50,7 @@ use function is_array;
 class SiteMap extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array             $sectionConfig Site map configuration
      * @param RendererInterface $renderer      View renderer
@@ -118,6 +118,55 @@ class SiteMap extends AbstractMenu
             }
         }
         return parent::isRequiredSetting($setting, $context, $contextKey);
+    }
+
+    /**
+     * Get processed and filtered menu configuration with groups and items to
+     * display.
+     *
+     * @return array
+     */
+    public function getMenu(): array
+    {
+        if (!isset($this->menu)) {
+            $menu = [];
+            foreach (parent::getMenu() as $key => $group) {
+                if (!empty($filtered = $this->filterAvailableForSiteMap($group))) {
+                    $menu[$key] = $filtered;
+                }
+            }
+            $this->menu = $menu;
+        }
+        return $this->menu;
+    }
+
+    /**
+     * Get available items for the site map page.
+     *
+     * @param array $menuArray Items or item to filter
+     *
+     * @return array
+     */
+    protected function filterAvailableForSiteMap(array $menuArray): array
+    {
+        if ($menuArray['excludeFromSiteMapPage'] ?? false) {
+            return [];
+        }
+        foreach (['MenuItems', 'submenuItems'] as $itemsKey) {
+            if (isset($menuArray[$itemsKey])) {
+                foreach ($menuArray[$itemsKey] as $i => $item) {
+                    $menuArray[$itemsKey][$i] = $this->filterAvailableForSiteMap($item);
+                    if (empty($menuArray[$itemsKey][$i])) {
+                        unset($menuArray[$itemsKey][$i]);
+                    }
+                }
+                if (empty($menuArray[$itemsKey])) {
+                    // Filter items without menu or submenu items to display.
+                    return [];
+                }
+            }
+        }
+        return $menuArray;
     }
 
     /**
@@ -202,7 +251,7 @@ class SiteMap extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */

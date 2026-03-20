@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Missing Field Exception
+ * Missing Field Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Missing Field Exception
+ * Missing Field Exception.
  *
  * @category VuFind
  * @package  Exceptions

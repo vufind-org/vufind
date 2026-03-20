@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Condition manager test
+ * Condition manager test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Condition\Handler\StringHandler;
 use VuFind\Condition\Manager as ConditionManager;
 
 /**
- * Condition manager test
+ * Condition manager test.
  *
  * @category VuFind
  * @package  Tests

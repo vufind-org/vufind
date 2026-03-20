@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BEPress Test Class
+ * BEPress Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\MetadataVocabulary;
 use VuFind\MetadataVocabulary\BEPress;
 
 /**
- * BEPress Test Class
+ * BEPress Test Class.
  *
  * @category VuFind
  * @package  Tests

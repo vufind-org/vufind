@@ -61,14 +61,14 @@ class Form extends \Laminas\Form\Form implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Input filter
+     * Input filter.
      *
      * @var InputFilter
      */
     protected $inputFilter;
 
     /**
-     * Default, untranslated validation messages
+     * Default, untranslated validation messages.
      *
      * @var array
      */
@@ -78,35 +78,35 @@ class Form extends \Laminas\Form\Form implements
     ];
 
     /**
-     * VuFind main configuration
+     * VuFind main configuration.
      *
      * @var array
      */
     protected $vufindConfig;
 
     /**
-     * Default form configuration (from config.ini > Feedback)
+     * Default form configuration (from config.ini > Feedback).
      *
      * @var array
      */
     protected $defaultFormConfig;
 
     /**
-     * Form element configuration
+     * Form element configuration.
      *
      * @var array
      */
     protected $formElementConfig = [];
 
     /**
-     * Form configuration
+     * Form configuration.
      *
      * @var array
      */
     protected $formConfig;
 
     /**
-     * YAML reader
+     * YAML reader.
      *
      * @var YamlReader
      */
@@ -120,14 +120,14 @@ class Form extends \Laminas\Form\Form implements
     protected $viewHelperManager;
 
     /**
-     * Handler plugin manager
+     * Handler plugin manager.
      *
      * @var HandlerManager
      */
     protected $handlerManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
@@ -153,7 +153,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Set form id
+     * Set form id.
      *
      * @param string $formId  Form id
      * @param array  $params  Additional form parameters.
@@ -203,7 +203,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Check if the form should use Captcha validation (if supported)
+     * Check if the form should use Captcha validation (if supported).
      *
      * @return bool
      */
@@ -213,7 +213,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Check if the form should report referrer url
+     * Check if the form should report referrer url.
      *
      * @return bool
      */
@@ -223,7 +223,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Check if the form should report browser's user agent
+     * Check if the form should report browser's user agent.
      *
      * @return bool
      */
@@ -253,7 +253,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return form action route if set in config
+     * Return form action route if set in config.
      *
      * @return string Form action route or feedback-form as default
      */
@@ -367,7 +367,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return email from address
+     * Return email from address.
      *
      * @return string
      */
@@ -379,7 +379,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return email from name
+     * Return email from name.
      *
      * @return string
      */
@@ -408,7 +408,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Map request parameters to field values
+     * Map request parameters to field values.
      *
      * @param array $requestParams Request parameters
      *
@@ -470,7 +470,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Retrieve input filter used by this form
+     * Retrieve input filter used by this form.
      *
      * @return InputFilterInterface
      *
@@ -568,7 +568,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get form configuration
+     * Get form configuration.
      *
      * @param string $formId Form id
      *
@@ -773,7 +773,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get options for an element
+     * Get options for an element.
      *
      * @param array $element Element configuration
      *
@@ -814,7 +814,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get option groups for an element
+     * Get option groups for an element.
      *
      * @param array $element Element configuration
      *
@@ -930,7 +930,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get configuration for a Laminas form element
+     * Get configuration for a Laminas form element.
      *
      * @param array $el Element configuration
      *
@@ -1099,7 +1099,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get form elements
+     * Get form elements.
      *
      * @param array $config Form configuration
      *
@@ -1118,7 +1118,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get a complete id for an element
+     * Get a complete id for an element.
      *
      * @param string $id Element ID
      *
@@ -1130,7 +1130,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get primary form handler
+     * Get primary form handler.
      *
      * @return HandlerInterface
      */
@@ -1141,7 +1141,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get secondary form handlers
+     * Get secondary form handlers.
      *
      * @return HandlerInterface[]
      */
@@ -1152,7 +1152,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get current form id/name
+     * Get current form id/name.
      *
      * @return string
      */
@@ -1162,7 +1162,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Validates prefill data and returns only the prefill values for enabled fields
+     * Validates prefill data and returns only the prefill values for enabled fields.
      *
      * @param array $prefill Prefill data
      *

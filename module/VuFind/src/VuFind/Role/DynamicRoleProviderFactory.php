@@ -47,7 +47,7 @@ use function in_array;
 class DynamicRoleProviderFactory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service container
      * @param string             $name      Requested service name (unused)
