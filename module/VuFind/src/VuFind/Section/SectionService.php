@@ -33,7 +33,6 @@ use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
 use VuFind\Config\YamlReader;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ConfigException;
-use VuFind\Navigation\NavigationInterface;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 
@@ -114,15 +113,7 @@ class SectionService implements SectionServiceInterface
             throw new BadConfig('Missing required setting: plugin');
         }
 
-        // Get plugin and initialize with key and optionally configuration,
-        // depending on plugin type.
-        $plugin = $this->sectionManager->get($classOrAlias);
-        $plugin->setSectionKey($key);
-        if (!$plugin instanceof NavigationInterface) {
-            $plugin->setSectionConfig($config);
-        }
-
-        return $plugin;
+        return $this->sectionManager->get($classOrAlias, [$key, $config]);
     }
 
     /**
