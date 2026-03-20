@@ -549,8 +549,17 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function verifyJwtClaims(object $claims): bool
     {
+        $clientId = $this->getConfig('client_id');
+
+        $audValid = false;
+        if (is_string($claims->aud ?? null)) {
+            $audValid = $claims->aud === $clientId;
+        } elseif (is_array($claims->aud ?? null)) {
+            $audValid = in_array($clientId, $claims->aud, true);
+        }
+
         return (!isset($claims->nonce) || $claims->nonce === $this->session->oidc_nonce)
-            && ($claims->aud === $this->getConfig('client_id'))
+            && $audValid
             && (!isset($claims->exp) || (is_int($claims->exp) && ($claims->exp > time())));
     }
 
