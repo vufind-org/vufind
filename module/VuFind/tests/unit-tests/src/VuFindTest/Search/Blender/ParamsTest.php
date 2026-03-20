@@ -884,6 +884,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'filters' => [
                     'building:OR:main',
                 ],
+                'searchMode' => [
+                    'all',
+                ],
             ],
             $edsParams->getArrayCopy()
         );

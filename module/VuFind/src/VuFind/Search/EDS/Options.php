@@ -227,7 +227,7 @@ class Options extends AbstractEDSOptions
      */
     public function getSearchMode()
     {
-        return $this->searchMode;
+        return $this->searchMode ?? $this->getDefaultMode();
     }
 
     /**

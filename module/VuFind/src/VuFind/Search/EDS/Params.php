@@ -137,10 +137,6 @@ class Params extends AbstractEDSParams
         $searchmode = $request->get('searchmode');
         if (isset($searchmode)) {
             $this->getOptions()->setSearchMode($searchmode);
-        } else {
-            //get default search mode and set as a hidden filter
-            $defaultSearchMode = $this->getOptions()->getDefaultMode();
-            $this->getOptions()->setSearchMode($defaultSearchMode);
         }
     }
 
