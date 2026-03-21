@@ -18,6 +18,7 @@ module.exports = {
     "no-param-reassign": "error",
     "no-shadow": "error",
     "no-unused-expressions": "error",
+    "no-use-before-define": ["error", { "functions": false }],
 
     // warnings
     "dot-notation": "warn",
