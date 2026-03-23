@@ -456,7 +456,7 @@ class Record implements DbServiceAwareInterface
             return $highlight($addEllipsis($highlightedTitle, $title));
         }
         if ('' !== trim($title)) {
-            $escape = $this->escapeOrCleanHtml;
+            $escape = $this->escape;
             $truncate = $this->truncate;
             return $escape($truncate($title, $maxLength), dataContext: 'title', renderingContext: 'link');
         }
@@ -802,7 +802,7 @@ class Record implements DbServiceAwareInterface
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
         $urlHelper = $this->url;
-        $serverUrlHelper = $this->viewRenderer->plugin('serverurl');
+        $serverUrlHelper = $this->serverUrl;
         $formatLink = function ($link) use ($urlHelper, $serverUrlHelper) {
             // Error if route AND URL are missing at this point!
             if (!isset($link['route']) && !isset($link['url'])) {

@@ -374,6 +374,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $context,
             false,
             false,
+            false,
             $searchTabs
         );
 
@@ -763,6 +764,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * @param array|Config $config                   Configuration
      * @param ?Context     $context                  Context helper
      * @param bool|string  $url                      Should we add a URL helper? False if no, expected route if yes.
+     * @param bool         $serverurl                Should we add a ServerURL helper?
      * @param bool         $setSearchTabExpectations Should we set default search tab expectations?
      * @param ?SearchTabs  $searchTabs               SearchTabs helper
      *
@@ -773,7 +775,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         array|Config $config = [],
         ?Context $context = null,
         bool|string $url = false,
-        bool $setSearchTabExpectations = true
+        bool $serverurl = false,
+        bool $setSearchTabExpectations = true,
+        ?SearchTabs $searchTabs = null
     ): Record {
         if (null === $context) {
             $context = $this->getMockContext();
@@ -788,7 +792,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $config = is_array($config) ? new Config($config) : $config;
 
-        $serverUrlHelper = $this->getMockServerUrl();
+        $serverUrlHelper = $this->getMockServerUrl($serverurl);
         $urlHelper = $url ? $this->getMockUrl($url) : $this->createMock(\VuFind\View\Helper\Root\Url::class);
         $searchTabs ??= $this->getMockSearchTabs($setSearchTabExpectations);
         $auth = new \VuFind\View\Helper\Root\Auth(
@@ -865,10 +869,15 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return MockObject&ServerUrl
      */
-    protected function getMockServerUrl(): MockObject&ServerUrl
+    protected function getMockServerUrl(bool $expectCall = false): MockObject&ServerUrl
     {
         $url = $this->createMock(ServerUrl::class);
-        $url->expects($this->once())->method('__invoke')->willReturn('http://server-foo/baz');
+        if ($expectCall) {
+            $url->expects($this->once())->method('__invoke')
+                ->willReturn('http://server-foo/baz');
+        } else {
+            $url->expects($this->never())->method('__invoke');
+        }
         return $url;
     }
 
