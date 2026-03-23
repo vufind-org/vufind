@@ -63,6 +63,7 @@ class Auth implements DbServiceAwareInterface
      * @param ILSAuthenticator  $ilsAuthenticator ILS Authenticator
      * @param RendererInterface $viewRenderer     View renderer
      * @param ResolverInterface $viewResolver     View resolver
+     * @param Context           $context          Context helper
      */
     #[Autowire()]
     public function __construct(
