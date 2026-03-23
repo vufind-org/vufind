@@ -141,7 +141,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $layout = $this->createMock(\VuFind\View\Helper\Bootstrap5\LayoutClass::class);
 
-        $highlight = new \VuFind\View\Helper\Root\Highlight($escapeHtml);
+        $highlight = new \VuFind\View\Helper\Root\Highlight();
         $addEllipsis = new \VuFind\View\Helper\Root\AddEllipsis();
         $escapeOrCleanHtml = $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class);
         $record = new \VuFind\View\Helper\Root\Record(

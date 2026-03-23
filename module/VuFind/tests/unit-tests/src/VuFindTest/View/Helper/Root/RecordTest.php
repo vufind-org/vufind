@@ -367,7 +367,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $searchTabs->expects($this->once())->method('getCurrentHiddenFilterParams')
             ->with('Solr', false, $expectedSeparator)
             ->willReturn($hiddenFilter);
-            
+
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
@@ -866,6 +866,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a mock server URL helper.
+     *
+     * @param bool $expectCall Whether the helper is expected to be executed.
      *
      * @return MockObject&ServerUrl
      */
