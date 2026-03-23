@@ -69,10 +69,13 @@ class Auth implements DbServiceAwareInterface
         protected Manager $manager,
         protected ILSAuthenticator $ilsAuthenticator,
         RendererInterface $viewRenderer,
-        ResolverInterface $viewResolver
+        ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $context,
     ) {
         $this->viewRenderer = $viewRenderer;
         $this->viewResolver = $viewResolver;
+        $this->setContextHelper($context);
     }
 
     /**

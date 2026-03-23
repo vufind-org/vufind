@@ -134,7 +134,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $authManager,
             $this->createMock(\VuFind\Auth\ILSAuthenticator::class),
             $renderer,
-            $resolver
+            $resolver,
+            $context
         );
 
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);

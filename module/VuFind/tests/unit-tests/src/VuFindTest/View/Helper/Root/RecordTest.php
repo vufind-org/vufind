@@ -799,7 +799,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Auth\Manager::class),
             $this->createMock(\VuFind\Auth\ILSAuthenticator::class),
             $view,
-            $resolver
+            $resolver,
+            $context
         );
         $layout = $this->createMock(\VuFind\View\Helper\Bootstrap5\LayoutClass::class);
 
