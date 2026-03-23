@@ -62,10 +62,12 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
     }
 
     /**
-     * Getter for rtl
-     * 
+     * Getter for rtl.
+     *
+     * @return bool
      */
-    public function getRtl(): bool{
+    public function getRtl(): bool
+    {
         return $this->rtl;
     }
 

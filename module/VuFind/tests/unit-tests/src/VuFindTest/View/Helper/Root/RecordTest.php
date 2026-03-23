@@ -31,7 +31,6 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Exception\RuntimeException;
 use Laminas\View\Helper\ServerUrl;
-use Laminas\View\Helper\Url;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\ResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -45,6 +44,7 @@ use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\SearchTabs;
+use VuFind\View\Helper\Root\Url;
 use VuFindTheme\ThemeInfo;
 
 use function is_array;
@@ -219,7 +219,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getListEntry.
-     *k
+     *
      * @return void
      */
     public function testGetListEntry(): void
@@ -362,13 +362,19 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
             ->with(['bar' => 'baz']);
+
+        $searchTabs = $this->getMockSearchTabs(false);
+        $searchTabs->expects($this->once())->method('getCurrentHiddenFilterParams')
+            ->with('Solr', false, $expectedSeparator)
+            ->willReturn($hiddenFilter);
+            
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
             $context,
             false,
             false,
-            false
+            $searchTabs
         );
 
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml', $linkUrl);
@@ -757,8 +763,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * @param array|Config $config                   Configuration
      * @param ?Context     $context                  Context helper
      * @param bool|string  $url                      Should we add a URL helper? False if no, expected route if yes.
-     * @param bool         $serverurl                Should we add a ServerURL helper?
      * @param bool         $setSearchTabExpectations Should we set default search tab expectations?
+     * @param ?SearchTabs  $searchTabs               SearchTabs helper
      *
      * @return Record
      */
@@ -767,7 +773,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         array|Config $config = [],
         ?Context $context = null,
         bool|string $url = false,
-        bool $serverurl = false,
         bool $setSearchTabExpectations = true
     ): Record {
         if (null === $context) {
@@ -783,6 +788,15 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $config = is_array($config) ? new Config($config) : $config;
 
+        $serverUrlHelper = $this->getMockServerUrl();
+        $urlHelper = $url ? $this->getMockUrl($url) : $this->createMock(\VuFind\View\Helper\Root\Url::class);
+        $searchTabs ??= $this->getMockSearchTabs($setSearchTabExpectations);
+        $auth = new \VuFind\View\Helper\Root\Auth(
+            $this->createMock(\VuFind\Auth\Manager::class),
+            $this->createMock(\VuFind\Auth\ILSAuthenticator::class),
+            $view,
+            $resolver
+        );
         $layout = $this->createMock(\VuFind\View\Helper\Bootstrap5\LayoutClass::class);
 
         $record = new Record(
@@ -792,6 +806,15 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $context,
             $view,
             $resolver,
+            $searchTabs,
+            $this->createMock(\VuFind\View\Helper\Root\TransEsc::class),
+            $this->createMock(\VuFind\View\Helper\Root\Highlight::class),
+            $this->createMock(\VuFind\View\Helper\Root\AddEllipsis::class),
+            $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class),
+            $this->createMock(\VuFind\View\Helper\Root\Truncate::class),
+            $auth,
+            $urlHelper,
+            $serverUrlHelper,
             $layout,
             $config,
         );

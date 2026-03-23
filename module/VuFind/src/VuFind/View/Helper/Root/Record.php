@@ -82,6 +82,15 @@ class Record implements DbServiceAwareInterface
      * @param Context           $contextHelper Context helper
      * @param RendererInterface $viewRenderer  View renderer
      * @param ResolverInterface $viewResolver  View resolver
+     * @param SearchTabs        $searchTabs    SearchTabs helper
+     * @param TransEsc          $transEsc      TransEsc helper
+     * @param Highlight         $highlight     Highlight helper
+     * @param AddEllipsis       $addEllipsis   AddEllipsis helper
+     * @param EscapeOrCleanHtml $escape        EscapeOrCleanHtml helper
+     * @param Truncate          $truncate      Truncate helper
+     * @param Auth              $auth          Auth helper
+     * @param Url               $url           Url helper
+     * @param ServerUrl         $serverUrl     ServerUrl helper
      * @param LayoutClass       $layout        Layout helper
      * @param ?Config           $config        Configuration from config.ini
      */
@@ -93,6 +102,24 @@ class Record implements DbServiceAwareInterface
         Context $contextHelper,
         RendererInterface $viewRenderer,
         ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected SearchTabs $searchTabs,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected TransEsc $transEsc,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Highlight $highlight,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AddEllipsis $addEllipsis,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeOrCleanHtml $escape,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Truncate $truncate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Auth $auth,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected \Laminas\View\Helper\ServerUrl $serverUrl,
         #[Autowire(container: 'ViewHelperManager')]
         protected LayoutClass $layout,
         #[Autowire(config: 'config', configType: 'object')]
@@ -424,16 +451,16 @@ class Record implements DbServiceAwareInterface
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
         $title = $this->driver->tryMethod('getTitle');
         if ('' !== $highlightedTitle) {
-            $highlight = $this->viewRenderer->plugin('highlight');
-            $addEllipsis = $this->viewRenderer->plugin('addEllipsis');
+            $highlight = $this->highlight;
+            $addEllipsis = $this->addEllipsis;
             return $highlight($addEllipsis($highlightedTitle, $title));
         }
         if ('' !== trim($title)) {
-            $escape = $this->viewRenderer->plugin('escapeOrCleanHtml');
-            $truncate = $this->viewRenderer->plugin('truncate');
+            $escape = $this->escapeOrCleanHtml;
+            $truncate = $this->truncate;
             return $escape($truncate($title, $maxLength), dataContext: 'title', renderingContext: 'link');
         }
-        $transEsc = $this->viewRenderer->plugin('transEsc');
+        $transEsc = $this->transEsc;
         return $transEsc('Title not available');
     }
 
@@ -458,13 +485,13 @@ class Record implements DbServiceAwareInterface
         // Try to get hidden filters for the current search:
         if ($this->searchMemory) {
             $searchId = $this->driver->getExtraDetail('searchId')
-                ?? $this->viewRenderer->plugin('searchMemory')->getLastSearchId();
+                ?? $this->searchMemory->getLastSearchId();
             if (
                 $searchId
                 && (
                     $search = $this->searchMemory->getSearchById(
                         $searchId,
-                        $this->viewRenderer->plugin('auth')->getUserObject()
+                        $this->auth->getUserObject()
                     )
                 )
             ) {
@@ -478,7 +505,7 @@ class Record implements DbServiceAwareInterface
         }
         // If we couldn't get hidden filters for the current search, use last filters:
         if (null === $hiddenFilters) {
-            $hiddenFilters = $this->viewRenderer->plugin('searchTabs')
+            $hiddenFilters = $this->searchTabs
                 ->getCurrentHiddenFilterParams(
                     $this->driver->getSearchBackendIdentifier(),
                     false,
@@ -719,7 +746,7 @@ class Record implements DbServiceAwareInterface
             'text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
-        $urlHelper = $this->viewRenderer->plugin('url');
+        $urlHelper = $this->url;
         return $urlHelper('qrcode-show') . '?' . http_build_query($qrcode);
     }
 
@@ -774,7 +801,7 @@ class Record implements DbServiceAwareInterface
 
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
-        $urlHelper = $this->viewRenderer->plugin('url');
+        $urlHelper = $this->url;
         $serverUrlHelper = $this->viewRenderer->plugin('serverurl');
         $formatLink = function ($link) use ($urlHelper, $serverUrlHelper) {
             // Error if route AND URL are missing at this point!

@@ -139,6 +139,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
 
+        $layout = $this->createMock(\VuFind\View\Helper\Bootstrap5\LayoutClass::class);
+
+        $highlight = new \VuFind\View\Helper\Root\Highlight($escapeHtml);
+        $addEllipsis = new \VuFind\View\Helper\Root\AddEllipsis();
+        $escapeOrCleanHtml = $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class);
         $record = new \VuFind\View\Helper\Root\Record(
             $this->createMock(TagsService::class),
             $coverRouter,
@@ -146,6 +151,16 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $context,
             $renderer,
             $resolver,
+            $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
+            $transEsc,
+            $highlight,
+            $addEllipsis,
+            $escapeOrCleanHtml,
+            $truncate,
+            $auth,
+            $url,
+            $serverUrl,
+            $layout,
             $configEntity
         );
 
