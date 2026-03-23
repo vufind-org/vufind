@@ -165,9 +165,7 @@ class Params extends AbstractEDSParams
         $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
-        if (isset($mode)) {
-            $backendParams->set('searchMode', $mode);
-        }
+        $backendParams->set('searchMode', $mode);
 
         $this->createBackendFilterParameters($backendParams);
 
