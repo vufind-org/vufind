@@ -49,17 +49,12 @@ class Breadcrumbs extends AbstractHelper
      * @param string  $text   Text of breadcrumb
      * @param ?string $href   Link of breadcrumb (null for no link)
      * @param bool    $active Is this the active breadcrumb (end of trail)?
-     * @param ?string $title  Title attribute of breadcrumb (null for no title)
      *
      * @return string
      */
-    protected function formatBreadcrumb(
-        string $text,
-        ?string $href = null,
-        bool $active = false,
-        ?string $title = null,
-    ): string {
-        return $this->getView()->render('Helpers/breadcrumbs/single', compact('text', 'href', 'active', 'title'));
+    protected function formatBreadcrumb(string $text, ?string $href = null, bool $active = false): string
+    {
+        return $this->getView()->render('Helpers/breadcrumbs/single', compact('text', 'href', 'active'));
     }
 
     /**
@@ -78,13 +73,12 @@ class Breadcrumbs extends AbstractHelper
      * @param string  $text   Text of breadcrumb
      * @param ?string $href   Link of breadcrumb (null for no link)
      * @param bool    $active Is this the active breadcrumb (end of trail)?
-     * @param ?string $title  Title attribute of breadcrumb (null for no title)
      *
      * @return static
      */
-    public function add(string $text, ?string $href = null, bool $active = false, ?string $title = null): static
+    public function add(string $text, ?string $href = null, bool $active = false): static
     {
-        $this->getLayout()->breadcrumbs .= $this->formatBreadcrumb($text, $href, $active, $title);
+        $this->getLayout()->breadcrumbs .= $this->formatBreadcrumb($text, $href, $active);
         return $this;
     }
 
