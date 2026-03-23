@@ -44,6 +44,7 @@ use VuFind\Search\Memory;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
+use VuFind\View\Helper\Bootstrap5\LayoutClass;
 
 use function get_class;
 use function in_array;
@@ -81,6 +82,7 @@ class Record implements DbServiceAwareInterface
      * @param Context           $contextHelper Context helper
      * @param RendererInterface $viewRenderer  View renderer
      * @param ResolverInterface $viewResolver  View resolver
+     * @param LayoutClass       $layout        Layout helper
      * @param ?Config           $config        Configuration from config.ini
      */
     public function __construct(
@@ -91,6 +93,8 @@ class Record implements DbServiceAwareInterface
         Context $contextHelper,
         RendererInterface $viewRenderer,
         ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected LayoutClass $layout,
         #[Autowire(config: 'config', configType: 'object')]
         protected ?Config $config = null
     ) {
@@ -660,7 +664,7 @@ class Record implements DbServiceAwareInterface
             ? true : $this->config->Site->$configField;
         $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
             ? true : $this->config->Site->mirrorThumbnailsRTL;
-        if ($this->viewRenderer->plugin('layout')->rtl && !$mirror) {
+        if ($this->layout->getRtl() && !$mirror) {
             $left = !$left;
         }
         return $left ? 'left' : 'right';

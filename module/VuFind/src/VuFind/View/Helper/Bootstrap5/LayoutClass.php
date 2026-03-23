@@ -62,6 +62,14 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
     }
 
     /**
+     * Getter for rtl
+     * 
+     */
+    public function getRtl(): bool{
+        return $this->rtl;
+    }
+
+    /**
      * Helper to allow easily configurable page layout -- given a broad class
      * name, return appropriate CSS classes to lay out the page according to
      * the current configuration file settings.

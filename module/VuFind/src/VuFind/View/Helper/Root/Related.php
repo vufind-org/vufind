@@ -59,16 +59,13 @@ class Related
      * @param RendererInterface      $viewRenderer         View renderer
      * @param ResolverInterface      $viewResolver         View resolver
      */
-    #[Autowire()]
     public function __construct(
         protected RelatedManager $relatedPluginManager,
         protected ConfigManagerInterface $configManager,
         protected OptionsManager $optionsManager,
         #[Autowire(container: 'ViewHelperManager')]
         Context $contextHelper,
-        #[Autowire(container: 'ViewHelperManager')]
         RendererInterface $viewRenderer,
-        #[Autowire(container: 'ViewHelperManager')]
         ResolverInterface $viewResolver
     ) {
         $this->setContextHelper($contextHelper);

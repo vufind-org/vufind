@@ -219,7 +219,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getListEntry.
-     *
+     *k
      * @return void
      */
     public function testGetListEntry(): void
@@ -783,6 +783,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
         $config = is_array($config) ? new Config($config) : $config;
 
+        $layout = $this->createMock(\VuFind\View\Helper\Bootstrap5\LayoutClass::class);
+
         $record = new Record(
             $this->createMock(TagsService::class),
             new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()),
@@ -790,6 +792,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $context,
             $view,
             $resolver,
+            $layout,
             $config,
         );
 
