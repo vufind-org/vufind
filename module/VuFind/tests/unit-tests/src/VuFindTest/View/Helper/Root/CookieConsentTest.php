@@ -61,7 +61,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelperInactive(): void
     {
-        $helper = $this->getCookieConsent([]);
+        $helper = $this->getCookieConsent([], expectRender: false);
         $this->assertFalse($helper->isEnabled());
         $this->assertSame('', $helper->render());
         $this->assertEquals($helper, $helper());
@@ -82,9 +82,6 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 ],
             ]
         );
-        $helper->getView()->expects($this->once())
-            ->method('render')
-            ->willReturn('rendered_template');
 
         $this->assertTrue($helper->isEnabled());
         $this->assertSame('rendered_template', $helper->render('bottom'));
@@ -122,13 +119,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 ]
             ),
         ];
-        $expectedParams = $this->getExpectedRenderParams($cookies);
         $helper = $this->getCookieConsent($config, $cookies);
 
-        $helper->getView()->expects($this->once())
-            ->method('render')
-            ->with('CookieConsent/cookie-consent.phtml', $expectedParams)
-            ->willReturn('rendered_template');
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
@@ -155,14 +147,14 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 [
                     'categories' => ['essential', 'matomo'],
                     'consentId' => 'foo123',
-                    'consentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
-                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+                    'consentTimestamp' => gmdate('Y-m-d\TH:i:s.v\Z'),
+                    'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s.v\Z'),
                     'revision' => -1,
                 ]
             ),
         ];
 
-        $helper = $this->getCookieConsent($config, $cookies);
+        $helper = $this->getCookieConsent($config, $cookies, expectRender: false);
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertFalse($helper->isCategoryAccepted('essential'));
         $this->assertFalse($helper->isServiceAllowed('matomo'));
@@ -175,7 +167,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelperWithBot(): void
     {
-        $helper = $this->getCookieConsent([], userAgent: 'I am a bot');
+        $helper = $this->getCookieConsent([], userAgent: 'I am a bot', expectRender: false);
         $this->assertFalse($helper->isEnabled());
     }
 
@@ -186,22 +178,24 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelperWithoutPosition(): void
     {
-        $helper = $this->getCookieConsent([]);
+        $helper = $this->getCookieConsent([], expectRender: false);
         $this->assertSame('', $helper->render());
     }
 
     /**
      * Create a CookieConsent helper.
      *
-     * @param array  $config    Main configuration
-     * @param array  $cookies   Cookies
-     * @param string $userAgent User agent string
+     * @param array  $config       Main configuration
+     * @param array  $cookies      Cookies
+     * @param bool   $expectRender Expect a call to view renderer?
+     * @param string $userAgent    User agent string
      *
      * @return CookieConsent
      */
     protected function getCookieConsent(
         array $config,
         array $cookies = [],
+        bool $expectRender = true,
         string $userAgent = 'I could be a real user'
     ): CookieConsent {
         $url = $this->createMock(Url::class);
@@ -235,13 +229,18 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             'serverUrl' => $serverUrl,
             'url' => $url,
         ];
-        $view = $this->createMock(PhpRenderer::class);
-        $view->method('plugin')
+        $renderer = $this->createMock(PhpRenderer::class);
+        $renderer->method('plugin')
             ->willReturnCallback(
                 function ($name) use ($plugins) {
                     return $plugins[$name] ?? null;
                 }
             );
+
+        $renderer->expects($expectRender ? $this->once() : $this->never())
+            ->method('render')
+            ->with('CookieConsent/cookie-consent.phtml', $this->getExpectedRenderParams($cookies))
+            ->willReturn('rendered_template');
 
         $mockLoginTokenManager = $this->createMock(LoginTokenManager::class);
         $mockLoginTokenManager->method('getCookieName')->willReturn('loginToken');
@@ -258,9 +257,9 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             $this->getCookieManager($config, $cookies),
             new \VuFind\Date\Converter(),
             $mockLoginTokenManager,
-            $mockRequest
+            $mockRequest,
+            $renderer
         );
-        $helper->setView($view);
         return $helper;
     }
 

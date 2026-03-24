@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\View;
 use VuFind\Auth\LoginTokenManager;
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Cookie\CookieManager;
@@ -50,7 +52,7 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
+class CookieConsent implements TranslatorAwareInterface
 {
     use ExplodeSettingTrait;
     use TranslatorAwareTrait;
@@ -97,6 +99,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
      * @param DateConverter     $dateConverter     Date converter
      * @param LoginTokenManager $loginTokenManager Login token manager
      * @param Request           $request           Request
+     * @param RendererInterface $renderer          View renderer
      */
     #[Autowire()]
     public function __construct(
@@ -109,6 +112,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
         protected LoginTokenManager $loginTokenManager,
         #[Autowire(service: 'Request')]
         protected Request $request,
+        #[Autowire(service: 'ViewRenderer')]
+        protected RendererInterface $renderer,
     ) {
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
         $this->consentCookieExpiration = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
@@ -153,7 +158,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
             'consentConfig' => $this->getConsentConfig(),
             'consentInformation' => $this->getConsentInformation(),
         ];
-        return $this->getView()->render('CookieConsent/cookie-consent.phtml', $params);
+        return $this->renderer->render('CookieConsent/cookie-consent.phtml', $params);
     }
 
     /**
@@ -263,7 +268,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
                         str_replace('Z', '+00:00', $result['lastConsentTimestamp'])
                     );
                 $result['domain'] = $this->cookieManager->getDomain()
-                    ?: $this->getView()->plugin('serverUrl')->getHost();
+                    ?: $this->renderer->plugin('serverUrl')->getHost();
                 $result['path'] = $this->cookieManager->getPath();
                 return $result;
             }
@@ -353,19 +358,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Replace placeholders in a string.
-     *
-     * @param string $str String
-     *
-     * @return string
-     */
-    protected function replacePlaceholders(string $str): string
-    {
-        $placeholders = $this->getPlaceholders();
-        return str_replace(array_keys($placeholders), array_values($placeholders), $str);
-    }
-
-    /**
      * Get placeholders for strings.
      *
      * @return array
@@ -385,21 +377,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get placeholders for description translations.
-     *
-     * @return array
-     */
-    protected function getDescriptionPlaceholders(): array
-    {
-        $root = rtrim(($this->getView()->plugin('url'))('home'), '/');
-        $escapeHtmlAttr = $this->getView()->plugin('escapeHtmlAttr');
-        return [
-            '%%siteRoot%%' => $root,
-            '%%siteRootAttr%%' => $escapeHtmlAttr($root),
-        ];
-    }
-
-    /**
      * Get current host name.
      *
      * @return string
@@ -407,7 +384,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     protected function getHostName(): string
     {
         if (null === $this->hostName) {
-            $this->hostName = $this->getView()->plugin('serverUrl')->getHost();
+            $this->hostName = $this->renderer->plugin('serverUrl')->getHost();
         }
         return $this->hostName;
     }
