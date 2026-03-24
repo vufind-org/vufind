@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class SorterFactory
+ * Class SorterFactory.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * Class SorterFactory
+ * Class SorterFactory.
  *
  * @category VuFind
  * @package  I18n
@@ -50,7 +50,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 class SorterFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

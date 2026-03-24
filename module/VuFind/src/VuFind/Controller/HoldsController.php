@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holds Controller
+ * Holds Controller.
  *
  * PHP version 8
  *
@@ -59,14 +59,14 @@ class HoldsController extends AbstractBase
     use \VuFind\Cache\CacheTrait;
 
     /**
-     * CSRF validator
+     * CSRF validator.
      *
      * @var CsrfInterface
      */
     protected $csrf;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm    Service locator
      * @param CsrfInterface           $csrf  CSRF validator
@@ -85,7 +85,7 @@ class HoldsController extends AbstractBase
     }
 
     /**
-     * Send list of holds to view
+     * Send list of holds to view.
      *
      * @return mixed
      */
@@ -131,7 +131,7 @@ class HoldsController extends AbstractBase
         if ($this->params()->fromPost('updateSelected')) {
             $selectedIds = $this->params()->fromPost('selectedIDS');
             if (empty($selectedIds)) {
-                $this->flashMessenger()->addErrorMessage('hold_empty_selection');
+                $this->getFlashMessenger()->addErrorMessage('hold_empty_selection');
                 if ($this->inLightbox()) {
                     return $this->getRefreshResponse();
                 }
@@ -206,7 +206,7 @@ class HoldsController extends AbstractBase
     }
 
     /**
-     * Edit holds
+     * Edit holds.
      *
      * @return mixed
      */
@@ -239,7 +239,7 @@ class HoldsController extends AbstractBase
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
         if (!$this->holds()->validateIds($selectedIds)) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
             return $this->inLightbox()
                 ? $this->getRefreshResponse()
@@ -285,14 +285,14 @@ class HoldsController extends AbstractBase
                         'hold_edit_success_items',
                         ['%%count%%' => $successful]
                     );
-                    $this->flashMessenger()->addSuccessMessage($msg);
+                    $this->getFlashMessenger()->addSuccessMessage($msg);
                 }
                 if ($failed) {
                     $msg = $this->translate(
                         'hold_edit_failed_items',
                         ['%%count%%' => $failed]
                     );
-                    $this->flashMessenger()->addErrorMessage($msg);
+                    $this->getFlashMessenger()->addErrorMessage($msg);
                 }
 
                 $this->getAuditEventService()->addEvent(
@@ -384,7 +384,7 @@ class HoldsController extends AbstractBase
                         break;
                     }
                 } catch (ILSException $e) {
-                    $this->flashMessenger()
+                    $this->getFlashMessenger()
                         ->addErrorMessage('ils_connection_failed');
                 }
             }
@@ -394,7 +394,7 @@ class HoldsController extends AbstractBase
     }
 
     /**
-     * Get fields to update from details gathered from the user
+     * Get fields to update from details gathered from the user.
      *
      * @param array $holdConfig      Hold configuration from the driver
      * @param array $gatheredDetails Details gathered from the user
@@ -447,10 +447,10 @@ class HoldsController extends AbstractBase
             );
         }
         if (!$validPickup) {
-            $this->flashMessenger()->addErrorMessage('hold_invalid_pickup');
+            $this->getFlashMessenger()->addErrorMessage('hold_invalid_pickup');
         }
         foreach ($dateValidationResults['errors'] as $msg) {
-            $this->flashMessenger()->addErrorMessage($msg);
+            $this->getFlashMessenger()->addErrorMessage($msg);
         }
         if (!$validPickup || $dateValidationResults['errors']) {
             return null;
@@ -497,7 +497,7 @@ class HoldsController extends AbstractBase
     }
 
     /**
-     * Get a unique cache id for a patron
+     * Get a unique cache id for a patron.
      *
      * @param array  $patron Patron
      * @param string $type   Type of cached data

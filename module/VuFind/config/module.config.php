@@ -393,25 +393,19 @@ $config = [
     'controller_plugins' => [
         'factories' => [
             'VuFind\Controller\Plugin\Captcha' => 'VuFind\Controller\Plugin\CaptchaFactory',
-            'VuFind\Controller\Plugin\DbUpgrade' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
-            'VuFind\Controller\Plugin\ResultScroller' => 'VuFind\Controller\Plugin\ResultScrollerFactory',
             'VuFind\Controller\Plugin\StorageRetrievalRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
-            'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger' => 'VuFind\Controller\Plugin\FlashMessengerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
             'captcha' => 'VuFind\Controller\Plugin\Captcha',
-            'dbUpgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
-            'flashMessenger' => 'Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'permission' => 'VuFind\Controller\Plugin\Permission',
-            'resultScroller' => 'VuFind\Controller\Plugin\ResultScroller',
             'storageRetrievalRequests' => 'VuFind\Controller\Plugin\StorageRetrievalRequests',
         ],
     ],
@@ -506,6 +500,8 @@ $config = [
             'VuFind\YamlReader' => 'VuFind\Config\YamlReader',
             'VuFind\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
             'VuFind\Validator\CsrfInterface' => 'VuFind\Validator\SessionCsrf',
+            'VuFind\View\FlashMessenger\FlashMessengerInterface' => 'VuFind\View\FlashMessenger\FlashMessenger',
+            'VuFind\View\Renderer\TemplateRendererInterface' => 'VuFind\View\Renderer\LaminasTemplateRenderer',
 
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',
@@ -590,11 +586,14 @@ $config = [
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
+            'action' => [ /* see VuFind\Action\PluginManager for details */],
+            'actionhelper' => [ /* see VuFind\ActionHelper\PluginManager for details */ ],
             'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
             'captcha' => [ /* see VuFind\Captcha\PluginManager for defaults */ ],
             'channelprovider' => [ /* see VuFind\ChannelProvider\PluginManager for defaults */ ],
+            'condition_handler' => [ /* see VuFind\Condition\Handlers\PluginManager for defaults */ ],
             'config_handler' => [ /* see VuFind\Config\Handler\PluginManager for defaults */ ],
             'content' => [ /* see VuFind\Content\PluginManager for defaults */ ],
             'content_authornotes' => [ /* see VuFind\Content\AuthorNotes\PluginManager for defaults */ ],

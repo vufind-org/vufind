@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laminas base CAPTCHA
+ * Laminas base CAPTCHA.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Captcha;
 use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
- * Laminas base CAPTCHA
+ * Laminas base CAPTCHA.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -43,28 +43,28 @@ use Laminas\Mvc\Controller\Plugin\Params;
 abstract class LaminasBase extends AbstractBase
 {
     /**
-     * Laminas CAPTCHA object
+     * Laminas CAPTCHA object.
      *
      * @var \Laminas\Captcha\AbstractWord
      */
     protected $captcha;
 
     /**
-     * HTML input name for generated captcha
+     * HTML input name for generated captcha.
      *
      * @var string
      */
     protected $captchaHtmlInternalId = 'captcha-id';
 
     /**
-     * HTML input name for user input
+     * HTML input name for user input.
      *
      * @var string
      */
     protected $captchaHtmlInputId = 'captcha-input';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Captcha\AbstractWord $captcha Laminas CAPTCHA object
      */
@@ -76,7 +76,7 @@ abstract class LaminasBase extends AbstractBase
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha field from controller params and check them for accuracy.
      *
      * @param Params $params Controller params
      *
@@ -92,7 +92,7 @@ abstract class LaminasBase extends AbstractBase
     }
 
     /**
-     * Laminas CAPTCHA object
+     * Laminas CAPTCHA object.
      *
      * @return \Laminas\Captcha\AbstractWord
      */
@@ -102,7 +102,7 @@ abstract class LaminasBase extends AbstractBase
     }
 
     /**
-     * Getter for template
+     * Getter for template.
      *
      * @return string
      */
@@ -112,7 +112,7 @@ abstract class LaminasBase extends AbstractBase
     }
 
     /**
-     * Getter for template
+     * Getter for template.
      *
      * @return string
      */

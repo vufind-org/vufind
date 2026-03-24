@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Driver for NewGenLib
+ * ILS Driver for NewGenLib.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function count;
 use function is_array;
 
 /**
- * ILS Driver for NewGenLib
+ * ILS Driver for NewGenLib.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -49,7 +49,7 @@ use function is_array;
 class NewGenLib extends AbstractBase
 {
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
@@ -83,7 +83,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -132,7 +132,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -200,7 +200,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -295,7 +295,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -335,7 +335,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -391,7 +391,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -418,7 +418,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -438,7 +438,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -481,56 +481,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @throws ILSException
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        // Do some initial work in solr so we aren't repeating it inside this loop.
-        $retVal = [];
-        $retVal[][] = [];
-
-        $offset = ($page - 1) * $limit;
-        $sql = 'select cataloguerecordid,owner_library_id from cataloguerecord ' .
-            "where created_on + interval '$daysOld days' >= " .
-            "current_timestamp offset $offset limit $limit";
-        try {
-            $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->execute();
-        } catch (PDOException $e) {
-            $this->throwAsIlsException($e);
-        }
-
-        $results = [];
-        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            $id = $row['cataloguerecordid'] . '_' . $row['owner_library_id'];
-            $results[] = $id;
-        }
-        $retVal = ['count' => count($results), 'results' => []];
-        foreach ($results as $result) {
-            $retVal['results'][] = ['id' => $result];
-        }
-        return $retVal;
-    }
-
-    /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -549,7 +500,7 @@ class NewGenLib extends AbstractBase
     }
 
     /**
-     * Support method to get information about the items attached to a record
+     * Support method to get information about the items attached to a record.
      *
      * @param string $RecordID Record ID
      *

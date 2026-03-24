@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Checkouts Controller
+ * Checkouts Controller.
  *
  * PHP version 8
  *
@@ -54,35 +54,35 @@ class CheckoutsController extends AbstractBase
     use Feature\CatchIlsExceptionsTrait;
 
     /**
-     * CSRF validator
+     * CSRF validator.
      *
      * @var CsrfInterface
      */
     protected $csrf;
 
     /**
-     * Session manager
+     * Session manager.
      *
      * @var SessionManager
      */
     protected $sessionManager;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionContainer = null;
 
     /**
-     * Pagination helper
+     * Pagination helper.
      *
      * @var PaginationHelper
      */
     protected $paginationHelper;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm      Service locator
      * @param CsrfInterface           $csrf    CSRF validator
@@ -100,7 +100,7 @@ class CheckoutsController extends AbstractBase
     }
 
     /**
-     * Send loan history to view
+     * Send loan history to view.
      *
      * @return mixed
      */
@@ -122,7 +122,7 @@ class CheckoutsController extends AbstractBase
             $patron
         );
         if (false === $functionConfig) {
-            $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
+            $this->getFlashMessenger()->addErrorMessage('ils_action_unavailable');
             return $this->createViewModel();
         }
         $purgeSelectedAllowed = !empty($functionConfig['purge_selected']);
@@ -142,7 +142,7 @@ class CheckoutsController extends AbstractBase
             = $catalog->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
 
         if (isset($result['success']) && !$result['success']) {
-            $this->flashMessenger()->addErrorMessage($result['status']);
+            $this->getFlashMessenger()->addErrorMessage($result['status']);
             return $this->createViewModel();
         }
 
@@ -190,7 +190,7 @@ class CheckoutsController extends AbstractBase
     }
 
     /**
-     * Purge loans from loan history
+     * Purge loans from loan history.
      *
      * @return mixed
      */
@@ -209,7 +209,7 @@ class CheckoutsController extends AbstractBase
         if ($purgeSelected || $purgeAll) {
             $csrfToken = $this->getRequest()->getPost()->get('csrf');
             if (!$this->csrf->isValid($csrfToken)) {
-                $this->flashMessenger()
+                $this->getFlashMessenger()
                     ->addErrorMessage('error_inconsistent_parameters');
                 return $redirectResponse;
             }
@@ -221,21 +221,22 @@ class CheckoutsController extends AbstractBase
             } else {
                 $ids = $this->getRequest()->getPost()->get('purgeSelectedIDs', []);
                 if (!$ids) {
-                    $this->flashMessenger()
+                    $this->getFlashMessenger()
                         ->addErrorMessage('no_items_selected');
                     return $redirectResponse;
                 }
                 if (!$this->validateRowIds($ids)) {
-                    $this->flashMessenger()
+                    $this->getFlashMessenger()
                         ->addErrorMessage('error_inconsistent_parameters');
                     return $redirectResponse;
                 }
                 $result = $catalog->purgeTransactionHistory($patron, $ids);
             }
-            $this->flashMessenger()->addMessage(
-                $result['status'],
-                $result['success'] ? 'success' : 'error'
-            );
+            if ($result['success']) {
+                $this->getFlashMessenger()->addSuccessMessage($result['status']);
+            } else {
+                $this->getFlashMessenger()->addErrorMessage($result['status']);
+            }
         }
         return $redirectResponse;
     }
@@ -256,7 +257,7 @@ class CheckoutsController extends AbstractBase
 
     /**
      * Reset the array of valid IDs in the session (used for form submission
-     * validation)
+     * validation).
      *
      * @return void
      */

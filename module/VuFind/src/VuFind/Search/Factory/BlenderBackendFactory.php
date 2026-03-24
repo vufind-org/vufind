@@ -57,7 +57,7 @@ class BlenderBackendFactory implements FactoryInterface
     protected ContainerInterface $container;
 
     /**
-     * VuFind configuration reader
+     * VuFind configuration reader.
      *
      * @var ConfigManagerInterface
      */
@@ -85,7 +85,7 @@ class BlenderBackendFactory implements FactoryInterface
     protected string $mappingsConfig = 'BlenderMappings';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

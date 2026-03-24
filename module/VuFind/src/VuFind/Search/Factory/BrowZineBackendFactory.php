@@ -62,14 +62,14 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     protected LoggerInterface $logger;
 
     /**
-     * BrowZine configuration
+     * BrowZine configuration.
      *
      * @var Config
      */
     protected Config $browzineConfig;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -154,7 +154,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

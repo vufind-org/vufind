@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Abstract Top-Level Service Factory
+ * VuFind Abstract Top-Level Service Factory.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\ServiceManager;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Abstract Top-Level Service Factory
+ * VuFind Abstract Top-Level Service Factory.
  *
  * @category VuFind
  * @package  ServiceManager

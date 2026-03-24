@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -78,7 +78,8 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
             $container->get(\Laminas\Session\SessionManager::class)->getId(),
             $container->get(\VuFind\Search\SearchNormalizer::class),
             $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
-            $container->get(\VuFind\Search\Memory::class)
+            $container->get(\VuFind\Search\Memory::class),
+            $container->get(\VuFind\Search\ResultScroller::class)
         );
         return $result;
     }

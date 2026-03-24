@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Course Reserves CSV Loader Test Class
+ * Course Reserves CSV Loader Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Reserves;
 use VuFind\Reserves\CsvReader;
 
 /**
- * Course Reserves CSV Loader Test Class
+ * Course Reserves CSV Loader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Test getInstructors()
+     * Test getInstructors().
      *
      * @return void
      */
@@ -61,7 +61,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getCourses()
+     * Test getCourses().
      *
      * @return void
      */
@@ -77,7 +77,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getDepartments()
+     * Test getDepartments().
      *
      * @return void
      */
@@ -93,7 +93,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getReserves()
+     * Test getReserves().
      *
      * @return void
      */
@@ -123,7 +123,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getErrors()
+     * Test getErrors().
      *
      * @return void
      */

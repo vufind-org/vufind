@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind YAML Configuration Reader
+ * VuFind YAML Configuration Reader.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function dirname;
 use function is_array;
 
 /**
- * VuFind YAML Configuration Reader
+ * VuFind YAML Configuration Reader.
  *
  * @category VuFind
  * @package  Config
@@ -52,7 +52,7 @@ class YamlReader
     use \VuFind\Feature\MergeRecursiveTrait;
 
     /**
-     * Cache directory name
+     * Cache directory name.
      *
      * @var string
      */
@@ -66,7 +66,7 @@ class YamlReader
     protected $files = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver           $pathResolver Config file path resolver
      * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
@@ -78,7 +78,7 @@ class YamlReader
     }
 
     /**
-     * Return a configuration
+     * Return a configuration.
      *
      * @param string $filename       Config file name
      * @param bool   $useLocalConfig Use local configuration if available
@@ -252,7 +252,7 @@ class YamlReader
     }
 
     /**
-     * Return array element reference by path
+     * Return array element reference by path.
      *
      * @param array $arr    Array to access
      * @param array $path   Path to retrieve

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Sorter
+ * Class Sorter.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\I18n;
 use function sprintf;
 
 /**
- * Class Sorter
+ * Class Sorter.
  *
  * @category VuFind
  * @package  I18n
@@ -45,7 +45,7 @@ use function sprintf;
 class Sorter implements SorterInterface
 {
     /**
-     * Intl Collator
+     * Intl Collator.
      *
      * @var \Collator
      */
@@ -59,7 +59,7 @@ class Sorter implements SorterInterface
     protected $respectLocale;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Collator $collator      Current user locale
      * @param bool      $respectLocale Do respect current locale?
@@ -71,7 +71,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Compare function
+     * Compare function.
      *
      * @param string $string1 First string to compare
      * @param string $string2 Second string to compare
@@ -86,7 +86,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Sort array by values
+     * Sort array by values.
      *
      * @param array $array Array to sort
      *
@@ -100,7 +100,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Sort array by values and maintain index association
+     * Sort array by values and maintain index association.
      *
      * @param array $array Array to sort
      *
@@ -114,7 +114,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Natural sort by values and maintain index association
+     * Natural sort by values and maintain index association.
      *
      * @param array $array Array to sort
      *
@@ -128,7 +128,7 @@ class Sorter implements SorterInterface
     }
 
     /**
-     * Function to actually do natural sorting
+     * Function to actually do natural sorting.
      *
      * @param array $array Array to sort
      *

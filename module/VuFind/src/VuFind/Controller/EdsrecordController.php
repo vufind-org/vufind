@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Record Controller
+ * EDS Record Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFindSearch\ParamBag;
 
 /**
- * EDS Record Controller
+ * EDS Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -47,7 +47,7 @@ class EdsrecordController extends AbstractRecord
     use HoldsTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -84,7 +84,7 @@ class EdsrecordController extends AbstractRecord
         }
         $url = $driver->tryMethod($method);
         if (!$url) {
-            $this->flashMessenger()->addErrorMessage($this->translate('error_accessing_full_text'));
+            $this->getFlashMessenger()->addErrorMessage($this->translate('error_accessing_full_text'));
             return $this->redirect()->toRoute('edsrecord', ['id' => $this->params()->fromRoute('id')]);
         }
         return $this->redirect()->toUrl($url);

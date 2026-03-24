@@ -51,14 +51,14 @@ use function get_class;
 class ILS extends AbstractBase
 {
     /**
-     * Catalog connection
+     * Catalog connection.
      *
      * @var \VuFind\ILS\Connection
      */
     protected $catalog = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection        $connection         ILS connection to set
      * @param \VuFind\Auth\ILSAuthenticator $authenticator      ILS authenticator
@@ -114,7 +114,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -129,7 +129,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -146,7 +146,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -255,7 +255,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *
@@ -392,7 +392,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Make sure passwords match and fulfill ILS policy
+     * Make sure passwords match and fulfill ILS policy.
      *
      * @param array   $params request parameters
      * @param ?string $target Authentication target for methods that support target selection
@@ -414,7 +414,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Get the Currently Logged-In Patron
+     * Get the Currently Logged-In Patron.
      *
      * @throws AuthException
      *

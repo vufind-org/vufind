@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat v2 Record Driver Test Class
+ * WorldCat v2 Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\Config;
 use VuFind\RecordDriver\WorldCat2;
 
 /**
- * WorldCat v2 Record Driver Test Class
+ * WorldCat v2 Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests

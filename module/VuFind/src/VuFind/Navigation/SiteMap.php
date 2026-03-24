@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SiteMap section plugin
+ * SiteMap section plugin.
  *
  * PHP version 8
  *
@@ -29,6 +29,8 @@
 
 namespace VuFind\Navigation;
 
+use Laminas\View\Renderer\RendererInterface;
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Exception\BadConfig;
 
 use function array_key_exists;
@@ -37,7 +39,7 @@ use function in_array;
 use function is_array;
 
 /**
- * SiteMap section plugin
+ * SiteMap section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -48,12 +50,14 @@ use function is_array;
 class SiteMap extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array $sectionConfig Site map configuration
+     * @param array             $sectionConfig Site map configuration
+     * @param RendererInterface $renderer      View renderer
      */
     public function __construct(
-        array $sectionConfig
+        array $sectionConfig,
+        protected RendererInterface $renderer,
     ) {
         $this->addRequiredSettings(
             [
@@ -114,6 +118,55 @@ class SiteMap extends AbstractMenu
             }
         }
         return parent::isRequiredSetting($setting, $context, $contextKey);
+    }
+
+    /**
+     * Get processed and filtered menu configuration with groups and items to
+     * display.
+     *
+     * @return array
+     */
+    public function getMenu(): array
+    {
+        if (!isset($this->menu)) {
+            $menu = [];
+            foreach (parent::getMenu() as $key => $group) {
+                if (!empty($filtered = $this->filterAvailableForSiteMap($group))) {
+                    $menu[$key] = $filtered;
+                }
+            }
+            $this->menu = $menu;
+        }
+        return $this->menu;
+    }
+
+    /**
+     * Get available items for the site map page.
+     *
+     * @param array $menuArray Items or item to filter
+     *
+     * @return array
+     */
+    protected function filterAvailableForSiteMap(array $menuArray): array
+    {
+        if ($menuArray['excludeFromSiteMapPage'] ?? false) {
+            return [];
+        }
+        foreach (['MenuItems', 'submenuItems'] as $itemsKey) {
+            if (isset($menuArray[$itemsKey])) {
+                foreach ($menuArray[$itemsKey] as $i => $item) {
+                    $menuArray[$itemsKey][$i] = $this->filterAvailableForSiteMap($item);
+                    if (empty($menuArray[$itemsKey][$i])) {
+                        unset($menuArray[$itemsKey][$i]);
+                    }
+                }
+                if (empty($menuArray[$itemsKey])) {
+                    // Filter items without menu or submenu items to display.
+                    return [];
+                }
+            }
+        }
+        return $menuArray;
     }
 
     /**
@@ -178,6 +231,19 @@ class SiteMap extends AbstractMenu
                 if (isset($processedGroups[$pluginGroupName])) {
                     throw new BadConfig('Group key clash in configuration: ' . $pluginGroupName);
                 }
+                foreach ($pluginGroup['MenuItems'] ?? [] as $key => $item) {
+                    if ($templateToUse = $item['siteMapPageTemplate'] ?? $item['template'] ?? null) {
+                        // Templates from included sections require a plugin
+                        // specific context so they are rendered at this stage.
+                        $context = [
+                            'sectionPlugin' => $plugin,
+                            ...$plugin->getSectionContext(),
+                            ...$item,
+                        ];
+                        $pluginGroup['MenuItems'][$key]['__html']
+                            = $this->renderer->render($templateToUse, $context);
+                    }
+                }
                 $processedGroups[$pluginGroupName] = $pluginGroup;
             }
         }
@@ -185,27 +251,24 @@ class SiteMap extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
     public static function getDefaultMenuConfig(): array
     {
-        return [
-            'HomePage' => [
-                'MenuItems' => [
-                    [
-                        'label' => 'Home Page',
-                        'route' => 'home',
-                    ],
-                ],
-            ],
-            'HeaderBar' => [
-                'section' => 'HeaderBar',
-            ],
-            'FooterMenu' => [
-                'section' => 'FooterMenu',
-            ],
-        ];
+        $yaml = <<<YAML
+            HomePage:
+              MenuItems:
+                - label: 'Home Page'
+                  route: home
+            
+            HeaderBar:
+              section: HeaderBar
+            
+            FooterMenu:
+              section: FooterMenu
+            YAML;
+        return Yaml::parse($yaml);
     }
 }

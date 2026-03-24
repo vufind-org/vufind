@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Upgrade Test Class
+ * Config Upgrade Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\Upgrade;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Config Upgrade Test Class
+ * Config Upgrade Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,11 +51,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Target upgrade version
+     * Target upgrade version.
      *
      * @var string
      */
-    protected string $targetVersion = '11.0';
+    protected string $targetVersion = '11.1';
 
     /**
      * Get an upgrade object for the specified source version:
@@ -149,7 +149,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test database upgrade in config.ini
+     * Test database upgrade in config.ini.
      *
      * @param string $fixture  Fixture file
      * @param array  $expected Expected result
@@ -222,6 +222,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test new items ILS method removal.
+     *
+     * @return void
+     */
+    public function testIlsNewItems(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure the ILS method is switched to disabled and the deprecated setting is removed:
+        $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method setting of "ils" has been '
+        . 'removed; you should enable change tracking (if not already done) and switch to "solr". For now, new '
+        . 'item search has been disabled.';
+        $this->assertSame([$expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame('disabled', $results['searches']['NewItem']['method']);
+        $this->assertFalse(isset($results['searches']['NewItem']['result_pages']));
+    }
+
+    /**
      * Data provider for testSyndetics.
      *
      * @return \Iterator
@@ -252,7 +271,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test Google preview setting upgrade
+     * Test Google preview setting upgrade.
      *
      * @return void
      */
@@ -267,7 +286,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test permission upgrade
+     * Test permission upgrade.
      *
      * @return void
      */
@@ -357,7 +376,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test upgrades that are expected to trigger a single warning
+     * Test upgrades that are expected to trigger a single warning.
      *
      * @param string $fixture         Fixture to load
      * @param string $expectedWarning Expected warning
@@ -396,7 +415,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testEbscoUpgrades
+     * Data provider for testEbscoUpgrades.
      *
      * @return \Iterator
      */
@@ -549,7 +568,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
             . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
             . 'You may need to reimplement your custom theme.';
-        $this->assertSame([$expectedWarning], $upgrader->getWarnings());
+        $this->assertContains($expectedWarning, $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'sandal5',

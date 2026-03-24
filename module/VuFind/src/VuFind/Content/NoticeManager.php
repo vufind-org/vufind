@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Notice Manager
+ * Notice Manager.
  *
  * PHP version 8
  *
@@ -31,12 +31,13 @@
 
 namespace VuFind\Content;
 
+use VuFind\Condition\Manager as ConditionManager;
 use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Notice Manager
+ * Notice Manager.
  *
  * @category VuFind
  * @package  Content
@@ -57,13 +58,16 @@ class NoticeManager implements LocaleSettingsAwareInterface
     protected ?array $notices = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array $config Config
+     * @param array            $config           Config
+     * @param ConditionManager $conditionManager Condition manager
      */
     public function __construct(
         #[Autowire(config: 'Notices', configType: 'yaml')]
-        protected array $config
+        protected array $config,
+        #[Autowire(service: ConditionManager::class)]
+        protected ConditionManager $conditionManager,
     ) {
     }
 
@@ -88,7 +92,10 @@ class NoticeManager implements LocaleSettingsAwareInterface
     {
         $activeNotices = [];
         foreach ($this->getNotices() as $notice) {
-            if ($position === null || $position === ($notice['position'] ?? 'default')) {
+            if (
+                ($position === null || $position === ($notice['position'] ?? 'default'))
+                && $this->conditionManager->evaluateConditions($notice['conditions'] ?? [])
+            ) {
                 $activeNotices[] = $notice;
             }
         }

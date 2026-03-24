@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Auth Plugin Manager Test Class
+ * Auth Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Auth;
 use VuFind\Auth\PluginManager;
 
 /**
- * Auth Plugin Manager Test Class
+ * Auth Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

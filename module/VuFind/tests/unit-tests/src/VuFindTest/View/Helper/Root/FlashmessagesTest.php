@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * PHP version 8
  *
@@ -29,14 +29,14 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\EscapeHtml;
+use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\Flashmessages;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Data provider for testFlashmessageData
+     * Data provider for testFlashmessageData.
      *
      * @return \Iterator
      */
@@ -210,7 +210,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a Flashmessages helper with the given messages in the queue
+     * Get a Flashmessages helper with the given messages in the queue.
      *
      * @param array $messages Messages
      *
@@ -223,14 +223,17 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         };
 
         $mockMessenger = $this->createMock(FlashMessenger::class);
-        $mockMessenger->method('getMessages')->with($this->isType('string'))->willReturnCallback($getMessages);
-        $mockMessenger->method('getCurrentMessages')->with($this->isType('string'))->willReturn([]);
+        $mockMessenger->method('getMessages')->with($this->isString())->willReturnCallback($getMessages);
+        $mockMessenger->method('getErrorMessages')->willReturnCallback(fn (): array => $getMessages('error'));
+        $mockMessenger->method('getInfoMessages')->willReturnCallback(fn (): array => $getMessages('info'));
+        $mockMessenger->method('getSuccessMessages')->willReturnCallback(fn (): array => $getMessages('success'));
+        $mockMessenger->method('getWarningMessages')->willReturnCallback(fn (): array => $getMessages('warning'));
 
         $fm = new Flashmessages($mockMessenger);
 
         $layout = new class () {
             /**
-             * Set layout template or retrieve "layout" view model
+             * Set layout template or retrieve "layout" view model.
              *
              * If no arguments are given, grabs the "root" or "layout" view model.
              * Otherwise, attempts to set the template for that view model.
@@ -275,15 +278,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $transEsc = new TransEsc();
-        $transEsc->setView(
-            $this->getPhpRenderer(
-                [
-                    'escapeHtml' => new EscapeHtml(),
-                    'translate' => $translate,
-                ]
-            )
-        );
+        $transEsc = new TransEsc($translate, new EscapeHtml());
         return compact('transEsc', 'translate');
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translator support class for Aleph ILS driver
+ * Translator support class for Aleph ILS driver.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function call_user_func_array;
 use function get_class;
 
 /**
- * Aleph Translator Class
+ * Aleph Translator Class.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -44,35 +44,35 @@ use function get_class;
 class Translator
 {
     /**
-     * Character set
+     * Character set.
      *
      * @var string
      */
     protected $charset;
 
     /**
-     * Table 15 configuration
+     * Table 15 configuration.
      *
      * @var array
      */
     protected $table15;
 
     /**
-     * Table 40 configuration
+     * Table 40 configuration.
      *
      * @var array
      */
     protected $table40;
 
     /**
-     * Sub library configuration table
+     * Sub library configuration table.
      *
      * @var array
      */
     protected $table_sub_library;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $configArray Aleph configuration
      */
@@ -94,7 +94,7 @@ class Translator
     }
 
     /**
-     * Parse a table
+     * Parse a table.
      *
      * @param string $file     Input file
      * @param string $callback Callback routine for parsing
@@ -130,7 +130,7 @@ class Translator
     }
 
     /**
-     * Get a tab40 collection description
+     * Get a tab40 collection description.
      *
      * @param string $collection Collection
      * @param string $sublib     Sub-library
@@ -149,7 +149,7 @@ class Translator
     }
 
     /**
-     * Support method for tab15Translate -- translate a sub-library name
+     * Support method for tab15Translate -- translate a sub-library name.
      *
      * @param string $sl Text to translate
      *
@@ -161,7 +161,7 @@ class Translator
     }
 
     /**
-     * Get a tab15 item status
+     * Get a tab15 item status.
      *
      * @param string $slc  Sub-library
      * @param string $isc  Item status code
@@ -186,7 +186,7 @@ class Translator
     }
 
     /**
-     * Callback for tab15 (modify $tab15 by reference)
+     * Callback for tab15 (modify $tab15 by reference).
      *
      * @param array  $matches preg_match() return array
      * @param array  $tab15   result array to generate
@@ -214,7 +214,7 @@ class Translator
     }
 
     /**
-     * Callback for tab40 (modify $tab40 by reference)
+     * Callback for tab40 (modify $tab40 by reference).
      *
      * @param array  $matches preg_match() return array
      * @param array  $tab40   result array to generate
@@ -233,7 +233,7 @@ class Translator
     }
 
     /**
-     * Sub-library callback (modify $tab_sub_library by reference)
+     * Sub-library callback (modify $tab_sub_library by reference).
      *
      * @param array  $matches         preg_match() return array
      * @param array  $tab_sub_library result array to generate

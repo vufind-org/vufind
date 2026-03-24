@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command plugin factory
+ * Console command plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindConsole\Command;
 
 /**
- * Console command plugin factory
+ * Console command plugin factory.
  *
  * @category VuFind
  * @package  Console
@@ -41,7 +41,7 @@ namespace VuFindConsole\Command;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

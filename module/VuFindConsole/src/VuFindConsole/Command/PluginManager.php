@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command plugin manager
+ * Console command plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindConsole\Command;
 
 /**
- * Console command plugin manager
+ * Console command plugin manager.
  *
  * @category VuFind
  * @package  Console
@@ -101,7 +101,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

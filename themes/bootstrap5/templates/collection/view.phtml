@@ -55,10 +55,13 @@
     <?php if (count($this->tabs) > 0): ?>
       <a id="tabnav"></a>
       <div class="record-tabs">
-        <?=$this->tabs(
-          $this->recordTabs()->getTabs($this->driver, $this->tabs, $this->activeTab),
-          $this->activeTab,
-          extraClasses: ['tabContent' => ['collectionDetails' . ($tree ? 'Tree' : '')]]
+        <?=$this->component(
+          'tabs',
+          [
+            'tabs' => $this->recordTabs()->getTabs($this->driver, $this->tabs, $this->activeTab),
+            'activeTab' => $this->activeTab,
+            'tabContentClasses' => ['collectionDetails' . ($tree ? 'Tree' : '')],
+          ]
         )?>
       </div>
     <?php endif; ?>

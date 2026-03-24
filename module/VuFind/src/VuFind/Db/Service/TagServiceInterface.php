@@ -55,7 +55,7 @@ interface TagServiceInterface extends DbServiceInterface
     public function getStatistics(bool $extended = false, bool $caseSensitiveTags = false): array;
 
     /**
-     * Get the tags that match a string
+     * Get the tags that match a string.
      *
      * @param string $text          Tag to look up.
      * @param string $sort          Sort type

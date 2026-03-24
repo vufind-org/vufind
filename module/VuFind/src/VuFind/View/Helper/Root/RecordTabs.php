@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record tab view helper
+ * Record tab view helper.
  *
  * PHP version 8
  *
@@ -30,11 +30,12 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordTab\TabManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
 /**
- * Record tab view helper
+ * Record tab view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,16 +43,25 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordTabs extends \Laminas\View\Helper\AbstractHelper
+class RecordTabs
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array      $config     Config
-     * @param TabManager $tabManager Tab Manager
+     * @param array        $config       Config
+     * @param TabManager   $tabManager   Tab Manager
+     * @param RecordLinker $recordLinker RecordLinker view helper
+     * @param Record       $recordHelper Record view helper
      */
-    public function __construct(protected array $config, protected TabManager $tabManager)
-    {
+    public function __construct(
+        #[Autowire(config: 'config')]
+        protected array $config,
+        protected TabManager $tabManager,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected RecordLinker $recordLinker,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Record $recordHelper
+    ) {
     }
 
     /**
@@ -68,8 +78,7 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
         array $tabs,
         string $activeTab
     ): array {
-        $recordLinker = $this->getView()->recordLinker();
-        $ajaxTabUrl = $recordLinker->getTabUrl($driver, 'AjaxTab');
+        $ajaxTabUrl = $this->recordLinker->getTabUrl($driver, 'AjaxTab');
         $loadInitialTabWithAjax = (bool)($this->config['Site']['loadInitialTabWithAjax'] ?? false);
         $backgroundTabs = $this->tabManager->getBackgroundTabNames($driver);
         $tabArray = [];
@@ -81,12 +90,11 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
             $tabItem['buttonAttributes'] = [
                 'class' => 'record-tab-button',
             ];
-
             $loadContent = (($activeTab === $tab) && !$loadInitialTabWithAjax) || !$obj->supportsAjax();
-            $tabItem['content'] = $loadContent ? $this->getView()->record($driver)->getTab($obj) : '';
+            $tabItem['content'] = $loadContent ? ($this->recordHelper)($driver)->getTab($obj) : '';
             $tabItem['paneAttributes'] = [
                 'class' => 'record-tab-pane',
-                'data-tab-url' => $recordLinker->getTabUrl($driver, $tab),
+                'data-tab-url' => $this->recordLinker->getTabUrl($driver, $tab),
                 'data-ajax-url' => $ajaxTabUrl,
             ];
             if ($loadContent) {
@@ -110,5 +118,15 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
     public function getExtraScripts(): array
     {
         return array_merge(...array_values($this->tabManager->getExtraScripts()));
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 }

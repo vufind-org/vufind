@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Locale Detector Delegator Factory
+ * Locale Detector Delegator Factory.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use VuFind\Cookie\CookieManager;
 use function call_user_func;
 
 /**
- * Locale Detector Delegator Factory
+ * Locale Detector Delegator Factory.
  *
  * @category VuFind
  * @package  I18n\Locale
@@ -56,7 +56,7 @@ use function call_user_func;
 class LocaleDetectorFactory implements DelegatorFactoryInterface
 {
     /**
-     * A factory that creates delegates of a given service
+     * A factory that creates delegates of a given service.
      *
      * @param ContainerInterface $container Container
      * @param string             $name      Service name

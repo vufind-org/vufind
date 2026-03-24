@@ -61,7 +61,7 @@ class MonitorCommandTest extends \PHPUnit\Framework\TestCase
     protected $container;
 
     /**
-     * Setup method
+     * Setup method.
      *
      * @return void
      */

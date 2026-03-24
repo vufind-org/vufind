@@ -13,7 +13,7 @@ matrix:
         - PHING_TASKS=phpunitfast
     - php: 7.4
       env:
-        - PHING_TASKS="eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
+        - PHING_TASKS="eslint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
 
 before_script:
   - touch solr/.disableAutomaticInstall
@@ -21,7 +21,6 @@ before_script:
   - phpenv rehash
   - composer install
   - npm install -g eslint@"<5.0.0"
-  - npm install -g jshint@"2.9.6"
   - npm install
 
 cache:

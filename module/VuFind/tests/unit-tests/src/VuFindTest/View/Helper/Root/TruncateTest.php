@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Truncate view helper Test Class
+ * Truncate view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\String\PropertyString;
 use VuFind\View\Helper\Root\Truncate;
 
 /**
- * Truncate view helper Test Class
+ * Truncate view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use VuFind\View\Helper\Root\Truncate;
 class TruncateTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testTruncate
+     * Data provider for testTruncate.
      *
      * @return \Iterator
      */
@@ -63,7 +63,7 @@ class TruncateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test truncation
+     * Test truncation.
      *
      * @param string|PropertyString $input    Input string
      * @param int                   $len      Maximum result string length

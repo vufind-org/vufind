@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "11.0.1",
+  "version": "11.0.2",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -32,7 +32,6 @@
     "eslint": "^8.15.0",
     "eslint-plugin-jsdoc": "50.2.2",
     "eslint-plugin-no-jquery": "^2.7.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "jshint": "^2.13.4"
+    "grunt-contrib-watch": "^1.1.0"
   }
 }

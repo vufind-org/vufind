@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Account menu
+ * Account menu.
  *
  * PHP version 8
  *
@@ -30,6 +30,7 @@
 
 namespace VuFind\Navigation;
 
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Config\AccountCapabilities;
@@ -43,7 +44,7 @@ use function count;
 use function in_array;
 
 /**
- * Account menu
+ * Account menu.
  *
  * @category VuFind
  * @package  Navigation
@@ -63,6 +64,7 @@ class AccountMenu extends AbstractMenu
      * @param Connection          $ilsConnection       ILS connection
      * @param ILSAuthenticator    $ilsAuthenticator    ILS authenticator
      * @param ?OverdriveConnector $overdriveConnector  Overdrive connector
+     * @param array               $config              Main configuration
      */
     public function __construct(
         array $sectionConfig,
@@ -71,6 +73,7 @@ class AccountMenu extends AbstractMenu
         protected Connection $ilsConnection,
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?OverdriveConnector $overdriveConnector,
+        array $config = []
     ) {
         if (isset($sectionConfig['MenuItems'])) {
             // backward compatibility for outdated legacy AccountMenu configurations
@@ -100,7 +103,7 @@ class AccountMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct($sectionConfig, $config);
     }
 
     /**
@@ -151,140 +154,120 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
     public static function getDefaultMenuConfig(): array
     {
-        return [
-            'Account' => [
-                'label' => 'Your Account',
-                'id' => 'acc-menu-acc-header',
-                'class' => 'account-menu',
-                'MenuItems' => [
-                    [
-                        'name' => 'favorites',
-                        'label' => 'saved_items',
-                        'route' => 'myresearch-favorites',
-                        'icon' => 'user-favorites',
-                        'checkMethod' => 'checkFavorites',
-                    ],
-                    [
-                        'name' => 'checkedout',
-                        'label' => 'Checked Out Items',
-                        'route' => 'myresearch-checkedout',
-                        'icon' => 'user-checked-out',
-                        'status' => true,
-                        'checkMethod' => 'checkCheckedout',
-                    ],
-                    [
-                        'name' => 'historicloans',
-                        'label' => 'Loan History',
-                        'route' => 'checkouts-history',
-                        'icon' => 'user-loan-history',
-                        'checkMethod' => 'checkHistoricloans',
-                    ],
-                    [
-                        'name' => 'holds',
-                        'label' => 'Holds and Recalls',
-                        'route' => 'holds-list',
-                        'icon' => 'user-holds',
-                        'status' => true,
-                        'checkMethod' => 'checkHolds',
-                    ],
-                    [
-                        'name' => 'storageRetrievalRequests',
-                        'label' => 'Storage Retrieval Requests',
-                        'route' => 'myresearch-storageretrievalrequests',
-                        'icon' => 'user-storage-retrievals',
-                        'status' => true,
-                        'checkMethod' => 'checkStorageRetrievalRequests',
-                    ],
-                    [
-                        'name' => 'ILLRequests',
-                        'label' => 'Interlibrary Loan Requests',
-                        'route' => 'myresearch-illrequests',
-                        'icon' => 'user-ill-requests',
-                        'status' => true,
-                        'checkMethod' => 'checkILLRequests',
-                    ],
-                    [
-                        'name' => 'fines',
-                        'label' => 'Fines',
-                        'route' => 'myresearch-fines',
-                        'status' => true,
-                        'checkMethod' => 'checkFines',
-                        'iconMethod' => 'finesIcon',
-                    ],
-                    [
-                        'name' => 'profile',
-                        'label' => 'Profile',
-                        'route' => 'myresearch-profile',
-                        'icon' => 'profile',
-                    ],
-                    [
-                        'name' => 'librarycards',
-                        'label' => 'Library Cards',
-                        'route' => 'librarycards-home',
-                        'icon' => 'barcode',
-                        'checkMethod' => 'checkLibraryCards',
-                    ],
-                    [
-                        'name' => 'dgcontent',
-                        'label' => 'Overdrive Content',
-                        'route' => 'overdrive-mycontent',
-                        'icon' => 'overdrive',
-                        'checkMethod' => 'checkOverdrive',
-                    ],
-                    [
-                        'name' => 'history',
-                        'label' => 'Search History',
-                        'route' => 'search-history',
-                        'icon' => 'search',
-                        'checkMethod' => 'checkHistory',
-                    ],
-                    [
-                        'name' => 'usercontent',
-                        'label' => 'user_content',
-                        'route' => 'myresearch-usercontent',
-                        'icon' => 'user-content',
-                        'checkMethod' => 'checkUserContent',
-                    ],
-                    [
-                        'name' => 'logout',
-                        'label' => 'Log Out',
-                        'route' => 'myresearch-logout',
-                        'icon' => 'sign-out',
-                        'checkMethod' => 'checkLogout',
-                    ],
-                ],
-            ],
-            'Lists' => [
-                'label' => 'Your Lists',
-                'id' => 'acc-menu-lists-header',
-                'checkMethod' => 'checkUserlistMode',
-                'MenuItems' => [
-                    [
-                        'template' => 'myresearch/menu-mylists.phtml',
-                        'icon' => 'user-list',
-                    ],
-                    [
-                        'name' => 'newlist',
-                        'label' => 'Create a List',
-                        'route' => 'editList',
-                        'routeParams' => [
-                            'id' => 'NEW',
-                        ],
-                        'icon' => 'ui-add',
-                    ],
-                ],
-            ],
-        ];
+        $yaml = <<<YAML
+            Account:
+              label: Your Account
+              id: acc-menu-acc-header
+              class: account-menu
+              MenuItems:
+                - name: favorites
+                  label: saved_items
+                  route: myresearch-favorites
+                  icon: user-favorites
+                  checkMethod: checkFavorites
+            
+                - name: checkedout
+                  label: Checked Out Items
+                  route: myresearch-checkedout
+                  icon: user-checked-out
+                  status: true
+                  checkMethod: checkCheckedout
+            
+                - name: historicloans
+                  label: Loan History
+                  route: checkouts-history
+                  icon: user-loan-history
+                  checkMethod: checkHistoricloans
+            
+                - name: holds
+                  label: Holds and Recalls
+                  route: holds-list
+                  icon: user-holds
+                  status: true
+                  checkMethod: checkHolds
+            
+                - name: storageRetrievalRequests
+                  label: Storage Retrieval Requests
+                  route: myresearch-storageretrievalrequests
+                  icon: user-storage-retrievals
+                  status: true
+                  checkMethod: checkStorageRetrievalRequests
+            
+                - name: ILLRequests
+                  label: Interlibrary Loan Requests
+                  route: myresearch-illrequests
+                  icon: user-ill-requests
+                  status: true
+                  checkMethod: checkILLRequests
+            
+                - name: fines
+                  label: Fines
+                  route: myresearch-fines
+                  status: true
+                  checkMethod: checkFines
+                  iconMethod: finesIcon
+            
+                - name: profile
+                  label: Profile
+                  route: myresearch-profile
+                  icon: profile
+            
+                - name: librarycards
+                  label: Library Cards
+                  route: librarycards-home
+                  icon: barcode
+                  checkMethod: checkLibraryCards
+            
+                - name: dgcontent
+                  label: Overdrive Content
+                  route: overdrive-mycontent
+                  icon: overdrive
+                  checkMethod: checkOverdrive
+            
+                - name: history
+                  label: Search History
+                  route: search-history
+                  icon: search
+                  checkMethod: checkHistory
+            
+                - name: usercontent
+                  label: user_content
+                  route: myresearch-usercontent
+                  icon: user-content
+                  checkMethod: checkUserContent
+            
+                - name: logout
+                  label: Log Out
+                  route: myresearch-logout
+                  icon: sign-out
+                  checkMethod: checkLogout
+            
+            Lists:
+              label: Your Lists
+              id: acc-menu-lists-header
+              checkMethod: checkUserlistMode
+              MenuItems:
+                - template: myresearch/menu-mylists.phtml
+                  icon: user-list
+            
+                - name: newlist
+                  label: Create a List
+                  route: editList
+                  routeParams:
+                    id: NEW
+                  icon: ui-add
+            YAML;
+        return Yaml::parse($yaml);
     }
 
     /**
-     * Check whether to show favorites item
+     * Check whether to show favorites item.
      *
      * @return bool
      */
@@ -294,7 +277,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show checkedout item
+     * Check whether to show checkedout item.
      *
      * @return bool
      */
@@ -304,7 +287,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show historicloans item
+     * Check whether to show historicloans item.
      *
      * @return bool
      */
@@ -314,7 +297,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show holds item
+     * Check whether to show holds item.
      *
      * @return bool
      */
@@ -324,7 +307,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show storageRetrievalRequests item
+     * Check whether to show storageRetrievalRequests item.
      *
      * @return bool
      */
@@ -334,7 +317,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show ILLRequests item
+     * Check whether to show ILLRequests item.
      *
      * @return bool
      */
@@ -344,7 +327,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show fines item
+     * Check whether to show fines item.
      *
      * @return bool
      */
@@ -354,7 +337,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show librarycards item
+     * Check whether to show librarycards item.
      *
      * @return bool
      */
@@ -365,7 +348,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show overdrive item
+     * Check whether to show overdrive item.
      *
      * @return bool
      */
@@ -375,7 +358,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show searchhistory item
+     * Check whether to show searchhistory item.
      *
      * @return bool
      */
@@ -385,7 +368,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show logout item
+     * Check whether to show logout item.
      *
      * @return bool
      */
@@ -406,7 +389,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether to show user content (comments, ratings, tags)
+     * Check whether to show user content (comments, ratings, tags).
      *
      * @return bool
      */
@@ -424,7 +407,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check ILS connection capability
+     * Check ILS connection capability.
      *
      * @param string $capability Name of then ILS method to check
      *
@@ -437,7 +420,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check ILS function capability
+     * Check ILS function capability.
      *
      * @param string $function The name of the ILS function to check.
      *
@@ -450,7 +433,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Check whether the ILS connection is available
+     * Check whether the ILS connection is available.
      *
      * @return bool
      */
@@ -460,7 +443,7 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Get params for checking ILS capability/function
+     * Get params for checking ILS capability/function.
      *
      * @return array
      */
@@ -475,12 +458,22 @@ class AccountMenu extends AbstractMenu
     }
 
     /**
-     * Get authenticated user
+     * Get authenticated user.
      *
      * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
     protected function getUser(): ?UserEntityInterface
     {
         return $this->authManager->getUserObject();
+    }
+
+    /**
+     * Create icon name for fines item.
+     *
+     * @return string
+     */
+    public function finesIcon(): string
+    {
+        return 'currency-' . strtolower($this->config['Site']['defaultCurrency'] ?? 'usd');
     }
 }

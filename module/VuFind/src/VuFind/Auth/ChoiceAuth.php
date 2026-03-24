@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * ChoiceAuth Authentication plugin
+ * ChoiceAuth Authentication plugin.
  *
  * This module enables a user to choose between two authentication methods.
  * choices are presented side-by-side and one is manually selected.
@@ -56,35 +56,35 @@ use function strlen;
 class ChoiceAuth extends AbstractBase
 {
     /**
-     * Authentication strategies to present
+     * Authentication strategies to present.
      *
      * @var array
      */
     protected $strategies = [];
 
     /**
-     * Auth strategy selected by user
+     * Auth strategy selected by user.
      *
      * @var string
      */
     protected $strategy;
 
     /**
-     * Plugin manager for obtaining other authentication objects
+     * Plugin manager for obtaining other authentication objects.
      *
      * @var PluginManager
      */
     protected $manager;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\Container $container Session container for retaining
      * user choices.
@@ -285,7 +285,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -295,7 +295,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -307,7 +307,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -317,7 +317,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -448,7 +448,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Set the active strategy
+     * Set the active strategy.
      *
      * @param string $strategy New strategy
      *

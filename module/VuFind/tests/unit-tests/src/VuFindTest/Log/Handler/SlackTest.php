@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Slack Log Handler Test Class
+ * Slack Log Handler Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Monolog\LogRecord;
 use VuFind\Log\Handler\SlackWebhookHandler;
 
 /**
- * Slack Log Handler Test Class
+ * Slack Log Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\Log\Handler\SlackWebhookHandler;
 class SlackTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test writer functionality
+     * Test writer functionality.
      *
      * @return void
      */

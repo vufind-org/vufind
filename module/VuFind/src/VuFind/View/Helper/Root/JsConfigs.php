@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JsConfigs helper for passing configs to Javascript
+ * JsConfigs helper for passing configs to Javascript.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
- * JsConfigs helper for passing configs to Javascript
+ * JsConfigs helper for passing configs to Javascript.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,10 +38,10 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class JsConfigs extends AbstractHelper
+class JsConfigs
 {
     /**
-     * Config
+     * Config.
      *
      * @var array
      */
@@ -73,5 +71,15 @@ class JsConfigs extends AbstractHelper
             return '{}';
         }
         return json_encode($this->config);
+    }
+
+    /**
+     * Return this helper instance.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

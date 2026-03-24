@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Search Results" AJAX handler
+ * "Get Search Results" AJAX handler.
  *
  * PHP version 8
  *
@@ -38,13 +38,14 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Search\ResultScroller;
 use VuFind\Search\SearchNormalizer;
 use VuFind\Session\Settings as SessionSettings;
 
 use function call_user_func;
 
 /**
- * "Get Search Results" AJAX handler
+ * "Get Search Results" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -106,7 +107,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings      $sessionSettings  Session settings
      * @param ResultsManager       $resultsManager   Results Manager
@@ -117,6 +118,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param SearchNormalizer     $searchNormalizer Search normalizer
      * @param array                $config           Main configuration
      * @param Memory               $searchMemory     Search memory
+     * @param ResultScroller       $resultScroller   Result scroller helper
      */
     public function __construct(
         SessionSettings $sessionSettings,
@@ -127,7 +129,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         protected string $sessionId,
         protected SearchNormalizer $searchNormalizer,
         protected array $config,
-        protected Memory $searchMemory
+        protected Memory $searchMemory,
+        protected ResultScroller $resultScroller
     ) {
         $this->sessionSettings = $sessionSettings;
     }
@@ -150,7 +153,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Get search results
+     * Get search results.
      *
      * @param ParamsHelper $requestParams Request params
      *
@@ -171,7 +174,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         }
 
         if ($results->getOptions()->resultScrollerActive()) {
-            $requestParams->getController()->resultScroller()->init($results);
+            $this->resultScroller->init($results);
         }
 
         // Always save search parameters, since these are namespaced by search
@@ -182,7 +185,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Render page elements
+     * Render page elements.
      *
      * @param ParamsHelper $requestParams Request params
      * @param Results      $results       Search results
@@ -206,7 +209,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Render search results
+     * Render search results.
      *
      * @param ParamsHelper $requestParams Request params
      * @param Results      $results       Search results
@@ -248,7 +251,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Render pagination
+     * Render pagination.
      *
      * @param ParamsHelper $requestParams Request params
      * @param Results      $results       Search results
@@ -284,7 +287,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Render simple pagination
+     * Render simple pagination.
      *
      * @param ParamsHelper $requestParams Request params
      * @param Results      $results       Search results
@@ -297,7 +300,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Render top pagination
+     * Render top pagination.
      *
      * @param ParamsHelper $requestParams Request params
      * @param Results      $results       Search results
@@ -310,7 +313,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Render search stats
+     * Render search stats.
      *
      * @param ParamsHelper $requestParams Request params
      * @param Results      $results       Search results
@@ -338,7 +341,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     }
 
     /**
-     * Render analytics
+     * Render analytics.
      *
      * @param ParamsHelper $requestParams Request params
      * @param Results      $results       Search results

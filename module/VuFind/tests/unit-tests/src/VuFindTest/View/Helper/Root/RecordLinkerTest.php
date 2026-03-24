@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordLinker view helper Test Class
+ * RecordLinker view helper Test Class.
  *
  * PHP version 8
  *
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\Config\Config;
 use VuFind\Record\Router;
 use VuFind\Search\Base\Results;
@@ -39,7 +40,7 @@ use VuFind\View\Helper\Root\Url;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * RecordLinker view helper Test Class
+ * RecordLinker view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -66,7 +67,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Make sure any percent signs in record ID are properly URL-encoded
+     * Make sure any percent signs in record ID are properly URL-encoded.
      *
      * @return void
      */
@@ -84,7 +85,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test behavior when there are multiple GET parameters
+     * Test behavior when there are multiple GET parameters.
      *
      * @return void
      */
@@ -98,7 +99,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test record URL creation with a non-tab action
+     * Test record URL creation with a non-tab action.
      *
      * @return void
      */
@@ -135,7 +136,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBreadcrumbParams
+     * Test getBreadcrumbParams.
      *
      * @param string $breadcrumb Breadcrumb text to test with
      *
@@ -207,15 +208,37 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRecordLinker(array $extraHelpers = []): RecordLinker
     {
-        $view = $this->getPhpRenderer(
-            $extraHelpers + [
-                'searchMemory' => $this->getSearchMemoryViewHelper(),
-                'url' => $this->getUrl(),
-            ]
+        $url = $this->getUrl();
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
+        $memory->method('getLastSearchId')->willReturn(-123);
+
+        $translate = $extraHelpers['translate'] ?? $this->createMock(Translate::class);
+        if (!isset($extraHelpers['translate'])) {
+            $translate->method('__invoke')->willReturnArgument(0);
+        }
+
+        $truncate = $extraHelpers['truncate'] ?? $this->createMock(Truncate::class);
+        if (!isset($extraHelpers['truncate'])) {
+            $truncate->method('__invoke')->willReturnArgument(0);
+        }
+
+        $escapeHtml = $this->createMock(EscapeHtml::class);
+        $escapeHtml->method('__invoke')->willReturnCallback(function ($str) {
+            return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+        });
+
+        $searchOptionManager = $this->createMock(\VuFind\Search\Options\PluginManager::class);
+
+        $recordLinker = new RecordLinker(
+            new Router(new Config([])),
+            $memory,
+            $url,
+            $searchOptionManager,
+            $translate,
+            $truncate,
+            $escapeHtml
         );
 
-        $recordLinker = new RecordLinker(new Router(new Config([])));
-        $recordLinker->setView($view);
         return $recordLinker;
     }
 

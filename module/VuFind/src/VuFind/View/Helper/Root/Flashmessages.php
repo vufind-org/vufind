@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * PHP version 8
  *
@@ -29,13 +29,13 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function is_array;
 
 /**
- * Flash message view helper
+ * Flash message view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,31 +46,30 @@ use function is_array;
 class Flashmessages extends AbstractHelper
 {
     /**
-     * Flash messenger controller helper
+     * Flash messenger namespaces and methods for getting the messages.
      *
-     * @var FlashMessenger
+     * The list is in priority order (errors are displayed first).
+     *
+     * @var array
      */
-    protected $fm;
+    protected $namespaces = [
+        'error' => 'getErrorMessages',
+        'warning' => 'getWarningMessages',
+        'info' => 'getInfoMessages',
+        'success' => 'getSuccessMessages',
+    ];
 
     /**
-     * Flash messenger namespaces
+     * Constructor.
      *
-     * @var string[]
+     * @param FlashMessengerInterface $flashMessenger Flash messenger controller helper
      */
-    protected $namespaces = ['error', 'warning', 'info', 'success', 'default'];
-
-    /**
-     * Constructor
-     *
-     * @param FlashMessenger $fm Flash messenger controller helper
-     */
-    public function __construct(FlashMessenger $fm)
+    public function __construct(protected FlashMessengerInterface $flashMessenger)
     {
-        $this->fm = $fm;
     }
 
     /**
-     * Get the CSS class to correspond with a messenger namespace
+     * Get the CSS class to correspond with a messenger namespace.
      *
      * @param string $ns Namespace
      *
@@ -92,11 +91,8 @@ class Flashmessages extends AbstractHelper
             return '';
         }
         $html = '';
-        foreach ($this->namespaces as $ns) {
-            $messages = array_merge(
-                $this->fm->getMessages($ns),
-                $this->fm->getCurrentMessages($ns)
-            );
+        foreach ($this->namespaces as $ns => $method) {
+            $messages = $this->flashMessenger->$method();
             foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div role="alert" class="'
                     . $this->getClassForNamespace($ns) . '"';
@@ -148,9 +144,8 @@ class Flashmessages extends AbstractHelper
                 }
                 $html .= '</div>';
             }
-            $this->fm->clearMessages($ns);
-            $this->fm->clearCurrentMessages($ns);
         }
+        $this->flashMessenger->clearAllMessages();
         return $html;
     }
 }

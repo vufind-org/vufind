@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Symphony Web Services (symws) ILS Driver
+ * Symphony Web Services (symws) ILS Driver.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Symphony Web Services (symws) ILS Driver
+ * Symphony Web Services (symws) ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -57,35 +57,35 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Cache for policy information
+     * Cache for policy information.
      *
      * @var object
      */
     protected $policyCache = false;
 
     /**
-     * Policy information
+     * Policy information.
      *
      * @var array
      */
     protected $policies;
 
     /**
-     * Cache manager
+     * Cache manager.
      *
      * @var CacheManager
      */
     protected $cacheManager;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader        $loader       Record loader
      * @param ?CacheManager $cacheManager Cache manager (optional)
@@ -386,7 +386,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses from 999 Holdings Marc Tag
+     * Get Statuses from 999 Holdings Marc Tag.
      *
      * Protected support method for parsing status info from the marc record
      *
@@ -451,7 +451,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Look up title info
+     * Look up title info.
      *
      * Protected support method for parsing the call info into items.
      *
@@ -527,7 +527,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Call Info
+     * Parse Call Info.
      *
      * Protected support method for parsing the call info into items.
      *
@@ -715,7 +715,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Bound With Link Info
+     * Parse Bound With Link Info.
      *
      * Protected support method for parsing bound with link information.
      *
@@ -776,7 +776,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Parse Title Order Info
+     * Parse Title Order Info.
      *
      * Protected support method for parsing order info.
      *
@@ -899,7 +899,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Live Statuses
+     * Get Live Statuses.
      *
      * Protected support method for retrieving a list of item statuses from symws.
      *
@@ -1005,7 +1005,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -1023,7 +1023,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -1043,7 +1043,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -1065,7 +1065,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1081,7 +1081,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1170,7 +1170,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1250,7 +1250,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1311,7 +1311,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1368,7 +1368,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1418,7 +1418,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Cancel Hold Form
+     * Get Cancel Hold Form.
      *
      * Supplies the form details required to cancel a hold
      *
@@ -1435,7 +1435,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold on a particular item
      *
@@ -1500,7 +1500,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Symphony requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -1518,7 +1518,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -1570,7 +1570,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item
      *
@@ -1631,7 +1631,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Policy List
+     * Get Policy List.
      *
      * Protected support method for getting a list of policies.
      *
@@ -1678,7 +1678,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -1713,7 +1713,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in Symphony.ini
      *

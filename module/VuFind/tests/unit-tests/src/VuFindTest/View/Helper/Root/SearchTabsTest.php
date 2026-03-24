@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SearchTabs view helper Test Class
+ * SearchTabs view helper Test Class.
  *
  * PHP version 8
  *
@@ -30,19 +30,17 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Http\Request;
-use Laminas\View\Helper\Url;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\Search\SearchTabsHelper;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
-use VuFind\View\Helper\Root\SearchMemory;
 use VuFind\View\Helper\Root\SearchTabs;
 use VuFindSearch\Service as SearchService;
 
 /**
- * SearchTabs view helper Test Class
+ * SearchTabs view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +53,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Data provider for testGetCurrentHiddenFilterParams
+     * Data provider for testGetCurrentHiddenFilterParams.
      *
      * @return \Iterator
      */
@@ -93,7 +91,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getCurrentHiddenFilterParams method
+     * Test getCurrentHiddenFilterParams method.
      *
      * @param array  $currentFilters   Current hidden filters
      * @param int    $filtersCalls     Number of expected calls to get filters
@@ -129,7 +127,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTabConfig method
+     * Test getTabConfig method.
      *
      * @return void
      */
@@ -197,7 +195,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHiddenFilters method
+     * Test getHiddenFilters method.
      *
      * @return void
      */
@@ -244,7 +242,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a SearchTabs helper
+     * Get a SearchTabs helper.
      *
      * @param array $filters              Current filters
      * @param int   $filtersCalls         Number of expected calls to get filters
@@ -283,34 +281,34 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
             $request->getQuery()->hiddenFilters = $queryFilters;
         }
 
-        $url = $this->createMock(Url::class);
+        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
+
         $searchTabsHelper = new SearchTabsHelper(
             $resultsPM,
             $tabConfig,
             $tabFilterConfig,
             $request,
-            [
-                'Solr:filtered' => 'logged-in',
-            ]
+            ['Solr:filtered' => 'logged-in']
         );
-        $searchMemory = $this->createMock(SearchMemory::class);
+
+        $searchMemory = $this->createMock(\VuFind\View\Helper\Root\SearchMemory::class);
         $searchMemory->expects($this->exactly($lastFiltersCalls))
             ->method('getLastHiddenFilters')
             ->willReturn($lastFilters);
-        $plugins = compact('searchMemory');
-        $helper = new SearchTabs($resultsPM, $url, $searchTabsHelper);
-        $helper->setView($this->getPhpRenderer($plugins));
+
+        $helper = new SearchTabs($resultsPM, $url, $searchTabsHelper, $searchMemory);
         return $helper;
     }
 
     /**
-     * Get a Solr Params object
+     * Get a Solr Params object.
      *
      * @return Params
      */
     protected function getSolrParams(): Params
     {
         $solrOptions = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $solrOptions->method('getSearchIni')->willReturn('searches');
         $solrOptions->method('getSearchClassId')->willReturn('Solr');
         $solrOptions->method('getDefaultLimit')->willReturn(20);
         $configManager = $this->createMock(ConfigManagerInterface::class);

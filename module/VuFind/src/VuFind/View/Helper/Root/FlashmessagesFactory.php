@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 /**
  * Flashmessages helper factory.
@@ -47,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class FlashmessagesFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,8 +69,6 @@ class FlashmessagesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $messenger = $container->get('ControllerPluginManager')
-            ->get(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
-        return new $requestedName($messenger);
+        return new $requestedName($container->get(FlashMessengerInterface::class));
     }
 }

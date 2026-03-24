@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search Params for second Solr index
+ * Search Params for second Solr index.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Search2;
 
 /**
- * Search Params for second Solr index
+ * Search Params for second Solr index.
  *
  * @category VuFind
  * @package  Search_Search2

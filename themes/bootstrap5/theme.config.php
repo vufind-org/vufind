@@ -53,8 +53,9 @@ return [
          */
         ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
-        ['file' => 'vendor/popper.min.js', 'priority' => 120],
-        ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
+        ['file' => 'vendor/js.cookie.min.js', 'priority' => 120],
+        ['file' => 'vendor/popper.min.js', 'priority' => 130],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
@@ -103,7 +104,6 @@ return [
             'VuFind\View\Helper\Bootstrap5\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Bootstrap5\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap5\LayoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClassFactory',
-            'VuFind\View\Helper\Bootstrap5\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
             'bulkAction' => 'VuFind\View\Helper\Bootstrap5\BulkAction',

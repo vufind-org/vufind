@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search Controller
+ * VuFind Search Controller.
  *
  * PHP version 8
  *
@@ -39,6 +39,7 @@ use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
+use VuFind\Search\ResultScroller;
 use VuFind\Solr\Utils as SolrUtils;
 
 use function count;
@@ -47,7 +48,7 @@ use function intval;
 use function is_array;
 
 /**
- * VuFind Search Controller
+ * VuFind Search Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -94,7 +95,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return ViewModel
      */
@@ -186,7 +187,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get active recommendation module settings
+     * Get active recommendation module settings.
      *
      * @return array
      */
@@ -247,7 +248,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Home action
+     * Home action.
      *
      * @return mixed
      */
@@ -273,7 +274,7 @@ class AbstractSearch extends AbstractBase
             throw new \Exception('Unrecoverable deep paging error.');
         }
         $request['page'] = $page;
-        $this->flashMessenger()->addErrorMessage(
+        $this->getFlashMessenger()->addErrorMessage(
             [
                 'msg' => 'deep_paging_failure',
                 'tokens' => ['%%page%%' => $page],
@@ -283,7 +284,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Send search results to results view
+     * Send search results to results view.
      *
      * @return Response|ViewModel
      */
@@ -331,7 +332,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get the value multiFacetsSelection from the config
+     * Get the value multiFacetsSelection from the config.
      *
      * @param array $config The config containing multiFacetsSelection
      *
@@ -348,7 +349,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Perform a search and send results to a results view
+     * Perform a search and send results to a results view.
      *
      * @param callable $setupCallback Optional setup callback that overrides the
      * default one
@@ -431,12 +432,12 @@ class AbstractSearch extends AbstractBase
 
             // Set up results scroller:
             if ($results->getOptions()->resultScrollerActive()) {
-                $this->resultScroller()->init($results);
+                $this->getService(ResultScroller::class)->init($results);
             }
 
             foreach ($results->getErrors() as $error) {
                 try {
-                    $this->flashMessenger()->addErrorMessage($error);
+                    $this->getFlashMessenger()->addErrorMessage($error);
                 } catch (\Exception $e) {
                     // The flash messenger will throw an exception if session writes are disabled,
                     // which will happen in combined search AJAX requests. For that situation, we'll
@@ -511,7 +512,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get a redirection response to a single record
+     * Get a redirection response to a single record.
      *
      * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
      * @param array                             $queryParams Any query parameters
@@ -578,7 +579,7 @@ class AbstractSearch extends AbstractBase
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger()->addMessage('advSearchError_notFound', 'error');
+            $this->getFlashMessenger()->addErrorMessage('advSearchError_notFound');
             return false;
         }
 
@@ -593,8 +594,8 @@ class AbstractSearch extends AbstractBase
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
-                $this->flashMessenger()
-                    ->addMessage('advSearchError_notAdvanced', 'error');
+                $this->getFlashMessenger()
+                    ->addErrorMessage('advSearchError_notAdvanced');
                 return false;
             }
         }
@@ -604,7 +605,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Convenience method for accessing results
+     * Convenience method for accessing results.
      *
      * @return \VuFind\Search\Results\PluginManager
      */
@@ -870,7 +871,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Returns a list of all items associated with one facet for the lightbox
+     * Returns a list of all items associated with one facet for the lightbox.
      *
      * Parameters:
      * facet        The facet to retrieve
@@ -951,7 +952,7 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get proper options file for search class
+     * Get proper options file for search class.
      *
      * @return \VuFind\Search\Base\Options
      */

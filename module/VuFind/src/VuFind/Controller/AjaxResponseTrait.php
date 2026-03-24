@@ -48,7 +48,7 @@ use VuFind\AjaxHandler\PluginManager;
 trait AjaxResponseTrait
 {
     /**
-     * AJAX Handler plugin manager
+     * AJAX Handler plugin manager.
      *
      * @var PluginManager
      */

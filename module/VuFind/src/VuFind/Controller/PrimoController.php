@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Primo Central Controller
+ * Primo Central Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Primo Central Controller
+ * Primo Central Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -46,7 +46,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class PrimoController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -64,7 +64,7 @@ class PrimoController extends AbstractSearch
      */
     public function citedByAction()
     {
-        $this->flashMessenger()->addInfoMessage('results_citing_title_note');
+        $this->getFlashMessenger()->addInfoMessage('results_citing_title_note');
         return $this->performCitationSearch();
     }
 
@@ -75,12 +75,12 @@ class PrimoController extends AbstractSearch
      */
     public function citesAction()
     {
-        $this->flashMessenger()->addInfoMessage('results_cited_by_title_note');
+        $this->getFlashMessenger()->addInfoMessage('results_cited_by_title_note');
         return $this->performCitationSearch();
     }
 
     /**
-     * Perform a "cited" or "cited by" search
+     * Perform a "cited" or "cited by" search.
      *
      * @return mixed
      *
@@ -111,7 +111,7 @@ class PrimoController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */

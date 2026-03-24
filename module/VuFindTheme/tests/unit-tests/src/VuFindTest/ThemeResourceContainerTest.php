@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ResourceContainer Test Class
+ * ResourceContainer Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest;
 use VuFindTheme\ResourceContainer;
 
 /**
- * ResourceContainer Test Class
+ * ResourceContainer Test Class.
  *
  * @category VuFind
  * @package  Tests

@@ -51,7 +51,7 @@ class PersistenceManager implements DbServiceAwareInterface
     use DbServiceAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManagerInterface $entityManager Doctrine ORM entity manager
      * @param bool                   $privacy       Is user privacy mode enabled?

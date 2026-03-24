@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -48,21 +48,21 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     use Factory\AutowireableTrait;
 
     /**
-     * Default namespace for building class names (null to use class names as-is)
+     * Default namespace for building class names (null to use class names as-is).
      *
      * @var ?string
      */
     protected $defaultNamespace = null;
 
     /**
-     * Optional suffix to append to class names (ignored when defaultNamespace is null)
+     * Optional suffix to append to class names (ignored when defaultNamespace is null).
      *
      * @var string
      */
     protected $classSuffix = '';
 
     /**
-     * Lookup table of factories for classes
+     * Lookup table of factories for classes.
      *
      * @var array
      */

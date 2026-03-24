@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind XSLT wrapper
+ * VuFind XSLT wrapper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use DOMDocument;
 use XSLTProcessor;
 
 /**
- * VuFind XSLT wrapper
+ * VuFind XSLT wrapper.
  *
  * @category VuFind
  * @package  XSLT

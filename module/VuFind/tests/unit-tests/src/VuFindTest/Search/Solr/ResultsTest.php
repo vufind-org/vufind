@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Search Object Results Test
+ * Solr Search Object Results Test.
  *
  * PHP version 8
  *
@@ -45,7 +45,7 @@ use VuFindSearch\Service as SearchService;
 use function get_class;
 
 /**
- * Solr Search Object Results Test
+ * Solr Search Object Results Test.
  *
  * @category VuFind
  * @package  Tests
@@ -60,7 +60,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Default faceted search configuration
+     * Default faceted search configuration.
      *
      * @var array
      */
@@ -78,7 +78,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Default faceted search response
+     * Default faceted search response.
      *
      * @var array
      */
@@ -424,7 +424,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test exception from missing hierarchical facet helper
+     * Test exception from missing hierarchical facet helper.
      *
      * @return void
      */
@@ -436,7 +436,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test exception from missing sorter
+     * Test exception from missing sorter.
      *
      * @return void
      */
@@ -450,7 +450,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Results object
+     * Get Results object.
      *
      * @param ?Params        $params        Params object
      * @param ?SearchService $searchService Search service
@@ -508,7 +508,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param ?Options                $options    Options object (null to create)
      * @param ?ConfigManagerInterface $mockConfig Mock ConfigManager (null to create)

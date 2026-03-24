@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract class for representing XML sitemaps
+ * Abstract class for representing XML sitemaps.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function count;
 use function dirname;
 
 /**
- * Abstract class for representing XML sitemaps
+ * Abstract class for representing XML sitemaps.
  *
  * @category VuFind
  * @package  Sitemap
@@ -128,7 +128,7 @@ abstract class AbstractFile
     }
 
     /**
-     * Check if the sitemap is empty
+     * Check if the sitemap is empty.
      *
      * @return bool
      */
@@ -138,7 +138,7 @@ abstract class AbstractFile
     }
 
     /**
-     * Get the count of items
+     * Get the count of items.
      *
      * @return int
      */
@@ -148,7 +148,7 @@ abstract class AbstractFile
     }
 
     /**
-     * Remove all entries
+     * Remove all entries.
      *
      * @return void
      */
@@ -158,7 +158,7 @@ abstract class AbstractFile
     }
 
     /**
-     * Get any extra namespace declarations needed for the sitemap
+     * Get any extra namespace declarations needed for the sitemap.
      *
      * @return array
      */
