@@ -29,8 +29,6 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Recommendation module plugin manager.
  *

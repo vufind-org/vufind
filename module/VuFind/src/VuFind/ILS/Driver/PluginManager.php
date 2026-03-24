@@ -29,8 +29,6 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * ILS driver plugin manager.
  *

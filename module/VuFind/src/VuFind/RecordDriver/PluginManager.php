@@ -29,8 +29,6 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 use function is_callable;
 
 /**

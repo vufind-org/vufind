@@ -29,8 +29,6 @@
 
 namespace VuFind\RecordTab;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Record tab plugin manager.
  *
@@ -72,7 +70,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'similaritemscarousel' => Channels::class,
     ];
 
-        /**
+    /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.
