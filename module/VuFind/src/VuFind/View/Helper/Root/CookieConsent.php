@@ -30,7 +30,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Renderer\RendererInterface;
-use Laminas\View\View;
 use VuFind\Auth\LoginTokenManager;
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Cookie\CookieManager;
@@ -138,6 +137,8 @@ class CookieConsent implements TranslatorAwareInterface
      */
     public function render(?string $type = null): string
     {
+        // Don't render anything unless enabled and 'bottom' given as the type. Checking the type avoids rendering
+        // inside the head element if layout template has not been properly updated.
         if (!$this->isEnabled() || 'bottom' !== $type) {
             return '';
         }
@@ -348,7 +349,7 @@ class CookieConsent implements TranslatorAwareInterface
             'cookieName' => $this->consentCookieName,
             'autoClearCookies' => $this->consentConfig['AutoClear'] ?? true,
             // RefreshPage is not documented because refresh is required for accessibility, but it's still available
-            // just in case.
+            // just in case. RefreshPage is disabled by some integration tests.
             'refreshPage' => $this->consentConfig['RefreshPage'] ?? true,
             'revision' => $this->getConsentRevision(),
             'cookieExpirationDays' => $this->consentCookieExpiration,

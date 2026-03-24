@@ -157,11 +157,14 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test cookie consent with page refresh.
+     * Test that changing consent refreshes the page.
+     *
+     * Other tests skip page refresh to be able to check dynamically modified settings, so we need one to actually test
+     * the refresh.
      *
      * @return void
      */
-    public function testCookieConsentWithRefresh(): void
+    public function testPageRefresh(): void
     {
         $this->changeConsentConfigs(true);
 
