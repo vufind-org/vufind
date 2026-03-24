@@ -72,36 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'similaritemscarousel' => Channels::class,
     ];
 
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Channels::class => ChannelsFactory::class,
-        CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
-        CollectionList::class => CollectionListFactory::class,
-        ComponentParts::class => ComponentPartsFactory::class,
-        Description::class => InvokableFactory::class,
-        Excerpt::class => ExcerptFactory::class,
-        Formats::class => InvokableFactory::class,
-        HierarchyTree::class => HierarchyTreeFactory::class,
-        HoldingsILS::class => HoldingsILSFactory::class,
-        HoldingsWorldCat2::class => HoldingsWorldCat2Factory::class,
-        Map::class => MapFactory::class,
-        OverdriveHoldings::class => InvokableFactory::class,
-        Preview::class => PreviewFactory::class,
-        Reviews::class => ReviewsFactory::class,
-        Search2CollectionList::class => CollectionListFactory::class,
-        StaffViewArray::class => InvokableFactory::class,
-        StaffViewMARC::class => InvokableFactory::class,
-        StaffViewOverdrive::class => InvokableFactory::class,
-        TOC::class => TOCFactory::class,
-        UserComments::class => UserCommentsFactory::class,
-        Versions::class => VersionsFactory::class,
-    ];
-
-    /**
+        /**
      * Constructor.
      *
      * Make sure plugins are properly initialized.
