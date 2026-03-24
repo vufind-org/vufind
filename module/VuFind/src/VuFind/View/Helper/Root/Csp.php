@@ -30,6 +30,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\Response;
+use VuFind\Security\NonceGenerator;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Content Security Policy view helper.
@@ -40,16 +42,27 @@ use Laminas\Http\Response;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Csp extends \Laminas\View\Helper\AbstractHelper
+class Csp
 {
+    /**
+     * CSP nonce
+     *
+     * @var string
+     */
+    protected string $nonce;
+
     /**
      * Constructor.
      *
-     * @param ?Response $response HTTP Response, if any
-     * @param string    $nonce    CSP nonce
+     * @param ?Response      $response HTTP Response, if any
+     * @param NonceGenerator $generator Nonce generator
      */
-    public function __construct(protected ?Response $response, protected string $nonce)
-    {
+    public function __construct(
+        #[Autowire(container: 'Response')]
+        protected ?Response $response,
+        protected NonceGenerator $generator
+    ) {
+        $this->nonce = $generator->getNonce();
     }
 
     /**

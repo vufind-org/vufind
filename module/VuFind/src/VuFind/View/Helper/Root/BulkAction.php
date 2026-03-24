@@ -29,6 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Export;
+use VuFind\Feature\BulkActionTrait;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Bulk action view helper.
  *
@@ -38,9 +44,9 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BulkAction extends \Laminas\View\Helper\AbstractHelper
+class BulkAction
 {
-    use \VuFind\Feature\BulkActionTrait;
+    use BulkActionTrait;
 
     /**
      * CSS class for button.
@@ -52,12 +58,15 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param \VuFind\Export                        $export        Export support class
-     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param Export                 $export        Export support class
+     * @param ConfigManagerInterface $configManager Configuration manager
+     * @param RendererInterface      $view          View renderer
      */
+    #[Autowire()]
     public function __construct(
-        protected \VuFind\Export $export,
-        protected \VuFind\Config\ConfigManagerInterface $configManager
+        protected Export $export,
+        protected ConfigManagerInterface $configManager,
+        protected RendererInterface $view
     ) {
     }
 
@@ -84,7 +93,7 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
         $attributes['type'] = 'submit';
         $attributes['name'] = $action;
         $attributes['data-item-limit'] = $limit;
-        return $this->getView()->render(
+        return $this->view->render(
             'Helpers/bulk-action-button.phtml',
             compact('action', 'icon', 'content', 'limit', 'attributes')
         );

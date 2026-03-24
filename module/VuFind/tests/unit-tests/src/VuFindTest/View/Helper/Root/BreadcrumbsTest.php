@@ -50,11 +50,15 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a breadcrumb helper with the formatBreadcrumb method mocked.
      *
+     * @param \Laminas\View\Renderer\RendererInterface $view   View renderer
+     * @param \Laminas\View\Helper\Layout              $layout Layout helper
+     *
      * @return Breadcrumbs&MockObject
      */
-    protected function getHelperWithFormatMocked(): Breadcrumbs&MockObject
+    protected function getHelperWithFormatMocked($view, $layout): Breadcrumbs&MockObject
     {
         $builder = $this->getMockBuilder(Breadcrumbs::class)
+            ->setConstructorArgs([$view, $layout])
             ->onlyMethods(['formatBreadcrumb'])
             ->getMock();
         $builder->method('formatBreadcrumb')->willReturnCallback(
