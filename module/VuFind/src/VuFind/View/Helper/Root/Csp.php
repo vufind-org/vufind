@@ -45,7 +45,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Csp
 {
     /**
-     * CSP nonce
+     * CSP nonce.
      *
      * @var string
      */
@@ -54,7 +54,7 @@ class Csp
     /**
      * Constructor.
      *
-     * @param ?Response      $response HTTP Response, if any
+     * @param ?Response      $response  HTTP Response, if any
      * @param NonceGenerator $generator Nonce generator
      */
     public function __construct(

@@ -46,7 +46,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Breadcrumbs
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RendererInterface $view   View renderer
      * @param Layout            $layout Layout view helper

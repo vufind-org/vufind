@@ -80,8 +80,7 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
         $layout = $this->createMock(Layout::class);
         $layout->method('__invoke')->willReturn($layoutModel);
         $view = $this->getPhpRenderer(compact('layout'));
-        $helper = $this->getHelperWithFormatMocked();
-        $helper->setView($view);
+        $helper = $this->getHelperWithFormatMocked($view, $layout);
         $helper->disable();
         $this->assertFalse($layoutModel->breadcrumbs);
         $helper->add('a', 'b');

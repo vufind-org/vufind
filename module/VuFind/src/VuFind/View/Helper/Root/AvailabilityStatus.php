@@ -108,7 +108,7 @@ class AvailabilityStatus
     protected array $messageCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RendererInterface $view View renderer
      */
