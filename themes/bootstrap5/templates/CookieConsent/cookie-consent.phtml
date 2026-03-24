@@ -1,9 +1,22 @@
 <?php
   $consentGiven = (bool)$this->cookieConsent()->getConsentInformation();
   $consentConfigJson = json_encode($this->consentConfig);
+  $cookieConsentDivAttrs = [
+    'class' => 'cookie-consent js-cookie-consent',
+    'role' => 'region',
+    'aria-label' => $this->translate('Cookie Settings'),
+    'tabindex' => '-1',
+  ];
+  if ($consentGiven) {
+    $cookieConsentDivAttrs['class'] .= ' hidden';
+  } else {
+    $cookieConsentDivAttrs['class'] .= ' js-loaded';
+    // Make sure we get focus even if not the first in DOM:
+    $cookieConsentDivAttrs['data-focus-on-load'] = 'important';
+  }
 ?>
 <div class="cookie-consent-wrapper">
-  <div class="cookie-consent js-cookie-consent<?=$consentGiven ? ' hidden' : ' js-loaded'?>" role="region" aria-label="<?=$this->transEscAttr('Cookie Settings')?>" tabindex="-1">
+  <div<?=$this->htmlAttributes($cookieConsentDivAttrs)?>>
     <?php if (!$consentGiven): ?>
       <?=$this->render('CookieConsent/cookie-consent-overlay.phtml')?>
       <?php // Set focus for discoverability with screen readers: ?>
