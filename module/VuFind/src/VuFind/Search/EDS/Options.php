@@ -73,7 +73,7 @@ class Options extends AbstractEDSOptions
     protected string $defaultMode = 'all';
 
     /**
-     * The set search mode.
+     * The search mode (null to use default mode).
      *
      * @var ?string
      */
@@ -224,11 +224,11 @@ class Options extends AbstractEDSOptions
     /**
      * Obtain the set searchmode.
      *
-     * @return ?string the search mode
+     * @return string the search mode
      */
-    public function getSearchMode(): ?string
+    public function getSearchMode(): string
     {
-        return $this->searchMode;
+        return $this->searchMode ?? $this->getDefaultMode();
     }
 
     /**
