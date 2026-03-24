@@ -67,13 +67,13 @@ class OpenUrl
      * @param Context       $context       Context helper
      * @param array         $openUrlRules  VuFind OpenURL rules
      * @param PluginManager $pluginManager Resolver plugin manager
-     * @param Config        $config        VuFind OpenURL config
+     * @param ?Config       $config        VuFind OpenURL config
      */
     public function __construct(
         protected Context $context,
         protected array $openUrlRules,
         protected PluginManager $pluginManager,
-        protected $config = null
+        protected ?Config $config = null
     ) {
     }
 
@@ -151,6 +151,8 @@ class OpenUrl
     public function renderTemplate($imagebased = null)
     {
         if (null !== $this->config && isset($this->config->url)) {
+            // Trim off any parameters (for legacy compatibility -- default config
+            // used to include extraneous parameters):
             [$base] = explode('?', $this->config->url);
         } else {
             $base = false;
@@ -291,7 +293,7 @@ class OpenUrl
     {
         // special case if no rules are defined at all assume that any record is
         // valid for openUrls
-        if (!$this->openUrlRules || count($this->openUrlRules) < 1) {
+        if (!$this->openUrlRules) {
             return true;
         }
         foreach ($this->openUrlRules as $rules) {
