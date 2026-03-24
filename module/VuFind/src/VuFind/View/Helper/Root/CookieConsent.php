@@ -36,6 +36,7 @@ use VuFind\Date\Converter as DateConverter;
 use VuFind\Http\PhpEnvironment\Request;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_string;
@@ -97,12 +98,16 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
      * @param LoginTokenManager $loginTokenManager Login token manager
      * @param Request           $request           Request
      */
+    #[Autowire()]
     public function __construct(
+        #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire(config: 'CookieConsent', path: 'CookieConsent', configType: 'yaml')]
         protected array $consentConfig,
         protected CookieManager $cookieManager,
         protected DateConverter $dateConverter,
         protected LoginTokenManager $loginTokenManager,
+        #[Autowire(service: 'Request')]
         protected Request $request,
     ) {
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
