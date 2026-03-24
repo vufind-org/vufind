@@ -136,15 +136,13 @@ VuFind.register('cookie', function cookie() {
   function saveConsent(acceptedCategories) {
     let categoriesChanged = true;
     let revisionChanged = true;
-    let newConsent;
+    let newConsent = true;
 
     let consent = getCurrentConsent() || {};
     if (consent.categories) {
       categoriesChanged = arraysDiffer(acceptedCategories, consent.categories);
       revisionChanged = consentConfig.revision !== consent.revision;
       newConsent = false;
-    } else {
-      newConsent = true;
     }
 
     const date = new Date();
