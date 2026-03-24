@@ -43,7 +43,7 @@ use VuFind\ServiceManager\Factory\AutowiringFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractPluginFactory implements AbstractFactoryInterface
+class AbstractPluginFactory implements AbstractFactoryInterface
 {
     use Factory\AutowireableTrait;
 
