@@ -79,7 +79,16 @@
 
   <property name="version" value="11.0.2" />
 
-  <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
+  <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport}" />
+  <!-- Add user if not empty -->
+  <if>
+    <not>
+      <equals arg1="${mysqlrootuser}" arg2="" />
+    </not>
+    <then>
+      <property name="mysqlconnectionargs" override="true" value="${mysqlconnectionargs} -u ${mysqlrootuser}" />
+    </then>
+  </if>
   <!-- Add password if not empty -->
   <if>
     <not>
