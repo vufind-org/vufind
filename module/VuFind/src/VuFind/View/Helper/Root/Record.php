@@ -800,7 +800,7 @@ class Record implements DbServiceAwareInterface
 
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
-        $formatLink = function ($link){
+        $formatLink = function ($link) {
             // Error if route AND URL are missing at this point!
             if (!isset($link['route']) && !isset($link['url'])) {
                 throw new \Exception('Invalid URL array.');
