@@ -91,7 +91,7 @@ class Record implements DbServiceAwareInterface
      * @param Auth              $auth              Auth helper
      * @param Url               $url               Url helper
      * @param ServerUrl         $serverUrl         ServerUrl helper
-     * @param LayoutClass       $layout            Layout helper
+     * @param Layout            $layout            Layout helper
      * @param ?Config           $config            Configuration from config.ini
      */
     public function __construct(
@@ -800,9 +800,7 @@ class Record implements DbServiceAwareInterface
 
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
-        $urlHelper = $this->url;
-        $serverUrlHelper = $this->serverUrl;
-        $formatLink = function ($link) use ($urlHelper, $serverUrlHelper) {
+        $formatLink = function ($link){
             // Error if route AND URL are missing at this point!
             if (!isset($link['route']) && !isset($link['url'])) {
                 throw new \Exception('Invalid URL array.');
@@ -812,8 +810,8 @@ class Record implements DbServiceAwareInterface
             if (!isset($link['url'])) {
                 $routeParams = $link['routeParams'] ?? [];
 
-                $link['url'] = $serverUrlHelper(
-                    $urlHelper($link['route'], $routeParams)
+                $link['url'] = ($this->serverUrl)(
+                    ($this->url)($link['route'], $routeParams)
                 );
                 if (isset($link['queryString'])) {
                     $link['url'] .= $link['queryString'];

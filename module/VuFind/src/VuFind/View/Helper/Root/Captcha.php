@@ -52,11 +52,11 @@ class Captcha
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config                       $config       Config
-     * @param \VuFind\Captcha\AbstractBase\AbstractBase[] $captchas     Captchas
-     * @param RendererInterface                           $viewRenderer View renderer
-     * @param ResolverInterface                           $viewResolver View resolver
-     * @param Context                                     $context      Context helper
+     * @param \VuFind\Config\Config          $config       Config
+     * @param \VuFind\Captcha\AbstractBase[] $captchas     Captchas
+     * @param RendererInterface              $viewRenderer View renderer
+     * @param ResolverInterface              $viewResolver View resolver
+     * @param Context                        $context      Context helper
      */
     public function __construct(
         protected \VuFind\Config\Config $config,
