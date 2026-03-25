@@ -60,9 +60,7 @@ class Recommend
         #[Autowire(container: 'ViewHelperManager')]
         Context $context,
     ) {
-        $this->viewRenderer = $viewRenderer;
-        $this->viewResolver = $viewResolver;
-        $this->setContextHelper($context);
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
     }
 
     /**

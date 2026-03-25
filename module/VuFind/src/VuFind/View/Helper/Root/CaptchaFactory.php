@@ -88,7 +88,8 @@ class CaptchaFactory implements FactoryInterface
             $config,
             $captchas,
             $viewRenderer,
-            $viewResolver
+            $viewResolver,
+            $viewHelperManager->get('context')
         );
     }
 }

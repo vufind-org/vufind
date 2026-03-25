@@ -104,9 +104,7 @@ class Section
         RendererInterface $viewRenderer,
         ResolverInterface $viewResolver
     ) {
-        $this->setContextHelper($contextHelper);
-        $this->viewRenderer = $viewRenderer;
-        $this->viewResolver = $viewResolver;
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
 
     /**

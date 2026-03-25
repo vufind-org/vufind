@@ -140,7 +140,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
 
-        $layout = $this->createMock(\VuFind\View\Helper\Bootstrap5\LayoutClass::class);
+        $layout = $this->createMock(\Laminas\View\Helper\Layout::class);
 
         $highlight = new \VuFind\View\Helper\Root\Highlight();
         $addEllipsis = new \VuFind\View\Helper\Root\AddEllipsis();
@@ -178,9 +178,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'context' => $context,
             'config' => $configHelper,
             'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context),
-            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(
-                $renderer->getHelperPluginManager()
-            ),
+            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
@@ -386,6 +384,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $view->setResolver($resolver);
 
         $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view, $resolver, $url);
+
+        foreach ($helpers as $helper) {
+            if (method_exists($helper, 'setView')) {
+                $helper->setView($view);
+            }
+        }
 
         $pluginManager = $view->getHelperPluginManager();
         foreach ($helpers as $key => $value) {

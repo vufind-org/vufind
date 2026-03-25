@@ -65,7 +65,6 @@ class Auth implements DbServiceAwareInterface
      * @param ResolverInterface $viewResolver     View resolver
      * @param Context           $context          Context helper
      */
-    #[Autowire()]
     public function __construct(
         protected Manager $manager,
         protected ILSAuthenticator $ilsAuthenticator,
@@ -74,9 +73,7 @@ class Auth implements DbServiceAwareInterface
         #[Autowire(container: 'ViewHelperManager')]
         Context $context,
     ) {
-        $this->viewRenderer = $viewRenderer;
-        $this->viewResolver = $viewResolver;
-        $this->setContextHelper($context);
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
     }
 
     /**

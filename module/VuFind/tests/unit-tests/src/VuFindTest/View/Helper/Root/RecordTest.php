@@ -802,7 +802,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $resolver,
             $context
         );
-        $layout = $this->createMock(\VuFind\View\Helper\Bootstrap5\LayoutClass::class);
+        $layout = $this->createMock(\Laminas\View\Helper\Layout::class);
 
         $record = new Record(
             $this->createMock(TagsService::class),

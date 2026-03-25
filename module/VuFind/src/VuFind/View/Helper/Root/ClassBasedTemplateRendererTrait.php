@@ -62,23 +62,42 @@ trait ClassBasedTemplateRendererTrait
     /**
      * View renderer.
      *
-     * @var RendererInterface
+     * @var ?RendererInterface
      */
-    protected $viewRenderer;
+    protected ?RendererInterface $viewRenderer = null;
 
     /**
      * View resolver.
      *
-     * @var ResolverInterface
+     * @var ?ResolverInterface
      */
-    protected $viewResolver;
+    protected ?ResolverInterface $viewResolver = null;
 
     /**
      * Context helper.
      *
-     * @var Context
+     * @var ?Context
      */
-    protected Context $contextHelper;
+    protected ?Context $contextHelper = null;
+
+    /**
+     * Helper setter function for required dependencies.
+     *
+     * @param RendererInterface $viewRenderer  View renderer
+     * @param ResolverInterface $viewResolver  View resolver
+     * @param Context           $contextHelper Context helper
+     *
+     * @return void
+     */
+    protected function setClassBasedTemplateRendererDependencies(
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        Context $contextHelper
+    ) {
+        $this->viewRenderer = $viewRenderer;
+        $this->viewResolver = $viewResolver;
+        $this->contextHelper = $contextHelper;
+    }
 
     /**
      * Recursively locate a template that matches the provided class name
@@ -119,18 +138,6 @@ trait ClassBasedTemplateRendererTrait
             $resolver,
             $topClassName ?? $className
         );
-    }
-
-    /**
-     * Set the context helper.
-     *
-     * @param Context $context Context helper
-     *
-     * @return void
-     */
-    public function setContextHelper(Context $context): void
-    {
-        $this->contextHelper = $context;
     }
 
     /**

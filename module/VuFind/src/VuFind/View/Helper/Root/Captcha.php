@@ -52,19 +52,20 @@ class Captcha
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config       Config
-     * @param array                 $captchas     Captchas
-     * @param RendererInterface     $viewRenderer View renderer
-     * @param ResolverInterface     $viewResolver View resolver
+     * @param \VuFind\Config\Config                       $config       Config
+     * @param \VuFind\Captcha\AbstractBase\AbstractBase[] $captchas     Captchas
+     * @param RendererInterface                           $viewRenderer View renderer
+     * @param ResolverInterface                           $viewResolver View resolver
+     * @param Context                                     $context      Context helper
      */
     public function __construct(
         protected \VuFind\Config\Config $config,
         protected array $captchas,
         RendererInterface $viewRenderer,
-        ResolverInterface $viewResolver
+        ResolverInterface $viewResolver,
+        Context $context
     ) {
-        $this->viewRenderer = $viewRenderer;
-        $this->viewResolver = $viewResolver;
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
     }
 
     /**

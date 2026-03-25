@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\Layout;
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Config\Config;
@@ -44,7 +45,6 @@ use VuFind\Search\Memory;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Tags\TagsService;
-use VuFind\View\Helper\Bootstrap5\LayoutClass;
 
 use function get_class;
 use function in_array;
@@ -76,23 +76,23 @@ class Record implements DbServiceAwareInterface
     /**
      * Constructor.
      *
-     * @param TagsService       $tagsService   Tags service
-     * @param CoverRouter       $coverRouter   Cover router
-     * @param Memory            $searchMemory  Search memory
-     * @param Context           $contextHelper Context helper
-     * @param RendererInterface $viewRenderer  View renderer
-     * @param ResolverInterface $viewResolver  View resolver
-     * @param SearchTabs        $searchTabs    SearchTabs helper
-     * @param TransEsc          $transEsc      TransEsc helper
-     * @param Highlight         $highlight     Highlight helper
-     * @param AddEllipsis       $addEllipsis   AddEllipsis helper
-     * @param EscapeOrCleanHtml $escape        EscapeOrCleanHtml helper
-     * @param Truncate          $truncate      Truncate helper
-     * @param Auth              $auth          Auth helper
-     * @param Url               $url           Url helper
-     * @param ServerUrl         $serverUrl     ServerUrl helper
-     * @param LayoutClass       $layout        Layout helper
-     * @param ?Config           $config        Configuration from config.ini
+     * @param TagsService       $tagsService       Tags service
+     * @param CoverRouter       $coverRouter       Cover router
+     * @param Memory            $searchMemory      Search memory
+     * @param Context           $contextHelper     Context helper
+     * @param RendererInterface $viewRenderer      View renderer
+     * @param ResolverInterface $viewResolver      View resolver
+     * @param SearchTabs        $searchTabs        SearchTabs helper
+     * @param TransEsc          $transEsc          TransEsc helper
+     * @param Highlight         $highlight         Highlight helper
+     * @param AddEllipsis       $addEllipsis       AddEllipsis helper
+     * @param EscapeOrCleanHtml $escapeOrCleanHtml EscapeOrCleanHtml helper
+     * @param Truncate          $truncate          Truncate helper
+     * @param Auth              $auth              Auth helper
+     * @param Url               $url               Url helper
+     * @param ServerUrl         $serverUrl         ServerUrl helper
+     * @param LayoutClass       $layout            Layout helper
+     * @param ?Config           $config            Configuration from config.ini
      */
     public function __construct(
         protected TagsService $tagsService,
@@ -111,7 +111,7 @@ class Record implements DbServiceAwareInterface
         #[Autowire(container: 'ViewHelperManager')]
         protected AddEllipsis $addEllipsis,
         #[Autowire(container: 'ViewHelperManager')]
-        protected EscapeOrCleanHtml $escape,
+        protected EscapeOrCleanHtml $escapeOrCleanHtml,
         #[Autowire(container: 'ViewHelperManager')]
         protected Truncate $truncate,
         #[Autowire(container: 'ViewHelperManager')]
@@ -121,13 +121,11 @@ class Record implements DbServiceAwareInterface
         #[Autowire(container: 'ViewHelperManager')]
         protected \Laminas\View\Helper\ServerUrl $serverUrl,
         #[Autowire(container: 'ViewHelperManager')]
-        protected LayoutClass $layout,
+        protected Layout $layout,
         #[Autowire(config: 'config', configType: 'object')]
         protected ?Config $config = null
     ) {
-        $this->setContextHelper($contextHelper);
-        $this->viewRenderer = $viewRenderer;
-        $this->viewResolver = $viewResolver;
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
 
     /**
@@ -456,12 +454,13 @@ class Record implements DbServiceAwareInterface
             return $highlight($addEllipsis($highlightedTitle, $title));
         }
         if ('' !== trim($title)) {
-            $escape = $this->escape;
-            $truncate = $this->truncate;
-            return $escape($truncate($title, $maxLength), dataContext: 'title', renderingContext: 'link');
+            return ($this->escapeOrCleanHtml)(
+                ($this->truncate)($title, $maxLength),
+                dataContext: 'title',
+                renderingContext: 'link'
+            );
         }
-        $transEsc = $this->transEsc;
-        return $transEsc('Title not available');
+        return ($this->transEsc)('Title not available');
     }
 
     /**
@@ -691,7 +690,7 @@ class Record implements DbServiceAwareInterface
             ? true : $this->config->Site->$configField;
         $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
             ? true : $this->config->Site->mirrorThumbnailsRTL;
-        if ($this->layout->getRtl() && !$mirror) {
+        if (($this->layout)()->rtl && !$mirror) {
             $left = !$left;
         }
         return $left ? 'left' : 'right';
