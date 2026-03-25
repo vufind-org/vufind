@@ -745,8 +745,7 @@ class Record implements DbServiceAwareInterface
             'text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
-        $urlHelper = $this->url;
-        return $urlHelper('qrcode-show') . '?' . http_build_query($qrcode);
+        return ($this->url)('qrcode-show') . '?' . http_build_query($qrcode);
     }
 
     /**
