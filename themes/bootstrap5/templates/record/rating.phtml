@@ -28,7 +28,8 @@
   <?=$this->component('page-title', ['title' => $this->translate($ratingData['count'] === 1 ? 'rating_summary_single' : 'rating_summary', ['%%count%%' => $ratingData['count']])]);?>
   <div class="rating-breakdown">
     <?php foreach ($ratingData['groups'] as $group => $groupCount): ?>
-      <div class="rating-breakdown-stars" title="<?=$groupTitleTransEscAttr[$group]?>">
+      <div class="visually-hidden"><?=$groupTitleTransEscAttr[$group]?></div>
+      <div class="rating-breakdown-stars" aria-hidden="true" title="<?=$groupTitleTransEscAttr[$group]?>">
         <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['count' => 1, 'rating' => $group / 5 * 100]]);?>
       </div>
       <div class="rating-breakdown-percentage">
@@ -48,7 +49,6 @@
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
     <div class="form-group">
       <label class="form-label"><?=$this->transEsc('rating_prompt')?>:</label>
-      <div class="visually-hidden"><?=$this->transEsc('rating_instructions_screenreader')?></div>
       <?=$this->component('star-rating', ['ratingData' => $this->currentRating]);?>
     </div>
     <div class="form-group">
