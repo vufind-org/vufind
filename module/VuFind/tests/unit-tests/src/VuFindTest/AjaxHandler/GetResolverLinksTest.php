@@ -95,7 +95,9 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $mockPlugin->expects($this->once())
             ->method('supportsMoreOptionsLink')
             ->willReturn(false);
-        $rm = $this->container->createMock(PluginManager::class, ['get']);
+        $rm = $this->container->createMock(PluginManager::class);
+        $rm->expects($this->once())->method('has')->with('generic')
+            ->willReturn(true);
         $rm->expects($this->once())->method('get')->with('generic')
             ->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
