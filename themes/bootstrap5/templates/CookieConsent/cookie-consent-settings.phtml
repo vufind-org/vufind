@@ -33,7 +33,7 @@
         <?=$this->transEsc($categoryConfig['Title'] ?? '')?>
       </label>
       <div class="cookie-consent__category-description">
-        <?=$this->transEsc($categoryConfig['Description'] ?? '')?>
+        <?=$this->translate($categoryConfig['Description'] ?? '') // Description may contain HTML, e.g. links ?>
       </div>
       <div class="cookie-consent__category-details">
         <button class="btn btn-link icon-link cookie-consent__category-details-toggle collapsed"
