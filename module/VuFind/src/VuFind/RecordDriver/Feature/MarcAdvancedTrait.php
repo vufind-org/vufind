@@ -914,7 +914,7 @@ trait MarcAdvancedTrait
         if ($details['mode'] === 'msg') {
             // Map 'true' and 'false' to boolean equivalents:
             $msgMap = ['true' => true, 'false' => false];
-            return $msgMap[$details['params']] ?? $details['params'];
+            return $msgMap[$details['params'] ?? ''] ?? $details['params'];
         }
 
         // Standard case -- "marc" mode (extract subfield data):

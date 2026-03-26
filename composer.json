@@ -98,7 +98,7 @@
         "mpdf/mpdf": "v8.2.6",
         "paytrail/paytrail-php-sdk": "2.7.5",
         "pear/archive_tar": "^1.4",
-        "phing/phing": "3.1.0",
+        "phing/phing": "3.1.2",
         "ppito/laminas-whoops": "2.3.0",
         "psr/log": "^3.0",
         "ramsey/uuid": "^4.7",
