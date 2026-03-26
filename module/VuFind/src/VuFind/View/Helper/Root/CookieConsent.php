@@ -131,7 +131,7 @@ class CookieConsent implements TranslatorAwareInterface
     /**
      * Render cookie consent.
      *
-     * @param ?string $type Dialog type (only valid option is 'bottom')
+     * @param ?string $type Dialog type (only valid option is 'bottom'; null value will disable cookie consent)
      *
      * @return string
      */
