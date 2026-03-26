@@ -577,7 +577,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     protected function getAttributeValue(object $userInfo, string $attribute): string
     {
         $attributeName = $this->oidcConfig->attributes[$attribute] ?? $attribute;
-        return $userInfo->$attributeName ?? '';
+        return (string)($userInfo->attributes->$attributeName ?? $userInfo->$attributeName ?? '');
     }
 
     /**

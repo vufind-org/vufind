@@ -17,7 +17,7 @@
 
 <div class="searchHomeContent">
   <?php $this->slot('search-home-hero')->start() ?>
-    <?=$this->render('search/searchbox.phtml', ['focusOnLoad' => true])?>
+    <?=$this->context($this)->renderInContext('search/searchbox.phtml', ['focusOnLoad' => true])?>
   <?=$this->slot('search-home-hero')->end() ?>
 </div>
 

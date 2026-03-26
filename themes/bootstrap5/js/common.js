@@ -1,7 +1,7 @@
 /*global grecaptcha, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, addRecordRatingFromUserList */
 
-var VuFind = (function VuFind() {
+var VuFind = (function VuFindModule() {
   var defaultSearchBackend = null;
   var path = null;
   var _initialized = false;
@@ -850,7 +850,7 @@ function deparam(url) {
  */
 function getUrlRoot(url) {
   // Parse out the base URL for the current record:
-  var urlroot = null;
+  var urlroot;
   var urlParts = url.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var slashSlash = urlWithoutFragment.indexOf('//');
