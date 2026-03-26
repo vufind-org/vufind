@@ -59,7 +59,7 @@
         "firebase/php-jwt": "^7.0.0",
         "guzzlehttp/guzzle": "7.10.0",
         "jaybizzle/crawler-detect": "^1.2",
-        "laminas/laminas-cache": "3.13.0",
+        "laminas/laminas-cache": "3.14.0",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",
         "laminas/laminas-cache-storage-adapter-filesystem": "^2.0",
         "laminas/laminas-cache-storage-adapter-memcached": "^2.0",

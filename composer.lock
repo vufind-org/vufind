@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2782735f25c80daa65058932e186950",
+    "content-hash": "a7e938c0e120b1bca53d4c751b9d209b",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2833,16 +2833,16 @@
         },
         {
             "name": "laminas/laminas-cache",
-            "version": "3.13.0",
+            "version": "3.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cache.git",
-                "reference": "8225b16d03bbff2ecf2bd5a4f38c39ca47389e50"
+                "reference": "c4b556ba0e0ba6f9aac245b89f3245138e4e939b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cache/zipball/8225b16d03bbff2ecf2bd5a4f38c39ca47389e50",
-                "reference": "8225b16d03bbff2ecf2bd5a4f38c39ca47389e50",
+                "url": "https://api.github.com/repos/laminas/laminas-cache/zipball/c4b556ba0e0ba6f9aac245b89f3245138e4e939b",
+                "reference": "c4b556ba0e0ba6f9aac245b89f3245138e4e939b",
                 "shasum": ""
             },
             "require": {
@@ -2850,7 +2850,7 @@
                 "laminas/laminas-eventmanager": "^3.4",
                 "laminas/laminas-servicemanager": "^3.21",
                 "laminas/laminas-stdlib": "^3.6",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
                 "psr/cache": "^1.0",
                 "psr/clock": "^1.0",
                 "psr/simple-cache": "^1.0",
@@ -2930,7 +2930,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-01-21T12:32:41+00:00"
+            "time": "2026-02-05T15:48:04+00:00"
         },
         {
             "name": "laminas/laminas-cache-storage-adapter-blackhole",
