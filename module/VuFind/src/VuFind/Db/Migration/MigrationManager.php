@@ -198,7 +198,7 @@ class MigrationManager
         // Try to extract the target version from the migration path, but use the overall target version
         // as a fallback if we get something unexpected:
         $targetVersion = dirname($name);
-        if (!preg_match('/\d(\.\d)+/', $targetVersion)) {
+        if (!preg_match('/^\d+(\.\d+)+$/', $targetVersion)) {
             $targetVersion = $this->targetVersion;
         }
         $writeToDatabase = $connection !== null;
