@@ -528,6 +528,32 @@ CREATE TABLE log_table (
   PRIMARY KEY (id)
 );
 
+--
+-- Table structure for table `notice`
+
+CREATE TABLE notice (
+  id SERIAL,
+  enabled boolean NOT NULL DEFAULT '1',
+  priority int NOT NULL DEFAULT 0,
+  position varchar(50) DEFAULT NULL,
+  style varchar(50) DEFAULT NULL,
+  content_type varchar(50) NOT NULL DEFAULT 'text',
+  conditions JSON DEFAULT NULL,
+  created datetime NOT NULL,
+  PRIMARY KEY (id)
+);
+
+--
+-- Table structure for table `notice_translation`
+
+CREATE TABLE notice_translation (
+  notice_id int NOT NULL,
+  language varchar(50) NOT NULL,
+  content text DEFAULT NULL,
+  PRIMARY KEY (notice_id, language)
+);
+CREATE INDEX notice_translation_notice_id_idx ON notice_translation (notice_id);
+
 -- --------------------------------------------------------
 
 --
@@ -635,3 +661,9 @@ ADD CONSTRAINT audit_event_ibfk_2 FOREIGN KEY (payment_id) REFERENCES "payment" 
 ---
 ALTER TABLE api_key
 ADD CONSTRAINT api_key_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+
+---
+-- Constraints for table notice_translation
+---
+ALTER TABLE notice_translation
+ADD CONSTRAINT notice_translation_ibfk_1 FOREIGN KEY (notice_id) REFERENCES "notice" (id) ON DELETE CASCADE;

@@ -87,35 +87,39 @@ class AdminMenu extends AbstractMenu
                 - name: home
                   label: Home
                   route: admin
-            
+
                 - name: socialstats
                   label: Social Statistics
                   route: admin/social
-            
+
                 - name: config
                   label: Configuration
                   route: admin/config
-            
+
                 - name: maintenance
                   label: System Maintenance
                   route: admin/maintenance
-            
+
                 - name: tags
                   label: Tag Maintenance
                   route: admin/tags
-            
+
                 - name: feedback
                   label: Feedback Management
                   route: admin/feedback
-            
+
                 - name: overdrive
                   label: od_admin_menu
                   route: admin/overdrive
                   checkMethod: checkShowOverdrive
-            
+
                 - name: payment
                   label: Online Payment
                   route: admin/payment
+
+                - name: notices
+                  label: Notices
+                  route: admin/notices
             YAML;
         return Yaml::parse($yaml);
     }

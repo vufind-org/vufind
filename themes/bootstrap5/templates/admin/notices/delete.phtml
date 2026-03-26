@@ -1,0 +1,32 @@
+<?php
+  // Set up page title:
+  $this->headTitle($this->translate('Delete'));
+
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->reset();
+  $this->breadcrumbs()->add($this->translate('Admin'), $this->url('admin'));
+  $this->breadcrumbs()->add($this->translate('Notices'), $this->url('admin/notices'));
+  $this->breadcrumbs()->add(
+      $this->translate('Delete'),
+      $this->url('admin/notices', ['action' => 'Delete', 'notice_id' => $this->noticeId])
+  );
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h1><?=$this->transEsc('Delete')?></h1>
+  <?=$this->flashmessages()?>
+  <p><?=$this->translate('confirm_delete_notice_text')?></p>
+  <div>
+    <?=$this->notices()->renderNotice($this->notice)?>
+  </div>
+  <form method="post">
+    <div class="form-group">
+      <button class="btn btn-default" type="submit" name="cancel"><?=$this->transEsc('confirm_dialog_no')?></button>
+      <button class="btn btn-danger" type="submit" name="confirm"><?=$this->transEsc('Delete')?></button>
+    </div>
+  </form>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
+</div>
+

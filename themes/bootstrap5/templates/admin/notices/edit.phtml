@@ -1,0 +1,21 @@
+<?php
+  $this->headTitle($this->translate('Edit Notice'));
+
+  $this->breadcrumbs()->reset();
+  $this->breadcrumbs()->add($this->translate('Admin'), $this->url('admin'));
+  $this->breadcrumbs()->add($this->translate('Notices'), $this->url('admin/notices'));
+  $this->breadcrumbs()->add(
+      $this->translate('Edit'),
+      $this->url('admin/notices', ['action' => 'Edit', 'notice_id' => $this->noticeId])
+  );
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h1><?=$this->transEsc('Edit Notice')?></h1>
+  <?=$this->flashmessages()?>
+  <?=$this->partial('form', ['formData' => $this->formData])?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
+</div>

@@ -89,3 +89,27 @@
     margin-top: 1rem;
   }
 }
+
+.content-list {
+  table-layout: fixed;
+
+  .content-list-edit-col  {
+    width: 25%;
+  }
+
+  .content-edit-button {
+    padding: 0 2px 0 0;
+    border: 0;
+    vertical-align: unset;
+  }
+}
+
+.content-form-tabs {
+  margin-bottom: 15px;
+
+  textarea.form-control {
+    max-width: 100%;
+  }
+}
+
+

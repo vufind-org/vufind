@@ -1,0 +1,38 @@
+<?php
+  $this->headTitle($this->translate('Notices'));
+
+  $this->breadcrumbs()->reset();
+  $this->breadcrumbs()->add($this->translate('Admin'), $this->url('admin'));
+  $this->breadcrumbs()->add($this->translate('Notices'), $this->url('admin/notices'));
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h1><?=$this->transEsc('Notices')?></h1>
+  <?=$this->flashmessages()?>
+  <table class="table table-striped content-list notice-list">
+    <thead>
+    <tr>
+      <th class="content-list-edit-col"><?=$this->transEsc('Edit')?></th>
+      <th><?=$this->transEsc('Notice')?></th>
+    </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($this->noticeList ?? [] as $notice): ?>
+        <tr class="notice-row" data-notice-id="<?=$this->escapeHtmlAttr($notice['id'])?>">
+          <td>
+            <a class="content-edit-button" href="<?=$this->url('admin/notices', ['action' => 'Edit'])?>?notice_id=<?=$notice['id']?>" title="<?=$this->transEsc('Edit')?>"><?=$this->icon('content-edit')?></a>
+            <a class="content-edit-button" href="<?=$this->url('admin/notices', ['action' => 'Delete'])?>?notice_id=<?=$notice['id']?>" title="<?=$this->transEsc('Delete')?>"><?=$this->icon('content-delete')?></a>
+          </td>
+          <td>
+            <?=$this->notices()->renderNotice($notice);?>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  <a href="<?=$this->url('admin/notices', ['action' => 'Add'])?>"><?=$this->transEsc('Add New Notice')?></a>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
+</div>

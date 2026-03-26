@@ -89,6 +89,16 @@ $config = [
                             ],
                         ],
                     ],
+                    'notices' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Notices[/:action][?notice_id=:notice_id]',
+                            'defaults' => [
+                                'controller' => 'AdminNotices',
+                                'action'     => 'Home',
+                            ],
+                        ],
+                    ],
                     'script' => [
                         'type' => 'Laminas\Router\Http\Segment',
                         'options' => [
@@ -159,6 +169,18 @@ $config = [
                             ],
                         ],
                     ],
+                ],
+            ],
+        ],
+    ],
+    'vufind' => [
+        'plugin_managers' => [
+            'action' => [
+                'autodiscovery_namespaces' => [
+                    'VuFindAdmin\Action',
+                ],
+                'category_aliases' => [
+                    'Adminnotices' => 'Notices',
                 ],
             ],
         ],
