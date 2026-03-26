@@ -201,12 +201,17 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         // Apply MySQL-specific adjustments:
         if ($driver == 'pdo_mysql') {
             if (PHP_VERSION_ID >= 80400) {
+                // @phpstan-ignore class.notFound
                 $driverOptions[Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT]
                     = $this->config->Database->verify_server_certificate ?? false;
                 $sslKeyMap = [
+                    // @phpstan-ignore class.notFound
                     'client_key' => Pdo\Mysql::ATTR_SSL_KEY,
+                    // @phpstan-ignore class.notFound
                     'client_cert' => Pdo\Mysql::ATTR_SSL_CERT,
+                    // @phpstan-ignore class.notFound
                     'ca_cert' => Pdo\Mysql::ATTR_SSL_CA,
+                    // @phpstan-ignore class.notFound
                     'ca_path' => Pdo\Mysql::ATTR_SSL_CAPATH,
                 ];
             } else {
