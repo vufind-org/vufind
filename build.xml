@@ -291,17 +291,17 @@
   <!-- ESLint -->
   <target name="eslint">
     <exec executable="npx" escape="false" checkreturn="true" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js" />
+      <arg line="eslint ${srcdir}/themes/**/*.js" />
     </exec>
   </target>
   <target name="eslint-fix">
     <exec executable="npx" escape="false" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --fix" />
+      <arg line="eslint ${srcdir}/themes/**/*.js --fix" />
     </exec>
   </target>
   <target name="eslint-report">
     <exec executable="npx" escape="false">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
+      <arg line="eslint ${srcdir}/themes/**/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
     </exec>
   </target>
 
