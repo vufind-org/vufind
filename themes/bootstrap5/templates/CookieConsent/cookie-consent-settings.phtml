@@ -69,10 +69,10 @@
                     <?=$this->escapeHtml($name)?>
                   </td>
                   <td data-label="<?=$this->transEsc('CookieConsent::Domain')?>">
-                    <?=$this->translate($cookie['Domain'] ?? '')?>
+                    <?=$this->transEsc($cookie['Domain'] ?? '')?>
                   </td>
                   <td data-label="<?=$this->transEsc('CookieConsent::Description')?>">
-                    <?=$this->translate($cookie['Description'] ?? '')?>
+                    <?=$this->translate($cookie['Description'] ?? '') // Description may contain HTML, e.g. links ?>
                   </td>
                   <td data-label="<?=$this->transEsc('CookieConsent::Expiration')?>">
                     <?php if (null !== ($expiration = $cookie['Expiration'] ?? null)): ?>
