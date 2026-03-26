@@ -279,7 +279,6 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         }
         $mockPm = $this->createMock(\VuFind\Resolver\Driver\PluginManager::class);
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
-        $openUrl->setView($this->getPhpRenderer());
         return $openUrl;
     }
 }

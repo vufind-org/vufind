@@ -29,9 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\PluginManager as RelatedManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Related records view helper.
@@ -42,7 +45,7 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Related extends \Laminas\View\Helper\AbstractHelper
+class Related
 {
     use ClassBasedTemplateRendererTrait;
 
@@ -52,12 +55,20 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      * @param RelatedManager         $relatedPluginManager Plugin manager for related record modules
      * @param ConfigManagerInterface $configManager        Configuration manager
      * @param OptionsManager         $optionsManager       Search options plugin manager
+     * @param Context                $contextHelper        Context helper
+     * @param RendererInterface      $viewRenderer         View renderer
+     * @param ResolverInterface      $viewResolver         View resolver
      */
     public function __construct(
         protected RelatedManager $relatedPluginManager,
         protected ConfigManagerInterface $configManager,
-        protected OptionsManager $optionsManager
+        protected OptionsManager $optionsManager,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $contextHelper,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver
     ) {
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
 
     /**
@@ -119,5 +130,15 @@ class Related extends \Laminas\View\Helper\AbstractHelper
         $className = $related::class;
         $context = ['related' => $related];
         return $this->renderClassTemplate($template, $className, $context);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

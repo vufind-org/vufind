@@ -34,6 +34,7 @@ use Doctrine\DBAL\Exception\TableNotFoundException;
 use RuntimeException;
 use VuFind\Db\Connection;
 
+use function dirname;
 use function get_class;
 
 /**
@@ -194,6 +195,12 @@ class MigrationManager
         if ($name === '11.0/000-add-migrations-table.sql' && $status !== 'success') {
             return '';
         }
+        // Try to extract the target version from the migration path, but use the overall target version
+        // as a fallback if we get something unexpected:
+        $targetVersion = dirname($name);
+        if (!preg_match('/^\d+(\.\d+)+$/', $targetVersion)) {
+            $targetVersion = $this->targetVersion;
+        }
         $writeToDatabase = $connection !== null;
         $connection ??= $this->connection;
         $queryBuilder = $connection->createQueryBuilder();
@@ -202,7 +209,7 @@ class MigrationManager
                 [
                     'name' => $connection->quote($name),
                     'status' => $connection->quote($status),
-                    'target_version' => $connection->quote($this->targetVersion),
+                    'target_version' => $connection->quote($targetVersion),
                 ]
             );
         $sql = (string)$queryBuilder;

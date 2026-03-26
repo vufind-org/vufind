@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Config\Config;
 use VuFind\Resolver\Driver\PluginManager;
 
 use function count;
@@ -44,36 +45,8 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class OpenUrl extends \Laminas\View\Helper\AbstractHelper
+class OpenUrl
 {
-    /**
-     * Context helper.
-     *
-     * @var \VuFind\View\Helper\Root\Context
-     */
-    protected $context;
-
-    /**
-     * VuFind OpenURL configuration.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * OpenURL rules.
-     *
-     * @var array
-     */
-    protected $openUrlRules;
-
-    /**
-     * Resolver plugin manager.
-     *
-     * @var PluginManager
-     */
-    protected $resolverPluginManager;
-
     /**
      * Current RecordDriver.
      *
@@ -91,21 +64,17 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param Context               $context       Context helper
-     * @param array                 $openUrlRules  VuFind OpenURL rules
-     * @param PluginManager         $pluginManager Resolver plugin manager
-     * @param \VuFind\Config\Config $config        VuFind OpenURL config
+     * @param Context       $context       Context helper
+     * @param array         $openUrlRules  VuFind OpenURL rules
+     * @param PluginManager $pluginManager Resolver plugin manager
+     * @param ?Config       $config        VuFind OpenURL config
      */
     public function __construct(
-        Context $context,
-        $openUrlRules,
-        PluginManager $pluginManager,
-        $config = null
+        protected Context $context,
+        protected array $openUrlRules,
+        protected PluginManager $pluginManager,
+        protected ?Config $config = null
     ) {
-        $this->context = $context;
-        $this->openUrlRules = $openUrlRules;
-        $this->resolverPluginManager = $pluginManager;
-        $this->config = $config;
     }
 
     /**
@@ -215,9 +184,9 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // instantiate the resolver plugin to get a proper resolver link
         $resolver = $this->config->resolver ?? 'other';
         $openurl = $this->recordDriver->getOpenUrl();
-        if ($this->resolverPluginManager->has($resolver)) {
+        if ($this->pluginManager->has($resolver)) {
             $resolverObj = new \VuFind\Resolver\Connection(
-                $this->resolverPluginManager->get($resolver)
+                $this->pluginManager->get($resolver)
             );
             $resolverUrl = $resolverObj->getResolverUrl($openurl);
             $moreOptionsUrl = $resolverObj->supportsMoreOptionsLink()
@@ -248,8 +217,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         $this->addImageBasedParams($imagebased, $params);
 
         // Render the subtemplate:
-        return ($this->context)($this->getView())
-            ->renderInContext('Helpers/openurl.phtml', $params);
+        return $this->context->renderInContext('Helpers/openurl.phtml', $params);
     }
 
     /**
@@ -325,7 +293,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     {
         // special case if no rules are defined at all assume that any record is
         // valid for openUrls
-        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+        if (!$this->openUrlRules) {
             return true;
         }
         foreach ($this->openUrlRules as $rules) {
