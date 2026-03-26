@@ -117,6 +117,29 @@ export default [
       "jsdoc/require-yields-check": "error",
       "jsdoc/tag-lines": "error",
       "jsdoc/valid-types": "error"
+      // Disabled
+      //"jsdoc/check-examples": "error",
+      //"jsdoc/check-indentation": "error",
+      //"jsdoc/check-line-alignment": "error",
+      //"jsdoc/check-template-names": "error",
+      //"jsdoc/check-syntax": "error",
+      //"jsdoc/informative-docs": "error",
+      //"jsdoc/match-description": "error",
+      //"jsdoc/no-bad-blocks": "error",
+      //"jsdoc/no-blank-block-descriptions": "error",
+      //"jsdoc/no-defaults": "error",
+      //"jsdoc/no-missing-syntax": "error",
+      //"jsdoc/no-restricted-syntax": "error",
+      //"jsdoc/no-types": "error",
+      //"jsdoc/require-asterisk-prefix": "error",
+      //"jsdoc/require-description": "error",
+      //"jsdoc/require-description-complete-sentence": "error",
+      //"jsdoc/require-example": "error",
+      //"jsdoc/require-file-overview": "error",
+      //"jsdoc/require-hyphen-before-param-description": "error",
+      //"jsdoc/require-template": "error",
+      //"jsdoc/require-throws": "error",
+      //"jsdoc/sort-tags": "error",
     }
   }
 ];
