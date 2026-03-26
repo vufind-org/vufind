@@ -100,7 +100,6 @@ class CookieConsent implements TranslatorAwareInterface
      * @param Request           $request           Request
      * @param RendererInterface $renderer          View renderer
      */
-    #[Autowire()]
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
