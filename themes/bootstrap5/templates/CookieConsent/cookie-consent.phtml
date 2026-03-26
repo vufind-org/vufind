@@ -11,7 +11,7 @@
     $cookieConsentDivAttrs['class'] .= ' hidden';
   } else {
     $cookieConsentDivAttrs['class'] .= ' js-loaded';
-    // Make sure we get focus even if not the first in DOM:
+    // Make sure we get focus even if not the first in DOM for discoverability with screen readers:
     $cookieConsentDivAttrs['data-focus-on-load'] = 'important';
   }
 ?>
@@ -19,8 +19,6 @@
   <div<?=$this->htmlAttributes($cookieConsentDivAttrs)?>>
     <?php if (!$consentGiven): ?>
       <?=$this->render('CookieConsent/cookie-consent-overlay.phtml')?>
-      <?php // Set focus for discoverability with screen readers: ?>
-      <?=$this->assetManager()->outputInlineScriptString('document.querySelector(".js-cookie-consent").focus();'); ?>
     <?php else: ?>
       <div class="cookie-consent__overlay">
         <div class="load-indicator">
