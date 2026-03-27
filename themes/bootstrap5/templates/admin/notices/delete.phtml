@@ -3,13 +3,9 @@
   $this->headTitle($this->translate('Delete'));
 
   // Set up breadcrumbs:
-  $this->breadcrumbs()->reset();
-  $this->breadcrumbs()->add($this->translate('Admin'), $this->url('admin'));
-  $this->breadcrumbs()->add($this->translate('Notices'), $this->url('admin/notices'));
-  $this->breadcrumbs()->add(
-      $this->translate('Delete'),
-      $this->url('admin/notices', ['action' => 'Delete', 'notice_id' => $this->noticeId])
-  );
+  $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
+    ->add($this->translate('Notices'), $this->url('admin/notices'))
+    ->add($this->translate('Delete'), active: true);
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h1><?=$this->transEsc('Delete')?></h1>
