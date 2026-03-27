@@ -1,10 +1,9 @@
 <?php
   $this->headTitle($this->translate('Add Notice'));
 
-  $this->breadcrumbs()->reset();
-  $this->breadcrumbs()->add($this->translate('Admin'), $this->url('admin'));
-  $this->breadcrumbs()->add($this->translate('Notices'), $this->url('admin/notices'));
-  $this->breadcrumbs()->add($this->translate('Add'), $this->url('admin/notices', ['action' => 'Add']));
+  $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
+    ->add($this->translate('Notices'), $this->url('admin/notices'));
+    ->add($this->translate('Add'), active: true);
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
