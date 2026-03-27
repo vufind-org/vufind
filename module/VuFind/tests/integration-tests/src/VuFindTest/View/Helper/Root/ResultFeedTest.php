@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ResultFeed Test Class
+ * ResultFeed Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Integration\View\Helper\Root;
 use VuFind\View\Helper\Root\ResultFeed;
 
 /**
- * ResultFeed Test Class
+ * ResultFeed Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -62,7 +62,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get plugins to register to support view helper being tested
+     * Get plugins to register to support view helper being tested.
      *
      * @return array
      */
@@ -106,7 +106,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test feed generation
+     * Test feed generation.
      *
      * @param array  $options      Options to pass to the ResultFeed object.
      * @param string $expectedLink The link URL we expect to find in the first result in the feed.

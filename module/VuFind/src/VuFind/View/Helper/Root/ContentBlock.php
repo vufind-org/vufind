@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ContentBlock view helper
+ * ContentBlock view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * ContentBlock view helper
+ * ContentBlock view helper.
  *
  * @category VuFind
  * @package  View_Helpers

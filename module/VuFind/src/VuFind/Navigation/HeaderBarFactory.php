@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HeaderBar section plugin factory
+ * HeaderBar section plugin factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * HeaderBar section plugin factory
+ * HeaderBar section plugin factory.
  *
  * @category VuFind
  * @package  Navigation
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class HeaderBarFactory extends AbstractMenuFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

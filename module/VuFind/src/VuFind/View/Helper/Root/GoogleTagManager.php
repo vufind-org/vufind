@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleTagManager view helper
+ * GoogleTagManager view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * GoogleTagManager view helper
+ * GoogleTagManager view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,14 +41,14 @@ namespace VuFind\View\Helper\Root;
 class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * GTM Container ID (false if disabled)
+     * GTM Container ID (false if disabled).
      *
      * @var string|bool
      */
     protected $gtmContainerId;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|bool $gtmContainerId Container ID (false if disabled)
      */

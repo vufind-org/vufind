@@ -1,7 +1,7 @@
 <?php
 
 /**
- * XC NCIP Toolkit (v2) ILS Driver
+ * XC NCIP Toolkit (v2) ILS Driver.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function in_array;
 use function is_array;
 
 /**
- * XC NCIP Toolkit (v2) ILS Driver
+ * XC NCIP Toolkit (v2) ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -59,49 +59,49 @@ class XCNCIP2 extends AbstractBase implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Is this a consortium? Default: false
+     * Is this a consortium? Default: false.
      *
      * @var bool
      */
     protected $consortium = false;
 
     /**
-     * Agency definitions (consortial) - Array list of consortium members
+     * Agency definitions (consortial) - Array list of consortium members.
      *
      * @var array
      */
     protected $agency = [];
 
     /**
-     * NCIP server URL
+     * NCIP server URL.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * Pickup locations
+     * Pickup locations.
      *
      * @var array
      */
     protected $pickupLocations = null;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Config file path resolver
+     * Config file path resolver.
      *
      * @var PathResolver
      */
     protected $pathResolver;
 
     /**
-     * From agency id
+     * From agency id.
      *
      * @var string
      */
@@ -109,7 +109,7 @@ class XCNCIP2 extends AbstractBase implements
 
     /**
      * Statuses of available items lowercased status string from CirculationStatus
-     * NCIP element
+     * NCIP element.
      *
      * @var string[]
      */
@@ -117,42 +117,42 @@ class XCNCIP2 extends AbstractBase implements
 
     /**
      * Statuses of active requests, lowercased status strings from RequestStatusType
-     * NCIP element
+     * NCIP element.
      *
      * @var string[]
      */
     protected $activeRequestStatuses = ['available for pickup', 'in process'];
 
     /**
-     * Lowercased status string for requests available for pickup by patron
+     * Lowercased status string for requests available for pickup by patron.
      *
      * @var string
      */
     protected $requestAvailableStatus = 'available for pickup';
 
     /**
-     * Lowercased request type strings identifying holds
+     * Lowercased request type strings identifying holds.
      *
      * @var string[]
      */
     protected $holdRequestTypes = ['hold', 'recall'];
 
     /**
-     * Lowercased request type strings identifying storage retrievals
+     * Lowercased request type strings identifying storage retrievals.
      *
      * @var string[]
      */
     protected $storageRetrievalRequestTypes = ['stack retrieval'];
 
     /**
-     * Lowercased item use restriction types we consider to be holdable
+     * Lowercased item use restriction types we consider to be holdable.
      *
      * @var string[]
      */
     protected $notHoldableRestriction = ['not for loan'];
 
     /**
-     * Lowercased circulation statuses we consider not be holdable
+     * Lowercased circulation statuses we consider not be holdable.
      *
      * @var string[]
      */
@@ -161,7 +161,7 @@ class XCNCIP2 extends AbstractBase implements
     ];
 
     /**
-     * Are renewals disabled for this driver instance? Defaults to false
+     * Are renewals disabled for this driver instance? Defaults to false.
      *
      * @var bool
      */
@@ -170,7 +170,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Which subelements of Problem element show to user when placing hold fails.
      * Possible values are: 'ProblemType', 'ProblemDetail', 'ProblemElement',
-     * 'ProblemValue'
+     * 'ProblemValue'.
      *
      * @var string[]
      */
@@ -210,7 +210,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * L1 cache for NCIP responses to save some http connections. Responses are
      * save as in following structure:
-     * [ 'ServiceName' => [ 'someId' => \SimpleXMLElement ] ]
+     * [ 'ServiceName' => [ 'someId' => \SimpleXMLElement ] ].
      *
      * @var array
      */
@@ -219,42 +219,42 @@ class XCNCIP2 extends AbstractBase implements
     ];
 
     /**
-     * If the NCIP need an authorization using OAuth2
+     * If the NCIP need an authorization using OAuth2.
      *
      * @var bool
      */
     protected $useOAuth2 = false;
 
     /**
-     * Use HTTP basic authorization when getting OAuth2 token
+     * Use HTTP basic authorization when getting OAuth2 token.
      *
      * @var bool
      */
     protected $tokenBasicAuth = false;
 
     /**
-     * If the NCIP need an authorization using HTTP Basic
+     * If the NCIP need an authorization using HTTP Basic.
      *
      * @var bool
      */
     protected $useHttpBasic = false;
 
     /**
-     * HTTP Basic username
+     * HTTP Basic username.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * HTTP Basic password
+     * HTTP Basic password.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Mapping block messages from NCIP API to VuFind internal values
+     * Mapping block messages from NCIP API to VuFind internal values.
      *
      * @var array
      */
@@ -271,7 +271,7 @@ class XCNCIP2 extends AbstractBase implements
     ];
 
     /**
-     * Domain used to translate messages from ILS
+     * Domain used to translate messages from ILS.
      *
      * @var string
      */
@@ -304,7 +304,7 @@ class XCNCIP2 extends AbstractBase implements
     protected $itemUseRestrictionTypesForStatus = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      * @param PathResolver           $pathResolver  Config file path resolver
@@ -398,7 +398,7 @@ class XCNCIP2 extends AbstractBase implements
 
     /**
      * Load pickup locations from file or from NCIP responder - it depends on
-     * configuration
+     * configuration.
      *
      * @throws ILSException
      * @return void
@@ -541,7 +541,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get a new or cached OAuth2 token (type + token)
+     * Get a new or cached OAuth2 token (type + token).
      *
      * @param bool $renew Force renewal of token
      *
@@ -758,7 +758,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -824,7 +824,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -914,7 +914,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Consortial Holding
+     * Get Consortial Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * consortial record.
@@ -1012,7 +1012,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -1047,7 +1047,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1066,7 +1066,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1121,7 +1121,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1225,7 +1225,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1290,7 +1290,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Patron requests by type
+     * Get Patron requests by type.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1373,7 +1373,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1389,7 +1389,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1485,7 +1485,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -1512,7 +1512,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
@@ -1528,7 +1528,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -1542,7 +1542,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -1556,7 +1556,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -1570,7 +1570,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -1643,7 +1643,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in HorizonXMLAPI.ini
      *
@@ -1664,7 +1664,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Return patron blocks
+     * Return patron blocks.
      *
      * @param array $patron Patron data from patronLogin method
      *
@@ -1692,7 +1692,7 @@ class XCNCIP2 extends AbstractBase implements
 
     /**
      * Helper function to distinguish if blocks are really blocking patron from
-     * actions on ILS, or if they are more like notifies
+     * actions on ILS, or if they are more like notifies.
      *
      * @param array $patron Patron from patronLogin
      *
@@ -1712,7 +1712,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -1741,7 +1741,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -1755,7 +1755,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Check if storage retrieval request available
+     * Check if storage retrieval request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -1773,7 +1773,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Place Storage Retrieval Request (Call Slip)
+     * Place Storage Retrieval Request (Call Slip).
      *
      * Attempts to place a call slip request on a particular item and returns
      * an array with result details
@@ -1789,7 +1789,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * This function returns the item id as a string which is then used
      * as submitted form data in checkedOut.php. This value is then extracted by
@@ -1806,7 +1806,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -1824,7 +1824,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Place a general request
+     * Place a general request.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -1898,7 +1898,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * General cancel request method
+     * General cancel request method.
      *
      * Attempts to Cancel a request on a particular item. The data in
      * $cancelDetails['details'] is determined by getCancelRequestDetails().
@@ -1968,7 +1968,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -1984,7 +1984,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Cancel Request Details
+     * Get Cancel Request Details.
      *
      * General method for getting details for cancel requests
      *
@@ -2003,7 +2003,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * This function returns the item id and recall id as a string
      * separated by a pipe, which is then submitted as form data in Hold.php. This
@@ -2023,7 +2023,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Cancel Storage Retrieval Requests (Call Slips)
+     * Cancel Storage Retrieval Requests (Call Slips).
      *
      * Attempts to Cancel a call slip on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -2040,7 +2040,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Cancel Storage Retrieval Request (Call Slip) Details
+     * Get Cancel Storage Retrieval Request (Call Slip) Details.
      *
      * This function returns the item id and call slip id as a
      * string separated by a pipe, which is then submitted as form data. This
@@ -2060,7 +2060,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -2190,7 +2190,7 @@ class XCNCIP2 extends AbstractBase implements
 
     /**
      * Helper function to build the request XML to request an item
-     * (Hold, Storage Retrieval, etc)
+     * (Hold, Storage Retrieval, etc).
      *
      * @param string $username         Username for login
      * @param string $password         Password for login
@@ -2270,7 +2270,7 @@ class XCNCIP2 extends AbstractBase implements
 
     /**
      * Helper function to build the request XML to log in a user
-     * and/or retrieve loaned items / request information
+     * and/or retrieve loaned items / request information.
      *
      * @param string $username       Username for login
      * @param string $password       Password for login
@@ -2297,7 +2297,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get LookupAgency Request XML message
+     * Get LookupAgency Request XML message.
      *
      * @param string|null $agency Agency Id
      *
@@ -2325,7 +2325,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Create Lookup Item Request
+     * Create Lookup Item Request.
      *
      * @param string  $itemId       Item identifier
      * @param ?string $idType       Item identifier type
@@ -2355,7 +2355,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get InitiationHeader element XML string
+     * Get InitiationHeader element XML string.
      *
      * @param string $agency Agency of NCIP responder
      *
@@ -2378,7 +2378,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Helper method for creating XML header and main element start
+     * Helper method for creating XML header and main element start.
      *
      * @return string
      */
@@ -2390,7 +2390,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get XML string for AuthenticationInput element
+     * Get XML string for AuthenticationInput element.
      *
      * @param string $username User login
      * @param string $password User password
@@ -2414,7 +2414,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get ItemId element XML
+     * Get ItemId element XML.
      *
      * @param string      $agency Agency id
      * @param string      $itemId Item id
@@ -2435,7 +2435,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get UserId element XML
+     * Get UserId element XML.
      *
      * @param string $patronAgency Patron agency id
      * @param string $patronId     Internal patron identifier
@@ -2456,7 +2456,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get request type elements XML
+     * Get request type elements XML.
      *
      * @param string $type  Request type
      * @param string $scope Request type scope (defaults to 'Bibliographic Item')
@@ -2471,7 +2471,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get BibliographicId element
+     * Get BibliographicId element.
      *
      * @param string $id Bibliographic item id
      *
@@ -2491,7 +2491,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Throw an exception if an NCIP error is found
+     * Throw an exception if an NCIP error is found.
      *
      * @param \SimpleXMLElement $response from NCIP call
      *
@@ -2509,7 +2509,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Register namespace(s) for an XML element/tree
+     * Register namespace(s) for an XML element/tree.
      *
      * @param \SimpleXMLElement $element Element to register namespace for
      *
@@ -2521,7 +2521,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Convert a date to display format
+     * Convert a date to display format.
      *
      * @param string $date Date and time string
      *
@@ -2533,7 +2533,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Convert a time to display format
+     * Convert a time to display format.
      *
      * @param string $date Date and time string
      *
@@ -2545,7 +2545,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Convert datetime to display format
+     * Convert datetime to display format.
      *
      * @param string $dateString Datetime string
      * @param string $dateOrTime Desired datetime part, could be 'date' or 'time'
@@ -2578,7 +2578,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Hold Type
+     * Get Hold Type.
      *
      * @param string $status Status string from CirculationStatus NCIP element
      *
@@ -2630,7 +2630,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Check if item is holdable
+     * Check if item is holdable.
      *
      * @param \SimpleXMLElement $itemInformation Item information element
      *
@@ -2661,7 +2661,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Determine ToAgencyId
+     * Determine ToAgencyId.
      *
      * @param array|string|null $agency List of available (configured) agencies or
      * Agency Id
@@ -2681,7 +2681,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get Lookup user response
+     * Get Lookup user response.
      *
      * @param string      $username User name
      * @param string|null $password User password
@@ -2711,7 +2711,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Creates array for Lookup user desired information
+     * Creates array for Lookup user desired information.
      *
      * @return array
      */
@@ -2729,7 +2729,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Parse http response into XML object representation
+     * Parse http response into XML object representation.
      *
      * @param string $xmlString XML string
      *
@@ -2756,7 +2756,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Parse all reported problem and return its string representation
+     * Parse all reported problem and return its string representation.
      *
      * @param string $xmlString XML string
      *
@@ -2773,7 +2773,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get problem description as one string
+     * Get problem description as one string.
      *
      * @param \SimpleXMLElement $xml              XML response
      * @param array|string[]    $elements         Which of Problem subelements
@@ -2813,7 +2813,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Creates scheme attribute based on $this->schemes array
+     * Creates scheme attribute based on $this->schemes array.
      *
      * @param string $element         Element name
      * @param string $namespacePrefix Namespace identifier
@@ -2828,7 +2828,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Creates simple element as XML string
+     * Creates simple element as XML string.
      *
      * @param string $elementName     Element name
      * @param string $text            Content of element
@@ -2849,7 +2849,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Parse the LocationNameInstanceElement for multi-level locations
+     * Parse the LocationNameInstanceElement for multi-level locations.
      *
      * @param array $locations Array of \SimpleXMLElement objects for
      * LocationNameInstance element
@@ -2879,7 +2879,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Translate a message from ILS
+     * Translate a message from ILS.
      *
      * @param string $message Message to be translated
      *
@@ -2891,7 +2891,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Invalidate L1 cache for responses
+     * Invalidate L1 cache for responses.
      *
      * @param string $message NCIP message type - currently only 'LookupUser'
      * @param string $key     Cache key (For LookupUser its cat_username)
@@ -2906,7 +2906,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Get all bibliographic records
+     * Get all bibliographic records.
      *
      * @param array $idList     List of bibliographic IDs.
      * @param array $agencyList List of possible toAgency values
@@ -2939,7 +2939,7 @@ class XCNCIP2 extends AbstractBase implements
     }
 
     /**
-     * Check NextItemToken for emptiness
+     * Check NextItemToken for emptiness.
      *
      * @param \SimpleXMLElement[] $nextItemToken Next item token elements from NCIP
      * Response

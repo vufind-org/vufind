@@ -550,7 +550,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Login and go to account home
+     * Login and go to account home.
      *
      * @param string $username The username to log in as (default = "username1").
      *
@@ -782,7 +782,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testListTaggingToDisplayChannel
+     * Data provider for testListTaggingToDisplayChannel.
      *
      * @return \Iterator
      */

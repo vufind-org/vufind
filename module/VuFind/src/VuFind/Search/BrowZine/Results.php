@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine aspect of the Search Multi-class (Results)
+ * BrowZine aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\BrowZine;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * BrowZine Search Results
+ * BrowZine Search Results.
  *
  * @category VuFind
  * @package  Search_BrowZine
@@ -50,7 +50,7 @@ class Results extends \VuFind\Search\Base\Results
     protected $backendId = 'BrowZine';
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.

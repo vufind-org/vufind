@@ -160,6 +160,50 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Apply a non-default HeaderBar.yaml configuration with excluded groups and items.
+     *
+     * @return void
+     */
+    protected function applyHeaderBarConfigWithExcludedGroupsAndItems(): void
+    {
+        $yaml = <<<YAML
+            "@parent_yaml": false
+            
+            ExcludedGroup:
+              label: 'Group 1 excluded from site map page'
+              MenuItems:
+                - label: 'Group 1 Item 1'
+                  url: '#'
+              excludeFromSiteMapPage: true
+            
+            GroupWithOneExcludedItem:
+              label: 'Group 2 with one item excluded from site map page'
+              MenuItems:
+                - label: 'Group 2 Item 1'
+                  url: '#'
+                - label: 'Group 2 Item 2 excluded from site map page'
+                  url: '#'
+                  excludeFromSiteMapPage: true
+                - label: 'Group 2 Item 3'
+                  url: '#'
+            
+            GroupWithAllItemsExcluded:
+              label: 'Group 3 with all items excluded from site map page'
+              MenuItems:
+                - label: 'Group 3 Item 1 excluded from site map page'
+                  url: '#'
+                  excludeFromSiteMapPage: true
+                - label: 'Group 3 Item 2 excluded from site map page'
+                  url: '#'
+                  excludeFromSiteMapPage: true
+                - label: 'Group 3 Item 3 excluded from site map page'
+                  url: '#'
+                  excludeFromSiteMapPage: true
+            YAML;
+        $this->changeYamlConfigs(['HeaderBar' => Yaml::parse($yaml)], ['HeaderBar']);
+    }
+
+    /**
      * Load Site Map page.
      *
      * @param ?Session $session Mink session (will be automatically established if not provided).
@@ -359,6 +403,37 @@ class SiteMapPageTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsString(
             'Regular Item 3',
             $this->findCssAndGetText($page, '#content > ul:nth-child(13) > li:nth-child(3) > a:nth-child(1)')
+        );
+    }
+
+    /**
+     * Test groups and items excluded from site map page.
+     *
+     * @return void
+     */
+    public function testExcludedGroupsAndItems(): void
+    {
+        $this->applyHeaderBarConfigWithExcludedGroupsAndItems();
+        $page = $this->getSiteMapPage();
+        $this->assertStringNotContainsString(
+            'Group 1 excluded from site map page',
+            $this->findCssAndGetText($page, '#content')
+        );
+        $this->assertStringContainsString(
+            'Group 2 Item 1',
+            $this->findCssAndGetText($page, '#content')
+        );
+        $this->assertStringNotContainsString(
+            'Group 2 Item 2',
+            $this->findCssAndGetText($page, '#content')
+        );
+        $this->assertStringContainsString(
+            'Group 2 Item 3',
+            $this->findCssAndGetText($page, '#content')
+        );
+        $this->assertStringNotContainsString(
+            'Group 3 with all items excluded from site map page',
+            $this->findCssAndGetText($page, '#content')
         );
     }
 }

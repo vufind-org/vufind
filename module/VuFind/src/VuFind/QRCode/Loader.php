@@ -1,7 +1,7 @@
 <?php
 
 /**
- * QR Code Generator
+ * QR Code Generator.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function intval;
 use function strlen;
 
 /**
- * QR Code Generator
+ * QR Code Generator.
  *
  * @category VuFind
  * @package  QRCode_Generator
@@ -52,14 +52,14 @@ use function strlen;
 class Loader extends \VuFind\ImageLoader
 {
     /**
-     * The default params used to generate the QRCode
+     * The default params used to generate the QRCode.
      *
      * @var string
      */
     protected $defaultParams = ['level' => 'L', 'size' => '3', 'margin' => '4'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config  $config VuFind configuration
      * @param \VuFindTheme\ThemeInfo $theme  VuFind theme tools
@@ -83,7 +83,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Set up a QR code image
+     * Set up a QR code image.
      *
      * @param string $text      The QR code text
      * @param array  $rawParams QR code parameters (level/size/margin)
@@ -156,7 +156,7 @@ class Loader extends \VuFind\ImageLoader
     }
 
     /**
-     * Generate a QR code image
+     * Generate a QR code image.
      *
      * @param string               $text   The QR code text
      * @param int                  $size   QR code width/height (in pixels)

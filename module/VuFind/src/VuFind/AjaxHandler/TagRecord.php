@@ -51,7 +51,7 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader               $loader      Record loader
      * @param TagsService          $tagsService Tags service

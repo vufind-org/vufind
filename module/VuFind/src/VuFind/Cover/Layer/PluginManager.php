@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover layer plugin manager
+ * Cover layer plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Cover\Layer;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Cover layer plugin manager
+ * Cover layer plugin manager.
  *
  * @category VuFind
  * @package  Cover_Generator

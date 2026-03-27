@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Memcache Session Handler Test Class
+ * Memcache Session Handler Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Config\Config;
 use VuFind\Session\Memcache;
 
 /**
- * Memcache Session Handler Test Class
+ * Memcache Session Handler Test Class.
  *
  * @category VuFind
  * @package  Tests

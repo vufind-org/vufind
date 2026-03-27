@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorInfo Recommendations Module
+ * AuthorInfo Recommendations Module.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindSearch\Query\Query;
 use function count;
 
 /**
- * AuthorInfo Recommendations Module
+ * AuthorInfo Recommendations Module.
  *
  * This class gathers information from the Wikipedia API and publishes the results
  * to a module at the top of an author's results page
@@ -57,28 +57,28 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * Wikipedia client
+     * Wikipedia client.
      *
      * @var Wikipedia
      */
     protected $wikipedia;
 
     /**
-     * Saved search results
+     * Saved search results.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
@@ -100,7 +100,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $sources;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      * @param \Laminas\Http\Client                 $client  HTTP client
@@ -137,7 +137,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Set a translator
+     * Set a translator.
      *
      * @param TranslatorInterface $translator Translator
      *
@@ -184,7 +184,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Returns info from Wikipedia to the view
+     * Returns info from Wikipedia to the view.
      *
      * @reference _parseWikipedia : Home.php (VuFind 1)
      * @refauthor Rushikesh Katikar <rushikesh.katikar@gmail.com>
@@ -283,7 +283,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Takes the search term and extracts a normal name from it
+     * Takes the search term and extracts a normal name from it.
      *
      * @return string
      */

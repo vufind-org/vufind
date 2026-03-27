@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesAZResultsDeferred Recommendations Module
+ * LibGuidesAZResultsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * LibGuidesAZResultsDeferred Recommendations Module
+ * LibGuidesAZResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the LibGuidesAZ module.
  *

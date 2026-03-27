@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tags aspect of the Search Multi-class (Results)
+ * Tags aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindSearch\Service as SearchService;
 use function count;
 
 /**
- * Search Tags Results
+ * Search Tags Results.
  *
  * @category VuFind
  * @package  Search_Tags
@@ -48,7 +48,7 @@ use function count;
 class Results extends BaseResults
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
      * search parameters.
@@ -142,7 +142,7 @@ class Results extends BaseResults
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.

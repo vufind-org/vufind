@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channel provider plugin manager
+ * Channel provider plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ChannelProvider;
 
 /**
- * Channel provider plugin manager
+ * Channel provider plugin manager.
  *
  * @category VuFind
  * @package  Channels
@@ -75,7 +75,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

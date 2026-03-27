@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Checkouts Controller
+ * Checkouts Controller.
  *
  * PHP version 8
  *
@@ -53,35 +53,35 @@ class CheckoutsController extends AbstractBase
     use Feature\CatchIlsExceptionsTrait;
 
     /**
-     * CSRF validator
+     * CSRF validator.
      *
      * @var CsrfInterface
      */
     protected $csrf;
 
     /**
-     * Session manager
+     * Session manager.
      *
      * @var SessionManager
      */
     protected $sessionManager;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionContainer = null;
 
     /**
-     * Pagination helper
+     * Pagination helper.
      *
      * @var PaginationHelper
      */
     protected $paginationHelper;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm      Service locator
      * @param CsrfInterface           $csrf    CSRF validator
@@ -99,7 +99,7 @@ class CheckoutsController extends AbstractBase
     }
 
     /**
-     * Send loan history to view
+     * Send loan history to view.
      *
      * @return mixed
      */
@@ -189,7 +189,7 @@ class CheckoutsController extends AbstractBase
     }
 
     /**
-     * Purge loans from loan history
+     * Purge loans from loan history.
      *
      * @return mixed
      */
@@ -256,7 +256,7 @@ class CheckoutsController extends AbstractBase
 
     /**
      * Reset the array of valid IDs in the session (used for form submission
-     * validation)
+     * validation).
      *
      * @return void
      */

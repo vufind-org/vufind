@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Not Found" Exception
+ * "Not Found" Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * "Not Found" Exception
+ * "Not Found" Exception.
  *
  * @category VuFind
  * @package  Exceptions

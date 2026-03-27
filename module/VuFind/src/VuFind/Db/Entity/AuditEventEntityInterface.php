@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for event table
+ * Entity model interface for event table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 
 /**
- * Entity model interface for event table
+ * Entity model interface for event table.
  *
  * @category VuFind
  * @package  Database

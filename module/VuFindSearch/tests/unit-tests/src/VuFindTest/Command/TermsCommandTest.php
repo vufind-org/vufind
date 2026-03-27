@@ -45,7 +45,7 @@ use VuFindSearch\Command\TermsCommand;
 class TermsCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */

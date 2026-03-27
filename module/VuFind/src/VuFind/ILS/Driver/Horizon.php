@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Horizon ILS Driver
+ * Horizon ILS Driver.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function in_array;
 use function intval;
 
 /**
- * Horizon ILS Driver
+ * Horizon ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -55,21 +55,21 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateFormat;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -337,7 +337,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -400,7 +400,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a specific
      * record. It is a proxy to getStatuses.
@@ -460,7 +460,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a collection of
      * records.
@@ -501,7 +501,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -517,7 +517,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -690,7 +690,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -724,7 +724,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -822,7 +822,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -978,7 +978,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1010,7 +1010,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
@@ -1026,7 +1026,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -1094,7 +1094,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check Horizon Version
+     * Check Horizon Version.
      *
      * Check the Horizon version found in the matham table to make sure it is at
      * least the required version.

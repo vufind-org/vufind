@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MyResearch Controller
+ * MyResearch Controller.
  *
  * PHP version 8
  *
@@ -94,7 +94,7 @@ class MyResearchController extends AbstractBase
     use OnlinePaymentTrait;
 
     /**
-     * Default life time for recovery hashes (one hour)
+     * Default life time for recovery hashes (one hour).
      *
      * @var int
      */
@@ -114,14 +114,14 @@ class MyResearchController extends AbstractBase
     protected $accessPermission = false;
 
     /**
-     * ILS Pagination Helper
+     * ILS Pagination Helper.
      *
      * @var PaginationHelper
      */
     protected $paginationHelper = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface               $sm            Service locator
      * @param Container                             $session       Session container
@@ -179,7 +179,7 @@ class MyResearchController extends AbstractBase
 
     /**
      * Maintaining this method for backwards compatibility with legacy code;
-     * logic moved to parent and method re-named
+     * logic moved to parent and method re-named.
      *
      * @return void
      */
@@ -189,7 +189,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Prepare and direct the home page where it needs to go
+     * Prepare and direct the home page where it needs to go.
      *
      * @return mixed
      */
@@ -256,7 +256,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * "Create account" action
+     * "Create account" action.
      *
      * @return mixed
      */
@@ -310,7 +310,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Login Action
+     * Login Action.
      *
      * @return mixed
      */
@@ -387,7 +387,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Logout Action
+     * Logout Action.
      *
      * @return mixed
      */
@@ -556,7 +556,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Handle search subscription request
+     * Handle search subscription request.
      *
      * @return mixed
      */
@@ -651,7 +651,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Handle 'save/unsave search' request
+     * Handle 'save/unsave search' request.
      *
      * @return mixed
      */
@@ -714,7 +714,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Gather user profile data
+     * Gather user profile data.
      *
      * @return mixed
      */
@@ -825,7 +825,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Catalog Login Action
+     * Catalog Login Action.
      *
      * @return mixed
      */
@@ -836,7 +836,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Action for sending all of a user's saved favorites to the view
+     * Action for sending all of a user's saved favorites to the view.
      *
      * @return mixed
      */
@@ -907,7 +907,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Delete record
+     * Delete record.
      *
      * @param string $id     ID of record to delete
      * @param string $source Source of record to delete
@@ -992,7 +992,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Edit record
+     * Edit record.
      *
      * @return mixed
      */
@@ -1093,7 +1093,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send user's saved favorites from a particular list to the view
+     * Send user's saved favorites from a particular list to the view.
      *
      * @return mixed
      */
@@ -1229,7 +1229,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send user's saved favorites from a particular list to the edit view
+     * Send user's saved favorites from a particular list to the edit view.
      *
      * @return mixed
      */
@@ -1315,7 +1315,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Creates a confirmation box to delete or not delete the current list
+     * Creates a confirmation box to delete or not delete the current list.
      *
      * @return mixed
      */
@@ -1364,7 +1364,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of holds to view
+     * Send list of holds to view.
      *
      * @return mixed
      *
@@ -1376,7 +1376,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of storage retrieval requests to view
+     * Send list of storage retrieval requests to view.
      *
      * @return mixed
      */
@@ -1449,7 +1449,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of ill requests to view
+     * Send list of ill requests to view.
      *
      * @return mixed
      */
@@ -1514,7 +1514,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of checked out books to view
+     * Send list of checked out books to view.
      *
      * @return mixed
      */
@@ -1644,7 +1644,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of historic loans to view
+     * Send list of historic loans to view.
      *
      * @return mixed
      */
@@ -1654,7 +1654,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of fines to view
+     * Send list of fines to view.
      *
      * @return mixed
      */
@@ -1718,7 +1718,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send account recovery email
+     * Send account recovery email.
      *
      * @return mixed
      */
@@ -1768,7 +1768,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Helper function for recoverAction
+     * Helper function for recoverAction.
      *
      * @param array $recoveryData Recovery information required by the authentication to reset the password
      *
@@ -2046,7 +2046,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Receive a hash and display the new password form if it's valid
+     * Receive a hash and display the new password form if it's valid.
      *
      * @return mixed
      */
@@ -2282,7 +2282,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Delete a login token
+     * Delete a login token.
      *
      * @return mixed
      */
@@ -2311,7 +2311,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Delete all login tokens for a user
+     * Delete all login tokens for a user.
      *
      * @return mixed
      */
@@ -2338,7 +2338,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Helper function for verification hashes
+     * Helper function for verification hashes.
      *
      * @param string $hash User-unique hash string from request
      *
@@ -2368,7 +2368,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Account deletion
+     * Account deletion.
      *
      * @return mixed
      */
@@ -2468,7 +2468,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get User Content (comments, ratings, tags)
+     * Get User Content (comments, ratings, tags).
      *
      * @return mixed
      */
@@ -2486,7 +2486,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get the ILS pagination helper
+     * Get the ILS pagination helper.
      *
      * @return PaginationHelper
      */
@@ -2510,7 +2510,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Add a message about any pending email change to the flash messenger
+     * Add a message about any pending email change to the flash messenger.
      *
      * @param UserEntityInterface $user User
      *
@@ -2539,7 +2539,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Return a response that redirects to MyResearch/Home with any further redirects disabled
+     * Return a response that redirects to MyResearch/Home with any further redirects disabled.
      *
      * @return Response
      */

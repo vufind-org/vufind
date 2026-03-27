@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record linker view helper
+ * Record linker view helper.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function is_array;
 use function is_string;
 
 /**
- * Record linker view helper
+ * Record linker view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -49,28 +49,28 @@ use function is_string;
 class RecordLinker extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Record router
+     * Record router.
      *
      * @var \VuFind\Record\Router
      */
     protected $router;
 
     /**
-     * Search results (optional)
+     * Search results (optional).
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results = null;
 
     /**
-     * Cached record URLs
+     * Cached record URLs.
      *
      * @var array
      */
     protected $cachedDriverUrls = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Record\Router $router Record router
      */
@@ -315,7 +315,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Return search URL for all versions
+     * Return search URL for all versions.
      *
      * @param AbstractRecord $driver Record driver
      *
@@ -365,7 +365,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get query parameters for a record URL
+     * Get query parameters for a record URL.
      *
      * @param array $options Any additional options:
      * - excludeSearchId (default: false)

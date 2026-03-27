@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AlphaBrowse Module Controller
+ * AlphaBrowse Module Controller.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function in_array;
 use function intval;
 
 /**
- * AlphabrowseController Class
+ * AlphabrowseController Class.
  *
  * Controls the alphabetical browsing feature
  *
@@ -55,7 +55,7 @@ class AlphabrowseController extends AbstractBase
     use Feature\AlphaBrowseTrait;
 
     /**
-     * Default browse types
+     * Default browse types.
      *
      * @var array
      */
@@ -67,7 +67,7 @@ class AlphabrowseController extends AbstractBase
     ];
 
     /**
-     * Default extras
+     * Default extras.
      *
      * @var array
      */
@@ -240,7 +240,7 @@ class AlphabrowseController extends AbstractBase
     }
 
     /**
-     * Gathers data for the view of the AlphaBrowser and does some initialization
+     * Gathers data for the view of the AlphaBrowser and does some initialization.
      *
      * @return ViewModel
      */

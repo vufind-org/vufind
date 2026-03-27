@@ -50,7 +50,7 @@ use function get_class;
 abstract class AbstractBase implements HandlerInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver $pathResolver Path Resolver
      */

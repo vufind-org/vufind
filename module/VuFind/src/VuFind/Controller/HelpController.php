@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Home action for Help module
+ * Home action for Help module.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\Controller;
 
 /**
- * Home action for Help module
+ * Home action for Help module.
  *
  * @category VuFind
  * @package  Controller
@@ -46,7 +46,7 @@ class HelpController extends AbstractBase
 {
     /**
      * Uses the user language to determine which Help template to use
-     * Uses the English template as a back-up
+     * Uses the English template as a back-up.
      *
      * @return mixed
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication Exception
+ * Authentication Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Authentication Exception
+ * Authentication Exception.
  *
  * @category VuFind
  * @package  Exceptions

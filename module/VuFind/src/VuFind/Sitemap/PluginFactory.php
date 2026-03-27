@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sitemap generator plugin factory
+ * Sitemap generator plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Sitemap;
 
 /**
- * Sitemap generator plugin factory
+ * Sitemap generator plugin factory.
  *
  * @category VuFind
  * @package  Sitemap
@@ -41,7 +41,7 @@ namespace VuFind\Sitemap;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

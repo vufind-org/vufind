@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Koha ILS Driver
+ * Koha ILS Driver.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Exception\ILS as ILSException;
 use function count;
 
 /**
- * VuFind Driver for Koha (version: 3.02)
+ * VuFind Driver for Koha (version: 3.02).
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -50,28 +50,28 @@ use function count;
 class Koha extends AbstractBase
 {
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * ILS base URL
+     * ILS base URL.
      *
      * @var string
      */
     protected $ilsBaseUrl;
 
     /**
-     * Location codes
+     * Location codes.
      *
      * @var array
      */
     protected $locCodes;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
@@ -85,7 +85,7 @@ class Koha extends AbstractBase
     protected $validatePasswords;
 
     /**
-     * Default terms for block types, can be overridden by configuration
+     * Default terms for block types, can be overridden by configuration.
      *
      * @var array
      */
@@ -97,14 +97,14 @@ class Koha extends AbstractBase
     ];
 
     /**
-     * Display comments for patron debarments, see Koha.ini
+     * Display comments for patron debarments, see Koha.ini.
      *
      * @var array
      */
     protected $showBlockComments;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      */
@@ -175,7 +175,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -285,7 +285,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -305,7 +305,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -351,7 +351,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -391,7 +391,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -429,7 +429,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -512,7 +512,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
      * checked out and then returned), for a specific patron.
@@ -592,7 +592,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -611,7 +611,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -628,7 +628,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -663,7 +663,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *

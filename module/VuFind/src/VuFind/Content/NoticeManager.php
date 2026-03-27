@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Notice Manager
+ * Notice Manager.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Notice Manager
+ * Notice Manager.
  *
  * @category VuFind
  * @package  Content
@@ -58,7 +58,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
     protected ?array $notices = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array            $config           Config
      * @param ConditionManager $conditionManager Condition manager

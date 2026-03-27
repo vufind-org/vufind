@@ -62,28 +62,28 @@ class PrimoBackendFactory extends AbstractBackendFactory
     protected $logger;
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $primoConfig;
 
     /**
-     * Primo backend class
+     * Primo backend class.
      *
      * @var string
      */
     protected $backendClass = Backend::class;
 
     /**
-     * Primo REST API connector class
+     * Primo REST API connector class.
      *
      * @var string
      */
     protected $restConnectorClass = RestConnector::class;
 
     /**
-     * CDI attribute mappings
+     * CDI attribute mappings.
      *
      * @var array
      */
@@ -119,7 +119,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     ];
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -241,7 +241,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */
@@ -264,7 +264,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a OnCampus Listener
+     * Get a OnCampus Listener.
      *
      * @return InjectOnCampusListener
      */
@@ -275,7 +275,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a PrimoPermissionHandler
+     * Get a PrimoPermissionHandler.
      *
      * @return ?PrimoPermissionHandler
      */
@@ -296,7 +296,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get HTTP options for the client
+     * Get HTTP options for the client.
      *
      * @param string $url URL being requested
      *

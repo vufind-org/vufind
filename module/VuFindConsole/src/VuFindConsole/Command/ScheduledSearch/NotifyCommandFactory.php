@@ -49,7 +49,7 @@ use VuFind\Db\Service\SearchServiceInterface;
 class NotifyCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

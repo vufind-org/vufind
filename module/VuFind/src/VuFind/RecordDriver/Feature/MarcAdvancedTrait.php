@@ -53,7 +53,7 @@ use function is_array;
 trait MarcAdvancedTrait
 {
     /**
-     * Fields that may contain subject headings, and their descriptions
+     * Fields that may contain subject headings, and their descriptions.
      *
      * @var array
      */
@@ -632,7 +632,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get hierarchical place names (MARC field 752)
+     * Get hierarchical place names (MARC field 752).
      *
      * Returns an array of formatted hierarchical place names, consisting of all
      * alpha-subfields, concatenated for display
@@ -713,7 +713,7 @@ trait MarcAdvancedTrait
      *               'link'  => link_URI
      *        ),
      *        ...
-     * )
+     * ).
      *
      * @return null|array
      */
@@ -793,7 +793,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Returns the array element for the 'getAllRecordLinks' method
+     * Returns the array element for the 'getAllRecordLinks' method.
      *
      * @param array $field Field to examine
      *
@@ -875,7 +875,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Returns an id extracted from the identifier subfield passed in
+     * Returns an id extracted from the identifier subfield passed in.
      *
      * @param string $idField MARC subfield containing id information
      * @param string $prefix  Prefix to search for in id field
@@ -901,7 +901,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Support method for getFormattedMarcDetails() -- extract a single result
+     * Support method for getFormattedMarcDetails() -- extract a single result.
      *
      * @param array $currentField Result from MarcReader::getFields
      * @param array $details      Parsed instructions from getFormattedMarcDetails()
@@ -1061,7 +1061,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first ISMN found for this record, or false if no one found
+     * Return first ISMN found for this record, or false if no one found.
      *
      * @return mixed
      */
@@ -1080,7 +1080,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first national bibliography number found, or false if not found
+     * Return first national bibliography number found, or false if not found.
      *
      * @return mixed
      */
@@ -1162,7 +1162,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Check if an array of indicator filters match the provided marc data
+     * Check if an array of indicator filters match the provided marc data.
      *
      * @param array $marc_data MARC data for a specific field
      * @param array $indFilter Array with up to 2 keys ('1', and '2') with an array as their value
@@ -1185,7 +1185,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Check if the indicator filters match the provided marc data
+     * Check if the indicator filters match the provided marc data.
      *
      * @param array $marc_data MARC data for a specific field
      * @param array $indData   Indicator filters as described in getMarcFieldWithInd()
@@ -1209,7 +1209,7 @@ trait MarcAdvancedTrait
      * sub fields (ex: ['a','b']) optionally as well as what indicator
      * numbers and values to filter for and concatenates the subfields
      * together and returns the fields back as an array
-     * (ex: ['subA subB subC', 'field2SubA field2SubB'])
+     * (ex: ['subA subB subC', 'field2SubA field2SubB']).
      *
      * @param string $field    Marc field to search within
      * @param ?array $subfield Sub-fields to return or empty for all
@@ -1248,7 +1248,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the location of other archival materials notes
+     * Get the location of other archival materials notes.
      *
      * @return array Note fields from the MARC record
      */
@@ -1268,7 +1268,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the summary note
+     * Get the summary note.
      *
      * @return array Note fields from the MARC record
      */
@@ -1278,7 +1278,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the abstract notes
+     * Get the abstract notes.
      *
      * @return array Note fields from the MARC record
      */
@@ -1288,7 +1288,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the review notes
+     * Get the review notes.
      *
      * @return array Note fields from the MARC record
      */
@@ -1298,7 +1298,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get the content advice notes
+     * Get the content advice notes.
      *
      * @return array Note fields from the MARC record
      */

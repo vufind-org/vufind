@@ -207,7 +207,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testPcAvailabilityFilter
+     * Data provider for testPcAvailabilityFilter.
      *
      * @return \Iterator
      */

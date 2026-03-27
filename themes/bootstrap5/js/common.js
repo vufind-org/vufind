@@ -1,7 +1,7 @@
 /*global grecaptcha, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, addRecordRatingFromUserList */
 
-var VuFind = (function VuFind() {
+var VuFind = (function VuFindModule() {
   var defaultSearchBackend = null;
   var path = null;
   var _initialized = false;
@@ -525,10 +525,25 @@ var VuFind = (function VuFind() {
   };
 
   /**
+   * Focus the first element that has the data-focus-on-load attribute.
+   * @returns {void}
+   */
+  var setFocusOnLoad = function setFocusOnLoad() {
+    const focusEl = document.querySelector('[data-focus-on-load="important"]')
+      || document.querySelector('[data-focus-on-load]');
+    if (focusEl) {
+      focusEl.focus();
+    }
+  };
+
+  /**
    * Initialize all registered submodules and global handlers.
    * @returns {void}
    */
   var init = function init() {
+    // Handle focus on load before anything else:
+    setFocusOnLoad();
+
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
         this[_submodules[i]].init();
@@ -826,7 +841,7 @@ function deparam(url) {
  */
 function getUrlRoot(url) {
   // Parse out the base URL for the current record:
-  var urlroot = null;
+  var urlroot;
   var urlParts = url.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var slashSlash = urlWithoutFragment.indexOf('//');

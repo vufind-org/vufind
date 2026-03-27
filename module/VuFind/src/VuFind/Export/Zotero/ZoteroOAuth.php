@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Zotero OAuth Connector
+ * Zotero OAuth Connector.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFind\Http\GuzzleService;
 use function is_array;
 
 /**
- * Zotero OAuth Connector
+ * Zotero OAuth Connector.
  *
  * Class for authenticating with Zotero using OAuth.
  *

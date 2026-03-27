@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Renewals Support Methods
+ * VuFind Action Helper - Renewals Support Methods.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Validator\CsrfInterface;
 use function is_array;
 
 /**
- * Action helper to perform renewal-related actions
+ * Action helper to perform renewal-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default cover text layer
+ * Default cover text layer.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Cover\Layer;
 use function count;
 
 /**
- * Default cover text layer
+ * Default cover text layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -43,7 +43,7 @@ use function count;
 class DefaultText extends AbstractTextLayer
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)
@@ -63,7 +63,7 @@ class DefaultText extends AbstractTextLayer
     }
 
     /**
-     * Render title in wrapped, black text with white border
+     * Render title in wrapped, black text with white border.
      *
      * @param resource $im         Image resource to draw on
      * @param object   $settings   Settings object
@@ -139,7 +139,7 @@ class DefaultText extends AbstractTextLayer
     }
 
     /**
-     * Render author at bottom in wrapped, white text with black border
+     * Render author at bottom in wrapped, white text with black border.
      *
      * @param resource $im       Image resource to draw on
      * @param object   $settings Settings object

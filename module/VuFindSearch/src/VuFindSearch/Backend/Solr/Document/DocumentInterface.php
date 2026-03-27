@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for Solr document classes
+ * Interface for Solr document classes.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindSearch\Backend\Solr\Document;
 
 /**
- * Interface for Solr document classes
+ * Interface for Solr document classes.
  *
  * @category VuFind
  * @package  Search

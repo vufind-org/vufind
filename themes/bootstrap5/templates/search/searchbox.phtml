@@ -114,6 +114,9 @@
           }
           $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($this->searchClassId);
         }
+        if ($this->focusOnLoad) {
+          $searchboxAttributes['data-focus-on-load'] = true;
+        }
         if (!empty($keyboardLayouts)) {
           $searchboxAttributes['class'] .= ' with-keyboard-selection';
         }
@@ -131,7 +134,6 @@
           ><?=$this->icon('ui-reset-search');?></button>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
-            $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
             $this->assetManager()->appendScriptLink('vendor/simple-keyboard/index.js');
             $this->assetManager()->appendScriptLink('vendor/simple-keyboard-layouts/index.js');
             $this->assetManager()->appendStyleLink('vendor/simple-keyboard/index.css');

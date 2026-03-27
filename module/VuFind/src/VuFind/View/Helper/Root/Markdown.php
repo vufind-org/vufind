@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Markdown
+ * Class Markdown.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use League\CommonMark\ConverterInterface;
 use League\CommonMark\Output\RenderedContentInterface;
 
 /**
- * Helper for transforming markdown to html
+ * Helper for transforming markdown to html.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,7 +45,7 @@ use League\CommonMark\Output\RenderedContentInterface;
 class Markdown extends AbstractHelper
 {
     /**
-     * Markdown converter
+     * Markdown converter.
      *
      * @var ConverterInterface
      */
@@ -62,7 +62,7 @@ class Markdown extends AbstractHelper
     }
 
     /**
-     * Converts markdown to html
+     * Converts markdown to html.
      *
      * @param string $markdown Markdown formatted text
      *

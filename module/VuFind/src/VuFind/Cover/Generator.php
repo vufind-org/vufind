@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Dynamic Book Cover Generator
+ * Dynamic Book Cover Generator.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTheme\ThemeInfo;
 use function count;
 
 /**
- * Dynamic Book Cover Generator
+ * Dynamic Book Cover Generator.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -76,35 +76,35 @@ class Generator
     ];
 
     /**
-     * Active style configuration
+     * Active style configuration.
      *
      * @var object
      */
     protected $settings;
 
     /**
-     * Base for image
+     * Base for image.
      *
      * @var resource
      */
     protected $im;
 
     /**
-     * ThemeInfo object
+     * ThemeInfo object.
      *
      * @var ThemeInfo
      */
     protected $themeTools;
 
     /**
-     * Layer manager
+     * Layer manager.
      *
      * @var LayerManager
      */
     protected $layerManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo    $themeTools For font loading
      * @param LayerManager $lm         Layer manager
@@ -190,7 +190,7 @@ class Generator
     }
 
     /**
-     * Generates a dynamic cover image from elements of the item
+     * Generates a dynamic cover image from elements of the item.
      *
      * @param string $title      Title of the book
      * @param string $author     Author of the book
@@ -213,7 +213,7 @@ class Generator
     }
 
     /**
-     * Get the layer plugin for the background
+     * Get the layer plugin for the background.
      *
      * @return LayerInterface
      */
@@ -226,7 +226,7 @@ class Generator
     }
 
     /**
-     * Get the layer plugin for the text
+     * Get the layer plugin for the text.
      *
      * @return LayerInterface
      */
@@ -239,7 +239,7 @@ class Generator
     }
 
     /**
-     * Find font in the theme folder
+     * Find font in the theme folder.
      *
      * @param string $font Font_name.ttf
      *

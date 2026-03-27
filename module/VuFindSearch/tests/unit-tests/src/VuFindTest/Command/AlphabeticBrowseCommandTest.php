@@ -44,7 +44,7 @@ use VuFindSearch\Command\AlphabeticBrowseCommand;
 class AlphabeticBrowseCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */
