@@ -97,20 +97,6 @@ VuFind.register('cookie', function cookie() {
   }
 
   /**
-   * Update the status of services based on consent.
-   */
-  function updateServiceStatus() {
-    Object.entries(consentConfig.controlledVuFindServices).forEach(([category, services]) => {
-      // Matomo:
-      if (window._paq && services.indexOf('matomo') !== -1) {
-        if (isCategoryAccepted(category)) {
-          window._paq.push(['setCookieConsentGiven']);
-        }
-      }
-    });
-  }
-
-  /**
    * Check if two arrays contain different values. Order is not important.
    * @param {Array} a1 First array
    * @param {Array} a2 Second array
@@ -170,14 +156,11 @@ VuFind.register('cookie', function cookie() {
       VuFind.emit('cookie-consent-first-done');
     }
 
-    updateServiceStatus();
     VuFind.emit('cookie-consent-done');
     if (categoriesChanged || revisionChanged) {
       VuFind.emit('cookie-consent-changed');
     }
-    if (consentConfig.refreshPage) {
-      VuFind.refreshPage();
-    }
+    VuFind.refreshPage();
   }
 
   /**
@@ -340,7 +323,6 @@ VuFind.register('cookie', function cookie() {
 
     // cookie-consent-done is triggered on every page load when a consent is available:
     if (null !== consentConfig.acceptedCategories) {
-      updateServiceStatus();
       VuFind.emit('cookie-consent-done');
     }
     VuFind.emit('cookie-consent-initialized');
@@ -353,9 +335,7 @@ VuFind.register('cookie', function cookie() {
    */
   function isServiceAllowed(serviceName) {
     for (const [category, services] of Object.entries(consentConfig.controlledVuFindServices)) {
-      if (services.indexOf(serviceName) !== -1
-        && isCategoryAccepted(category)
-      ) {
+      if (services.indexOf(serviceName) !== -1 && isCategoryAccepted(category)) {
         return true;
       }
     }

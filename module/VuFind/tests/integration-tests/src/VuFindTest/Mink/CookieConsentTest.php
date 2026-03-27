@@ -31,6 +31,8 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function assert;
+
 /**
  * Mink cookie consent test class.
  *
@@ -77,16 +79,37 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testCookieConsent(): void
     {
-        $this->changeConsentConfigs(false);
-
-        $page = $this->getStartPage();
-        $html = $page->getHtml();
-        $this->assertStringContainsString('VuFind.cookie.setupConsent', $html);
-
-        $this->assertStringContainsString(
-            "_paq.push(['requireCookieConsent']);",
-            $html
+        // Activate the cookie consent and Matomo:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Cookies' => [
+                        'consent' => true,
+                        'consentCategories' => 'essential,matomo',
+                    ],
+                    'Matomo' => [
+                        'url' => $this->getVuFindUrl() . '/Content/faq',
+                    ],
+                ],
+            ]
         );
+        // Make sure the cookie dialog is not hidden from a headless client:
+        $this->changeYamlConfigs(
+            [
+                'CookieConsent' => [
+                    'CookieConsent' => [
+                        'HideFromBots' => false,
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->getStartPage('/Content/privacy');
+        $html = $page->getHtml();
+
+        $this->assertStringContainsString('VuFind.cookie.setupConsent', $html);
+        // Check that the missing consent is properly reflected:
+        $this->verifyCurrentAllowStatus($page, false, false);
 
         $this->waitForCookieConsentOverlay($page);
         $this->assertCount(2, $page->findAll('css', '.cookie-consent .cookie-consent__category'));
@@ -102,24 +125,15 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         // Save without allowing analytics:
         $this->clickAcceptEssential($page);
         // Verify that there's no Matomo consent:
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
-        // Verify that essential cookies are allowed:
-        $this->waitStatement('VuFind.cookie.isCategoryAccepted("essential")');
+        $this->verifyCurrentAllowStatus($page, true, false);
 
         // Open settings again and accept only essential cookies:
         $this->clickSettings($page);
         $this->waitForCookieConsentOverlay($page);
         $this->clickCss($page, '.cookie-consent .cookie-consent__settings-toggle');
         $this->clickSave($page);
-
-        // Verify that there's no Matomo consent:
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
+        // Verify again that there's no Matomo consent:
+        $this->verifyCurrentAllowStatus($page, true, false);
 
         // Open settings again and toggle analytics:
         $this->clickSettings($page);
@@ -130,58 +144,21 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.cookie-consent .cookie-consent__category-checkbox input', index: 1);
         $this->clickSave($page);
         // Verify that there's Matomo consent:
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement('window._paq.pop()');
+        $this->verifyCurrentAllowStatus($page, true, true);
 
         // Open settings again and accept only essential cookies:
         $this->clickSettings($page);
         $this->waitForCookieConsentOverlay($page);
         $this->clickAcceptEssential($page);
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement('window._paq.pop()');
+        // Verify that there's no Matomo consent:
+        $this->verifyCurrentAllowStatus($page, true, false);
 
         // Open settings again and accept all cookies:
         $this->clickSettings($page);
         $this->waitForCookieConsentOverlay($page);
         $this->clickAcceptAll($page);
-        $this->waitStatement(
-            "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
-        );
-        $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
-    }
-
-    /**
-     * Test that changing consent refreshes the page.
-     *
-     * Other tests skip page refresh to be able to check dynamically modified settings, so we need one to actually test
-     * the refresh.
-     *
-     * @return void
-     */
-    public function testPageRefresh(): void
-    {
-        $this->changeConsentConfigs(true);
-
-        $page = $this->getStartPage('/Content/privacy');
-        $this->assertStringContainsString(
-            'You have not yet given consent.',
-            $this->findCssAndGetText($page, '#content')
-        );
-
-        $this->waitForCookieConsentOverlay($page);
-        $this->clickAcceptEssential($page);
-
-        $this->waitForPageLoad($page);
-        $this->assertStringContainsString(
-            'State: Allow (Essential Cookies)',
-            $this->findCssAndGetText($page, '#content')
-        );
+        // Verify that there's Matomo consent:
+        $this->verifyCurrentAllowStatus($page, true, true);
     }
 
     /**
@@ -214,6 +191,63 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
             . 'you interact with it.',
             $this->findCssAndGetText($page, '.cookie-consent .cookie-consent__title')
         );
+    }
+
+    /**
+     * Assert that cookies are allowed as they should.
+     *
+     * @param Element $page             Page
+     * @param bool    $consentGiven     Has consent been given?
+     * @param bool    $analyticsAllowed Should analytics cookies be allowed?
+     *
+     * @return void
+     */
+    protected function verifyCurrentAllowStatus(Element $page, bool $consentGiven, bool $analyticsAllowed): void
+    {
+        $notAllowedInPaq = "_paq.push(['requireCookieConsent']);";
+
+        // Verify that essential cookies are allowed if consent is given, or proper status is displayed if not:
+        if ($consentGiven) {
+            $this->waitStatement('VuFind.cookie.isCategoryAccepted("essential")');
+        }
+
+        if ($analyticsAllowed) {
+            assert($consentGiven);
+            $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
+            $this->assertWithTimeout(
+                $notAllowedInPaq,
+                fn () => $page->getHtml(),
+                fn ($expected, $result) => !str_contains($result, $expected),
+                [$this, 'assertStringNotContainsString']
+            );
+
+            $this->assertStringContainsString(
+                'State: Allow (Essential Cookies, Analytics Cookies)',
+                $this->findCssAndGetText($page, '#content')
+            );
+        } else {
+            $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
+            $this->assertWithTimeout(
+                $notAllowedInPaq,
+                fn () => $page->getHtml(),
+                fn ($expected, $result) => str_contains($result, $expected),
+                [$this, 'assertStringContainsString']
+            );
+
+            if ($consentGiven) {
+                $this->assertStringContainsString(
+                    'State: Allow (Essential Cookies)',
+                    $this->findCssAndGetText($page, '#content')
+                );
+            } else {
+                $this->assertWithTimeout(
+                    'You have not yet given consent.',
+                    fn () => $this->findCssAndGetText($page, '#content'),
+                    fn ($expected, $result) => str_contains($result, $expected),
+                    [$this, 'assertStringContainsString']
+                );
+            }
+        }
     }
 
     /**
@@ -262,41 +296,5 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     protected function clickSave(Element $page): void
     {
         $this->clickCss($page, '.cookie-consent .cookie-consent__save-settings');
-    }
-
-    /**
-     * Set up cookie consent configuration.
-     *
-     * @param bool $refreshPage Refresh page after saving the consent?
-     *
-     * @return void
-     */
-    protected function changeConsentConfigs(bool $refreshPage): void
-    {
-        // Activate the cookie consent and Matomo:
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Cookies' => [
-                        'consent' => true,
-                        'consentCategories' => 'essential,matomo',
-                    ],
-                    'Matomo' => [
-                        'url' => $this->getVuFindUrl() . '/Content/faq',
-                    ],
-                ],
-            ]
-        );
-        // Make sure the cookie dialog is not hidden from a headless client:
-        $this->changeYamlConfigs(
-            [
-                'CookieConsent' => [
-                    'CookieConsent' => [
-                        'HideFromBots' => false,
-                        'RefreshPage' => $refreshPage,
-                    ],
-                ],
-            ]
-        );
     }
 }

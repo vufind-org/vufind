@@ -318,7 +318,6 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             'consentConfig' => [
                 'cookieName' => 'cc_cookie',
                 'autoClearCookies' => true,
-                'refreshPage' => true,
                 'revision' => 0,
                 'cookieExpirationDays' => 182,
                 'categoryConfig' => $jsCategoryConfig,

@@ -347,9 +347,6 @@ class CookieConsent implements TranslatorAwareInterface
         return [
             'cookieName' => $this->consentCookieName,
             'autoClearCookies' => $this->consentConfig['AutoClear'] ?? true,
-            // RefreshPage is not documented because refresh is required for accessibility, but it's still available
-            // just in case. RefreshPage is disabled by some integration tests.
-            'refreshPage' => $this->consentConfig['RefreshPage'] ?? true,
             'revision' => $this->getConsentRevision(),
             'cookieExpirationDays' => $this->consentCookieExpiration,
             'categoryConfig' => $categoryConfig,
