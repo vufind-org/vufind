@@ -1,9 +1,8 @@
 <?php
   $this->headTitle($this->translate('Notices'));
 
-  $this->breadcrumbs()->reset();
-  $this->breadcrumbs()->add($this->translate('Admin'), $this->url('admin'));
-  $this->breadcrumbs()->add($this->translate('Notices'), $this->url('admin/notices'));
+  $this->breadcrumbs()->set($this->translate('Admin'), $this->url('admin'))
+    ->add($this->translate('Notices'), active: true);
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
