@@ -36,7 +36,7 @@ use VuFind\Db\Entity\NoticeEntityInterface;
 use VuFind\Db\Entity\NoticeTranslationEntityInterface;
 use VuFind\Exception\NotFound;
 
-use function is_int;
+use function intval;
 
 /**
  * Database service for Notice.
