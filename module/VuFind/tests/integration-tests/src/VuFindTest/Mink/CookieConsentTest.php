@@ -31,8 +31,6 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
-use function assert;
-
 /**
  * Mink cookie consent test class.
  *
@@ -212,7 +210,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         }
 
         if ($analyticsAllowed) {
-            assert($consentGiven);
+            $this->assertTrue($consentGiven);
             $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
             $this->assertWithTimeout(
                 $notAllowedInPaq,
