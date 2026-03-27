@@ -43,7 +43,7 @@ use VuFindTest\Feature\LiveDatabaseTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NoticesTest extends \VuFindTest\Integration\MinkTestCase
+final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
 {
     use CacheManagementTrait;
     use LiveDatabaseTrait;

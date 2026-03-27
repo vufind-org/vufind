@@ -87,7 +87,7 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
         foreach ($this->getFormLanguages() as $language) {
             $formData['translations'][$language] = $notice['translations'][$language] ?? null;
         }
-        $styles = $this->noticeManager->getConfig()['styles'] ?? [];
+        $styles = $this->noticeManager->getNoticeConfig()['styles'] ?? [];
         $activeStyle = $notice['style'] ?? array_keys($styles)[0] ?? null;
         foreach ($styles as $style => $attributes) {
             if ($activeStyle === $style) {
@@ -124,7 +124,7 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
     public function getFormLanguages(): array
     {
         $defaultLanguages = $this->localeSettings->getEnabledLocales();
-        $config = $this->noticeManager->getConfig()['adminForm'] ?? [];
+        $config = $this->noticeManager->getNoticeConfig()['adminForm'] ?? [];
         if (isset($config['languages'])) {
             return array_filter(
                 $config['languages'],

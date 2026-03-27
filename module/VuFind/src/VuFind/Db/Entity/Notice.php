@@ -143,19 +143,6 @@ class Notice implements NoticeEntityInterface
     }
 
     /**
-     * Set id.
-     *
-     * @param int $id Id
-     *
-     * @return static
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
      * Is notice enabled?
      *
      * @return bool

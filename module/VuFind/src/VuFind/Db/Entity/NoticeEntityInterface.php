@@ -51,15 +51,6 @@ interface NoticeEntityInterface extends EntityInterface
     public function getId(): int;
 
     /**
-     * Set id.
-     *
-     * @param int $id Id
-     *
-     * @return static
-     */
-    public function setId(int $id): static;
-
-    /**
      * Is notice enabled?
      *
      * @return bool

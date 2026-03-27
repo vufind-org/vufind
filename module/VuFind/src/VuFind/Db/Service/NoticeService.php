@@ -165,15 +165,13 @@ class NoticeService extends AbstractDbService implements
     {
         $notice = $this->createEntity();
 
+        // Set priority to last position in notice list.
         $dql = 'SELECT COUNT(b) '
             . 'FROM ' . NoticeEntityInterface::class . ' b';
         $query = $this->entityManager->createQuery($dql);
         try {
-            $priority = $query->getSingleScalarResult();
+            $priority = intval($query->getSingleScalarResult());
         } catch (\Exception $e) {
-            $priority = 0;
-        }
-        if (!is_int($priority)) {
             $priority = 0;
         }
         $notice->setPriority($priority);

@@ -118,7 +118,7 @@ class Notices implements TranslatorAwareInterface
      */
     public function getStyleClasses(string $style): string
     {
-        return $this->noticeManager->getConfig()['styles'][$style]['classes']
+        return $this->noticeManager->getNoticeConfig()['styles'][$style]['classes']
             ?? $this->defaultStyleClasses[$style]
             ?? '';
     }

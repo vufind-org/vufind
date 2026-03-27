@@ -33,7 +33,7 @@ namespace VuFind\Content;
 
 use VuFind\Condition\Manager as ConditionManager;
 use VuFind\Db\Entity\NoticeEntityInterface;
-use VuFind\Db\Service\NoticeService;
+use VuFind\Db\Service\NoticeServiceInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -62,17 +62,17 @@ class NoticeManager implements LocaleSettingsAwareInterface
     /**
      * Constructor.
      *
-     * @param array            $config           Config
-     * @param ConditionManager $conditionManager Condition manager
-     * @param NoticeService    $noticeService    Notice service
+     * @param array                  $noticeConfig     Notice config
+     * @param ConditionManager       $conditionManager Condition manager
+     * @param NoticeServiceInterface $noticeService    Notice service
      */
     public function __construct(
         #[Autowire(config: 'Notices', configType: 'yaml')]
-        protected array $config,
+        protected array $noticeConfig,
         #[Autowire(service: ConditionManager::class)]
         protected ConditionManager $conditionManager,
         #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
-        protected NoticeService $noticeService
+        protected NoticeServiceInterface $noticeService
     ) {
     }
 
@@ -81,9 +81,9 @@ class NoticeManager implements LocaleSettingsAwareInterface
      *
      * @return array
      */
-    public function getConfig(): array
+    public function getNoticeConfig(): array
     {
-        return $this->config;
+        return $this->noticeConfig;
     }
 
     /**
@@ -93,7 +93,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
      */
     public function getDefaults(): array
     {
-        $style = array_keys($this->config['styles'] ?? [])[0] ?? null;
+        $style = array_keys($this->noticeConfig['styles'] ?? [])[0] ?? null;
         return [
             'style' => $style,
         ];
@@ -151,7 +151,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
     protected function loadNotices(): void
     {
         $this->notices = [];
-        foreach ($this->config['notices'] ?? [] as $index => $notice) {
+        foreach ($this->noticeConfig['notices'] ?? [] as $index => $notice) {
             $notice['id'] = 'config_' . $index;
             if (!isset($notice['content'])) {
                 $content = $this->getActiveTranslation($notice['translations'] ?? [], true);
