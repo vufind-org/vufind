@@ -81,6 +81,7 @@ VuFind.register('cookie', function cookie() {
     try {
       return JSON.parse(cookieData);
     } catch (e) {
+      console.warn(e);
       return null;
     }
   }
