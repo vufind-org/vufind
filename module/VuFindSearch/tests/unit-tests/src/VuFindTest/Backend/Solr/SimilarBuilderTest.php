@@ -59,7 +59,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
         $q = $response->get('q');
         $this->assertEquals('id:"testrecord"', $q[0]);
         $qt = $response->get('qt');
-        $this->assertEquals('morelikethis', $qt[0]);
+        $this->assertNull($qt);
     }
 
     /**

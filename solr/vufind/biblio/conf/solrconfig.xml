@@ -423,7 +423,7 @@
     </arr>
   </requestHandler>
 
-  <requestHandler name="morelikethis" class="solr.MoreLikeThisHandler">
+  <requestHandler name="/morelikethis" class="solr.MoreLikeThisHandler">
     <lst name="defaults">
       <str name="mlt.fl">title,title_short,callnumber-label,topic,language,author,publishDate</str>
       <str name="mlt.qf">
