@@ -500,6 +500,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             'terms' => [
                 'functions' => ['terms'],
             ],
+            'morelikethis' => [
+                'functions' => ['similar'],
+            ],
         ];
 
         foreach ($this->getHiddenFilters() as $filter) {
