@@ -117,6 +117,14 @@ VuFind.register('cookie', function cookie() {
   }
 
   /**
+   * Create a new consent ID.
+   * @returns {string}
+   */
+  function generateUUIDv4() {
+    return '00000000-0000-4000-8000-000000000000'.replace(/0/g, () => ((Math.random() * 16) | 0).toString(16));
+  }
+
+  /**
    * Store consent data (back-compatible with previous releases).
    * @param {Array} acceptedCategories List of accepted categories
    */
@@ -140,7 +148,7 @@ VuFind.register('cookie', function cookie() {
       consent.consentTimestamp = date.toISOString();
     }
     if (!consent.consentId) {
-      consent.consentId = crypto.randomUUID();
+      consent.consentId = generateUUIDv4();
     }
     if (!consent.expirationTime || categoriesChanged || revisionChanged) {
       // Expiration time is expressed in milliseconds in the cookie:
