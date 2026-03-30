@@ -254,12 +254,12 @@ class Params extends \VuFind\Search\Base\Params
                 if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
                     $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
                         ?? VUFIND_DEFAULT_EARLIEST_YEAR;
-                    $endYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                    $endYear = $this->getOptions()->getDateRangeSliderMaxValue($facetField)
                         ?? ((int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET);
                     $facetSet["f.{$facetField}.facet.range.start"]
-                        = sprintf('%s%04d-01-01T00:00:00Z', $startYear < 0 ? '-' : '', $startYear);
+                        = sprintf('%04d-01-01T00:00:00Z', $startYear);
                     $facetSet["f.{$facetField}.facet.range.end"]
-                        = sprintf('%s%04d-12-31T23:59:59Z', $endYear < 0 ? '-' : '', $endYear);
+                        = sprintf('%04d-12-31T23:59:59Z', $endYear);
                     $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
                     $facetSet['range'][] = $facetField;
                 } else {
