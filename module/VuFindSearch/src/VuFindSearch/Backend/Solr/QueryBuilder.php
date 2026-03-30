@@ -574,7 +574,7 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Given a Query string, return a fully normalized version.
      *
-     * @param String $queryString Query string
+     * @param string $queryString Query string
      *
      * @return string
      */
