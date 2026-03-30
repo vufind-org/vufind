@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Timed method blocks view helper.
  *
@@ -38,8 +40,25 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
+class MethodTimedBlocks
 {
+    /**
+     * Constructor
+     *
+     * @param Ils       $ils       ILS helper
+     * @param Translate $transEsc  Translate helper
+     * @param DateTime  $dateTime  DateTime helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Ils $ils,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $transEsc,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected DateTime $dateTime
+    ) {
+    }
+
     /**
      * Returns a display string of timed blocks from driver configuration.
      *
@@ -54,31 +73,26 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
         string $methodDisplayName = '',
         array $params = []
     ): string {
-        $ils = $this->getView()->plugin('ils');
-        if ($block = $ils()->getMethodBlock($methodName, $params)) {
-            $transEsc = $this->getView()->plugin('transEsc');
-            $dateTime = $this->getView()->plugin('dateTime');
+        if ($block = ($this->ils)()->getMethodBlock($methodName, $params)) {
             $transParams = [
                 '%%service%%' => $methodDisplayName
-                    ? $transEsc($methodDisplayName)
-                    : $transEsc('default_service_description'),
+                    ? ($this->transEsc)($methodDisplayName)
+                    : ($this->transEsc)('default_service_description'),
             ];
 
             if (!$block['recurring']) {
                 $end = $block['end']
-                    ? $dateTime->convertToDisplayDate('U', $block['end']->getTimestamp())
+                    ? $this->dateTime->convertToDisplayDate('U', $block['end']->getTimestamp())
                     : '';
                 $transParams['%%end%%'] = $end;
 
-                if ($end) {
-                    return $transEsc('service_blocked_until', $transParams);
-                } else {
-                    return $transEsc('service_blocked', $transParams);
-                }
+                return $end
+                    ? ($this->transEsc)('service_blocked_until', $transParams)
+                    : ($this->transEsc)('service_blocked', $transParams);
             } else {
-                $end = $dateTime->convertToDisplayTime('U', $block['end']->getTimestamp());
+                $end = $this->dateTime->convertToDisplayTime('U', $block['end']->getTimestamp());
                 $transParams['%%end%%'] = $end;
-                return $transEsc('service_blocked_until', $transParams);
+                return ($this->transEsc)('service_blocked_until', $transParams);
             }
         }
         return '';

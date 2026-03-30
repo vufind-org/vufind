@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 use function call_user_func_array;
 
 /**
@@ -40,23 +42,20 @@ use function call_user_func_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DateTime extends \Laminas\View\Helper\AbstractHelper
+class DateTime
 {
-    /**
-     * Date converter.
-     *
-     * @var \VuFind\Date\Converter
-     */
-    protected $converter;
-
     /**
      * Constructor.
      *
      * @param \VuFind\Date\Converter $converter Date converter
+     * @param Translate              $translate Translate view helper
      */
-    public function __construct(\VuFind\Date\Converter $converter)
-    {
-        $this->converter = $converter;
+    #[Autowire]
+    public function __construct(
+        protected \VuFind\Date\Converter $converter,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate
+    ) {
     }
 
     /**
@@ -88,11 +87,10 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
             = $this->converter->convertToDisplayDate('m-d-y', '11-22-3333');
         $search = ['1', '2', '3'];
         $replace = [
-            $this->view->translate('date_month_placeholder'),
-            $this->view->translate('date_day_placeholder'),
-            $this->view->translate('date_year_placeholder'),
+            ($this->translate)('date_month_placeholder'),
+            ($this->translate)('date_day_placeholder'),
+            ($this->translate)('date_year_placeholder'),
         ];
-
         return str_replace($search, $replace, $dueDateHelpString);
     }
 
@@ -107,5 +105,15 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
     public function __call($methodName, $params)
     {
         return call_user_func_array([$this->converter, $methodName], $params);
+    }
+
+    /**
+     * Make helper invokable
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }
