@@ -9,7 +9,8 @@
     </p>
   <?php endif; ?>
 
-  <div class="cookie-consent__settings">
+  <?php // Note: aria-live="polite" is required e.g. for Chrome + VoiceOver to read uncollapsed content ?>
+  <div class="cookie-consent__settings" aria-live="polite">
     <button class="btn btn-link icon-link cookie-consent__settings-toggle collapsed" type="button"
       data-bs-toggle="collapse" data-bs-target="#cookie_consent_settings_collapse"
       aria-expanded="false" aria-controls="cookie_consent_settings_collapse"
