@@ -43,11 +43,11 @@ use VuFind\ServiceManager\Factory\Autowire;
 class MethodTimedBlocks
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Ils       $ils       ILS helper
-     * @param Translate $transEsc  Translate helper
-     * @param DateTime  $dateTime  DateTime helper
+     * @param Ils       $ils      ILS helper
+     * @param Translate $transEsc Translate helper
+     * @param DateTime  $dateTime DateTime helper
      */
     public function __construct(
         #[Autowire(container: 'ViewHelperManager')]

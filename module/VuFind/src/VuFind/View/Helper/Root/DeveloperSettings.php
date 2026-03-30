@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 
 /**
@@ -64,7 +63,7 @@ class DeveloperSettings
     }
 
     /**
-     * Make helper invokable
+     * Make helper invokable.
      *
      * @return static
      */

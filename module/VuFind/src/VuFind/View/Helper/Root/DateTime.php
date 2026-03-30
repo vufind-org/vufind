@@ -108,7 +108,7 @@ class DateTime
     }
 
     /**
-     * Make helper invokable
+     * Make helper invokable.
      *
      * @return static
      */

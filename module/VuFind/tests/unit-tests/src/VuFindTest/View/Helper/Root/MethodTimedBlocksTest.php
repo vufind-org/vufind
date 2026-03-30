@@ -29,7 +29,6 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\View\Helper\EscapeHtml;
 use VuFind\Date\Converter;
 use VuFind\ILS\Connection;
 use VuFind\View\Helper\Root\DateTime;
@@ -139,9 +138,9 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
 
         $connection = $this->createMock(Connection::class);
         $connection->method('getMethodBlock')->willReturn($blocked ? $timedBlocks : []);
-        
+
         $ils = new Ils($connection);
-        
+
         $dateTime = new DateTime(new Converter(), $translate);
 
         return compact('translate', 'ils', 'dateTime');
