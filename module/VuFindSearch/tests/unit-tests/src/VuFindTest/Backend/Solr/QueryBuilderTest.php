@@ -114,7 +114,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getQuestionTests()
+    protected function getQuestionTests(): array
     {
         // Format: [input, expected output, flags array]
         return [
@@ -153,7 +153,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runBasicQuestionTest($qb, $handler, $test)
+    protected function runBasicQuestionTest(QueryBuilder $qb, string $handler, array $test): void
     {
         [$input, $output, $flags] = $test;
         if (
@@ -185,7 +185,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runAdvancedQuestionTest($qb, $handler, $test)
+    protected function runAdvancedQuestionTest(QueryBuilder $qb, string $handler, array $test): void
     {
         [$input, $output, $flags] = $test;
         if (
@@ -213,7 +213,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runQuestionTests($builderParams, $handler)
+    protected function runQuestionTests(array $builderParams, string $handler): void
     {
         // Set up an array of expected inputs and outputs:
         $tests = $this->getQuestionTests();
@@ -229,7 +229,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQueryHandler()
+    public function testQueryHandler(): void
     {
         $this->runQuestionTests(
             [
@@ -244,7 +244,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQueryHandlerWithDismax()
+    public function testQueryHandlerWithDismax(): void
     {
         $this->runQuestionTests(
             [
@@ -259,7 +259,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQueryHandlerWithEdismax()
+    public function testQueryHandlerWithEdismax(): void
     {
         $this->runQuestionTests(
             [
@@ -275,7 +275,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExactQueryHandler()
+    public function testExactQueryHandler(): void
     {
         $qb = new QueryBuilder(
             [
@@ -306,7 +306,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQueryHandlerWithFilterQueryAndDisMax()
+    public function testQueryHandlerWithFilterQueryAndDisMax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -324,7 +324,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQueryHandlerWithFilterQueryAndNoDisMax()
+    public function testQueryHandlerWithFilterQueryAndNoDisMax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -343,7 +343,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMatchAllQueryWithFilterQueryAndNoDisMax()
+    public function testMatchAllQueryWithFilterQueryAndNoDisMax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -364,7 +364,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHlQ()
+    public function testHlQ(): void
     {
         $qb = new QueryBuilder(
             [
@@ -391,7 +391,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetFieldsToHighlight()
+    public function testSetFieldsToHighlight(): void
     {
         $qb = new QueryBuilder(
             [
@@ -432,7 +432,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetCreateSpellingQuery()
+    public function testSetCreateSpellingQuery(): void
     {
         $qb = new QueryBuilder(
             [
@@ -463,7 +463,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQueryGroup()
+    public function testQueryGroup(): void
     {
         $qb = new QueryBuilder(
             [
@@ -494,7 +494,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testQueryGroupWithAdvancedSyntax()
+    public function testQueryGroupWithAdvancedSyntax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -529,7 +529,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMultipleQuotedPhrases()
+    public function testMultipleQuotedPhrases(): void
     {
         $qb = new QueryBuilder(
             [
@@ -553,7 +553,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMixedQuotedPhrases()
+    public function testMixedQuotedPhrases(): void
     {
         $qb = new QueryBuilder(
             [
@@ -577,7 +577,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMixedQuotedPhrasesWithEscapedQuote()
+    public function testMixedQuotedPhrasesWithEscapedQuote(): void
     {
         $qb = new QueryBuilder(
             [
@@ -599,9 +599,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIndividualQueryHandlerWithGlobalExtraParams().
      *
-     * @return \Iterator
+     * @return Iterator
      */
-    public static function globalExtraParamsIndividualQueryDataProvider(): \Iterator
+    public static function globalExtraParamsIndividualQueryDataProvider(): Iterator
     {
         yield 'Single value, no extra params' => [
             'globalExtraParams' => null,
@@ -773,18 +773,18 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
-     * @param array $globalExtraParams Global extra parameters
-     * @param array $expected1         First set of expected fields
-     * @param array $expected2         Second set of expected fields
+     * @param ?array $globalExtraParams Global extra parameters
+     * @param array  $expected1         First set of expected fields
+     * @param array  $expected2         Second set of expected fields
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsIndividualQueryDataProvider')]
     public function testIndividualQueryHandlerWithGlobalExtraParams(
-        $globalExtraParams,
-        $expected1,
-        $expected2
-    ) {
+        ?array $globalExtraParams,
+        array $expected1,
+        array $expected2
+    ): void {
         $q1 = new Query('q', 'test');
         $params1 = new ParamBag(['sort' => 'score desc']);
         $q2 = new Query('q', 'test2');
@@ -826,9 +826,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGroupedQueryHandlerWithGlobalExtraParams().
      *
-     * @return \Iterator
+     * @return Iterator
      */
-    public static function globalExtraParamsGroupedQueryDataProvider(): \Iterator
+    public static function globalExtraParamsGroupedQueryDataProvider(): Iterator
     {
         yield 'Search type in [test]' => [
             'globalExtraParams' => [
@@ -906,9 +906,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsGroupedQueryDataProvider')]
     public function testGroupedQueryHandlerWithGlobalExtraParams(
-        $globalExtraParams,
-        $expectedFields
-    ) {
+        array $globalExtraParams,
+        array $expectedFields
+    ): void {
         $q1 = new Query('q', 'test');
         $q2 = new Query('q', 'test2');
         $group = new QueryGroup('AND', [$q1, $q2]);
@@ -940,7 +940,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegatedQuery()
+    public function testNegatedQuery(): void
     {
         $group = new QueryGroup('NOT', [new Query('q')]);
         $qb = new QueryBuilder([]);
@@ -953,7 +953,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegatedAndQuery()
+    public function testNegatedAndQuery(): void
     {
         $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
         $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
@@ -971,7 +971,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegatedOrQuery()
+    public function testNegatedOrQuery(): void
     {
         $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
         $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
@@ -989,7 +989,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDismaxMunge()
+    public function testDismaxMunge(): void
     {
         // Set up an array of expected inputs and outputs:
         $tests = [
@@ -1021,7 +1021,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testDismaxMungeQueryGroupOnlyOnce()
+    /**
+     * Test that dismax munge is only applied once in query group.
+     *
+     * @return void
+     */
+    public function testDismaxMungeQueryGroupOnlyOnce(): void
     {
         $specs = [
             'test' => [
@@ -1033,11 +1038,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         ];
         $qb = new QueryBuilder($specs);
         $query = new QueryGroup(
-            'AND', [ new Query('some-coded-value', 'test') ]
+            'AND',
+            [ new Query('some-coded-value', 'test') ]
         );
         $response = $qb->build($query);
         $processedQ = $response->get('q');
-        $this->assertEquals(1, preg_match('/\}22@some-coded-value"/', $processedQ[0]));
-        $this->assertEquals(0, preg_match('/\}22@22@some-coded-value"/', $processedQ[0]));
+        $this->assertMatchesRegularExpression('/\}22@some-coded-value"/', $processedQ[0]);
+        $this->assertDoesNotMatchRegularExpression('/\}22@22@some-coded-value"/', $processedQ[0]);
     }
 }
