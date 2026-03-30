@@ -57,10 +57,10 @@ class Csp
      * @param ?Response      $response  HTTP Response, if any
      * @param NonceGenerator $generator Nonce generator
      */
+    #[Autowire()]
     public function __construct(
-        #[Autowire(container: 'Response')]
         protected ?Response $response,
-        protected NonceGenerator $generator
+        NonceGenerator $generator
     ) {
         $this->nonce = $generator->getNonce();
     }
@@ -103,5 +103,15 @@ class Csp
     public function getNonce(): string
     {
         return $this->nonce;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

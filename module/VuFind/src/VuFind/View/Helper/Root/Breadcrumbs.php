@@ -162,4 +162,14 @@ class Breadcrumbs
         $this->getLayout()->breadcrumbs = $this->formatBreadcrumb($text, $href, $active);
         return $this;
     }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }

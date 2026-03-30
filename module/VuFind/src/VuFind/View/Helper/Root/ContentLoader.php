@@ -41,18 +41,11 @@ namespace VuFind\View\Helper\Root;
 class ContentLoader
 {
     /**
-     * Content loader.
-     *
-     * @var \VuFind\Content\Loader
-     */
-    protected $loader;
-
-    /**
      * Constructor.
      *
      * @param \VuFind\Content\Loader $loader Content loader
      */
-    public function __construct(\VuFind\Content\Loader $loader)
+    public function __construct(protected \VuFind\Content\Loader $loader)
     {
         $this->loader = $loader;
     }

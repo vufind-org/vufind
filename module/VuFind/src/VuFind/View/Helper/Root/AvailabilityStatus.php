@@ -182,4 +182,14 @@ class AvailabilityStatus
         }
         return $this->messageCache[$key];
     }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }

@@ -98,4 +98,14 @@ class BulkAction
             compact('action', 'icon', 'content', 'limit', 'attributes')
         );
     }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }
