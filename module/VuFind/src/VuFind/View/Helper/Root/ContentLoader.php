@@ -47,7 +47,6 @@ class ContentLoader
      */
     public function __construct(protected \VuFind\Content\Loader $loader)
     {
-        $this->loader = $loader;
     }
 
     /**
