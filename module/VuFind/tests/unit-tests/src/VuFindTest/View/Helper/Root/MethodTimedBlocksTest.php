@@ -106,9 +106,9 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('methodTimedBlocksProvider')]
     public function testMethodTimedBlocks(array $timedBlocks, string $expected, string $service = '', $blocked = true)
     {
-        $helpers = $this->getViewHelpers($timedBlocks, $blocked);
+        $helpers = $this->getDependencies($timedBlocks, $blocked);
         $helper = new MethodTimedBlocks(
-            $helpers['ils'],
+            $helpers['connection'],
             $helpers['translate'],
             $helpers['dateTime']
         );
@@ -116,14 +116,14 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get view helpers needed by test.
+     * Get dependencies needed by test.
      *
      * @param array $timedBlocks Timed blocks
      * @param bool  $blocked     Is the method blocked
      *
      * @return array
      */
-    protected function getViewHelpers(array $timedBlocks, bool $blocked): array
+    protected function getDependencies(array $timedBlocks, bool $blocked): array
     {
         $translations = [
             'default' => [
@@ -139,10 +139,8 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getMethodBlock')->willReturn($blocked ? $timedBlocks : []);
 
-        $ils = new Ils($connection);
-
         $dateTime = new DateTime(new Converter(), $translate);
 
-        return compact('translate', 'ils', 'dateTime');
+        return compact('translate', 'connection', 'dateTime');
     }
 }
