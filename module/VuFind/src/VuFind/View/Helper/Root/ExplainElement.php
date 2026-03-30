@@ -55,7 +55,7 @@ class ExplainElement
      * @param LocalizedNumber   $localizedNumber LocalizedNumber helper
      */
     public function __construct(
-        #[Autowire(container: 'ViewRenderer')]
+        #[Autowire(service: 'ViewRenderer')]
         protected RendererInterface $view,
         #[Autowire(container: 'ViewHelperManager')]
         protected Translate $translate,
