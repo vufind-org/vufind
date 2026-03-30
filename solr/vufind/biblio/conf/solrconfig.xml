@@ -315,10 +315,40 @@
      Names starting with a '/' are accessed with a path equal to the
      registered name.  Names without a leading '/' are accessed with:
       http://host/app/select?qt=name
+     If no qt is defined, the requestHandler that declares default="true"
+     will be used.
   -->
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
+    <!-- default values for query parameters -->
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+       <!--
+       <int name="rows">10</int>
+       <str name="fl">*</str>
+       <str name="version">2.1</str>
+        -->
+      <str name="spellcheck.extendedResults">true</str>
+      <str name="spellcheck.onlyMorePopular">true</str>
+      <str name="spellcheck.count">20</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
+      <!-- Enable split on whitespace to prevent switching from term centric to field
+           centric search if different field types return different analysis (such as
+           synonyms or stopwords). Note the downside that sow=true prevents
+           multi-word synonyms from working properly.
+           See the following links for more information:
+           https://opensourceconnections.com/blog/2018/02/20/edismax-and-multiterm-synonyms-oddities/
+           https://lucene.472066.n3.nabble.com/Problem-with-eDisMax-and-multi-word-synonyms-td4471917.html
+      -->
+      <str name="sow">true</str>
+    </lst>
+    <arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+  </requestHandler>
 
   <!-- Explicit /select handler to replace deprecated requestDispatcher handleSelect handling.
-       This mirrors the former "standard" handler so that requests to /select behave the same as before. -->
+       This mirrors the "standard" handler so that requests to /select behave the same as before. -->
   <requestHandler name="/select" class="solr.SearchHandler">
     <lst name="defaults">
       <str name="echoParams">explicit</str>
