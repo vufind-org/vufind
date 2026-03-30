@@ -1,6 +1,6 @@
 <?php
   $consentGiven = (bool)$this->cookieConsent()->getConsentInformation();
-  $consentConfigJson = json_encode($this->consentConfig);
+  $consentConfigJson = json_encode($this->cookieConsent()->getConsentConfig());
   $cookieConsentDivAttrs = [
     'class' => 'cookie-consent js-cookie-consent',
     'role' => 'region',

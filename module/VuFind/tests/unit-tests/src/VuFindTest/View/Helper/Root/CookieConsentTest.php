@@ -74,14 +74,19 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelperWithoutConsent(): void
     {
-        $helper = $this->getCookieConsent(
-            [
-                'Cookies' => [
-                    'consent' => true,
-                    'consentCategories' => 'essential,matomo',
-                ],
-            ]
-        );
+        $config = [
+            'Cookies' => [
+                'consent' => true,
+                'consentCategories' => 'essential,matomo',
+            ],
+        ];
+
+        $helper = $this->getCookieConsent($config);
+
+        // Test helper methods:
+        $expectedResults = $this->getExpectedHelperMethodResults($config, []);
+        $this->assertSame($expectedResults['getConsentConfig'], $helper->getConsentConfig());
+        $this->assertSame($expectedResults['getConsentInformation'], $helper->getConsentInformation());
 
         $this->assertTrue($helper->isEnabled());
         $this->assertSame('rendered_template', $helper->render('bottom'));
@@ -121,6 +126,11 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         ];
         $helper = $this->getCookieConsent($config, $cookies);
 
+        // Test helper methods:
+        $expectedResults = $this->getExpectedHelperMethodResults($config, $cookies);
+        $this->assertSame($expectedResults['getConsentConfig'], $helper->getConsentConfig());
+        $this->assertSame($expectedResults['getConsentInformation'], $helper->getConsentInformation());
+
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
@@ -155,6 +165,12 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         ];
 
         $helper = $this->getCookieConsent($config, $cookies, expectRender: false);
+
+        // Test helper methods:
+        $expectedResults = $this->getExpectedHelperMethodResults($config, $cookies);
+        $this->assertSame($expectedResults['getConsentConfig'], $helper->getConsentConfig());
+        $this->assertNull($helper->getConsentInformation());
+
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertFalse($helper->isCategoryAccepted('essential'));
         $this->assertFalse($helper->isServiceAllowed('matomo'));
@@ -239,7 +255,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
 
         $renderer->expects($expectRender ? $this->once() : $this->never())
             ->method('render')
-            ->with('CookieConsent/cookie-consent.phtml', $this->getExpectedRenderParams($cookies))
+            ->with('CookieConsent/cookie-consent.phtml')
             ->willReturn('rendered_template');
 
         $mockLoginTokenManager = $this->createMock(LoginTokenManager::class);
@@ -260,17 +276,19 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             $mockRequest,
             $renderer
         );
+
         return $helper;
     }
 
     /**
-     * Get expected params for the render call.
+     * Get expected helper method results.
      *
+     * @param array $config  Main config
      * @param array $cookies Cookies
      *
      * @return array
      */
-    protected function getExpectedRenderParams(array $cookies): array
+    protected function getExpectedHelperMethodResults(array $config, array $cookies): array
     {
         $categoryConfig = [
             'essential' => [
@@ -294,6 +312,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+        $enabledCategories = explode(',', $config['Cookies']['consentCategories'] ?? 'essential');
+        $categoryConfig = array_intersect_key($categoryConfig, array_flip($enabledCategories));
         $jsCategoryConfig = $categoryConfig;
         foreach ($jsCategoryConfig as &$category) {
             unset($category['Title']);
@@ -315,19 +335,22 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             $consentInformation['path'] = '/first';
         }
         return [
-            'consentConfig' => [
+            'getConsentConfig' => [
                 'cookieName' => 'cc_cookie',
                 'autoClearCookies' => true,
                 'revision' => 0,
                 'cookieExpirationDays' => 182,
                 'categoryConfig' => $jsCategoryConfig,
-                'controlledVuFindServices' => [
-                    'matomo' => [
-                        'matomo',
+                'controlledVuFindServices' => array_intersect_key(
+                    [
+                        'matomo' => [
+                            'matomo',
+                        ],
                     ],
-                ],
+                    array_flip($enabledCategories)
+                ),
             ],
-            'consentInformation' => $consentInformation,
+            'getConsentInformation' => $consentInformation,
         ];
     }
 

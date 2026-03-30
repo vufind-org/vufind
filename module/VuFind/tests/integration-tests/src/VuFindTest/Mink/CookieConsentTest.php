@@ -77,30 +77,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testCookieConsent(): void
     {
-        // Activate the cookie consent and Matomo:
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Cookies' => [
-                        'consent' => true,
-                        'consentCategories' => 'essential,matomo',
-                    ],
-                    'Matomo' => [
-                        'url' => $this->getVuFindUrl() . '/Content/faq',
-                    ],
-                ],
-            ]
-        );
-        // Make sure the cookie dialog is not hidden from a headless client:
-        $this->changeYamlConfigs(
-            [
-                'CookieConsent' => [
-                    'CookieConsent' => [
-                        'HideFromBots' => false,
-                    ],
-                ],
-            ]
-        );
+        $this->setupConfigs();
 
         $page = $this->getStartPage('/Content/privacy');
         $html = $page->getHtml();
@@ -157,6 +134,68 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickAcceptAll($page);
         // Verify that there's Matomo consent:
         $this->verifyCurrentAllowStatus($page, true, true);
+    }
+
+    /**
+     * Test cookie consent with only essential categories.
+     *
+     * @return void
+     */
+    public function testEssentialOnly(): void
+    {
+        $this->setupConfigs('essential');
+
+        $page = $this->getStartPage('/Content/privacy');
+        $this->waitForCookieConsentOverlay($page);
+        $this->assertCount(1, $page->findAll('css', '.cookie-consent .cookie-consent__category'));
+        $this->assertSame(
+            'Essential Cookies',
+            $this->findCssAndGetText($page, '.cookie-consent .cookie-consent__category-checkbox')
+        );
+        // Check that there's no Save Settings button:
+        $this->unFindCss($page, '.cookie-consent .cookie-consent__save-settings');
+
+        // Toggle settings and click the Accept All button that should still be visible:
+        $this->clickCss($page, '.cookie-consent .cookie-consent__settings-toggle');
+        $this->clickAcceptAll($page);
+
+        // Verify that there's no Matomo consent:
+        $this->verifyCurrentAllowStatus($page, true, false);
+    }
+
+    /**
+     * Setup configs for cookie consent.
+     *
+     * @param string $categories Enabled categories
+     *
+     * @return void
+     */
+    protected function setupConfigs(?string $categories = null): void
+    {
+        // Activate the cookie consent and Matomo:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Cookies' => [
+                        'consent' => true,
+                        'consentCategories' => $categories ?? 'essential,matomo',
+                    ],
+                    'Matomo' => [
+                        'url' => $this->getVuFindUrl() . '/Content/faq',
+                    ],
+                ],
+            ]
+        );
+        // Make sure the cookie dialog is not hidden from a headless client:
+        $this->changeYamlConfigs(
+            [
+                'CookieConsent' => [
+                    'CookieConsent' => [
+                        'HideFromBots' => false,
+                    ],
+                ],
+            ]
+        );
     }
 
     /**

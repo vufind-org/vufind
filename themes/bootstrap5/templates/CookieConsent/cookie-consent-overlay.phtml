@@ -10,7 +10,10 @@
   <?php endif; ?>
 
   <div class="cookie-consent__settings">
-    <button class="btn btn-link icon-link cookie-consent__settings-toggle collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cookie_consent_settings_collapse" aria-expanded="false">
+    <button class="btn btn-link icon-link cookie-consent__settings-toggle collapsed" type="button"
+      data-bs-toggle="collapse" data-bs-target="#cookie_consent_settings_collapse"
+      aria-expanded="false" aria-controls="cookie_consent_settings_collapse"
+    >
       <?=$this->icon('collapse-open', 'icon-link__icon collapse-icon-open') ?>
       <?=$this->icon('collapse-close', 'icon-link__icon collapse-icon-close') ?>
       <span class="icon-link__label">
@@ -23,9 +26,11 @@
   </div>
 
   <div class="cookie-consent__buttons">
-    <button class="btn btn-primary cookie-consent__save-settings js-save-settings hidden">
-      <?=$this->transEsc('CookieConsent::Save Settings')?>
-    </button>
+    <?php if ($this->cookieConsent()->hasNonEssentialCategories()): ?>
+      <button class="btn btn-primary cookie-consent__save-settings js-save-settings hidden">
+        <?=$this->transEsc('CookieConsent::Save Settings')?>
+      </button>
+    <?php endif; ?>
     <button class="btn btn-primary cookie-consent__accept-all js-accept-all">
       <?=$this->transEsc('CookieConsent::Accept All Cookies')?>
     </button>

@@ -217,25 +217,17 @@ VuFind.register('cookie', function cookie() {
     const acceptAllBtn = consentElement.querySelector('.js-accept-all');
     const acceptEssentialBtn = consentElement.querySelector('.js-accept-essential');
 
-    if (settingsCollapseEl) {
+    if (settingsCollapseEl && saveBtn && acceptAllBtn) {
       settingsCollapseEl.addEventListener('show.bs.collapse', (e) => {
         if (e.target === settingsCollapseEl) {
-          if (saveBtn && e.target === settingsCollapseEl) {
-            saveBtn.classList.remove('hidden');
-          }
-          if (acceptAllBtn) {
-            acceptAllBtn.classList.add('hidden');
-          }
+          saveBtn.classList.remove('hidden');
+          acceptAllBtn.classList.add('hidden');
         }
       });
       settingsCollapseEl.addEventListener('hide.bs.collapse', (e) => {
         if (e.target === settingsCollapseEl) {
-          if (saveBtn) {
-            saveBtn.classList.add('hidden');
-          }
-          if (acceptAllBtn) {
-            acceptAllBtn.classList.remove('hidden');
-          }
+          saveBtn.classList.add('hidden');
+          acceptAllBtn.classList.remove('hidden');
         }
       });
     }

@@ -115,6 +115,11 @@ class CookieConsent implements TranslatorAwareInterface
     ) {
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
         $this->consentCookieExpiration = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
+        // Filter out disabled categories from the configuration:
+        $this->consentConfig['Categories'] = array_intersect_key(
+            $this->consentConfig['Categories'] ?? [],
+            array_flip($this->getEnabledCategories())
+        );
     }
 
     /**
@@ -154,11 +159,7 @@ class CookieConsent implements TranslatorAwareInterface
             }
         }
 
-        $params = [
-            'consentConfig' => $this->getConsentConfig(),
-            'consentInformation' => $this->getConsentInformation(),
-        ];
-        return $this->renderer->render('CookieConsent/cookie-consent.phtml', $params);
+        return $this->renderer->render('CookieConsent/cookie-consent.phtml');
     }
 
     /**
@@ -307,12 +308,11 @@ class CookieConsent implements TranslatorAwareInterface
      */
     public function getCategoryConfig(): array
     {
-        $categoryData = $this->consentConfig['Categories'] ?? [];
-        $categoryConfig = array_intersect_key($categoryData, array_flip($this->getEnabledCategories()));
+        $categoryConfig = $this->consentConfig['Categories'];
         // Replace placeholders:
         $placeholders = $this->getPlaceholders();
         $placeholderSearch = array_keys($placeholders);
-        $placeholderReplace =  array_values($placeholders);
+        $placeholderReplace = array_values($placeholders);
         array_walk_recursive(
             $categoryConfig,
             function (&$value) use ($placeholderSearch, $placeholderReplace): void {
@@ -329,16 +329,28 @@ class CookieConsent implements TranslatorAwareInterface
     }
 
     /**
+     * Check if non-essential categories are available.
+     *
+     * @return bool
+     */
+    public function hasNonEssentialCategories(): bool
+    {
+        foreach ($this->consentConfig['Categories'] as $category) {
+            if (!($category['Essential'] ?? false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get cookie consent configuration.
      *
      * @return array
      */
     public function getConsentConfig(): array
     {
-        $categoryConfig = array_intersect_key(
-            $this->consentConfig['Categories'] ?? [],
-            array_flip($this->getEnabledCategories())
-        );
+        $categoryConfig = $this->consentConfig['Categories'];
         foreach ($categoryConfig as &$category) {
             $category = array_intersect_key($category, array_flip($this->jsCategoryConfigElements));
         }
