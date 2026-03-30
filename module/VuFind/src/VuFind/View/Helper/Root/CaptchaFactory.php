@@ -80,10 +80,16 @@ class CaptchaFactory implements FactoryInterface
             $captchas[] = $container->get(\VuFind\Captcha\PluginManager::class)
                 ->get(trim($captchaType));
         }
+        $viewHelperManager = $container->get('ViewHelperManager');
+        $viewRenderer = $viewHelperManager->getRenderer();
+        $viewResolver = $viewRenderer->resolver();
 
         return new $requestedName(
             $config,
-            $captchas
+            $captchas,
+            $viewRenderer,
+            $viewResolver,
+            $viewHelperManager->get('context')
         );
     }
 }
