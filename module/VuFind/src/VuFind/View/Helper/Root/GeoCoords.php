@@ -29,7 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\Url;
 use VuFind\Search\Base\Options;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 
@@ -42,22 +44,8 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GeoCoords extends \Laminas\View\Helper\AbstractHelper
+class GeoCoords
 {
-    /**
-     * Is Map Search enabled?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
-     * Default coordinates.
-     *
-     * @var string
-     */
-    protected $coords;
-
     /**
      * Get geoField variable name.
      *
@@ -69,10 +57,14 @@ class GeoCoords extends \Laminas\View\Helper\AbstractHelper
      * Constructor.
      *
      * @param string $coords Default coordinates
+     * @param Url    $url    URL helper
      */
-    public function __construct($coords)
-    {
-        $this->coords = $coords;
+    public function __construct(
+        #[Autowire(config: 'MapSelectionConfig', path: 'default_coordinates')]
+        protected string $coords,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url
+    ) {
     }
 
     /**
@@ -112,10 +104,9 @@ class GeoCoords extends \Laminas\View\Helper\AbstractHelper
         if (!$this->recommendationEnabled($options->getRecommendationSettings())) {
             return false;
         }
-        $urlHelper = $this->getView()->plugin('url');
         $query = http_build_query([
             'filter' => [$this->geoField . ':Intersects(ENVELOPE(' . $this->coords . '))'],
         ]);
-        return $urlHelper('search-results') . '?' . $query;
+        return ($this->url)('search-results') . '?' . $query;
     }
 }
