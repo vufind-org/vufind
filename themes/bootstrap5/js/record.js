@@ -441,9 +441,13 @@ function backgroundLoadTab(tabId) {
  * @param {boolean} scrollToTabs Whether to scroll to the tabs section.
  */
 function applyRecordTabHash(scrollToTabs) {
-  const activeLi = document.querySelector('.record-tabs li.active');
+  const recordTabs = document.querySelector('.record-tabs');
+  if (!recordTabs) {
+    return;
+  }
+  const activeLi = recordTabs.querySelector('li.active');
   const activeTab = activeLi ? activeLi.dataset.tab : undefined;
-  const initiallyActiveTab = document.querySelector('.record-tabs li.initiallyActive a');
+  const initiallyActiveTab = recordTabs.querySelector('li.initiallyActive a');
   const newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase() : '';
 
   // Open tab in url hash
@@ -453,7 +457,7 @@ function applyRecordTabHash(scrollToTabs) {
       initiallyActiveTab.focus();
     }
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    const tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
+    const tabLink = recordTabs.querySelector('.' + newTab.substring(1) + ' a');
     if (tabLink) {
       tabLink.click();
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
