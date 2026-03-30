@@ -15,7 +15,7 @@
   // Round down to nearest 10 only if rating is not null
   $roundedRating = $rating === null
     ? null
-    : (string) max(0, floor($rating / 10) * 10);
+    : (string)max(0, floor($rating / 10) * 10);
   // Unique name for the fields of read-only ratings so that displaying multiple ratings on a page works:
   $fieldName = $this->readonly ? "rating_{$id}" : 'rating';
 ?>
