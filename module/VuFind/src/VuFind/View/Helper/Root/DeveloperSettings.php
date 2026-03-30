@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Developer settings helper.
