@@ -57,8 +57,8 @@ class Csp
      * @param ?Response      $response  HTTP Response, if any
      * @param NonceGenerator $generator Nonce generator
      */
-    #[Autowire()]
     public function __construct(
+        #[Autowire(service: 'Response')]
         protected ?Response $response,
         NonceGenerator $generator
     ) {
