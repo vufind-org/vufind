@@ -9,8 +9,8 @@
     </p>
   <?php endif; ?>
 
-  <?php // Note: aria-live="polite" is required e.g. for Chrome + VoiceOver to read uncollapsed content ?>
-  <div class="cookie-consent__settings" aria-live="polite">
+  <?php // Note: id referred to by data-bs-parent attribyte; see https://getbootstrap.com/docs/5.3/components/accordion/ ?>
+  <div class="cookie-consent__settings" id="cookie_settings">
     <button class="btn btn-link icon-link cookie-consent__settings-toggle collapsed" type="button"
       data-bs-toggle="collapse" data-bs-target="#cookie_consent_settings_collapse"
       aria-expanded="false" aria-controls="cookie_consent_settings_collapse"
@@ -21,7 +21,7 @@
         <?=$this->transEsc('CookieConsent::toggle_categories')?>
       </span>
     </button>
-    <div class="collapse js-settings-collapse" id="cookie_consent_settings_collapse">
+    <div class="collapse js-settings-collapse" id="cookie_consent_settings_collapse" data-bs-parent="cookie_settings">
       <?=$this->render('CookieConsent/cookie-consent-settings.phtml')?>
     </div>
   </div>
