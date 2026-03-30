@@ -29,8 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\ILS\Connection;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Timed method blocks view helper.
@@ -46,9 +46,9 @@ class MethodTimedBlocks
     /**
      * Constructor.
      *
-     * @param Connection $ils        ILS helper
-     * @param Translate  $translate  Translate helper
-     * @param DateTime   $dateTime   DateTime helper
+     * @param Connection $ils       ILS helper
+     * @param Translate  $translate Translate helper
+     * @param DateTime   $dateTime  DateTime helper
      */
     public function __construct(
         protected Connection $ils,

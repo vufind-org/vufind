@@ -32,7 +32,6 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\Date\Converter;
 use VuFind\ILS\Connection;
 use VuFind\View\Helper\Root\DateTime;
-use VuFind\View\Helper\Root\Ils;
 use VuFind\View\Helper\Root\MethodTimedBlocks;
 use VuFind\View\Helper\Root\Translate;
 
