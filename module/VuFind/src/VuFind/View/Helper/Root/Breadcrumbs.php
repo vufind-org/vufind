@@ -29,8 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\Layout;
 use Laminas\View\Model\ViewModel;
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Breadcrumb trail view helper.
@@ -41,8 +43,21 @@ use Laminas\View\Model\ViewModel;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Breadcrumbs extends AbstractHelper
+class Breadcrumbs
 {
+    /**
+     * Constructor.
+     *
+     * @param RendererInterface $view   View renderer
+     * @param Layout            $layout Layout view helper
+     */
+    public function __construct(
+        protected RendererInterface $view,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Layout $layout
+    ) {
+    }
+
     /**
      * Format a single breadcrumb.
      *
@@ -54,7 +69,7 @@ class Breadcrumbs extends AbstractHelper
      */
     protected function formatBreadcrumb(string $text, ?string $href = null, bool $active = false): string
     {
-        return $this->getView()->render('Helpers/breadcrumbs/single', compact('text', 'href', 'active'));
+        return $this->view->render('Helpers/breadcrumbs/single', compact('text', 'href', 'active'));
     }
 
     /**
@@ -64,7 +79,7 @@ class Breadcrumbs extends AbstractHelper
      */
     protected function getLayout(): ViewModel
     {
-        return ($this->getView()->plugin('layout'))();
+        return ($this->layout)();
     }
 
     /**
@@ -119,7 +134,7 @@ class Breadcrumbs extends AbstractHelper
         $layout = $this->getLayout();
         $active = ($layout->showBreadcrumbs ?? true) && $layout->breadcrumbs !== false;
         $breadcrumbs = $active ? $layout->breadcrumbs : '';
-        return $this->getView()->render('Helpers/breadcrumbs/all', compact('active', 'breadcrumbs'));
+        return $this->view->render('Helpers/breadcrumbs/all', compact('active', 'breadcrumbs'));
     }
 
     /**
@@ -145,6 +160,16 @@ class Breadcrumbs extends AbstractHelper
     public function set(string $text, ?string $href = null, bool $active = false): static
     {
         $this->getLayout()->breadcrumbs = $this->formatBreadcrumb($text, $href, $active);
+        return $this;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
         return $this;
     }
 }
