@@ -448,16 +448,16 @@ function applyRecordTabHash(scrollToTabs) {
   const activeLi = recordTabs.querySelector('li.active');
   const activeTab = activeLi ? activeLi.dataset.tab : undefined;
   const initiallyActiveTab = recordTabs.querySelector('li.initiallyActive a');
-  const newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase() : '';
+  const newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase().substring(1) : '';
 
   // Open tab in url hash
-  if (initiallyActiveTab && (newTab.length <= 1 || newTab === '#tabnav')) {
+  if (initiallyActiveTab && (newTab === '' || newTab === 'tabnav')) {
     initiallyActiveTab.click();
-    if (newTab === '#tabnav') {
+    if (newTab === 'tabnav') {
       initiallyActiveTab.focus();
     }
-  } else if ('#' + activeTab !== newTab && /^#[a-zA-Z_][a-zA-Z0-9_-]*$/.test(newTab)) {
-    const tabLink = recordTabs.querySelector('.' + newTab.substring(1) + ' a');
+  } else if (activeTab !== newTab && /^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(newTab)) {
+    const tabLink = recordTabs.querySelector('.' + newTab + ' a');
     if (tabLink) {
       tabLink.click();
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
