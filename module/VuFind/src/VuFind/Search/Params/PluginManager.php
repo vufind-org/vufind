@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search params plugin manager.
+ * Search options plugin manager.
  *
  * PHP version 8
  *
@@ -27,10 +27,10 @@
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\Search\Params;
+namespace VuFind\Search\Options;
 
 /**
- * Search params plugin manager.
+ * Search options plugin manager.
  *
  * @category VuFind
  * @package  Search
@@ -46,33 +46,33 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'blender' => \VuFind\Search\Blender\Params::class,
-        'blender2' => \VuFind\Search\Blender2\Params::class,
-        'browzine' => \VuFind\Search\BrowZine\Params::class,
-        'combined' => \VuFind\Search\Combined\Params::class,
-        'eds' => \VuFind\Search\EDS\Params::class,
-        'eit' => \VuFind\Search\EIT\Params::class,
-        'epf' => \VuFind\Search\EPF\Params::class,
-        'emptyset' => \VuFind\Search\EmptySet\Params::class,
-        'favorites' => \VuFind\Search\Favorites\Params::class,
-        'libguides' => \VuFind\Search\LibGuides\Params::class,
-        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Params::class,
-        'mixedlist' => \VuFind\Search\MixedList\Params::class,
-        'pazpar2' => \VuFind\Search\Pazpar2\Params::class,
-        'primo' => \VuFind\Search\Primo\Params::class,
-        'proquestfsg' => \VuFind\Search\ProQuestFSG\Params::class,
-        'search2' => \VuFind\Search\Search2\Params::class,
-        'solr' => \VuFind\Search\Solr\Params::class,
-        'solrauth' => \VuFind\Search\SolrAuth\Params::class,
-        'solrauthor' => \VuFind\Search\SolrAuthor\Params::class,
-        'solrauthorfacets' => \VuFind\Search\SolrAuthorFacets\Params::class,
-        'solrcollection' => \VuFind\Search\SolrCollection\Params::class,
-        'solrreserves' => \VuFind\Search\SolrReserves\Params::class,
-        'solrweb' => \VuFind\Search\SolrWeb\Params::class,
-        'summon' => \VuFind\Search\Summon\Params::class,
-        'tags' => \VuFind\Search\Tags\Params::class,
-        'worldcat' => \VuFind\Search\WorldCat\Params::class,
-        'worldcat2' => \VuFind\Search\WorldCat2\Params::class,
+        'blender' => \VuFind\Search\Blender\Options::class,
+        'browzine' => \VuFind\Search\BrowZine\Options::class,
+        'combined' => \VuFind\Search\Combined\Options::class,
+        'eds' => \VuFind\Search\EDS\Options::class,
+        'eit' => \VuFind\Search\EIT\Options::class,
+        'epf' => \VuFind\Search\EPF\Options::class,
+        'emptyset' => \VuFind\Search\EmptySet\Options::class,
+        'favorites' => \VuFind\Search\Favorites\Options::class,
+        'libguides' => \VuFind\Search\LibGuides\Options::class,
+        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Options::class,
+        'mixedlist' => \VuFind\Search\MixedList\Options::class,
+        'pazpar2' => \VuFind\Search\Pazpar2\Options::class,
+        'primo' => \VuFind\Search\Primo\Options::class,
+        'proquestfsg' => \VuFind\Search\ProQuestFSG\Options::class,
+        'search2' => \VuFind\Search\Search2\Options::class,
+        'search2collection' => \VuFind\Search\Search2\Options::class,
+        'solr' => \VuFind\Search\Solr\Options::class,
+        'solrauth' => \VuFind\Search\SolrAuth\Options::class,
+        'solrauthor' => \VuFind\Search\SolrAuthor\Options::class,
+        'solrauthorfacets' => \VuFind\Search\SolrAuthorFacets\Options::class,
+        'solrcollection' => \VuFind\Search\SolrCollection\Options::class,
+        'solrreserves' => \VuFind\Search\SolrReserves\Options::class,
+        'solrweb' => \VuFind\Search\SolrWeb\Options::class,
+        'summon' => \VuFind\Search\Summon\Options::class,
+        'tags' => \VuFind\Search\Tags\Options::class,
+        'worldcat' => \VuFind\Search\WorldCat\Options::class,
+        'worldcat2' => \VuFind\Search\WorldCat2\Options::class,
     ];
 
     /**
@@ -81,29 +81,34 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        \VuFind\Search\BrowZine\Params::class => ParamsFactory::class,
-        \VuFind\Search\Combined\Params::class => ParamsFactory::class,
-        \VuFind\Search\EDS\Params::class => ParamsFactory::class,
-        \VuFind\Search\EIT\Params::class => ParamsFactory::class,
-        \VuFind\Search\EPF\Params::class => ParamsFactory::class,
-        \VuFind\Search\EmptySet\Params::class => ParamsFactory::class,
-        \VuFind\Search\Favorites\Params::class => ParamsFactory::class,
-        \VuFind\Search\LibGuides\Params::class => ParamsFactory::class,
-        \VuFind\Search\LibGuidesAZ\Params::class => ParamsFactory::class,
-        \VuFind\Search\MixedList\Params::class => ParamsFactory::class,
-        \VuFind\Search\Pazpar2\Params::class => ParamsFactory::class,
-        \VuFind\Search\Primo\Params::class => ParamsFactory::class,
-        \VuFind\Search\ProQuestFSG\Params::class => ParamsFactory::class,
-        \VuFind\Search\SolrAuth\Params::class => ParamsFactory::class,
-        \VuFind\Search\SolrAuthor\Params::class => ParamsFactory::class,
-        \VuFind\Search\SolrAuthorFacets\Params::class =>  ParamsFactory::class,
-        \VuFind\Search\SolrCollection\Params::class => ParamsFactory::class,
-        \VuFind\Search\SolrReserves\Params::class => ParamsFactory::class,
-        \VuFind\Search\SolrWeb\Params::class => ParamsFactory::class,
-        \VuFind\Search\Summon\Params::class => ParamsFactory::class,
-        \VuFind\Search\Tags\Params::class => ParamsFactory::class,
-        \VuFind\Search\WorldCat\Params::class => ParamsFactory::class,
-        \VuFind\Search\WorldCat2\Params::class => ParamsFactory::class,
+        \VuFind\Search\Blender\Options::class => OptionsFactory::class,
+        \VuFind\Search\BrowZine\Options::class => OptionsFactory::class,
+        \VuFind\Search\Combined\Options::class => \VuFind\Search\Combined\OptionsFactory::class,
+        \VuFind\Search\EDS\Options::class =>
+            \VuFind\Search\EDS\OptionsFactory::class,
+        \VuFind\Search\EIT\Options::class => OptionsFactory::class,
+        \VuFind\Search\EPF\Options::class => OptionsFactory::class,
+        \VuFind\Search\EmptySet\Options::class => OptionsFactory::class,
+        \VuFind\Search\Favorites\Options::class => OptionsFactory::class,
+        \VuFind\Search\LibGuides\Options::class => OptionsFactory::class,
+        \VuFind\Search\LibGuidesAZ\Options::class => OptionsFactory::class,
+        \VuFind\Search\MixedList\Options::class => OptionsFactory::class,
+        \VuFind\Search\Pazpar2\Options::class => OptionsFactory::class,
+        \VuFind\Search\Primo\Options::class => OptionsFactory::class,
+        \VuFind\Search\ProQuestFSG\Options::class => OptionsFactory::class,
+        \VuFind\Search\Search2\Options::class => OptionsFactory::class,
+        \VuFind\Search\Search2Collection\Options::class => OptionsFactory::class,
+        \VuFind\Search\Solr\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrAuth\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrAuthor\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrAuthorFacets\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrCollection\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrReserves\Options::class => OptionsFactory::class,
+        \VuFind\Search\SolrWeb\Options::class => OptionsFactory::class,
+        \VuFind\Search\Summon\Options::class => OptionsFactory::class,
+        \VuFind\Search\Tags\Options::class => OptionsFactory::class,
+        \VuFind\Search\WorldCat\Options::class => OptionsFactory::class,
+        \VuFind\Search\WorldCat2\Options::class => OptionsFactory::class,
     ];
 
     /**
@@ -119,10 +124,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
-        // These objects are not meant to be shared -- every time we retrieve one,
-        // we are building a brand new object.
-        $this->sharedByDefault = false;
-
         $this->addAbstractFactory(PluginFactory::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
@@ -135,6 +136,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return \VuFind\Search\Base\Params::class;
+        return \VuFind\Search\Base\Options::class;
     }
 }
