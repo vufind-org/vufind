@@ -165,6 +165,7 @@
             "cd themes/bootstrap5 && npm run updateDeps"
         ],
         "install-build-deps": [
+            "npm install --ignore-scripts",
             "cd themes/bootstrap5 && npm run installBuildDeps"
         ]
     }

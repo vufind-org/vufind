@@ -44,20 +44,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache NPM dependencies
-        if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('**/package.json') }}
-          restore-keys: npm-
-
-      - name: Install node dependencies
-        if: ${{ matrix.phing_tasks == 'qa-console' }}
-        # Use --ignore-scripts to prevent pre/post install scripts from running
-        # (a security precaution).
-        run: npm install --ignore-scripts
-
       - name: Get composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
@@ -99,6 +85,19 @@ jobs:
 
       - name: Install composer dependencies
         run: composer install
+
+      - name: Cache NPM dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package.json') }}
+          restore-keys: npm-
+
+      - name: Install node dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        # Run NPM via Composer for consistency and centralization.
+        run: composer run install-build-deps
 
       - name: Run tests
         run: vendor/bin/phing ${{ matrix.phing_tasks }}
