@@ -72,7 +72,7 @@ class AddAction extends AbstractNoticeAction
             );
         }
 
-        $this->noticeManager->addNotice(
+        $this->noticeManager->addNoticeToDatabase(
             $this->formDataToNotice()
         );
 

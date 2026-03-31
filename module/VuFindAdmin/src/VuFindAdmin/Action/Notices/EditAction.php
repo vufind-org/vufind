@@ -69,7 +69,7 @@ class EditAction extends AbstractNoticeAction
             throw new BadRequest('Query parameter "notice_id" is missing.');
         }
 
-        $notice = $this->noticeManager->getById($noticeId);
+        $notice = $this->noticeManager->getByDatabaseId($noticeId);
         if ($notice === null) {
             throw new NotFound('Notice does not exist');
         }
@@ -85,7 +85,7 @@ class EditAction extends AbstractNoticeAction
             );
         }
 
-        $this->noticeManager->editNotice(
+        $this->noticeManager->editDatabaseNotice(
             $noticeId,
             $this->formDataToNotice()
         );

@@ -69,7 +69,7 @@ class DeleteAction extends AbstractNoticeAction
             throw new BadRequest('Query parameter "notice_id" is missing.');
         }
 
-        $notice = $this->noticeManager->getById($noticeId);
+        $notice = $this->noticeManager->getByDatabaseId($noticeId);
         if ($notice === null) {
             throw new NotFound('Notice does not exist');
         }
@@ -83,7 +83,7 @@ class DeleteAction extends AbstractNoticeAction
             );
         }
 
-        $this->noticeManager->deleteById($noticeId);
+        $this->noticeManager->deleteByDatabaseId($noticeId);
 
         return $this->returnToNoticesAdminHome();
     }

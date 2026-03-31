@@ -182,7 +182,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
      *
      * @return ?array
      */
-    public function getById(int $id): ?array
+    public function getByDatabaseId(int $id): ?array
     {
         $noticeEntity = $this->noticeService->getById($id);
         if ($noticeEntity === null) {
@@ -198,7 +198,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
      *
      * @return void
      */
-    public function addNotice(array $notice): void
+    public function addNoticeToDatabase(array $notice): void
     {
         $this->noticeService->insert($notice);
     }
@@ -211,7 +211,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
      *
      * @return void
      */
-    public function editNotice(int $id, array $notice): void
+    public function editDatabaseNotice(int $id, array $notice): void
     {
         $this->noticeService->update($id, $notice);
     }
@@ -219,11 +219,11 @@ class NoticeManager implements LocaleSettingsAwareInterface
     /**
      * Delete notice from the database by id.
      *
-     * @param string $id Notice id
+     * @param int $id Notice id
      *
      * @return void
      */
-    public function deleteById(string $id): void
+    public function deleteByDatabaseId(int $id): void
     {
         $this->noticeService->delete($id);
     }
