@@ -409,13 +409,14 @@ class AssetManager
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
+        $inlineScript = clone $this->inlineScript;
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $this->inlineScript->setScript($script, $type, $attrs);
-        $result = ($this->inlineScript)();
+        $inlineScript->setScript($script, $type, $attrs);
+        $result = ($inlineScript)();
         if ($resetArbitraryAttributes !== null) {
-            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
@@ -437,16 +438,17 @@ class AssetManager
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
+        $inlineScript = clone $this->inlineScript;
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $this->inlineScript->setFile($src, $type, $attrs);
-        $result = ($this->inlineScript)();
+        $inlineScript->setFile($src, $type, $attrs);
+        $result = ($inlineScript)();
         if ($resetArbitraryAttributes !== null) {
-            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }

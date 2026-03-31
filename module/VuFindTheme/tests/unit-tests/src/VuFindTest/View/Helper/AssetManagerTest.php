@@ -136,8 +136,17 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             $this->assertSame('js', $type);
             return $scripts;
         });
+        
+        $view = $this->getPhpRenderer();
         $manager = $this->getMockBuilder(AssetManager::class)
-            ->setConstructorArgs([$themeInfo, $pipeline])
+            ->setConstructorArgs([
+                $themeInfo,
+                $pipeline,
+                $view->plugin('url'),
+                $view->plugin('headLink'),
+                $view->plugin('headStyle'),
+                $view->plugin('inlineScript')
+            ])
             ->onlyMethods(['outputInlineScriptLink', 'outputInlineScriptString', 'outputStyleAssets'])
             ->getMock();
         $manager->method('outputInlineScriptLink')
