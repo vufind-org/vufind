@@ -456,7 +456,7 @@ function applyRecordTabHash(scrollToTabs) {
     if (newTab === '#tabnav') {
       initiallyActiveTab.focus();
     }
-  } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
+  } else if ('#' + activeTab !== newTab && /^#[a-zA-Z_][a-zA-Z0-9_-]*$/.test(newTab)) {
     const tabLink = recordTabs.querySelector('.' + newTab.substring(1) + ' a');
     if (tabLink) {
       tabLink.click();
