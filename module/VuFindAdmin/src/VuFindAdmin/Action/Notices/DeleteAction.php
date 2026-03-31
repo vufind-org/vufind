@@ -33,8 +33,6 @@ namespace VuFindAdmin\Action\Notices;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Exception\BadRequest;
-use VuFind\Exception\NotFound;
 
 /**
  * Delete notice action.
