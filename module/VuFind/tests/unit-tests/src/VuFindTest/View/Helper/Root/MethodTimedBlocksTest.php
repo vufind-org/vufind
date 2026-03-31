@@ -29,10 +29,12 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\Date\Converter;
 use VuFind\ILS\Connection;
 use VuFind\View\Helper\Root\DateTime;
 use VuFind\View\Helper\Root\MethodTimedBlocks;
+use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
 /**
@@ -108,7 +110,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         $helpers = $this->getDependencies($timedBlocks, $blocked);
         $helper = new MethodTimedBlocks(
             $helpers['connection'],
-            $helpers['translate'],
+            $helpers['transEsc'],
             $helpers['dateTime']
         );
         $this->assertSame($expected, $helper('Renewals', $service));
@@ -134,12 +136,13 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
+        $transEsc = new TransEsc($translate, new EscapeHtml());
 
         $connection = $this->createMock(Connection::class);
         $connection->method('getMethodBlock')->willReturn($blocked ? $timedBlocks : []);
 
         $dateTime = new DateTime(new Converter(), $translate);
 
-        return compact('translate', 'connection', 'dateTime');
+        return compact('transEsc', 'connection', 'dateTime');
     }
 }

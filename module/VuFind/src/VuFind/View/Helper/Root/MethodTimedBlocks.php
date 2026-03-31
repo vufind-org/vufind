@@ -46,14 +46,14 @@ class MethodTimedBlocks
     /**
      * Constructor.
      *
-     * @param Connection $ils       ILS helper
-     * @param Translate  $translate Translate helper
-     * @param DateTime   $dateTime  DateTime helper
+     * @param Connection $ils      ILS helper
+     * @param TransEsc   $transEsc TransEsc helper
+     * @param DateTime   $dateTime DateTime helper
      */
     public function __construct(
         protected Connection $ils,
         #[Autowire(container: 'ViewHelperManager')]
-        protected Translate $translate,
+        protected TransEsc $transEsc,
         #[Autowire(container: 'ViewHelperManager')]
         protected DateTime $dateTime
     ) {
@@ -75,7 +75,7 @@ class MethodTimedBlocks
     ): string {
         if ($block = $this->ils->getMethodBlock($methodName, $params)) {
             $transParams = [
-                '%%service%%' => ($this->translate)($methodDisplayName ?: 'default_service_description'),
+                '%%service%%' => ($this->transEsc)($methodDisplayName ?: 'default_service_description'),
             ];
 
             if (!$block['recurring']) {
@@ -84,11 +84,11 @@ class MethodTimedBlocks
                     : '';
                 $transParams['%%end%%'] = $end;
 
-                return ($this->translate)($end ? 'service_blocked_until' : 'service_blocked', $transParams);
+                return ($this->transEsc)($end ? 'service_blocked_until' : 'service_blocked', $transParams);
             } else {
                 $end = $this->dateTime->convertToDisplayTime('U', $block['end']->getTimestamp());
                 $transParams['%%end%%'] = $end;
-                return ($this->translate)('service_blocked_until', $transParams);
+                return ($this->transEsc)('service_blocked_until', $transParams);
             }
         }
         return '';
