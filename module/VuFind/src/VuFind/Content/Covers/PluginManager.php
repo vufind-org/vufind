@@ -29,7 +29,6 @@
 
 namespace VuFind\Content\Covers;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
 use VuFind\Content\ObalkyKnihContentFactory;
 use VuFind\ServiceManager\AbstractPluginFactory;
 

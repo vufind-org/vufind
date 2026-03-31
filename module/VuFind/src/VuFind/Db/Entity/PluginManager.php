@@ -29,7 +29,6 @@
 
 namespace VuFind\Db\Entity;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
 use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
