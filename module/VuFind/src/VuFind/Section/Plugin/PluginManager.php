@@ -34,6 +34,7 @@ use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\FooterMenu;
 use VuFind\Navigation\HeaderBar;
 use VuFind\Navigation\SiteMap;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
  * Section plugin manager.
