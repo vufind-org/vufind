@@ -64,26 +64,18 @@ class DeleteAction extends AbstractNoticeAction
             return $this->returnToNoticesAdminHome();
         }
 
-        $noticeId = $this->getQueryParam('notice_id');
-        if (!$noticeId) {
-            throw new BadRequest('Query parameter "notice_id" is missing.');
-        }
-
-        $notice = $this->noticeManager->getByDatabaseId($noticeId);
-        if ($notice === null) {
-            throw new NotFound('Notice does not exist');
-        }
+        $notice = $this->getNoticeByQueryParam();
 
         if (!$this->isPost()) {
             return $this->renderTemplate(
                 $request,
                 $response,
-                compact('noticeId', 'notice'),
+                compact('notice'),
                 'admin/notices/delete'
             );
         }
 
-        $this->noticeManager->deleteByDatabaseId($noticeId);
+        $this->noticeManager->deleteByDatabaseId($notice['id']);
 
         return $this->returnToNoticesAdminHome();
     }

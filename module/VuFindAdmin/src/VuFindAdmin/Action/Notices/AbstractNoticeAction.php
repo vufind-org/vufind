@@ -34,6 +34,8 @@ namespace VuFindAdmin\Action\Notices;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\Content\NoticeManager;
+use VuFind\Exception\BadRequest;
+use VuFind\Exception\NotFound;
 use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -72,6 +74,25 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
     protected function returnToNoticesAdminHome(): ResponseInterface
     {
         return $this->getRedirectResponse($this->response, $this->getUrlFromRoute('admin/notices'));
+    }
+
+    /**
+     * Get notice by the query parameter "notice_id".
+     *
+     * @return array
+     */
+    protected function getNoticeByQueryParam(): array
+    {
+        $noticeId = $this->getQueryParam('notice_id');
+        if (!$noticeId) {
+            throw new BadRequest('Query parameter "notice_id" is missing.');
+        }
+
+        $notice = $this->noticeManager->getByDatabaseId($noticeId);
+        if ($notice === null) {
+            throw new NotFound('Notice does not exist');
+        }
+        return $notice;
     }
 
     /**

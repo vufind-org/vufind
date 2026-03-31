@@ -64,15 +64,7 @@ class EditAction extends AbstractNoticeAction
             return $this->returnToNoticesAdminHome();
         }
 
-        $noticeId = $this->getQueryParam('notice_id');
-        if (!$noticeId) {
-            throw new BadRequest('Query parameter "notice_id" is missing.');
-        }
-
-        $notice = $this->noticeManager->getByDatabaseId($noticeId);
-        if ($notice === null) {
-            throw new NotFound('Notice does not exist');
-        }
+        $notice = $this->getNoticeByQueryParam();
 
         $formData = $this->getFormData($notice);
 
@@ -80,13 +72,13 @@ class EditAction extends AbstractNoticeAction
             return $this->renderTemplate(
                 $request,
                 $response,
-                compact('noticeId', 'formData'),
+                compact('formData'),
                 'admin/notices/edit'
             );
         }
 
         $this->noticeManager->editDatabaseNotice(
-            $noticeId,
+            $notice['id'],
             $this->formDataToNotice()
         );
 
