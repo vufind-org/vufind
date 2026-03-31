@@ -132,7 +132,7 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
             );
         }
         unset($defaultLanguages['debug']);
-        // move default language in fist position
+        // move default language into first position
         $defaultLanguage = $this->localeSettings->getDefaultLocale();
         unset($defaultLanguages[$defaultLanguage]);
         $languages = array_keys($defaultLanguages);
