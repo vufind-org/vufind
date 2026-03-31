@@ -94,9 +94,7 @@ class NoticeManager implements LocaleSettingsAwareInterface
     public function getDefaults(): array
     {
         $style = array_keys($this->noticeConfig['styles'] ?? [])[0] ?? null;
-        return [
-            'style' => $style,
-        ];
+        return compact('style');
     }
 
     /**
