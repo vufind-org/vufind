@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Search\Solr;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
@@ -119,7 +120,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckboxVisibility()
+    public function testCheckboxVisibility(): void
     {
         $config = [
             'facets' => [
@@ -184,7 +185,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('sortValueProvider')]
+    #[DataProvider('sortValueProvider')]
     public function testSortTieBreakerParameter(
         string $sort,
         string $tieBreaker,
@@ -417,7 +418,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('sortListDataProvider')]
+    #[DataProvider('sortListDataProvider')]
     public function testSortList(array $searchConfig, string $sort, array $expectedSortList): void
     {
         $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['searches' => $searchConfig]));
@@ -426,7 +427,86 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Data provider for testGetFacetSettings.
+     *
+     * @return \Iterator
+     */
+    public static function getFacetSettingsProvider(): \Iterator
+    {
+        $expectedSettings = [
+            'limit' => 30,
+            'f.publishDateRange.facet.range.start' => '1400-01-01T00:00:00Z',
+            'f.publishDateRange.facet.range.end' => '2027-12-31T23:59:59Z',
+            'f.publishDateRange.facet.range.gap' => '+1YEAR',
+            'range' => [
+                'publishDateRange',
+            ],
+            'sort' => 'count',
+        ];
+
+        yield 'default limits' => [
+            [],
+            $expectedSettings,
+        ];
+
+        $expectedSettings['f.publishDateRange.facet.range.start'] = '1000-01-01T00:00:00Z';
+        $expectedSettings['f.publishDateRange.facet.range.end'] = '2000-12-31T23:59:59Z';
+        yield 'custom limits' => [
+            [
+                'Facet_publishDateRange' => [
+                    'slider_min_value' => '1000',
+                    'slider_max_value' => '2000',
+                ],
+            ],
+            $expectedSettings,
+        ];
+
+        $expectedSettings['f.publishDateRange.facet.range.start'] = '-2000-01-01T00:00:00Z';
+        $expectedSettings['f.publishDateRange.facet.range.end'] = '-1000-12-31T23:59:59Z';
+        yield 'custom limits with negative years' => [
+            [
+                'Facet_publishDateRange' => [
+                    'slider_min_value' => '-2000',
+                    'slider_max_value' => '-1000',
+                ],
+            ],
+            $expectedSettings,
+        ];
+    }
+
+    /**
+     * Test getFacetSettings.
+     *
+     * @param array $additionalConfig Additional facet configuration
+     * @param array $expectedSettings Expected results
+     *
+     * @return void
+     */
+    #[DataProvider('getFacetSettingsProvider')]
+    public function testGetFacetSettings(array $additionalConfig, array $expectedSettings): void
+    {
+        $facetConfig = $additionalConfig + [
+            'Advanced' => [
+                'publishDateRange' => 'Publish Date',
+            ],
+            'SpecialFacets' => [
+                'dateRange' => ['publishDateRange'],
+                'dateRangeFieldType' => [
+                    'publishDateRange' => 'DateRangeField',
+                ],
+            ],
+        ];
+        $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['facets' => $facetConfig]));
+        $params->addFacet('publishDateRange');
+
+        $this->assertSame(
+            $expectedSettings,
+            $params->getFacetSettings()
+        );
+    }
+
+    /**
+     * Get Params object.
      *
      * @param ?Options                $options           Options object (null to create)
      * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
