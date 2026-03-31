@@ -53,7 +53,7 @@
             if ($classes = $this->notices()->getStyleClasses($style)) {
               $labelAttributes['class'] .= ' ' . $classes;
             }
-            ?><label <?=$this->htmlAttributes($labelAttributes)?>>
+            ?><label<?=$this->htmlAttributes($labelAttributes)?>>
             <input
               type="radio"
               name="style_fieldset[style]"
