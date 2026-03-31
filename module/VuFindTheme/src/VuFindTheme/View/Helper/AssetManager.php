@@ -29,7 +29,12 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Laminas\View\Helper\HeadLink;
 use Laminas\View\Helper\HeadScript;
+use Laminas\View\Helper\HeadStyle;
+use Laminas\View\Helper\InlineScript;
+use Laminas\View\Helper\Url;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
@@ -42,7 +47,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AssetManager extends \Laminas\View\Helper\AbstractHelper
+class AssetManager
 {
     use RelativePathTrait;
 
@@ -77,13 +82,25 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param ThemeInfo     $themeInfo Theme information service
-     * @param AssetPipeline $pipeline  Asset pipeline helper
-     * @param string        $cspNonce  Nonce from nonce generator (for content security policy)
+     * @param ThemeInfo     $themeInfo    Theme information service
+     * @param AssetPipeline $pipeline     Asset pipeline helper
+     * @param Url           $url          Url view helper
+     * @param HeadLink      $headLink     HeadLink view helper
+     * @param HeadStyle     $headStyle    HeadStyle view helper
+     * @param InlineScript  $inlineScript InlineScript view helper
+     * @param string        $cspNonce     Nonce from nonce generator (for content security policy)
      */
     public function __construct(
         protected ThemeInfo $themeInfo,
         protected AssetPipeline $pipeline,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HeadLink $headLink,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HeadStyle $headStyle,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected InlineScript $inlineScript,
         protected string $cspNonce = ''
     ) {
         $this->clearScriptList();
@@ -297,8 +314,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     {
         $details = $this->themeInfo->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
         if (!empty($details)) {
-            $urlHelper = $this->getView()->plugin('url');
-            $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+            $url = ($this->url)('home') . "themes/{$details['theme']}/" . $relPath;
             $url .= strstr($url, '?') ? '&_=' : '?_=';
             $url .= filemtime($details['path']);
             return $url;
@@ -342,7 +358,6 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
      */
     protected function outputStyleAssets(): string
     {
-        $headLink = $this->getView()->plugin('headLink');
         $processedStylesheets = $this->pipeline->process($this->stylesheets, 'css');
         foreach ($processedStylesheets as $sheet) {
             // Account for the theme system (when appropriate):
@@ -352,7 +367,7 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
                 }
             }
 
-            $headLink->appendStylesheet(
+            $this->headLink->appendStylesheet(
                 $sheet['href'],
                 $sheet['media'],
                 $sheet['conditionalStylesheet'],
@@ -360,12 +375,11 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
             );
         }
 
-        $headStyle = $this->getView()->plugin('headStyle');
         foreach ($this->styles as $style) {
-            $headStyle->appendStyle($style['css'], $style['attributes']);
+            $this->headStyle->appendStyle($style['css'], $style['attributes']);
         }
 
-        return ($headLink)() . "\n" . ($headStyle)();
+        return ($this->headLink)() . "\n" . ($this->headStyle)();
     }
 
     /**
@@ -395,14 +409,13 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $inlineScript = $this->getView()->plugin('inlineScript');
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $inlineScript->setScript($script, $type, $attrs);
-        $result = ($inlineScript)();
+        $this->inlineScript->setScript($script, $type, $attrs);
+        $result = ($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
-            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
@@ -424,17 +437,16 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $inlineScript = $this->getView()->plugin('inlineScript');
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $inlineScript->setFile($src, $type, $attrs);
-        $result = ($inlineScript)();
+        $this->inlineScript->setFile($src, $type, $attrs);
+        $result = ($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
-            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
@@ -447,5 +459,15 @@ class AssetManager extends \Laminas\View\Helper\AbstractHelper
     public function outputFooterAssets(): string
     {
         return $this->outputScriptAssets('footer');
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

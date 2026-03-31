@@ -69,7 +69,6 @@ trait ViewTrait
         $container = new MockContainer($this);
         $factory = new AssetManagerFactory();
         $helper = $factory($container, AssetManager::class);
-        $helper->setView($renderer);
         return $helper;
     }
 
