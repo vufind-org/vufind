@@ -433,10 +433,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public static function getFacetSettingsProvider(): \Iterator
     {
+        $endYear = ((int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET);
         $expectedSettings = [
             'limit' => 30,
             'f.publishDateRange.facet.range.start' => '1400-01-01T00:00:00Z',
-            'f.publishDateRange.facet.range.end' => '2027-12-31T23:59:59Z',
+            'f.publishDateRange.facet.range.end' => "$endYear-12-31T23:59:59Z",
             'f.publishDateRange.facet.range.gap' => '+1YEAR',
             'range' => [
                 'publishDateRange',
