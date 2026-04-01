@@ -301,18 +301,6 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         $helper = new Slot();
-        $helper->setView($this->getMockView());
         return $helper;
-    }
-
-    /**
-     * Get a fake view object.
-     *
-     * @return \Laminas\View\Renderer\PhpRenderer
-     */
-    protected function getMockView()
-    {
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        return $view;
     }
 }
