@@ -69,6 +69,13 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     protected $factoryForClass = [];
 
     /**
+     * Default factory to use when autodetection fails.
+     *
+     * @var string
+     */
+    protected string $defaultFactory = InvokableFactory::class;
+
+    /**
      * Get the name of a class for a given plugin name.
      *
      * @param string $requestedName Name of service
@@ -116,8 +123,8 @@ class AbstractPluginFactory implements AbstractFactoryInterface
             }
             $parentClass = get_parent_class($parentClass);
         }
-        // If we got this far, we'll try the InvokableFactory for lack of a better option:
-        return InvokableFactory::class;
+        // If we got this far, we'll fall back on the default factory for lack of a better option:
+        return $this->defaultFactory;
     }
 
     /**
