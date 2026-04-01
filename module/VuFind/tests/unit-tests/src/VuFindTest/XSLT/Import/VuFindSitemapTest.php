@@ -79,14 +79,15 @@ class VuFindSitemapTest extends \PHPUnit\Framework\TestCase
                     'title' => 'The Fake Title',
                     'keywords' => 'fake keywords',
                     'description' => 'fake description',
-                    'fulltext' => 'fake full text',
+                    'fulltext' => 'fake full text ' . md5(file_get_contents($htmlFile)),
                 ];
             }
         };
         $url = $this->getFixturePath('web/test.html');
         $xml = $class::getDocument($url);
         $xmlRegEx = '|<field name="title">The Fake Title</field><field name="keywords">fake keywords</field>'
-            . '<field name="description">fake description</field><field name="fulltext">fake full text</field>'
+            . '<field name="description">fake description</field>'
+            . '<field name="fulltext">fake full text ' . md5(file_get_contents($url)) . '</field>'
             . '<field name="category">fake category</field><field name="subject">fake subject</field>'
             . '<field name="use_count">123</field><field name="id">' . md5($url) . '</field>'
             . '<field name="url">' . $url . '</field>'
