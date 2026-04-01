@@ -114,6 +114,9 @@
           }
           $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($this->searchClassId);
         }
+        if ($this->focusOnLoad) {
+          $searchboxAttributes['data-focus-on-load'] = true;
+        }
         if (!empty($keyboardLayouts)) {
           $searchboxAttributes['class'] .= ' with-keyboard-selection';
         }
