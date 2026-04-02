@@ -34,7 +34,7 @@
   <label aria-hidden="true" class="rating__label hidden" for="rating_<?=$id?>_none" aria-label="<?=$this->transEsc('rating_none')?>"<?=$labelAttrs?>>
     &nbsp;
   </label>
-  <input aria-hidden="true" inert class="rating__input" name="<?=$fieldName?>" id="rating_<?=$id?>_none" value="" type="radio"<?=null === $rating ? ' checked' : ''?><?=$inputAttrs?>>
+  <input aria-hidden="true" class="rating__input" name="<?=$fieldName?>" id="rating_<?=$id?>_none" value="" type="radio"<?=null === $rating ? ' checked' : ''?><?=$inputAttrs?><?=$this->readonly ? ' disabled' : ''?>>
   <?php for ($level = 10; $level <= 100; $level += 10): ?>
     <?php
       $fieldId = "rating_{$id}_$level";
@@ -43,7 +43,6 @@
       $class = $level % 20 === 10 ? ' rating__label--half' : '';
       $icon = $this->icon($level % 20 === 10 ? 'rating-half' : 'rating-full', 'rating__icon rating__icon--star');
     ?>
-
     <label aria-hidden="true" class="rating__label<?=$class?>" for="<?=$fieldId?>" <?=$labelAttrs?>>
       <?=$icon?>
     </label>
