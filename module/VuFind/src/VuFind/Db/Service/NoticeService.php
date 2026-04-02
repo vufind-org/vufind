@@ -81,7 +81,7 @@ class NoticeService extends AbstractDbService implements
     {
         $dql = 'SELECT b '
             . 'FROM ' . NoticeEntityInterface::class . ' b '
-            . 'ORDER BY b.priority ASC, b.id ASC';
+            . 'ORDER BY b.displayOrder ASC, b.id ASC';
         $query = $this->entityManager->createQuery($dql);
         try {
             return $query->getResult();
@@ -103,8 +103,8 @@ class NoticeService extends AbstractDbService implements
         if (isset($data['enabled'])) {
             $notice->setEnabled($data['enabled']);
         }
-        if (isset($data['priority'])) {
-            $notice->setPriority($data['priority']);
+        if (isset($data['displayOrder'])) {
+            $notice->setDisplayOrder($data['displayOrder']);
         }
         if (isset($data['position'])) {
             $notice->setPosition($data['position']);
@@ -165,16 +165,16 @@ class NoticeService extends AbstractDbService implements
     {
         $notice = $this->createEntity();
 
-        // Set priority to last position in notice list.
+        // Set display order to last position in notice list.
         $dql = 'SELECT COUNT(b) '
             . 'FROM ' . NoticeEntityInterface::class . ' b';
         $query = $this->entityManager->createQuery($dql);
         try {
-            $priority = intval($query->getSingleScalarResult());
+            $displayOrder = intval($query->getSingleScalarResult());
         } catch (\Exception $e) {
-            $priority = 0;
+            $displayOrder = 0;
         }
-        $notice->setPriority($priority);
+        $notice->setDisplayOrder($displayOrder);
 
         $this->setNoticeData($notice, $data);
 

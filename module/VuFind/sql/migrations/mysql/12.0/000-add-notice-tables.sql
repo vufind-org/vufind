@@ -1,7 +1,7 @@
 CREATE TABLE `notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
-  `priority` int(11) NOT NULL DEFAULT 0,
+  `display_order` int(11) NOT NULL DEFAULT 0,
   `position` varchar(50) DEFAULT NULL,
   `style` varchar(50) DEFAULT NULL,
   `content_type` varchar(50) NOT NULL DEFAULT 'text',

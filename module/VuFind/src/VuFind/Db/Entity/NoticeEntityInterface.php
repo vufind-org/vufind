@@ -67,20 +67,20 @@ interface NoticeEntityInterface extends EntityInterface
     public function setEnabled(bool $enabled): static;
 
     /**
-     * Get priority.
+     * Get display order.
      *
      * @return int
      */
-    public function getPriority(): int;
+    public function getDisplayOrder(): int;
 
     /**
-     * Set priority.
+     * Set display order.
      *
-     * @param int $priority Priority
+     * @param int $displayOrder Display order
      *
      * @return static
      */
-    public function setPriority(int $priority): static;
+    public function setDisplayOrder(int $displayOrder): static;
 
     /**
      * Get position.

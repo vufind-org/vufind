@@ -69,12 +69,12 @@ class Notice implements NoticeEntityInterface
     protected bool $enabled = true;
 
     /**
-     * Priority.
+     * Display order.
      *
      * @var int
      */
-    #[ORM\Column(name: 'priority', type: 'integer', nullable: false, options: ['default' => 0])]
-    protected int $priority = 0;
+    #[ORM\Column(name: 'display_order', type: 'integer', nullable: false, options: ['default' => 0])]
+    protected int $displayOrder = 0;
 
     /**
      * Position.
@@ -166,25 +166,25 @@ class Notice implements NoticeEntityInterface
     }
 
     /**
-     * Get priority.
+     * Get display order.
      *
      * @return int
      */
-    public function getPriority(): int
+    public function getDisplayOrder(): int
     {
-        return $this->priority;
+        return $this->displayOrder;
     }
 
     /**
-     * Set priority.
+     * Set display order.
      *
-     * @param int $priority Priority
+     * @param int $displayOrder Display order
      *
      * @return static
      */
-    public function setPriority(int $priority): static
+    public function setDisplayOrder(int $displayOrder): static
     {
-        $this->priority = $priority;
+        $this->displayOrder = $displayOrder;
         return $this;
     }
 

@@ -534,7 +534,7 @@ CREATE TABLE log_table (
 CREATE TABLE notice (
   id SERIAL,
   enabled boolean NOT NULL DEFAULT '1',
-  priority int NOT NULL DEFAULT 0,
+  display_order int NOT NULL DEFAULT 0,
   position varchar(50) DEFAULT NULL,
   style varchar(50) DEFAULT NULL,
   content_type varchar(50) NOT NULL DEFAULT 'text',
