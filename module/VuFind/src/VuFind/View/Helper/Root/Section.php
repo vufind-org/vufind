@@ -171,7 +171,7 @@ class Section
         } else {
             // Default to class-based template.
             $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = strtolower($this->section::class);
+            $className = $this->section::class;
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
     }
