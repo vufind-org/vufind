@@ -109,6 +109,9 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     {
         $reflectionClass = new ReflectionClass($class);
         $matches = $reflectionClass->getAttributes(DefaultFactory::class);
+        if (!$matches) {
+            $matches = $reflectionClass->getConstructor()?->getAttributes(DefaultFactory::class);
+        }
         return isset($matches[0]) ? $matches[0]->getArguments() : ['name' => null, 'autodetect' => true];
     }
 
@@ -127,21 +130,24 @@ class AbstractPluginFactory implements AbstractFactoryInterface
         if ($defaultFactorySettings['name']) {
             return $defaultFactorySettings['name'];
         }
-        // If the class has an explicit factory, use that:
-        if ($defaultFactorySettings['autodetect'] && class_exists($class . 'Factory')) {
-            return $class . 'Factory';
-        }
         // If the class is autowireable, take advantage of that:
         if ($this->isAutowireable($class)) {
             return AutowiringFactory::class;
         }
-        // Check if parent classes have factories:
-        $parentClass = get_parent_class($class);
-        while ($defaultFactorySettings['autodetect'] && $parentClass) {
-            if (class_exists($parentClass . 'Factory')) {
-                return $parentClass . 'Factory';
+        // Autodetect a factory if desired:
+        if ($defaultFactorySettings['autodetect']) {
+            // If the class has an explicit factory, use that:
+            if (class_exists($class . 'Factory')) {
+                return $class . 'Factory';
             }
-            $parentClass = get_parent_class($parentClass);
+            // Check if parent classes have factories:
+            $parentClass = get_parent_class($class);
+            while ($parentClass) {
+                if (class_exists($parentClass . 'Factory')) {
+                    return $parentClass . 'Factory';
+                }
+                $parentClass = get_parent_class($parentClass);
+            }
         }
         // If we got this far, we'll fall back on the default factory for lack of a better option:
         return $this->defaultFactory;
