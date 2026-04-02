@@ -30,9 +30,10 @@
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
-use Laminas\ServiceManager\Factory\InvokableFactory;
 use Psr\Container\ContainerInterface;
+use ReflectionClass;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
+use VuFind\ServiceManager\Factory\DefaultFactory;
 
 /**
  * VuFind Abstract Plugin Factory.
@@ -69,11 +70,11 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     protected $factoryForClass = [];
 
     /**
-     * Default factory to use when autodetection fails.
+     * Default factory to use when autodetection fails (null for none).
      *
-     * @var string
+     * @var ?string
      */
-    protected string $defaultFactory = InvokableFactory::class;
+    protected ?string $defaultFactory = null;
 
     /**
      * Get the name of a class for a given plugin name.
@@ -97,6 +98,21 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     }
 
     /**
+     * Given the name of a class, check if it has default factory behavior assigned; return an array
+     * containing ?string $name and bool $autodetect, as per the DefaultFactory attribute.
+     *
+     * @param string $class Class name
+     *
+     * @return array
+     */
+    protected function getdefaultFactorySettings(string $class): array
+    {
+        $reflectionClass = new ReflectionClass($class);
+        $matches = $reflectionClass->getAttributes(DefaultFactory::class);
+        return isset($matches[0]) ? $matches[0]->getArguments() : ['name' => null, 'autodetect' => true];
+    }
+
+    /**
      * Given a class name, detect the best matching factory. Return null if none can be found.
      * This is a support method for getFactoryForClass and should not be called directly; use
      * getFactoryForClass to take advantage of internal caching.
@@ -107,8 +123,12 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      */
     protected function detectFactoryForClass(string $class): ?string
     {
+        $defaultFactorySettings = $this->getdefaultFactorySettings($class);
+        if ($defaultFactorySettings['name']) {
+            return $defaultFactorySettings['name'];
+        }
         // If the class has an explicit factory, use that:
-        if (class_exists($class . 'Factory')) {
+        if ($defaultFactorySettings['autodetect'] && class_exists($class . 'Factory')) {
             return $class . 'Factory';
         }
         // If the class is autowireable, take advantage of that:
@@ -117,7 +137,7 @@ class AbstractPluginFactory implements AbstractFactoryInterface
         }
         // Check if parent classes have factories:
         $parentClass = get_parent_class($class);
-        while ($parentClass) {
+        while ($defaultFactorySettings['autodetect'] && $parentClass) {
             if (class_exists($parentClass . 'Factory')) {
                 return $parentClass . 'Factory';
             }
