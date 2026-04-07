@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Translator\TranslatorInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * DisplayLanguageOption view helper.
@@ -46,9 +47,13 @@ class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
      * Constructor.
      *
      * @param TranslatorInterface $translator Translator
+     * @param EscapeHtml          $escapeHtml EscapeHtml view helper
      */
-    public function __construct(protected TranslatorInterface $translator)
-    {
+    public function __construct(
+        protected TranslatorInterface $translator,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
     }
 
     /**
@@ -60,7 +65,7 @@ class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($str)
     {
-        return $this->view->escapeHtml(
+        return ($this->escapeHtml)(
             $this->translator->translate($str, 'default', 'native')
         );
     }

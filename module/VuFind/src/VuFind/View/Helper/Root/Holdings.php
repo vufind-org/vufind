@@ -40,23 +40,17 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Holdings extends \Laminas\View\Helper\AbstractHelper
+class Holdings
 {
-    /**
-     * Configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
     /**
      * Constructor.
      *
      * @param array $config Configuration
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $config
+    ) {
     }
 
     /**

@@ -72,6 +72,10 @@ class DisplayLanguageOptionFactory implements FactoryInterface
         $translator = $container->get(Translator::class);
         // Add a special locale used just for this plugin:
         $translator->addTranslationFile('ExtendedIni', null, 'default', 'native');
-        return new $requestedName($translator);
+        $viewHelperManager = $container->get('ViewHelperManager');
+        return new $requestedName(
+            $translator,
+            $viewHelperManager->get(EscapeHtml::class)
+        );
     }
 }
