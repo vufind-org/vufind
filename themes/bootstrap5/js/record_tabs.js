@@ -58,27 +58,34 @@ VuFind.register('recordTabs', function RecordTabs() {
   }
 
   /**
+   * Handle initial hash for supporting outdated links.
+   */
+  function _handleInitialHash() {
+    const hrefParts = window.location.href.split('#');
+    if (hrefParts.length < 2) return;
+
+    if (window.history.replaceState) {
+      window.history.replaceState({}, document.title, hrefParts[0]);
+    } else {
+      window.location.hash = '#';
+    }
+
+    if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(hrefParts[1])) return;
+    let tabElement = document.querySelector('.record-tabs #tab-button-' + hrefParts[1]);
+    if (!tabElement || tabElement.classList.contains('active')) return;
+
+    let tab = bootstrap.Tab.getOrCreateInstance(tabElement);
+    tab.show();
+  }
+
+  /**
    * Initialize the record tabs.
    */
   function init() {
     updateContainer({container: document});
     VuFind.listen('embedded-record-init', updateContainer);
 
-    // handle location hashes for supporting outdated links
-    const hrefParts = window.location.href.split('#');
-    if (hrefParts.length > 1) {
-      let tabElement = document.querySelector('.record-tabs #tab-button-' + hrefParts[1]);
-      if (!tabElement) return;
-      if (window.history.replaceState) {
-        const href = window.location.href.split('#');
-        window.history.replaceState({}, document.title, href[0]);
-      } else {
-        window.location.hash = '#';
-      }
-      if (tabElement.classList.contains('active')) return;
-      let tab = bootstrap.Tab.getOrCreateInstance(tabElement);
-      tab.show();
-    }
+    _handleInitialHash()
   }
 
   return {
