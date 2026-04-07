@@ -30,6 +30,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * This is a helper that lets the layout know whether or not to include the feedback
  * tab.
@@ -40,7 +42,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Feedback extends \Laminas\View\Helper\AbstractHelper
+class Feedback
 {
     /**
      * Is the tab enabled?
@@ -52,11 +54,13 @@ class Feedback extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param bool $enabled Is the tab enabled?
+     * @param array $config Configuration
      */
-    public function __construct($enabled = true)
-    {
-        $this->tab = $enabled;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'object')]
+        protected array $config
+    ) {
+        $this->tab = $config['Feedback']['tab_enabled'] ?? false;
     }
 
     /**

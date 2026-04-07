@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * ILS (integrated library system) view helper.
  *
@@ -41,20 +43,13 @@ namespace VuFind\View\Helper\Root;
 class Ils extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * ILS connection.
-     *
-     * @var \VuFind\ILS\Connection
-     */
-    protected $connection;
-
-    /**
      * Constructor.
      *
      * @param \VuFind\ILS\Connection $connection ILS connection
      */
-    public function __construct(\VuFind\ILS\Connection $connection)
+    #[Autowire]
+    public function __construct(protected \VuFind\ILS\Connection $connection)
     {
-        $this->connection = $connection;
     }
 
     /**

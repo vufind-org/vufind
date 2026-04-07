@@ -31,6 +31,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * KeepAlive view helper.
  *
@@ -41,7 +43,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class KeepAlive extends \Laminas\View\Helper\AbstractHelper
+class KeepAlive
 {
     /**
      * Keep-alive interval in seconds or 0 if disabled.
@@ -53,11 +55,13 @@ class KeepAlive extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param int $interval Keep-alive interval in seconds or 0 if disabled
+     * @param array $config Configuration
      */
-    public function __construct($interval)
-    {
-        $this->interval = $interval;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $config
+    ) {
+        $this->interval = $config['Session']['keepAlive'] ?? 0;
     }
 
     /**
