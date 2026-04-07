@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Translator\TranslatorInterface;
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\ServiceManager\Factory\Autowire;
 
 /**

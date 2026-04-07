@@ -54,7 +54,7 @@ class HistoryLabel
         #[Autowire(container: 'ViewHelperManager')]
         protected TransEsc $translator
     ) {
-        $this->config ??= $config['SearchHistoryLabels'];
+        $this->config = $config['SearchHistoryLabels'] ?? [];
     }
 
     /**

@@ -33,6 +33,7 @@ use Laminas\Mvc\I18n\Translator;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Helper\EscapeHtml;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
