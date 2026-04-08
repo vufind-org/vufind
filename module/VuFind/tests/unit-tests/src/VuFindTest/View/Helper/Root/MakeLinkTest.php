@@ -47,13 +47,11 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     /**
      * Get MakeLink helper with mock view.
      *
-     * @return \Laminas\View\Helper\EscapeHtml
+     * @return \VuFind\View\Helper\Root\MakeLink
      */
     protected function getHelper()
     {
-        $helper = new MakeLink();
-        $helper->setView($this->getViewWithHelpers());
-        return $helper;
+        return new MakeLink($this->getMakeTagHelper());
     }
 
     /**
