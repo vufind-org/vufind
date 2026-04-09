@@ -71,4 +71,14 @@ class Holdings
         return $holding['availability']->isVisibleInHoldings()
             && ($showEmptyBarcodes || strlen($holding['barcode'] ?? '') > 0);
     }
+
+    /**
+     * Make the helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }
