@@ -47,7 +47,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     /**
      * Get MakeLink helper with mock view.
      *
-     * @return \VuFind\View\Helper\Root\MakeLink
+     * @return MakeLink
      */
     protected function getHelper()
     {
