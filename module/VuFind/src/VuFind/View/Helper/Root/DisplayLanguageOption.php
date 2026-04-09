@@ -42,7 +42,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
+class DisplayLanguageOption
 {
     /**
      * Constructor.
