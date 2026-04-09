@@ -49,12 +49,11 @@ class HistoryLabel
      * @param TransEsc $translator Translation helper
      */
     public function __construct(
-        #[Autowire(config: 'config', configType: 'array')]
+        #[Autowire(config: 'config', configType: 'array', path: 'SearchHistoryLabels', default: [])]
         protected array $config,
         #[Autowire(container: 'ViewHelperManager')]
         protected TransEsc $translator
     ) {
-        $this->config = $config['SearchHistoryLabels'] ?? [];
     }
 
     /**
