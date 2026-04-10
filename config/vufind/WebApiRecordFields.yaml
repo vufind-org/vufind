@@ -10,6 +10,11 @@ id:
   vufind.default: true
   description: Record unique ID (can be used in the record endpoint)
   type: string
+fulltext:
+  vufind.method: getFulltext
+  vufind.default: false
+  description: Fulltext of the web page
+  type: string
 lastModified:
   vufind.method: getLastModified
   vufind.default: true
