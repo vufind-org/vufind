@@ -16,7 +16,7 @@
                                         $this->optionalFields ?? []
                                     );
                                     echo implode(', ', array_map(
-                                        fn($f) => '"' . addslashes($f) . '"',
+                                        fn ($f) => '"' . addslashes($f) . '"',
                                         $allFields
                                     ));
                                 ?>]
