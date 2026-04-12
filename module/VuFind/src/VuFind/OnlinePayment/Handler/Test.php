@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Payment handler for VuFind's internal test service
+ * Payment handler for VuFind's internal test service.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFind\Exception\PaymentException;
 use function is_array;
 
 /**
- * Payment handler for VuFind's internal test service
+ * Payment handler for VuFind's internal test service.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -213,7 +213,7 @@ class Test extends AbstractBase
     }
 
     /**
-     * Call the payment service
+     * Call the payment service.
      *
      * @param string $function Payment service function to call
      * @param array  $params   POST params

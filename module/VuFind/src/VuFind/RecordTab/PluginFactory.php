@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record tab plugin factory
+ * Record tab plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Record tab plugin factory
+ * Record tab plugin factory.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,7 +41,7 @@ namespace VuFind\RecordTab;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

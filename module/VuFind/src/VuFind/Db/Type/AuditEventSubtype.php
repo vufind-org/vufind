@@ -72,6 +72,7 @@ enum AuditEventSubtype: string
     case LoginFailure = 'login_fail';
     case Logout = 'logout';
     case PasswordChanged = 'password_changed';
+    case PasswordReset = 'password_reset';
     case RememberLogin = 'remember_login';
     case SaveSearch = 'save_search';
     case ScheduleSearch = 'schedule_search';

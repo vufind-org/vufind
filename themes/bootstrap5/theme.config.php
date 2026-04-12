@@ -53,8 +53,9 @@ return [
          */
         ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
-        ['file' => 'vendor/popper.min.js', 'priority' => 120],
-        ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
+        ['file' => 'vendor/js.cookie.min.js', 'priority' => 120],
+        ['file' => 'vendor/popper.min.js', 'priority' => 130],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
@@ -111,6 +112,7 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap5\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap5\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClass',
+            'notices' => VuFind\View\Helper\Bootstrap5\Notices::class,
             'search' => 'VuFind\View\Helper\Bootstrap5\Search',
         ],
     ],
@@ -143,7 +145,15 @@ return [
             'Unicode' => [
                 'template' => 'unicode',
             ],
-            /* For an example of an images set, see Bootprint's theme.config.php. */
+            // Example of an image set:
+            /*
+            'Img' => [
+                'template' => 'images',
+                'src' => 'icons', // Points to a subdirectory under images; processed via imageLink.
+            ],
+            // With the above, you can point to e.g. images/icons/add.png by adding an alias below:
+            // 'cart-add' => 'Img:add.png'
+            */
         ],
         'aliases' => [
             /**
@@ -306,7 +316,7 @@ return [
             'profile-delete' => 'Alias:ui-delete',
             'profile-edit' => 'Alias:ui-edit',
             'profile-email' => 'FontAwesome:envelope',
-            'profile-sms' => 'FontAwesome:phone',
+            'profile-sms' => 'FontAwesome:mobile',
             'qrcode' => 'FontAwesome:qrcode',
             'rating-half' => 'FontAwesome:star-half',
             'rating-full' => 'FontAwesome:star',
@@ -317,7 +327,7 @@ return [
             'search-save' => 'Alias:ui-save',
             'search-schedule-alert' => 'FontAwesome:exclamation-circle',
             'send-email' => 'FontAwesome:envelope',
-            'send-sms' => 'FontAwesome:phone',
+            'send-sms' => 'FontAwesome:mobile',
             'sign-in' => 'FontAwesome:sign-in',
             'sign-out' => 'FontAwesome:sign-out',
             'spinner' => 'FontAwesome:spinner:icon--spin',

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Simulated Single Sign-On Controller
+ * Simulated Single Sign-On Controller.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Controller;
 
 /**
- * Simulated Single Sign-On Controller
+ * Simulated Single Sign-On Controller.
  *
  * @category VuFind
  * @package  Controller

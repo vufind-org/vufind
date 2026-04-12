@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record route generator
+ * Record route generator.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function count;
 use function is_object;
 
 /**
- * Record route generator
+ * Record route generator.
  *
  * @category VuFind
  * @package  Record
@@ -44,14 +44,14 @@ use function is_object;
 class Router
 {
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config VuFind configuration
      */

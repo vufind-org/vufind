@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base62 generator
+ * Base62 generator.
  *
  * Class to encode and decode numbers using base62
  *
@@ -37,7 +37,7 @@ use function intval;
 use function strlen;
 
 /**
- * Base62 generator
+ * Base62 generator.
  *
  * Class to encode and decode numbers using base62
  *

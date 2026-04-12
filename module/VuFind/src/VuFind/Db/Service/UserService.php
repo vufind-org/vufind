@@ -52,7 +52,7 @@ class UserService extends AbstractDbService implements
     UserSessionPersistenceInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManager       $entityManager        Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager  VuFind entity plugin manager
@@ -154,6 +154,7 @@ class UserService extends AbstractDbService implements
             $parameters = compact('fieldValue');
             $query = $this->entityManager->createQuery($dql);
             $query->setParameters($parameters);
+            $query->setMaxResults(1); // Not every field is guaranteed unique, so be sure to get just one!
             return $query->getOneOrNullResult();
         }
         throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');

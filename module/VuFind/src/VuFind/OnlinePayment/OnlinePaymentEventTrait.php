@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online payment event log support trait
+ * Online payment event log support trait.
  *
  * PHP version 8
  *
@@ -48,14 +48,14 @@ use VuFind\Db\Type\AuditEventSubtype;
 trait OnlinePaymentEventTrait
 {
     /**
-     * Audit event log service
+     * Audit event log service.
      *
      * @var ?AuditEventServiceInterface
      */
     protected ?AuditEventServiceInterface $auditEventService = null;
 
     /**
-     * Add an event log entry for a payment
+     * Add an event log entry for a payment.
      *
      * @param PaymentEntityInterface $payment Payment
      * @param AuditEventSubtype      $subtype Event subtype
@@ -77,6 +77,6 @@ trait OnlinePaymentEventTrait
                 throw new \Exception('Event log service not set');
             }
         }
-        $this->auditEventService->addPaymentEvent($payment, $subtype, $message, $data);
+        $this->auditEventService->addPaymentEvent($payment, $subtype, $message, $data, 1);
     }
 }

@@ -117,8 +117,8 @@ class AuthHashService extends AbstractDbService implements
             . 'ORDER BY ah.created DESC';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('sessionId', $sessionId);
-        $result = $query->getOneOrNullResult();
-        return $result;
+        $query->setMaxResults(1);
+        return $query->getOneOrNullResult();
     }
 
     /**

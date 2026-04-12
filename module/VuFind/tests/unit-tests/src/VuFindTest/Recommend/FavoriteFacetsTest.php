@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FavoriteFacets recommendation module Test Class
+ * FavoriteFacets recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\FavoriteFacets;
 
 /**
- * FavoriteFacets recommendation module Test Class
+ * FavoriteFacets recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -67,12 +67,12 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')
-            ->with($this->equalTo('tags'), $this->equalTo('Your Tags'), $this->equalTo(false));
+            ->with('tags', 'Your Tags', false);
         $this->getFavoriteFacets($results);
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param ?\VuFind\Search\Solr\Results $results    results object
      * @param string                       $tagSetting Are tags enabled?
@@ -111,10 +111,8 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->willReturn($params);
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -130,10 +128,8 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->willReturn($query);
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

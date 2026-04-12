@@ -88,7 +88,7 @@ final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\Min
             $this->getFixture('shibboleth/logout_notification.xml'),
             'application/xml'
         );
-        $this->assertEquals(200, $result->getStatusCode());
+        $this->assertSame(200, $result->getStatusCode());
 
         $session->visit($this->getVuFindUrl() . '/Search/History');
         $this->unFindCss($page, 'table#recent-searches');

@@ -48,7 +48,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SearchServiceTrait;
 
     /**
-     * Get a mock backend
+     * Get a mock backend.
      *
      * @return Backend
      */
@@ -60,7 +60,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wrap a mock backend in a backend manager
+     * Wrap a mock backend in a backend manager.
      *
      * @param Backend $backend Backend to wrap
      *
@@ -85,7 +85,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
         $eds = new Eds($this->getSearchService($manager));
         $backend->expects($this->once())
             ->method('autocomplete')
-            ->with($this->equalTo('query'), $this->equalTo('rawqueries'))
+            ->with('query', 'rawqueries')
             ->willReturn([1, 2, 3]);
         $this->assertEquals([1, 2, 3], $eds->getSuggestions('query'));
     }
@@ -103,7 +103,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
         $eds->setConfig('holdings');
         $backend->expects($this->once())
             ->method('autocomplete')
-            ->with($this->equalTo('query'), $this->equalTo('holdings'))
+            ->with('query', 'holdings')
             ->willReturn([4, 5]);
         $this->assertEquals([4, 5], $eds->getSuggestions('query'));
     }

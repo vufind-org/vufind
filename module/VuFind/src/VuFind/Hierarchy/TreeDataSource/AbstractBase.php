@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Data Source (abstract base)
+ * Hierarchy Tree Data Source (abstract base).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 /**
- * Hierarchy Tree Data Source (abstract base)
+ * Hierarchy Tree Data Source (abstract base).
  *
  * This is a base helper class for producing hierarchy Trees.
  *
@@ -45,7 +45,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Hierarchy driver
+     * Hierarchy driver.
      *
      * @var \VuFind\Hierarchy\Driver\AbstractBase
      */
@@ -66,7 +66,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
     protected $recordRoute = 'record';
 
     /**
-     * Get the hierarchy driver
+     * Get the hierarchy driver.
      *
      * @return \VuFind\Hierarchy\Driver\AbstractBase
      * @throws \Exception
@@ -80,7 +80,7 @@ abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the hierarchy driver
+     * Set the hierarchy driver.
      *
      * @param \VuFind\Hierarchy\Driver\AbstractBase $driver Hierarchy driver
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Title Hold Logic Class
+ * Title Hold Logic Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_array;
 use function is_bool;
 
 /**
- * Title Hold Logic Class
+ * Title Hold Logic Class.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -50,14 +50,14 @@ use function is_bool;
 class TitleHolds
 {
     /**
-     * Holding locations to hide from display
+     * Holding locations to hide from display.
      *
      * @var array
      */
     protected $hideHoldings;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $catalog A catalog connection
@@ -74,7 +74,7 @@ class TitleHolds
     }
 
     /**
-     * Public method for getting title level holds
+     * Public method for getting title level holds.
      *
      * @param string $id            A Bib ID
      * @param array  $linkOverrides Optional id and source to override standard record driver
@@ -164,7 +164,7 @@ class TitleHolds
     }
 
     /**
-     * Protected method for driver defined title holds
+     * Protected method for driver defined title holds.
      *
      * @param string $id            A Bib ID
      * @param array  $patron        An Array of patron data
@@ -194,7 +194,7 @@ class TitleHolds
     }
 
     /**
-     * Protected method for vufind (i.e. User) defined holds
+     * Protected method for vufind (i.e. User) defined holds.
      *
      * @param string $id            A Bib ID
      * @param string $type          The holds mode to be applied from:
@@ -250,7 +250,7 @@ class TitleHolds
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * Supplies the form details required to place a hold
      *

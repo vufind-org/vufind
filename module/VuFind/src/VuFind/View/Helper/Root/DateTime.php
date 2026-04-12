@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use function call_user_func_array;
 
 /**
- * View helper for formatting dates and times
+ * View helper for formatting dates and times.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ use function call_user_func_array;
 class DateTime extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Date converter
+     * Date converter.
      *
      * @var \VuFind\Date\Converter
      */
     protected $converter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $converter Date converter
      */

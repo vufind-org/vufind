@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MyResearch Controller
+ * MyResearch Controller.
  *
  * PHP version 8
  *
@@ -94,7 +94,7 @@ class MyResearchController extends AbstractBase
     use OnlinePaymentTrait;
 
     /**
-     * Default life time for recovery hashes (one hour)
+     * Default life time for recovery hashes (one hour).
      *
      * @var int
      */
@@ -114,14 +114,14 @@ class MyResearchController extends AbstractBase
     protected $accessPermission = false;
 
     /**
-     * ILS Pagination Helper
+     * ILS Pagination Helper.
      *
      * @var PaginationHelper
      */
     protected $paginationHelper = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface               $sm            Service locator
      * @param Container                             $session       Session container
@@ -174,12 +174,12 @@ class MyResearchController extends AbstractBase
         ) {
             $msg = 'authentication_error_loggedout';
         }
-        $this->flashMessenger()->addMessage($msg, 'error');
+        $this->flashMessenger()->addErrorMessage($msg);
     }
 
     /**
      * Maintaining this method for backwards compatibility with legacy code;
-     * logic moved to parent and method re-named
+     * logic moved to parent and method re-named.
      *
      * @return void
      */
@@ -189,7 +189,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Prepare and direct the home page where it needs to go
+     * Prepare and direct the home page where it needs to go.
      *
      * @return mixed
      */
@@ -256,7 +256,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * "Create account" action
+     * "Create account" action.
      *
      * @return mixed
      */
@@ -297,7 +297,7 @@ class MyResearchController extends AbstractBase
                 $this->sendFirstVerificationEmail($e->getUser());
                 return $this->redirect()->toRoute('myresearch-emailnotverified');
             } catch (AuthException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
             }
         } else {
             // If we are not processing a submission, we need to simply display
@@ -310,7 +310,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Login Action
+     * Login Action.
      *
      * @return mixed
      */
@@ -387,7 +387,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Logout Action
+     * Logout Action.
      *
      * @return mixed
      */
@@ -556,7 +556,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Handle search subscription request
+     * Handle search subscription request.
      *
      * @return mixed
      */
@@ -651,7 +651,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Handle 'save/unsave search' request
+     * Handle 'save/unsave search' request.
      *
      * @return mixed
      */
@@ -694,10 +694,10 @@ class MyResearchController extends AbstractBase
             } else {
                 $this->setSavedFlagSecurely($id, true, $user);
             }
-            $this->flashMessenger()->addMessage('search_save_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('search_save_success');
         } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
             $this->setSavedFlagSecurely($id, false, $user);
-            $this->flashMessenger()->addMessage('search_unsave_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('search_unsave_success');
         } else {
             throw new \Exception('Missing save and delete parameters.');
         }
@@ -714,7 +714,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Gather user profile data
+     * Gather user profile data.
      *
      * @return mixed
      */
@@ -742,7 +742,7 @@ class MyResearchController extends AbstractBase
                     $homeLibrary = null;
                 }
                 $this->getService(ILSAuthenticator::class)->updateUserHomeLibrary($user, $homeLibrary);
-                $this->flashMessenger()->addMessage('profile_update', 'success');
+                $this->flashMessenger()->addSuccessMessage('profile_update');
             }
 
             // Obtain user information from ILS:
@@ -812,16 +812,20 @@ class MyResearchController extends AbstractBase
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
-                $this->flashMessenger()->addMessage(
-                    [ 'msg' => $block, 'dataset' => [ 'lightbox-ignore' => '1' ] ],
-                    'error'
+                $this->flashMessenger()->addErrorMessage(
+                    [
+                        'msg' => $block,
+                        'dataset' => [
+                            'lightbox-ignore' => '1',
+                        ],
+                    ]
                 );
             }
         }
     }
 
     /**
-     * Catalog Login Action
+     * Catalog Login Action.
      *
      * @return mixed
      */
@@ -832,7 +836,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Action for sending all of a user's saved favorites to the view
+     * Action for sending all of a user's saved favorites to the view.
      *
      * @return mixed
      */
@@ -885,7 +889,7 @@ class MyResearchController extends AbstractBase
         } elseif ($this->formWasSubmitted()) {
             $this->getService(FavoritesService::class)
                 ->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
-            $this->flashMessenger()->addMessage('fav_delete_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('fav_delete_success');
             return $this->redirect()->toUrl($newUrl);
         }
 
@@ -903,7 +907,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Delete record
+     * Delete record.
      *
      * @param string $id     ID of record to delete
      * @param string $source Source of record to delete
@@ -931,11 +935,11 @@ class MyResearchController extends AbstractBase
             // ...Specific List
             $list = $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
             $favoritesService->removeListResourcesById($list, $user, [$id], $source);
-            $this->flashMessenger()->addMessage('Item removed from list', 'success');
+            $this->flashMessenger()->addSuccessMessage('Item removed from list');
         } else {
             // ...All Saved Items
             $favoritesService->removeUserResourcesById($user, [$id], $source);
-            $this->flashMessenger()->addMessage('Item removed from favorites', 'success');
+            $this->flashMessenger()->addSuccessMessage('Item removed from favorites');
         }
 
         // All done -- return true to indicate success.
@@ -978,7 +982,7 @@ class MyResearchController extends AbstractBase
             $favorites->save(['list' => $addToList], $user, $driver);
         }
         if ($didSomething) {
-            $this->flashMessenger()->addMessage('edit_list_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('edit_list_success');
         }
 
         $newUrl = null === $listID
@@ -988,7 +992,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Edit record
+     * Edit record.
      *
      * @return mixed
      */
@@ -1089,7 +1093,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send user's saved favorites from a particular list to the view
+     * Send user's saved favorites from a particular list to the view.
      *
      * @return mixed
      */
@@ -1217,7 +1221,7 @@ class MyResearchController extends AbstractBase
 
             return $this->redirect()->toRoute('userList', ['id' => $finalId]);
         } catch (ListPermissionException | MissingFieldException $e) {
-            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
             return false;
         } catch (LoginRequiredException $e) {
             return $this->forceLogin();
@@ -1225,7 +1229,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send user's saved favorites from a particular list to the edit view
+     * Send user's saved favorites from a particular list to the edit view.
      *
      * @return mixed
      */
@@ -1305,13 +1309,13 @@ class MyResearchController extends AbstractBase
             }
             $this->sendVerificationEmail($user, $change);
         } else {
-            $this->flashMessenger()->addMessage('verification_email_sent', 'info');
+            $this->flashMessenger()->addInfoMessage('verification_email_sent');
         }
         return $this->createViewModel();
     }
 
     /**
-     * Creates a confirmation box to delete or not delete the current list
+     * Creates a confirmation box to delete or not delete the current list.
      *
      * @return mixed
      */
@@ -1337,7 +1341,7 @@ class MyResearchController extends AbstractBase
                 $this->getService(FavoritesService::class)->destroyList($list, $this->getUser());
 
                 // Success Message
-                $this->flashMessenger()->addMessage('fav_list_delete', 'success');
+                $this->flashMessenger()->addSuccessMessage('fav_list_delete');
             } catch (LoginRequiredException | ListPermissionException $e) {
                 if (!$this->getUser()) {
                     return $this->forceLogin();
@@ -1360,7 +1364,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of holds to view
+     * Send list of holds to view.
      *
      * @return mixed
      *
@@ -1372,7 +1376,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of storage retrieval requests to view
+     * Send list of storage retrieval requests to view.
      *
      * @return mixed
      */
@@ -1445,7 +1449,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of ill requests to view
+     * Send list of ill requests to view.
      *
      * @return mixed
      */
@@ -1510,7 +1514,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of checked out books to view
+     * Send list of checked out books to view.
      *
      * @return mixed
      */
@@ -1640,7 +1644,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of historic loans to view
+     * Send list of historic loans to view.
      *
      * @return mixed
      */
@@ -1650,7 +1654,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send list of fines to view
+     * Send list of fines to view.
      *
      * @return mixed
      */
@@ -1714,7 +1718,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Send account recovery email
+     * Send account recovery email.
      *
      * @return mixed
      */
@@ -1764,7 +1768,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Helper function for recoverAction
+     * Helper function for recoverAction.
      *
      * @param array $recoveryData Recovery information required by the authentication to reset the password
      *
@@ -1870,7 +1874,7 @@ class MyResearchController extends AbstractBase
         // If we can't find a user
         if (null == $user) {
             $this->flashMessenger()
-                ->addMessage('verification_user_not_found', 'error');
+                ->addErrorMessage('verification_user_not_found');
         } else {
             // Make sure we've waited long enough
             $hashtime = $this->getHashAge($user->getVerifyHash());
@@ -1878,7 +1882,7 @@ class MyResearchController extends AbstractBase
             $recoveryInterval = $config['Authentication']['recover_interval'] ?? 60;
             if (time() - $hashtime < $recoveryInterval && !$change) {
                 $this->flashMessenger()
-                    ->addMessage('verification_too_soon', 'error');
+                    ->addErrorMessage('verification_too_soon');
             } else {
                 // Attempt to send the email
                 try {
@@ -1906,7 +1910,7 @@ class MyResearchController extends AbstractBase
                     $flashMessage = $change
                         ? 'verification_email_change_sent'
                         : 'verification_email_sent';
-                    $this->flashMessenger()->addMessage($flashMessage, 'info');
+                    $this->flashMessenger()->addInfoMessage($flashMessage);
                     // If this is an email change, send a notification to the old
                     // email address as well.
                     if ($change) {
@@ -1924,7 +1928,7 @@ class MyResearchController extends AbstractBase
                         ]
                     );
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                    $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
                 }
             }
         }
@@ -1950,7 +1954,7 @@ class MyResearchController extends AbstractBase
                 ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
-                    ->addMessage('recovery_expired_hash', 'error');
+                    ->addErrorMessage('recovery_expired_hash');
                 return $this->forwardTo('MyResearch', 'Login');
             } else {
                 // If the hash is valid, forward user to create new password
@@ -1978,7 +1982,7 @@ class MyResearchController extends AbstractBase
                 }
             }
         }
-        $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
+        $this->flashMessenger()->addErrorMessage('recovery_invalid_hash');
         return $this->forwardTo('MyResearch', 'Login');
     }
 
@@ -2042,7 +2046,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Receive a hash and display the new password form if it's valid
+     * Receive a hash and display the new password form if it's valid.
      *
      * @return mixed
      */
@@ -2057,7 +2061,7 @@ class MyResearchController extends AbstractBase
                 ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
-                    ->addMessage('recovery_expired_hash', 'error');
+                    ->addErrorMessage('recovery_expired_hash');
                 return $this->forwardTo('MyResearch', 'Profile');
             } else {
                 // If the hash is valid, store validation in DB and forward to login
@@ -2071,7 +2075,7 @@ class MyResearchController extends AbstractBase
                     $user->setEmailVerified(new DateTime());
                     $this->getDbService(UserServiceInterface::class)->persistEntity($user);
 
-                    $this->flashMessenger()->addMessage('verification_done', 'info');
+                    $this->flashMessenger()->addInfoMessage('verification_done');
 
                     $this->getAuditEventService()->addEvent(
                         AuditEventType::User,
@@ -2083,7 +2087,7 @@ class MyResearchController extends AbstractBase
                 }
             }
         }
-        $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
+        $this->flashMessenger()->addErrorMessage('recovery_invalid_hash');
         return $this->redirect()->toRoute('myresearch-profile');
     }
 
@@ -2137,13 +2141,13 @@ class MyResearchController extends AbstractBase
         }
         // Missing or invalid hash
         if (!$userFromHash) {
-            $this->flashMessenger()->addMessage('recovery_user_not_found', 'error');
+            $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
             // Force login or restore hash
             $post->username = false;
             return $this->forwardTo('MyResearch', 'Recover');
         } elseif ($userFromHash->getUsername() !== $post->username) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_invalid', 'error');
+                ->addErrorMessage('authentication_error_invalid');
             return $this->resetNewPasswordForm($userFromHash, $view);
         }
         // Verify old password if we're logged in
@@ -2159,7 +2163,7 @@ class MyResearchController extends AbstractBase
             }
             if (!$valid) {
                 $this->flashMessenger()
-                    ->addMessage('authentication_error_invalid', 'error');
+                    ->addErrorMessage('authentication_error_invalid');
                 $view->verifyold = true;
                 return $view;
             }
@@ -2168,7 +2172,7 @@ class MyResearchController extends AbstractBase
         try {
             $user = $this->getAuthManager()->updatePassword($this->getRequest());
         } catch (AuthException $e) {
-            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
             return $view;
         }
         // Update hash to prevent reusing hash
@@ -2176,7 +2180,7 @@ class MyResearchController extends AbstractBase
         // Login
         $this->getAuthManager()->login($this->request);
         // Return to account home
-        $this->flashMessenger()->addMessage('new_password_success', 'success');
+        $this->flashMessenger()->addSuccessMessage('new_password_success');
 
         $this->getAuditEventService()->addEvent(
             AuditEventType::User,
@@ -2199,7 +2203,7 @@ class MyResearchController extends AbstractBase
             return $this->forceLogin();
         }
         if (!$this->getAuthManager()->supportsEmailChange()) {
-            $this->flashMessenger()->addMessage('change_email_disabled', 'error');
+            $this->flashMessenger()->addErrorMessage('change_email_disabled');
             return $this->redirect()->toRoute('home');
         }
         $view = $this->createViewModel($this->params()->fromPost());
@@ -2229,17 +2233,17 @@ class MyResearchController extends AbstractBase
                     $this->sendVerificationEmail($user, true);
                 } else {
                     $this->flashMessenger()
-                        ->addMessage('new_email_success', 'success');
+                        ->addSuccessMessage('new_email_success');
                 }
             } catch (AuthException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
                 return $view;
             }
             // Return to account home
             return $this->redirect()->toRoute('myresearch-home');
         } elseif ($this->getConfigArray()['Authentication']['verify_email'] ?? false) {
             $this->flashMessenger()
-                ->addMessage('change_email_verification_reminder', 'info');
+                ->addInfoMessage('change_email_verification_reminder');
         }
         $this->addPendingEmailChangeMessage($user);
         return $view;
@@ -2257,7 +2261,7 @@ class MyResearchController extends AbstractBase
         }
         // If not submitted, are we logged in?
         if (!$this->getAuthManager()->supportsPasswordChange()) {
-            $this->flashMessenger()->addMessage('recovery_new_disabled', 'error');
+            $this->flashMessenger()->addErrorMessage('recovery_new_disabled');
             return $this->redirect()->toRoute('home');
         }
         $view = $this->createViewModel($this->params()->fromPost());
@@ -2278,7 +2282,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Delete a login token
+     * Delete a login token.
      *
      * @return mixed
      */
@@ -2307,7 +2311,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Delete all login tokens for a user
+     * Delete all login tokens for a user.
      *
      * @return mixed
      */
@@ -2334,7 +2338,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Helper function for verification hashes
+     * Helper function for verification hashes.
      *
      * @param string $hash User-unique hash string from request
      *
@@ -2364,7 +2368,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Account deletion
+     * Account deletion.
      *
      * @return mixed
      */
@@ -2464,7 +2468,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get User Content (comments, ratings, tags)
+     * Get User Content (comments, ratings, tags).
      *
      * @return mixed
      */
@@ -2482,7 +2486,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get the ILS pagination helper
+     * Get the ILS pagination helper.
      *
      * @return PaginationHelper
      */
@@ -2506,7 +2510,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Add a message about any pending email change to the flash messenger
+     * Add a message about any pending email change to the flash messenger.
      *
      * @param UserEntityInterface $user User
      *
@@ -2535,7 +2539,7 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Return a response that redirects to MyResearch/Home with any further redirects disabled
+     * Return a response that redirects to MyResearch/Home with any further redirects disabled.
      *
      * @return Response
      */

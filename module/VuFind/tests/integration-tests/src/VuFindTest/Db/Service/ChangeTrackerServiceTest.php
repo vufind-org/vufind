@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ChangeTrackerService Test Class
+ * ChangeTrackerService Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Db\Service;
 use VuFind\Db\Service\ChangeTrackerService;
 
 /**
- * ChangeTrackerService Test Class
+ * ChangeTrackerService Test Class.
  *
  * Class must be final due to use of "new static()" by LiveDatabaseTrait.
  *
@@ -72,7 +72,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test change tracking
+     * Test change tracking.
      *
      * @return void
      */
@@ -134,7 +134,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $tracker->markDeleted($core, 'test2');
         $row = $tracker->getChangeTrackerEntity($core, 'test2');
         $this->assertIsObject($row);
-        $this->assertTrue(!empty($row->getDeleted()));
+        $this->assertNotEmpty($row->getDeleted());
 
         // Index the previously-deleted record and make sure it undeletes properly:
         $tracker->index($core, 'test2', 1326833170);

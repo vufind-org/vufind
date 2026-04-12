@@ -82,7 +82,7 @@ class ResourceTagsService extends AbstractDbService implements
     }
 
     /**
-     * Get Resource Tags Paginator
+     * Get Resource Tags Paginator.
      *
      * @param ?int    $userId            ID of user (null for any)
      * @param ?int    $resourceId        ID of the resource (null for any)
@@ -161,7 +161,7 @@ class ResourceTagsService extends AbstractDbService implements
     }
 
     /**
-     * Create a resource_tags row linking the specified resources
+     * Create a resource_tags row linking the specified resources.
      *
      * @param ResourceEntityInterface|int|null $resourceOrId Resource entity or ID to link up (optional)
      * @param TagsEntityInterface|int          $tagOrId      Tag entity or ID to link up
@@ -213,6 +213,7 @@ class ResourceTagsService extends AbstractDbService implements
 
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
+        $query->setMaxResults(1); // There should only be at most one row, but to be safe...
         $result = $query->getOneOrNullResult();
 
         // Only create row if it does not already exist:
@@ -548,7 +549,7 @@ class ResourceTagsService extends AbstractDbService implements
     }
 
     /**
-     * Get count of anonymous tags
+     * Get count of anonymous tags.
      *
      * @return int count
      */

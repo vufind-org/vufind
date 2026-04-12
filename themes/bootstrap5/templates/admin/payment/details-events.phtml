@@ -12,6 +12,7 @@
   </thead>
   <tbody>
     <?php foreach ($this->paymentEvents as $event): ?>
+      <?php $eventData = $event->getData(); ?>
       <tr>
         <td>
           <time datetime="<?=$this->escapeHtmlAttr($event->getDate()->format('Y-m-d\TH:i:s'))?>">
@@ -25,18 +26,15 @@
           <?=$this->escapeHtml($event->getServerName())?>
         </td>
         <td>
-          <?=$this->escapeHtml(json_decode($event->getData(), true)['__request_uri'] ?? '')?>
+          <?=$this->escapeHtml($eventData['__request_uri'] ?? '')?>
         </td>
         <td>
           <?=$this->transEsc('Payment::' . $event->getMessage())?>
         </td>
         <td>
           <?php
-            if ($data = $event->getData()) {
-              $details = json_decode($data, true);
-              if ($error = $details['error'] ?? null) {
-                echo $this->transEsc("Payment::$error");
-              }
+            if ($error = $eventData['error'] ?? null) {
+              echo $this->transEsc("Payment::$error");
             }
           ?>
         </td>

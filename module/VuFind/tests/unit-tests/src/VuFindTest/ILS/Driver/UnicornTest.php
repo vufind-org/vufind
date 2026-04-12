@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\Unicorn;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -90,7 +90,7 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
             $this->callMethod($this->driver, 'getMarcHoldings', [$marc])
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
                     'library_code' => 'library',

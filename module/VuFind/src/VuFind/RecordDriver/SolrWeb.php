@@ -41,7 +41,7 @@ namespace VuFind\RecordDriver;
 class SolrWeb extends SolrDefault
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)

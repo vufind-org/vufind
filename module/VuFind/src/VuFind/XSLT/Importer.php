@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind XSLT importer
+ * VuFind XSLT importer.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function in_array;
 use function is_array;
 
 /**
- * VuFind XSLT importer
+ * VuFind XSLT importer.
  *
  * @category VuFind
  * @package  XSLT
@@ -53,7 +53,7 @@ class Importer
     use GetServiceTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service manager
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Shibboleth Logout Notification API Controller
+ * Shibboleth Logout Notification API Controller.
  *
  * PHP version 8
  *
@@ -47,7 +47,7 @@ use function extension_loaded;
 class ShibbolethLogoutNotificationController extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -59,7 +59,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * GET method handler for the logout handler
+     * GET method handler for the logout handler.
      *
      * @return Response
      */
@@ -76,7 +76,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * POST method handler for the logout handler
+     * POST method handler for the logout handler.
      *
      * @return Response
      */
@@ -108,7 +108,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * Logout notification handler
+     * Logout notification handler.
      *
      * @param string $sessionId External session id
      *
@@ -128,7 +128,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * Get WSDL for the service
+     * Get WSDL for the service.
      *
      * @return string
      */

@@ -99,7 +99,7 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
     protected string $iconUnknown = 'status-unknown';
 
     /**
-     * Message cache
+     * Message cache.
      *
      * @var array
      */

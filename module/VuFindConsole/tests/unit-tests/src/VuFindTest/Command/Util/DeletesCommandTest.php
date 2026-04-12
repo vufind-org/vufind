@@ -52,9 +52,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockWriter()
     {
-        return $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\VuFind\Solr\Writer::class);
     }
 
     /**
@@ -87,8 +85,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['filename' => '/does/not/exist']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Cannot find file: /does/not/exist\n",
             $commandTester->getDisplay()
         );
@@ -103,7 +101,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('Solr'), $this->equalTo(['rec1', 'rec2', 'rec3']));
+            ->with('Solr', ['rec1', 'rec2', 'rec3']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
@@ -113,8 +111,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 'format' => 'flat',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -126,7 +124,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('Solr'), $this->equalTo(['x.rec1', 'x.rec2', 'x.rec3']));
+            ->with('Solr', ['x.rec1', 'x.rec2', 'x.rec3']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
@@ -137,8 +135,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 '--id-prefix' => 'x.',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -150,7 +148,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('foo'), $this->equalTo(['testbug2']));
+            ->with('foo', ['testbug2']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = __DIR__ . '/../../../../../../../../tests/data/testbug2.mrc';
@@ -160,7 +158,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 'index' => 'foo',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 }

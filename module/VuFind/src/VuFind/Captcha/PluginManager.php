@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CAPTCHA plugin manager
+ * CAPTCHA plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Captcha;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * CAPTCHA plugin manager
+ * CAPTCHA plugin manager.
  *
  * @category VuFind
  * @package  CAPTCHA

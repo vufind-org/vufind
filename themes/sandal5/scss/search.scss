@@ -15,8 +15,6 @@
 .author-facets { font-size: $reduced-font-size; }
 
 .result {
-  margin-left: -1rem;
-  margin-right: -1rem;
   padding: 1rem;
   padding-right: 0;
   border-bottom: 1px solid $moon-gray;
@@ -111,7 +109,7 @@
     text-shadow: 0 1px 0 $black;
   }
   @include media-breakpoint-up(sm) {
-    height: 300px;
+    min-height: 300px;
     padding: 7rem calc(50vw - 50%); // Align searchbox with container
   }
 }

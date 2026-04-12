@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laminas\Feed\Renderer\Feed extension for Open Search
+ * Laminas\Feed\Renderer\Feed extension for Open Search.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use DOMElement;
 use Laminas\Feed\Writer\Extension\AbstractRenderer;
 
 /**
- * Laminas\Feed\Renderer\Feed extension for Open Search
+ * Laminas\Feed\Renderer\Feed extension for Open Search.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -54,7 +54,7 @@ class Feed extends AbstractRenderer
     protected $called = false;
 
     /**
-     * Render feed
+     * Render feed.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Append feed namespaces
+     * Append feed namespaces.
      *
      * @return void
      */
@@ -88,7 +88,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set total results
+     * Set total results.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -108,7 +108,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set start index
+     * Set start index.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -128,7 +128,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set items per page
+     * Set items per page.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -148,7 +148,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set the query element
+     * Set the query element.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element
@@ -172,7 +172,7 @@ class Feed extends AbstractRenderer
     }
 
     /**
-     * Set links
+     * Set links.
      *
      * @param DOMDocument $dom  the dom document
      * @param DOMElement  $root the root element

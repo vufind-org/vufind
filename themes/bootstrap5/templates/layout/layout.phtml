@@ -75,7 +75,6 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
           $this->assetManager()->appendScriptLink('cart.js');
         }
         $this->assetManager()->prependScriptString(
@@ -157,6 +156,9 @@
     <?=$this->breadcrumbs()->render()?>
     <div role="main" class="main">
       <div id="content" class="container">
+        <?php if (!($this->layout()->disableDefaultNotices ?? false)): ?>
+          <?=$this->notices()->renderNoticesForPosition('default')?>
+        <?php endif; ?>
         <?=$this->layout()->content ?>
       </div>
     </div>

@@ -35,13 +35,7 @@
     <form action="<?=$this->url('ratings-deleteratings')?>" name="updateForm" id="select_all_ratings" method="post">
       <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
-        <div class="toolbar">
-          <label>
-            <div class="checkbox">
-              <input type="checkbox" name="selectAll" class="checkbox-select-all">
-              <?=$this->transEsc('select_all_on_page')?>
-            </div>
-          </label>
+        <div class="toolbar table-checkbox-toolbar">
           <?=
             $this->component(
                 'confirm-button',
@@ -56,6 +50,12 @@
                 ]
             )
           ?>
+          <div class="select-all-container">
+            <label class="select-all-label">
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
+              <?=$this->transEsc('select_all_on_page')?>
+            </label>
+          </div>
         </div>
       <?php endif; ?>
       <table class="usercontent-table table-striped table table-responsive">
@@ -87,9 +87,9 @@
                 <a href="<?=$this->url('record', ['id' => $rating['record_id']])?>"><?=$this->escapeHtml($rating['recordTitle'])?></a>
               </td>
               <td class="user-rating" data-label="<?=$this->transEscAttr('Rating')?>">
-                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($rating['source'] . '|' . $rating['record_id'], 'Rating'))?>" data-lightbox>
-                  <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1]])?>
-                </a>
+                <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1], 'labelAttrs' => ['data-click-callback="addRecordRatingFromUserList"']])?>
+                <?php // The following link is triggered programmatically on click: ?>
+                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($rating['source'] . '|' . $rating['record_id'], 'Rating'))?>" data-lightbox></a>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -103,5 +103,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render('usercontent')?>
+  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'usercontent'])?>
 </div>

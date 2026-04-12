@@ -9,6 +9,7 @@ if ($this->displayVersions) {
 // Load only if list view parameter is NOT full:
 if (($this->listViewOption ?? 'full') !== 'full') {
     $this->assetManager()->appendScriptLink('record.js');
+    $this->assetManager()->appendScriptLink('channels.js');
     $this->assetManager()->appendScriptLink('embedded_record.js');
 }
 if ($this->jsResults ?? false) {

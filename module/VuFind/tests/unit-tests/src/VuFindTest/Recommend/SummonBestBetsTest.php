@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonBestBets Test Class
+ * SummonBestBets Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\SummonBestBets;
 
 /**
- * SummonBestBets Test Class
+ * SummonBestBets Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,16 +49,10 @@ class SummonBestBetsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResults(): void
     {
-        $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $pm = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $obj = new SummonBestBets($pm);
-        $results = $this->getMockBuilder(\VuFind\Search\Summon\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Summon\Results::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->expects($this->once())->method('getParams')
             ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchClassId')

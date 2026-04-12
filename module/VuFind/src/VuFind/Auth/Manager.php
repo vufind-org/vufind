@@ -63,56 +63,56 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Authentication modules
+     * Authentication modules.
      *
      * @var AuthInterface[]
      */
     protected array $auth = [];
 
     /**
-     * Currently selected authentication module
+     * Currently selected authentication module.
      *
      * @var string
      */
     protected string $activeAuth;
 
     /**
-     * List of values allowed to be set into $activeAuth
+     * List of values allowed to be set into $activeAuth.
      *
      * @var array
      */
     protected array $legalAuthOptions;
 
     /**
-     * Cache for current logged in user object
+     * Cache for current logged in user object.
      *
      * @var ?UserEntityInterface
      */
     protected ?UserEntityInterface $currentUser = null;
 
     /**
-     * Cache for hideLogin setting
+     * Cache for hideLogin setting.
      *
      * @var ?bool
      */
     protected ?bool $hideLogin = null;
 
     /**
-     * ILS Authenticator
+     * ILS Authenticator.
      *
      * @var ?ILSAuthenticator
      */
     protected ?ILSAuthenticator $ilsAuthenticator = null;
 
     /**
-     * Default session initiator target
+     * Default session initiator target.
      *
      * @var ?string
      */
     protected ?string $defaultSessionInitiatorTarget = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config                          $config            VuFind configuration
      * @param UserServiceInterface            $userService       User database service
@@ -147,7 +147,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Set ILS Authenticator
+     * Set ILS Authenticator.
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      *
@@ -174,7 +174,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             // need to be replaced by "getLogoutRedirectUrl" and "clearLoginState".
             if (is_callable([$this->auth[$name], 'logout']) || is_callable([$this->auth[$name], 'resetState'])) {
                 throw new \Exception(
-                    'Deprecated methods "logout" and "resetState" need'
+                    'Deprecated methods "logout" and "resetState" need '
                     . 'to be replaced by "getLogoutRedirectUrl" and "clearLoginState"'
                 );
             }
@@ -183,7 +183,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Helper
+     * Helper.
      *
      * @param string $method auth method to instantiate
      *
@@ -312,7 +312,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Get persistent login lifetime in days
+     * Get persistent login lifetime in days.
      *
      * @return int
      */
@@ -322,7 +322,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @param ?string $authMethod optional; check this auth method rather than
      * the one in config file
@@ -337,7 +337,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $authMethod optional; check this auth method rather than the one in config file
      * @param ?string $target     Authentication target for methods that support target selection
@@ -666,7 +666,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Retrieve CSRF token
+     * Retrieve CSRF token.
      *
      * If no CSRF token currently exists, or should be regenerated, generates one.
      *
@@ -684,7 +684,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Get the logged-in user's identity (null if not logged in)
+     * Get the logged-in user's identity (null if not logged in).
      *
      * @return ?IdentityInterface
      */
@@ -790,6 +790,11 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     public function resetPassword(array $recoveryData, array $params)
     {
         $this->getAuth()->resetPassword($recoveryData, $params);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubType::PasswordReset,
+            data: compact('recoveryData', 'params')
+        );
     }
 
     /**
@@ -1000,7 +1005,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Delete a login token
+     * Delete a login token.
      *
      * @param string $series Series to identify the token
      *
@@ -1012,7 +1017,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Delete all login tokens for a user
+     * Delete all login tokens for a user.
      *
      * @param int $userId User identifier
      *
@@ -1024,7 +1029,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Setter
+     * Setter.
      *
      * @param string $method     The auth class to proxy
      * @param bool   $forceLegal Whether to force the new method legal
@@ -1076,7 +1081,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *
@@ -1117,7 +1122,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Update common user attributes on login
+     * Update common user attributes on login.
      *
      * @param UserEntityInterface $user       User object
      * @param ?string             $authMethod Authentication method to user
@@ -1153,7 +1158,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Process a raw policy configuration
+     * Process a raw policy configuration.
      *
      * @param array $policy Policy configuration
      *

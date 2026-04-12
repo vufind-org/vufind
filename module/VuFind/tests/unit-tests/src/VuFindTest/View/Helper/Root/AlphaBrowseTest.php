@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AlphaBrowse view helper Test Class
+ * AlphaBrowse view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\Url;
 use VuFind\View\Helper\Root\AlphaBrowse;
 
 /**
- * AlphaBrowse view helper Test Class
+ * AlphaBrowse view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,9 +55,9 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $mock = $this->createMock(Url::class);
         $mock->expects($this->once())->method('__invoke')
             ->with(
-                $this->equalTo('search-results'),
-                $this->equalTo([]),
-                $this->equalTo(['query' => $expectedQuery])
+                'search-results',
+                [],
+                ['query' => $expectedQuery]
             )->willReturn('foo');
         return $mock;
     }

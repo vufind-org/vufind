@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for payment table
+ * Entity model for payment table.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Type\PaymentStatus;
 use function in_array;
 
 /**
- * Entity model for payment table
+ * Entity model for payment table.
  *
  * @category VuFind
  * @package  Database
@@ -391,7 +391,8 @@ class Payment implements PaymentEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

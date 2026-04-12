@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for resource_tags table
+ * Entity model for resource_tags table.
  *
  * PHP version 8
  *
@@ -31,9 +31,10 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for resource_tags table
+ * Entity model for resource_tags table.
  *
  * @category VuFind
  * @package  Database
@@ -49,6 +50,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class ResourceTags implements ResourceTagsEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -110,7 +113,7 @@ class ResourceTags implements ResourceTagsEntityInterface
     protected ?UserEntityInterface $user = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -227,7 +230,8 @@ class ResourceTags implements ResourceTagsEntityInterface
      */
     public function getPosted(): DateTime
     {
-        return $this->posted;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->posted);
     }
 
     /**

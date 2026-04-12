@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration-Based Hierarchy Driver
+ * Configuration-Based Hierarchy Driver.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Hierarchy\Driver;
 
 /**
- * Configuration-Based Hierarchy Driver
+ * Configuration-Based Hierarchy Driver.
  *
  * @category VuFind
  * @package  Hierarchy_Drivers
@@ -41,14 +41,14 @@ namespace VuFind\Hierarchy\Driver;
 class ConfigurationBased extends AbstractBase
 {
     /**
-     * Default tree renderer
+     * Default tree renderer.
      *
      * @var string
      */
     protected $defaultTreeRenderer = 'HTMLTree';
 
     /**
-     * Show Tree
+     * Show Tree.
      *
      * Returns the configuration setting for displaying a hierarchy tree
      *
@@ -61,7 +61,7 @@ class ConfigurationBased extends AbstractBase
     }
 
     /**
-     * Get Tree Renderer Type
+     * Get Tree Renderer Type.
      *
      * Returns the configuration setting for generating a hierarchy tree
      *
@@ -74,7 +74,7 @@ class ConfigurationBased extends AbstractBase
     }
 
     /**
-     * Get Tree Data Source Type
+     * Get Tree Data Source Type.
      *
      * @return string
      */
@@ -84,7 +84,7 @@ class ConfigurationBased extends AbstractBase
     }
 
     /**
-     * Get Tree Cache Time
+     * Get Tree Cache Time.
      *
      * Returns the configuration setting for hierarchy tree caching time when
      * using solr to build the tree
@@ -97,7 +97,7 @@ class ConfigurationBased extends AbstractBase
     }
 
     /**
-     * Check if sorting is enabled in the hierarchy Options
+     * Check if sorting is enabled in the hierarchy Options.
      *
      * Returns the configuration setting for hierarchy tree sorting
      *
@@ -109,7 +109,7 @@ class ConfigurationBased extends AbstractBase
     }
 
     /**
-     * Get Tree Settings
+     * Get Tree Settings.
      *
      * Returns all the configuration settings for a hierarchy tree
      *
@@ -122,7 +122,7 @@ class ConfigurationBased extends AbstractBase
     }
 
     /**
-     * Get Collection Link Type from the config file
+     * Get Collection Link Type from the config file.
      *
      * @return string
      */
@@ -133,7 +133,7 @@ class ConfigurationBased extends AbstractBase
     }
 
     /**
-     * Get the Solr field name used for grouping together collection contents
+     * Get the Solr field name used for grouping together collection contents.
      *
      * @param bool $hasSearch Is the user performing a search?
      *

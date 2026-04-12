@@ -47,7 +47,7 @@ use function count;
 class IdentifierLinksLookup extends AbstractBase
 {
     /**
-     * Identifier link resolver configuration value, exploded into an array of options
+     * Identifier link resolver configuration value, exploded into an array of options.
      *
      * @var string[]
      */
@@ -55,28 +55,28 @@ class IdentifierLinksLookup extends AbstractBase
 
     /**
      * Behavior to use when multiple resolvers find results for the same identifier set (may
-     * be 'first' -- use first match, or 'merge' -- use all results)
+     * be 'first' -- use first match, or 'merge' -- use all results).
      *
      * @var string
      */
     protected $multiMode;
 
     /**
-     * Whether to load icons via the cover proxy
+     * Whether to load icons via the cover proxy.
      *
      * @var bool
      */
     protected $proxyIcons = false;
 
     /**
-     * Whether to open links in a new window
+     * Whether to open links in a new window.
      *
      * @var bool
      */
     protected $openInNewWindow = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager     $pluginManager Identifier Linker Plugin Manager
      * @param RendererInterface $viewRenderer  View renderer
@@ -150,7 +150,7 @@ class IdentifierLinksLookup extends AbstractBase
     }
 
     /**
-     * Proxify external icon links and render local icons
+     * Proxify external icon links and render local icons.
      *
      * @param array $data Identifier plugin data
      *

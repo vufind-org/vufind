@@ -56,7 +56,6 @@ for MAPPINGS_FILENAME in ${MAPPINGS_FILENAMES[@]}; do
   fi
 done
 
-export SOLRCORE="authority"
 export EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=$MAPPINGS_FILES"
 
 # Call the standard script:

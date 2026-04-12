@@ -76,21 +76,21 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected $maxValuesToSuggestPerField;
 
     /**
-     * Page of results to retrieve
+     * Page of results to retrieve.
      *
      * @var int
      */
     protected $page = 1;
 
     /**
-     * Page size for retrieved results
+     * Page size for retrieved results.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager $resultsManager Results manager
      * @param Url            $url            URL helper

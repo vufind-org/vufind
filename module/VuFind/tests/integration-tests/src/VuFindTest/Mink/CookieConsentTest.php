@@ -45,7 +45,7 @@ use Behat\Mink\Element\Element;
 final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Test cookie consent disabled
+     * Test cookie consent disabled.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test cookie consent
+     * Test cookie consent.
      *
      * @return void
      */
@@ -176,7 +176,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get start page
+     * Get start page.
      *
      * @return Element
      */
@@ -190,7 +190,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Click the "Accept All Cookies" button
+     * Click the "Accept All Cookies" button.
      *
      * @param Element $page Page
      *
@@ -202,7 +202,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Click the "Accept Only Essential Cookies" button
+     * Click the "Accept Only Essential Cookies" button.
      *
      * @param Element $page Page
      *
@@ -214,7 +214,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Click the Settings button
+     * Click the Settings button.
      *
      * @param Element $page Page
      *
@@ -226,7 +226,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Click the Save button
+     * Click the Save button.
      *
      * @param Element $page Page
      *
