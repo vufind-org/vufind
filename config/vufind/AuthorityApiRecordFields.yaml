@@ -27,6 +27,10 @@ institution:
   vufind.default: true
   description: Institution
   type: string
+# More fields could be added here if desired:
 # String Fields for Exact Match / Faceting
+# [...]
 # Keyword Fields for Searching
-# RDA fields -->
+# [...]
+# RDA fields
+# [...]
