@@ -62,7 +62,7 @@ function waitForAjaxContentToLoad(fn) {
   });
 }
 
-VuFind.listen("ready", function triggerPrint() {
+VuFind.listenOnce('ready', () => {
   if (!VuFind.isPrinting()) {
     return;
   }

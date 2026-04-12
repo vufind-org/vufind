@@ -37,6 +37,13 @@ var VuFind = (function VuFindModule() {
   // Event controls
 
   let listeners = {};
+
+  /**
+   * Object containing arguments for events emitted.
+   * @member {object}
+   */
+  let _resolves = {};
+
   /**
    * Remove a listener function from a specific event.
    * @param {string}   event The name of the event.
@@ -61,9 +68,18 @@ var VuFind = (function VuFindModule() {
    * @param {Function} fn             The function to call when the event is emitted.
    * @param {object}   [options]      Options for the listener.
    * @param {boolean}  [options.once] If true, the listener will be removed after being called once (default = false).
-   * @returns {Function} A function to remove the listener.
+   * @returns {Function} A function to remove the listener or an empty function in case it was resolved immediately.
    */
-  function listen(event, fn, { once = false } = {}) {
+  function listen(event, fn, { once = false} = {}) {
+    // Run the script immediately if it has been resolved.
+    if (_resolves[event]) {
+      fn(..._resolves[event]);
+      // Return an empty function if script was meant to run only once and it was resolved.
+      // This keeps the structure similar and does not need any additional checks.
+      if (once) {
+        return () => {};
+      }
+    }
     if (typeof listeners[event] === "undefined") {
       listeners[event] = [];
     }
@@ -85,6 +101,16 @@ var VuFind = (function VuFindModule() {
   }
 
   /**
+   * Add function to be called once when an event is emitted or resolved.
+   * @param {string} event The name of the event.
+   * @param {Function} fn The function to call when the event is emitted.
+   * @returns {Function} A function to remove the listener or an empty function in case it was resolved immediately.
+   */
+  function listenOnce(event, fn) {
+    return listen(event, fn, {once: true});
+  }
+  
+  /**
    * Broadcast an event, passing arguments to all registered listeners.
    * @param {string} event The name of the event.
    * @param {...*}   args  Arguments to pass to the listeners.
@@ -95,7 +121,7 @@ var VuFind = (function VuFindModule() {
     if (typeof listeners[event] === "undefined") {
       return;
     }
-
+    _resolves[event] = [...args];
     // iterate over a copy of the listeners array
     // this prevents listeners from being skipped
     // if the listener before it is removed during execution
@@ -681,6 +707,7 @@ var VuFind = (function VuFindModule() {
     el: el,
     emit: emit,
     listen: listen,
+    listenOnce: listenOnce,
     unlisten: unlisten,
     evalCallback: evalCallback,
     getCspNonce: getCspNonce,

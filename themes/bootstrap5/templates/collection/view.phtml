@@ -103,4 +103,10 @@
     <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 </div>
-<?=$this->assetManager()->outputInlineScriptString('$(document).ready(recordDocReady);'); ?>
+<?php
+    $js = <<<JS
+        VuFind.listenOnce('ready', recordDocReady);
+        JS;
+
+    echo $this->assetManager()->outputInlineScriptString($js);
+?>
