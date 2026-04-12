@@ -75,9 +75,9 @@ class SolrWeb extends SolrDefault
      *
      * @return string
      */
-    public function getFulltext()
+    public function getFulltext(): string
     {
-        return $this->fields['fulltext'];
+        return $this->fields['fulltext'] ?? '';
     }
 
     /**
