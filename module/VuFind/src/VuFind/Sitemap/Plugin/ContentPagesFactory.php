@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content pages generator plugin factory
+ * Content pages generator plugin factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Content pages generator plugin factory
+ * Content pages generator plugin factory.
  *
  * @category VuFind
  * @package  Sitemap
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class ContentPagesFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,11 +68,11 @@ class ContentPagesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
             $container->get('HttpRouter'),
-            $configLoader->get('config')
+            $config
         );
     }
 }

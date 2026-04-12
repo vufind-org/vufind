@@ -1,0 +1,18 @@
+<?php
+  // This template is only used by integration tests and does not need to be translated
+
+  $this->headTitle('Payment');
+  $this->layout()->userLang = 'en';
+?>
+
+<h1>Simulated Payment Service</h1>
+
+<form method="POST">
+  <input type="hidden" name="requestId" value="<?=$this->escapeHtmlAttr($this->requestId)?>">
+  <?php // Note: Return URL is included for Mink tests only ?>
+  <input type="hidden" name="returnUrl" value="<?=$this->escapeHtmlAttr($this->returnUrl)?>">
+  <button type="submit" class="btn btn-default button-success" name="success" value="1">Return Success</button>
+  <button type="submit" class="btn btn-default button-failure" name="failure" value="1">Return Failure</button>
+  <button type="submit" class="btn btn-default button-cancel" name="cancel" value="1">Cancel Payment</button>
+  <button type="submit" class="btn btn-default button-notify" name="notify" value="1">Only Notify Success</button>
+</form>

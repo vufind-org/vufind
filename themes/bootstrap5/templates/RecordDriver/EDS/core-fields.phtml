@@ -1,0 +1,43 @@
+<?php
+  $formatter = $this->recordDataFormatter($this->driver);
+  $coreFields = $formatter->getData($formatter->getDefaults($this->defaults ?? 'core'));
+  $dbLabel = $this->driver->getDbLabel();
+  $accessLevel = $this->driver->getAccessLevel();
+  $restrictedView = empty($accessLevel) ? false : true;
+  $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
+?>
+<?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>
+  <?=$this->render('error/restrictedViewWarning.phtml')?>
+<?php endif; ?>
+<?php if (!empty($coreFields)): ?>
+  <table <?php if (!empty($this->tableId)): ?>id="<?=$this->tableId ?>" <?php endif; ?>class="table table-striped">
+    <caption class="visually-hidden"><?=$this->transEsc($this->caption ?? 'Bibliographic Details')?></caption>
+    <?php foreach ($coreFields as $current): ?>
+      <tr class="record__biblio-value"><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
+    <?php endforeach; ?>
+    <?php if ($dbLabel): ?>
+      <tr>
+        <th><?=$this->transEsc('Database')?>:</th>
+        <td><?=$this->escapeHtml($dbLabel)?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView): ?>
+      <?php $fullText = $this->driver->getHtmlFullText(); ?>
+      <tr id="html">
+        <td colspan="2">
+          <?=$fullText?>
+        </td>
+      </tr>
+    <?php elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
+      <tr id="html">
+        <td colspan="2">
+          <div class="alert alert-info">
+            <?=$this->transEsc('Full text is not displayed to guests')?>
+            <?=$this->render('error/loginForAccess.phtml')?>
+          </div>
+        </td>
+      </tr>
+    <?php endif; ?>
+  </table>
+<?php endif; ?>

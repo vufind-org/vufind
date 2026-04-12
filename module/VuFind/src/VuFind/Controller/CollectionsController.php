@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Collections Controller
+ * Collections Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -38,7 +38,7 @@ use function array_slice;
 use function count;
 
 /**
- * Collections Controller
+ * Collections Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -53,14 +53,14 @@ class CollectionsController extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param Config                  $config VuFind configuration
@@ -73,7 +73,7 @@ class CollectionsController extends AbstractBase implements
     }
 
     /**
-     * Search by title action
+     * Search by title action.
      *
      * @return mixed
      */
@@ -90,7 +90,7 @@ class CollectionsController extends AbstractBase implements
     }
 
     /**
-     * Browse action
+     * Browse action.
      *
      * @return mixed
      */
@@ -112,7 +112,7 @@ class CollectionsController extends AbstractBase implements
     }
 
     /**
-     * Show the Browse Menu
+     * Show the Browse Menu.
      *
      * @return mixed
      */
@@ -166,7 +166,7 @@ class CollectionsController extends AbstractBase implements
     }
 
     /**
-     * Show the Browse Menu
+     * Show the Browse Menu.
      *
      * @return mixed
      */
@@ -280,7 +280,7 @@ class CollectionsController extends AbstractBase implements
     }
 
     /**
-     * Function to normalize the names so they sort properly
+     * Function to normalize the names so they sort properly.
      *
      * @param array $result Array to sort (passed by reference to use less
      * memory)
@@ -301,7 +301,7 @@ class CollectionsController extends AbstractBase implements
     }
 
     /**
-     * Normalize the value for the browse sort
+     * Normalize the value for the browse sort.
      *
      * @param string $val Value to normalize
      *
@@ -327,7 +327,7 @@ class CollectionsController extends AbstractBase implements
     }
 
     /**
-     * Get the collection browse page size
+     * Get the collection browse page size.
      *
      * @return int
      */

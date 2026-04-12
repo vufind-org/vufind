@@ -1,0 +1,163 @@
+<?php
+// Note: Zotero has several fields specific to each item type. To avoid errors from bad fields, ZoteroController will
+// clean up the results we build here before sending the record(s) to Zotero.
+// See https://api.zotero.org/schema for more information.
+
+$data = [];
+// A driver-specific template may pass in format overrides; check for these before going to the driver itself:
+$itemType = $this->slot('zotero-format')->get();
+if (null === $itemType) {
+    $formatMap = [
+        'Article' => 'journalArticle',
+        'Audio' => 'audioRecording',
+        'Blu-ray Disc' => 'videoRecording',
+        'Book Chapter' => 'bookSection',
+        'Book' => 'book',
+        'CD' => 'audioRecording',
+        'Cassette' => 'audioRecording',
+        'ConferenceProceeding' => 'conferencePaper',
+        'DVD' => 'videoRecording',
+        'Data Set' => 'dataset',
+        'Database' => 'document',
+        'Electronic' => 'document',
+        'Globe' => 'map',
+        'Government Document' => 'document',
+        'Image' => 'document',
+        'Journal' => 'journalArticle',
+        'Kit' => 'document',
+        'Manuscript' => 'manuscript',
+        'Map' => 'map',
+        'Microfilm' => 'document',
+        'Musical Score' => 'document',
+        'Newspaper' => 'newspaperArticle',
+        'Photo' => 'document',
+        'Physical Object' => 'document',
+        'Postcard' => 'artwork',
+        'Poster' => 'presentation',
+        'Reference Material' => 'document',
+        'Sensor Image' => 'document',
+        'Serial' => 'document',
+        'Slide' => 'document',
+        'Software' => 'computerProgram',
+        'Text' => 'document',
+        'Thesis' => 'thesis',
+        'Unknown' => 'document',
+        'VHS' => 'videoRecording',
+        'Video Game' => 'computerProgram',
+        'Video' => 'videoRecording',
+        'Website' => 'website',
+        'eBook' => 'book',
+    ];
+    $formats = $this->driver->tryMethod('getFormats');
+    foreach ($formats as $format) {
+        if ($itemType = $formatMap[(string)$format] ?? null) {
+            break;
+        }
+    }
+    if (!$itemType) {
+        $itemType = 'book';
+    }
+}
+
+// Check for container information and override itemType as necessary:
+if ($this->driver->tryMethod('getContainerTitle')) {
+    $itemType = match($itemType) {
+        'book' => 'bookSection',
+        'conferencePaper' => 'conferencePaper',
+        'journalArticle' => 'journalArticle',
+        default => 'bookSection',
+    };
+}
+
+$data['itemType'] = $itemType;
+
+$data['title'] = rtrim($this->driver->getTitle(), ' /');
+
+foreach ($this->driver->tryMethod('getPrimaryAuthors', [], []) as $current) {
+    $data['creators'][] = [
+        'creatorType' => 'author',
+        'name' => $current,
+    ];
+}
+
+foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
+    $data['creators'][] = [
+        'creatorType' => 'contributor',
+        'name' => $current,
+    ];
+}
+
+if ($pubPlaces = $this->driver->tryMethod('getPlacesOfPublication')) {
+    $data['place'] = implode('; ', $pubPlaces);
+}
+
+if ($pubNames = $this->driver->tryMethod('getPublishers')) {
+    $data['publisher'] = implode('; ', $pubNames);
+}
+
+if ($pubDates = $this->driver->tryMethod('getPublicationDates')) {
+    $data['date'] = implode('; ', $pubDates);
+}
+
+if ($languages = $this->driver->tryMethod('getLanguages')) {
+    $data['language'] = implode('; ', $languages);
+}
+
+if ($series = $this->driver->tryMethod('getSeries')) {
+    $data['series'] = $series;
+}
+
+if ($isbns = $this->driver->tryMethod('getISBNs')) {
+    $data['ISBN'] = implode('; ', $isbns);
+}
+
+if ($issns = $this->driver->tryMethod('getISSNs')) {
+    $data['ISSN'] = implode('; ', $issns);
+}
+
+if ($journalTitle = $this->driver->tryMethod('getContainerTitle')) {
+    $data['publicationTitle'] = $journalTitle;
+}
+if ($volume = $this->driver->tryMethod('getContainerVolume')) {
+    $data['volume'] = $volume;
+}
+if ($number = $this->driver->tryMethod('getContainerIssue')) {
+    $data['issue'] = $number;
+}
+if ($page = $this->driver->tryMethod('getContainerStartPage')) {
+    $data['page'] = $page;
+}
+
+if ($urls = $this->driver->getUrls()) {
+    $url = reset($urls);
+    $data['url'] = $url['url'];
+}
+
+if ($edition = $this->driver->tryMethod('getEdition')) {
+    $data['edition'] = $edition;
+}
+
+if ($summary = $this->driver->tryMethod('getSummary')) {
+    $data['abstractNote'] = implode('; ', $summary);
+}
+
+if ($seriesData = $this->driver->getSeries()) {
+    $series = [];
+    $seriesNumbers = [];
+    foreach ($seriesData as $current) {
+        if (is_array($current)) {
+            $series[] = $current['name'];
+            if ($number = $current['number'] ?? null) {
+                $seriesNumbers[] = $number;
+            }
+        } else {
+            $series[] = $current;
+        }
+    }
+    $data['series'] = implode('; ', $series);
+    $data['seriesNumber'] = implode('; ', $seriesNumbers);
+}
+
+$data['extra'] = 'id:' . $this->driver->getUniqueID();
+
+echo json_encode($data);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -54,7 +54,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
     /**
-     * A factory that creates delegates of a given service
+     * A factory that creates delegates of a given service.
      *
      * @param ContainerInterface $container Container
      * @param string             $name      Service name
@@ -92,7 +92,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
     }
 
     /**
-     * Add caching to a translator object
+     * Add caching to a translator object.
      *
      * @param Translator         $translator Translator object
      * @param ContainerInterface $container  Service manager

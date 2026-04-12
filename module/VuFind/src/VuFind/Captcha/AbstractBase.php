@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base CAPTCHA
+ * Abstract base CAPTCHA.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -34,7 +34,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use function get_class;
 
 /**
- * Abstract base CAPTCHA
+ * Abstract base CAPTCHA.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -55,7 +55,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Get ID for current CAPTCHA (to use e.g. in HTML forms)
+     * Get ID for current CAPTCHA (to use e.g. in HTML forms).
      *
      * @return string
      */
@@ -76,7 +76,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha field from controller params and check them for accuracy.
      *
      * @param Params $params Controller params
      *

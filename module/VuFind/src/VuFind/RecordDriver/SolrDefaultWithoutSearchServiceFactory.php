@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -46,14 +46,14 @@ use Psr\Container\ContainerInterface;
 class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * @var string
      */
     protected $searchIni = 'searches';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,10 +72,9 @@ class SolrDefaultWithoutSearchServiceFactory extends AbstractBaseFactory
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get($this->searchIni);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($this->searchIni);
         $finalOptions = [null, $config];
         return parent::__invoke($container, $requestedName, $finalOptions);
     }

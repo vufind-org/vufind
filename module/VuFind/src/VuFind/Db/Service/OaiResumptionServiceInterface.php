@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
 
 /**
@@ -42,7 +43,7 @@ use VuFind\Db\Entity\OaiResumptionEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface OaiResumptionServiceInterface
+interface OaiResumptionServiceInterface extends DbServiceInterface
 {
     /**
      * Remove all expired tokens from the database.
@@ -95,13 +96,13 @@ interface OaiResumptionServiceInterface
     /**
      * Create and persist a new resumption token.
      *
-     * @param array $params Parameters associated with the token.
-     * @param int   $expire Expiration time for token (Unix timestamp).
+     * @param array    $params Parameters associated with the token.
+     * @param DateTime $expiry Expiration time for the token.
      *
      * @return OaiResumptionEntityInterface
      * @throws \Exception
      */
-    public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface;
+    public function createAndPersistToken(array $params, DateTime $expiry): OaiResumptionEntityInterface;
 
     /**
      * Create a OaiResumption entity object.

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -43,28 +43,28 @@ class Orb extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingD
     use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
-     * Base URL for Orb API
+     * Base URL for Orb API.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * API user for Orb
+     * API user for Orb.
      *
      * @var string
      */
     protected $apiUser;
 
     /**
-     * API key for Orb
+     * API key for Orb.
      *
      * @var string
      */
     protected $apiKey;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $url     Base URL for Orb
      * @param string $apiUser API key for Orb

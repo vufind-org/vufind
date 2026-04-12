@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -65,7 +65,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             [$session, 'getCurrentUrl']
         );
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
-        $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
+        $this->assertSame('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
     /**
@@ -94,7 +94,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
         $this->assertEquals('Holdings', $staffViewTab->getText());
         $staffViewTab->click();
-        $this->assertEquals(
+        $this->assertSame(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.record-tabs .holdings-tab h2')
         );
@@ -159,15 +159,13 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPermalink().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function permalinkProvider(): array
+    public static function permalinkProvider(): \Iterator
     {
-        return [
-            'default' => [null],
-            'enabled' => [true],
-            'disabled' => [false],
-        ];
+        yield 'default' => [null];
+        yield 'enabled' => [true];
+        yield 'disabled' => [false];
     }
 
     /**
@@ -177,9 +175,8 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $id      Record ID to test with
      *
      * @return void
-     *
-     * @dataProvider permalinkProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('permalinkProvider')]
     public function testPermalink(?bool $enabled, $id = 'testbug1'): void
     {
         // Change configuration, unless we're using the default value:

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Collection aspect of the Search Multi-class (Params)
+ * Solr Collection aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrCollection;
 use function sprintf;
 
 /**
- * Solr Collection Search Options
+ * Solr Collection Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -45,14 +45,14 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * The field which defines something as being a collection
      * this is usually either hierarchy_parent_id or
-     * hierarchy_top_id
+     * hierarchy_top_id.
      *
      * @var string
      */
     protected $collectionField = null;
 
     /**
-     * The ID of the collection being searched
+     * The ID of the collection being searched.
      *
      * @var string
      */
@@ -93,21 +93,18 @@ class Params extends \VuFind\Search\Solr\Params
         // Solr search backend come from searches.ini and are set up in the
         // AbstractSolrBackendFactory, we need to account for additional ones
         // from Collection.ini here.
-        $collectionConfig = $this->configLoader->get('Collection');
-        if (isset($collectionConfig->HiddenFilters)) {
-            foreach ($collectionConfig->HiddenFilters as $field => $value) {
-                $this->addHiddenFilter(sprintf('%s:"%s"', $field, $value));
-            }
+        $collectionConfig = $this->configManager->getConfigArray('Collection');
+        foreach ($collectionConfig['HiddenFilters'] ?? [] as $field => $value) {
+            $this->addHiddenFilter(sprintf('%s:"%s"', $field, $value));
         }
-        if (isset($collectionConfig->RawHiddenFilters)) {
-            foreach ($collectionConfig->RawHiddenFilters as $current) {
-                $this->addHiddenFilter($current);
-            }
+
+        foreach ($collectionConfig['RawHiddenFilters'] ?? [] as $current) {
+            $this->addHiddenFilter($current);
         }
     }
 
     /**
-     * Get collection field
+     * Get collection field.
      *
      * @return string
      */
@@ -117,7 +114,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Get collection id
+     * Get collection id.
      *
      * @return string
      */

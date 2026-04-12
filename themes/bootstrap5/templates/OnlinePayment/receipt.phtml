@@ -1,0 +1,176 @@
+<?php
+// Note: this template is used to create a payment receipt as a complete HTML page. The result is passed to mpdf for PDF
+// conversion. Not all HTML features are supported, and external stylesheets cannot be used.
+
+$titleEsc = $this->transEsc('Payment::breakdown_title');
+if ($sourceNameEsc = $this->transEscWithPrefix('source_', $this->sourceIls, [], '')) {
+  $titleEsc .= " - $sourceNameEsc";
+} elseif ($this->businessId) {
+  $titleEsc .= ' - ' . $this->escapeHtml($this->businessId);
+}
+?>
+<!DOCTYPE html>
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+  <head>
+    <title><?=$titleEsc?> - <?=$this->payment->getPaidDate()->format('Y-m-d H-i')?></title>
+    <meta name="description" content="<?=$this->transEscAttr('Payment::breakdown_title')?>">
+    <?php
+      // The following special tag can be used to specify the file name for the resulting PDF. It must be formatted
+      // exactly as below.
+      $filenameEsc = $titleEsc . ' - ' . $payment->getPaidDate()->format('Y-m-d H-i') . '.pdf';
+    ?>
+    <meta name="filename" content="<?=$filenameEsc?>">
+    <?=$this->partial('OnlinePayment/receipt-head-style.phtml')?>
+  </head>
+  <body>
+    <h1><?=$titleEsc?></h1>
+
+    <hr>
+
+    <table class="info-table">
+      <tbody>
+        <tr>
+          <th>
+            <?=$this->transEsc('Payment::Recipient')?>
+          </th>
+          <td>
+            <?php if ($sourceNameEsc): ?>
+              <?=$sourceNameEsc?><?=$this->businessId ? $this->escapeHtml(" ($this->businessId)") : ''?>
+            <?php else: ?>
+               <?=$this->escapeHtml($this->businessId)?>
+            <?php endif; ?>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <?=$this->transEsc('Payment::Date')?>
+          </th>
+          <td>
+            <?=$this->dateTime()->convertToDisplayDateAndTime('U', $payment->getPaidDate()->getTimestamp())?>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <?=$this->transEsc('Payment::Identifier')?>
+          </th>
+          <td>
+            <?=$this->escapeHtml($this->payment->getLocalIdentifier())?>
+          </td>
+        </tr>
+        <?php if ($this->contactInfo): ?>
+          <tr>
+            <th>
+              <?=$this->transEsc('Payment::Contact Information')?>
+            </th>
+            <td>
+              <?php if (preg_match('/^(https?:\/\/.+)\|(.+)$/', $this->contactInfo, $matches)): ?>
+                <a href="<?=$this->escapeHtmlAttr($matches[1])?>"><?=$this->escapeHtml($matches[2])?></a>
+              <?php elseif (preg_match('/^https?:\/\/([^\s]+)$/', $this->contactInfo, $matches)): ?>
+                <a href="<?=$this->escapeHtmlAttr($this->contactInfo)?>"><?=$this->escapeHtml($matches[1])?></a>
+              <?php else: ?>
+                <?=$this->escapeHtml($this->contactInfo)?>
+              <?php endif; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+
+    <table class="fee-table">
+      <thead>
+        <tr>
+          <th class="identifier"><?=$this->transEsc('Payment::Identifier')?></th>
+          <th class="type"><?=$this->transEsc('Payment::Type')?></th>
+          <th class="details"><?=$this->transEsc('Payment::Details')?></th>
+          <?php if ($this->feeSpecificOrganizations): ?>
+            <th class="recipient"><?=$this->transEsc('Payment::Recipient')?></th>
+          <?php endif; ?>
+          <th class="fee"><?=$this->transEsc('Payment::Fee')?></th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php $feeTotal = 0; ?>
+        <?php foreach ($this->fees as $fee): ?>
+          <?php
+            $type = $fee->getType();
+            $typeEsc = $this->transEscWithPrefix('fee_status_', $type);
+            $descriptions = [];
+            if ($desc = $fee->getDescription()) {
+                $descriptions[] = $desc;
+            }
+            if ($title = $fee->getTitle()) {
+                $descriptions[] = $title;
+            }
+            if (!$descriptions) {
+              $descriptions[] = $this->translate('Payment::receipt_no_details_placeholder');
+            }
+            $feeTotal += $fee->getAmount();
+          ?>
+          <tr>
+            <td class="identifier"><?=$this->escapeHtml($fee->getFineId())?></td>
+            <td class="type"><?=$typeEsc?></td>
+            <td class="details"><?=$this->escapeHtml(implode(' - ', $descriptions))?></td>
+            <?php if ($this->feeSpecificOrganizations): ?>
+              <?php
+                $feeOrg = $fee->getOrganization();
+                $lineBusinessId = $feeOrg ? ($this->organizationBusinessIdMappings[$feeOrg] ?? '') : '';
+                if ($feeOrg && $lineBusinessId) {
+                    $recipientEsc = $this->transEsc("Payment::organisation_{$sourceIls}_{$feeOrg}", [], $feeOrg)
+                        . $this->escapeHtml(" ($lineBusinessId)");
+                } else {
+                    $recipientEsc = $this->sourceNameEsc . ($businessId ? $this->transEsc(" ($businessId)") : '');
+                }
+              ?>
+              <td class="recipient"><?=$recipientEsc?></td>
+            <?php endif; ?>
+            <td class="fee"><?=$this->safeMoneyFormat($fee->getAmount() / 100.0)?></td>
+          </tr>
+        <?php endforeach; ?>
+        <tr class="total">
+          <td colspan="<?=$this->feeSpecificOrganizations ? 5 : 4?>" class="fee"><?=$this->transEsc('Payment::Total')?> <?=$this->safeMoneyFormat($feeTotal / 100.0)?></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <?php if ($this->paymentConfig['vatBreakdown'] ?? false): ?>
+      <?php
+        // Collect sums for all VAT bases:
+        $vatTable = [];
+        $percentDecimals = 0;
+        foreach ($this->fees as $fee) {
+          $vat = $fee->getTaxPercent();
+          $entry = $vatTable[$vat] ?? [0, 0, 0];
+          $entry[0] += $fee->calculateAmountExcludingTax();
+          $entry[1] += $fee->calculateTax();
+          $entry[2] += $fee->getAmount();
+          $vatTable[$vat] = $entry;
+          if ($vat % 100 !== 0) {
+            $percentDecimals = 1;
+          }
+        }
+      ?>
+      <table class="vat-breakdown" align="right">
+        <thead>
+          <tr>
+            <th class="breakdown-heading"><?=$this->transEsc('Payment::VAT Breakdown')?></th>
+            <th><?=$this->transEsc('Payment::VAT Percent')?></th>
+            <th><?=$this->transEsc('Payment::Excluding VAT')?></th>
+            <th><?=$this->transEsc('Payment::VAT')?></th>
+            <th><?=$this->transEsc('Payment::Including VAT')?></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($vatTable as $vat => $amounts): ?>
+            <tr>
+              <td></td>
+              <td><?=$this->localizedNumber($vat / 100.0, $percentDecimals)?>%</td>
+              <td><?=$this->safeMoneyFormat($amounts[0] / 100.0)?></td>
+              <td><?=$this->safeMoneyFormat($amounts[1] / 100.0)?></td>
+              <td><?=$this->safeMoneyFormat($amounts[2] / 100.0)?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif; ?>
+  </body>
+</html>

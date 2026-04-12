@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -41,14 +41,14 @@ namespace VuFind\Captcha;
 class Image extends LaminasBase
 {
     /**
-     * Base path of cache where image will be stored, e.g. /vufind/cache/
+     * Base path of cache where image will be stored, e.g. /vufind/cache/.
      *
      * @var string
      */
     protected $cacheBasePath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Captcha\AbstractWord $captcha       Laminas CAPTCHA object
      * @param string                        $cacheBasePath e.g. /vufind/cache/
@@ -62,7 +62,7 @@ class Image extends LaminasBase
     }
 
     /**
-     * Getter for template
+     * Getter for template.
      *
      * @return string
      */

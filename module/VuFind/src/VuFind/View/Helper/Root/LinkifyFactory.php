@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Linkify helper factory
+ * Linkify helper factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -37,7 +37,7 @@ use VStelmakh\UrlHighlight\Validator\Validator;
 use VuFind\UrlHighlight\VuFindHighlighter;
 
 /**
- * Linkify helper factory
+ * Linkify helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,7 +48,7 @@ use VuFind\UrlHighlight\VuFindHighlighter;
 class LinkifyFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service Manager
      * @param string             $requestedName Service being created
@@ -64,7 +64,7 @@ class LinkifyFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
 
         $proxyUrl = $container->get('ViewHelperManager')->get('proxyUrl');
@@ -74,6 +74,6 @@ class LinkifyFactory implements FactoryInterface
         $validatorExceptEmail = new Validator(matchEmails: false);
         $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
         $urlHighlightExceptEmail = new UrlHighlight($validatorExceptEmail, $highlighter, $encoder);
-        return new Linkify($urlHighlight, $urlHighlightExceptEmail);
+        return new $requestedName($urlHighlight, $urlHighlightExceptEmail);
     }
 }

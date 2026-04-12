@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record loader
+ * Record loader.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -44,7 +44,7 @@ use function count;
 use function is_object;
 
 /**
- * Record loader
+ * Record loader.
  *
  * @category VuFind
  * @package  Record
@@ -53,40 +53,40 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Loader implements \Laminas\Log\LoggerAwareInterface
+class Loader implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Record factory
+     * Record factory.
      *
      * @var RecordFactory
      */
     protected $recordFactory;
 
     /**
-     * Search service
+     * Search service.
      *
      * @var SearchService
      */
     protected $searchService;
 
     /**
-     * Record cache
+     * Record cache.
      *
      * @var Cache
      */
     protected $recordCache;
 
     /**
-     * Fallback record loader
+     * Fallback record loader.
      *
      * @var FallbackLoader
      */
     protected $fallbackLoader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SearchService   $searchService  Search service
      * @param RecordFactory   $recordFactory  Record loader
@@ -364,7 +364,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the context to control cache behavior
+     * Set the context to control cache behavior.
      *
      * @param string $context Cache context
      *

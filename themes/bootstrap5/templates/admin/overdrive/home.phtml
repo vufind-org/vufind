@@ -46,5 +46,5 @@
   <?php endif; ?>
 </div>
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->adminMenu()->render()?>
+  <?=$this->section('AdminMenu', template: 'admin/menu.phtml')->render()?>
 </div>

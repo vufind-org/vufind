@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pagination helper test
+ * Pagination helper test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS;
 use VuFind\ILS\PaginationHelper;
 
 /**
- * Pagination helper test
+ * Pagination helper test.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\ILS\PaginationHelper;
 class PaginationHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test options supporting pagination
+     * Test options supporting pagination.
      *
      * @return void
      */
@@ -150,7 +150,7 @@ class PaginationHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test options not supporting pagination
+     * Test options not supporting pagination.
      *
      * @return void
      */

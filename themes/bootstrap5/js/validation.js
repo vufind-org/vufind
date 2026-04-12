@@ -1,4 +1,4 @@
-/* global VuFind, isPhoneNumberValid */
+/* global VuFind */
 
 VuFind.register('validation', function Validation() {
   /**
@@ -21,6 +21,31 @@ VuFind.register('validation', function Validation() {
     return true;
   }
 
+
+  /**
+   * Is the provided phone number valid?
+   * @param {string} number Phone number to validate
+   * @param {string} region Region for validation
+   * @returns {string|boolean} True if valid, error string or false if not valid
+   */
+  function isPhoneNumberValid(number, region) {
+    const result = window.libphonenumber.isValidPhoneNumber(number, region);
+    // If the result is negative, see if we can map it to a standard error message:
+    if (!result) {
+      const lengthMessage = window.libphonenumber.validatePhoneNumberLength(number, region);
+      if (lengthMessage === 'NOT_A_NUMBER') {
+        return 'libphonenumber_notanumber';
+      }
+      if (lengthMessage === 'TOO_LONG') {
+        return 'libphonenumber_toolong';
+      }
+      if (lengthMessage === 'TOO_SHORT') {
+        return 'libphonenumber_tooshort';
+      }
+    }
+    return result;
+  }
+
   /**
    * Check field phone number validity
    * @param {Event} ev Event
@@ -31,7 +56,7 @@ VuFind.register('validation', function Validation() {
     if (field.id && field.type === 'tel' && field.dataset.validatorRegion) {
       const valid = isPhoneNumberValid(field.value, field.dataset.validatorRegion);
       if (true !== valid) {
-        field.setCustomValidity(typeof valid === 'string' ? valid : VuFind.translate('libphonenumber_invalid'));
+        field.setCustomValidity(VuFind.translate(typeof valid === 'string' ? valid : 'libphonenumber_invalid'));
         return false;
       }
     }

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -47,14 +47,14 @@ use function in_array;
 class AccountCapabilities
 {
     /**
-     * Function to fetch auth manager
+     * Function to fetch auth manager.
      *
      * @var callable
      */
     protected $authCallback;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config   $config  Top-level configuration
      * @param callable $getAuth Function to fetch auth manager
@@ -65,7 +65,7 @@ class AccountCapabilities
     }
 
     /**
-     * Get authentication manager
+     * Get authentication manager.
      *
      * @return AuthManager
      */
@@ -255,7 +255,7 @@ class AccountCapabilities
     }
 
     /**
-     * Check if record ratings can be removed
+     * Check if record ratings can be removed.
      *
      * @return bool
      */

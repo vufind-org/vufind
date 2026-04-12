@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -30,10 +30,12 @@
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Initializer\InitializerInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -56,8 +58,7 @@ class ServiceInitializer implements InitializerInterface
         static $enabled = null;
         if (null === $enabled) {
             // Return true if Record Cache is enabled for any data source
-            $cacheConfig = $sm->get(\VuFind\Config\PluginManager::class)
-                ->get('RecordCache');
+            $cacheConfig = $sm->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('RecordCache');
             $enabled = false;
             foreach ($cacheConfig as $section) {
                 foreach ($section as $setting) {
@@ -84,24 +85,28 @@ class ServiceInitializer implements InitializerInterface
      */
     public function __invoke(ContainerInterface $sm, $instance)
     {
-        if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
-            $instance->setDbTableManager(
-                $sm->get(\VuFind\Db\Table\PluginManager::class)
-            );
-        }
         if ($instance instanceof \VuFind\Db\Service\DbServiceAwareInterface) {
             $instance->setDbServiceManager(
                 $sm->get(\VuFind\Db\Service\PluginManager::class)
             );
         }
-        if ($instance instanceof \Laminas\Log\LoggerAwareInterface) {
+        if ($instance instanceof \Psr\Log\LoggerAwareInterface) {
             $instance->setLogger($sm->get(\VuFind\Log\Logger::class));
+        }
+        if ($instance instanceof \VuFind\I18n\Locale\LocaleSettingsAwareInterface) {
+            $instance->setLocaleSettings($sm->get(\VuFind\I18n\Locale\LocaleSettings::class));
         }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
             $instance->setTranslator($sm->get(\Laminas\Mvc\I18n\Translator::class));
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
+        }
+        if ($instance instanceof \VuFind\Http\GuzzleServiceAwareInterface) {
+            $instance->setGuzzleService($sm->get(\VuFind\Http\GuzzleService::class));
+        }
+        if ($instance instanceof AuthorizationServiceAwareInterface) {
+            $instance->setAuthorizationService($sm->get(AuthorizationService::class));
         }
         // Only inject cache if configuration enabled (to save resources):
         if (

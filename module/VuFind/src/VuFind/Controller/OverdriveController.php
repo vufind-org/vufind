@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Overdrive Controller
+ * Overdrive Controller.
  *
  * PHP version 8
  *
@@ -14,14 +14,15 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\DigitalContent\OverdriveConnector;
+use VuFind\RecordDriver\SolrOverdrive;
 
 use function is_array;
 
 /**
- * Overdrive Controller supports actions for Overdrive Integration
+ * Overdrive Controller supports actions for Overdrive Integration.
  *
  * @category VuFind
  * @package  Controller
@@ -36,14 +37,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Overdrive Connector
+     * Overdrive Connector.
      *
      * @var OverdriveConnector $connector Overdrive Connector
      */
     protected $connector;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -91,16 +92,13 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             // for this user and add to our array of IDS
             $checkoutResults = $this->connector->getCheckouts(true);
             if (!($checkoutResults->status ?? false)) {
-                $this->flashMessenger()->addMessage(
-                    $checkoutResults->code ?? 'An error has occurred',
-                    'error'
-                );
+                $this->flashMessenger()->addErrorMessage($checkoutResults->code ?? 'An error has occurred');
                 $checkoutsUnavailable = true;
             } else {
                 foreach ($checkoutResults->data as $checkout) {
                     $mycheckout = compact('checkout');
 
-                    if ($checkout->metadata->mediaType == 'Magazine') {
+                    if (($checkout->metadata->mediaType ?? '') == 'Magazine') {
                         $mycheckout['checkout']->isMagazine = true;
                         $this->debug("loading magazine metadata for {$checkout->reserveId}");
                         $idToLoad = strtolower($checkout->metadata->parentMagazineReferenceId);
@@ -112,16 +110,13 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
                     try {
                         $this->debug("loading checkout using: $idToLoad");
-                        $mycheckout['record'] = $this->getService(\VuFind\Record\Loader::class)
-                            ->load($idToLoad);
+                        $mycheckout['record'] = $this->loadOverdriveRecord($idToLoad);
                         $checkouts[] = $mycheckout;
                     } catch (\VuFind\Exception\RecordMissing $e) {
                         $this->debug("missing record in index: $idToLoad");
                         // checkout is missing from Solr
-                        $this->flashMessenger()->addMessage(
-                            'One or more checkouts could not be displayed properly: ' .
-                            $e->getMessage(),
-                            'error'
+                        $this->flashMessenger()->addErrorMessage(
+                            'One or more checkouts could not be displayed properly: ' . $e->getMessage()
                         );
                         // get metadata from overdrive.
                         $meta = $this->connector->getMetadata([strtolower($checkout->reserveId)]);
@@ -137,25 +132,18 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 !($holdsResults->status ?? false)
                 && ($checkoutResults->status ?? false) // avoid double errors
             ) {
-                $this->flashMessenger()->addMessage(
-                    $holdsResults->code ?? 'An error has occurred',
-                    'error'
-                );
+                $this->flashMessenger()->addErrorMessage($holdsResults->code ?? 'An error has occurred');
                 $holdsUnavailable = true;
             } else {
                 foreach ($holdsResults->data as $hold) {
                     $myhold['hold'] = $hold;
                     try {
-                        $myhold['record']
-                            = $this->getService(\VuFind\Record\Loader::class)
-                            ->load(strtolower($hold->reserveId));
+                        $myhold['record'] = $this->loadOverdriveRecord(strtolower($hold->reserveId));
                         $holds[] = $myhold;
                     } catch (\VuFind\Exception\RecordMissing $e) {
                         // hold is missing from Solr
-                        $this->flashMessenger()->addMessage(
-                            'One or more holds could not be displayed properly: ' .
-                            $e->getMessage(),
-                            'error'
+                        $this->flashMessenger()->addErrorMessage(
+                            'One or more holds could not be displayed properly: ' . $e->getMessage()
                         );
 
                         // get metadata from overdrive.
@@ -181,7 +169,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
     /**
      * Get Status Action
-     * Supports the ajax getStatus calls
+     * Supports the ajax getStatus calls.
      *
      * @return array|bool|\Laminas\View\Model\ViewModel
      */
@@ -200,7 +188,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Hold Action
+     * Hold Action.
      *
      * Hold Action handles all of the actions involving
      * Overdrive content including checkout, hold, cancel hold etc.
@@ -219,30 +207,13 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         }
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');
-        $action = $this->params()->fromQuery('action');
-        $edition = $this->params()->fromPost(
-            'edition',
-            $this->params()->fromQuery('edition', false)
-        );
-        $holdEmail = '';
 
-        // Action comes in through the form
-        if (null !== $this->params()->fromPost('doAction')) {
-            $action = $this->params()->fromPost('doAction');
-        }
-
-        // Place hold action comes in through the form
-        if (null !== $this->params()->fromPost('getTitleFormat')) {
-            $format = $this->params()->fromPost('getTitleFormat');
-        }
-
-        $format = $this->params()->fromQuery('getTitleFormat');
+        // These can come through the form as well as query:
+        $action = $this->params()->fromPost('doAction') ?? $this->params()->fromQuery('action');
+        $edition = $this->params()->fromPost('edition') ?? $this->params()->fromQuery('edition', false);
 
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
-        // Load the Record Driver. Should be a SolrOverdrive driver.
-        $driver = $this->getService(\VuFind\Record\Loader::class)->load(
-            $rec_id
-        );
+        $driver = $this->loadOverdriveRecord($rec_id);
 
         $formats = $driver->getDigitalFormats();
         $title = $driver->getTitle();
@@ -302,7 +273,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Hold Confirm Result
+     * Hold Confirm Result.
      *
      * Get result of the action
      *
@@ -333,7 +304,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Confirm Checkout Result
+     * Confirm Checkout Result.
      *
      * Get result of the action
      *
@@ -343,17 +314,12 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');
-        // Load the Record Driver. Should be a SolrOverdrive driver.
-        $driver = $this->getService(\VuFind\Record\Loader::class)->load(
-            $rec_id
-        );
+        $driver = $this->loadOverdriveRecord($rec_id);
         $formats = $driver->getDigitalFormats();
         // Looks like this is a magazine...
         if (current($formats)->id == 'magazine-overdrive') {
-            $isMagazine = true;
             $result = $this->connector->getMagazineIssues($od_id, true);
             if ($result->status) {
-                $issues = $result->data->products;
                 $result->data->isMagazine = true;
             } else {
                 $this->debug("couldn't get issues for checkout");
@@ -386,7 +352,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Checkout Result
+     * Checkout Result.
      *
      * Get result of the action
      *
@@ -407,7 +373,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Place Hold Result
+     * Place Hold Result.
      *
      * Get result of the action
      *
@@ -428,7 +394,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Edit Hold Email Confirm Result
+     * Edit Hold Email Confirm Result.
      *
      * Get result of the action
      *
@@ -445,7 +411,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Edit Hold Email Result
+     * Edit Hold Email Result.
      *
      * Get result of the action
      *
@@ -461,7 +427,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Return Title Confirmation Result
+     * Return Title Confirmation Result.
      *
      * Get result of the action
      *
@@ -471,17 +437,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $result = $this->connector->getResultObject();
         $rec_id = $this->params()->fromQuery('rec_id');
-        // Load the SolrOverdrive driver.
-        $driver = $this->getService(\VuFind\Record\Loader::class)->load(
-            $rec_id
-        );
+        $driver = $this->loadOverdriveRecord($rec_id);
         $formats = $driver->getDigitalFormats();
         $result->data = (current($formats)->id == 'magazine-overdrive') ?: false;
         return $result;
     }
 
     /**
-     * Suspend Hold Result
+     * Suspend Hold Result.
      *
      * Get result of the action
      *
@@ -510,7 +473,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Edit Suspended Hold Result
+     * Edit Suspended Hold Result.
      *
      * Get result of the action
      *
@@ -533,7 +496,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Cancel Hold Result
+     * Cancel Hold Result.
      *
      * Get result of the action
      *
@@ -548,7 +511,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Return Title Result
+     * Return Title Result.
      *
      * Get result of the action
      *
@@ -563,7 +526,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Download Title Result
+     * Download Title Result.
      *
      * Get result of the action
      *
@@ -575,5 +538,17 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $result = $this->connector->getDownloadRedirect($od_id);
         $result->code = $result->status ? '' : 'od_gettitle_failure';
         return $result;
+    }
+
+    /**
+     * Load an Overdrive record.
+     *
+     * @param string $recordId Record ID
+     *
+     * @return SolrOverdrive
+     */
+    protected function loadOverdriveRecord(string $recordId): SolrOverdrive
+    {
+        return $this->getService(\VuFind\Record\Loader::class)->load($recordId);
     }
 }

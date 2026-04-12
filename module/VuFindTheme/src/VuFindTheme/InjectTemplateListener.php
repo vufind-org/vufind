@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind "Inject Template" Listener
+ * VuFind "Inject Template" Listener.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -45,7 +45,7 @@ use function strlen;
 class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListener
 {
     /**
-     * List of prefixes for theme files
+     * List of prefixes for theme files.
      *
      * @var array $prefixes
      */
@@ -72,7 +72,7 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
     }
 
     /**
-     * Inflect a name to a normalized value
+     * Inflect a name to a normalized value.
      *
      * @param string $name Name to inflect
      *

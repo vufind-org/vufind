@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Checkouts Controller
+ * Checkouts Controller.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -53,35 +53,35 @@ class CheckoutsController extends AbstractBase
     use Feature\CatchIlsExceptionsTrait;
 
     /**
-     * CSRF validator
+     * CSRF validator.
      *
      * @var CsrfInterface
      */
     protected $csrf;
 
     /**
-     * Session manager
+     * Session manager.
      *
      * @var SessionManager
      */
     protected $sessionManager;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionContainer = null;
 
     /**
-     * Pagination helper
+     * Pagination helper.
      *
      * @var PaginationHelper
      */
     protected $paginationHelper;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm      Service locator
      * @param CsrfInterface           $csrf    CSRF validator
@@ -99,7 +99,7 @@ class CheckoutsController extends AbstractBase
     }
 
     /**
-     * Send loan history to view
+     * Send loan history to view.
      *
      * @return mixed
      */
@@ -128,11 +128,11 @@ class CheckoutsController extends AbstractBase
         $purgeAllAllowed = !empty($functionConfig['purge_all']);
 
         // Get paging setup:
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $pageOptions = $this->paginationHelper->getOptions(
             (int)$this->params()->fromQuery('page', 1),
             $this->params()->fromQuery('sort'),
-            $config->Catalog->historic_loan_page_size ?? 50,
+            $config['Catalog']['historic_loan_page_size'] ?? 50,
             $functionConfig
         );
 
@@ -189,7 +189,7 @@ class CheckoutsController extends AbstractBase
     }
 
     /**
-     * Purge loans from loan history
+     * Purge loans from loan history.
      *
      * @return mixed
      */
@@ -231,10 +231,11 @@ class CheckoutsController extends AbstractBase
                 }
                 $result = $catalog->purgeTransactionHistory($patron, $ids);
             }
-            $this->flashMessenger()->addMessage(
-                $result['status'],
-                $result['success'] ? 'success' : 'error'
-            );
+            if ($result['success']) {
+                $this->flashMessenger()->addSuccessMessage($result['status']);
+            } else {
+                $this->flashMessenger()->addErrorMessage($result['status']);
+            }
         }
         return $redirectResponse;
     }
@@ -255,7 +256,7 @@ class CheckoutsController extends AbstractBase
 
     /**
      * Reset the array of valid IDs in the session (used for form submission
-     * validation)
+     * validation).
      *
      * @return void
      */

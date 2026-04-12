@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Title holds logic test
+ * Title holds logic test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFind\ILS\Logic\TitleHolds;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Title holds logic test
+ * Title holds logic test.
  *
  * @category VuFind
  * @package  Tests
@@ -76,14 +76,12 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSuppressedLocations().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function suppressedLocationsProvider(): array
+    public static function suppressedLocationsProvider(): \Iterator
     {
-        return [
-            'default' => [[], []],
-            'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']],
-        ];
+        yield 'default' => [[], []];
+        yield 'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']];
     }
 
     /**
@@ -93,9 +91,8 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedList Expected suppressed locations list
      *
      * @return void
-     *
-     * @dataProvider suppressedLocationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('suppressedLocationsProvider')]
     public function testHideHoldingsBehavior(array $configArray, array $expectedList): void
     {
         $logic = $this->getTitleHoldsLogic(config: $configArray);
@@ -116,7 +113,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test a failed catalog login
+     * Test a failed catalog login.
      *
      * @return void
      */

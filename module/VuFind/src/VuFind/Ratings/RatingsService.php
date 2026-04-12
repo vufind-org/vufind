@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ratings service
+ * Ratings service.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Ratings
@@ -34,7 +34,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
- * Ratings service
+ * Ratings service.
  *
  * @category VuFind
  * @package  Ratings
@@ -45,14 +45,14 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 class RatingsService
 {
     /**
-     * Cache for rating data
+     * Cache for rating data.
      *
      * @var array
      */
     protected $ratingCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RatingsServiceInterface $dbService         Ratings database service
      * @param ResourcePopulator       $resourcePopulator Resource populator

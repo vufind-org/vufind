@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Catalog Connection Class
+ * Catalog Connection Class.
  *
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -33,8 +33,8 @@
 
 namespace VuFind\ILS;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -49,10 +49,9 @@ use function in_array;
 use function intval;
 use function is_array;
 use function is_callable;
-use function is_object;
 
 /**
- * Catalog Connection Class
+ * Catalog Connection Class.
  *
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
@@ -88,39 +87,18 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $driver = null;
 
     /**
-     * ILS configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
-     * Holds mode
+     * Holds mode.
      *
      * @var string
      */
     protected $holdsMode = 'disabled';
 
     /**
-     * Title-level holds mode
+     * Title-level holds mode.
      *
      * @var string
      */
     protected $titleHoldsMode = 'disabled';
-
-    /**
-     * Driver plugin manager
-     *
-     * @var \VuFind\ILS\Driver\PluginManager
-     */
-    protected $driverManager;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configReader;
 
     /**
      * Is the current ILS driver failing?
@@ -130,21 +108,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $failing = false;
 
     /**
-     * Request object
-     *
-     * @var \Laminas\Http\Request
-     */
-    protected $request;
-
-    /**
-     * Cache life time per method
+     * Cache life time per method.
      *
      * @var array
      */
     protected $cacheLifeTime = ['*' => 60];
 
     /**
-     * Cache storage per method
+     * Cache storage per method.
      *
      * Note: Don't cache anything too large in session before
      * https://openlibraryfoundation.atlassian.net/browse/VUFIND-1652 is implemented
@@ -159,33 +130,33 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     ];
 
     /**
-     * Methods that invalidate the session cache
+     * Methods that invalidate the session cache.
      *
      * @var array
      */
     protected $sessionCacheInvalidatingMethods = ['changePassword'];
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var Container
      */
     protected $sessionCache = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\Config            $config        Configuration
+     * @param \VuFind\Config\Config                 $config        Configuration
      * representing the [Catalog] section of config.ini
-     * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
-     * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
-     * @param ?\Laminas\Http\Request           $request       Request object
+     * @param \VuFind\ILS\Driver\PluginManager      $driverManager Driver plugin manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param ?\Laminas\Http\Request                $request       Request object
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        \VuFind\ILS\Driver\PluginManager $driverManager,
-        \VuFind\Config\PluginManager $configReader,
-        ?\Laminas\Http\Request $request = null
+        protected \VuFind\Config\Config $config,
+        protected \VuFind\ILS\Driver\PluginManager $driverManager,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected ?\Laminas\Http\Request $request = null
     ) {
         if (!isset($config->driver)) {
             throw new \Exception('ILS driver setting missing.');
@@ -193,10 +164,6 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         if (!$driverManager->has($config->driver)) {
             throw new \Exception('ILS driver missing: ' . $config->driver);
         }
-        $this->config = $config;
-        $this->configReader = $configReader;
-        $this->driverManager = $driverManager;
-        $this->request = $request;
     }
 
     /**
@@ -227,7 +194,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Set cache lifetime settings
+     * Set cache lifetime settings.
      *
      * @param array $settings Lifetime settings
      *
@@ -364,18 +331,17 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         // Determine config file name based on class name:
         $parts = explode('\\', $this->getDriverClass());
-        $config = $this->configReader->get(end($parts));
-        return is_object($config) ? $config->toArray() : [];
+        return $this->configManager->getConfigArray(end($parts));
     }
 
     /**
-     * Check Function
+     * Check Function.
      *
      * This is responsible for checking the driver configuration to determine
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param array  $params   (optional) An array of function-specific parameters
+     * @param ?array $params   (optional) An array of function-specific parameters
      *
      * @return mixed On success, an associative array with specific function keys
      * and values; on failure, false.
@@ -384,15 +350,19 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         try {
             // Extract the configuration from the driver if available:
+            $paramsArray = $params ?? [];
             $functionConfig = $this->checkCapability(
                 'getConfig',
-                [$function, $params],
+                [$function, $paramsArray],
                 true
-            ) ? $this->getDriver()->getConfig($function, $params) : false;
+            ) ? $this->getDriver()->getConfig($function, $paramsArray) : false;
 
             // See if we have a corresponding check method to analyze the response:
             $checkMethod = 'checkMethod' . $function;
             if (!method_exists($this, $checkMethod)) {
+                return false;
+            }
+            if (!empty($this->getMethodBlock($function, $paramsArray))) {
                 return false;
             }
 
@@ -408,13 +378,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Holds
+     * Check Holds.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Holds.
      *
-     * @param array $functionConfig The Hold configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Hold configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing holds via a form or a URL; on failure, false.
@@ -466,13 +436,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Cancel Holds
+     * Check Cancel Holds.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling Holds.
      *
-     * @param array $functionConfig The Cancel Hold configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Cancel Hold configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling holds via a form or a URL;
@@ -504,13 +474,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Renewals
+     * Check Renewals.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Renewing Items.
      *
-     * @param array $functionConfig The Renewal configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Renewal configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for renewing items via a form or a URL; on failure, false.
@@ -541,15 +511,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Storage Retrieval Request
+     * Check Storage Retrieval Request.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array $functionConfig The storage retrieval request configuration
-     * values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The storage retrieval request configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -577,14 +546,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Cancel Storage Retrieval Requests
+     * Check Cancel Storage Retrieval Requests.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling
      * Storage Retrieval Requests.
      *
-     * @param array $functionConfig The Cancel function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Cancel function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -628,14 +597,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check ILL Request
+     * Check ILL Request.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array $functionConfig The ILL request configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The ILL request configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -666,14 +635,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Cancel ILL Requests
+     * Check Cancel ILL Requests.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling
      * ILL Requests.
      *
-     * @param array $functionConfig The Cancel function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Cancel function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -715,7 +684,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Password Change
+     * Check Password Change.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports changing
@@ -741,8 +710,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Check if initiating of password recovery is supported.
      *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return array|false
      */
@@ -757,8 +726,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Check if password recovery is supported.
      *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return array|false
      */
@@ -771,7 +740,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Current Loans
+     * Check Current Loans.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports current
@@ -794,7 +763,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Historic Loans
+     * Check Historic Loans.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports historic
@@ -817,7 +786,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Purge Historic Loans
+     * Check Purge Historic Loans.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports purging of
@@ -840,17 +809,19 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Patron login
+     * Check Patron login.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports patron login.
      * It is currently assumed that all drivers do.
      *
-     * @param array $functionConfig The patronLogin configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The patronLogin configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values for login; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodpatronLogin($functionConfig, $params)
     {
@@ -858,7 +829,25 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get proper help text from the function config
+     * Check if online payment is supported.
+     *
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
+     *
+     * @return mixed On success, an associative array with the function name; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodregisterPayment($functionConfig, $params)
+    {
+        if ($this->checkCapability('registerPayment', [$params ?: []])) {
+            return ['function' => 'registerPayment'];
+        }
+        return false;
+    }
+
+    /**
+     * Get proper help text from the function config.
      *
      * @param string|array $helpText Help text(s)
      *
@@ -874,7 +863,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Request is Valid
+     * Check Request is Valid.
      *
      * This is responsible for checking if a request is valid from hold.php
      *
@@ -905,7 +894,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Storage Retrieval Request is Valid
+     * Check Storage Retrieval Request is Valid.
      *
      * This is responsible for checking if a storage retrieval request is valid
      *
@@ -942,7 +931,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check ILL Request is Valid
+     * Check ILL Request is Valid.
      *
      * This is responsible for checking if an ILL request is valid
      *
@@ -976,7 +965,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Holds Mode
+     * Get Holds Mode.
      *
      * This is responsible for returning the holds mode
      *
@@ -988,7 +977,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Offline Mode
+     * Get Offline Mode.
      *
      * This is responsible for returning the offline mode
      *
@@ -1022,7 +1011,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Title Holds Mode
+     * Get Title Holds Mode.
      *
      * This is responsible for returning the Title holds mode
      *
@@ -1034,7 +1023,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Has Holdings
+     * Has Holdings.
      *
      * Obtain information on whether or not the item has holdings
      *
@@ -1057,7 +1046,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Hidden Login Mode
+     * Get Hidden Login Mode.
      *
      * This is responsible for indicating whether login should be hidden.
      *
@@ -1122,7 +1111,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Names of Textual Holdings Fields
+     * Get Names of Textual Holdings Fields.
      *
      * Obtain information on which textual holdings fields should be displayed
      *
@@ -1136,7 +1125,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get the password policy from the driver
+     * Get the password policy from the driver.
      *
      * @param array $patron Patron data
      *
@@ -1152,7 +1141,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1178,7 +1167,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get holdings
+     * Get holdings.
      *
      * Retrieve holdings from ILS driver class and normalize result array and availability if needed.
      *
@@ -1237,7 +1226,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get status
+     * Get status.
      *
      * Retrieve status from ILS driver class and normalize availability if needed.
      *
@@ -1254,7 +1243,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get statuses
+     * Get statuses.
      *
      * Retrieve statuses from ILS driver class and normalize availability if needed.
      *
@@ -1326,7 +1315,98 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get data for an ILS method from shared or session cache
+     * Get timed blocks for a method from driver configuration.
+     *
+     * @param string $methodName Method to check
+     * @param array  $params     Array of passed parameters
+     *
+     * @return array Array with keys 'start', 'end', 'recurring'
+     *               or empty array if no blocks are found
+     */
+    public function getMethodTimedBlocks(string $methodName, array $params = []): array
+    {
+        $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks', $params])
+            ? $this->getDriver()->getConfig('TimedBlocks', $params)
+            : [];
+
+        if (!isset($functionConfig[$methodName])) {
+            return [];
+        }
+        $blocks = [];
+        foreach ($functionConfig[$methodName] as $block) {
+            if (!str_contains($block, '/')) {
+                continue;
+            }
+            [$start, $end] = explode('/', $block, 2);
+            $isDate = preg_match('/^\d{4}-\d{2}-\d{2}/', $start ?: $end);
+
+            if ($isDate) {
+                $startDate = $start ? new \DateTime($start) : null;
+                $noEndHours = empty(explode(' ', $end, 2)[1]);
+                if ($end && $noEndHours) {
+                    $end .= ' 23:59:59';
+                }
+                $endDate = $end ? new \DateTime($end) : null;
+                $blocks[] = [
+                    'start' => $startDate,
+                    'end' => $endDate,
+                    'recurring' => false,
+                ];
+            } else {
+                $startTime = $start ? new \DateTime($start) : null;
+                $endTime = $end ? new \DateTime($end) : null;
+                if ($startTime && $endTime) {
+                    if ($endTime <= $startTime) {
+                        $now = new \DateTime();
+                        if ($now < $endTime) {
+                            $startTime->modify('-1 day');
+                        } else {
+                            $endTime->modify('+1 day');
+                        }
+                    }
+                    $blocks[] = [
+                        'start' => $startTime,
+                        'end' => $endTime,
+                        'recurring' => true,
+                    ];
+                }
+            }
+        }
+        return $blocks;
+    }
+
+    /**
+     * Check whether a method is currently blocked in TimedBlocks section of
+     * driver configuration.
+     *
+     * @param string $methodName Method to check
+     * @param array  $params     Array of passed parameters
+     *
+     * @return array If currently blocked, return the blocked times.
+     *               Otherwise return an empty array
+     */
+    public function getMethodBlock(string $methodName, array $params = []): array
+    {
+        $blocks = $this->getMethodTimedBlocks($methodName, $params);
+        foreach ($blocks as $block) {
+            $now = new \DateTime();
+            $start = $block['start'];
+            $end = $block['end'];
+            if ($start && !$end && $now >= $start) {
+                return $block;
+            }
+            if ($end && !$start && $now < $end) {
+                return $block;
+            }
+            if ($start && $end && $now >= $start && $now < $end) {
+                return $block;
+            }
+        }
+        return [];
+    }
+
+    /**
+     * Get data for an ILS method from shared or session cache.
      *
      * @param array $cacheSettings Cache settings
      *
@@ -1371,7 +1451,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Clear session cache if the given method requires it
+     * Clear session cache if the given method requires it.
      *
      * @param string $methodName Method name
      *
@@ -1385,7 +1465,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get cache settings for a method
+     * Get cache settings for a method.
      *
      * @param string $methodName The name of the called method.
      * @param array  $params     Array of passed parameters.

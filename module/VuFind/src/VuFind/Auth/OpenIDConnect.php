@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -64,28 +64,28 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Request token
+     * Request token.
      *
      * @var object
      */
-    protected object $requestToken;
+    protected array $requestTokens = [];
 
     /**
-     * OpenID Connect provider settings
+     * OpenID Connect provider settings.
      *
      * @var object
      */
     protected object $provider;
 
     /**
-     * Open Id connect JWKs
+     * Open Id connect JWKs.
      *
      * @var array
      */
     protected array $jwks = [];
 
     /**
-     * Default attributes mappings
+     * Default attributes mappings.
      *
      * @var array
      */
@@ -96,7 +96,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionContainer $session          Session container for persisting state information.
      * @param array            $oidcConfig       Configuration
@@ -130,7 +130,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get provider configuration
+     * Get provider configuration.
      *
      * @return object
      * @throws AuthException
@@ -161,7 +161,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get provider configuration from config
+     * Get provider configuration from config.
      *
      * @return object
      */
@@ -185,7 +185,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Validate provider metadata
+     * Validate provider metadata.
      *
      * @param object $provider Provider metadata
      *
@@ -247,7 +247,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         if (empty($code)) {
             throw new AuthException('authentication_error_admin');
         }
-        $request_token = $this->getRequestToken($code);
+        $requestToken = $this->getRequestToken($code);
         $state = $request->getQuery()->get('state');
         $currentState = $this->session->oidc_state;
         $stateIsValid = $state === $currentState;
@@ -257,7 +257,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('authentication_error_technical');
         }
 
-        $claims = $this->decodeJWT($request_token->id_token);
+        $claims = $this->decodeJWT($requestToken->id_token);
 
         if (!$this->validateIssuer($claims->iss)) {
             $this->logError('Wrong issuer: ' . $claims->iss);
@@ -270,13 +270,17 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('authentication_error_technical');
         }
 
-        $accessToken = $request_token->access_token;
+        $accessToken = $requestToken->access_token;
         $userInfo = $this->getUserInfo($accessToken);
+
+        // Store id_token in session for logout
+        $this->session->oidc_id_token = $requestToken->id_token;
+
         return $this->setUserAttributes($userInfo);
     }
 
     /**
-     * Set user attributes from user info claim
+     * Set user attributes from user info claim.
      *
      * @param object $userInfo User info claim object
      *
@@ -345,7 +349,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         // Adding the auth_method setting makes it possible to handle logins when
         // using an auth method that proxies others (e.g. ChoiceAuth)
-        $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=oidc';
+        $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=OpenIDConnect';
         if (empty($this->session->oidcLastUri) && !empty($target)) {
             $this->session->oidcLastUri = $targetUri;
         }
@@ -355,9 +359,54 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'client_id' => $this->getConfig('client_id'),
             'nonce' => $this->session->oidc_nonce,
             'state' => $this->session->oidc_state,
-            'scope' => 'openid profile email',
+            'scope' => $this->getConfig('scope') ?? 'openid profile email',
         ];
         return $this->getProvider()->authorization_endpoint . '?' . http_build_query($params);
+    }
+
+    /**
+     * Get URL users should be redirected to for logout in external services if necessary.
+     *
+     * @param string $url Internal URL to redirect user to after logging out.
+     *
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
+     */
+    public function getLogoutRedirectUrl(string $url): string
+    {
+        $redirectUrl = $url;
+        $endSessionEndpoint = false;
+
+        $logout = $this->getConfig('logout');
+
+        if (!$logout) {
+            // No logout configured, so don't logout from service provider.
+            $this->debug('no logout URL given');
+        } elseif (filter_var($logout, FILTER_VALIDATE_URL)) {
+            // A valid URL was configured, use it.
+            $endSessionEndpoint = $logout;
+        } else {
+            // Get end_session_endpoint from provider.
+            $provider = $this->getProvider();
+            $endSessionEndpoint = $provider->end_session_endpoint ?? null;
+        }
+
+        if ($endSessionEndpoint) {
+            // Retrieve id_token from session.
+            $idToken = $this->session->oidc_id_token ?? null;
+            if ($idToken === null) {
+                $this->logWarning('No id_token found in session data');
+            } else {
+                $params = [
+                    'id_token_hint' => $idToken,
+                    'post_logout_redirect_uri' => $url,
+                ];
+                $append = (str_contains($endSessionEndpoint, '?') ? '&' : '?');
+                $redirectUrl = $endSessionEndpoint . $append . http_build_query($params);
+            }
+        }
+
+        // Send back the redirect URL (possibly modified).
+        return $redirectUrl;
     }
 
     /**
@@ -370,8 +419,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function getRequestToken(string $code): object
     {
-        if (isset($this->requestToken)) {
-            return $this->requestToken;
+        if ($this->requestTokens[$code] ?? false) {
+            return $this->requestTokens[$code];
         }
         $provider = $this->getProvider();
         $url = $provider->token_endpoint;
@@ -419,25 +468,25 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             $this->logError('Failed to get request token: ' . ($json->error_description ?? $json->error));
             throw new AuthException('authentication_error_technical');
         }
-        $this->requestToken = $json;
-        return $this->requestToken;
+        $this->requestTokens[$code] = $json;
+        return $json;
     }
 
     /**
      * Given an access token, look up user details.
      *
-     * @param string $access_token Access token
+     * @param string $accessToken Access token
      *
      * @return object
      * @throws AuthException
      */
-    protected function getUserInfo(string $access_token): object
+    protected function getUserInfo(string $accessToken): object
     {
         $url = $this->getProvider()->userinfo_endpoint;
         $params = [
             'schema' => 'openid',
         ];
-        $headers = ['Authorization: Bearer ' . $access_token];
+        $headers = ['Authorization: Bearer ' . $accessToken];
         try {
             $response = $this->httpService->get($url, $params, null, $headers);
         } catch (\Exception $e) {
@@ -456,7 +505,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Decode JSON Web Token
+     * Decode JSON Web Token.
      *
      * @param string $jwt JWT string
      *
@@ -473,12 +522,12 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         [$headerEncoded] = explode('.', $jwt);
         $header = json_decode(base64_decode(strtr($headerEncoded, '-_', '+/')));
-        $key = JWK::parseKey($this->getJwk($header->kid ?? null), $header->alg);
+        $key = JWK::parseKey($this->getSignatureJwk($header->kid ?? null), $header->alg);
         return JWT::decode($jwt, $key);
     }
 
     /**
-     * Validate issuer
+     * Validate issuer.
      *
      * @param string $iss Issuer
      *
@@ -491,7 +540,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Verify the claims are valid
+     * Verify the claims are valid.
      *
      * @param object $claims Claims from authentication response
      *
@@ -500,13 +549,16 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      */
     protected function verifyJwtClaims(object $claims): bool
     {
+        $clientId = $this->getConfig('client_id');
+        $audValid = in_array($clientId, (array)($claims->aud ?? []), true);
+
         return (!isset($claims->nonce) || $claims->nonce === $this->session->oidc_nonce)
-            && ($claims->aud === $this->getConfig('client_id'))
+            && $audValid
             && (!isset($claims->exp) || (is_int($claims->exp) && ($claims->exp > time())));
     }
 
     /**
-     * Get attributes mappings
+     * Get attributes mappings.
      *
      * @return array
      * @throws AuthException
@@ -518,7 +570,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get attibute value from user info
+     * Get attribute value from user info.
      *
      * @param object $userInfo  User info claim from OIDC server
      * @param string $attribute Attribute to get value for
@@ -528,16 +580,16 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     protected function getAttributeValue(object $userInfo, string $attribute): string
     {
         $attributeName = $this->oidcConfig->attributes[$attribute] ?? $attribute;
-        return $userInfo->$attributeName ?? '';
+        return (string)($userInfo->attributes->$attributeName ?? $userInfo->$attributeName ?? '');
     }
 
     /**
-     * Get JWKs from provider
+     * Get signature JWKs from provider.
      *
      * @return array
      * @throws AuthException
      */
-    protected function getJwks(): array
+    protected function getSignatureJwks(): array
     {
         if (empty($this->jwks)) {
             try {
@@ -552,23 +604,26 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             }
             $jwks = json_decode($response->getBody(), true);
             foreach ($jwks['keys'] as $i => $jwk) {
-                $this->jwks[$jwk['kid'] ?? $i] = $jwk;
+                // Filter for signature keys only.
+                if (($jwk['use'] ?? '') === 'sig') {
+                    $this->jwks[$jwk['kid'] ?? $i] = $jwk;
+                }
             }
         }
         return $this->jwks;
     }
 
     /**
-     * Get JWK data
+     * Get signature JWK data.
      *
      * @param ?string $kid Key id or null for first (default)
      *
      * @return array
      * @throws AuthException
      */
-    protected function getJwk(?string $kid): array
+    protected function getSignatureJwk(?string $kid): array
     {
-        $jwks = $this->getJwks();
+        $jwks = $this->getSignatureJwks();
         if (null !== $kid) {
             if (!isset($jwks[$kid])) {
                 $this->logError("JWK '$kid' not found");
@@ -580,7 +635,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Initialize OIDC state and nonce
+     * Initialize OIDC state and nonce.
      *
      * @param bool $resetState Reset existing state?
      *

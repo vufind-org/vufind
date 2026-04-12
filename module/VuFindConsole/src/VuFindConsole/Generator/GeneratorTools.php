@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Generator
@@ -56,7 +56,7 @@ class GeneratorTools
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Laminas configuration
+     * Laminas configuration.
      *
      * @var array
      */
@@ -182,7 +182,6 @@ class GeneratorTools
 
         // Force getExpectedInterface() to be public so we can read it:
         $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
-        $reflectionMethod->setAccessible(true);
         return $reflectionMethod->invoke($pm);
     }
 
@@ -331,7 +330,7 @@ class GeneratorTools
             $module,
             null,
             ['Laminas\ServiceManager\Factory\FactoryInterface'],
-            function ($generator) {
+            function ($generator): void {
                 $method = MethodGenerator::fromArray(
                     [
                         'name' => '__invoke',
@@ -450,7 +449,6 @@ class GeneratorTools
     {
         // There is no "getFactories" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'factories');
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($container);
     }
 
@@ -479,7 +477,6 @@ class GeneratorTools
     {
         // There is no "getDelegators" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'delegators');
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($container);
     }
 

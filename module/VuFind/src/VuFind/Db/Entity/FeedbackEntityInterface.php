@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for feedback table
+ * Entity model interface for feedback table.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for feedback table
+ * Entity model interface for feedback table.
  *
  * @category VuFind
  * @package  Database
@@ -43,14 +43,14 @@ use DateTime;
 interface FeedbackEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
-     * Message setter
+     * Message setter.
      *
      * @param string $message Message
      *
@@ -59,7 +59,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setMessage(string $message): static;
 
     /**
-     * Message getter
+     * Message getter.
      *
      * @return string
      */
@@ -68,18 +68,18 @@ interface FeedbackEntityInterface extends EntityInterface
     /**
      * Form data setter.
      *
-     * @param array $data Form data
+     * @param ?array $data Form data
      *
      * @return static
      */
-    public function setFormData(array $data): static;
+    public function setFormData(?array $data): static;
 
     /**
-     * Form data getter
+     * Form data getter.
      *
-     * @return array
+     * @return ?array
      */
-    public function getFormData(): array;
+    public function getFormData(): ?array;
 
     /**
      * Form name setter.
@@ -91,7 +91,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setFormName(string $name): static;
 
     /**
-     * Form name getter
+     * Form name getter.
      *
      * @return string
      */
@@ -107,7 +107,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setCreated(DateTime $dateTime): static;
 
     /**
-     * Created getter
+     * Created getter.
      *
      * @return DateTime
      */
@@ -123,7 +123,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setUpdated(DateTime $dateTime): static;
 
     /**
-     * Updated getter
+     * Updated getter.
      *
      * @return DateTime
      */
@@ -139,7 +139,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setStatus(string $status): static;
 
     /**
-     * Status getter
+     * Status getter.
      *
      * @return string
      */
@@ -155,7 +155,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setSiteUrl(string $url): static;
 
     /**
-     * Site URL getter
+     * Site URL getter.
      *
      * @return string
      */
@@ -171,7 +171,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): static;
 
     /**
-     * User getter
+     * User getter.
      *
      * @return ?UserEntityInterface
      */
@@ -187,7 +187,7 @@ interface FeedbackEntityInterface extends EntityInterface
     public function setUpdatedBy(?UserEntityInterface $user): static;
 
     /**
-     * Updatedby getter
+     * Updatedby getter.
      *
      * @return ?UserEntityInterface
      */

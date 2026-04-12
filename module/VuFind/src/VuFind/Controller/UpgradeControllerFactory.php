@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Upgrade;
 
 /**
  * Upgrade controller factory.
@@ -46,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class UpgradeControllerFactory extends AbstractBaseFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -65,16 +66,17 @@ class UpgradeControllerFactory extends AbstractBaseFactory
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
         $session = new \Laminas\Session\Container(
             'upgrade',
             $container->get(\Laminas\Session\SessionManager::class)
         );
+        $configUpgrader = $container->get(Upgrade::class);
         return $this->applyPermissions(
             $container,
-            new $requestedName($container, $cookieManager, $session)
+            new $requestedName($container, $cookieManager, $session, $configUpgrader)
         );
     }
 }

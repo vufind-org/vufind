@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -53,7 +53,7 @@ interface ConnectorInterface
 {
     /**
      * Execute a search. Adds all the querystring parameters into
-     * $this->client and returns the parsed response
+     * $this->client and returns the parsed response.
      *
      * @param string $institution Institution
      * @param array  $terms       Associative array:
@@ -99,7 +99,7 @@ interface ConnectorInterface
 
     /**
      * Get the institution code based on user IP. If user is coming from
-     * off campus return
+     * off campus return.
      *
      * @return string
      */

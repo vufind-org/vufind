@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels Controller
+ * Channels Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\ChannelProvider\ChannelLoader;
 
 /**
- * Channels Class
+ * Channels Class.
  *
  * Controls the alphabetical browsing feature
  *
@@ -46,14 +46,14 @@ use VuFind\ChannelProvider\ChannelLoader;
 class ChannelsController extends AbstractBase
 {
     /**
-     * Channel loader
+     * Channel loader.
      *
      * @var ChannelLoader
      */
     protected $loader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ChannelLoader           $loader Channel loader
      * @param ServiceLocatorInterface $sm     Top-level service manager (needed for
@@ -90,8 +90,7 @@ class ChannelsController extends AbstractBase
         $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $activeChannel = $this->params()->fromQuery('channelProvider');
         $token = $this->params()->fromQuery('channelToken');
-        $context = $this->loader
-            ->getRecordContext($recordId, $token, $activeChannel, $source);
+        $context = $this->loader->getRecordContext($recordId, $token, $activeChannel, $source);
         return $this->createViewModel($context);
     }
 

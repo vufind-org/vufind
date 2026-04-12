@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -46,21 +46,21 @@ use VuFindSearch\Query\WorkKeysQuery;
 trait VersionAwareTrait
 {
     /**
-     * Cached result of other versions (work expressions) count
+     * Cached result of other versions (work expressions) count.
      *
      * @var int
      */
     protected $otherVersionsCount = null;
 
     /**
-     * Cached result of other versions (work expressions)
+     * Cached result of other versions (work expressions).
      *
      * @var \VuFindSearch\Response\RecordCollectionInterface
      */
     protected $otherVersions;
 
     /**
-     * Return count of other versions available
+     * Return count of other versions available.
      *
      * @return int
      */
@@ -93,7 +93,7 @@ trait VersionAwareTrait
     }
 
     /**
-     * Retrieve versions as a search result
+     * Retrieve versions as a search result.
      *
      * @param bool $includeSelf Whether to include this record
      * @param int  $count       Maximum number of records to display
@@ -110,7 +110,7 @@ trait VersionAwareTrait
         if (!isset($this->otherVersions)) {
             $command = new SearchCommand(
                 $this->getSourceIdentifier(),
-                new WorkKeysQuery($this->getUniqueID(), false, $keys),
+                new WorkKeysQuery($this->getUniqueID(), $includeSelf, $keys),
                 $offset,
                 $count
             );

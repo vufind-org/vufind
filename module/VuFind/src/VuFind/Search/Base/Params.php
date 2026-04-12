@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -31,6 +31,7 @@
 
 namespace VuFind\Search\Base;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\TranslatableString;
 use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;
@@ -49,7 +50,6 @@ use function intval;
 use function is_array;
 use function is_callable;
 use function is_object;
-use function strlen;
 
 /**
  * Abstract parameters search model.
@@ -74,14 +74,14 @@ class Params
     protected $query;
 
     /**
-     * Page number
+     * Page number.
      *
      * @var int
      */
     protected $page = 1;
 
     /**
-     * Sort setting
+     * Sort setting.
      *
      * @var string
      */
@@ -95,56 +95,56 @@ class Params
     protected $skipRssSort = false;
 
     /**
-     * Result limit
+     * Result limit.
      *
      * @var int
      */
     protected $limit = 20;
 
     /**
-     * Search type (basic or advanced)
+     * Search type (basic or advanced).
      *
      * @var string
      */
     protected $searchType  = 'basic';
 
     /**
-     * Shards
+     * Shards.
      *
      * @var array
      */
     protected $selectedShards = [];
 
     /**
-     * View
+     * View.
      *
      * @var string
      */
     protected $view = null;
 
     /**
-     * Previously-used view (loaded in from session)
+     * Previously-used view (loaded in from session).
      *
      * @var string
      */
     protected $lastView = null;
 
     /**
-     * Search options
+     * Search options.
      *
      * @var Options
      */
     protected $options;
 
     /**
-     * Main facet configuration
+     * Main facet configuration.
      *
      * @var array
      */
     protected $facetConfig = [];
 
     /**
-     * Extra facet labels
+     * Extra facet labels.
      *
      * @var array
      */
@@ -167,42 +167,42 @@ class Params
     protected $defaultFacetLabelCheckboxSections = [];
 
     /**
-     * Checkbox facet configuration
+     * Checkbox facet configuration.
      *
      * @var array
      */
     protected $checkboxFacets = [];
 
     /**
-     * Whether to fetch result counts for checkbox facets
+     * Whether to fetch result counts for checkbox facets.
      *
      * @var bool
      */
     protected $fetchCheckboxFacetCounts = false;
 
     /**
-     * Applied filters
+     * Applied filters.
      *
      * @var array
      */
     protected $filterList = [];
 
     /**
-     * Pre-assigned filters
+     * Pre-assigned filters.
      *
      * @var array
      */
     protected $hiddenFilters = [];
 
     /**
-     * Facets in "OR" mode
+     * Facets in "OR" mode.
      *
      * @var array
      */
     protected $orFacets = [];
 
     /**
-     * Override Query
+     * Override Query.
      */
     protected $overrideQuery = false;
 
@@ -228,21 +228,14 @@ class Params
     protected $searchContextParameters = [];
 
     /**
-     * Config loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Query adapter
+     * Query adapter.
      *
      * @var ?QueryAdapterInterface
      */
     protected $queryAdapter = null;
 
     /**
-     * Default query adapter class
+     * Default query adapter class.
      *
      * @var string
      */
@@ -257,33 +250,32 @@ class Params
     protected $isSpecializedSearch = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, protected ConfigManagerInterface $configManager)
     {
         $this->setOptions($options);
-
-        $this->configLoader = $configLoader;
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
 
         // Set up facet label settings, to be used as fallbacks if specific facets
         // are not already configured:
-        $config = $configLoader->get($options->getFacetsIni());
-        $sections = $config->FacetLabels->labelSections
+        $facetConfigName = $options->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $configManager->getConfigArray($facetConfigName) : [];
+        $sections = $config['FacetLabels']['labelSections']
             ?? $this->defaultFacetLabelSections;
         foreach ($sections as $section) {
-            foreach ($config->$section ?? [] as $field => $label) {
+            foreach ($config[$section] ?? [] as $field => $label) {
                 $this->extraFacetLabels[$field] = $label;
             }
         }
 
         // Activate all relevant checkboxes, also important for labeling:
-        $checkboxSections = $config->FacetLabels->checkboxSections
+        $checkboxSections = $config['FacetLabels']['checkboxSections']
             ?? $this->defaultFacetLabelCheckboxSections;
         foreach ($checkboxSections as $checkboxSection) {
             $this->initCheckboxFacets($checkboxSection);
@@ -313,7 +305,7 @@ class Params
     }
 
     /**
-     * Get query adapter
+     * Get query adapter.
      *
      * @return QueryAdapterInterface
      */
@@ -326,7 +318,7 @@ class Params
     }
 
     /**
-     * Set query adapter
+     * Set query adapter.
      *
      * @param QueryAdapterInterface $queryAdapter Query adapter
      *
@@ -338,7 +330,7 @@ class Params
     }
 
     /**
-     * Copy constructor
+     * Copy constructor.
      *
      * @return void
      */
@@ -363,7 +355,7 @@ class Params
     }
 
     /**
-     * Pull the search parameters
+     * Pull the search parameters.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
@@ -388,7 +380,7 @@ class Params
     }
 
     /**
-     * Pull shard parameters from the request or set defaults
+     * Pull shard parameters from the request or set defaults.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
@@ -419,7 +411,7 @@ class Params
     }
 
     /**
-     * Pull the page size parameter or set to default
+     * Pull the page size parameter or set to default.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
@@ -457,7 +449,7 @@ class Params
     }
 
     /**
-     * Pull the page parameter
+     * Pull the page parameter.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
@@ -602,7 +594,7 @@ class Params
     }
 
     /**
-     * Get the value for which type of sorting to use
+     * Get the value for which type of sorting to use.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
@@ -631,7 +623,7 @@ class Params
     }
 
     /**
-     * Get the value for which results view to use
+     * Get the value for which results view to use.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
@@ -663,7 +655,7 @@ class Params
     }
 
     /**
-     * Return the default sorting value
+     * Return the default sorting value.
      *
      * @return string
      */
@@ -674,7 +666,7 @@ class Params
     }
 
     /**
-     * Return the current limit value
+     * Return the current limit value.
      *
      * @return int
      */
@@ -684,7 +676,7 @@ class Params
     }
 
     /**
-     * Change the value of the limit
+     * Change the value of the limit.
      *
      * @param int $l New limit value.
      *
@@ -696,7 +688,7 @@ class Params
     }
 
     /**
-     * Change the page
+     * Change the page.
      *
      * @param int $p New page value.
      *
@@ -708,7 +700,7 @@ class Params
     }
 
     /**
-     * Get the page value
+     * Get the page value.
      *
      * @return int
      */
@@ -718,7 +710,7 @@ class Params
     }
 
     /**
-     * Return the sorting value
+     * Return the sorting value.
      *
      * @return string
      */
@@ -763,11 +755,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        if ($this->isValidSort($sort)) {
-            $this->sort = $sort;
-        } else {
-            $this->sort = $this->getDefaultSort();
-        }
+        $this->sort = $this->isValidSort($sort) ? $sort : $this->getDefaultSort();
 
         // In RSS mode, we may want to adjust sort settings:
         if (!$this->skipRssSort && $this->getView() == 'rss') {
@@ -777,7 +765,7 @@ class Params
 
     /**
      * Return the selected search handler (null for complex searches which have no
-     * single handler)
+     * single handler).
      *
      * @return string|null
      */
@@ -789,7 +777,7 @@ class Params
     }
 
     /**
-     * Return the search type (i.e. basic or advanced)
+     * Return the search type (i.e. basic or advanced).
      *
      * @return string
      */
@@ -799,7 +787,7 @@ class Params
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */
@@ -809,7 +797,7 @@ class Params
     }
 
     /**
-     * Set the value for which search view we use
+     * Set the value for which search view we use.
      *
      * @param String $v New view setting
      *
@@ -1057,7 +1045,7 @@ class Params
     }
 
     /**
-     * Get facet operator for the specified field
+     * Get facet operator for the specified field.
      *
      * @param string $field Field name
      *
@@ -1090,7 +1078,7 @@ class Params
     }
 
     /**
-     * Enable or disable fetching of checkbox facet counts
+     * Enable or disable fetching of checkbox facet counts.
      *
      * @param bool $enable Whether to enable counts
      *
@@ -1205,6 +1193,23 @@ class Params
             }
         }
         return $list;
+    }
+
+    /**
+     * Returns only the exclude filters (field starting with '-').
+     *
+     * @return array an array field => value without the '-' for the field
+     */
+    public function getExcludeFilters()
+    {
+        $result = [];
+        foreach ($this->filterList as $field => $values) {
+            [$operator, $fieldName] = $this->parseOperatorAndFieldName($field);
+            if ('NOT' === $operator) {
+                $result[$fieldName] = $values;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -1364,7 +1369,7 @@ class Params
     }
 
     /**
-     * Return checkbox facets without any processing
+     * Return checkbox facets without any processing.
      *
      * @return array
      */
@@ -1423,18 +1428,7 @@ class Params
     protected function formatYearForDateRange($year, $rangeEnd = false)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
-        $year = preg_match('/^-?\d+$/', $year ?? '') ? $year : '*';
-
-        // Pad two or three character positive range to four digits:
-        if (!str_starts_with($year, '-')) {
-            if (strlen($year) == 2) {
-                $year = '19' . $year;
-            } elseif (strlen($year) == 3) {
-                $year = '0' . $year;
-            }
-        }
-
-        return $year;
+        return preg_match('/^-?\d+$/', $year ?? '') ? $year : '*';
     }
 
     /**
@@ -1759,14 +1753,7 @@ class Params
     {
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
-
-        if (
-            isset($this->hiddenFilters[$field])
-            && in_array($value, $this->hiddenFilters[$field])
-        ) {
-            return true;
-        }
-        return false;
+        return in_array($value, $this->hiddenFilters[$field] ?? []);
     }
 
     /**
@@ -1897,7 +1884,7 @@ class Params
     }
 
     /**
-     * Store settings to a minified object
+     * Store settings to a minified object.
      *
      * @param Minified $minified Minified Search Object
      *
@@ -2001,7 +1988,7 @@ class Params
     }
 
     /**
-     * Translate a string (or string-castable object)
+     * Translate a string (or string-castable object).
      *
      * @param string|object|array $target  String to translate or an array of text
      * domain and string to translate
@@ -2018,7 +2005,7 @@ class Params
     }
 
     /**
-     * Set the override query
+     * Set the override query.
      *
      * @param string $q Override query
      *
@@ -2030,7 +2017,7 @@ class Params
     }
 
     /**
-     * Get the override query
+     * Get the override query.
      *
      * @return string
      */
@@ -2079,18 +2066,18 @@ class Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     {
-        $config = $this->configLoader
-            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
-        if (!isset($config->$facetList)) {
+        $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
+        if (!isset($config[$facetList])) {
             return false;
         }
-        if (isset($config->$facetSettings->orFacets)) {
+        if (isset($config[$facetSettings]['orFacets'])) {
             $orFields
-                = array_map('trim', explode(',', $config->$facetSettings->orFacets));
+                = array_map('trim', explode(',', $config[$facetSettings]['orFacets']));
         } else {
             $orFields = [];
         }
-        foreach ($config->$facetList as $key => $value) {
+        foreach ($config[$facetList] as $key => $value) {
             $useOr = (isset($orFields[0]) && $orFields[0] == '*')
                 || in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
@@ -2122,17 +2109,17 @@ class Params
         $facetList = 'CheckboxFacets',
         $cfgFile = null
     ) {
-        $config = $this->configLoader
-            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
+        $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
         $retVal = false;
         // If the section is in reverse order, the tilde will flag this:
         if (str_starts_with($facetList, '~')) {
-            foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
+            foreach ($config[substr($facetList, 1)] ?? [] as $value => $key) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;
             }
         } else {
-            foreach ($config->$facetList ?? [] as $key => $value) {
+            foreach ($config[$facetList] ?? [] as $key => $value) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;
             }
@@ -2141,7 +2128,7 @@ class Params
     }
 
     /**
-     * Check whether a specific facet supports filtering
+     * Check whether a specific facet supports filtering.
      *
      * @param string $facet The facet to check
      *
@@ -2165,7 +2152,7 @@ class Params
     }
 
     /**
-     * Get HiddenSorting patterns matching the given sort
+     * Get HiddenSorting patterns matching the given sort.
      *
      * @param ?string $sort Sort
      *

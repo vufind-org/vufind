@@ -10,7 +10,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2007, 2022.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,8 +22,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -42,6 +42,7 @@ use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -67,24 +68,25 @@ use function strlen;
 class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\HasSorterTrait;
+    use OnlinePaymentTrait;
 
     /**
      * Catalog ID used to distinguish between multiple Demo driver instances with the
-     * MultiBackend driver
+     * MultiBackend driver.
      *
      * @var string
      */
     protected $catalogId = 'demo';
 
     /**
-     * Connection used when getting random bib ids from Solr
+     * Connection used when getting random bib ids from Solr.
      *
      * @var SearchService
      */
     protected $searchService;
 
     /**
-     * Total count of records in the Solr index (used for random bib lookup)
+     * Total count of records in the Solr index (used for random bib lookup).
      *
      * @var int
      */
@@ -133,14 +135,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $ILLRequests = true;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Failure probability settings
+     * Failure probability settings.
      *
      * @var array
      */
@@ -168,7 +170,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $instructors = ['Instructor A', 'Instructor B', 'Instructor C'];
 
     /**
-     * Item and pick up locations
+     * Item and pick up locations.
      *
      * @var array
      */
@@ -188,14 +190,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     ];
 
     /**
-     * Default pickup location
+     * Default pickup location.
      *
      * @var string
      */
     protected $defaultPickUpLocation;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param SearchService          $ss             Search service
@@ -480,7 +482,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Generates a random, fake holding array
+     * Generates a random, fake holding array.
      *
      * @param string $id     set id
      * @param string $number set number for multiple items
@@ -530,7 +532,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron ? true : false,
+            'addLink'      => (bool)$patron,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
@@ -684,7 +686,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -715,7 +717,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get the session container (constructing it on demand if not already present)
+     * Get the session container (constructing it on demand if not already present).
      *
      * @param string $patron ID of current patron
      *
@@ -739,7 +741,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Simulated Status (support method for getStatus/getHolding)
+     * Get Simulated Status (support method for getStatus/getHolding).
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -791,7 +793,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Set Status
+     * Set Status.
      *
      * @param string $id      id for record
      * @param array  $holding associative array with options to specify
@@ -805,9 +807,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function setStatus(string $id, $holding = [], $append = true, $patron = null)
     {
         $session = $this->getSession($patron['id'] ?? null);
-        $i = isset($session->statuses[$id])
-            ? count($session->statuses[$id]) + 1 : 1;
-        $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+
+        if ($this->config['Holdings']['generateRandomHoldings'] ?? true) {
+            $i = isset($session->statuses[$id])
+                ? count($session->statuses[$id]) + 1 : 1;
+            $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+        }
 
         // if statuses is already stored
         if ($session->statuses) {
@@ -827,7 +832,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -895,7 +900,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -930,7 +935,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $status[$i] += $this->getLoanTypeForHolding();
             $volume = intdiv($issue, 4) + 1;
             $seriesIssue = $issue % 4;
-            $issue = $issue + 1;
+            $issue += 1;
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
             if (rand(1, 100) <= ($this->config['Holdings']['boundWithProbability'] ?? 25)) {
                 $status[$i]['bound_with_records'] = [];
@@ -992,7 +997,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1013,7 +1018,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1028,21 +1033,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         $this->checkIntermittentFailure();
 
-        $user = [
-            'id'           => trim($username),
-            'firstname'    => 'Lib',
-            'lastname'     => 'Rarian',
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => 'Lib.Rarian@library.not',
-            'major'        => null,
-            'college'      => null,
-        ];
-
         $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'password';
-        if ('email' === $loginMethod) {
-            $user['email'] = $username;
-            $user['cat_password'] = '';
+        $isEmailLogin = $loginMethod === 'email';
+
+        $user = $this->createPatronArray(
+            id: $username,
+            firstname: 'Lib',
+            lastname: 'Rarian',
+            cat_username: $username,
+            cat_password: $isEmailLogin ? '' : $password,
+            email: $isEmailLogin ? $username : 'Lib.Rarian@library.not'
+        );
+        if ($isEmailLogin) {
             return $user;
         }
 
@@ -1059,7 +1061,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1073,25 +1075,24 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $age = rand(13, 113);
         $birthDate = new \DateTime();
         $birthDate->sub(new \DateInterval("P{$age}Y"));
-        $patron = [
-            'firstname'       => 'Lib-' . $patron['cat_username'],
-            'lastname'        => 'Rarian',
-            'address1'        => 'Somewhere...',
-            'address2'        => 'Over the Rainbow',
-            'zip'             => '12345',
-            'city'            => 'City',
-            'country'         => 'Country',
-            'phone'           => '1900 CALL ME',
-            'mobile_phone'    => '1234567890',
-            'group'           => 'Library Staff',
-            'expiration_date' => 'Someday',
-            'birthdate'       => $birthDate->format('Y-m-d'),
-        ];
-        return $patron;
+        return $this->createProfileArray(
+            firstname: 'Lib-' . $patron['cat_username'],
+            lastname: 'Rarian',
+            address1: 'Somewhere...',
+            address2: 'Over the Rainbow',
+            zip: '12345',
+            city: 'City',
+            country: 'Country',
+            phone: '1900 CALL ME',
+            mobile_phone: '1234567890',
+            group: 'Library Staff',
+            expiration_date: 'Someday',
+            birthdate: $birthDate->format('Y-m-d')
+        );
     }
 
     /**
-     * Generate random fines
+     * Generate random fines.
      *
      * @return array
      */
@@ -1102,6 +1103,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $fines = rand() % 20 - 2;
 
         $fineList = [];
+        $firstId = rand(1, 1000);
         for ($i = 0; $i < $fines; $i++) {
             // How many days overdue is the item?
             $day_overdue = rand() % 30 + 5;
@@ -1109,47 +1111,53 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
             // 1 in 10 chance of this being a "Manual Fee":
             if (rand(1, 10) === 1) {
-                $fine = 2.50;
+                $amount = 2.50;
                 $type = 'Manual Fee';
             } else {
                 // 50c a day fine
-                $fine = $day_overdue * 0.50;
+                $amount = $day_overdue * 0.50;
                 // After 20 days it becomes 'Long Overdue'
                 $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
             }
+            // 50% chance they've paid half of it:
+            $balance = (rand() % 100 > 49 ? $amount / 2 : $amount);
 
-            $fineList[] = [
-                'amount'   => $fine * 100,
-                'checkout' => $this->dateConverter
-                    ->convertToDisplayDate('U', $checkout),
-                'createdate' => $this->dateConverter
-                    ->convertToDisplayDate('U', time()),
+            $fine = [
+                'fineId'  => (string)($firstId + $i),
+                'amount'   => (int)round($amount * 100),
+                'checkout' => $this->dateConverter->convertToDisplayDate('U', $checkout),
+                'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
                 'fine'     => $type,
-                // Additional description for long overdue fines:
+                // Additional description:
                 'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
-                // 50% chance they've paid half of it
-                'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
+                'balance'  => (int)round($balance * 100),
                 'duedate'  => $this->dateConverter->convertToDisplayDate(
                     'U',
                     strtotime("now - $day_overdue days")
                 ),
+                'organization' => $this->getFakeLoc(),
             ];
+
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
+
             // Some fines will have no id or title:
             if (rand() % 3 != 1) {
                 if ($this->idsInMyResearch) {
-                    [$fineList[$i]['id'], $fineList[$i]['title']]
+                    [$fine['id'], $fine['title']]
                         = $this->getRandomBibIdAndTitle();
-                    $fineList[$i]['source'] = $this->getRecordSource();
+                    $fine['source'] = $this->getRecordSource();
                 } else {
-                    $fineList[$i]['title'] = 'Demo Title ' . $i;
+                    $fine['title'] = 'Demo Title ' . $i;
                 }
             }
+
+            $fineList[] = $fine;
         }
         return $fineList;
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1172,7 +1180,66 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Holds
+     * Register a payment.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
+     *
+     * @throws ILSException
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
+        if ($this->isFailing(__METHOD__, 10)) {
+            throw new ILSException('Payment::registration_failed');
+        }
+
+        $session = $this->getSession($patron['id'] ?? null);
+        $paid = 0;
+        foreach ($session->fines ?? [] as $key => $fine) {
+            if (
+                ($fine['payableOnline'] ?? false)
+                && (!$fineIds || in_array($fine['fineId'] ?? '', $fineIds))
+            ) {
+                unset($session->fines[$key]);
+                $paid += $fine['balance'];
+            }
+        }
+        if ($paid < $amount) {
+            $session->fines[] = [
+                'amount'   => $paid - $amount,
+                'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
+                'fine'     => 'Balance',
+                'balance'  => $paid - $amount,
+            ];
+        }
+
+        // Delay for a bit to avoid a race condition with session updates during CI. When this method is called via the
+        // OnlinePaymentRegister AJAX handler, the "main" request that initiated the AJAX request may be slower to shut
+        // down and write the session data due to code coverage analysis. Since we also update the session with the new
+        // fines, we need to ensure it happens later.
+        sleep(2);
+        return [
+            'success' => true,
+        ];
+    }
+
+    /**
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1193,7 +1260,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -1215,7 +1282,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL requests by a specific patron.
      *
@@ -1347,7 +1414,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1477,7 +1544,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic transactions for a specific
      * patron.
@@ -1549,7 +1616,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Purge Patron Transaction History
+     * Purge Patron Transaction History.
      *
      * @param array  $patron The patron array from patronLogin
      * @param ?array $ids    IDs to purge, or null for all
@@ -1581,7 +1648,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -1627,7 +1694,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported.
      *
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Contains most of the same values passed to
@@ -1646,7 +1713,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in HorizonXMLAPI.ini
      *
@@ -1669,7 +1736,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group
      *
@@ -1695,7 +1762,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $bibId       BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -1729,11 +1796,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -1742,7 +1811,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -1755,7 +1824,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -1768,7 +1837,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -1781,7 +1850,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get a set of random bib IDs
+     * Get a set of random bib IDs.
      *
      * @param int $limit Maximum number of IDs to return (max 30)
      *
@@ -1803,14 +1872,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -1820,6 +1889,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @return array       Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -1872,7 +1942,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -1912,7 +1982,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item.
      *
@@ -1957,7 +2027,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Update holds
+     * Update holds.
      *
      * This is responsible for changing the status of hold requests
      *
@@ -2011,7 +2081,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Cancel Storage Retrieval Request
+     * Cancel Storage Retrieval Request.
      *
      * Attempts to Cancel a Storage Retrieval Request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -2058,7 +2128,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Cancel Storage Retrieval Request Details
+     * Get Cancel Storage Retrieval Request Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -2078,7 +2148,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -2119,7 +2189,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                             'U',
                             $transactions[$i]['rawduedate']
                         );
-                    $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
+                    $transactions[$i]['renew'] += 1;
                     $transactions[$i]['renewable']
                         = $transactions[$i]['renew']
                         < $transactions[$i]['renewLimit'];
@@ -2151,7 +2221,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -2168,7 +2238,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Check if hold or recall available
+     * Check if hold or recall available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2192,14 +2262,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'hold_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details.
@@ -2292,7 +2366,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Check if storage retrieval request available
+     * Check if storage retrieval request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2317,14 +2391,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'storage_retrieval_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
     /**
-     * Place a Storage Retrieval Request
+     * Place a Storage Retrieval Request.
      *
      * Attempts to place a request on a particular item and returns
      * an array with result details.
@@ -2423,7 +2501,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Check if ILL request available
+     * Check if ILL request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2447,14 +2525,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'ill_request_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'ill_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
     /**
-     * Place ILL Request
+     * Place ILL Request.
      *
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details
@@ -2559,7 +2641,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get ILL Pickup Libraries
+     * Get ILL Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -2595,7 +2677,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get ILL Pickup Locations
+     * Get ILL Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -2643,7 +2725,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Cancel ILL Request
+     * Cancel ILL Request.
      *
      * Attempts to Cancel an ILL request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -2690,7 +2772,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Cancel ILL Request Details
+     * Get Cancel ILL Request Details.
      *
      * @param array $request An array of request data
      * @param array $patron  Patron information from patronLogin
@@ -2705,7 +2787,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * Attempts to change patron password (PIN code)
      *
@@ -2735,7 +2817,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get password recovery data for a user
+     * Get password recovery data for a user.
      *
      * @param array $params Required params such as cat_username and email
      *
@@ -2788,11 +2870,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $details Driver-specific account recovery details.
      * @param array $params  User-entered form parameters.
      *
-     * @throws AuthException
+     * @throws ILSException
      * @return array Status
      */
     public function resetPassword(array $details, array $params)
     {
+        if (!($this->config['PasswordRecovery']['enabled'] ?? false)) {
+            throw new ILSException('Recovery disabled');
+        }
         if (empty($details['cat_username']) || empty($details['email']) || empty($params['password'])) {
             return [
                 'success' => false,
@@ -2815,7 +2900,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $function The name of the feature to be checked
      * @param array  $params   Optional feature-specific parameters (array)
      *
-     * @return array An array with key-value pairs.
+     * @return array|false An array with key-value pairs.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -2908,6 +2993,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
             return ($config['enabled'] ?? false) ? $config : false;
+        }
+        if ($function == 'OnlinePayment') {
+            return $this->config['OnlinePayment'] ?? [];
+        }
+
+        if ('TimedBlocks' === $function) {
+            return $this->config['TimedBlocks'] ?? [];
         }
 
         return [];

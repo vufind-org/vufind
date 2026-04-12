@@ -1,0 +1,129 @@
+<h1>उपयोगी खोज सुझाव</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#wildcard_searches">वाइल्डकार्ड खोजें</a></li>
+  <li><a href="#fuzzy_searches">फज़ी खोजें</a></li>
+  <li><a href="#proximity_searches">निकटता खोजें</a></li>
+  <li><a href="#range_searches">रेंज खोजें</a></li>
+  <li><a href="#boosting_a_term">किसी शब्द को बढ़ाना</a></li>
+  <li><a href="#boolean_operators">बूलियन ऑपरेटर</a>
+    <ul>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_plus">+</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+      <li><a href="#boolean_minus">-</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a id="wildcard_searches"></a>वाइल्डकार्ड खोजें</dt>
+  <dd>
+    <p>एकल अक्षर वाइल्डकार्ड खोज करने के लिए <strong>?</strong> प्रतीक का उपयोग करें।</p>
+    <p>उदाहरण के लिए, "woman" या "women" खोजने के लिए यह खोज करें:</p>
+    <pre class="code">wom?n</pre>
+    <p>एक से अधिक अक्षर (0 या अधिक) वाइल्डकार्ड खोज करने के लिए <strong>*</strong> प्रतीक का उपयोग करें।</p>
+    <p>उदाहरण के लिए, test, tests या tester खोजने के लिए यह क्वेरी उपयोग करें:</p>
+    <pre class="code">test*</pre>
+    <p>आप वाइल्डकार्ड को किसी शब्द के बीच में भी उपयोग कर सकते हैं।</p>
+    <pre class="code">te*t</pre>
+    <p>नोट: आप किसी खोज के पहले अक्षर के रूप में * या ? का उपयोग नहीं कर सकते।</p>
+  </dd>
+
+  <dt><a id="fuzzy_searches"></a>फज़ी खोजें</dt>
+  <dd>
+    <p>किसी <strong>एकल</strong> शब्द के अंत में टिल्ड (<strong>~</strong>) प्रतीक का उपयोग करें।  
+       उदाहरण के लिए, "Tchaikovsky" की विभिन्न वर्तनी खोजने के लिए यह फज़ी खोज करें:</p>
+    <pre class="code">Tchaikovsky~</pre>
+    <p>एक अतिरिक्त पैरामीटर समानता (similarity) की आवश्यकता को निर्दिष्ट कर सकता है।  
+       यह मान 0 और 1 के बीच होता है — 1 के निकट मान केवल उच्च समानता वाले शब्दों से मेल खाएगा।  
+       उदाहरण:</p>
+    <pre class="code">Tchaikovsky~0.8</pre>
+    <p>यदि पैरामीटर नहीं दिया गया है, तो डिफ़ॉल्ट मान 0.5 होता है।</p>
+  </dd>
+
+  <dt><a id="proximity_searches"></a>निकटता खोजें</dt>
+  <dd>
+    <p>
+      किसी <strong>एकाधिक</strong> शब्द वाले वाक्यांश के अंत में टिल्ड (<strong>~</strong>) प्रतीक का उपयोग करें।  
+      उदाहरण के लिए, “economics” और “Keynes” जो एक-दूसरे से 10 शब्दों के भीतर हों, उन्हें खोजने के लिए:
+    </p>
+    <pre class="code">"economics Keynes"~10</pre>
+  </dd>
+
+  <dt><a id="range_searches"></a>रेंज खोजें</dt>
+  <dd>
+    <p>
+      रेंज खोज करने के लिए आप <strong>{ }</strong> प्रतीकों का उपयोग कर सकते हैं।  
+      उदाहरण के लिए, उन शब्दों को खोजने के लिए जो A, B या C से शुरू होते हैं:
+    </p>
+    <pre class="code">{A TO C}</pre>
+    <p>
+      यही चीज़ संख्यात्मक फ़ील्ड जैसे वर्ष (Year) के साथ भी की जा सकती है:
+    </p>
+    <pre class="code">[2002 TO 2003]</pre>
+  </dd>
+
+  <dt><a id="boosting_a_term"></a>किसी शब्द को बढ़ाना</dt>
+  <dd>
+    <p>
+      किसी शब्द को अधिक महत्व देने के लिए आप <strong>^</strong> प्रतीक का उपयोग कर सकते हैं।  
+      उदाहरण के लिए, आप यह खोज आज़मा सकते हैं:
+    </p>
+    <pre class="code">economics Keynes^5</pre>
+    <p>यह खोज “Keynes” शब्द को अधिक महत्व देगी।</p>
+  </dd>
+
+  <dt><a id="boolean_operators"></a>बूलियन ऑपरेटर</dt>
+  <dd>
+    <p>
+      बूलियन ऑपरेटर शब्दों को तर्कसंगत (लॉजिक) ऑपरेटरों के साथ संयोजित करने की अनुमति देते हैं।  
+      निम्नलिखित ऑपरेटरों का उपयोग किया जा सकता है: <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> और <strong>-</strong>।
+    </p>
+    <p>नोट: बूलियन ऑपरेटर हमेशा बड़े अक्षरों (ALL CAPS) में होने चाहिए।</p>
+    <dl>
+      <dt><a id="boolean_and"></a>AND</dt>
+      <dd>
+        <p><strong>AND</strong> ऑपरेटर डिफ़ॉल्ट संयोजन ऑपरेटर है।  
+           यदि दो शब्दों के बीच कोई बूलियन ऑपरेटर नहीं है, तो AND का उपयोग किया जाता है।  
+           यह ऑपरेटर उन रिकॉर्ड्स से मेल खाता है जहाँ दोनों शब्द किसी भी फ़ील्ड में मौजूद हों।</p>
+        <p>ऐसे रिकॉर्ड खोजने के लिए जिनमें "economics" और "Keynes" दोनों हों, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">economics Keynes</pre>
+        <p>या</p>
+        <pre class="code">economics AND Keynes</pre>
+      </dd>
+
+      <dt><a id="boolean_plus"></a>+</dt>
+      <dd>
+        <p>"+" या आवश्यक (required) ऑपरेटर यह सुनिश्चित करता है कि "+" के बाद आने वाला शब्द रिकॉर्ड के किसी फ़ील्ड में मौजूद हो।</p>
+        <p>ऐसे रिकॉर्ड खोजने के लिए जिनमें "economics" अवश्य हो और "Keynes" हो भी सकता है या नहीं, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">+economics Keynes</pre>
+      </dd>
+
+      <dt><a id="boolean_or"></a>OR</dt>
+      <dd>
+        <p>OR ऑपरेटर दो शब्दों को जोड़ता है और ऐसा रिकॉर्ड खोजता है जहाँ उनमें से कोई एक शब्द मौजूद हो।</p>
+        <p>ऐसे दस्तावेज़ खोजने के लिए जिनमें या तो "economics Keynes" या केवल "Keynes" हो, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">"economics Keynes" OR Keynes</pre>
+      </dd>
+
+      <dt><a id="boolean_not"></a>NOT</dt>
+      <dd>
+        <p>NOT ऑपरेटर उन रिकॉर्ड्स को बाहर करता है जिनमें NOT के बाद दिया गया शब्द मौजूद हो।</p>
+        <p>ऐसे दस्तावेज़ खोजने के लिए जिनमें "economics" तो हो लेकिन "Keynes" न हो, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">economics NOT Keynes</pre>
+        <p>नोट: NOT ऑपरेटर को केवल एक शब्द के साथ उपयोग नहीं किया जा सकता।  
+           उदाहरण के लिए, निम्न खोज कोई परिणाम नहीं देगी:</p>
+        <pre class="code">NOT economics</pre>
+      </dd>
+
+      <dt><a id="boolean_minus"></a>-</dt>
+      <dd>
+        <p><strong>-</strong> या निषेध (prohibit) ऑपरेटर उन दस्तावेज़ों को बाहर करता है जिनमें "-" के बाद दिया गया शब्द मौजूद हो।</p>
+        <p>ऐसे दस्तावेज़ खोजने के लिए जिनमें "economics" हो लेकिन "Keynes" न हो, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">economics -Keynes</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>

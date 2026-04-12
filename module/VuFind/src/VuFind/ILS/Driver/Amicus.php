@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Amicus ILS Driver
+ * Amicus ILS Driver.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -39,7 +39,7 @@ use function count;
 use function in_array;
 
 /**
- * Amicus ILS Driver
+ * Amicus ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -52,7 +52,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
@@ -185,7 +185,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     /**
      * Function that returns the number or on loan items for a given copy number.
      * If there is no on loan items it returns 0.
-     * Used in getHolding and getStatus functions
+     * Used in getHolding and getStatus functions.
      *
      * @param int $copyId The copy id number to check.
      *
@@ -211,11 +211,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $prestados = $row['PRESTADO'];
-            if ($row['PRESTADO'] == 0) {
-                $prestados = 'Disponible';
-            } else {
-                $prestados = 'No disponible';
-            }
+            $prestados = $row['PRESTADO'] == 0 ? 'Disponible' : 'No disponible';
         }
         return $prestados;
     }
@@ -223,7 +219,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     /**
      * Function that returns the due date or a special message.
      * If the difference is greater than 50 days it will return one special message
-     * If not it returns the due date
+     * If not it returns the due date.
      *
      * @param int $copyId The copy id number to check.
      *
@@ -245,11 +241,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $diferencia = $row['DIFERENCIA'];
-            if ($diferencia > 50) {
-                $fecha = 'SIN DETERMINAR';
-            } else {
-                $fecha = $row['FECHADEV'];
-            }
+            $fecha = $diferencia > 50 ? 'SIN DETERMINAR' : $row['FECHADEV'];
         }
         return $fecha;
     }
@@ -282,7 +274,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -418,7 +410,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -439,7 +431,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -522,7 +514,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -553,7 +545,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -574,29 +566,20 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            if (isset($row['LOGIN']) && ($row['LOGIN'] != '')) {
-                return [
-                    'id' => $row['LOGIN'],
-                    'firstname' => $row['FIRST_NAME'],
-                    'lastname' => $lname,
-                    'cat_username' => $barcode,
-                    'cat_password' => $lname,
-                    // There's supposed to be a getPatronEmailAddress stored
-                    // procedure in Oracle, but I couldn't get it to work here;
-                    // might be worth investigating further if needed later.
-                    'email' => null,
-                    'major' => null,
-                    'college' => null];
-            } else {
-                return null;
-            }
+            return !empty($row['LOGIN']) ? $this->createPatronArray(
+                id: $row['LOGIN'],
+                firstname: $row['FIRST_NAME'],
+                lastname: $lname,
+                cat_username: $barcode,
+                cat_password: $lname
+            ) : null;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -630,7 +613,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -667,7 +650,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -706,7 +689,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -740,15 +723,18 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                $patron = ['firstname' => $row['FIRST_NAME'],
-                                'lastname' => $row['LAST_NAME'],
-                                'address1' => $row['ADDRESS_LINE1'],
-                                'address2' => $row['ADDRESS_LINE2'],
-                                'zip' => $row['ZIP_POSTAL'],
-                                'phone' => $row['TFNO'],
-                                'email' => $row['EMAIL'],
-                                'group' => $row['PATRON_GROUP_NAME']];
-                return $patron;
+                return $this->createProfileArray(
+                    firstname: $row['FIRST_NAME'],
+                    lastname: $row['LAST_NAME'],
+                    address1: $row['ADDRESS_LINE1'],
+                    address2: $row['ADDRESS_LINE2'],
+                    zip: $row['ZIP_POSTAL'],
+                    phone: $row['TFNO'],
+                    group: $row['PATRON_GROUP_NAME'],
+                    nonDefaultFields: [
+                        'email' => $row['EMAIL'],
+                    ]
+                );
             }
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
@@ -757,7 +743,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -776,14 +762,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -794,6 +780,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @return array       Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -848,12 +835,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @throws ILSException
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -876,7 +865,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *

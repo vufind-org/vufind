@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search API Controller
+ * Search API Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -41,7 +41,7 @@ use function count;
 use function is_array;
 
 /**
- * Search API Controller
+ * Search API Controller.
  *
  * Controls the Search API functionality
  *
@@ -52,55 +52,56 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class SearchApiController extends \VuFind\Controller\AbstractSearch implements ApiInterface
+class SearchApiController extends \VuFind\Controller\AbstractSearch implements
+    ApiInterface
 {
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
 
     /**
-     * Default record fields to return if a request does not define the fields
+     * Default record fields to return if a request does not define the fields.
      *
      * @var array
      */
     protected $defaultRecordFields = [];
 
     /**
-     * Permission required for the record endpoint
+     * Permission required for the record endpoint.
      *
      * @var string
      */
     protected $recordAccessPermission = 'access.api.Record';
 
     /**
-     * Permission required for the search endpoint
+     * Permission required for the search endpoint.
      *
      * @var string
      */
     protected $searchAccessPermission = 'access.api.Search';
 
     /**
-     * Record route uri
+     * Record route uri.
      *
      * @var string
      */
     protected $recordRoute = 'record';
 
     /**
-     * Search route uri
+     * Search route uri.
      *
      * @var string
      */
     protected $searchRoute = 'search';
 
     /**
-     * Descriptive label for the index managed by this controller
+     * Descriptive label for the index managed by this controller.
      *
      * @var string
      */
     protected $indexLabel = 'primary';
 
     /**
-     * Prefix for use in model names used by API
+     * Prefix for use in model names used by API.
      *
      * @var string
      */
@@ -117,28 +118,28 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     /**
      * Default max limit for cursor based search. Even if cursor search is cheaper in terms of processing in Solr,
      * PHP memory still has limitations so set the default to be a decent amount. (Default 200).
-     * Value is adjustable in searches.ini [API] cursorLimit
+     * Value is adjustable in searches.ini [API] cursorLimit.
      *
      * @var int
      */
     protected $cursorLimit = 200;
 
     /**
-     * Facet configuration
+     * Facet configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var array
      */
     protected $facetConfig;
 
     /**
-     * Hierarchical facets
+     * Hierarchical facets.
      *
      * @var array
      */
     protected $hierarchicalFacets;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm              Service manager
      * @param RecordFormatter         $recordFormatter Record formatter
@@ -157,10 +158,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             }
         }
         // Load configurations from the search options class:
-        $options = $sm->get(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
+        $options = $this->getService(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
         $settings = $options->getAPISettings();
-        $this->facetConfig = $this->getConfig($options->getFacetsIni());
-        $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];
+        $this->facetConfig = $this->getConfigArray($options->getFacetsIni());
+        $this->hierarchicalFacets = $this->facetConfig['SpecialFacets']['hierarchical'] ?? [];
         // Apply all supported configurations:
         $configKeys = [
             'recordAccessPermission', 'searchAccessPermission', 'maxLimit', 'cursorLimit',
@@ -170,23 +171,24 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $this->$key = $settings[$key];
             }
         }
+        $config = $this->getConfigArray()['API_Keys'] ?? [];
+        $this->initApiKeySettings($config);
     }
 
     /**
      * Get API specification JSON fragment for services provided by the
-     * controller
+     * controller.
      *
      * @return string
      */
     public function getApiSpecFragment()
     {
-        $config = $this->getConfig();
         $results = $this->getResultsManager()->get($this->searchClassId);
         $options = $results->getOptions();
         $params = $results->getParams();
 
         $viewParams = [
-            'config' => $config,
+            'config' => $this->getConfigArray(),
             'version' => \VuFind\Config\Version::getBuildVersion(),
             'searchTypes' => $options->getBasicHandlers(),
             'defaultSearchType' => $options->getDefaultHandler(),
@@ -201,6 +203,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
             'maxLimit' => $this->maxLimit,
+            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
+            'apiKeyHeaderField' => $this->apiKeyHeaderField,
+            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/openapi',
@@ -210,7 +215,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     }
 
     /**
-     * Execute the request
+     * Execute the request.
      *
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
@@ -241,7 +246,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     }
 
     /**
-     * Record action
+     * Record action.
      *
      * @return \Laminas\Http\Response
      */
@@ -256,9 +261,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             return $result;
         }
 
-        $request = $this->getRequest()->getQuery()->toArray()
-            + $this->getRequest()->getPost()->toArray();
+        $request = $this->getAllRequestParams();
 
+        if (!$this->checkRequestForApiKey()) {
+            return $this->outputMissingAPIKey();
+        }
         if (!isset($request['id'])) {
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
@@ -298,7 +305,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     }
 
     /**
-     * Search action
+     * Search action.
      *
      * @return \Laminas\Http\Response
      */
@@ -312,10 +319,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         if ($result = $this->isAccessDenied($this->searchAccessPermission)) {
             return $result;
         }
-
+        if (!$this->checkRequestForApiKey()) {
+            return $this->outputMissingAPIKey();
+        }
         // Send both GET and POST variables to search class:
-        $request = $this->getRequest()->getQuery()->toArray()
-            + $this->getRequest()->getPost()->toArray();
+        $request = $this->getAllRequestParams();
 
         $isCursorSearch = ($request['resumptionToken'] ?? false);
         try {
@@ -334,7 +342,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     }
 
     /**
-     * Perform a search using page in Solr
+     * Perform a search using page in Solr.
      *
      * @param array $request Array containing combination of post and get request params
      *
@@ -342,6 +350,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      *               - records: Records found
      *               - resultCount: Total result count
      *               - facets: array containing facets for the result
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function doDefaultSearch(array $request): array
     {
@@ -368,7 +378,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $facets,
                 $hierarchicalFacets,
                 $recordFields
-            ) {
+            ): void {
                 foreach ($facets as $facet) {
                     if (!isset($hierarchicalFacets[$facet])) {
                         $params->addFacet($facet);
@@ -407,7 +417,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     }
 
     /**
-     * Perform a search using cursor in Solr. Do not send facet information when using cursor
+     * Perform a search using cursor in Solr. Do not send facet information when using cursor.
      *
      * @param array $request Array containing combination of post and get request params
      *
@@ -416,12 +426,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      *               - resultCount: Total result count
      *               - resumptionToken: Array containing info about resumption token
      *                  - token
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function doCursorSearch(array $request): array
     {
         unset($request['page']);
-        // Always discard cursors from requests
-        $request['cursor'] = 0;
         if ('*' !== $request['resumptionToken']) {
             // Try to load a resumption token for this request
             $resumptionTokenParams = $this->loadResumptionToken($request['resumptionToken']);
@@ -431,7 +441,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             $request = array_merge($request, $resumptionTokenParams);
         }
         $limit = $this->cursorLimit;
-        $cursor = $request['cursor'];
         $cursorMark = $request['cursorMark'] ?? '';
         $recordFields = $this->getFieldList($request);
         // Throw an error here, as there is no reason to search for anything, if no record fields were defined
@@ -449,7 +458,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             ) use (
                 $cursorMark,
                 $limit
-            ) {
+            ): void {
                 $results->overrideStartRecord(1);
                 $results->setCursorMark($cursorMark);
                 $params->setLimit($limit);
@@ -471,19 +480,19 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         if ($records) {
             $response['records'] = $records;
             // Save resumption token if results were found
-            $nextCursor = $cursor += count($records);
+            $nextCursor = count($records);
             $nextCursorMark = $results->getCursorMark();
             $resumptionToken = $this->createResumptionToken($request, $nextCursor, $nextCursorMark);
             $response['resumptionToken'] = [
                 'token' => $resumptionToken->getToken(),
-                'expires' => $resumptionToken->getExpiry()->format('Y-m-d H:i:s'),
+                'expires' => $resumptionToken->getExpiry()->format(VUFIND_DATABASE_DATETIME_FORMAT),
             ];
         }
         return $response;
     }
 
     /**
-     * Get hierarchical facet data for the given facet fields
+     * Get hierarchical facet data for the given facet fields.
      *
      * @param array $facets Facet fields
      *
@@ -524,7 +533,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     }
 
     /**
-     * Get field list based on the request
+     * Get field list based on the request.
      *
      * @param array $request Request params
      *

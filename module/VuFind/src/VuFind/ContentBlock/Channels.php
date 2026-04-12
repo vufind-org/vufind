@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -44,28 +44,28 @@ use VuFind\ChannelProvider\ChannelLoader;
 class Channels implements ContentBlockInterface
 {
     /**
-     * Request object
+     * Request object.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * Channel loader
+     * Channel loader.
      *
      * @var ChannelLoader
      */
     protected $loader;
 
     /**
-     * Data source (null to use default found in channels.ini)
+     * Data source (null to use default found in channels.ini).
      *
      * @var string
      */
     protected $source = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request       $request Request object
      * @param ChannelLoader $loader  Channel loader

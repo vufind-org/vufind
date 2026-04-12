@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Common EDS & EPF API Params
+ * Common EDS & EPF API Params.
  *
  * PHP version 8
  *
@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -39,7 +39,7 @@ use function count;
 use function in_array;
 
 /**
- * Common EDS & EPF API Params
+ * Common EDS & EPF API Params.
  *
  * @category VuFind
  * @package  EBSCO
@@ -102,23 +102,18 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      *
      * @param string $field Filter field name
      *
-     * @return boolean
+     * @return bool
      */
     protected function filterRequiresFacetOperator($field)
     {
-        if (
-            str_starts_with($field, 'LIMIT') ||
-            str_starts_with($field, 'EXPAND') ||
-            str_starts_with($field, 'SEARCHMODE') ||
-            str_starts_with($field, 'PublicationDate')
-        ) {
-            return false;
-        }
-        return true;
+        return !(str_starts_with($field, 'LIMIT')
+            || str_starts_with($field, 'EXPAND')
+            || str_starts_with($field, 'SEARCHMODE')
+            || str_starts_with($field, 'PublicationDate'));
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */
@@ -129,7 +124,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Get facet operator for the specified field
+     * Get facet operator for the specified field.
      *
      * @param string $field             Field name
      * @param string $specifiedOperator Operator specified on a config filter line
@@ -148,7 +143,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */

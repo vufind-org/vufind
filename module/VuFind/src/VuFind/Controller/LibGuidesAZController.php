@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides A-Z Databases Controller
+ * LibGuides A-Z Databases Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -33,7 +33,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * LibGuides A-Z Databases Controller
+ * LibGuides A-Z Databases Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -45,7 +45,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class LibGuidesAZController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

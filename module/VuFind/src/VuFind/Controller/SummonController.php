@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Controller
+ * Summon Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -33,7 +33,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Summon Controller
+ * Summon Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -44,7 +44,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class SummonController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -70,7 +70,7 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -86,7 +86,7 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return mixed
      */
@@ -116,7 +116,7 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */

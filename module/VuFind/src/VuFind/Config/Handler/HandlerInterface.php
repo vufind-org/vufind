@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for config handler classes
+ * Interface for config handler classes.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config_Handlers
@@ -32,7 +32,7 @@ namespace VuFind\Config\Handler;
 use VuFind\Config\Location\ConfigLocationInterface;
 
 /**
- * Interface for config handler classes
+ * Interface for config handler classes.
  *
  * This interface class is the definition of the required methods for
  * loading configuration.
@@ -59,9 +59,26 @@ interface HandlerInterface
      * - parentLocation (Config location of the parent config)
      * - mergeCallback (A callback that specifies how the parent config should be merged)
      *
-     * @param ConfigLocationInterface $configLocation Config location
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
      */
-    public function parseConfig(ConfigLocationInterface $configLocation): array;
+    public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array;
+
+    /**
+     * Write configuration to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location for the config
+     * @param array|string             $config              Config to write
+     * @param ?ConfigLocationInterface $baseLocation        Location of a base configuration that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void;
 }

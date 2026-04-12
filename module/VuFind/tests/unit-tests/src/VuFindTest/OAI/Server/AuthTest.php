@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category Search
  * @package  Service
@@ -51,9 +51,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     public function testEmptyInput(): void
     {
         $auth = $this->getAuth();
-        $this->assertTrue(
-            str_contains($auth->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
-        );
+        $this->assertStringContainsString('<error code="badVerb">Missing Verb Argument</error>', $auth->getResponse());
     }
 
     /**
@@ -82,7 +80,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock results manager
+     * Get a mock results manager.
      *
      * @return MockObject&\VuFind\Search\Results\PluginManager
      */
@@ -92,7 +90,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock record loader
+     * Get a mock record loader.
      *
      * @return MockObject&\VuFind\Record\Loader
      */
@@ -102,7 +100,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock change tracker service
+     * Get a mock change tracker service.
      *
      * @return MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
      */
@@ -112,7 +110,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock record formatter
+     * Get a mock record formatter.
      *
      * @return MockObject&\VuFindApi\Formatter\RecordFormatter
      */
@@ -122,7 +120,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock resumption Service
+     * Get a mock resumption Service.
      *
      * @return MockObject&\VuFind\Db\Service\OaiResumptionService
      */

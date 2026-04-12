@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Eds Controller
+ * Eds Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -32,10 +32,11 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Solr\Utils as SolrUtils;
 
+use function array_key_exists;
 use function in_array;
 
 /**
- * EDS Controller
+ * EDS Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -46,7 +47,7 @@ use function in_array;
 class EdsController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -57,7 +58,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Handle an advanced search
+     * Handle an advanced search.
      *
      * @return mixed
      */
@@ -77,7 +78,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */
@@ -190,7 +191,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Process the publication date range limiter widget
+     * Process the publication date range limiter widget.
      *
      * @param object $searchObject Saved search object (false if none)
      *
@@ -229,9 +230,10 @@ class EdsController extends AbstractSearch
         $params = $results->getParams();
         $options = $params->getOptions();
         $searchModes = $options->getModeOptions();
+        $useDefault = true;
         // Process the facets, assuming they came back
-        foreach ($searchModes as $key => $mode) {
-            if ($searchObject) {
+        if ($searchObject) {
+            foreach ($searchModes as $key => $mode) {
                 $modeFilter = 'SEARCHMODE:' . $mode['Value'];
                 if ($searchObject->getParams()->hasFilter($modeFilter)) {
                     $searchModes[$key]['selected'] = true;
@@ -240,11 +242,14 @@ class EdsController extends AbstractSearch
                     // will already be accounted for by being selected in the
                     // filter select list!
                     $searchObject->getParams()->removeFilter($modeFilter);
+                    $useDefault = false;
                 }
-            } else {
-                if ($key == $options->getDefaultMode()) {
-                    $searchModes[$key]['selected'] = true;
-                }
+            }
+        }
+        if ($useDefault) {
+            $key = $options->getDefaultMode();
+            if (array_key_exists($key, $searchModes)) {
+                $searchModes[$key]['selected'] = true;
             }
         }
 

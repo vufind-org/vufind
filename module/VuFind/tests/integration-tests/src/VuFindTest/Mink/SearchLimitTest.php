@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -50,14 +50,14 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     use SearchLimitTrait;
 
     /**
-     * Selector for limit control
+     * Selector for limit control.
      *
      * @var string
      */
     protected $limitControlSelector = '#limit';
 
     /**
-     * Set up a search page with limits configured
+     * Set up a search page with limits configured.
      *
      * @param string  $limitParam Value of limit GET parameter
      * @param ?string $options    limit_options setting for searches.ini
@@ -89,11 +89,11 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     {
         $text = $this->findCssAndGetText($page, '.search-stats strong');
         [, $actualSize] = explode(' - ', $text);
-        $this->assertEquals($size, intval($actualSize));
+        $this->assertSame($size, intval($actualSize));
     }
 
     /**
-     * Check that first and last record of the results are correct
+     * Check that first and last record of the results are correct.
      *
      * @param Element $page  Current page
      * @param string  $first Expected first title
@@ -183,7 +183,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test the limit control
+     * Test the limit control.
      *
      * @return void
      */

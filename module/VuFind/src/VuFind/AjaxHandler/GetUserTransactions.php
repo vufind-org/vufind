@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get User Transactions" AJAX handler
+ * "Get User Transactions" AJAX handler.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -33,7 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Account\AccountStatusLevelType;
 
 /**
- * "Get User Transactions" AJAX handler
+ * "Get User Transactions" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -46,7 +46,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * Paginator
+     * Paginator.
      *
      * @var \VuFind\ILS\PaginationHelper
      */
@@ -95,7 +95,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     }
 
     /**
-     * Get account status level for notification icon
+     * Get account status level for notification icon.
      *
      * @param array $status Status information
      *
@@ -113,7 +113,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     }
 
     /**
-     * Set the ILS pagination helper
+     * Set the ILS pagination helper.
      *
      * @param \VuFind\ILS\PaginationHelper $helper Pagination helper
      *
@@ -125,7 +125,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     }
 
     /**
-     * Get the ILS pagination helper
+     * Get the ILS pagination helper.
      *
      * @return \VuFind\ILS\PaginationHelper
      */

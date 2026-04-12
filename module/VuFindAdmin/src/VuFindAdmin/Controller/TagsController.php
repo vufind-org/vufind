@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Tag Controller
+ * Admin Tag Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -51,31 +51,14 @@ use function is_array;
 class TagsController extends AbstractAdmin
 {
     /**
-     * Params
+     * Params.
      *
      * @var array
      */
     protected $params;
 
     /**
-     * Get the url parameters
-     *
-     * @param string $param          A key to check the url params for
-     * @param bool   $prioritizePost If true, check the POST params first
-     * @param mixed  $default        Default value if no value found
-     *
-     * @return string
-     */
-    protected function getParam($param, $prioritizePost = true, $default = null)
-    {
-        $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
-        $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
-        return $this->params()->$primary($param)
-            ?? $this->params()->$secondary($param, $default);
-    }
-
-    /**
-     * Tag Details
+     * Tag Details.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -88,7 +71,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Manage Tags
+     * Manage Tags.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -106,7 +89,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * List Tags
+     * List Tags.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -130,7 +113,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Delete Tags
+     * Delete Tags.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -172,7 +155,7 @@ class TagsController extends AbstractAdmin
                 : $this->params()->fromPost('idsAll');
 
             if (!is_array($ids) || empty($ids)) {
-                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
+                $this->flashMessenger()->addErrorMessage('bulk_noitems_advice');
                 return $this->redirect()->toUrl($originUrl);
             }
 
@@ -183,19 +166,18 @@ class TagsController extends AbstractAdmin
         }
 
         if (0 == $delete) {
-            $this->flashMessenger()->addMessage('tags_delete_fail', 'error');
+            $this->flashMessenger()->addErrorMessage('tags_delete_fail');
             return $this->redirect()->toUrl($originUrl);
         }
 
         // If we got this far, we should clean up orphans:
         $this->getDbService(TagServiceInterface::class)->deleteOrphanedTags();
 
-        $this->flashMessenger()->addMessage(
+        $this->flashMessenger()->addSuccessMessage(
             [
                 'msg' => 'tags_deleted',
                 'tokens' => ['%count%' => $delete],
-            ],
-            'success'
+            ]
         );
         return $this->redirect()->toUrl($originUrl);
     }
@@ -238,7 +220,8 @@ class TagsController extends AbstractAdmin
                     "Unexpected error retrieving resource $resourceId"
                 );
             }
-            $resourceMsg = "{$resource->getTitle()} ({$resource->getId()})";
+            $title = $resource->getDisplayTitle() ?? $resource->getTitle();
+            $resourceMsg = "$title ({$resource->getId()})";
         }
 
         $messages = [
@@ -262,7 +245,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Confirm Delete by Id
+     * Confirm Delete by Id.
      *
      * @param array  $ids       A list of resource tag Ids
      * @param string $originUrl An origin url
@@ -295,7 +278,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Confirm Tag Delete by Filter
+     * Confirm Tag Delete by Filter.
      *
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
@@ -331,7 +314,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Gets a list of unique resources based on the url params
+     * Gets a list of unique resources based on the url params.
      *
      * @return array[]
      */
@@ -345,7 +328,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Gets a list of unique tags based on the url params
+     * Gets a list of unique tags based on the url params.
      *
      * @return array[]
      */
@@ -359,7 +342,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Gets a list of unique users based on the url params
+     * Gets a list of unique users based on the url params.
      *
      * @return array[]
      */
@@ -373,7 +356,7 @@ class TagsController extends AbstractAdmin
     }
 
     /**
-     * Converts empty params and "ALL" to null
+     * Converts empty params and "ALL" to null.
      *
      * @param string $value A parameter to check
      *

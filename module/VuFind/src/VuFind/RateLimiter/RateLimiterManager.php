@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -31,8 +31,8 @@ namespace VuFind\RateLimiter;
 
 use Closure;
 use Laminas\EventManager\EventInterface;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\MvcEvent;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
@@ -57,28 +57,28 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     use TranslatorAwareTrait;
 
     /**
-     * Turnstile service
+     * Turnstile service.
      *
      * @var ?Turnstile
      */
     protected $turnstile = null;
 
     /**
-     * Current event description for logging
+     * Current event description for logging.
      *
      * @var string
      */
     protected $eventDesc = '??';
 
     /**
-     * Client details for logging
+     * Client details for logging.
      *
      * @var string
      */
     protected $clientLogDetails;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array          $config                     Rate limiter configuration
      * @param string         $clientIp                   Client's IP address
@@ -112,7 +112,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if rate limiter is enabled
+     * Check if rate limiter is enabled.
      *
      * @return bool|string False if disabled, true if enabled and enforcing,
      * 'report_only' if enabled for logging only (not enforcing the limits)
@@ -124,7 +124,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if the given event is allowed
+     * Check if the given event is allowed.
      *
      * @param EventInterface $event Event
      *
@@ -193,6 +193,16 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 . ', retry-after: ' . $result['retryAfter']
                 . ', limit: ' . $result['requestLimit']
             );
+            if (isset($turnstileLimit)) {
+                $this->verboseDebug(
+                    'Turnstile: '
+                    . ($turnstileLimit->isAccepted() ? 'Accepted' : 'Refused')
+                    . " by policy '$policyId'"
+                    . ', remaining: ' . $turnstileLimit->getRemainingTokens()
+                    . ', retry-after: ' . $turnstileLimit->getRetryAfter()->getTimestamp() - time()
+                    . ', limit: ' . $turnstileLimit->getLimit()
+                );
+            }
 
             // Add headers if configured:
             if ($this->config['Policies'][$policyId]['addHeaders'] ?? false) {
@@ -211,6 +221,28 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                     $result['allow'] = false;
                     $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
                     $result['presentTurnstileChallenge'] = ($priorTurnstileResult === null);
+                    if (
+                        $result['presentTurnstileChallenge'] &&
+                        ($this->config['Policies'][$policyId]['turnstileIgnoredRateLimiterSettings'] ?? false)
+                    ) {
+                        $turnstileIgnoredLimiter = ($this->rateLimiterFactoryCallback)(
+                            $this->config,
+                            $policyId,
+                            $this->clientIp,
+                            $this->userId,
+                            'turnstileIgnoredRateLimiterSettings'
+                        );
+                        $turnstileIgnoredLimit = $turnstileIgnoredLimiter->consume(1);
+                        if (!$turnstileIgnoredLimit->isAccepted()) {
+                            $this->verboseDebug('Turnstile ignored limit exceeded.');
+                            $this->turnstile->setResult($policyId, $this->clientIp, false);
+                            $result['presentTurnstileChallenge'] = false;
+                        } else {
+                            $this->verboseDebug(
+                                'Turnstile ignored limit down to ' . $turnstileIgnoredLimit->getRemainingTokens()
+                            );
+                        }
+                    }
                     return $result;
                 }
             }
@@ -234,7 +266,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Try to find a policy that matches an event
+     * Try to find a policy that matches an event.
      *
      * @param MvcEvent $event Event
      *
@@ -248,7 +280,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         $isCrawler = null;
         foreach ($this->config['Policies'] ?? [] as $name => $settings) {
             if (null !== ($loggedIn = $settings['loggedIn'] ?? null)) {
-                if ($loggedIn !== ($this->userId ? true : false)) {
+                if ($loggedIn !== ((bool)$this->userId)) {
                     continue;
                 }
             }
@@ -282,7 +314,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if an event matches a filter
+     * Check if an event matches a filter.
      *
      * @param MvcEvent $event  Event
      * @param array    $filter Filter from configuration
@@ -317,7 +349,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Log a verbose debug message if configured
+     * Log a verbose debug message if configured.
      *
      * @param string $msg Message
      *
@@ -331,7 +363,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Get a response message for too many requests
+     * Get a response message for too many requests.
      *
      * @param MvcEvent $event  Request event
      * @param array    $result Rate limiter result
@@ -353,7 +385,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
     }
 
     /**
-     * Check if the request is from a crawler
+     * Check if the request is from a crawler.
      *
      * @param MvcEvent $event Request event
      *

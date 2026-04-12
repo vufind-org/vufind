@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait SortingTrait
+ * Trait SortingTrait.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  I18n
@@ -34,7 +34,7 @@ namespace VuFind\I18n;
 use VuFind\Exception\BadConfig as BadConfigException;
 
 /**
- * Trait SortingTrait
+ * Trait SortingTrait.
  *
  * @category VuFind
  * @package  I18n
@@ -45,14 +45,14 @@ use VuFind\Exception\BadConfig as BadConfigException;
 trait HasSorterTrait
 {
     /**
-     * Sorter
+     * Sorter.
      *
      * @var ?SorterInterface
      */
     protected $sorter = null;
 
     /**
-     * Set the sorter
+     * Set the sorter.
      *
      * @param SorterInterface $sorter Sorter service
      *
@@ -64,7 +64,7 @@ trait HasSorterTrait
     }
 
     /**
-     * Get the sorter
+     * Get the sorter.
      *
      * @return SorterInterface
      */

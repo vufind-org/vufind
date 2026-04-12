@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Missing Exception
+ * Record Missing Exception.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Exceptions
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * Record Missing Exception
+ * Record Missing Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -47,6 +47,6 @@ class RecordMissing extends NotFound implements SeverityLevelInterface
      */
     public function getSeverityLevel()
     {
-        return \Laminas\Log\Logger::DEBUG;
+        return \Psr\Log\LogLevel::DEBUG;
     }
 }

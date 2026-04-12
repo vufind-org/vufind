@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Collection Controller
+ * Collection Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Config\Config;
 
 /**
- * Collection Controller
+ * Collection Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -44,7 +44,7 @@ use VuFind\Config\Config;
 class CollectionController extends AbstractRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param Config                  $config VuFind configuration
@@ -83,8 +83,8 @@ class CollectionController extends AbstractRecord
     protected function showTab($tab, $ajax = false)
     {
         // Check that collections are enabled and redirect if necessary
-        $config = $this->getConfig();
-        if (empty($config->Collections->collections)) {
+        $config = $this->getConfigArray();
+        if (empty($config['Collections']['collections'])) {
             return $this->redirectToRecord();
         }
 

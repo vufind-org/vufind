@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class AbstractBaseFactory
+ * Class AbstractBaseFactory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class AbstractBaseFactory
+ * Class AbstractBaseFactory.
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,8 +69,8 @@ class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $treeDataFormatter = new $requestedName($config->Hierarchy->validateHierarchySequences ?? true);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $treeDataFormatter = new $requestedName($config['Hierarchy']['validateHierarchySequences'] ?? true);
         $treeDataFormatter->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $treeDataFormatter;
     }

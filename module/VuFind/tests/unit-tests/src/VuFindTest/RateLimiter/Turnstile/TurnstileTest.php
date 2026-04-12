@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Turnstile Test Class
+ * Turnstile Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -36,7 +36,7 @@ use VuFind\RateLimiter\Turnstile\Turnstile;
 use VuFindHttp\HttpService;
 
 /**
- * Turnstile Test Class
+ * Turnstile Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -92,7 +92,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
                 $turnstile->setHttpService($this->buildHttpService(
                     ['success' => $result]
                 ));
-                $validationResult = $turnstile->validateToken('some_token', $policyId, $clientIp);
+                $validationResult = $turnstile->validateToken('some_token');
                 $this->assertEquals($result, $validationResult);
             }
 
@@ -123,7 +123,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $cache = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)->getMock();
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $cache->method('getItem')->willReturn($cacheResult);
 
         $turnstile = new Turnstile($config, $cache);

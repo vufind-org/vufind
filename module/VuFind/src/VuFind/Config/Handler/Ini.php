@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config_Handlers
@@ -32,6 +32,8 @@ namespace VuFind\Config\Handler;
 
 use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\Config\Writer as ConfigWriter;
+use VuFind\Exception\ConfigException;
 use VuFind\Exception\FileAccess as FileAccessException;
 
 use function in_array;
@@ -54,41 +56,85 @@ class Ini extends AbstractBase
     /**
      * Parses the configuration in a config location.
      *
-     * @param ConfigLocationInterface $configLocation Config location
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
      */
-    public function parseConfig(ConfigLocationInterface $configLocation): array
+    public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
-        $path = $configLocation->getPath();
+        $data = $this->loadFromFile($configLocation->getPath());
+
+        $config = [];
+
+        if ($handleParentConfig) {
+            $parentConfig = $data['Parent_Config'] ?? [];
+            unset($data['Parent_Config']);
+            $parentPath = null;
+            if (isset($parentConfig['path'])) {
+                $parentPath = $parentConfig['path'];
+            } elseif (isset($parentConfig['relative_path'])) {
+                $parentPath = pathinfo($configLocation->getPath(), PATHINFO_DIRNAME)
+                    . DIRECTORY_SEPARATOR
+                    . $parentConfig['relative_path'];
+            }
+
+            if ($parentPath !== null) {
+                $parentConfigLocation = $this->getParentLocationOnPath($configLocation, $parentPath);
+                $parentConfigLocation->setSubsection($configLocation->getSubsection());
+                $config['parentLocation'] = $parentConfigLocation;
+            } elseif ($parentConfig['use_parent_dir'] ?? false) {
+                $config['parentLocation'] = $configLocation->getDirLocationsParent();
+            }
+
+            $overrideSections = $this->explodeListSetting($parentConfig['override_full_sections'] ?? '');
+            $config['mergeCallback'] = $this->getMergeCallback(
+                $overrideSections,
+                $parentConfig['merge_array_settings'] ?? false
+            );
+        }
+
+        $config['data'] = $data;
+
+        return $config;
+    }
+
+    /**
+     * Load from file.
+     *
+     * @param string $path Config file path
+     *
+     * @return array
+     */
+    protected function loadFromFile(string $path): array
+    {
         $data = parse_ini_file($path, true);
         if ($data === false) {
             throw new FileAccessException('Could not read ini file ' . $path);
         }
-        $parentConfig = $data['Parent_Config'] ?? [];
-        unset($data['Parent_Config']);
-        $config = ['data' => $data];
-        $parentPath = null;
-        if (isset($parentConfig['path'])) {
-            $parentPath = $parentConfig['path'];
-        } elseif (isset($parentConfig['relative_path'])) {
-            $parentPath = pathinfo($configLocation->getPath(), PATHINFO_DIRNAME)
-                . DIRECTORY_SEPARATOR
-                . $parentConfig['relative_path'];
-        }
+        return $this->handleIncludeStatements($data, pathinfo($path, PATHINFO_DIRNAME));
+    }
 
-        if ($parentPath !== null) {
-            $config['parentLocation'] = $this->getParentLocationOnPath($configLocation, $parentPath);
-        } elseif ($parentConfig['use_parent_dir'] ?? false) {
-            $config['parentLocation'] = $configLocation->getDirLocationsParent();
+    /**
+     * Handle include statements.
+     *
+     * @param array  $data     Config data
+     * @param string $basePath Config file base path
+     *
+     * @return array
+     */
+    protected function handleIncludeStatements(array $data, string $basePath): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->handleIncludeStatements($value, $basePath);
+            } elseif ($key === '@include') {
+                $included = $this->loadFromFile($basePath . DIRECTORY_SEPARATOR . $value);
+                unset($data['@include']);
+                $data = array_replace_recursive($data, $included);
+            }
         }
-
-        $overrideSections = $this->explodeListSetting($parentConfig['override_full_sections'] ?? '');
-        $config['mergeCallback'] = $this->getMergeCallback(
-            $overrideSections,
-            $parentConfig['merge_array_settings'] ?? false
-        );
-        return $config;
+        return $data;
     }
 
     /**
@@ -129,5 +175,70 @@ class Ini extends AbstractBase
             }
             return $parentConfig;
         };
+    }
+
+    /**
+     * Write configuration to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location for the config
+     * @param array|string             $config              Config to write
+     * @param ?ConfigLocationInterface $baseLocation        Location of a base configuration that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void {
+        if (!is_array($config)) {
+            throw new ConfigException('Ini handler can only write array config.');
+        }
+
+        // If target file already exists, back it up:
+        $outfile = $destinationLocation->getPath();
+        $this->backupFile($outfile);
+
+        $comments = [];
+        if ($baseLocation !== null) {
+            $comments = $this->extractComments($baseLocation->getPath());
+        }
+        $writer = $this->getConfigWriter($outfile, $config, $comments);
+        if (!$writer->save()) {
+            throw new FileAccessException(
+                "Error: Problem writing to {$outfile}."
+            );
+        }
+    }
+
+    /**
+     * Get writer object.
+     *
+     * @param string $outfile  Path to output file
+     * @param array  $config   Configuration to write
+     * @param array  $comments Comments
+     *
+     * @return ConfigWriter
+     */
+    protected function getConfigWriter(string $outfile, array $config, array $comments): ConfigWriter
+    {
+        return new ConfigWriter(
+            $outfile,
+            $config,
+            $comments
+        );
+    }
+
+    /**
+     * Extract comments of a file.
+     *
+     * @param string $filename Name of ini file to read.
+     *
+     * @return array
+     */
+    protected function extractComments($filename)
+    {
+        return ConfigWriter::extractComments($filename);
     }
 }

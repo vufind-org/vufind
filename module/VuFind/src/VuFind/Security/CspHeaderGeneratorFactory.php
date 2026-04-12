@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class CspHeaderGeneratorFactory
+ * Class CspHeaderGeneratorFactory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Security
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for creating  Content Security Policy http headers generator class
+ * Factory for creating  Content Security Policy http headers generator class.
  *
  * @category VuFind
  * @package  Security
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class CspHeaderGeneratorFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,8 +68,8 @@ class CspHeaderGeneratorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('contentsecuritypolicy');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('contentsecuritypolicy');
         $nonceGenerator = $container->get(NonceGenerator::class);
 
         return new $requestedName($config, $nonceGenerator);

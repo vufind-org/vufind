@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract config location
+ * Abstract config location.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config_Location
@@ -32,7 +32,7 @@ namespace VuFind\Config\Location;
 use function dirname;
 
 /**
- * Abstract config location
+ * Abstract config location.
  *
  * @category VuFind
  * @package  Config_Location
@@ -78,7 +78,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     protected ?ConfigLocationInterface $dirLocationsParent = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string  $path       Path to configuration
      * @param ?string $configName Optional configuration name (default is file name)
@@ -138,7 +138,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $basePath Base path
      *
-     * @return void
+     * @return static
      */
     public function setBasePath(string $basePath): static
     {
@@ -161,7 +161,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $fileName string
      *
-     * @return void
+     * @return static
      */
     public function setFileName(string $fileName): static
     {
@@ -184,7 +184,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param string $configName Config name
      *
-     * @return void
+     * @return static
      */
     public function setConfigName(string $configName): static
     {
@@ -207,7 +207,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param array $subsection Subsection
      *
-     * @return void
+     * @return static
      */
     public function setSubsection(array $subsection): static
     {
@@ -230,7 +230,7 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
      *
      * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
-     * @return void
+     * @return static
      */
     public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static
     {
@@ -247,5 +247,19 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     {
         $extension = pathinfo($this->getFileName(), PATHINFO_EXTENSION);
         return !empty($extension) ? $extension : null;
+    }
+
+    /**
+     * Get cache key.
+     *
+     * @return string
+     */
+    public function getCacheKey(): string
+    {
+        $path = $this->getPath();
+        if ($realPath = realpath($path)) {
+            $path = $realPath;
+        }
+        return $path . '_' . implode('_', $this->getSubsection());
     }
 }

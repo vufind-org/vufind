@@ -1,7 +1,7 @@
 <?php
 
 /**
- * III ILS Driver
+ * III ILS Driver.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -36,7 +36,7 @@ use function count;
 use function strlen;
 
 /**
- * VuFind Connector for Innovative
+ * VuFind Connector for Innovative.
  *
  * This class uses screen scraping techniques to gather record holdings written
  * by Adam Bryn of the Tri-College consortium.
@@ -69,7 +69,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Make an HTTP request
+     * Make an HTTP request.
      *
      * @param string $url URL to request
      *
@@ -92,7 +92,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Prepare ID
+     * Prepare ID.
      *
      * This function returns the correct record id format as defined
      * in the Innovative.ini file.
@@ -118,7 +118,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -197,11 +197,7 @@ class Innovative extends AbstractBase implements
                     }
                     // Does column hold reserves information?
                     if (stripos($keys[$i], (string)$reserves_col_name) > -1) {
-                        if (stripos($cols[$i], (string)$reserves_key_name) > -1) {
-                            $ret[$count - 2]['reserve'] = 'Y';
-                        } else {
-                            $ret[$count - 2]['reserve'] = 'N';
-                        }
+                        $ret[$count - 2]['reserve'] = stripos($cols[$i], (string)$reserves_key_name) > -1 ? 'Y' : 'N';
                     }
                     // Does column hold call numbers?
                     if (stripos($keys[$i], (string)$call_col_name) > -1) {
@@ -244,7 +240,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -266,7 +262,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -289,7 +285,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -308,7 +304,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -335,7 +331,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -350,7 +346,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -364,83 +360,82 @@ class Innovative extends AbstractBase implements
     public function patronLogin($username, $password)
     {
         // TODO: if username is a barcode, test to make sure it fits proper format
-        $enabled = $this->config['PATRONAPI']['enabled'] ?? false;
-        if ($enabled && strtolower($enabled) !== 'false') {
-            // use patronAPI to authenticate customer
-            $url = $this->config['PATRONAPI']['url'];
-
-            // build patronapi pin test request
-            $result = $this->sendRequest(
-                $url . urlencode($username) . '/' . urlencode($password) .
-                '/pintest'
-            );
-
-            // search for successful response of "RETCOD=0"
-            if (stripos($result, 'RETCOD=0') == -1) {
-                // pin did not match, can look up specific error to return
-                // more useful info.
-                return null;
-            }
-
-            // Pin did match, get patron information
-            $result = $this->sendRequest($url . urlencode($username) . '/dump');
-
-            // The following is taken and modified from patronapi.php by John Blyberg
-            // released under the GPL
-            $api_contents = trim(strip_tags($result));
-            $api_array_lines = explode("\n", $api_contents);
-            $api_data = ['PBARCODE' => false];
-
-            foreach ($api_array_lines as $api_line) {
-                $api_line = str_replace('p=', 'peq', $api_line);
-                $api_line_arr = explode('=', $api_line);
-                $regex_match = ["/\[(.*?)\]/","/\s/",'/#/'];
-                $regex_replace = ['','','NUM'];
-                $key = trim(
-                    preg_replace($regex_match, $regex_replace, $api_line_arr[0])
-                );
-                $api_data[$key] = trim($api_line_arr[1]);
-            }
-
-            if (!$api_data['PBARCODE']) {
-                // No barcode found, can look up specific error to return more
-                // useful info. This check needs to be modified to handle using
-                // III patron ids also.
-                return null;
-            }
-
-            // return patron info
-            $ret = [];
-            $ret['id'] = $api_data['PBARCODE']; // or should I return patron id num?
-            $names = explode(',', $api_data['PATRNNAME']);
-            $ret['firstname'] = $names[1];
-            $ret['lastname'] = $names[0];
-            $ret['cat_username'] = urlencode($username);
-            $ret['cat_password'] = urlencode($password);
-            $ret['email'] = $api_data['EMAILADDR'];
-            $ret['major'] = null;
-            $ret['college'] = $api_data['HOMELIBR'];
-            $ret['homelib'] = $api_data['HOMELIBR'];
-            // replace $ separator in III addresses with newline
-            $ret['address1'] = str_replace('$', ', ', $api_data['ADDRESS']);
-            $ret['address2'] = str_replace('$', ', ', $api_data['ADDRESS2']);
-            preg_match(
-                '/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/',
-                $api_data['ADDRESS'],
-                $zipmatch
-            );
-            $ret['zip'] = $zipmatch[1]; //retrieve from address
-            $ret['phone'] = $api_data['TELEPHONE'];
-            $ret['phone2'] = $api_data['TELEPHONE2'];
-            // Should probably have a translation table for patron type
-            $ret['group'] = $api_data['PTYPE'];
-            $ret['expiration'] = $api_data['EXPDATE'];
-            // Only if agency module is enabled.
-            $ret['region'] = $api_data['AGENCY'];
-            return $ret;
-        } else {
-            // TODO: use screen scrape
+        // Avoid situation where string value false would evaluate to true
+        $enabled = $this->config['PATRONAPI']['enabled'] ?? 'false';
+        if (!$enabled || strtolower(trim($enabled)) === 'false') {
             return null;
         }
+        // use patronAPI to authenticate customer
+        $url = $this->config['PATRONAPI']['url'];
+
+        // build patronapi pin test request
+        $result = $this->sendRequest(
+            $url . urlencode($username) . '/' . urlencode($password) .
+            '/pintest'
+        );
+
+        // search for successful response of "RETCOD=0"
+        if (stripos($result, 'RETCOD=0') == -1) {
+            // pin did not match, can look up specific error to return
+            // more useful info.
+            return null;
+        }
+
+        // Pin did match, get patron information
+        $result = $this->sendRequest($url . urlencode($username) . '/dump');
+
+        // The following is taken and modified from patronapi.php by John Blyberg
+        // released under the GPL
+        $api_contents = trim(strip_tags($result));
+        $api_array_lines = explode("\n", $api_contents);
+        $api_data = ['PBARCODE' => false];
+
+        foreach ($api_array_lines as $api_line) {
+            $api_line = str_replace('p=', 'peq', $api_line);
+            $api_line_arr = explode('=', $api_line);
+            $regex_match = ["/\[(.*?)\]/","/\s/",'/#/'];
+            $regex_replace = ['','','NUM'];
+            $key = trim(
+                preg_replace($regex_match, $regex_replace, $api_line_arr[0])
+            );
+            $api_data[$key] = trim($api_line_arr[1]);
+        }
+
+        if (!$api_data['PBARCODE']) {
+            // No barcode found, can look up specific error to return more
+            // useful info. This check needs to be modified to handle using
+            // III patron ids also.
+            return null;
+        }
+        $names = explode(',', $api_data['PATRNNAME']);
+        preg_match(
+            '/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/',
+            $api_data['ADDRESS'],
+            $zipmatch
+        );
+        // return patron info
+        return $this->createPatronArray(
+            id: $api_data['PBARCODE'], // or should I return patron id num?
+            cat_username: urlencode($username),
+            cat_password: urlencode($password),
+            firstname:  $names[1],
+            lastname:  $names[0],
+            email: $api_data['EMAILADDR'],
+            college: $api_data['HOMELIBR'],
+            nonDefaultFields: [
+                'homelib' => $api_data['HOMELIBR'],
+                // replace $ separator in III addresses with newline
+                'address1' => str_replace('$', ', ', $api_data['ADDRESS']),
+                'address2' => str_replace('$', ', ', $api_data['ADDRESS2']),
+                'zip' => $zipmatch[1],
+                'phone' => $api_data['TELEPHONE'],
+                'phone2' => $api_data['TELEPHONE2'],
+                // Should probably have a translation table for patron type
+                'group' => $api_data['PTYPE'],
+                'expiration' => $api_data['EXPDATE'],
+                // Only if agency module is enabled.
+                'region' => $api_data['AGENCY'],
+            ]
+        );
     }
 }

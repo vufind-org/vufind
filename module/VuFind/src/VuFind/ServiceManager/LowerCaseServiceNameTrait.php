@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -43,7 +43,7 @@ namespace VuFind\ServiceManager;
 trait LowerCaseServiceNameTrait
 {
     /**
-     * Retrieve a plugin
+     * Retrieve a plugin.
      *
      * @param string     $name    Name of plugin
      * @param null|array $options Options to use when creating the instance.

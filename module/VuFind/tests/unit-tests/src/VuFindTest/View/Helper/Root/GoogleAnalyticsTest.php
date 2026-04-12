@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleAnalytics view helper Test Class
+ * GoogleAnalytics view helper Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\GoogleAnalytics;
 
 /**
- * GoogleAnalytics view helper Test Class
+ * GoogleAnalytics view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test the helper (basic setup)
+     * Test the helper (basic setup).
      *
      * @return void
      */
@@ -63,7 +63,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey'));
+        $this->assertSame($expected, $this->renderGA('myfakekey'));
     }
 
     /**
@@ -75,7 +75,6 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $createJs = "{cookie_flags: 'max-age=7200;secure;samesite=none'}";
         $options = [
-            'universal' => true,
             'create_options_js' => $createJs,
         ];
         $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
@@ -90,21 +89,21 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey', $options));
+        $this->assertSame($expected, $this->renderGA('myfakekey', $options));
     }
 
     /**
-     * Test the helper (disabled mode)
+     * Test the helper (disabled mode).
      *
      * @return void
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGA(false));
+        $this->assertSame('', $this->renderGA(false));
     }
 
     /**
-     * Render the GA code
+     * Render the GA code.
      *
      * @param string $key     GA key (false for disabled)
      * @param array  $options Options for GA helper
@@ -115,6 +114,6 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $helper = new GoogleAnalytics($key, $options);
         $helper->setView($this->getPhpRenderer());
-        return (string)$helper();
+        return $helper();
     }
 }

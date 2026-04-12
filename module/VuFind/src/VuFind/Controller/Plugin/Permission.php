@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Permission Checker
+ * VuFind Action Helper - Permission Checker.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -29,15 +29,15 @@
 
 namespace VuFind\Controller\Plugin;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
 
 /**
- * VuFind Action Helper - Permission Checker
+ * VuFind Action Helper - Permission Checker.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -53,28 +53,28 @@ class Permission extends AbstractPlugin implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Permission manager
+     * Permission manager.
      *
      * @var PermissionManager
      */
     protected $permissionManager;
 
     /**
-     * Permission denied manager
+     * Permission denied manager.
      *
      * @var PermissionDeniedManager
      */
     protected $permissionDeniedManager;
 
     /**
-     * Auth manager
+     * Auth manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $authManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PermissionManager       $pm   Permission Manager
      * @param PermissionDeniedManager $pdm  Permission Denied Manager
@@ -181,7 +181,7 @@ class Permission extends AbstractPlugin implements
     /**
      * Get the current identity from the authentication manager.
      *
-     * @return \LmcRbacMvc\Identity\IdentityInterface|null
+     * @return \Lmc\Rbac\Identity\IdentityInterface|null
      */
     public function getIdentity()
     {

@@ -31,8 +31,9 @@ foreach ($ids as $id) {
             . $this->transEsc('od_code_login_for_avail') . '</p>';
         $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
     } else {
-        $current['full_status'] .= '<div class="availability"><p>';
-        if ($avail->copiesAvailable > 0) {
+        $current['full_status'] .= '<div class="availability">';
+        $copiesAvailable = (int)($avail->copiesAvailable ?? 0);
+        if ($copiesAvailable > 0) {
             $current['full_status'] .= '<span class="text-success">';
             $current['full_status'] .= $this->icon('status-available', 'icon-link__icon');
             $current['full_status'] .= '</span> ';
@@ -43,13 +44,14 @@ foreach ($ids as $id) {
             $current['full_status'] .= '</span> ';
             $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE;
         }
-        $copies = $avail->availabilityType == 'AlwaysAvailable'
+        $copies = (isset($avail->availabilityType) && $avail->availabilityType == 'AlwaysAvailable')
             ? $this->transEsc('od_unlimited')
-            : ($avail->copiesAvailable . ' / ' . $avail->copiesOwned);
+            : ($copiesAvailable . ' / ' . ($avail->copiesOwned ?? 0));
         $current['full_status'] .= ' ' . $this->transEsc('od_copies_available', ['%%copies%%' => $copies]);
-        if ($avail->numberOfHolds > 0) {
-            $current['full_status'] .= '; ' . $this->transEsc('od_waiting', ['holds' => $avail->numberOfHolds], null, true);
+        if ($numHolds = ($avail->numberOfHolds ?? 0) > 0) {
+            $current['full_status'] .= '; ' . $this->transEsc('od_waiting', ['holds' => $numHolds], null, true);
         }
+        $current['full_status'] .= '</div>';
     }
     $current['availability_message'] = $availabilityStatus ? $this->render(
         'ajax/status.phtml',

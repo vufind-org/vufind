@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Linkify a string so that the links become clickable HTML
+ * Linkify a string so that the links become clickable HTML.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -34,7 +34,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
 /**
- * Linkify a string so that the links become clickable HTML
+ * Linkify a string so that the links become clickable HTML.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,7 +46,7 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 class Linkify extends AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UrlHighlight $urlHighlight            Url highlighter
      * @param UrlHighlight $urlHighlightExceptEmail Url highlighter that ignores email addresses
@@ -56,7 +56,7 @@ class Linkify extends AbstractHelper
     }
 
     /**
-     * Replace urls and emails by html tags
+     * Replace urls and emails by html tags.
      *
      * @param string $string       String to linkify (must be HTML-escaped)
      * @param bool   $includeEmail If email addresses should also be linkified

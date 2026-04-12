@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\FallbackLoader\Summon;
 use VuFind\Record\RecordIdUpdater;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
 use VuFindSearch\ParamBag;
 
 /**
@@ -56,7 +56,7 @@ class SummonTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->createMock(\VuFind\RecordDriver\Summon::class);
         $record->expects($this->once())->method('setPreviousUniqueId')
-            ->with($this->equalTo('oldId'));
+            ->with('oldId');
         $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Summon\Response\RecordCollection(
             ['recordCount' => 1]
@@ -81,16 +81,16 @@ class SummonTest extends \PHPUnit\Framework\TestCase
         $updater = $this->createMock(RecordIdUpdater::class);
         $updater->expects($this->once())->method('updateRecordId')
             ->with(
-                $this->equalTo('oldId'),
-                $this->equalTo('newId'),
-                $this->equalTo('Summon')
+                'oldId',
+                'newId',
+                'Summon'
             );
         $entity = $this->createMock(ResourceEntityInterface::class);
         $entity->expects($this->once())->method('getExtraMetadata')
             ->willReturn('{ "bookmark": "bar" }');
         $resourceService = $this->createMock(ResourceServiceInterface::class);
         $resourceService->expects($this->once())->method('getResourceByRecordId')
-            ->with($this->equalTo('oldId'), $this->equalTo('Summon'))
+            ->with('oldId', 'Summon')
             ->willReturn($entity);
         $loader = new Summon($resourceService, $updater, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));

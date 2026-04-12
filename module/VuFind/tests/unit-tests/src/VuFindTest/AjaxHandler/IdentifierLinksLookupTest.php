@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -60,8 +60,8 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     protected function setupConfig($config)
     {
         $this->container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'))
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(compact('config'))
         );
     }
 
@@ -84,7 +84,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $mockPlugin = $this->container
             ->createMock(IdentifierLinkerInterface::class, ['getLinks']);
         $mockPlugin->expects($this->$times())->method('getLinks')
-            ->with($this->equalTo($expected))
+            ->with($expected)
             ->willReturn(
                 [
                     $key => [
@@ -139,8 +139,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         ];
 
         $mockRenderer = $this->container->createMock(PhpRenderer::class);
-        $mockRenderer->expects($this->any())
-            ->method('plugin')
+        $mockRenderer->method('plugin')
             ->willReturnCallback(
                 function ($plugin) use ($plugins) {
                     return $plugins[$plugin] ?? null;
@@ -148,8 +147,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             );
         // JSON encode parameters to the render method so that it returns a string
         // that we can make assertions about in our tests.
-        $mockRenderer->expects($this->any())
-            ->method('render')
+        $mockRenderer->method('render')
             ->willReturnCallback(
                 function () {
                     return json_encode(func_get_args());
@@ -165,7 +163,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     }
 
     /**
-     * Data provider for testSingleLookup
+     * Data provider for testSingleLookup.
      *
      * @return array
      */
@@ -208,10 +206,9 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      * @param bool   $newWindow  Expected "new window" setting
      * @param string $remoteIcon Expected icon value
      *
-     * @dataProvider getTestSingleLookupData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestSingleLookupData')]
     public function testSingleLookup(
         array $config,
         bool $newWindow,

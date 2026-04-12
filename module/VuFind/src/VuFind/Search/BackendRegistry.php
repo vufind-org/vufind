@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -62,6 +62,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         'Blender' => Factory\BlenderBackendFactory::class,
+        'Blender2' => Factory\Blender2BackendFactory::class,
         'BrowZine' => Factory\BrowZineBackendFactory::class,
         'EDS' => Factory\EdsBackendFactory::class,
         'EIT' => Factory\EITBackendFactory::class,

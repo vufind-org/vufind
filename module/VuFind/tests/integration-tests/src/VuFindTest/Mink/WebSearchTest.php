@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -45,21 +45,19 @@ use function intval;
 class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testWebSearch()
+     * Data provider for testWebSearch().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function webSearchProvider(): array
+    public static function webSearchProvider(): \Iterator
     {
-        return [
-            'blank search' => ['', 3, '', ['Fact', 'Fantasy', 'Fiction']],
-            'search in full text' => ['"second record"', 1, 'second record', ['Fact']],
-            'search in description' => ['three', 1, 'three', ['Fantasy']],
-        ];
+        yield 'blank search' => ['', 3, '', ['Fact', 'Fantasy', 'Fiction']];
+        yield 'search in full text' => ['"second record"', 1, 'second record', ['Fact']];
+        yield 'search in description' => ['three', 1, 'three', ['Fantasy']];
     }
 
     /**
-     * Test performing a Web search
+     * Test performing a Web search.
      *
      * @param string   $query                  Search query
      * @param int      $expectedCount          Expected search result count
@@ -67,9 +65,8 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param string[] $expectedSubjectFacets  Expected subject facet values
      *
      * @return void
-     *
-     * @dataProvider webSearchProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('webSearchProvider')]
     public function testWebSearch(
         string $query,
         int $expectedCount,
@@ -85,14 +82,14 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm the result count:
-        $this->assertEquals(
+        $this->assertSame(
             $expectedCount,
             intval($this->findCssAndGetText($page, '.js-search-stats strong', index: 1))
         );
 
         // Confirm highlighting:
         if ($expectedFirstHighlight) {
-            $this->assertEquals($expectedFirstHighlight, $this->findCssAndGetText($page, '#result0 mark'));
+            $this->assertSame($expectedFirstHighlight, $this->findCssAndGetText($page, '#result0 mark'));
         }
 
         // Confirm facet values:

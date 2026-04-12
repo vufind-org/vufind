@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,40 +43,26 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
     use \VuFind\Feature\BulkActionTrait;
 
     /**
-     * CSS class for button
+     * CSS class for button.
      *
      * @var ?string
      */
     protected $buttonClass = null;
 
     /**
-     * Configuration loader
+     * Constructor.
      *
-     * @var \VuFind\Config\PluginManager
+     * @param \VuFind\Export                        $export        Export support class
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
-    protected $configLoader;
-
-    /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Export               $export       Export support class
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Export $export, \VuFind\Config\PluginManager $configLoader)
-    {
-        $this->export = $export;
-        $this->configLoader = $configLoader;
+    public function __construct(
+        protected \VuFind\Export $export,
+        protected \VuFind\Config\ConfigManagerInterface $configManager
+    ) {
     }
 
     /**
-     * Get a bulk action button
+     * Get a bulk action button.
      *
      * @param string $action     Action name
      * @param string $icon       Icon identifier

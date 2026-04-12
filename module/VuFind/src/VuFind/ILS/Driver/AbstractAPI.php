@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract Driver for API-based ILS drivers
+ * Abstract Driver for API-based ILS drivers.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -30,7 +30,7 @@
 namespace VuFind\ILS\Driver;
 
 use Laminas\Http\Response;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
@@ -39,7 +39,7 @@ use function in_array;
 use function is_string;
 
 /**
- * Abstract Driver for API-based ILS drivers
+ * Abstract Driver for API-based ILS drivers.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -57,7 +57,7 @@ abstract class AbstractAPI extends AbstractBase implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Allow default corrections to all requests
+     * Allow default corrections to all requests.
      *
      * @param \Laminas\Http\Headers $headers the request headers
      * @param array                 $params  the parameters object
@@ -70,7 +70,7 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
-     * Function that obscures and logs debug data
+     * Function that obscures and logs debug data.
      *
      * @param string                $method      Request method
      * (GET/POST/PUT/DELETE/etc.)
@@ -134,7 +134,7 @@ abstract class AbstractAPI extends AbstractBase implements
     }
 
     /**
-     * Make requests
+     * Make requests.
      *
      * @param string            $method              GET/POST/PUT/DELETE/etc
      * @param string            $path                API path (with a leading /)

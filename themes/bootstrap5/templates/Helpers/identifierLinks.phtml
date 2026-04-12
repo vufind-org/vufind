@@ -1,5 +1,5 @@
 <?php
-    $attribs = ['class' => 'identifierLink', 'data-instance' => $instance ?? 0];
+    $attribs = ['class' => 'identifierLinks', 'data-instance' => $instance ?? 0];
     if (!empty($doi)) {
         $attribs['data-doi'] = $doi;
     }
@@ -11,4 +11,4 @@
     }
     echo $this->assetManager()->outputInlineScriptLink('identifierLinks.js');
 ?>
-<span<?=$this->htmlAttributes($attribs)?>></span>
+<div<?=$this->htmlAttributes($attribs)?>></div>

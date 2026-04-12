@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFind\Config\Version;
 
 /**
  * Mink upgrade controller test class.
@@ -73,6 +74,24 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that we pick a reasonable default "from" version.
+     *
+     * @return void
+     */
+    public function testDefaultUpgradeFromVersion(): void
+    {
+        // Now go to the upgrade page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Upgrade'));
+        $page = $session->getPage();
+        // Confirm that the source version defaults to the current version.
+        $this->assertEquals(
+            Version::getBuildVersion(),
+            $this->findCssAndGetValue($page, 'input[name="sourceversion"]')
+        );
+    }
+
+    /**
      * Test that the upgrade controller deduplicates tags.
      *
      * @return void
@@ -99,7 +118,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->addTagsToRecord($page, 'foo foO fOo');
         // Count tags
         $this->waitForPageLoad($page);
-        $this->assertEquals(['fOo', 'foO', 'foo'], $this->getTagsFromPage($page));
+        $this->assertSame(['fOo', 'foO', 'foo'], $this->getTagsFromPage($page));
         // Now switch to case-insensitive tags:
         $this->changeConfigs(
             [
@@ -112,26 +131,18 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Verify that there are duplicates on the page:
         $page = $this->gotoRecord();
-        $this->assertEquals(['foo', 'foo', 'foo'], $this->getTagsFromPage($page));
+        $this->assertSame(['foo', 'foo', 'foo'], $this->getTagsFromPage($page));
         // Now go to the upgrade page:
         $this->getMinkSession()->visit($this->getVuFindUrl('/Upgrade'));
-        // Upgrade the database from version 10.0:
-        $this->findCssAndSetValue($page, 'input[name="sourceversion"]', '10.0');
+        // Upgrade the database only:
         $this->clickCss($page, '#skip-config');
-        $this->clickCss($page, '#skip-metadata');
         $this->clickCss($page, '.main input.btn-primary');
         $this->waitForPageLoad($page);
         // Skip the security warning:
-        $this->assertEquals('Critical Issue: Insecure database settings', $this->findCssAndGetText($page, 'h2'));
+        $this->assertSame('Critical Issue: Insecure database settings', $this->findCssAndGetText($page, 'h2'));
         $ignoreSelector = '.main a.btn-default';
-        $this->assertEquals('ignore the problem', $this->findCssAndGetText($page, $ignoreSelector));
+        $this->assertSame('ignore the problem', $this->findCssAndGetText($page, $ignoreSelector));
         $this->clickCss($page, $ignoreSelector);
-        $this->waitForPageLoad($page);
-        // Print the migrations instead of running them:
-        $this->clickCss($page, 'input[name="printsql"]');
-        $this->waitForPageLoad($page);
-        // Acknowledge the migrations:
-        $this->clickCss($page, 'input[name="continue"]');
         $this->waitForPageLoad($page);
         // Now we should be on the duplicate tag screen; let's submit it:
         $this->assertStringContainsString('duplicate tags', $this->findCssAndGetText($page, 'p'));
@@ -140,7 +151,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsString('Upgrade complete.', $this->findCssAndGetText($page, 'p'));
         // Upgrade should now be complete; verify that deduplication worked.
         $page = $this->gotoRecord();
-        $this->assertEquals(['foo'], $this->getTagsFromPage($page));
+        $this->assertSame(['foo'], $this->getTagsFromPage($page));
         // Clean up the tag now that we're done by deleting in tag admin:
         $page = $this->goToTagAdmin('/Manage');
         $this->findCss($page, '#type')->setValue('tag');

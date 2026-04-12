@@ -72,12 +72,21 @@ main:
       - label: Compile theme (flatten hierarchy)
         type: internal-command
         command: compile/theme
-    - label: Configuration and Installation Tools
+    - label: Configuration, Installation and Upgrade Tools
       type: menu
       contents:
-      - label: Manage VuFind installation
+      - label: Initialize VuFind® database
+        type: internal-command
+        command: install/database
+      - label: Manage VuFind® installation
         type: internal-command
         command: install/install
+      - label: Upgrade VuFind® configurations
+        type: internal-command
+        command: upgrade/config
+      - label: Upgrade VuFind® database
+        type: internal-command
+        command: upgrade/database
       - label: Manage the browscap cache
         type: internal-command
         command: util/browscap
@@ -96,6 +105,9 @@ main:
       - label: Expire old access tokens in the database
         type: internal-command
         command: util/expire_access_tokens
+      - label: Expire old audit events in the database
+        type: internal-command
+        command: util/expire_audit_events
       - label: Expire old authentication hashes in the database
         type: internal-command
         command: util/expire_auth_hashes
@@ -111,6 +123,9 @@ main:
       - label: Expire old sessions in the database
         type: internal-command
         command: util/expire_sessions
+      - label: Expire old harvesting resumption tokens in the database
+        type: internal-command
+        command: util/expire_resumption_tokens
     - label: Data Management Tools
       type: menu
       contents:
@@ -123,6 +138,12 @@ main:
       - label: Send scheduled search email notifications
         type: internal-command
         command: scheduledsearch/notify
+      - label: Register pending online payments and report expired ones
+        type: internal-command
+        command: onlinepayment/monitor
+      - label: Update resource metadata
+        type: internal-command
+        command: util/updateResourceMetadata
     - label: Harvest Tools
       type: menu
       contents:
@@ -203,6 +224,9 @@ main:
           - label: Specify ID prefix
             switch: --id-prefix
             type: string
+      - label: Download a file
+        type: internal-command
+        command: util/download
     - label: Import Tools
       type: menu
       contents:

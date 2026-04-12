@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AbstractMenu view helper
+ * AbstractMenu view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -32,19 +32,20 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Navigation\AbstractMenu;
 
 /**
- * AbstractMenu view helper
+ * AbstractMenu view helper.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
-
 abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AbstractMenu $menu Menu
      */
@@ -63,7 +64,7 @@ abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Render menu
+     * Render menu.
      *
      * @param ?string $activeItem The name of current active item (optional)
      * @param string  $idPrefix   Element ID prefix

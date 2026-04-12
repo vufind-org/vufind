@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database authentication class
+ * Database authentication class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -38,12 +38,13 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+use VuFind\Exception\DuplicateKeyException;
 
 use function in_array;
 use function is_object;
 
 /**
- * Database authentication class
+ * Database authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -56,28 +57,28 @@ use function is_object;
 class Database extends AbstractBase
 {
     /**
-     * Password hasher
+     * Password hasher.
      *
      * @var PasswordHasher
      */
     protected $hasher;
 
     /**
-     * Username
+     * Username.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password
+     * Password.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?PasswordHasher $hasher Password hash service (null to create one)
      */
@@ -146,19 +147,6 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does the provided exception indicate that a duplicate key value has been
-     * created?
-     *
-     * @param \Exception $e Exception to check
-     *
-     * @return bool
-     */
-    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
-    {
-        return strstr($e->getMessage(), 'Duplicate entry') !== false;
-    }
-
-    /**
      * Create a new user account from the request.
      *
      * @param Request $request Request object containing new account details.
@@ -185,7 +173,7 @@ class Database extends AbstractBase
         $user = $this->createUserFromParams($params, $userService);
         try {
             $userService->persistEntity($user);
-        } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
+        } catch (DuplicateKeyException $e) {
             // In a scenario where the unique key of the user table is
             // shorter than the username field length, it is possible that
             // a user will pass validation but still get rejected due to
@@ -193,8 +181,7 @@ class Database extends AbstractBase
             // unlikely scenario, but if it occurs, we will treat it the
             // same as a duplicate username. Other unexpected database
             // errors will be passed through unmodified.
-            throw $this->exceptionIndicatesDuplicateKey($e)
-                ? new AuthException('That username is already taken') : $e;
+            throw new AuthException('That username is already taken');
         }
 
         // Verify email address:
@@ -369,7 +356,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -379,7 +366,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -442,7 +429,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -457,7 +444,7 @@ class Database extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

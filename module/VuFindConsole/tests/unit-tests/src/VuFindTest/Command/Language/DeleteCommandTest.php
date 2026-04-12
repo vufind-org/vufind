@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +49,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Language fixture directory
+     * Language fixture directory.
      *
      * @var string
      */
@@ -87,13 +87,14 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testSuccessWithMinimalParameters()
+     * Data provider for testSuccessWithMinimalParameters().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function successWithMinimalParametersProvider(): array
+    public static function successWithMinimalParametersProvider(): \Iterator
     {
-        return ['double-quoted string' => ['foo'], 'single-quoted string' => ['foo-quoted']];
+        yield 'double-quoted string' => ['foo'];
+        yield 'single-quoted string' => ['foo-quoted'];
     }
 
     /**
@@ -102,25 +103,24 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
      * @param string $domain Text domain to test with.
      *
      * @return void
-     *
-     * @dataProvider successWithMinimalParametersProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('successWithMinimalParametersProvider')]
     public function testSuccessWithMinimalParameters(string $domain): void
     {
         $expectedPath = realpath($this->languageFixtureDir) . '/' . $domain . '/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($expectedPath));
+            ->with($expectedPath);
         $command = $this->getMockCommand($normalizer);
         $command->expects($this->once())->method('writeFileToDisk')
             ->with(
-                $this->equalTo($expectedPath),
-                $this->equalTo('')
+                $expectedPath,
+                ''
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => $domain . '::bar']);
-        $this->assertEquals("Processing en.ini...\n", $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame("Processing en.ini...\n", $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -133,15 +133,15 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => 'foo::barzap']);
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nSource key not found.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
-     * Get a mock command object
+     * Get a mock command object.
      *
      * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
      * @param ?ExtendedIniReader     $reader      Reader for .ini files
@@ -168,7 +168,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock normalizer object
+     * Get a mock normalizer object.
      *
      * @param array $methods Methods to mock
      *
@@ -185,7 +185,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock reader object
+     * Get a mock reader object.
      *
      * @param array $methods Methods to mock
      *

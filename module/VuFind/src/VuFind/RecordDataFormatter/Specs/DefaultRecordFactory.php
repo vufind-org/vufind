@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDataFormatter
@@ -37,6 +37,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function get_class;
+
 /**
  * Factory for DefaultRecord specs.
  *
@@ -51,7 +53,7 @@ use Psr\Container\ContainerInterface;
 class DefaultRecordFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,9 +74,20 @@ class DefaultRecordFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('RecordDataFormatter')->toArray();
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigArray('RecordDataFormatter/DefaultRecord');
+        // check deprecated legacy RecordDataFormatter.ini for backward compatibility
+        $oldConfig = $configManager->getConfigArray('RecordDataFormatter.ini');
+        if (!empty($oldConfig)) {
+            $logger = $container->get(\VuFind\Log\Logger::class);
+            $warningMessage = 'Using deprecated configuration file RecordDataFormatter.ini! '
+                . 'Please move to RecordDataFormatter/DefaultRecord.ini instead. '
+                . 'You can do that manually or use the config upgrader.';
+            $logger->warn(get_class($this) . ': ' . $warningMessage);
+            $config = $oldConfig;
+        }
         $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         return new $requestedName($config, $schemaOrgHelper);
     }

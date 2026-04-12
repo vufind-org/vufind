@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Bootstrap5;
 
 /**
- * Bulk action view helper
+ * Bulk action view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Bootstrap5;
 class BulkAction extends \VuFind\View\Helper\Root\BulkAction
 {
     /**
-     * CSS class for button
+     * CSS class for button.
      *
      * @var ?string
      */

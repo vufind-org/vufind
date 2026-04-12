@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Data Formatter (JSON)
+ * Hierarchy Tree Data Formatter (JSON).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -30,7 +30,7 @@
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
 /**
- * Hierarchy Tree Data Formatter (JSON)
+ * Hierarchy Tree Data Formatter (JSON).
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -51,7 +51,7 @@ class Json extends AbstractBase
     }
 
     /**
-     * Get Solr Children for JSON
+     * Get Solr Children for JSON.
      *
      * @param object $record   Solr record to format
      * @param string $parentID The starting point for the current recursion
@@ -78,7 +78,7 @@ class Json extends AbstractBase
     }
 
     /**
-     * Get Solr Children for JSON
+     * Get Solr Children for JSON.
      *
      * @param string $parentID The starting point for the current recursion
      * (equivalent to Solr field hierarchy_parent_id)

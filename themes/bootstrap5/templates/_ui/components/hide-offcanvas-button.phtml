@@ -1,4 +1,8 @@
 <?php
+    /**
+     * Component to display the button that hides expanded sidebars displayed in off-canvas mode (generally used at
+     * mobile sizes). This component is configuration-driven and takes no parameters.
+     */
     $side = $this->config()->offcanvasSide();
     $buttonAttrs = [
         'class' => 'close-offcanvas btn btn-link ' . $this->_componentClass,

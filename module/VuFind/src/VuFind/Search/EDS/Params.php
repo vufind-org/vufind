@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Params
+ * EDS API Params.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -31,10 +31,11 @@
 
 namespace VuFind\Search\EDS;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
 /**
- * EDS API Params
+ * EDS API Params.
  *
  * @category VuFind
  * @package  EBSCO
@@ -56,14 +57,14 @@ class Params extends AbstractEDSParams
     ];
 
     /**
-     * Settings for the date facet only
+     * Settings for the date facet only.
      *
      * @var array
      */
     protected $dateFacetSettings = [];
 
     /**
-     * Additional filters to display as side facets
+     * Additional filters to display as side facets.
      *
      * @var array
      */
@@ -87,7 +88,7 @@ class Params extends AbstractEDSParams
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
@@ -103,25 +104,25 @@ class Params extends AbstractEDSParams
     protected $checkboxFacetsAugmented = false;
 
     /**
-     * Default query adapter class (override to use EDS version)
+     * Default query adapter class (override to use EDS version).
      *
      * @var string
      */
     protected $queryAdapterClass = QueryAdapter::class;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, ConfigManagerInterface $configManager)
     {
-        parent::__construct($options, $configLoader);
+        parent::__construct($options, $configManager);
     }
 
     /**
-     * Pull the search parameters
+     * Pull the search parameters.
      *
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
@@ -136,10 +137,6 @@ class Params extends AbstractEDSParams
         $searchmode = $request->get('searchmode');
         if (isset($searchmode)) {
             $this->getOptions()->setSearchMode($searchmode);
-        } else {
-            //get default search mode and set as a hidden filter
-            $defaultSearchMode = $this->getOptions()->getDefaultMode();
-            $this->getOptions()->setSearchMode($defaultSearchMode);
         }
     }
 
@@ -168,9 +165,7 @@ class Params extends AbstractEDSParams
         $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
-        if (isset($mode)) {
-            $backendParams->set('searchMode', $mode);
-        }
+        $backendParams->set('searchMode', $mode);
 
         $this->createBackendFilterParameters($backendParams);
 
@@ -249,7 +244,7 @@ class Params extends AbstractEDSParams
     }
 
     /**
-     * Populate common limiters as checkbox facets
+     * Populate common limiters as checkbox facets.
      *
      * @param Options $options Options
      *
@@ -268,7 +263,7 @@ class Params extends AbstractEDSParams
     }
 
     /**
-     * Populate expanders as checkbox facets
+     * Populate expanders as checkbox facets.
      *
      * @param Options $options Options
      *
@@ -289,7 +284,7 @@ class Params extends AbstractEDSParams
     /**
      * Override for build a string for onscreen display showing the
      *   query used in the search. It will include field level operators instead
-     *   of group operators (Since EDS only uses one group.)
+     *   of group operators (Since EDS only uses one group.).
      *
      * @return string user friendly version of 'query'
      */
@@ -304,7 +299,7 @@ class Params extends AbstractEDSParams
     }
 
     /**
-     * Return checkbox facets without any processing
+     * Return checkbox facets without any processing.
      *
      * @return array
      */
@@ -316,7 +311,7 @@ class Params extends AbstractEDSParams
 
     /**
      * Augment checkbox facets with limiters and expanders retrieved from the API
-     * info
+     * info.
      *
      * @return void
      */

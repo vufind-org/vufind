@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category Search
  * @package  Service
@@ -51,8 +51,9 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     public function testEmptyInput(): void
     {
         $server = $this->getServer();
-        $this->assertTrue(
-            str_contains($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
+        $this->assertStringContainsString(
+            '<error code="badVerb">Missing Verb Argument</error>',
+            $server->getResponse()
         );
     }
 
@@ -82,7 +83,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock results manager
+     * Get a mock results manager.
      *
      * @return \VuFind\Search\Results\PluginManager
      */
@@ -92,7 +93,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock record loader
+     * Get a mock record loader.
      *
      * @return \VuFind\Record\Loader
      */
@@ -102,7 +103,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock change tracker service
+     * Get a mock change tracker service.
      *
      * @return MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
      */
@@ -112,7 +113,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock record formatter
+     * Get a mock record formatter.
      *
      * @return MockObject&\VuFindApi\Formatter\RecordFormatter
      */
@@ -122,7 +123,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock resumption Service
+     * Get a mock resumption Service.
      *
      * @return MockObject&\VuFind\Db\Service\OaiResumptionService
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MarkdownFactory Test Class
+ * MarkdownFactory Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,7 +34,7 @@ use League\CommonMark\ConverterInterface;
 use VuFind\Service\MarkdownFactory;
 
 /**
- * MarkdownFactory Test Class
+ * MarkdownFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test to ensure the markdown factory is using right config for markdown
-     * service
+     * service.
      *
      * @return void
      */
@@ -242,7 +242,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that extensions are added based on configuration
+     * Test that extensions are added based on configuration.
      *
      * @return void
      */
@@ -319,7 +319,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return config of created markdown service environment
+     * Return config of created markdown service environment.
      *
      * @param array $config Configuration settings
      *
@@ -332,7 +332,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return config of created markdown service environment
+     * Return config of created markdown service environment.
      *
      * @param array $config Configuration settings
      *
@@ -345,7 +345,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create markdown converter
+     * Create markdown converter.
      *
      * @param array $config Configuration
      *
@@ -375,13 +375,13 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Markdown\ExampleExtension()
         );
         $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(['markdown' => $config])
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(['markdown' => $config])
         );
         $markdownFactory = new MarkdownFactory();
         return $markdownFactory(
             $container,
-            \League\CommonMark\ConverterInterface::class
+            \League\CommonMark\MarkdownConverter::class
         );
     }
 }

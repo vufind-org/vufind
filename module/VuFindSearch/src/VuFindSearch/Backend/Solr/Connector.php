@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -60,7 +60,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
@@ -77,7 +77,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * HTTP client factory
+     * HTTP client factory.
      *
      * @var callable
      */
@@ -98,21 +98,21 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected $map;
 
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
     protected $uniqueKey;
 
     /**
-     * Url of the last request
+     * Url of the last request.
      *
      * @var ?Http
      */
     protected $lastUrl = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|array        $url       SOLR core URL or an array of alternative
      * URLs
@@ -130,13 +130,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        if ($cf instanceof HttpClient) {
-            $this->clientFactory = function () use ($cf) {
-                return clone $cf;
-            };
-        } else {
-            $this->clientFactory = $cf;
-        }
+        $this->clientFactory = $cf instanceof HttpClient
+            ? fn () => clone $cf
+            : $cf;
     }
 
     /// Public API
@@ -182,7 +178,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Clears the last url
+     * Clears the last url.
      *
      * @return void
      */
@@ -288,7 +284,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $callback = function ($client) use ($document) {
+        $callback = function ($client) use ($document): void {
             $client->setEncType($document->getContentType());
             $body = $document->getContent();
             $client->setRawBody($body);
@@ -315,7 +311,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
-            $callback = function ($client) use ($paramString) {
+            $callback = function ($client) use ($paramString): void {
                 $client->setRawBody($paramString);
                 $client->setEncType(HttpClient::ENC_URLENCODED);
                 $client->setHeaders(['Content-Length' => strlen($paramString)]);
@@ -331,7 +327,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Call a method with provided options for the HTTP client
+     * Call a method with provided options for the HTTP client.
      *
      * @param array  $options HTTP client options
      * @param string $method  Method to call
@@ -368,7 +364,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Check if an exception from a Solr request should be thrown rather than retried
+     * Check if an exception from a Solr request should be thrown rather than retried.
      *
      * @param \Exception $ex Exception
      *

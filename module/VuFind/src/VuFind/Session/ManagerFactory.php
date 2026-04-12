@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating Session Manager
+ * Factory for instantiating Session Manager.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for instantiating Session Manager
+ * Factory for instantiating Session Manager.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -91,20 +91,19 @@ class ManagerFactory implements FactoryInterface
     protected function getHandler(ContainerInterface $container)
     {
         // Load and validate session configuration:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        if (!isset($config->Session->type)) {
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        if (!isset($config['Session']['type'])) {
             throw new \Exception('Cannot initialize session; configuration missing');
         }
 
         return $container->get(\VuFind\Session\PluginManager::class)
-            ->get($config->Session->type);
+            ->get($config['Session']['type']);
     }
 
     /**
      * According to the PHP manual, session_write_close should always be
      * registered as a shutdown function when using an object as a session
-     * handler: http://us.php.net/manual/en/function.session-set-save-handler.php
+     * handler: http://us.php.net/manual/en/function.session-set-save-handler.php.
      *
      * This method sets that up.
      *
@@ -115,7 +114,7 @@ class ManagerFactory implements FactoryInterface
     protected function registerShutdownFunction(SessionManager $sessionManager)
     {
         register_shutdown_function(
-            function () use ($sessionManager) {
+            function () use ($sessionManager): void {
                 // If storage is immutable, the session is already closed:
                 if (!$sessionManager->getStorage()->isImmutable()) {
                     $sessionManager->writeClose();
@@ -125,7 +124,7 @@ class ManagerFactory implements FactoryInterface
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

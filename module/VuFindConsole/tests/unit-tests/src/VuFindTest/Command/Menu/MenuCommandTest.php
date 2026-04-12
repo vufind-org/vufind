@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -119,11 +119,12 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSimpleExternalCommand().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function simpleExternalCommandProvider(): array
+    public static function simpleExternalCommandProvider(): \Iterator
     {
-        return ['success' => [true], 'failure' => [false]];
+        yield 'success' => [true];
+        yield 'failure' => [false];
     }
 
     /**
@@ -132,9 +133,8 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
      * @param bool $success Should the command succeed?
      *
      * @return void
-     *
-     * @dataProvider simpleExternalCommandProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('simpleExternalCommandProvider')]
     public function testSimpleExternalCommand(bool $success): void
     {
         $config = [
@@ -207,6 +207,6 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
                     Command
             OUTPUT;
         $this->assertStringContainsString($expectedSummary, $tester->getDisplay());
-        $this->assertEquals(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
     }
 }

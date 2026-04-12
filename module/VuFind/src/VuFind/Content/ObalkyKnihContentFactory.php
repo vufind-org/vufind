@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ObalkyKnihCoversFactory
+ * Class ObalkyKnihCoversFactory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -35,7 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class ObalkyKnihCoversFactory
+ * Class ObalkyKnihCoversFactory.
  *
  * @category VuFind
  * @package  Content
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ObalkyKnihContentFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

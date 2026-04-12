@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<user>
+    <first_name>John</first_name>
+    <last_name>Smith</last_name>
+    <user_group>test</user_group>
+    <contact_info>
+        <addresses>
+            <address>
+                <line1>A street 1</line1>
+                <line2>          </line2>
+                <line3>Not a default field</line3>
+                <country>Far</country>
+                <city>Far away</city>
+                <postal_code>00000</postal_code>
+            </address>
+        </addresses>
+        <phones>
+            <phone>
+                <phone_number>0123456789</phone_number>
+            </phone>
+        </phones>
+    </contact_info>
+</user>

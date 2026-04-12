@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Check Enabled Trait
+ * Check Enabled Trait.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -33,7 +33,7 @@ use Laminas\Mvc\MvcEvent;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
- * Check Enabled Trait
+ * Check Enabled Trait.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -44,7 +44,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 trait CheckEnabledTrait
 {
     /**
-     * Check whether the controller is enabled
+     * Check whether the controller is enabled.
      *
      * @return void
      *
@@ -57,14 +57,14 @@ trait CheckEnabledTrait
             return;
         }
 
-        $config = $this->getConfig($configId);
+        $config = $this->getConfigArray($configId);
         if (!($config['General']['enabled'] ?? false)) {
             throw new ForbiddenException($configId . ' is disabled');
         }
     }
 
     /**
-     * Add to event listeners a check that the controller is enabled
+     * Add to event listeners a check that the controller is enabled.
      *
      * @return void
      */

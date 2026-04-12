@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -49,40 +49,40 @@ use function in_array;
  */
 class ServerParam implements
     PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Request object
+     * Request object.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * Aliases for server param names (default: none)
+     * Aliases for server param names (default: none).
      *
      * @var array
      */
     protected $aliases = [];
 
     /**
-     * Delimiter for multi-valued server params (default: none)
+     * Delimiter for multi-valued server params (default: none).
      *
      * @var string
      */
     protected $serverParamDelimiter = '';
 
     /**
-     * Escape character for delimiter in server param strings (default: none)
+     * Escape character for delimiter in server param strings (default: none).
      *
      * @var string
      */
     protected $serverParamEscape = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request $request Request object
      */
@@ -181,7 +181,7 @@ class ServerParam implements
     }
 
     /**
-     * Split string on delimiter unless dequalified with escape
+     * Split string on delimiter unless dequalified with escape.
      *
      * @param string $string    String to split
      * @param string $delimiter Delimiter character
@@ -195,11 +195,7 @@ class ServerParam implements
             return [$string];
         }
 
-        if ($delimiter === ' ') {
-            $pattern = ' +';
-        } else {
-            $pattern = preg_quote($delimiter, '/');
-        }
+        $pattern = $delimiter === ' ' ? ' +' : preg_quote($delimiter, '/');
 
         if ($escape === '') {
             $pattern = '(?<!' . preg_quote($escape, '/') . ')' . $pattern;

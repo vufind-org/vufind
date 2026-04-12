@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for Link Resolver Drivers
+ * Interface for Link Resolver Drivers.
  *
  * PHP version 8
  *
@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -33,7 +33,7 @@
 namespace VuFind\Resolver\Driver;
 
 /**
- * Resolver Specific Driver Class
+ * Resolver Specific Driver Class.
  *
  * This interface class is the definition of the required methods for
  * interacting with the local OpenURL resolver.
@@ -47,7 +47,7 @@ namespace VuFind\Resolver\Driver;
 interface DriverInterface
 {
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -58,7 +58,7 @@ interface DriverInterface
     public function fetchLinks($openURL);
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display
@@ -70,7 +70,7 @@ interface DriverInterface
     public function parseLinks($xmlstr);
 
     /**
-     * Get Resolver Url
+     * Get Resolver Url.
      *
      * Transform the OpenURL as needed to get a working link to the resolver.
      *

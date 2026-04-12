@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -47,7 +47,7 @@ class RetrieveBatchCommandTest extends TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Test RetrieveBatch with RetrieveBatchInterface
+     * Test RetrieveBatch with RetrieveBatchInterface.
      *
      * @return void
      */
@@ -56,21 +56,20 @@ class RetrieveBatchCommandTest extends TestCase
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
         $ids = ['id1', 'id2'];
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('retrieveBatch')
             ->with(
-                $this->equalTo($ids),
-                $this->equalTo($params)
-            )->will($this->returnValue('result'));
+                $ids,
+                $params
+            )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 
     /**
-     * Test RetrieveBatch without RetrieveBatchInterface
+     * Test RetrieveBatch without RetrieveBatchInterface.
      *
      * @return void
      */
@@ -80,25 +79,22 @@ class RetrieveBatchCommandTest extends TestCase
         $backendId = 'bar';
         $ids = ['id1', 'id2'];
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
-            ->disableOriginalConstructor()->getMock();
-        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->disableOriginalConstructor()->getMock();
-        $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
+        $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
+        $record = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
         $this->expectConsecutiveCalls(
             $backend,
             'retrieve',
             [['id1', $params], ['id2', $params]],
             $rci
         );
-        $rci->expects($this->once())->method('first')->will($this->returnValue($record));
-        $rci->expects($this->once())->method('add')->with($this->equalTo($record));
+        $rci->expects($this->once())->method('first')->willReturn($record);
+        $rci->expects($this->once())->method('add')->with($record);
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 
     /**
-     * Test getArguments method
+     * Test getArguments method.
      *
      * @return void
      */
@@ -116,7 +112,7 @@ class RetrieveBatchCommandTest extends TestCase
     }
 
     /**
-     * Test getRecordIdentifiers method
+     * Test getRecordIdentifiers method.
      *
      * @return void
      */
@@ -125,7 +121,7 @@ class RetrieveBatchCommandTest extends TestCase
         $backendId = 'bar';
         $ids = ['id1', 'id2'];
         $command = new RetrieveBatchCommand($backendId, $ids);
-        $this->assertEquals(
+        $this->assertSame(
             $ids,
             $command->getRecordIdentifiers()
         );

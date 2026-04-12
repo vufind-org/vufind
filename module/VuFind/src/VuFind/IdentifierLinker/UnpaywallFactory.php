@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unpaywall identifier linker factory
+ * Unpaywall identifier linker factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * BrowZine identifier linker factory
+ * BrowZine identifier linker factory.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,8 +69,8 @@ class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->DOI;
+        $fullConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $fullConfig->IdentifierLinks ?? $fullConfig->DOI ?? null;
         return new $requestedName($config);
     }
 }

@@ -1,6 +1,11 @@
 /*global AjaxRequestQueue, VuFind */
 
 VuFind.register("recordVersions", function recordVersions() {
+  /**
+   * Update elements with version status on a successful AJAX call.
+   * @param {Array}  items    The items passed to the AjaxRequestQueue.
+   * @param {object} response The AJAX response.
+   */
   function checkVersionStatusSuccess(items, response) {
     items.forEach(function displayVersionStatus(item) {
       const key = item.source + "|" + item.id;
@@ -11,12 +16,21 @@ VuFind.register("recordVersions", function recordVersions() {
     });
   }
 
+  /**
+   * Update elements with an error message on a failed AJAX call.
+   * @param {Array} items The items passed to the AjaxRequestQueue.
+   */
   function checkVersionStatusFailure(items) {
     items.forEach(function displayVersionFailure(item) {
       item.el.textContent = VuFind.translate("error_occurred");
     });
   }
 
+  /**
+   * Run the AJAX request to get record versions for a batch of items.
+   * @param {Array} items The array of items to request versions for.
+   * @returns {Promise} A promise for the AJAX request.
+   */
   function runVersionAjaxQueue(items) {
     return new Promise(function runVersionAjaxPromise(done, error) {
       $.getJSON(VuFind.path + "/AJAX/JSON", {
@@ -36,6 +50,10 @@ VuFind.register("recordVersions", function recordVersions() {
     failure: checkVersionStatusFailure,
   });
 
+  /**
+   * Check for and queue record version requests for elements within a container.
+   * @param {Document|jQuery} _container The container to check for elements.
+   */
   function checkRecordVersions(_container = document) {
     const container = $(_container);
 
@@ -67,6 +85,11 @@ VuFind.register("recordVersions", function recordVersions() {
     });
   }
 
+
+  /**
+   * Handle updating a container with version information.
+   * @param {object} params An object containing the container element.
+   */
   function updateContainer(params) {
     let container = params.container;
     if (VuFind.isPrinting()) {
@@ -80,6 +103,9 @@ VuFind.register("recordVersions", function recordVersions() {
     }
   }
 
+  /**
+   * Initialize the record versions module.
+   */
   function init() {
     updateContainer({container: document});
     VuFind.listen('results-init', updateContainer);

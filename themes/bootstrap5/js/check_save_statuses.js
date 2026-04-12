@@ -1,6 +1,11 @@
 /*global userIsLoggedIn, AjaxRequestQueue, VuFind */
 
 VuFind.register("saveStatuses", function ItemStatuses() {
+  /**
+   * Display the save status for a single record element.
+   * @param {Array<object>} itemLists Array of saved lists for the record.
+   * @param {jQuery}        el        The record element.
+   */
   function displaySaveStatus(itemLists, el) {
     const $item = $(el);
 
@@ -27,6 +32,11 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     $item.removeClass('js-save-pending');
   }
 
+  /**
+   * Success callback for the AJAX queue to iterate through items to display their save status.
+   * @param {Array}  items    The items passed to the AjaxRequestQueue.
+   * @param {object} response The AJAX response object. 
+   */
   function checkSaveStatusSuccess(items, response) {
     items.forEach(function displayEachSaveStatus(item) {
       const key = item.source + "|" + item.id;
@@ -39,6 +49,12 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     VuFind.emit("save-status-done");
   }
 
+  /**
+   * Failure callback for the AJAX queue, displaying an error message or hiding the status element.
+   * @param {Array}  items      The items passed to the AjaxRequestQueue
+   * @param {object} response   The AJAX response object
+   * @param {string} textStatus The status of the AJAX request
+   */
   function checkSaveStatusFailure(items, response, textStatus) {
     if (
       textStatus === "abort" ||
@@ -64,6 +80,11 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     VuFind.emit("save-status-done");
   }
 
+  /**
+   * Run the AJAX request to get save statuses for a batch of items.
+   * @param {Array} items The array of items to request statuses for.
+   * @returns {Promise} A promise for the AJAX request.
+   */
   function runSaveAjaxQueue(items) {
     return new Promise(function runSaveAjaxPromise(done, error) {
       $.ajax({
@@ -86,6 +107,10 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     failure: checkSaveStatusFailure,
   });
 
+  /**
+   * Check the save status of a single element record.
+   * @param {HTMLElement} el The element to check save status of. 
+   */
   function checkSaveStatus(el) {
     const savedListsEl = el.querySelector(".savedLists");
     if (!userIsLoggedIn || !savedListsEl) {
@@ -125,6 +150,10 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     });
   }
 
+  /**
+   * Check the save status of all the records within a container
+   * @param {HTMLElement} [container] The container element (default = document).
+   */
   function checkAllSaveStatuses(container = document) {
     if (!userIsLoggedIn) {
       VuFind.emit("save-status-done");
@@ -137,11 +166,18 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     VuFind.emit("save-status-done");
   }
 
+  /**
+   * Refresh the status of the all the records on the page.
+   */
   function refresh() {
     // Make sure no event parameter etc. is passed to checkAllSaveStatuses()
     checkAllSaveStatuses();
   }
 
+  /**
+   * Update a container by checking save statuses.
+   * @param {object} params An object containing the container element.
+   */
   function updateContainer(params) {
     let container = params.container;
     if (VuFind.isPrinting()) {
@@ -155,6 +191,9 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     }
   }
 
+  /**
+   * Initialize the module setting up initial checks and event listeners.
+   */
   function init() {
     updateContainer({container: document});
     VuFind.listen('results-init', updateContainer);

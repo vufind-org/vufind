@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Component view helper
+ * Component view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -33,7 +33,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
- * Component view helper
+ * Component view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,7 +52,7 @@ class Component extends AbstractHelper
     protected array $cssClassCache = [];
 
     /**
-     * Expand path and render template
+     * Expand path and render template.
      *
      * @param string $name   Component name that matches a template
      * @param array  $params Data for the component template

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,17 +30,18 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Row\AccessToken as AccessTokenRow;
-use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Entity\AccessToken;
+use VuFind\Db\Entity\AccessTokenEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AccessTokenService;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Db\Table\AccessToken;
-use VuFind\Db\Table\User;
 use VuFind\OAuth2\Entity\ClientEntity;
 use VuFind\OAuth2\Repository\AccessTokenRepository;
 use VuFind\OAuth2\Repository\AuthCodeRepository;
 use VuFind\OAuth2\Repository\RefreshTokenRepository;
+
+use function count;
 
 /**
  * Abstract base class for OAuth2 token repository tests.
@@ -54,6 +55,8 @@ use VuFind\OAuth2\Repository\RefreshTokenRepository;
 abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $accessTokenTable = [];
+
+    public $entityManager = null;
 
     /**
      * Create AccessTokenRepository with mocks.
@@ -98,7 +101,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create OAuth2 Config
+     * Create OAuth2 Config.
      *
      * @return array
      */
@@ -108,171 +111,230 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     }
 
     /**
-     * Create AccessToken table
+     * Mock entity manager.
      *
-     * @return MockObject&AccessToken
+     * @return MockObject
      */
-    protected function getMockAccessTokenTable(): AccessToken
+    protected function getEntityManager()
     {
+        $entityManager = $this->getMockBuilder(\Doctrine\ORM\EntityManager::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['createQuery','persist','flush'])
+            ->getMock();
+        $query = $this->createMock(\Doctrine\ORM\Query::class);
+        $entityManager->method('createQuery')->willReturn($query);
+        $entityManager->method('persist');
+        $entityManager->method('flush');
+        return $entityManager;
+    }
+
+    /**
+     * Mock entity plugin manager.
+     *
+     * @param bool $setExpectation Flag to set the method expectations.
+     *
+     * @return MockObject
+     */
+    protected function getPluginManager($setExpectation = false)
+    {
+        $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
+        if ($setExpectation) {
+            $pluginManager->method('get')
+                ->with(AccessToken::class)
+                ->willReturn(new AccessToken());
+        }
+        return $pluginManager;
+    }
+
+    /**
+     * Create a mock AccessTokenEntity from an array of values.
+     *
+     * @param array $fields Field values
+     *
+     * @return AccessTokenEntityInterface&MockObject
+     */
+    protected function createAccessTokenEntity(array $fields): AccessTokenEntityInterface&MockObject
+    {
+        $i = $this->findAccessTokenTableRow($fields);
+        if ($i === null) {
+            $i = count($this->accessTokenTable);
+            $this->accessTokenTable[] = $fields;
+        }
+        $mock = $this->createMock(AccessTokenEntityInterface::class);
+        $mock->method('getId')->willReturnCallback(fn (): ?string => (string)$this->accessTokenTable[$i]['id']);
+        $mock->method('getType')->willReturnCallback(fn (): ?string => $this->accessTokenTable[$i]['type'] ?? null);
+        $mock->method('getUser')->willReturnCallback(function () use ($i): ?\VuFind\Db\Entity\UserEntityInterface {
+            $userId = $this->accessTokenTable[$i]['user_id'] ?? null;
+            if ($userId) {
+                return $this->getMockUserService()->getUserByField('id', $userId);
+            }
+            return null;
+        });
+        $mock->method('getData')->willReturnCallback(fn (): ?string => $this->accessTokenTable[$i]['data'] ?? null);
+        $mock->method('isRevoked')->willReturnCallback(fn (): bool => $this->accessTokenTable[$i]['revoked'] ?? false);
+        $mock->method('setData')->willReturnCallback(function (?string $data) use ($i, $mock) {
+            $this->accessTokenTable[$i]['data'] = $data;
+            return $mock;
+        });
+        $mock->method('setType')->willReturnCallback(function (?string $type) use ($i, $mock) {
+            $this->accessTokenTable[$i]['type'] = $type;
+            return $mock;
+        });
+        $mock->method('setUser')->willReturnCallback(function (?UserEntityInterface $user) use ($i, $mock) {
+            $this->accessTokenTable[$i]['user_id'] = $user?->getId();
+            return $mock;
+        });
+        $mock->method('setRevoked')->willReturnCallback(function (bool $revoked) use ($i, $mock) {
+            $this->accessTokenTable[$i]['revoked'] = $revoked;
+            return $mock;
+        });
+        return $mock;
+    }
+
+    /**
+     * Find a row matching the provided data in our virtual data table; return null
+     * if no match is found.
+     *
+     * @param array $data Data to match
+     *
+     * @return ?int
+     */
+    protected function findAccessTokenTableRow(array $data): ?int
+    {
+        foreach ($this->accessTokenTable as $i => $row) {
+            if (
+                $data['id'] === $row['id']
+                && $data['type'] === $row['type']
+            ) {
+                return $i;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Create Access token service.
+     *
+     * @return MockObject&AccessTokenServiceInterface
+     */
+    protected function getMockAccessTokenService(): AccessTokenServiceInterface&MockObject
+    {
+        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getByIdAndType', 'persistEntity', 'storeNonce', 'getNonce'])
+            ->getMock();
+
         $getByIdAndTypeCallback = function (
             string $id,
             string $type,
             bool $create
-        ): ?AccessTokenRow {
+        ): ?AccessTokenEntityInterface {
             foreach ($this->accessTokenTable as $row) {
                 if (
                     $id === $row['id']
                     && $type === $row['type']
                 ) {
-                    return $this->createAccessTokenRow($row);
+                    return $this->createAccessTokenEntity($row);
                 }
             }
             $revoked = false;
             $user_id = null;
             return $create
-                ? $this->createAccessTokenRow(
+                ? $this->createAccessTokenEntity(
                     compact('id', 'type', 'revoked', 'user_id')
                 ) : null;
         };
-
-        $accessTokenTable = $this->getMockBuilder(AccessToken::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getByIdAndType'])
-            ->getMock();
-        $accessTokenTable->expects($this->any())
+        $accessTokenService
             ->method('getByIdAndType')
             ->willReturnCallback($getByIdAndTypeCallback);
-
-        return $accessTokenTable;
-    }
-
-    /**
-     * Create User table
-     *
-     * @return MockObject&User
-     */
-    protected function getMockUserTable(): User
-    {
-        $getByIdCallback = function (
-            $id
-        ): ?UserRow {
-            $username = 'test';
-            return $this->createUserRow(compact('id', 'username'));
-        };
-
-        $accessTokenTable = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getById'])
-            ->getMock();
-        $accessTokenTable->expects($this->any())
-            ->method('getById')
-            ->willReturnCallback($getByIdCallback);
-
-        return $accessTokenTable;
-    }
-
-    /**
-     * Create AccessToken row
-     *
-     * @param array $data Row data
-     *
-     * @return MockObject&AccessTokenRow
-     */
-    protected function createAccessTokenRow(array $data): AccessTokenRow
-    {
-        $result = $this->getMockBuilder(AccessTokenRow::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['initialize', 'save'])
-            ->getMock();
-        $result->populate($data);
-
-        $save = function () use ($result) {
-            $data = $result->toArray();
-            foreach ($this->accessTokenTable as &$row) {
-                if (
-                    $data['id'] === $row['id']
-                    && $data['type'] === $row['type']
-                ) {
-                    $row = $data;
-                    return 1;
-                }
+        $persistEntityCallback = function (AccessTokenEntityInterface $entity): void {
+            $data = [
+                'id' => $entity->getId(),
+                'type' => $entity->getType(),
+                'revoked' => $entity->isRevoked(),
+                'data' => $entity->getData(),
+                'user_id' => $entity->getUser()?->getId(),
+            ];
+            if (null !== ($i = $this->findAccessTokenTableRow($data))) {
+                $this->accessTokenTable[$i] = $data;
+                return;
             }
             $this->accessTokenTable[] = $data;
-            return 1;
         };
+        $accessTokenService
+            ->method('persistEntity')
+            ->willReturnCallback($persistEntityCallback);
 
-        $result->expects($this->any())
-            ->method('save')
-            ->willReturnCallback($save);
-
-        return $result;
-    }
-
-    /**
-     * Create User row
-     *
-     * @param array $data Row data
-     *
-     * @return MockObject&UserRow
-     */
-    protected function createUserRow(array $data): UserRow
-    {
-        $result = $this->getMockBuilder(UserRow::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['initialize'])
-            ->getMock();
-        $result->populate($data);
-        return $result;
-    }
-
-    /**
-     * Create Access token service
-     *
-     * @return MockObject&AccessTokenServiceInterface
-     */
-    protected function getMockAccessTokenService(): AccessTokenServiceInterface
-    {
-        $accessTokenTable = $this->getMockAccessTokenTable();
-        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(
-                [
-                    'getByIdAndType',
-                    'getNonce',
-                    'storeNonce',
-                ]
-            )
-            ->getMock();
-        $accessTokenService->expects($this->any())
-            ->method('getByIdAndType')
-            ->willReturnCallback([$accessTokenTable, 'getByIdAndType']);
-        $accessTokenService->expects($this->any())
+        $getNonceCallback = function (int $userId): ?string {
+            foreach ($this->accessTokenTable as $row) {
+                if ($userId === $row['user_id']) {
+                    return $row['data'];
+                }
+            }
+            return null;
+        };
+        $accessTokenService
             ->method('getNonce')
-            ->willReturnCallback([$accessTokenTable, 'getNonce']);
-        $accessTokenService->expects($this->any())
+            ->willReturnCallback($getNonceCallback);
+
+        $storeNonceCallback = function (int $userId, ?string $nonce): void {
+            $data = [
+                'id' => 2,
+                'type' => 'oauth2_access_token',
+                'revoked' => false,
+                'data' => $nonce,
+                'user_id' => $userId,
+            ];
+            if (null !== ($i = $this->findAccessTokenTableRow($data))) {
+                $this->accessTokenTable[$i] = $data;
+                return;
+            }
+            $this->accessTokenTable[] = $data;
+        };
+        $accessTokenService
             ->method('storeNonce')
-            ->willReturnCallback([$accessTokenTable, 'storeNonce']);
+            ->willReturnCallback($storeNonceCallback);
         return $accessTokenService;
     }
 
     /**
-     * Create User service
+     * Create User entity mock.
+     *
+     * @param ?int   $id       User ID
+     * @param string $username User's name
+     *
+     * @return MockObject&UserEntityInterface&null
+     */
+    protected function createMockUserEntity(?int $id, string $username): UserEntityInterface&MockObject
+    {
+        $mockUser = $this->createMock(UserEntityInterface::class);
+        if ($id !== null) {
+            $mockUser
+                ->method('getId')
+                ->willReturn($id);
+            $mockUser
+                ->method('getUsername')
+                ->willReturn($username);
+        }
+        return $mockUser;
+    }
+
+    /**
+     * Create User service.
      *
      * @return MockObject&UserServiceInterface
      */
-    protected function getMockUserService(): UserServiceInterface
+    protected function getMockUserService(): UserServiceInterface&MockObject
     {
-        $userTable = $this->getMockUserTable();
-        $userService = $this->createMock(UserServiceInterface::class);
-        $userService->expects($this->any())
+        $mockUserService = $this->createMock(UserServiceInterface::class);
+        $mockUserService
             ->method('getUserByField')
-            ->willReturnCallback(
-                function ($fieldName, $fieldValue) use ($userTable) {
-                    $this->assertEquals('id', $fieldName);
-                    return $userTable->getById($fieldValue);
-                }
-            );
-        return $userService;
+            ->willReturnCallback(function (string $fieldName, int|string|null $fieldValue): ?UserEntityInterface {
+                $this->assertSame('id', $fieldName);
+                return $this->createMockUserEntity($fieldValue, 'test');
+            });
+
+        return $mockUserService;
     }
 
     /**
@@ -294,11 +356,11 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      */
     protected function createExpiryDateTime(): \DateTimeImmutable
     {
-        return new \DateTimeImmutable(date('Y-m-d H:i:s', strtotime('now+1hour')));
+        return new \DateTimeImmutable('now+1hour');
     }
 
     /**
-     * Create a client entity
+     * Create a client entity.
      *
      * @return ClientEntity
      */

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -33,8 +33,6 @@ use Laminas\I18n\Translator\TextDomain;
 use VuFindDevTools\Controller\DevtoolsController as Controller;
 
 use function count;
-use function get_class;
-use function in_array;
 
 /**
  * Unit tests for DevTools controller.
@@ -57,7 +55,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
             ->expects($this->once())->method('getEnabledLocales')
-            ->will($this->returnValue(['en' => 'English']));
+            ->willReturn(['en' => 'English']);
         $c = new Controller($container);
         $result = $c->languageAction();
 
@@ -66,17 +64,17 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('English', $result['mainName']);
 
         // Make sure correct type of object was loaded:
-        $this->assertEquals(TextDomain::class, get_class($result['main']));
+        $this->assertInstanceOf(TextDomain::class, $result['main']);
 
         // Shortcut to help check some key details:
         $en = $result['details']['en'];
 
         // Did we load help files correctly?
         $this->assertGreaterThan(3, count($en['helpFiles']));
-        $this->assertTrue(in_array('search.phtml', $en['helpFiles']));
+        $this->assertContains('search.phtml', $en['helpFiles']);
 
         // Did we put the object in the right place?
-        $this->assertEquals(TextDomain::class, get_class($en['object']));
+        $this->assertInstanceOf(TextDomain::class, $en['object']);
 
         // Did the @parent_ini macro get stripped correctly?
         $this->assertArrayNotHasKey('@parent_ini', $result['details']['en-gb']['object']);

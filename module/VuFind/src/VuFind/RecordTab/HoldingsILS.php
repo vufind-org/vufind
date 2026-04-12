@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holdings (ILS) tab
+ * Holdings (ILS) tab.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -34,7 +34,7 @@ use VuFind\ILS\Connection;
 use function strlen;
 
 /**
- * Holdings (ILS) tab
+ * Holdings (ILS) tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -45,7 +45,7 @@ use function strlen;
 class HoldingsILS extends AbstractBase
 {
     /**
-     * ILS connection (or null if not applicable)
+     * ILS connection (or null if not applicable).
      *
      * @var Connection
      */
@@ -66,7 +66,7 @@ class HoldingsILS extends AbstractBase
     protected $hideWhenEmpty;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Connection $catalog       ILS connection to use to check for holdings before displaying the tab;
      * may be set to null if no check is needed.
@@ -91,6 +91,18 @@ class HoldingsILS extends AbstractBase
     public function getDescription()
     {
         return 'Holdings';
+    }
+
+    /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
+        // Check if the driver has a supportsHoldingsTab method and use it,
+        // defaulting to true (visible) if the method doesn't exist
+        return $this->driver->tryMethod('supportsHoldingsTab', [], true);
     }
 
     /**

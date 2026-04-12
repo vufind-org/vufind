@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Account Capabilities Test Class
+ * Account Capabilities Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,7 +34,7 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Config\Config;
 
 /**
- * Account Capabilities Test Class
+ * Account Capabilities Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -64,68 +64,62 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetEmailActionSettings().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function emailActionSettingsProvider(): array
+    public static function emailActionSettingsProvider(): \Iterator
     {
-        return [
-            'email_action setting' => [['email_action' => 'foo'], 'foo'],
-            'legacy require_login true' => [['require_login' => true], 'require_login'],
-            'legacy require_login false' => [['require_login' => false], 'enabled'],
-            'default (no config)' => [[], 'require_login'],
-        ];
+        yield 'email_action setting' => [['email_action' => 'foo'], 'foo'];
+        yield 'legacy require_login true' => [['require_login' => true], 'require_login'];
+        yield 'legacy require_login false' => [['require_login' => false], 'enabled'];
+        yield 'default (no config)' => [[], 'require_login'];
     }
 
     /**
-     * Test getEmailActionSettings()
+     * Test getEmailActionSettings().
      *
      * @param array  $mailConfig Settings for Mail configuration section
      * @param string $expected   Expected return value
      *
      * @return void
-     *
-     * @dataProvider emailActionSettingsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('emailActionSettingsProvider')]
     public function testGetEmailActionSettings(array $mailConfig, string $expected): void
     {
         $capabilities = $this->getCapabilities(['Mail' => $mailConfig]);
-        $this->assertEquals($expected, $capabilities->getEmailActionSetting());
+        $this->assertSame($expected, $capabilities->getEmailActionSetting());
     }
 
     /**
-     * Data provider for testIsEmailActionAvailable()
+     * Data provider for testIsEmailActionAvailable().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function emailActionAvailableProvider(): array
+    public static function emailActionAvailableProvider(): \Iterator
     {
-        return [
-            'disabled, login' => ['disabled', true, false],
-            'disabled, no login' => ['disabled', false, false],
-            'enabled, login' => ['enabled', true, true],
-            'enabled, no login' => ['enabled', false, true],
-            'require_login, login' => ['require_login', true, true],
-            'require_login, no login' => ['require_login', false, false],
-        ];
+        yield 'disabled, login' => ['disabled', true, false];
+        yield 'disabled, no login' => ['disabled', false, false];
+        yield 'enabled, login' => ['enabled', true, true];
+        yield 'enabled, no login' => ['enabled', false, true];
+        yield 'require_login, login' => ['require_login', true, true];
+        yield 'require_login, no login' => ['require_login', false, false];
     }
 
     /**
-     * Test isEmailActionAvailable()
+     * Test isEmailActionAvailable().
      *
      * @param string $mailSetting  The email_action config setting
      * @param bool   $loginEnabled Is login enabled?
      * @param bool   $expected     The expected result
      *
      * @return void
-     *
-     * @dataProvider emailActionAvailableProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('emailActionAvailableProvider')]
     public function testIsEmailActionAvailable(string $mailSetting, bool $loginEnabled, bool $expected): void
     {
         $config = ['Mail' => ['email_action' => $mailSetting]];
         $auth = $this->createMock(Manager::class);
         $auth->method('loginEnabled')->willReturn($loginEnabled);
         $capabilities = $this->getCapabilities($config, $auth);
-        $this->assertEquals($expected, $capabilities->isEmailActionAvailable());
+        $this->assertSame($expected, $capabilities->isEmailActionAvailable());
     }
 }

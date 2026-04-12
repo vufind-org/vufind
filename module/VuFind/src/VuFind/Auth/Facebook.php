@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -49,14 +49,14 @@ class Facebook extends AbstractBase implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\Container $container Session container for persisting
      * state information.

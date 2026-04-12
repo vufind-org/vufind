@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Requests Support Methods
+ * VuFind Action Helper - Requests Support Methods.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -41,7 +41,7 @@ use function get_class;
 use function in_array;
 
 /**
- * Action helper base class to perform request-related actions
+ * Action helper base class to perform request-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -52,35 +52,35 @@ use function in_array;
 abstract class AbstractRequestBase extends AbstractPlugin
 {
     /**
-     * Session data
+     * Session data.
      *
      * @var Container
      */
     protected $session;
 
     /**
-     * Session manager
+     * Session manager.
      *
      * @var SessionManager
      */
     protected $sessionManager;
 
     /**
-     * HMAC generator
+     * HMAC generator.
      *
      * @var HMAC
      */
     protected $hmac;
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var DateConverter
      */
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HMAC           $hmac           HMAC generator
      * @param SessionManager $sessionManager Session manager
@@ -115,7 +115,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
 
     /**
      * Reset the array of valid IDs in the session (used for form submission
-     * validation)
+     * validation).
      *
      * @return void
      */
@@ -369,7 +369,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     }
 
     /**
-     * Get remembered valid IDs
+     * Get remembered valid IDs.
      *
      * @return array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for configuration locations
+ * Interface for configuration locations.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config_Location
@@ -30,7 +30,7 @@
 namespace VuFind\Config\Location;
 
 /**
- * Interface for configuration locations
+ * Interface for configuration locations.
  *
  * This is a representation for the location of a configuration. It is based on a file or directory
  * on the system.
@@ -75,7 +75,7 @@ interface ConfigLocationInterface
      *
      * @param string $path Path
      *
-     * @return void
+     * @return static
      */
     public function setPath(string $path): static;
 
@@ -91,7 +91,7 @@ interface ConfigLocationInterface
      *
      * @param string $basePath Base path
      *
-     * @return void
+     * @return static
      */
     public function setBasePath(string $basePath): static;
 
@@ -107,7 +107,7 @@ interface ConfigLocationInterface
      *
      * @param string $fileName string
      *
-     * @return void
+     * @return static
      */
     public function setFileName(string $fileName): static;
 
@@ -123,7 +123,7 @@ interface ConfigLocationInterface
      *
      * @param string $configName Config name
      *
-     * @return void
+     * @return static
      */
     public function setConfigName(string $configName): static;
 
@@ -139,7 +139,7 @@ interface ConfigLocationInterface
      *
      * @param array $subsection Subsection
      *
-     * @return void
+     * @return static
      */
     public function setSubsection(array $subsection): static;
 
@@ -155,7 +155,7 @@ interface ConfigLocationInterface
      *
      * @param ?ConfigLocationInterface $dirLocationsParent Parent location
      *
-     * @return void
+     * @return static
      */
     public function setDirLocationsParent(?ConfigLocationInterface $dirLocationsParent): static;
 
@@ -165,4 +165,11 @@ interface ConfigLocationInterface
      * @return string
      */
     public function getHandler(): string;
+
+    /**
+     * Get cache key.
+     *
+     * @return string
+     */
+    public function getCacheKey(): string;
 }

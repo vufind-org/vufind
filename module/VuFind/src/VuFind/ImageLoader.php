@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
+ * Base class for loading images (shared by Cover\Loader and QRCode\Loader).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -33,7 +33,7 @@ namespace VuFind;
 use function array_key_exists;
 
 /**
- * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
+ * Base class for loading images (shared by Cover\Loader and QRCode\Loader).
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -42,26 +42,26 @@ use function array_key_exists;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
-class ImageLoader implements \Laminas\Log\LoggerAwareInterface
+class ImageLoader implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Property for storing raw image data; may be null if image is unavailable
+     * Property for storing raw image data; may be null if image is unavailable.
      *
      * @var string
      */
     protected $image = null;
 
     /**
-     * Content type of data in $image property
+     * Content type of data in $image property.
      *
      * @var string
      */
     protected $contentType = null;
 
     /**
-     * Theme tools
+     * Theme tools.
      *
      * @var \VuFindTheme\ThemeInfo
      */
@@ -83,7 +83,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
 
     /**
      * Array containing map of allowed file extensions to mimetypes
-     * (to be extended)
+     * (to be extended).
      *
      * @var array
      */
@@ -95,7 +95,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     ];
 
     /**
-     * Setter for dependency
+     * Setter for dependency.
      *
      * @param \VuFindTheme\ThemeInfo $theme VuFind theme tools
      *
@@ -107,7 +107,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Get the image data (not meant to be called until after image is populated)
+     * Get the image data (not meant to be called until after image is populated).
      *
      * @return string
      */
@@ -122,7 +122,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
 
     /**
      * Get the content type of the current image (not meant to be called until after
-     * contentType is populated)
+     * contentType is populated).
      *
      * @return string
      */

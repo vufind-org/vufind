@@ -1,0 +1,53 @@
+// Responsive table mixin
+@mixin table-responsive {
+  border: none;
+  thead, tfoot > tr > th {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+  tbody > tr {
+    display: block;
+    margin-bottom: #{$line-height-base * $font-size-base};
+    border-left: 1px solid $table-border-color;
+    border-right: 1px solid $table-border-color;
+    border-bottom: 4px solid $table-border-color;
+    // Adjust margin to account for the border so that content doesn't shift and cause alignment issues e.g. with the
+    // select all checkbox:
+    margin-left: -1px;
+    margin-right: -1px;
+
+    > :first-child {
+      border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
+    }
+  }
+  td, tbody > tr > th {
+    display: flex;
+    align-items: first baseline;
+    background: #fff;
+    &:not(.unlabeled-column):before {
+      display: flex;
+      flex-basis: 40%;
+      flex-shrink: 0;
+      font-weight: bold;
+      content: attr(data-label);
+    }
+  }
+  tbody > tr {
+    & > td:nth-child(even),
+    & > th:nth-child(even) {
+      background-color: var(--bs-table-striped-bg);
+    }
+  }
+  tfoot > tr > td {
+    border-top: none;
+  }
+  > :not(caption) > * > * {
+    box-shadow: none;
+  }
+}

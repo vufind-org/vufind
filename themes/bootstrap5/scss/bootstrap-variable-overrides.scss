@@ -1,10 +1,11 @@
 // These colors ensure proper contrast:
-$primary:         #265680 !default;
-$success:         #028302 !default;
-$info:            #1C5F74 !default;
-$warning:         #A56100 !default;
-$danger:          #A41915 !default;
-$link-color:      #12538B !default;
+$primary:                   #265680 !default;
+$success:                   #028302 !default;
+$info:                      #1C5F74 !default;
+$warning:                   #A56100 !default;
+$danger:                    #A41915 !default;
+$link-color:                #12538B !default;
+$link-hover-color:          #000000 !default;
 
 $success-bg-subtle:         #dff0d8 !default;
 $success-border-subtle:     darken(adjust-hue($success-bg-subtle, -10), 5%) !default;

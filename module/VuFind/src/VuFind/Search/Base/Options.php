@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -30,7 +30,9 @@
 
 namespace VuFind\Search\Base;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function count;
@@ -57,70 +59,70 @@ abstract class Options implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Available sort options
+     * Available sort options.
      *
      * @var array
      */
     protected $sortOptions;
 
     /**
-     * Allowed hidden sort options
+     * Allowed hidden sort options.
      *
      * @var array
      */
     protected $hiddenSortOptions = [];
 
     /**
-     * Available sort options for facets
+     * Available sort options for facets.
      *
      * @var array
      */
     protected $facetSortOptions = [];
 
     /**
-     * Overall default sort option
+     * Overall default sort option.
      *
      * @var string
      */
     protected $defaultSort;
 
     /**
-     * Handler-specific defaults
+     * Handler-specific defaults.
      *
      * @var array
      */
     protected $defaultSortByHandler;
 
     /**
-     * RSS-specific sort option
+     * RSS-specific sort option.
      *
      * @var ?string
      */
     protected $rssSort;
 
     /**
-     * Default search handler
+     * Default search handler.
      *
      * @var ?string
      */
     protected $defaultHandler;
 
     /**
-     * Advanced search handlers
+     * Advanced search handlers.
      *
      * @var array
      */
     protected $advancedHandlers;
 
     /**
-     * Basic search handlers
+     * Basic search handlers.
      *
      * @var array
      */
     protected $basicHandlers;
 
     /**
-     * Special advanced facet settings
+     * Special advanced facet settings.
      *
      * @var string
      */
@@ -141,21 +143,21 @@ abstract class Options implements TranslatorAwareInterface
     protected $alwaysDisplayResetFilters;
 
     /**
-     * Default filters to apply to new searches
+     * Default filters to apply to new searches.
      *
      * @var array
      */
     protected $defaultFilters;
 
     /**
-     * Default limit option
+     * Default limit option.
      *
      * @var int
      */
     protected $defaultLimit;
 
     /**
-     * Available limit options
+     * Available limit options.
      *
      * @var array
      */
@@ -169,28 +171,28 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $resultScrollerActive = false;
 
     /**
-     * Default view option
+     * Default view option.
      *
      * @var string
      */
     protected $defaultView = 'list';
 
     /**
-     * Available view options
+     * Available view options.
      *
      * @var array
      */
     protected $viewOptions = [];
 
     /**
-     * Default delimiter used for delimited facets
+     * Default delimiter used for delimited facets.
      *
      * @var string
      */
     protected $defaultFacetDelimiter;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
@@ -204,63 +206,63 @@ abstract class Options implements TranslatorAwareInterface
     protected $processedDelimitedFacets = null;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
     protected $translatedFacets = [];
 
     /**
-     * Text domains for translated facets
+     * Text domains for translated facets.
      *
      * @var array
      */
     protected $translatedFacetsTextDomains = [];
 
     /**
-     * Formats for translated facets
+     * Formats for translated facets.
      *
      * @var array
      */
     protected $translatedFacetsFormats = [];
 
     /**
-     * Hierarchical facets
+     * Hierarchical facets.
      *
      * @var array
      */
     protected $hierarchicalFacets = [];
 
     /**
-     * Hierarchical facet separators
+     * Hierarchical facet separators.
      *
      * @var array
      */
     protected $hierarchicalFacetSeparators = [];
 
     /**
-     * Hierarchical facet sort settings
+     * Hierarchical facet sort settings.
      *
      * @var array
      */
     protected $hierarchicalFacetSortSettings = [];
 
     /**
-     * Spelling setting
+     * Spelling setting.
      *
      * @var bool
      */
     protected $spellcheck = true;
 
     /**
-     * Available shards
+     * Available shards.
      *
      * @var array
      */
     protected $shards = [];
 
     /**
-     * Default selected shards
+     * Default selected shards.
      *
      * @var array
      */
@@ -274,35 +276,49 @@ abstract class Options implements TranslatorAwareInterface
     protected $visibleShardCheckboxes = false;
 
     /**
-     * Highlighting setting
+     * Highlighting setting.
      *
      * @var bool
      */
     protected $highlight = false;
 
     /**
-     * Autocomplete setting
+     * Autocomplete setting.
      *
      * @var bool
      */
     protected $autocompleteEnabled = false;
 
     /**
-     * Autocomplete auto submit setting
+     * Autocomplete auto submit setting.
      *
      * @var bool
      */
     protected $autocompleteAutoSubmit = true;
 
     /**
-     * Autocomplete query formatting rules
+     * Autocomplete apply active filters setting (null to fall back to retainFiltersByDefault setting).
+     *
+     * @var ?bool
+     */
+    protected $autocompleteApplyActiveFilters = null;
+
+    /*
+     * Autocomplete max display items setting
+     *
+     * @var int
+     */
+    protected $autocompleteDisplayLimit = 20;
+
+    /**
+     * Autocomplete query formatting rules.
      *
      * @var array
      */
     protected $autocompleteFormattingRules = [];
 
     /**
-     * Configuration file to read global settings from
+     * Configuration file to read global settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -311,7 +327,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $mainIni = 'config';
 
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -320,7 +336,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $searchIni = 'searches';
 
     /**
-     * Configuration file to read facet settings from
+     * Configuration file to read facet settings from.
      *
      * Note that any change to this must be made before calling the constructor of this class.
      *
@@ -336,14 +352,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $listviewOption;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Maximum number of results (-1 = unlimited)
+     * Maximum number of results (-1 = unlimited).
      *
      * @var int
      */
@@ -383,28 +392,28 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
-     * apply in advanced search
+     * apply in advanced search.
      *
      * @var bool
      */
     protected $filterHierarchicalFacetsInAdvanced;
 
     /**
-     * Hierarchical exclude filters
+     * Hierarchical exclude filters.
      *
      * @var array
      */
     protected $hierarchicalExcludeFilters;
 
     /**
-     * Hierarchical facet filters
+     * Hierarchical facet filters.
      *
      * @var array
      */
     protected $hierarchicalFacetFilters;
 
     /**
-     * Top pagination control style (none, simple or full)
+     * Top pagination control style (none, simple or full).
      *
      * @var string
      */
@@ -432,45 +441,43 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $showRestrictedViewWarning;
 
     /**
-     * VuFind main configuration
+     * VuFind main configuration.
      *
      * @var array
      */
     protected array $mainConfig;
 
     /**
-     * Search settings
+     * Search settings.
      *
      * @var array
      */
     protected array $searchSettings;
 
     /**
-     * Facet settings
+     * Facet settings.
      *
      * @var array
      */
     protected array $facetSettings;
 
     /**
-     * Section name for advanced facet settings
+     * Section name for advanced facet settings.
      *
      * @var string
      */
     protected string $advancedFacetSettingsSection = 'Advanced_Settings';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(protected ConfigManagerInterface $configManager)
     {
-        $this->setConfigLoader($configLoader);
-
-        $this->mainConfig = $configLoader->get($this->mainIni)?->toArray() ?? [];
-        $this->searchSettings = $configLoader->get($this->searchIni)?->toArray() ?? [];
-        $this->facetSettings = $configLoader->get($this->facetsIni)?->toArray() ?? [];
+        $this->mainConfig = $configManager->getConfigArray($this->mainIni);
+        $this->searchSettings = $configManager->getConfigArray($this->searchIni);
+        $this->facetSettings = $configManager->getConfigArray($this->facetsIni);
 
         // Search handlers:
         $this->basicHandlers = $this->searchSettings['Basic_Searches'] ?? [];
@@ -536,18 +543,6 @@ abstract class Options implements TranslatorAwareInterface
             = (bool)($this->searchSettings['Results_Settings']['display_citation_links'] ?? true);
         $this->showRestrictedViewWarning
             = (bool)($this->searchSettings['General']['show_restricted_view_warning'] ?? false);
-    }
-
-    /**
-     * Set the config loader
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
-     *
-     * @return void
-     */
-    public function setConfigLoader(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -773,7 +768,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Return the sorting value for RSS mode
+     * Return the sorting value for RSS mode.
      *
      * @param string $sort Sort setting to modify for RSS mode
      *
@@ -859,7 +854,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get a list of delimited facets
+     * Get a list of delimited facets.
      *
      * @param bool $processed False = return raw values; true = process values into
      * field => delimiter associative array.
@@ -876,11 +871,9 @@ abstract class Options implements TranslatorAwareInterface
             $defaultDelimiter = $this->getDefaultFacetDelimiter();
             foreach ($this->delimitedFacets as $current) {
                 $parts = explode('|', $current, 2);
-                if (count($parts) == 2) {
-                    $this->processedDelimitedFacets[$parts[0]] = $parts[1];
-                } else {
-                    $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
-                }
+                $this->processedDelimitedFacets[$parts[0]] = count($parts) == 2
+                    ? $parts[1]
+                    : $defaultDelimiter;
             }
         }
         return $this->processedDelimitedFacets;
@@ -1064,6 +1057,26 @@ abstract class Options implements TranslatorAwareInterface
     public function autocompleteAutoSubmit()
     {
         return $this->autocompleteAutoSubmit;
+    }
+
+    /**
+     * Should autocomplete apply active filters?
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters(): bool
+    {
+        return $this->autocompleteApplyActiveFilters ?? $this->getRetainFilterSetting();
+    }
+
+    /**
+     * Get max number of displayed suggestions.
+     *
+     * @return array
+     */
+    public function getAutocompleteDisplayLimit(): int
+    {
+        return $this->autocompleteDisplayLimit;
     }
 
     /**
@@ -1260,12 +1273,10 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Inherit defaults from searches.ini (if that is not already the
         // configured search settings file):
-        $defaultConfig = $this->configLoader->get('searches')->API;
-        $defaultSettings = $defaultConfig ? $defaultConfig->toArray() : [];
+        $defaultSettings = $this->configManager->getConfigArray('searches')['API'] ?? [];
         $localIni = $this->getSearchIni();
-        $localConfig = ($localIni !== 'searches')
-            ? $this->configLoader->get($localIni)->API : null;
-        $localSettings = $localConfig ? $localConfig->toArray() : [];
+        $localSettings = ($localIni !== 'searches')
+            ? $this->configManager->getConfigArray($localIni)['API'] ?? [] : [];
         return array_merge($defaultSettings, $localSettings);
     }
 
@@ -1283,7 +1294,7 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $searchSettings = $this->configLoader->get($this->getSearchIni());
+        $searchSettings = $this->configManager->getConfigArray($this->getSearchIni());
 
         // Load a type-specific recommendations setting if possible, or the default
         // otherwise:
@@ -1291,40 +1302,27 @@ abstract class Options implements TranslatorAwareInterface
 
         if (
             null !== $handler
-            && isset($searchSettings->TopRecommendations->$handler)
+            && isset($searchSettings['TopRecommendations'][$handler])
         ) {
-            $recommend['top'] = $searchSettings->TopRecommendations
-                ->$handler->toArray();
+            $recommend['top'] = $searchSettings['TopRecommendations'][$handler];
         } else {
-            $recommend['top']
-                = isset($searchSettings->General->default_top_recommend)
-                ? $searchSettings->General->default_top_recommend->toArray()
-                : false;
+            $recommend['top'] = $searchSettings['General']['default_top_recommend'] ?? false;
         }
         if (
             null !== $handler
-            && isset($searchSettings->SideRecommendations->$handler)
+            && isset($searchSettings['SideRecommendations'][$handler])
         ) {
-            $recommend['side'] = $searchSettings->SideRecommendations
-                ->$handler->toArray();
+            $recommend['side'] = $searchSettings['SideRecommendations'][$handler];
         } else {
-            $recommend['side']
-                = isset($searchSettings->General->default_side_recommend)
-                ? $searchSettings->General->default_side_recommend->toArray()
-                : false;
+            $recommend['side'] = $searchSettings['General']['default_side_recommend'] ?? false;
         }
         if (
             null !== $handler
-            && isset($searchSettings->NoResultsRecommendations->$handler)
+            && isset($searchSettings['NoResultsRecommendations'][$handler])
         ) {
-            $recommend['noresults'] = $searchSettings->NoResultsRecommendations
-                ->$handler->toArray();
+            $recommend['noresults'] = $searchSettings['NoResultsRecommendations'][$handler];
         } else {
-            $recommend['noresults']
-                = isset($searchSettings->General->default_noresults_recommend)
-                ? $searchSettings->General->default_noresults_recommend
-                    ->toArray()
-                : false;
+            $recommend['noresults'] = $searchSettings['General']['default_noresults_recommend'] ?? false;
         }
 
         return $recommend;
@@ -1344,7 +1342,7 @@ abstract class Options implements TranslatorAwareInterface
         // Special case: if there's an unexpected number of parts, we may be testing
         // with a mock object; if so, that's okay, but anything else is unexpected.
         if (count($class) !== 4) {
-            if (str_starts_with($className, 'Mock_') || str_starts_with($className, 'MockObject_')) {
+            if ($this instanceof MockObject) {
                 return 'Mock';
             }
             throw new \Exception("Unexpected class name: {$className}");
@@ -1357,7 +1355,7 @@ abstract class Options implements TranslatorAwareInterface
      * Get the search class ID for identifying search box options; this is normally
      * the same as the current search class ID, but some "special purpose" search
      * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
-     * generation
+     * generation.
      *
      * @return string
      */
@@ -1367,19 +1365,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we include first/last options in record page navigation?
-     *
-     * @return bool
-     *
-     * @deprecated Use recordFirstLastNavigationEnabled instead
-     */
-    public function supportsFirstLastNavigation()
-    {
-        return $this->recordFirstLastNavigationEnabled();
-    }
-
-    /**
-     * Is first/last navigation supported by the backend
+     * Is first/last navigation supported by the backend.
      *
      * @return bool
      */
@@ -1432,7 +1418,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get top paginator style
+     * Get top paginator style.
      *
      * @return string
      */
@@ -1570,6 +1556,10 @@ abstract class Options implements TranslatorAwareInterface
         if (null !== ($autosubmit = $autocompleteSettings['auto_submit'] ?? null)) {
             $this->autocompleteAutoSubmit = $autosubmit;
         }
+        $this->autocompleteApplyActiveFilters = $autocompleteSettings['apply_active_filters'] ?? null;
+        if (null !== ($displaylimit = $autocompleteSettings['display_limit'] ?? null)) {
+            $this->autocompleteDisplayLimit = (int)$displaylimit;
+        }
         $formattingRules = $autocompleteSettings['formatting_rule'] ?? [];
         if ($formattingRules && is_array($formattingRules)) {
             $this->autocompleteFormattingRules = $formattingRules;
@@ -1577,7 +1567,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Initialize hidden sort options by combining the settings into a single array
+     * Initialize hidden sort options by combining the settings into a single array.
      *
      * @return void
      */

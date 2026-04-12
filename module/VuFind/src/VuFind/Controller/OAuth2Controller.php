@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OAuth2 Controller
+ * OAuth2 Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -31,7 +31,6 @@ namespace VuFind\Controller;
 
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
@@ -39,6 +38,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use OpenIDConnectServer\ClaimExtractor;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
@@ -50,7 +50,7 @@ use function in_array;
 use function is_array;
 
 /**
- * OAuth2 Controller
+ * OAuth2 Controller.
  *
  * Provides authorization support for external systems
  *
@@ -69,21 +69,21 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     public const SESSION_NAME = 'OAuth2Server';
 
     /**
-     * OAuth2 authorization server factory
+     * OAuth2 authorization server factory.
      *
      * @var callable
      */
     protected $oauth2ServerFactory;
 
     /**
-     * OAuth2 resource server factory
+     * OAuth2 resource server factory.
      *
      * @var callable
      */
     protected $resourceServerFactory;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface     $sm                 Service locator
      * @param array                       $oauth2Config       OAuth2 configuration
@@ -115,7 +115,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Execute the request
+     * Execute the request.
      *
      * @param \Laminas\Mvc\MvcEvent $e Event
      *
@@ -141,7 +141,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * OAuth2 authorization request action
+     * OAuth2 authorization request action.
      *
      * @return mixed
      */
@@ -176,7 +176,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         if ($allowedScopes = $clientConfig['allowedScopes'] ?? null) {
             $scopes = $authRequest->getScopes();
             array_map(
-                function ($scope) use ($allowedScopes) {
+                function ($scope) use ($allowedScopes): void {
                     if (!in_array($scope->getIdentifier(), $allowedScopes)) {
                         $scope->setHidden(true);
                     }
@@ -236,7 +236,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * OAuth2 token request action
+     * OAuth2 token request action.
      *
      * @return mixed
      */
@@ -260,7 +260,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * OpenID Connect user info request action
+     * OpenID Connect user info request action.
      *
      * @return mixed
      */
@@ -304,7 +304,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Action to retrieve JSON Web Keys
+     * Action to retrieve JSON Web Keys.
      *
      * @see https://www.tuxed.net/fkooman/blog/json_web_key_set.html
      *
@@ -354,7 +354,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Action to retrieve the OIDC configuration
+     * Action to retrieve the OIDC configuration.
      *
      * @return mixed
      */

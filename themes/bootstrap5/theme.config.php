@@ -53,8 +53,9 @@ return [
          */
         ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
-        ['file' => 'vendor/popper.min.js', 'priority' => 120],
-        ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
+        ['file' => 'vendor/js.cookie.min.js', 'priority' => 120],
+        ['file' => 'vendor/popper.min.js', 'priority' => 130],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
@@ -111,6 +112,7 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap5\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap5\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClass',
+            'notices' => VuFind\View\Helper\Bootstrap5\Notices::class,
             'search' => 'VuFind\View\Helper\Bootstrap5\Search',
         ],
     ],
@@ -143,7 +145,15 @@ return [
             'Unicode' => [
                 'template' => 'unicode',
             ],
-            /* For an example of an images set, see Bootprint's theme.config.php. */
+            // Example of an image set:
+            /*
+            'Img' => [
+                'template' => 'images',
+                'src' => 'icons', // Points to a subdirectory under images; processed via imageLink.
+            ],
+            // With the above, you can point to e.g. images/icons/add.png by adding an alias below:
+            // 'cart-add' => 'Img:add.png'
+            */
         ],
         'aliases' => [
             /**
@@ -172,6 +182,7 @@ return [
             'cite' => 'FontAwesome:asterisk',
             'cites' => 'Unicode:275D',
             'cited-by' => 'Unicode:275E',
+            'clone' => 'FontAwesome:clone',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
@@ -189,6 +200,7 @@ return [
             'currency-won' => 'FontAwesome:won',
             'currency-yen' => 'FontAwesome:yen',
             'dropdown-caret' => 'FontAwesome:caret-down',
+            'explain' => 'FontAwesome:question-circle',
             'export' => 'FontAwesome:external-link',
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
@@ -228,6 +240,7 @@ return [
             'format-newspaper' => 'FontAwesome:file-text-o',
             'format-online' => 'FontAwesome:laptop',
             'format-painting' => 'FontAwesome:picture-o',
+            'format-pdf' => 'FontAwesome:file-pdf',
             'format-photo' => 'FontAwesome:picture-o',
             'format-photonegative' => 'FontAwesome:picture-o',
             'format-physicalobject' => 'FontAwesome:archive',
@@ -255,7 +268,9 @@ return [
             'hierarchy-noncollapsible' => 'Alias:facet-noncollapsible',
             'hierarchy-record' => 'FontAwesome:file-o',
             'hierarchy-tree' => 'FontAwesome:sitemap',
+            'keyboard' => 'FontAwesome:keyboard-o',
             'lightbox-close' => 'FontAwesome:times',
+            'link' => 'FontAwesome:link',
             'more' => 'FontAwesome:chevron-circle-right',
             'more-rtl' => 'FontAwesome:chevron-circle-left',
             'my-account' => 'FontAwesome:user-circle-o',
@@ -277,7 +292,6 @@ return [
             'overdrive-help' => 'FontAwesome:question-circle',
             'overdrive-place-hold' => 'Alias:place-hold',
             'overdrive-return' => 'FontAwesome:undo',
-            'overdrive-return-rtl' => 'FontAwesome:undo',
             'overdrive-sign-in' => 'FontAwesome:sign-in',
             'overdrive-success' => 'FontAwesome:check',
             'overdrive-suspend-hold' => 'Alias:place-hold',
@@ -302,7 +316,7 @@ return [
             'profile-delete' => 'Alias:ui-delete',
             'profile-edit' => 'Alias:ui-edit',
             'profile-email' => 'FontAwesome:envelope',
-            'profile-sms' => 'FontAwesome:phone',
+            'profile-sms' => 'FontAwesome:mobile',
             'qrcode' => 'FontAwesome:qrcode',
             'rating-half' => 'FontAwesome:star-half',
             'rating-full' => 'FontAwesome:star',
@@ -313,7 +327,7 @@ return [
             'search-save' => 'Alias:ui-save',
             'search-schedule-alert' => 'FontAwesome:exclamation-circle',
             'send-email' => 'FontAwesome:envelope',
-            'send-sms' => 'FontAwesome:phone',
+            'send-sms' => 'FontAwesome:mobile',
             'sign-in' => 'FontAwesome:sign-in',
             'sign-out' => 'FontAwesome:sign-out',
             'spinner' => 'FontAwesome:spinner:icon--spin',

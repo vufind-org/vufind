@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Search\Primo;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Primo\Options;
 use VuFind\Search\Primo\Params;
 
@@ -44,7 +45,7 @@ use VuFind\Search\Primo\Params;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test facet value normalization
+     * Test facet value normalization.
      *
      * @return void
      */
@@ -200,16 +201,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @return Params
      */
     protected function getParams(): Params
     {
-        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            new Options($configMock),
-            $configMock
+            new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 }

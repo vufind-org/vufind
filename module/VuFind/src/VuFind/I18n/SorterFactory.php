@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class SorterFactory
+ * Class SorterFactory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  I18n
@@ -39,7 +39,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * Class SorterFactory
+ * Class SorterFactory.
  *
  * @category VuFind
  * @package  I18n
@@ -50,7 +50,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 class SorterFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -73,13 +73,11 @@ class SorterFactory implements FactoryInterface
         }
         $localeSettings = $container->get(LocaleSettings::class);
         $collator = new \Collator($localeSettings->getUserLocale());
-        $config = $container
-            ->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->Sorting;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $collator->setStrength(\Collator::SECONDARY);
         return new $requestedName(
             $collator,
-            (bool)($config->use_locale_sorting ?? false)
+            (bool)($config['Sorting']['use_locale_sorting'] ?? false)
         );
     }
 }

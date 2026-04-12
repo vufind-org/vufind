@@ -14,8 +14,8 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import org.marc4j.marc.Record;
@@ -196,10 +196,12 @@ public class FormatCalculator
                         char formatCode5 = formatString.length() > 4
                             ? formatString.charAt(4) : ' ';
                         switch(formatCode5) {
-                            case 's':
-                                return "BRDisc";
                             case 'g':
                                 return "LaserDisc";
+                            case 's':
+                                return "BRDisc";
+                            case 'v':
+                                return "DVD";
                         }
                         return "VideoDisc";
                     case 'f':

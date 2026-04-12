@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -59,16 +59,14 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testSearchResponse()
+     * Data provider for testSearchResponse().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function authenticatedBehaviorProvider(): array
+    public static function authenticatedBehaviorProvider(): \Iterator
     {
-        return [
-            'failure' => ['error: it is broken', ['error: it is broken', 500]],
-            'success' => ['success', [['result' => 'success']]],
-        ];
+        yield 'failure' => ['error: it is broken', ['error: it is broken', 500]];
+        yield 'success' => ['success', [['result' => 'success']]];
     }
 
     /**
@@ -78,9 +76,8 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected handler response
      *
      * @return void
-     *
-     * @dataProvider authenticatedBehaviorProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authenticatedBehaviorProvider')]
     public function testAuthenticatedBehavior(string $response, array $expected): void
     {
         $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);

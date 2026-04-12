@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP profiling support
+ * PHP profiling support.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Profiling
@@ -30,7 +30,7 @@
  */
 
 /**
- * Enable profiler (XHProf or Tideways)
+ * Enable profiler (XHProf or Tideways).
  *
  * @param string $profilerBaseUrl Profiler base url to display
  *
@@ -64,7 +64,7 @@ function enableVuFindProfiling($profilerBaseUrl)
             $xhprofRunId,
             $suffix,
             $profilerDisableFunc
-        ) {
+        ): void {
             $xhprofData = $profilerDisableFunc();
             $dir = ini_get('xhprof.output_dir');
             if (empty($dir)) {

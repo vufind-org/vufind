@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels tab
+ * Channels tab.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -32,7 +32,7 @@ namespace VuFind\RecordTab;
 use VuFind\ChannelProvider\ChannelLoader;
 
 /**
- * Channels tab
+ * Channels tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -50,7 +50,7 @@ class Channels extends AbstractBase
     protected array $configSections = ['recordTab', 'record'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ChannelLoader $loader  Channel loader
      * @param array         $options Config settings
@@ -67,17 +67,6 @@ class Channels extends AbstractBase
     public function getDescription()
     {
         return $this->options['label'] ?? 'Channels';
-    }
-
-    /**
-     * Can this tab be loaded via AJAX?
-     *
-     * @return bool
-     */
-    public function supportsAjax()
-    {
-        // Due to heavy Javascript in channels, the tab cannot be AJAX-loaded:
-        return false;
     }
 
     /**

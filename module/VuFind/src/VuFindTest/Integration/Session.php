@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -41,28 +41,35 @@ namespace VuFindTest\Integration;
 class Session extends \Behat\Mink\Session
 {
     /**
-     * Test name
+     * Test name.
      *
      * @var string
      */
     protected $testName = '';
 
     /**
-     * Coverage data directory
+     * Coverage data directory.
      *
      * @var string
      */
     protected $coverageDir = '';
 
     /**
-     * Whether Whoops error handler needs to be disabled
+     * Whether Whoops error handler needs to be disabled.
      *
      * @var bool
      */
     protected $disableWhoops = false;
 
     /**
-     * Set remote code coverage configuration
+     * API key token to request header.
+     *
+     * @var ?string
+     */
+    protected ?string $apiKeyToken = null;
+
+    /**
+     * Set remote code coverage configuration.
      *
      * @param string $testName    Test name
      * @param string $coverageDir Coverage data directory
@@ -78,7 +85,7 @@ class Session extends \Behat\Mink\Session
     }
 
     /**
-     * Toggle HTTP header that disables Whoops
+     * Toggle HTTP header that disables Whoops.
      *
      * @param bool $disable Whether to disable Whoops
      *
@@ -87,6 +94,19 @@ class Session extends \Behat\Mink\Session
     public function setWhoopsDisabled(bool $disable): void
     {
         $this->disableWhoops = $disable;
+    }
+
+    /**
+     * Set API key token to request header.
+     *
+     * @param string $token API key token
+     *
+     * @return static
+     */
+    public function setApiKeyToken(string $token): static
+    {
+        $this->apiKeyToken = $token;
+        return $this;
     }
 
     /**
@@ -113,6 +133,9 @@ class Session extends \Behat\Mink\Session
         }
         if ($this->disableWhoops) {
             $this->setRequestHeader('X-VuFind-Disable-Whoops', '1');
+        }
+        if ($this->apiKeyToken) {
+            $this->setRequestHeader(VUFIND_API_KEY_DEFAULT_HEADER_FIELD, $this->apiKeyToken);
         }
 
         parent::visit($url);

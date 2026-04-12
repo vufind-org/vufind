@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -43,28 +43,28 @@ use Behat\Mink\Element\Element;
 class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Selector for active pagination item
+     * Selector for active pagination item.
      *
      * @var string
      */
     protected $activePageSelector = '.pagination li.active';
 
     /**
-     * Selector for current pagination item
+     * Selector for current pagination item.
      *
      * @var string
      */
     protected $ariaCurrentPageSelector = '.pagination li[aria-current=page] a';
 
     /**
-     * Selector for active top pagination item
+     * Selector for active top pagination item.
      *
      * @var string
      */
     protected $topActivePageSelector = '.pagination-top li.active';
 
     /**
-     * Selector for current top pagination item
+     * Selector for current top pagination item.
      *
      * @var string
      */
@@ -89,27 +89,24 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testDefaultTopPagination
+     * Data provider for testDefaultTopPagination.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function topPaginationProvider(): array
+    public static function topPaginationProvider(): \Iterator
     {
-        return [
-            [false],
-            [true],
-        ];
+        yield [false];
+        yield [true];
     }
 
     /**
-     * Test default top pagination
+     * Test default top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
-     * @dataProvider topPaginationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topPaginationProvider')]
     public function testDefaultTopPagination(bool $jsResults): void
     {
         // Change configuration:
@@ -140,14 +137,13 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test simple top pagination
+     * Test simple top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
-     * @dataProvider topPaginationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topPaginationProvider')]
     public function testSimpleTopPagination(bool $jsResults): void
     {
         $config = [
@@ -179,6 +175,17 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertShowingResults($page, '21 - 40');
         $this->scrollToResults();
 
+        // Switch language to ensure that query params are not lost:
+        $dropdown = $this->findCss($page, '.nav-item.language .dropdown__item', index: 1);
+        $this->clickCss($dropdown, '.dropdown__link');
+        $this->waitForPageLoad($page);
+        $this->assertSame('Sprache', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+        // ...and back:
+        $this->clickCss($page, '.nav-item.language .dropdown__link');
+        $this->waitForPageLoad($page);
+        $this->assertShowingResults($page, '21 - 40');
+        $this->assertSame('Language', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
         $this->waitForPageLoad($page);
@@ -186,7 +193,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test full top pagination
+     * Test full top pagination.
      *
      * @return void
      */
@@ -229,7 +236,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test bottom pagination
+     * Test bottom pagination.
      *
      * @return void
      */
@@ -254,7 +261,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Check that correct result range is being displayed
+     * Check that correct result range is being displayed.
      *
      * @param Element $page    Page
      * @param string  $results Result range (e.g. '1 - 20')
@@ -272,7 +279,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Scroll to results immediately to avoid elements from moving around while we click them
+     * Scroll to results immediately to avoid elements from moving around while we click them.
      *
      * @return void
      */

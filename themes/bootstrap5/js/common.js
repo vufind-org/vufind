@@ -1,7 +1,7 @@
-/*global grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*global grecaptcha, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, addRecordRatingFromUserList */
 
-var VuFind = (function VuFind() {
+var VuFind = (function VuFindModule() {
   var defaultSearchBackend = null;
   var path = null;
   var _initialized = false;
@@ -18,10 +18,10 @@ var VuFind = (function VuFind() {
 
   /**
    * Element creator function
-   * @param {string} tagName Element tag name
-   * @param {string} className Element class
-   * @param {object} attrs Additional attrs as key => value
-   * @param {Array|NodeList} children Child nodes to be added
+   * @param {string}         tagName   Element tag name
+   * @param {string}         className Element class
+   * @param {object}         attrs     Additional attrs as key => value
+   * @param {Array|NodeList} children  Child nodes to be added
    * @returns {Element} Created Element
    */
   function el(tagName, className = '', attrs = {}, children = []) {
@@ -37,6 +37,12 @@ var VuFind = (function VuFind() {
   // Event controls
 
   let listeners = {};
+  /**
+   * Remove a listener function from a specific event.
+   * @param {string}   event The name of the event.
+   * @param {Function} fn    The function to remove.
+   * @returns {void}
+   */
   function unlisten(event, fn) {
     if (typeof listeners[event] === "undefined") {
       return;
@@ -49,10 +55,14 @@ var VuFind = (function VuFind() {
     }
   }
 
-  // Add a function to call when an event is emitted
-  //
-  // Options:
-  // - once: remove this listener after it's been called
+  /**
+   * Add a function to be called when an event is emitted.
+   * @param {string}   event          The name of the event.
+   * @param {Function} fn             The function to call when the event is emitted.
+   * @param {object}   [options]      Options for the listener.
+   * @param {boolean}  [options.once] If true, the listener will be removed after being called once (default = false).
+   * @returns {Function} A function to remove the listener.
+   */
   function listen(event, fn, { once = false } = {}) {
     if (typeof listeners[event] === "undefined") {
       listeners[event] = [];
@@ -74,7 +84,12 @@ var VuFind = (function VuFind() {
     return removeListener;
   }
 
-  // Broadcast an event, passing arguments to all listeners
+  /**
+   * Broadcast an event, passing arguments to all registered listeners.
+   * @param {string} event The name of the event.
+   * @param {...*}   args  Arguments to pass to the listeners.
+   * @returns {void}
+   */
   function emit(event, ...args) {
     // No listeners for this event
     if (typeof listeners[event] === "undefined") {
@@ -104,7 +119,11 @@ var VuFind = (function VuFind() {
   };
 
   /**
-   * Evaluate a callback
+   * Evaluates a callback function
+   * @param {string} callback The name of the callback function.
+   * @param {*}      event    The event object.
+   * @param {*}      data     Additional data.
+   * @returns {*} The result of the callback function, or null if not found.
    */
   var evalCallback = function evalCallback(callback, event, data) {
     if ('function' === typeof window[callback]) {
@@ -150,12 +169,25 @@ var VuFind = (function VuFind() {
         document.getElementById(elem.dataset.clickSetChecked).checked = true;
         event.preventDefault();
       }
+      if (elem.hasAttribute('data-click-set-query-params')) {
+        const setParams = new URLSearchParams(elem.dataset.clickSetQueryParams);
+        const url = new URL(window.location.href);
+        for (const [key, value] of setParams) {
+          url.searchParams.set(key, value);
+        }
+        window.location.href = url.toString();
+        event.preventDefault();
+      }
       if (elem.hasAttribute('data-toggle-aria-expanded')) {
         elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
         event.preventDefault();
       }
-      // Check also parent node for spans (e.g. a button with icon)
-      if (!event.defaultPrevented && elem.localName === 'span' && elem.parentNode) {
+      // Check also parent node for spans or other elements with the icon class (e.g. a button with icon)
+      if (
+        !event.defaultPrevented
+        && elem.parentNode instanceof HTMLElement
+        && (elem.localName === 'span' || elem.classList.contains('icon'))
+      ) {
         checkClickHandlers(event, elem.parentNode);
       }
     };
@@ -207,15 +239,11 @@ var VuFind = (function VuFind() {
 
   /**
    * Get an icon identified by a name.
-   *
-   * @param {String} name          Name of the icon to create
-   * @param {Object} attrs         Object containing attributes,
-   *                               key is the attribute of an HTMLElement,
-   *                               value is the values to add for the attribute.
-   * @param {Boolean}   returnElement [Optional] Should the function return an HTMLElement.
-   *                               Default is false.
-   *
-   * @returns {String|HTMLElement}
+   * @param {string}  name            Name of the icon to create
+   * @param {object}  attrs           Object containing attributes, key is the attribute of an HTMLElement,
+   *                                  value is the values to add for the attribute.
+   * @param {boolean} [returnElement] Should the function return an HTMLElement (default = false).
+   * @returns {string|HTMLElement} Return the icon
    */
   var icon = function icon(name, attrs = {}, returnElement = false) {
     if (typeof _icons[name] == "undefined") {
@@ -237,7 +265,12 @@ var VuFind = (function VuFind() {
     clone.insertAdjacentHTML('afterbegin', _icons[name]);
     let element = clone.firstChild;
 
-    // Add additional attributes
+
+    /**
+     * Adds attributes to an HTML element.
+     * @param {HTMLElement} _element The HTML element to which attributes will be added.
+     * @param {object}      _attrs   An object of key-value pairs representing the attributes to add (default = {}).
+     */
     function addAttrs(_element, _attrs = {}) {
       Object.keys(_attrs).forEach(key => {
         if (key !== 'class') {
@@ -272,8 +305,8 @@ var VuFind = (function VuFind() {
 
   /**
    * Return a spinner html element
-   * @param {string} extraClass Extra class string to add for spinner wrapper
-   * @returns {HTMLSpanElement}
+   * @param {string} extraClass Extra class string to add for spinner wrapper (default = '')
+   * @returns {HTMLSpanElement} The spinner HTML element.
    */
   var spinnerElement = function spinnerElement(extraClass = '') {
     const spinnerIcon = icon('spinner', {}, true);
@@ -284,9 +317,9 @@ var VuFind = (function VuFind() {
 
   /**
    * Return a spinner html element with loading text
-   * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
-   * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
-   * @returns {HTMLSpanElement}
+   * @param {string|null} [text]       Translation key to append inside span wrapper; loading_ellipsis is used if null (default = null)
+   * @param {string}      [extraClass] Extra class string to add for spinner wrapper (default = '')
+   * @returns {HTMLSpanElement} The spinner HTML element with text.
    */
   var loadingElement = function loadingElement(text = null, extraClass = '') {
     const spinnerSpan = spinnerElement(extraClass);
@@ -298,9 +331,9 @@ var VuFind = (function VuFind() {
 
   /**
    * Return an overlay html element that contains a spinner with loading text
-   * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
-   * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
-   * @returns {HTMLDivElement}
+   * @param {string|null} [text]       Translation key to append inside span wrapper; loading_ellipsis is used if null (default = null)
+   * @param {string}      [extraClass] Extra class string to add for spinner wrapper (default = '')
+   * @returns {HTMLDivElement} The loading overlay element.
    */
   function loadingOverlay(text = null, extraClass = '') {
     const overlay = document.createElement('div');
@@ -313,6 +346,8 @@ var VuFind = (function VuFind() {
 
   /**
    * Reload the page without causing trouble with POST parameters while keeping hash
+   * @param {boolean} forceGet If true, forces a GET request with a cache-busting timestamp.
+   * @returns {void}
    */
   var refreshPage = function refreshPage(forceGet) {
     var parts = window.location.href.split('#');
@@ -346,17 +381,16 @@ var VuFind = (function VuFind() {
 
   /**
    * Set element contents and ensure that any inline scripts run properly
-   *
    * @param {Element} elm      Target element
    * @param {string}  html     HTML
-   * @param {Object}  attrs    Any additional attributes (does not work with outerHtml as property)
-   * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update)
+   * @param {object}  attrs    Any additional attributes (does not work with outerHtml as property)
+   * @param {string}  property Target property ('innerHTML', 'outerHTML' or '' for no HTML update) (default = 'innerHTML')
    */
   function setElementContents(elm, html, attrs = {}, property = 'innerHTML') {
     const tmpDiv = document.createElement('div');
     tmpDiv.innerHTML = html;
     const scripts = [];
-    // Cloning scripts wont work as they pass internal executed state so save them for later
+    // Cloning scripts won't work as they pass internal executed state so save them for later
     tmpDiv.querySelectorAll('script').forEach(script => {
       const type = script.getAttribute('type');
       if (!type || 'text/javascript' === type) {
@@ -395,10 +429,9 @@ var VuFind = (function VuFind() {
 
   /**
    * Set innerHTML and ensure that any inline scripts run properly
-   *
    * @param {Element} elm   Target element
    * @param {string}  html  HTML
-   * @param {Object}  attrs Any additional attributes
+   * @param {object}  attrs Any additional attributes
    */
   function setInnerHtml(elm, html, attrs = {}) {
     setElementContents(elm, html, attrs, 'innerHTML');
@@ -406,7 +439,6 @@ var VuFind = (function VuFind() {
 
   /**
    * Set outerHTML and ensure that any inline scripts run properly
-   *
    * @param {Element} elm   Target element
    * @param {string}  html  HTML
    */
@@ -469,6 +501,11 @@ var VuFind = (function VuFind() {
     _theme = theme;
   };
 
+  /**
+   * Sets up click handlers for QR code links to display the QR code image on click.
+   * @param {Element} [_container] The container element to search for links (default = document.body).
+   * @returns {void}
+   */
   function setupQRCodeLinks(_container) {
     var container = _container || document.body;
     var qrcodeLinks = container.querySelectorAll('a.qrcodeLink');
@@ -488,8 +525,8 @@ var VuFind = (function VuFind() {
 
   /**
    * Initialize result page scripts.
-   *
-   * @param {string|Element} _container
+   * @param {string|Element} _container The container element to initialize scripts on.
+   * @returns {void}
    */
   var initResultScripts = function initResultScripts(_container) {
     let container = typeof _container === 'string' ? document.querySelector(_container) : _container;
@@ -500,7 +537,26 @@ var VuFind = (function VuFind() {
     }
   };
 
+  /**
+   * Focus the first element that has the data-focus-on-load attribute.
+   * @returns {void}
+   */
+  var setFocusOnLoad = function setFocusOnLoad() {
+    const focusEl = document.querySelector('[data-focus-on-load="important"]')
+      || document.querySelector('[data-focus-on-load]');
+    if (focusEl) {
+      focusEl.focus();
+    }
+  };
+
+  /**
+   * Initialize all registered submodules and global handlers.
+   * @returns {void}
+   */
   var init = function init() {
+    // Handle focus on load before anything else:
+    setFocusOnLoad();
+
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
         this[_submodules[i]].init();
@@ -516,8 +572,8 @@ var VuFind = (function VuFind() {
 
   /**
    * Disable transition effects and return the previous state
-   *
    * @param {Element} elem Element to handle
+   * @returns {string} The original `transitionDuration` style.
    */
   function disableTransitions(elem) {
     const oldState = elem.style.transitionDuration;
@@ -527,25 +583,21 @@ var VuFind = (function VuFind() {
 
   /**
    * Restore transition effects to the given state
-   *
-   * @param {Element} elem Element to handle
-   * @param {(string|boolean)} state State from previous call to disableTransitions
+   * @param {Element}        elem  Element to handle
+   * @param {string|boolean} state State from previous call to disableTransitions
    */
   function restoreTransitions(elem, state) {
     elem.style.transitionDuration = state;
   }
 
   /**
-   * Check if URLSearchParams contains the given key+value
-   *
+   * Check if URLSearchParams contains the given key-value pair
    * URLSearchParams.has(key, value) support is not yet widespread enough to be used
    * (see https://caniuse.com/mdn-api_urlsearchparams_has_value_parameter)
-   *
    * @param {URLSearchParams} params URLSearchParams to check
-   * @param {string} key Key
-   * @param {string} value Value
-   *
-   * @returns boolean
+   * @param {string} key The key to look for
+   * @param {string} value The value to match
+   * @returns {boolean} Return true if the key-value pair exists
    */
   function inURLSearchParams(params, key, value) {
     for (const [paramsKey, paramsValue] of params) {
@@ -558,15 +610,12 @@ var VuFind = (function VuFind() {
 
   /**
    * Delete a key+value from URLSearchParams
-   *
    * URLSearchParams.delete(key, value) support is not yet widespread enough to be used
    * (see https://caniuse.com/mdn-api_urlsearchparams_delete_value_parameter)
-   *
    * @param {URLSearchParams} params URLSearchParams to delete from
    * @param {string} deleteKey Key to delete
    * @param {string} deleteValue Value to delete
-   *
-   * @returns URLSearchParams
+   * @returns {URLSearchParams} A new URLSearchParams object without the specified key-value pair.
    */
   function deleteKeyValueFromURLSearchParams(params, deleteKey, deleteValue) {
     const newParams = new URLSearchParams();
@@ -580,14 +629,11 @@ var VuFind = (function VuFind() {
 
   /**
    * Delete a set of parameters from URLSearchParams
-   *
    * URLSearchParams.delete(key, value) support is not yet widespread enough to be used
    * (see https://caniuse.com/mdn-api_urlsearchparams_delete_value_parameter)
-   *
    * @param {URLSearchParams} params URLSearchParams to delete from
    * @param {URLSearchParams} deleteParams URLSearchParams containing all params to delete
-   *
-   * @returns URLSearchParams
+   * @returns {URLSearchParams} A new URLSearchParams object with the specified pairs removed.
    */
   function deleteParamsFromURLSearchParams(params, deleteParams) {
     const newParams = new URLSearchParams();
@@ -601,8 +647,9 @@ var VuFind = (function VuFind() {
 
   /**
    * MultiILS: Display password recovery link for enabled login targets
-   * @param {Object} links Recovery links
-   * @param {?String} idPrefix
+   * @param {object} links Recovery links
+   * @param {string|null} idPrefix Optional prefix for the ID selectors.
+   * @returns {void}
    */
   function displayILSPasswordRecoveryLink(links, idPrefix) {
     const searchPrefix = idPrefix ? '#' + idPrefix : '#';
@@ -669,6 +716,12 @@ var VuFind = (function VuFind() {
 })();
 
 /* --- GLOBAL FUNCTIONS --- */
+
+/**
+ * HTML-encode a string.
+ * @param {string} value The string to encode.
+ * @returns {string} The encoded string.
+ */
 function htmlEncode(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -684,17 +737,22 @@ function htmlEncode(value) {
  * - https://github.com/ghosh/Micromodal/blob/master/lib/src/index.js
  */
 const FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
+/**
+ * Get all focusable nodes within a given container element.
+ * @param {Element} container The container to search within.
+ * @returns {Array<Element>} An array of focusable elements.
+ */
 function getFocusableNodes(container) {
   const nodes = container.querySelectorAll(FOCUSABLE_ELEMENTS);
   return Array.from(nodes);
 }
 
 /**
+ * Escape a string for use as an HTML attribute.
  * Adapted from Laminas.
  * Source: https://github.com/laminas/laminas-escaper/blob/2.13.x/src/Escaper.php
- *
- * @param  {string} str Attribute
- * @return {string}
+ * @param  {string} str The string to escape.
+ * @returns {string} The escaped string.
  */
 function escapeHtmlAttr(str) {
   if (!str) {
@@ -738,6 +796,11 @@ function escapeHtmlAttr(str) {
   });
 }
 
+/**
+ * Extract key-value parameters from an element's class string.
+ * @param {Element} el The element to extract parameters from.
+ * @returns {object} An object of key-value pairs.
+ */
 function extractClassParams(el) {
   var str = el.className;
   if (typeof str === "undefined") {
@@ -754,7 +817,11 @@ function extractClassParams(el) {
   return params;
 }
 
-// Turn GET string into array
+/**
+ * Parse a URL's query string into an object.
+ * @param {string} url The URL string.
+ * @returns {object} An object representing the query string parameters.
+ */
 function deparam(url) {
   if (!url.match(/\?|&/)) {
     return [];
@@ -780,9 +847,14 @@ function deparam(url) {
   return request;
 }
 
+/**
+ * Extract the root URL path from a given URL string.
+ * @param {string} url The URL string.
+ * @returns {string|null} The root URL path or null if not found.
+ */
 function getUrlRoot(url) {
   // Parse out the base URL for the current record:
-  var urlroot = null;
+  var urlroot;
   var urlParts = url.split(/[?#]/);
   var urlWithoutFragment = urlParts[0];
   var slashSlash = urlWithoutFragment.indexOf('//');
@@ -805,29 +877,10 @@ function getUrlRoot(url) {
 }
 
 /**
- * Phone number validation
- * @param {String} numID Phone number field ID
- * @param {String} regionCode Region code
- * @deprecated See validation.js for replacement
+ * Initialize Google reCAPTCHA widgets on a page.
+ * @param {Document|Element} [_context] The context to search for reCAPTCHA elements (default = document).
+ * @returns {void}
  */
-function phoneNumberFormHandler(numID, regionCode) {
-  var phoneInput = document.getElementById(numID);
-  var number = phoneInput.value;
-  var valid = isPhoneNumberValid(number, regionCode);
-  if (valid !== true) {
-    if (typeof valid === 'string') {
-      valid = VuFind.translate(valid);
-    } else {
-      valid = VuFind.translate('libphonenumber_invalid');
-    }
-    phoneInput.setCustomValidity(valid);
-    return false;
-  } else {
-    phoneInput.setCustomValidity('');
-  }
-}
-
-// Setup captchas after Google script loads
 function recaptchaOnLoad(_context) {
   if (typeof grecaptcha !== 'undefined') {
     const context = typeof _context === "undefined" ? document : _context;
@@ -837,6 +890,11 @@ function recaptchaOnLoad(_context) {
   }
 }
 
+/**
+ * Reset a reCAPTCHA widget within a given target element.
+ * @param {Element} target The element containing the reCAPTCHA widget.
+ * @returns {void}
+ */
 function resetCaptcha(target) {
   if (typeof grecaptcha !== 'undefined') {
     const captcha = target.querySelector('.g-recaptcha');
@@ -846,6 +904,12 @@ function resetCaptcha(target) {
   }
 }
 
+/**
+ * Handle a bulk form submission.
+ * @param {Event}         event The form submission event.
+ * @param {Array<object>} data  The form data.
+ * @returns {boolean|void} Return false to prevent form submission.
+ */
 function bulkFormHandler(event, data) {
   let numberOfSelected = VuFind.listItemSelection.getAllSelected(event.target).length;
   if (numberOfSelected === 0) {
@@ -875,7 +939,10 @@ function bulkFormHandler(event, data) {
   }
 }
 
-// Ready functions
+/**
+ * Set up click handlers for off-canvas sidebar toggles.
+ * @returns {void}
+ */
 function setupOffcanvas() {
   const sidebar = document.querySelector('.sidebar');
   const body = document.body;
@@ -892,10 +959,20 @@ function setupOffcanvas() {
   }
 }
 
+/**
+ * Unwrap a jQuery object to return the native DOM node.
+ * @param {Node|jQuery} node The node or jQuery object to unwrap.
+ * @returns {Node} The native DOM node.
+ */
 function unwrapJQuery(node) {
   return node instanceof Node ? node : node[0];
 }
 
+/**
+ * Set up change event handlers for "jump menu" dropdowns.
+ * @param {Element} [_container] The container to search for jump menus (default = document.body).
+ * @returns {void}
+ */
 function setupJumpMenus(_container) {
   var container = _container || document.body;
   var selects = container.querySelectorAll('select.jumpMenu');
@@ -909,6 +986,12 @@ function setupJumpMenus(_container) {
   });
 }
 
+/**
+ * Set up dynamic login fields for multi-ILS login.
+ * @param {object} loginMethods An object mapping login targets to their method.
+ * @param {string} idPrefix     An optional prefix for ID selectors.
+ * @returns {void}
+ */
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
   $(searchPrefix + 'target').on("change", function onChangeLoginTarget() {
@@ -934,6 +1017,17 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
       }
     }
   }).trigger("change");
+}
+
+/**
+ * Handle adding a rating to a record by programmatically clicking the rating link.
+ * @param {Event|null} event Click event, if any
+ */
+function addRecordRatingFromUserList(event) {
+  const ratingLink = event.target.closest('.user-rating').querySelector('a');
+  if (ratingLink) {
+    ratingLink.click();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

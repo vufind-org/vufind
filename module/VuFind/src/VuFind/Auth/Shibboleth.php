@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -40,8 +40,6 @@ use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -58,10 +56,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Shibboleth extends AbstractBase implements DbTableAwareInterface
+class Shibboleth extends AbstractBase
 {
-    use DbTableAwareTrait;
-
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */
@@ -81,28 +77,28 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     ];
 
     /**
-     * Read attributes from headers instead of environment variables
+     * Read attributes from headers instead of environment variables.
      *
-     * @var boolean
+     * @var bool
      */
     protected $useHeaders = false;
 
     /**
-     * Name of attribute with shibboleth identity provider
+     * Name of attribute with shibboleth identity provider.
      *
      * @var string
      */
     protected $shibIdentityProvider = self::DEFAULT_IDPSERVERPARAM;
 
     /**
-     * Name of attribute with shibboleth session ID
+     * Name of attribute with shibboleth session ID.
      *
      * @var string
      */
     protected $shibSessionId = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
      * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
@@ -328,7 +324,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Return configuration loader
+     * Return configuration loader.
      *
      * @return ConfigurationLoaderInterface configuration loader
      */
@@ -369,7 +365,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Add session id mapping to external_session table for single logout support
+     * Add session id mapping to external_session table for single logout support.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -394,7 +390,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Fetch entityId used for authentication
+     * Fetch entityId used for authentication.
      *
      * @param Request $request Request object
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Autocomplete Module
+ * Solr Autocomplete Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -35,7 +35,7 @@ use function is_array;
 use function is_object;
 
 /**
- * Solr Autocomplete Module
+ * Solr Autocomplete Module.
  *
  * This class provides suggestions by using the local Solr index.
  *
@@ -48,70 +48,77 @@ use function is_object;
 class Solr implements AutocompleteInterface
 {
     /**
-     * Parameter for mungeQuery
+     * Parameter for mungeQuery.
      *
      * @var string
      */
     protected const NO_WILDCARD = 'NO_WILDCARD';
 
     /**
-     * Autocomplete handler
+     * Autocomplete handler.
      *
      * @var string
      */
     protected $handler;
 
     /**
-     * Solr field to use for display
+     * Solr field to use for display.
      *
      * @var string
      */
     protected $displayField;
 
     /**
-     * Default Solr display field if none is configured
+     * Default Solr display field if none is configured.
      *
      * @var string
      */
     protected $defaultDisplayField = 'title';
 
     /**
-     * Solr field to use for sorting
+     * Solr field to use for sorting.
      *
      * @var string
      */
     protected $sortField;
 
     /**
-     * Filters to apply to Solr search
+     * Max number of search result rows.
+     *
+     * @var ?int
+     */
+    protected ?int $limit = null;
+
+    /**
+     * Filters to apply to Solr search.
      *
      * @var array
      */
     protected $filters;
 
     /**
-     * Search object family to use
+     * Search object family to use.
      *
      * @var string
      */
     protected $searchClassId = 'Solr';
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
@@ -140,7 +147,13 @@ class Solr implements AutocompleteInterface
             $params[2] : null;
         $this->filters = [];
         if (count($params) > 3) {
-            for ($x = 3; $x < count($params); $x += 2) {
+            if (ctype_digit($params[3])) {
+                $this->setLimit((int)$params[3]);
+                $filterStartIndex = 4;
+            } else {
+                $filterStartIndex = 3;
+            }
+            for ($x = $filterStartIndex; $x < count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
                     $this->filters[] = $params[$x] . ':' . $params[$x + 1];
                 }
@@ -152,7 +165,7 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * Add filters (in addition to the configured ones)
+     * Add filters (in addition to the configured ones).
      *
      * @param array $filters Filters to add
      *
@@ -209,6 +222,9 @@ class Solr implements AutocompleteInterface
             $this->handler
         );
         $this->searchObject->getParams()->setSort($this->sortField);
+        if ($this->limit) {
+            $this->searchObject->getParams()->setLimit($this->limit);
+        }
         foreach ($this->filters as $current) {
             $this->searchObject->getParams()->addFilter($current);
         }
@@ -358,6 +374,19 @@ class Solr implements AutocompleteInterface
     protected function setSortField($new)
     {
         $this->sortField = $new;
+    }
+
+    /**
+     * Set the limit. Useful for child classes.
+     *
+     * @param ?int $limit Limit of search result rows. Can be null to default
+     * to the limit of the search class.
+     *
+     * @return void
+     */
+    protected function setLimit(?int $limit): void
+    {
+        $this->limit = $limit;
     }
 
     /**

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<user>
+<z305>
+    <z305-expiry-date>20220120</z305-expiry-date>
+    <z305-sum>9999</z305-sum>
+    <z305-credit-debit>E</z305-credit-debit>
+</z305>
+<z304>
+    <z304-address-0>barcode</z304-address-0>
+    <z304-address-1>The,Arcanis</z304-address-1>
+    <z304-address-2>Teststreet</z304-address-2>
+    <z304-address-3></z304-address-3>
+    <z304-address-4>Test City</z304-address-4>
+    <z304-zip></z304-zip>
+    <z304-bor-status>Omnipotent</z304-bor-status>
+    <z304-email-address>test@email.t</z304-email-address>
+    <z304-telephone>0123456789</z304-telephone>
+</z304>
+<z303>
+    <z303-name>The,Arcanis</z303-name>
+    <z303-id>1</z303-id>
+</z303>
+</user>
+

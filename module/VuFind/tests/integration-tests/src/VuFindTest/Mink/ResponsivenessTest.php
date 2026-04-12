@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,27 +49,24 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * Data provider for testing elements that should be hidden in mobile, visible
      * on desktop.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function windowDimensionProvider(): array
+    public static function windowDimensionProvider(): \Iterator
     {
-        return [
-            'mobile' => [500, 500, ['bulk' => false, 'offcanvas' => true]],
-            'desktop' => [1280, 768, ['bulk' => true, 'offcanvas' => false]],
-        ];
+        yield 'mobile' => [500, 500, ['bulk' => false, 'offcanvas' => true]];
+        yield 'desktop' => [1280, 768, ['bulk' => true, 'offcanvas' => false]];
     }
 
     /**
-     * Test that bulk controls are hidden in mobile view and visible in desktop
+     * Test that bulk controls are hidden in mobile view and visible in desktop.
      *
      * @param int   $windowWidth       Window width
      * @param int   $windowHeight      Window height
      * @param array $controlVisibility Expected visibility of controls
      *
      * @return void
-     *
-     * @dataProvider windowDimensionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('windowDimensionProvider')]
     public function testBulkControls(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate the bulk options:
@@ -118,16 +115,15 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that offcanvas controls are visible in mobile and hidden in desktop
+     * Test that offcanvas controls are visible in mobile and hidden in desktop.
      *
      * @param int   $windowWidth       Window width
      * @param int   $windowHeight      Window height
      * @param array $controlVisibility Expected visibility of controls
      *
      * @return void
-     *
-     * @dataProvider windowDimensionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('windowDimensionProvider')]
     public function testOffcanvas(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate offcanvas:

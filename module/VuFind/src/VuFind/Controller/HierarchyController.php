@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Controller
+ * Hierarchy Controller.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -38,7 +38,7 @@ use function count;
 use function is_object;
 
 /**
- * Hierarchy Controller
+ * Hierarchy Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -50,7 +50,7 @@ use function is_object;
 class HierarchyController extends AbstractBase
 {
     /**
-     * Output JSON
+     * Output JSON.
      *
      * @param array $result Result to be encoded as JSON
      * @param int   $status Response status code
@@ -68,7 +68,7 @@ class HierarchyController extends AbstractBase
     }
 
     /**
-     * Gets a Hierarchy Tree
+     * Gets a Hierarchy Tree.
      *
      * @return mixed
      */
@@ -113,8 +113,8 @@ class HierarchyController extends AbstractBase
     public function searchtreeAction(): ResponseInterface
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $config = $this->getConfig();
-        $limit = $config->Hierarchy->treeSearchLimit;
+        $config = $this->getConfigArray();
+        $limit = $config['Hierarchy']['treeSearchLimit'];
         $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
         $source = $this->params()
@@ -143,7 +143,7 @@ class HierarchyController extends AbstractBase
     }
 
     /**
-     * Get a record for display within a tree
+     * Get a record for display within a tree.
      *
      * @return ResponseInterface
      */

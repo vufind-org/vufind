@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Basemap Configuration Module
+ * Basemap Configuration Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -30,7 +30,7 @@
 namespace VuFind\GeoFeatures;
 
 /**
- * Basemap Configuration Class
+ * Basemap Configuration Class.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -41,21 +41,21 @@ namespace VuFind\GeoFeatures;
 class BasemapConfig extends AbstractConfig
 {
     /**
-     * Request origin
+     * Request origin.
      *
      * @var string
      */
     protected $requestOrigin;
 
     /**
-     * Valid options to retrieve from configuration
+     * Valid options to retrieve from configuration.
      *
      * @var string[]
      */
     protected $options = ['basemap_url', 'basemap_attribution'];
 
     /**
-     * Set default options
+     * Set default options.
      *
      * @return array
      */

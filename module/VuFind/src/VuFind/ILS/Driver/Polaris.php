@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Polaris ILS Driver
+ * Polaris ILS Driver.
  *
  * PHP version 8
  *
@@ -16,8 +16,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -31,11 +31,12 @@ namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
+use function in_array;
 use function intval;
 use function strlen;
 
 /**
- * VuFind Connector for Polaris
+ * VuFind Connector for Polaris.
  *
  * Based on Polaris 1.4 API
  *
@@ -50,42 +51,42 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Web services host
+     * Web services host.
      *
      * @var string
      */
     protected $ws_host;
 
     /**
-     * Web services application path
+     * Web services application path.
      *
      * @var string
      */
     protected $ws_app;
 
     /**
-     * Web services ID
+     * Web services ID.
      *
      * @var string
      */
     protected $ws_api_id;
 
     /**
-     * Web services key
+     * Web services key.
      *
      * @var string
      */
     protected $ws_api_key;
 
     /**
-     * Default pick up location
+     * Default pick up location.
      *
      * @var string
      */
     protected $defaultPickUpLocation;
 
     /**
-     * Web services requesting organization ID
+     * Web services requesting organization ID.
      *
      * @var string
      */
@@ -117,7 +118,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Polaris Restful API
      *
@@ -186,7 +187,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Return human-readable date from text like Date(1360051200000-0800)
+     * Return human-readable date from text like Date(1360051200000-0800).
      *
      * @param string $jsontime Input
      *
@@ -205,7 +206,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Encode from human-readable date to text like Date(1360051200000-0800)
+     * Encode from human-readable date to text like Date(1360051200000-0800).
      *
      * @param string $date Input
      *
@@ -224,7 +225,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -265,7 +266,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -286,15 +287,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             //$holdings_response = $holdings_response_array[0];
             $copy_count++;
 
-            $availability = 0;
-            if (
-                ($holdings_response->CircStatus == 'In')
-                || ($holdings_response->CircStatus == 'Just Returned')
-                || ($holdings_response->CircStatus == 'On Shelf')
-                || ($holdings_response->CircStatus == 'Available - Check shelves')
-            ) {
-                $availability = 1;
-            }
+            $availability = in_array(
+                $holdings_response->CircStatus,
+                ['In', 'Just Returned', 'On Shelf', 'Available - Check shelves']
+            ) ? 1 : 0;
 
             $duedate = '';
             if ($holdings_response->DueDate) {
@@ -323,7 +319,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -356,16 +352,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -386,7 +378,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details.
@@ -460,7 +452,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -507,7 +499,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in VoyagerRestful.ini
      *
@@ -528,7 +520,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -543,14 +535,14 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -560,6 +552,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return array             Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -567,7 +560,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -585,7 +578,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -603,23 +596,15 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!$response->ValidPatron) {
             return null;
         }
-
-        $user = [];
-
-        $user['id']           = $response->PatronID;
-        $user['firstname']    = null;
-        $user['lastname']     = null;
-        $user['cat_username'] = $response->PatronBarcode;
-        $user['cat_password'] = $password;
-        $user['email']        = null;
-        $user['major']        = null;
-        $user['college']      = null;
-
-        return $user;
+        return $this->createPatronArray(
+            id: $response->PatronID,
+            cat_username: $response->PatronBarcode,
+            cat_password: $password
+        );
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -656,7 +641,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -674,16 +659,15 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['cat_password']
         );
         $profile_response = $response->PatronBasicData;
-        $profile = [
-          'firstname' => $profile_response->NameFirst,
-          'lastname'  => $profile_response->NameLast,
-          'phone'     => $profile_response->PhoneNumber,
-        ];
-        return $profile;
+        return $this->createProfileArray(
+            firstname:  $profile_response->NameFirst,
+            lastname:  $profile_response->NameLast,
+            phone:  $profile_response->PhoneNumber
+        );
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -707,11 +691,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         foreach ($response->PatronItemsOutGetRows as $trResponse) {
             // any more renewals available?
-            if (($trResponse->RenewalLimit - $trResponse->RenewalCount) > 0) {
-                $renewable = true;
-            } else {
-                $renewable = false;
-            }
+            $renewable = $trResponse->RenewalLimit - $trResponse->RenewalCount > 0;
             $transactions[] = [
                 'duedate' => $this->formatJSONTime($trResponse->DueDate),
                 'id'      => $trResponse->BibID,
@@ -727,7 +707,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -789,7 +769,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -807,7 +787,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -852,7 +832,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * @param array $holdDetails A single hold array from getMyHolds
      * @param array $patron      Patron information from patronLogin
@@ -868,7 +848,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Checkout History
+     * Get Checkout History.
      *
      * Returns the patrons checkout / reading history
      *
@@ -899,11 +879,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $penultimate_page = $pages - 1;
 
-        if ($penultimate_page > 0) {
-            $page_offset = $penultimate_page;
-        } else {
-            $page_offset = $pages;
-        }
+        $page_offset = $penultimate_page > 0 ? $penultimate_page : $pages;
 
         $checkouts = [];
         while ($page_offset <= $pages) {
@@ -935,7 +911,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Hold Count
+     * Get Hold Count.
      *
      * Returns the count of a hold based on API call to bibid
      *
@@ -962,7 +938,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Suspend Holds
+     * Suspend Holds.
      *
      * Attempts to Suspend a hold or recall on a particular item. The
      * data in $suspendDetails['details'] is determined by getSuspendHoldDetails().
@@ -1015,7 +991,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Suspend Hold Details
+     * Get Suspend Hold Details.
      *
      * @param array $holdDetails An array of item data
      *
@@ -1028,7 +1004,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Reactivate Holds
+     * Reactivate Holds.
      *
      * Attempts to Reactivate a hold or recall on a particular item. The
      * data in $reactivateDetails['details'] is determined by

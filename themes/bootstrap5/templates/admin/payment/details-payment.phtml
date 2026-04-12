@@ -1,0 +1,51 @@
+<?=$this->component('page-title', ['title' => $this->translate('Payment::Payment'), 'level' => 2, 'lightboxLevel' => 3]);?>
+
+<table class="table table-striped">
+  <tr>
+    <th><?=$this->transEsc('Payment::ID')?></th>
+    <td><?=$this->escapeHtml($paymentEntity->getId())?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Local Identifier')?></th>
+    <td><?=$this->escapeHtml($paymentEntity->getLocalIdentifier())?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Remote Identifier')?></th>
+    <td><?=$this->escapeHtml($paymentEntity->getRemoteIdentifier())?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::ILS')?></th>
+    <td><?=$this->escapeHtml($paymentEntity->getSourceIls())?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Username')?></th>
+    <td><?=$this->escapeHtml($paymentEntity->getCatUsername())?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Total')?></th>
+    <td><?=$this->safeMoneyFormat($paymentEntity->getAmount() / 100.00) ?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Created')?></th>
+    <td><?=$this->dateTime()->convertToDisplayDateAndTime('U', $paymentEntity->getCreated()->getTimestamp())?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Paid')?></th>
+    <td><?=$paymentEntity->getPaidDate() ? $this->dateTime()->convertToDisplayDateAndTime('U', $paymentEntity->getPaidDate()->getTimestamp()) : '-'?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Registration Started')?></th>
+    <td><?=$paymentEntity->getRegistrationStartDate() ? $this->dateTime()->convertToDisplayDateAndTime('U', $paymentEntity->getRegistrationStartDate()->getTimestamp()) : '-'?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Registered')?></th>
+    <td><?=$paymentEntity->getRegistrationDate() ? $this->dateTime()->convertToDisplayDateAndTime('U', $paymentEntity->getRegistrationDate()->getTimestamp()) : '-'?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Status')?></th>
+    <td>
+      <?=$this->escapeHtml($this->statuses[$paymentEntity->getStatus()->value] ?? '-')?><br>
+      <?=$this->escapeHtml($paymentEntity->getStatusMessage())?>
+    </td>
+  </tr>
+</table>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PAIA ILS Driver for VuFind to get patron information
+ * PAIA ILS Driver for VuFind to get patron information.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -43,7 +43,7 @@ use function is_array;
 use function is_callable;
 
 /**
- * PAIA ILS Driver for VuFind to get patron information
+ * PAIA ILS Driver for VuFind to get patron information.
  *
  * Holding information is obtained by DAIA, so it's not necessary to implement those
  * functions here; we just need to extend the DAIA driver.
@@ -60,49 +60,49 @@ use function is_callable;
 class PAIA extends DAIA
 {
     /**
-     * URL of PAIA service
+     * URL of PAIA service.
      *
      * @var string
      */
     protected $paiaURL;
 
     /**
-     * Accepted grant_type for authorization
+     * Accepted grant_type for authorization.
      *
      * @var string
      */
     protected $grantType = 'password';
 
     /**
-     * Timeout in seconds to be used for PAIA http requests
+     * Timeout in seconds to be used for PAIA http requests.
      *
      * @var int
      */
     protected $paiaTimeout = null;
 
     /**
-     * Flag to switch on/off caching for PAIA items
+     * Flag to switch on/off caching for PAIA items.
      *
      * @var bool
      */
     protected $paiaCacheEnabled = false;
 
     /**
-     * Session containing PAIA login information
+     * Session containing PAIA login information.
      *
      * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
-     * SessionManager
+     * SessionManager.
      *
      * @var \Laminas\Session\SessionManager
      */
     protected $sessionManager;
 
     /**
-     * PAIA status strings
+     * PAIA status strings.
      *
      * @var array
      */
@@ -125,7 +125,7 @@ class PAIA extends DAIA
 
     /**
      * PAIA scopes as defined in
-     * http://gbv.github.io/paia/paia.html#access-tokens-and-scopes
+     * http://gbv.github.io/paia/paia.html#access-tokens-and-scopes.
      *
      * Notice: logged in users should ALWAYS have scope read_patron as the PAIA
      * driver performs paiaGetUserDetails() upon each call of VuFind's patronLogin().
@@ -147,7 +147,7 @@ class PAIA extends DAIA
     public const SCOPE_DELETE_NOTIFICATIONS = 'delete_notifications';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter          $converter      Date converter
      * @param \Laminas\Session\SessionManager $sessionManager Session Manager
@@ -177,7 +177,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get the session container (constructing it on demand if not already present)
+     * Get the session container (constructing it on demand if not already present).
      *
      * @return SessionContainer
      */
@@ -194,7 +194,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get the session scope
+     * Get the session scope.
      *
      * @return array Array of the Session scope
      */
@@ -360,7 +360,7 @@ class PAIA extends DAIA
 
     /**
      * Public Function which changes the password in the library system
-     * (not supported prior to VuFind 2.4)
+     * (not supported prior to VuFind 2.4).
      *
      * @param array $details Array with patron information, newPassword and
      *                       oldPassword.
@@ -435,7 +435,7 @@ class PAIA extends DAIA
     /**
      * This method returns a string to use as the input form value for
      * cancelling each hold item. (optional, but required if you
-     * implement cancelHolds). Not supported prior to VuFind 1.2
+     * implement cancelHolds). Not supported prior to VuFind 1.2.
      *
      * @param array $hold   A single hold array from getMyHolds
      * @param array $patron Patron information from patronLogin
@@ -454,7 +454,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * @param array $patron      Patron information returned by the patronLogin
      * method.
@@ -464,6 +464,8 @@ class PAIA extends DAIA
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = null, $holdDetails = null)
     {
@@ -471,11 +473,13 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -486,7 +490,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Cancel Storage Retrieval Request
+     * Cancel Storage Retrieval Request.
      *
      * Attempts to Cancel a Storage Retrieval Request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -496,6 +500,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
@@ -504,7 +510,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Cancel Storage Retrieval Request Details
+     * Get Cancel Storage Retrieval Request Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -525,7 +531,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL requests by a specific patron.
      *
@@ -542,7 +548,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Check if ILL request available
+     * Check if ILL request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -561,7 +567,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Place ILL Request
+     * Place ILL Request.
      *
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details
@@ -570,6 +576,8 @@ class PAIA extends DAIA
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function placeILLRequest($details)
     {
@@ -578,7 +586,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get ILL Pickup Libraries
+     * Get ILL Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -597,7 +605,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get ILL Pickup Locations
+     * Get ILL Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -617,7 +625,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Cancel ILL Request
+     * Cancel ILL Request.
      *
      * Attempts to Cancel an ILL request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -627,6 +635,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelILLRequests($cancelDetails)
     {
@@ -635,7 +645,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Cancel ILL Request Details
+     * Get Cancel ILL Request Details.
      *
      * @param array $details An array of item data
      * @param array $patron  Patron information from patronLogin
@@ -651,7 +661,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -715,6 +725,8 @@ class PAIA extends DAIA
      * @param array $patron The patron array from patronLogin
      *
      * @return array Additional fee data for the item
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getAdditionalFeeData($fee, $patron = null)
     {
@@ -739,7 +751,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -761,7 +773,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -771,39 +783,33 @@ class PAIA extends DAIA
      */
     public function getMyProfile($patron)
     {
-        if (is_array($patron)) {
-            $type = isset($patron['type'])
-                ? implode(
-                    ', ',
-                    array_map(
-                        [$this, 'getReadableGroupType'],
-                        (array)$patron['type']
-                    )
-                )
-                : null;
-            return [
-                'firstname'  => $patron['firstname'],
-                'lastname'   => $patron['lastname'],
-                'address1'   => $patron['address'],
-                'address2'   => null,
-                'city'       => null,
-                'country'    => null,
-                'zip'        => null,
-                'phone'      => null,
-                'mobile_phone' => null,
-                'group'      => $type,
-                // PAIA specific custom values
-                'expires'    => isset($patron['expires'])
-                    ? $this->convertDate($patron['expires']) : null,
-                'statuscode' => $patron['status'] ?? null,
-                'canWrite'   => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
-            ];
+        if (!is_array($patron)) {
+            return [];
         }
-        return [];
+        $type = isset($patron['type'])
+            ? implode(
+                ', ',
+                array_map(
+                    [$this, 'getReadableGroupType'],
+                    (array)$patron['type']
+                )
+            )
+            : null;
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $patron['address'],
+            group: $type,
+            nonDefaultFields: [
+                'expires' => isset($patron['expires']) ? $this->convertDate($patron['expires']) : null,
+                'statuscode' => $patron['status'] ?? null,
+                'canWrite' => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
+            ]
+        );
     }
 
     /**
-     * Get Readable Group Type
+     * Get Readable Group Type.
      *
      * Due to PAIA specifications type returns an URI. This method offers a
      * possibility to translate the URI in a readable value by inheritance
@@ -819,7 +825,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -840,7 +846,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get Patron StorageRetrievalRequests
+     * Get Patron StorageRetrievalRequests.
      *
      * This is responsible for retrieving all storage retrieval requests
      * by a specific patron.
@@ -861,24 +867,32 @@ class PAIA extends DAIA
     }
 
     /**
-     * This method queries the ILS for new items
+     * This method queries the ILS for new items.
      *
-     * @param string $page    page number of results to retrieve (counting starts @1)
-     * @param string $limit   the size of each page of results to retrieve
-     * @param string $daysOld the maximum age of records to retrieve in days (max 30)
-     * @param string $fundID  optional fund ID to use for limiting results
+     * @param string  $page    page number of results to retrieve (counting starts @1)
+     * @param string  $limit   the size of each page of results to retrieve
+     * @param string  $daysOld the maximum age of records to retrieve in days (max 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
      *
      * @return array An associative array with two keys: 'count' (the number of items
      * in the 'results' array) and 'results' (an array of associative arrays, each
      * with a single key: 'id', a record ID).
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
-    public function getNewItems($page, $limit, $daysOld, $fundID)
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         return [];
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -895,6 +909,8 @@ class PAIA extends DAIA
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = null, $holdDetails = null)
     {
@@ -905,7 +921,7 @@ class PAIA extends DAIA
     /**
      * This method returns a string to use as the input form value for renewing
      * each hold item. (optional, but required if you implement the
-     * renewMyItems method) Not supported prior to VuFind 1.2
+     * renewMyItems method) Not supported prior to VuFind 1.2.
      *
      * @param array $checkOutDetails One of the individual item arrays returned by
      *                               the getMyTransactions method
@@ -922,7 +938,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get the callnumber of this item
+     * Get the callnumber of this item.
      *
      * @param array $doc Array of PAIA item.
      *
@@ -934,7 +950,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1072,7 +1088,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * PAIA helper function to map session data to return value of patronLogin()
+     * PAIA helper function to map session data to return value of patronLogin().
      *
      * @param array  $details  Patron details returned by patronLogin
      * @param string $password Patron catalogue password
@@ -1095,7 +1111,7 @@ class PAIA extends DAIA
      *  - http://purl.org/ontology/paia#StorageCondition to select a document
      *    location -- mapped to pickUpLocation
      *  - http://purl.org/ontology/paia#FeeCondition to confirm or select a document
-     *    service causing a fee -- not mapped yet
+     *    service causing a fee -- not mapped yet.
      *
      * @param array $holdDetails An array of item and patron data
      *
@@ -1112,7 +1128,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details
@@ -1194,7 +1210,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Place a Storage Retrieval Request
+     * Place a Storage Retrieval Request.
      *
      * Attempts to place a request on a particular item and returns
      * an array with result details.
@@ -1319,7 +1335,7 @@ class PAIA extends DAIA
      */
 
     /**
-     * PAIA support method to return strings for PAIA service status values
+     * PAIA support method to return strings for PAIA service status values.
      *
      * @param string $status PAIA service status
      *
@@ -1391,7 +1407,7 @@ class PAIA extends DAIA
 
     /**
      * PAIA support method to retrieve needed ItemId in case PAIA-response does not
-     * contain it
+     * contain it.
      *
      * @param string $id itemId
      *
@@ -1403,7 +1419,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * PAIA support function to implement ILS specific parsing of user_details
+     * PAIA support function to implement ILS specific parsing of user_details.
      *
      * @param string $patron        User id
      * @param array  $user_response Array with PAIA response data
@@ -1426,21 +1442,22 @@ class PAIA extends DAIA
         // TODO: implement parsing of user details according to types set
         // (cf. https://github.com/gbv/paia/issues/29)
 
-        $user = [];
-        $user['id']        = $patron;
-        $user['firstname'] = $firstname;
-        $user['lastname']  = $lastname;
-        $user['email']     = ($user_response['email'] ?? '');
-        $user['major']     = null;
-        $user['college']   = null;
         // add other information from PAIA - we don't want anything to get lost
         // while parsing
+        $undefinedData = [];
         foreach ($user_response as $key => $value) {
-            if (!isset($user[$key])) {
-                $user[$key] = $value;
+            if (in_array($key, ['id', 'firstname', 'lastname', 'email'])) {
+                continue;
             }
+            $undefinedData[$key] = $value;
         }
-        return $user;
+        return $this->createPatronArray(
+            id: $patron,
+            firstname: $firstname,
+            lastname: $lastname,
+            email: $user_response['email'] ?? null,
+            nonDefaultFields: $undefinedData
+        );
     }
 
     /**
@@ -1482,7 +1499,7 @@ class PAIA extends DAIA
             && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
             ? $result['item_id'] : '';
 
-        // edition (0..1) URI of a the document (no particular copy)
+        // edition (0..1) URI of the document (no particular copy)
         // hook for retrieving alternative ItemId in case PAIA does not
         // the needed id
         $result['id'] = (isset($doc['edition'])
@@ -1567,7 +1584,7 @@ class PAIA extends DAIA
             }
 
             // status: provided (the document is ready to be used by the patron)
-            $result['available'] = $doc['status'] == 4 ? true : false;
+            $result['available'] = $doc['status'] == 4;
 
             $results[] = $result;
         }
@@ -1675,7 +1692,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Post something to a foreign host
+     * Post something to a foreign host.
      *
      * @param string $file         POST target URL
      * @param string $data_to_send POST data
@@ -1714,7 +1731,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * GET data from foreign host
+     * GET data from foreign host.
      *
      * @param string $file         GET target URL
      * @param string $access_token PAIA access token for current session
@@ -1746,7 +1763,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Helper function for PAIA to uniformly parse JSON
+     * Helper function for PAIA to uniformly parse JSON.
      *
      * @param string $file JSON data
      *
@@ -1767,7 +1784,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Retrieve file at given URL and return it as json_decoded array
+     * Retrieve file at given URL and return it as json_decoded array.
      *
      * @param string $file GET target URL
      *
@@ -1785,7 +1802,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Post something at given URL and return it as json_decoded array
+     * Post something at given URL and return it as json_decoded array.
      *
      * @param string $file POST target URL
      * @param array  $data POST data
@@ -1805,7 +1822,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * PAIA authentication function
+     * PAIA authentication function.
      *
      * @param string $username Username
      * @param string $password Password
@@ -1858,11 +1875,17 @@ class PAIA extends DAIA
 
         // finalize post data
         $post_data['grant_type'] = $this->grantType;
-        $post_data['scope'] = self::SCOPE_READ_PATRON . ' ' .
-                self::SCOPE_READ_FEES . ' ' .
-                self::SCOPE_READ_ITEMS . ' ' .
-                self::SCOPE_WRITE_ITEMS . ' ' .
-                self::SCOPE_CHANGE_PASSWORD;
+        $scopes = array_merge(
+            [
+                self::SCOPE_READ_PATRON,
+                self::SCOPE_READ_FEES,
+                self::SCOPE_READ_ITEMS,
+                self::SCOPE_WRITE_ITEMS,
+                self::SCOPE_CHANGE_PASSWORD,
+            ],
+            (array)($this->config['PAIA']['additionalScopes'] ?? [])
+        );
+        $post_data['scope'] = implode(' ', $scopes);
 
         // perform full PAIA auth and get patron info
         $result = $this->httpService->post(
@@ -1945,7 +1968,7 @@ class PAIA extends DAIA
      *
      * @param string $scope The scope to test for with the current session scopes.
      *
-     * @return boolean
+     * @return bool
      */
     protected function paiaCheckScope($scope)
     {
@@ -1954,7 +1977,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Check if storage retrieval request available
+     * Check if storage retrieval request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -1972,7 +1995,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Check if hold or recall available
+     * Check if hold or recall available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -1987,18 +2010,13 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (
-            isset($patron['status']) && $patron['status'] == 0
+        return isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
-        ) {
-            return true;
-        }
-        return false;
+            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
     }
 
     /**
-     * PAIA support method for PAIA core method 'notifications'
+     * PAIA support method for PAIA core method 'notifications'.
      *
      * @param array $patron Array with patron information
      *
@@ -2044,7 +2062,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Enriches PAIA notifications response with additional mappings
+     * Enriches PAIA notifications response with additional mappings.
      *
      * @param array $notifications list of PAIA notifications
      *
@@ -2057,7 +2075,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * PAIA support method for PAIA core method DELETE 'notifications'
+     * PAIA support method for PAIA core method DELETE 'notifications'.
      *
      * @param array  $patron    Array with patron information
      * @param string $messageId PAIA service specific ID
@@ -2105,7 +2123,7 @@ class PAIA extends DAIA
 
     /**
      * Removes multiple System Messages. Bulk deletion is not implemented in PAIA,
-     * so this method iterates over the set of IDs and removes them separately
+     * so this method iterates over the set of IDs and removes them separately.
      *
      * @param array $patron     Array with patron information
      * @param array $messageIds list of PAIA service specific IDs
@@ -2133,7 +2151,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * Get notification identifier from message identifier
+     * Get notification identifier from message identifier.
      *
      * @param string $messageId Message identifier
      *
@@ -2145,7 +2163,7 @@ class PAIA extends DAIA
     }
 
     /**
-     * DELETE data on foreign host
+     * DELETE data on foreign host.
      *
      * @param string $file         DELETE target URL
      * @param string $access_token PAIA access token for current session

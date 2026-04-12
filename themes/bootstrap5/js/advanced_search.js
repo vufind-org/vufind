@@ -5,6 +5,13 @@ var nextGroup = 0;
 var groupLength = [];
 var deleteGroup, deleteSearch;
 
+/**
+ * Add a new search field to a specified group in the advanced search form
+ * @param {number}  group          The ID of the group to add the search field to.
+ * @param {object}  [_fieldValues] Optional object with preset values for the search field.
+ * @param {boolean} [isUser]       Check whether the action was triggered by the user (default = false)
+ * @returns {boolean} Always return false to prevent default link behavior.
+ */
 function addSearch(group, _fieldValues, isUser = false) {
   var fieldValues = _fieldValues || {};
   // Build the new search
@@ -63,6 +70,12 @@ function addSearch(group, _fieldValues, isUser = false) {
   return false;
 }
 
+/**
+ * Delete a specific search field from a group.
+ * @param {number} group The ID of the group containing the search field.
+ * @param {number} sindex The index of the search field to delete.
+ * @returns {boolean} Always return false to prevent default link behavior.
+ */
 deleteSearch = function _deleteSearch(group, sindex) {
   for (var i = sindex; i < groupLength[group] - 1; i++) {
     var $search0 = $('#search' + group + '_' + i);
@@ -87,6 +100,9 @@ deleteSearch = function _deleteSearch(group, sindex) {
   return false;
 };
 
+/**
+ * Renumber the labels for the group delete links.
+ */
 function _renumberGroupLinkLabels() {
   $('.adv-group-close').each(function deleteGroupLinkLabel(i, link) {
     $(link).attr(
@@ -96,6 +112,14 @@ function _renumberGroupLinkLabels() {
   });
 }
 
+/**
+ * Add a new search group to the advanced search form.
+ * @param {string}  [_firstTerm]  Initial search term for the first field in the new group.
+ * @param {string}  [_firstField] Initial search field for the first field in the new group.
+ * @param {string}  [_join]       Initial join operator for the new group.
+ * @param {boolean} [isUser]      Whether the action was triggered by a user (default = false).
+ * @returns {number} The ID of the newly created group.
+ */
 function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   var firstTerm = _firstTerm || '';
   var firstField = _firstField || '';

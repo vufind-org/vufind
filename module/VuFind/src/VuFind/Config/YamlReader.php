@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind YAML Configuration Reader
+ * VuFind YAML Configuration Reader.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -38,7 +38,7 @@ use function dirname;
 use function is_array;
 
 /**
- * VuFind YAML Configuration Reader
+ * VuFind YAML Configuration Reader.
  *
  * @category VuFind
  * @package  Config
@@ -52,7 +52,7 @@ class YamlReader
     use \VuFind\Feature\MergeRecursiveTrait;
 
     /**
-     * Cache directory name
+     * Cache directory name.
      *
      * @var string
      */
@@ -66,7 +66,7 @@ class YamlReader
     protected $files = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver           $pathResolver Config file path resolver
      * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
@@ -78,12 +78,11 @@ class YamlReader
     }
 
     /**
-     * Return a configuration
+     * Return a configuration.
      *
-     * @param string  $filename       Config file name
-     * @param boolean $useLocalConfig Use local configuration if available
-     * @param boolean $forceReload    Reload even if config has been internally
-     * cached in the class.
+     * @param string $filename       Config file name
+     * @param bool   $useLocalConfig Use local configuration if available
+     * @param bool   $forceReload    Reload even if config has been internally cached in the class.
      *
      * @return array
      */
@@ -100,7 +99,8 @@ class YamlReader
             $baseConfigPath = $this->pathResolver->getBaseConfigPath($filename);
             $this->files[$filename] = $this->getFromPaths(
                 $baseConfigPath,
-                $localConfigPath
+                $localConfigPath,
+                $useLocalConfig
             );
         }
 
@@ -110,29 +110,38 @@ class YamlReader
     /**
      * Given core and local filenames, retrieve the configuration data.
      *
-     * @param string $defaultFile Full path to file containing default YAML
-     * @param string $customFile  Full path to file containing local customizations
+     * @param string $defaultFile    Full path to file containing default YAML
+     * @param string $customFile     Full path to file containing local customizations
      * (may be null if no local file exists).
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    protected function getFromPaths($defaultFile, $customFile = null)
+    protected function getFromPaths($defaultFile, $customFile = null, $useLocalConfig = true)
     {
         // Connect to the cache:
         $cache = (null !== $this->cacheManager)
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
+        $cacheConfig = (null !== $this->cacheManager) ? $this->cacheManager->getConfig() : [];
+        $cacheOptions = array_merge(
+            $cacheConfig['ConfigCache'] ?? [],
+            $cacheConfig['CacheConfigName_' . $this->cacheName] ?? [],
+        );
+        $reloadOnFileChange = $cacheOptions['reloadOnFileChange'] ?? true;
+
         // Generate cache key:
-        $cacheKey = $defaultFile . '-'
-            . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
+        $cacheKey = $defaultFile .
+            (($reloadOnFileChange && file_exists($defaultFile)) ? '-' . filemtime($defaultFile) : '');
         if (!empty($customFile)) {
-            $cacheKey .= '-local-' . filemtime($customFile);
+            $cacheKey .= '-local-'
+                . (($reloadOnFileChange && file_exists($customFile)) ? '-' . filemtime($customFile) : '');
         }
         $cacheKey = md5($cacheKey);
 
         // Generate data if not found in cache:
         if ($cache === false || !($results = $cache->getItem($cacheKey))) {
-            $results = $this->parseYaml($customFile, $defaultFile);
+            $results = $this->parseYaml($customFile, $defaultFile, $useLocalConfig);
             if ($cache !== false) {
                 $cache->setItem($cacheKey, $results);
             }
@@ -144,32 +153,68 @@ class YamlReader
     /**
      * Process a YAML file (and its parent, if necessary).
      *
-     * @param string $file          YAML file to load (will evaluate to null
+     * @param string $file           YAML file to load (will evaluate to null
      * if file does not exist).
-     * @param string $defaultParent Parent YAML file from which $file should
+     * @param string $defaultParent  Parent YAML file from which $file should
      * inherit (unless overridden by a specific directive in $file). None by
      * default.
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    protected function parseYaml($file, $defaultParent = null)
+    protected function parseYaml($file, $defaultParent = null, $useLocalConfig = true)
     {
         // First load current file:
         $results = (!empty($file) && file_exists($file))
             ? Yaml::parse(file_get_contents($file)) : [];
 
+        if (isset($results['@parent_yaml']) && isset($results['@parent_config_name'])) {
+            error_log(
+                'Cannot use both directives @parent_yaml and '
+                . '@parent_config_name at the same time in one file.'
+            );
+        }
+
         // Override default parent with explicitly-defined parent, if present:
         if (isset($results['@parent_yaml'])) {
-            // First try parent as absolute path, then as relative:
-            $defaultParent = file_exists($results['@parent_yaml'])
-                ? $results['@parent_yaml']
-                : dirname($file) . '/' . $results['@parent_yaml'];
-            if (!file_exists($defaultParent)) {
+            if (false === $results['@parent_yaml']) {
+                // Remove parent since value was set to false:
                 $defaultParent = null;
-                error_log('Cannot find parent file: ' . $results['@parent_yaml']);
+            } else {
+                // First try parent as absolute path, then as relative:
+                $defaultParent = file_exists($results['@parent_yaml'])
+                    ? $results['@parent_yaml']
+                    : dirname($file) . '/' . $results['@parent_yaml'];
+                if (!file_exists($defaultParent)) {
+                    $defaultParent = null;
+                    error_log(
+                        'Cannot find parent file: ' . $results['@parent_yaml']
+                    );
+                }
             }
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
+        }
+        // Override default parent with a named configuration, if present:
+        if (isset($results['@parent_config_name'])) {
+            if (false === $results['@parent_config_name']) {
+                // Remove parent since value was set to false:
+                $defaultParent = null;
+            } else {
+                $parentConfigName = $results['@parent_config_name'] . '.yaml';
+                $defaultParent = $useLocalConfig
+                    ? $this->pathResolver->getLocalConfigPath($parentConfigName)
+                    : null;
+                if ($defaultParent === null || !file_exists($defaultParent)) {
+                    $defaultParent = $this->pathResolver->getBaseConfigPath($parentConfigName);
+                }
+                if (!file_exists($defaultParent)) {
+                    $defaultParent = null;
+                    error_log('Cannot find parent config: ' . $parentConfigName);
+                }
+            }
+            // Swallow the directive after processing it:
+            unset($results['@parent_config_name']);
         }
         // Check for sections to merge instead of overriding:
         $mergedSections = [];
@@ -207,7 +252,7 @@ class YamlReader
     }
 
     /**
-     * Return array element reference by path
+     * Return array element reference by path.
      *
      * @param array $arr    Array to access
      * @param array $path   Path to retrieve

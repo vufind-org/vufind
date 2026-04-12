@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Image link view helper (extended for VuFind's theme system).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -30,7 +30,7 @@
 namespace VuFindTheme\View\Helper;
 
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Image link view helper (extended for VuFind's theme system).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
     use RelativePathTrait;
 
     /**
-     * Theme information service
+     * Theme information service.
      *
      * @var \VuFindTheme\ThemeInfo
      */
     protected $themeInfo;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
      */
@@ -60,7 +60,7 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Returns an image path according the configured theme
+     * Returns an image path according the configured theme.
      *
      * @param string $image image name/path
      *

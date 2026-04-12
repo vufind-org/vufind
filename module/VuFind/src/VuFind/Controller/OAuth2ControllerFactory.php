@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -65,35 +65,35 @@ use function in_array;
 class OAuth2ControllerFactory extends AbstractBaseFactory
 {
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * OAuth2 configuration
+     * OAuth2 configuration.
      *
      * @var array
      */
     protected $oauth2Config;
 
     /**
-     * Config file path resolver
+     * Config file path resolver.
      *
      * @var PathResolver
      */
     protected $pathResolver;
 
     /**
-     * Claim extractor
+     * Claim extractor.
      *
      * @var ClaimExtractor
      */
     protected $claimExtractor = null;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -112,7 +112,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $this->container = $container;
         $this->pathResolver = $container->get(PathResolver::class);
@@ -190,7 +190,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     }
 
     /**
-     * Add grant types to the server
+     * Add grant types to the server.
      *
      * @param AuthorizationServer $server       Authorization server
      * @param ?array              $clientConfig Client configuration
@@ -219,7 +219,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     }
 
     /**
-     * Create an auth code grant
+     * Create an auth code grant.
      *
      * @param ?array $clientConfig Client configuration
      *
@@ -245,7 +245,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     }
 
     /**
-     * Create a refresh token grant
+     * Create a refresh token grant.
      *
      * @return RefreshTokenGrant
      */

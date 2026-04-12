@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Prefix Autocomplete Module
+ * Solr Prefix Autocomplete Module.
  *
  * PHP version 8
  *
@@ -17,14 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
  * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
+ * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
 
 namespace VuFind\Autocomplete;
@@ -32,7 +32,7 @@ namespace VuFind\Autocomplete;
 use function is_object;
 
 /**
- * Solr autocomplete module with prefix queries using edge N-gram filter
+ * Solr autocomplete module with prefix queries using edge N-gram filter.
  *
  * This class provides suggestions by using the local Solr index.
  *
@@ -45,56 +45,56 @@ use function is_object;
 class SolrPrefix implements AutocompleteInterface
 {
     /**
-     * Results manager
+     * Results manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Search object
+     * Search object.
      *
      * @var \VuFind\Search\Solr\Results
      */
     protected $searchObject;
 
     /**
-     * Search class id
+     * Search class id.
      *
      * @var string
      */
     protected $searchClassId = 'Solr';
 
     /**
-     * Autocomplete field
+     * Autocomplete field.
      *
      * @var string
      */
     protected $autocompleteField;
 
     /**
-     * Facet field
+     * Facet field.
      *
      * @var string
      */
     protected $facetField;
 
     /**
-     * Facet limit, can be overridden in subclasses
+     * Facet limit, can be overridden in subclasses.
      *
      * @var int
      */
     protected $limit = 10;
 
     /**
-     * Filters to apply to Solr search
+     * Filters to apply to Solr search.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
@@ -104,7 +104,7 @@ class SolrPrefix implements AutocompleteInterface
     }
 
     /**
-     * Get suggestions
+     * Get suggestions.
      *
      * This method returns an array of strings matching the user's query for
      * display in the autocomplete box.
@@ -122,8 +122,7 @@ class SolrPrefix implements AutocompleteInterface
         $results = [];
         try {
             $params = $this->searchObject->getParams();
-            $rawQuery = $this->autocompleteField . ':(' .
-                $this->mungeQuery($query) . ')';
+            $rawQuery = $this->autocompleteField . ':(' . $this->mungeQuery($query) . ')';
             $params->setBasicSearch($rawQuery);
             $params->addFacet($this->facetField);
             $params->setLimit(0);
@@ -161,7 +160,7 @@ class SolrPrefix implements AutocompleteInterface
     }
 
     /**
-     * Set configuration
+     * Set configuration.
      *
      * Set parameters that affect the behavior of the autocomplete handler.
      * These values normally come from the search configuration file.
@@ -172,12 +171,15 @@ class SolrPrefix implements AutocompleteInterface
      */
     public function setConfig($params)
     {
-        [$this->autocompleteField, $this->facetField] = explode(':', $params, 2);
+        [$this->autocompleteField, $this->facetField, $limit] = explode(':', $params . '::');
+        if ($limit && ctype_digit($limit)) {
+            $this->limit = $limit;
+        }
         $this->initSearchObject();
     }
 
     /**
-     * Add filters (in addition to the configured ones)
+     * Add filters (in addition to the configured ones).
      *
      * @param array $filters Filters to add
      *
@@ -197,7 +199,5 @@ class SolrPrefix implements AutocompleteInterface
     {
         // Build a new search object:
         $this->searchObject = $this->resultsManager->get($this->searchClassId);
-        $this->searchObject->getOptions()->spellcheckEnabled(false);
-        $this->searchObject->getOptions()->disableHighlighting();
     }
 }

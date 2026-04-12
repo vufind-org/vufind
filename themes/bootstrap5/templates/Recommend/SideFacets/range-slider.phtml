@@ -1,9 +1,9 @@
 <?php
   // Sanitize inputs:
   $sanitize = match($this->facet['type']) {
-    'date' => fn ($val) => preg_replace('/[^\d]*/', '', $val), // digits only for year-only dates
+    'date' => fn ($val) => preg_replace('/^.*?(-?\d+).*/', '$1', $val), // digits/sign only for year-only dates
     'fulldate' => fn ($val) => substr($val, 0, 10),
-    'numeric' => fn ($val) => preg_replace('/[^\d.]*/', '', $val), // digits/decimal points only for numeric
+    'numeric' => fn ($val) => preg_replace('/^.*?(-?[\d.]+).*/', '$1', $val), // digits/decimal points/sign only for numeric
     default => fn ($val) => $val, // no sanitization for "generic" ranges
   };
   $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Aleph ILS driver
+ * Aleph ILS driver.
  *
  * PHP version 8
  *
@@ -10,8 +10,7 @@
  * last update: 7.11.2007
  * tested with X-Server Aleph 18.1.
  *
- * TODO: login, course information, getNewItems, duedate in holdings,
- * https connection to x-server, ...
+ * TODO: login, course information, https connection to x-server, ...
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,8 +22,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -50,7 +49,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * Aleph ILS driver
+ * Aleph ILS driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -63,7 +62,7 @@ use function strlen;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Aleph extends AbstractBase implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -72,56 +71,56 @@ class Aleph extends AbstractBase implements
     public const RECORD_ID_BASE_SEPARATOR = '-';
 
     /**
-     * Translator object
+     * Translator object.
      *
      * @var Aleph\Translator
      */
     protected $alephTranslator = false;
 
     /**
-     * The base URL, where the REST DLF API is running
+     * The base URL, where the REST DLF API is running.
      *
      * @var string
      */
     protected $dlfbaseurl = null;
 
     /**
-     * Aleph server
+     * Aleph server.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * Bibliographic bases
+     * Bibliographic bases.
      *
      * @var array
      */
     protected $bib;
 
     /**
-     * User library
+     * User library.
      *
      * @var string
      */
     protected $useradm;
 
     /**
-     * Item library
+     * Item library.
      *
      * @var string
      */
     protected $admlib;
 
     /**
-     * X server user name
+     * X server user name.
      *
      * @var string
      */
     protected $wwwuser;
 
     /**
-     * X server user password
+     * X server user password.
      *
      * @var string
      */
@@ -135,28 +134,28 @@ class Aleph extends AbstractBase implements
     protected $xserver_enabled;
 
     /**
-     * X server port (defaults to 80)
+     * X server port (defaults to 80).
      *
      * @var int
      */
     protected $xport;
 
     /**
-     * DLF REST API port
+     * DLF REST API port.
      *
      * @var int
      */
     protected $dlfport;
 
     /**
-     * Statuses considered as available
+     * Statuses considered as available.
      *
      * @var array
      */
     protected $available_statuses;
 
     /**
-     * List of patron hoe libraries
+     * List of patron hoe libraries.
      *
      * @var array
      */
@@ -178,21 +177,21 @@ class Aleph extends AbstractBase implements
     protected $debug_enabled;
 
     /**
-     * Preferred pickup locations
+     * Preferred pickup locations.
      *
      * @var array
      */
     protected $preferredPickUpLocations;
 
     /**
-     * Patron id used when no specific patron defined
+     * Patron id used when no specific patron defined.
      *
      * @var string
      */
     protected $defaultPatronId;
 
     /**
-     * Mapping of z304 address elements in Aleph to getMyProfile attributes
+     * Mapping of z304 address elements in Aleph to getMyProfile attributes.
      *
      * @var array
      */
@@ -215,7 +214,7 @@ class Aleph extends AbstractBase implements
         . '(?<position>[0-9]+) in queue;/';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      * @param ?\VuFind\Cache\Manager $cacheManager  Cache manager (optional)
@@ -532,7 +531,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -621,7 +620,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -660,7 +659,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -689,11 +688,7 @@ class Aleph extends AbstractBase implements
             $params['patron'] = $this->defaultPatronId;
         }
         $xml = $this->doRestDLFRequest(['record', $resource, 'items'], $params);
-        if (!empty($xml->{'items'})) {
-            $items = $xml->{'items'}->{'item'};
-        } else {
-            $items = [];
-        }
+        $items = !empty($xml->{'items'}) ? $xml->{'items'}->{'item'} : [];
         foreach ($items as $item) {
             $item_status         = (string)$item->{'z30-item-status-code'}; // $isc
             // $ipsc:
@@ -774,7 +769,7 @@ class Aleph extends AbstractBase implements
                 'addLink'           => $addLink,
                 'holdtype'          => 'hold',
                 /* below are optional attributes*/
-                'collection'        => (string)$collection,
+                'collection'        => $collection,
                 'collection_desc'   => (string)$collection_desc['desc'],
                 'callnumber_second' => (string)$z30->{'z30-call-no-2'},
                 'sub_lib_desc'      => (string)$item_status['sub_lib_desc'],
@@ -786,7 +781,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * @param array $user   The patron array from patronLogin
      * @param array $params Parameters
@@ -801,14 +796,14 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array   $user    The patron array from patronLogin
-     * @param array   $params  Parameters
-     * @param boolean $history History
+     * @param array $user    The patron array from patronLogin
+     * @param array $params  Parameters
+     * @param bool  $history History
      *
      * @throws DateException
      * @throws ILSException
@@ -901,7 +896,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -918,7 +913,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $details['details'] is determined by getRenewDetails().
@@ -956,7 +951,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1000,11 +995,7 @@ class Aleph extends AbstractBase implements
             if (preg_match($this->queuePositionRegex, $status, $matches)) {
                 $position = $matches['position'];
             }
-            if ($holddate == '00000000') {
-                $holddate = null;
-            } else {
-                $holddate = $this->parseDate($holddate);
-            }
+            $holddate = $holddate == '00000000' ? null : $this->parseDate($holddate);
             $delete = ($delete[0] == 'Y');
             // Secondary, Aleph-specific identifier that may be useful for
             // local customizations
@@ -1033,7 +1024,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * @param array $holdDetails A single hold array from getMyHolds
      * @param array $patron      Patron information from patronLogin
@@ -1052,7 +1043,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -1070,7 +1061,7 @@ class Aleph extends AbstractBase implements
         $items = [];
         foreach ($details['details'] as $id) {
             try {
-                $result = $this->doRestDLFRequest(
+                $this->doRestDLFRequest(
                     [
                         'patron', $patronId, 'circulationActions', 'requests',
                         'holds', $id,
@@ -1092,7 +1083,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1148,7 +1139,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1159,11 +1150,7 @@ class Aleph extends AbstractBase implements
      */
     public function getMyProfile($user)
     {
-        if ($this->xserver_enabled) {
-            $profile = $this->getMyProfileX($user);
-        } else {
-            $profile = $this->getMyProfileDLF($user);
-        }
+        $profile = $this->xserver_enabled ? $this->getMyProfileX($user) : $this->getMyProfileDLF($user);
         $profile['cat_username'] ??= $user['id'];
         return $profile;
     }
@@ -1189,42 +1176,27 @@ class Aleph extends AbstractBase implements
             ],
             true
         );
-        $id = (string)$xml->z303->{'z303-id'};
-        $address1 = (string)$xml->z304->{'z304-address-2'};
-        $address2 = (string)$xml->z304->{'z304-address-3'};
-        $zip = (string)$xml->z304->{'z304-zip'};
-        $phone = (string)$xml->z304->{'z304-telephone'};
-        $barcode = (string)$xml->z304->{'z304-address-0'};
-        $group = (string)$xml->z305->{'z305-bor-status'};
+        [$lastname, $firstname] = $this->getLastAndFirstName((string)$xml->z303->{'z303-name'});
+
         $expiry = (string)$xml->z305->{'z305-expiry-date'};
-        $credit_sum = (string)$xml->z305->{'z305-sum'};
-        $credit_sign = (string)$xml->z305->{'z305-credit-debit'};
-        $name = (string)$xml->z303->{'z303-name'};
-        if (strstr($name, ',')) {
-            [$lastname, $firstname] = explode(',', $name);
-        } else {
-            $lastname = $name;
-            $firstname = '';
-        }
-        if ($credit_sign == null) {
-            $credit_sign = 'C';
-        }
-        $recordList = compact('firstname', 'lastname');
-        if (isset($user['email'])) {
-            $recordList['email'] = $user['email'];
-        }
-        $recordList['address1'] = $address1;
-        $recordList['address2'] = $address2;
-        $recordList['zip'] = $zip;
-        $recordList['phone'] = $phone;
-        $recordList['group'] = $group;
-        $recordList['barcode'] = $barcode;
-        $recordList['expire'] = $this->parseDate($expiry);
-        $recordList['credit'] = $expiry;
-        $recordList['credit_sum'] = $credit_sum;
-        $recordList['credit_sign'] = $credit_sign;
-        $recordList['id'] = $id;
-        return $recordList;
+        return $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            address1: (string)$xml->z304->{'z304-address-2'},
+            address2: (string)$xml->z304->{'z304-address-3'},
+            zip: (string)$xml->z304->{'z304-zip'},
+            phone: (string)$xml->z304->{'z304-telephone'},
+            group: (string)$xml->z304->{'z304-bor-status'},
+            nonDefaultFields: [
+                'id' => (string)$xml->z303->{'z303-id'},
+                'barcode' => (string)$xml->z304->{'z304-address-0'},
+                'expire' => $this->parseDate($expiry),
+                'credit' => $expiry,
+                'credit_sum' => (string)$xml->z305->{'z305-sum'},
+                'credit_sign' => (string)$xml->z305->{'z305-credit-debit'} ?? 'C',
+                'email' => $user['email'] ?? null,
+            ]
+        );
     }
 
     /**
@@ -1237,39 +1209,50 @@ class Aleph extends AbstractBase implements
      */
     public function getMyProfileDLF($user)
     {
-        $recordList = [];
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronInformation', 'address']
         );
-        $profile = [];
-        $profile['id'] = $user['id'];
-        $profile['cat_username'] = $user['id'];
         $address = $xml->xpath('//address-information')[0];
+        $mappedValues = [];
         foreach ($this->addressMappings as $key => $value) {
             if (!empty($value)) {
-                $profile[$key] = (string)$address->{$value};
+                $mappedValues[$key] = (string)$address->{$value};
             }
         }
-        $fullName = $profile['fullname'];
-        if (!str_contains($fullName, ',')) {
-            $profile['lastname'] = $fullName;
-            $profile['firstname'] = '';
-        } else {
-            [$profile['lastname'], $profile['firstname']]
-                = explode(',', $fullName);
-        }
+        [$lastname, $firstname] = $this->getLastAndFirstName($mappedValues['fullname'] ?? '');
+
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronStatus', 'registration']
         );
-        $status = $xml->xpath('//institution/z305-bor-status');
         $expiry = $xml->xpath('//institution/z305-expiry-date');
-        $profile['expiration_date'] = $this->parseDate($expiry[0]);
-        $profile['group'] = $status[0];
-        return $profile;
+        return $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            group: (string)$xml->xpath('//institution/z305-bor-status')[0],
+            city: $mappedValues['city'] ?? null,
+            country: $mappedValues['country'] ?? null,
+            phone: $mappedValues['phone'] ?? null,
+            mobile_phone: $mappedValues['mobile_phone'] ?? null,
+            address1: $mappedValues['address1'] ?? null,
+            address2: $mappedValues['address2'] ?? null,
+            zip: $mappedValues['zip'] ?? null,
+            birthdate: $mappedValues['birthdate'] ?? '',
+            expiration_date: $this->parseDate((string)$expiry[0]),
+            // Merge all mapped values here even if all the default values are checked
+            // independently. This ensures that all the possible values are being set correctly
+            // and clarification what is being output remains.
+            nonDefaultFields: array_merge(
+                $mappedValues,
+                [
+                    'cat_username' => $user['id'],
+                    'id' => $user['id'],
+                ]
+            )
+        );
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1321,15 +1304,14 @@ class Aleph extends AbstractBase implements
                 $patron['college'] = $this->sublibadm["$home_lib"];
             }
         }
-        $patron['id'] = (string)$id;
-        $patron['barcode'] = (string)$user;
-        $patron['firstname'] = (string)$firstName;
-        $patron['lastname'] = (string)$lastName;
-        $patron['cat_username'] = (string)$user;
-        $patron['cat_password'] = $password;
-        $patron['email'] = (string)$email_addr;
-        $patron['major'] = null;
-        return $patron;
+        return $this->createPatronArray(
+            id: (string)$id,
+            cat_username: (string)$user,
+            cat_password: $password,
+            firstname: $firstName,
+            lastname: (string)$lastName,
+            email: (string)$email_addr,
+        );
     }
 
     /**
@@ -1376,7 +1358,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported.
      *
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Contains most of the same values passed to
@@ -1409,7 +1391,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -1519,6 +1501,7 @@ class Aleph extends AbstractBase implements
                     }
                 }
             } catch (\Exception $ex) {
+                // Fall through to throw the exception below
             }
         }
         throw new ILSException('barcode not found');
@@ -1606,7 +1589,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -1652,7 +1635,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in VoyagerRestful.ini
      *
@@ -1693,7 +1676,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1712,14 +1695,14 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -1730,6 +1713,7 @@ class Aleph extends AbstractBase implements
      * @return array       Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -1739,7 +1723,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -1753,7 +1737,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -1767,7 +1751,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -1781,7 +1765,7 @@ class Aleph extends AbstractBase implements
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *

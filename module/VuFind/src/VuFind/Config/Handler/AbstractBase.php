@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config_Handlers
@@ -31,7 +31,10 @@ namespace VuFind\Config\Handler;
 
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
+use VuFind\Exception\ConfigException;
 use VuFind\Exception\FileAccess as FileAccessException;
+
+use function get_class;
 
 /**
  * Abstract config handler base class.
@@ -47,13 +50,50 @@ use VuFind\Exception\FileAccess as FileAccessException;
 abstract class AbstractBase implements HandlerInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver $pathResolver Path Resolver
      */
     public function __construct(
         protected PathResolver $pathResolver,
     ) {
+    }
+
+    /**
+     * Write configuration to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location for the config
+     * @param array|string             $config              Config to write
+     * @param ?ConfigLocationInterface $baseLocation        Location of a base configuration that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void {
+        throw new ConfigException('Writing is not supported by handler: ' . get_class($this));
+    }
+
+    /**
+     * Create a backup of a file.
+     *
+     * @param string $file Path to file
+     *
+     * @return void
+     *
+     * @throws FileAccessException
+     */
+    protected function backupFile(string $file): void
+    {
+        $backupFile = $file . '.bak.' . time();
+        if (file_exists($file) && !copy($file, $backupFile)) {
+            throw new FileAccessException(
+                "Error: Could not copy {$file} to {$backupFile}."
+            );
+        }
     }
 
     /**

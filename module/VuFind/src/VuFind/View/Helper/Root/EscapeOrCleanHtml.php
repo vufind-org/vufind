@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View helper for escaping or cleaning HTML
+ * View helper for escaping or cleaning HTML.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -34,7 +34,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\String\PropertyStringInterface;
 
 /**
- * View helper for escaping or cleaning HTML
+ * View helper for escaping or cleaning HTML.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,14 +45,14 @@ use VuFind\String\PropertyStringInterface;
 class EscapeOrCleanHtml extends AbstractHelper
 {
     /**
-     * Contexts that allow HTML
+     * Contexts that allow HTML.
      *
      * @var array
      */
     protected array $htmlContexts;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Escaper   $escaper   Escaper
      * @param CleanHtml $cleanHtml Clean HTML helper
@@ -64,7 +64,7 @@ class EscapeOrCleanHtml extends AbstractHelper
     }
 
     /**
-     * Invoke this helper: escape a value
+     * Invoke this helper: escape a value.
      *
      * @param string|PropertyStringInterface $value            Value to escape
      * @param ?string                        $dataContext      Data context (for fields that allow sanitized HTML)
@@ -93,7 +93,7 @@ class EscapeOrCleanHtml extends AbstractHelper
     }
 
     /**
-     * Escape a string
+     * Escape a string.
      *
      * @param string $value String to escape
      *

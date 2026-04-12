@@ -1,5 +1,11 @@
 /*global VuFind */
 /*exported setUpHoldRequestForm, setupHoldEditForm */
+
+/**
+ * Set up the hold request form by dynamically populating the pickup location
+ * dropdown based on the selected request group.
+ * @param {string} recordId The ID of the record for the hold request.
+ */
 function setUpHoldRequestForm(recordId) {
   var $select = $('#pickUpLocation');
   var $icon = $('#pickUpLocationLabel .loading-icon');
@@ -49,7 +55,7 @@ function setUpHoldRequestForm(recordId) {
             $emptyOption.removeAttr('hidden');
           }
           $select.show();
-          $('#pickUpLocationLabel').text($self.find(':selected').data('locations-label'));
+          $('#pickUpLocationLabel .pick-up-location-label-text').text($self.find(':selected').data('locations-label'));
         } else {
           $select.hide();
           $noResults.show();
@@ -64,6 +70,10 @@ function setUpHoldRequestForm(recordId) {
   }).trigger('change');
 }
 
+/**
+ * Sets up the hold edit form by enabling or disabling the 'frozen_through'
+ * date input based on the 'frozen' checkbox's state.
+ */
 function setupHoldEditForm() {
   $('#frozen').on('change', function updateFrozen() {
     var $frozenThrough = $('#frozen_through');

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SwitchQuery Recommendations Module
+ * SwitchQuery Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -37,7 +37,7 @@ use function in_array;
 use function strlen;
 
 /**
- * SwitchQuery Recommendations Module
+ * SwitchQuery Recommendations Module.
  *
  * This class recommends adjusting your search query to yield better results.
  *
@@ -95,7 +95,7 @@ class SwitchQuery implements RecommendInterface
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service $searchService Search backend plugin manager
      */
@@ -294,7 +294,7 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * Broaden search by truncating one character (e.g. call number)
+     * Broaden search by truncating one character (e.g. call number).
      *
      * @param string $query Query to transform
      *

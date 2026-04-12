@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cover layer interface
+ * Cover layer interface.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -30,7 +30,7 @@
 namespace VuFind\Cover\Layer;
 
 /**
- * Cover layer interface
+ * Cover layer interface.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -41,7 +41,7 @@ namespace VuFind\Cover\Layer;
 interface LayerInterface
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)

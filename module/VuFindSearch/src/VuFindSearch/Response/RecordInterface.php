@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category Search
  * @package  Service
@@ -98,7 +98,7 @@ interface RecordInterface
     public function getResultSetIdentifier();
 
     /**
-     * Add a label for the record
+     * Add a label for the record.
      *
      * @param string $label Label, may be a translation key
      * @param string $class Label class
@@ -108,7 +108,7 @@ interface RecordInterface
     public function addLabel(string $label, string $class);
 
     /**
-     * Set the labels for the record
+     * Set the labels for the record.
      *
      * @param array $labels An array of associative arrays with keys 'label' and
      * 'class'
@@ -118,7 +118,7 @@ interface RecordInterface
     public function setLabels(array $labels);
 
     /**
-     * Return all labels for the record
+     * Return all labels for the record.
      *
      * @return array An array of associative arrays with keys 'label' and 'class'
      */

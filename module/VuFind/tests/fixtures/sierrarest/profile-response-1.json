@@ -1,0 +1,34 @@
+{
+    "names": [
+        "Testeri, Test",
+        "Other Name, First"
+    ],
+    "addresses": [
+        {
+            "lines": [
+                "Teststreet 251",
+                "01234 Testland"
+            ]
+        },
+        {
+            "lines": [
+                "Baitstreet 251",
+                "NOT A REAL RESULT HERE"
+            ]
+        }
+    ],
+    "phones": [
+        {
+            "number": "0123456789"
+        },
+        {
+            "number": "NOT A REAL NUMBER"
+        }
+    ],
+    "birthDate": "11-1-2019",
+    "expirationDate": "30.11.2201",
+    "emails": [
+        "preferredEmail@email.fi",
+        "NOT A REAL EMAIL HERE"
+    ]
+}

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr record fallback loader factory
+ * Solr record fallback loader factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Solr record fallback loader factory
+ * Solr record fallback loader factory.
  *
  * @category VuFind
  * @package  Record
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class SolrFactory extends AbstractFallbackLoaderFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -64,9 +64,8 @@ class SolrFactory extends AbstractFallbackLoaderFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('searches');
-        $legacyIdField = $config->General->fallback_id_field ?? null;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('searches');
+        $legacyIdField = $config['General']['fallback_id_field'] ?? null;
         $finalOptions = $options ?? [];
         array_unshift($finalOptions, $legacyIdField);
         return parent::__invoke($container, $requestedName, $finalOptions);

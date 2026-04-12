@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Net
@@ -45,7 +45,7 @@ use function count;
 class UserIpReader
 {
     /**
-     * Server parameters
+     * Server parameters.
      *
      * @var Parameters
      */
@@ -60,14 +60,14 @@ class UserIpReader
     protected $allowForwardedIps;
 
     /**
-     * IP addresses to exclude from consideration
+     * IP addresses to exclude from consideration.
      *
      * @var array
      */
     protected $ipFilter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Parameters  $server            Server parameters
      * @param string|bool $allowForwardedIps Forwarded header configuration string

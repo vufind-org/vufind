@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary implementation for Eprints
+ * Metadata vocabulary implementation for Eprints.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary implementation for Eprints
+ * Metadata vocabulary implementation for Eprints.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -41,7 +41,7 @@ namespace VuFind\MetadataVocabulary;
 class Eprints extends AbstractBase
 {
     /**
-     * Mapping from Eprints to VuFind fields
+     * Mapping from Eprints to VuFind fields.
      *
      * @var array
      */
@@ -56,7 +56,7 @@ class Eprints extends AbstractBase
     ];
 
     /**
-     * Special implementation to combine start / end page in eprints.pagerange
+     * Special implementation to combine start / end page in eprints.pagerange.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *

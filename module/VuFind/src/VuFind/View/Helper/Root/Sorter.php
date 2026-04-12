@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Sorter
+ * Class Sorter.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFind\View\Helper\Root
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\View\Helper\Root;
 
 /**
- * Class Sorter
+ * Class Sorter.
  *
  * @category VuFind
  * @package  VuFind\View\Helper\Root
@@ -45,7 +45,7 @@ class Sorter implements \VuFind\I18n\HasSorterInterface
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Get sorter
+     * Get sorter.
      *
      * @return \VuFind\I18n\SorterInterface
      */

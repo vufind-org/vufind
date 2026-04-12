@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Staff view (array dump) tab
+ * Staff view (array dump) tab.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Staff view (array dump) tab
+ * Staff view (array dump) tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -41,7 +41,7 @@ namespace VuFind\RecordTab;
 class StaffViewOverdrive extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

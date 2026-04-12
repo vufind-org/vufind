@@ -160,7 +160,7 @@ VuFind.register('account', function Account() {
       if (accountStatus > ICON_LEVELS.NONE) {
         accountIconEl.dataset.bsToggle = 'tooltip';
         accountIconEl.dataset.bsPlacement = 'bottom';
-        accountIconEl.title = VuFind.translate('account_has_alerts');
+        accountIconEl.dataset.bsTitle = VuFind.translate('account_has_alerts');
         bootstrap.Tooltip.getOrCreateInstance(accountIconEl);
       } else {
         bootstrap.Tooltip.getOrCreateInstance(accountIconEl).dispose();
@@ -300,7 +300,7 @@ VuFind.register('account', function Account() {
     clearAllCaches: clearAllCaches,
     notify: notify,
     // if user is logged out, clear cache instead of register
-    register: userIsLoggedIn ? register : clearCache
+    register: (typeof userIsLoggedIn !== 'undefined' && userIsLoggedIn) ? register : clearCache
   };
 });
 

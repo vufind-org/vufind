@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 /**
- * View helper for formatting dates and times
+ * View helper for formatting dates and times.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ use VuFind\UrlShortener\UrlShortenerInterface;
 class ShortenUrl extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * URL shortener
+     * URL shortener.
      *
      * @var UrlShortenerInterface
      */
     protected $shortener;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UrlShortenerInterface $shortener URL shortener
      */
@@ -60,7 +60,7 @@ class ShortenUrl extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Shorten a URL
+     * Shorten a URL.
      *
      * @param string $url URL to shorten
      *

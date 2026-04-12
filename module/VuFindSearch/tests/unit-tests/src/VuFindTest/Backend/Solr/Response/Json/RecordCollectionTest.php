@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -33,8 +33,6 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindTest\RecordDriver\TestHarness;
-
-use function in_array;
 
 /**
  * Unit tests for simple JSON-based record collection.
@@ -55,7 +53,7 @@ class RecordCollectionTest extends TestCase
     public function testDefaults()
     {
         $coll = new RecordCollection([]);
-        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
+        $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
         $this->assertEquals(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());
@@ -74,7 +72,7 @@ class RecordCollectionTest extends TestCase
     public function testDefaultsWithNullResponse()
     {
         $coll = new RecordCollection(['response' => null]);
-        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
+        $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
         $this->assertEquals(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());
@@ -207,9 +205,9 @@ class RecordCollectionTest extends TestCase
         $coll->shuffle();
         $final = $coll->getRecords();
         $this->assertCount(3, $final);
-        $this->assertTrue(in_array($r1, $final));
-        $this->assertTrue(in_array($r2, $final));
-        $this->assertTrue(in_array($r3, $final));
+        $this->assertContains($r1, $final);
+        $this->assertContains($r2, $final);
+        $this->assertContains($r3, $final);
     }
 
     /**
@@ -229,11 +227,11 @@ class RecordCollectionTest extends TestCase
         for ($i = 0; $i < 4; $i++) {
             $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
         }
-        $this->assertEquals(5, $coll->count());
+        $this->assertCount(5, $coll);
         $coll->add($record);
-        $this->assertEquals(5, $coll->count());
+        $this->assertCount(5, $coll);
         $coll->add($record, false);
-        $this->assertEquals(6, $coll->count());
+        $this->assertCount(6, $coll);
     }
 
     /**

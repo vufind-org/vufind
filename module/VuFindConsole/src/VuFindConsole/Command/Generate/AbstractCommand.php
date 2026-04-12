@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -44,14 +44,14 @@ use VuFindConsole\Generator\GeneratorTools;
 abstract class AbstractCommand extends Command
 {
     /**
-     * Generator tools
+     * Generator tools.
      *
      * @var GeneratorTools
      */
     protected $generatorTools;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorTools $tools Generator tools
      * @param string|null    $name  The name of the command; passing null means it

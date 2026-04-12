@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -51,14 +51,14 @@ use function get_class;
 class ILS extends AbstractBase
 {
     /**
-     * Catalog connection
+     * Catalog connection.
      *
      * @var \VuFind\ILS\Connection
      */
     protected $catalog = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection        $connection         ILS connection to set
      * @param \VuFind\Auth\ILSAuthenticator $authenticator      ILS authenticator
@@ -114,7 +114,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -125,11 +125,11 @@ class ILS extends AbstractBase
     public function supportsPasswordRecovery(?string $target = null)
     {
         $recoveryConfig = $this->getCatalog()->checkFunction('resetPassword');
-        return $recoveryConfig ? true : false;
+        return (bool)$recoveryConfig;
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -146,7 +146,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -154,7 +154,7 @@ class ILS extends AbstractBase
      */
     public function getPasswordPolicy(?string $target = null): array
     {
-        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
+        // If a target is specified, use an arbitrary cat_username with the current target prefix:
         $patron = $target ? ['cat_username' => "$target.123"] : $this->getLoggedInPatron();
         $policy = $this->getCatalog()->getPasswordPolicy($patron);
         if ($policy === false) {
@@ -244,14 +244,18 @@ class ILS extends AbstractBase
         // Validate Input
         $this->validatePasswordUpdate($params, $recoveryData['target'] ?? null);
 
-        $result = $this->getCatalog()->resetPassword($recoveryData['details'], $params);
-        if (!$result['success']) {
-            throw new AuthException($result['error']);
+        try {
+            $result = $this->getCatalog()->resetPassword($recoveryData['details'], $params);
+            if (!$result['success']) {
+                throw new AuthException($result['error']);
+            }
+        } catch (ILSException $e) {
+            throw new AuthException('ils_connection_failed', previous: $e);
         }
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *
@@ -388,7 +392,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Make sure passwords match and fulfill ILS policy
+     * Make sure passwords match and fulfill ILS policy.
      *
      * @param array   $params request parameters
      * @param ?string $target Authentication target for methods that support target selection
@@ -410,7 +414,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Get the Currently Logged-In Patron
+     * Get the Currently Logged-In Patron.
      *
      * @throws AuthException
      *

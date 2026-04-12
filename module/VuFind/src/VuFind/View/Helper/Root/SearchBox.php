@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search box view helper
+ * Search box view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -37,7 +37,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Search box view helper
+ * Search box view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,17 +45,19 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Laminas\View\Helper\AbstractHelper
+class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
-     * Cache for configurations
+     * Cache for configurations.
      *
      * @var array
      */
     protected $cachedConfigs = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param OptionsManager $optionsManager    Search options plugin manager
      * @param array          $config            Configuration for search box
@@ -118,7 +120,20 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Is autocomplete enabled for the current context?
+     * Is autocomplete configured to apply active filters for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters(string $activeSearchClass): bool
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return $options->autocompleteApplyActiveFilters();
+    }
+
+    /**
+     * Is autocomplete configured to autosubmit for the current context?
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -143,10 +158,30 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $settings = $this->getCombinedHandlerConfig($activeSearchClass);
             foreach ($settings['target'] ?? [] as $i => $target) {
                 if (($settings['type'][$i] ?? null) === 'VuFind') {
-                    $options = $this->getOptionsForTarget($target);
-                    $handlerRules = $options->getAutocompleteFormattingRules();
-                    foreach ($handlerRules as $key => $val) {
-                        $rules["VuFind:$target|$key"] = $val;
+                    try {
+                        $options = $this->getOptionsForTarget($target);
+                        $handlerRules = $options->getAutocompleteFormattingRules() ?? [];
+                        foreach ($handlerRules as $key => $val) {
+                            $rules["VuFind:$target|$key"] = $val;
+                        }
+                    } catch (\Exception $e) {
+                        // Log a warning and ignore when we can't add the autocomplete rules for
+                        // any of the handlers
+                        $baseMsg = "Could not determine autocomplete formatting rules for {$target}.";
+                        $shortDetails = $e->getMessage();
+                        $fullDetails = (string)$e;
+                        $this->logWarning(
+                            $baseMsg,
+                            [
+                                'details' => [
+                                    1 => "$baseMsg $shortDetails",
+                                    2 => "$baseMsg $shortDetails",
+                                    3 => "$baseMsg $shortDetails",
+                                    4 => "$baseMsg $fullDetails",
+                                    5 => "$baseMsg $fullDetails",
+                                ],
+                            ]
+                        );
                     }
                 }
             }
@@ -155,6 +190,18 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $rules = $options->getAutocompleteFormattingRules();
         }
         return json_encode($rules);
+    }
+
+    /**
+     * Get limit of items in autocomplete list.
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteDisplayLimit($activeSearchClass)
+    {
+        return $this->getOptionsForTarget($activeSearchClass)->getAutocompleteDisplayLimit();
     }
 
     /**
@@ -180,7 +227,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Helper method: get special character to represent operator in filter
+     * Helper method: get special character to represent operator in filter.
      *
      * @param string $operator Operator
      *
@@ -237,7 +284,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get placeholder text from config using the activeSearchClass as key
+     * Get placeholder text from config using the activeSearchClass as key.
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -255,7 +302,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get an array of the configured virtual keyboard layouts
+     * Get an array of the configured virtual keyboard layouts.
      *
      * @return array
      */
@@ -283,7 +330,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get number of active filters
+     * Get number of active filters.
      *
      * @param array $checkboxFilters Checkbox filters
      * @param array $filterList      Other filters
@@ -466,12 +513,34 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $label = $settings['label'][$i];
 
             if ($type == 'VuFind') {
-                $options = $this->getOptionsForTarget($target);
                 $j = 0;
-                $basic = $options->getBasicHandlers();
+                try {
+                    $options = $this->getOptionsForTarget($target);
+                    $basic = $options->getBasicHandlers();
+                } catch (\Exception $e) {
+                    // If we can't get the options or basic handlers for the search
+                    // target, then log it and don't add it to the search box
+                    $baseMsg = "Missing required data for {$target}. Could not add to search box.";
+                    $shortDetails = $e->getMessage();
+                    $fullDetails = (string)$e;
+                    $this->logError(
+                        $baseMsg,
+                        [
+                            'details' => [
+                                1 => "$baseMsg $shortDetails",
+                                2 => "$baseMsg $shortDetails",
+                                3 => "$baseMsg $shortDetails",
+                                4 => "$baseMsg $fullDetails",
+                                5 => "$baseMsg $fullDetails",
+                            ],
+                        ]
+                    );
+                    continue;
+                }
                 if (empty($basic)) {
                     $basic = ['' => ''];
                 }
+                $collapseInactiveBackends = $this->config['General']['collapseInactiveBackendOptions'] ?? false;
                 foreach ($basic as $searchVal => $searchDesc) {
                     $j++;
                     $selected = $target == $filteredActiveSearchClass
@@ -492,7 +561,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                         $indent = false;
                     } else {
                         $finalLabel = $j == 1 ? $label : $searchDesc;
-                        $indent = $j == 1 ? false : true;
+                        $indent = $j != 1;
                     }
                     $handlers[] = [
                         'value' => $type . ':' . $target . '|' . $searchVal,
@@ -501,6 +570,11 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                         'selected' => $selected,
                         'group' => $settings['group'][$i],
                     ];
+                    // If collapsing inactive backends is turned on, we only want to show the
+                    // first value for non-active backends:
+                    if ($collapseInactiveBackends && $target !== $activeSearchClass) {
+                        break;
+                    }
                 }
 
                 // Should we add alphabrowse links?

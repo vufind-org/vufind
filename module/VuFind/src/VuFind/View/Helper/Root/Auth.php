@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication view helper
+ * Authentication view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use LmcRbacMvc\Identity\IdentityInterface;
+use Lmc\Rbac\Identity\IdentityInterface;
 use RuntimeException;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
@@ -38,7 +38,7 @@ use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
- * Authentication view helper
+ * Authentication view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,21 +52,21 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     use DbServiceAwareTrait;
 
     /**
-     * Authentication manager
+     * Authentication manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $manager;
 
     /**
-     * ILS Authenticator
+     * ILS Authenticator.
      *
      * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuthenticator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\Manager          $manager          Authentication manager
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
@@ -97,26 +97,13 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get manager
+     * Get manager.
      *
      * @return \VuFind\Auth\Manager
      */
     public function getManager()
     {
         return $this->manager;
-    }
-
-    /**
-     * Checks whether the user is logged in.
-     *
-     * @return UserEntityInterface|bool Object if user is logged in, false
-     * otherwise.
-     *
-     * @deprecated Use getIdentity() or getUserObject() instead.
-     */
-    public function isLoggedIn()
-    {
-        return $this->getManager()->isLoggedIn();
     }
 
     /**
@@ -130,7 +117,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get the logged-in user's identity (null if not logged in)
+     * Get the logged-in user's identity (null if not logged in).
      *
      * @return ?IdentityInterface
      */
@@ -223,7 +210,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get login token data
+     * Get login token data.
      *
      * @param int $userId user identifier
      *

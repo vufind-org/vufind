@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Email Authenticator Test Class
+ * Email Authenticator Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use VuFind\Validator\CsrfInterface;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * Email Authenticator Manager Test Class
+ * Email Authenticator Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -130,7 +130,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
         $row->expects($this->once())->method('setSessionId')->with('foo-session')->willReturn($row);
-        $assertData = function ($data) {
+        $assertData = function ($data): void {
             $this->assertIsInt($data['timestamp']);
             $this->assertEquals(['foo-data'], $data['data']);
             $this->assertEquals('me@example.com', $data['email']);

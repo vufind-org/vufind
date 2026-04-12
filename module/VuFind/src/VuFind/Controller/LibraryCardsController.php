@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibraryCards Controller
+ * LibraryCards Controller.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -33,6 +33,8 @@ namespace VuFind\Controller;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -48,7 +50,7 @@ use VuFind\Exception\ILS as ILSException;
 class LibraryCardsController extends AbstractBase
 {
     /**
-     * Send user's library cards to the view
+     * Send user's library cards to the view.
      *
      * @return mixed
      */
@@ -73,7 +75,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Send user's library card to the edit view
+     * Send user's library card to the edit view.
      *
      * @return mixed
      */
@@ -132,7 +134,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Creates a confirmation box to delete or not delete the current list
+     * Creates a confirmation box to delete or not delete the current list.
      *
      * @return mixed
      */
@@ -155,8 +157,17 @@ class LibraryCardsController extends AbstractBase
         if ($confirm) {
             $this->getDbService(UserCardServiceInterface::class)->deleteLibraryCard($user, $cardID);
 
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::DeleteCard,
+                $user,
+                data: [
+                    'card_id' => $cardID,
+                ]
+            );
+
             // Success Message
-            $this->flashMessenger()->addMessage('Library Card Deleted', 'success');
+            $this->flashMessenger()->addSuccessMessage('Library Card Deleted');
             // Redirect to MyResearch library cards
             return $this->redirect()->toRoute('librarycards-home');
         }
@@ -187,7 +198,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Activates a library card
+     * Activates a library card.
      *
      * @return \Laminas\Http\Response
      */
@@ -213,11 +224,11 @@ class LibraryCardsController extends AbstractBase
             );
             if (!$patron) {
                 $this->flashMessenger()
-                    ->addMessage('authentication_error_invalid', 'error');
+                    ->addErrorMessage('authentication_error_invalid');
             }
         } catch (ILSException $e) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_technical', 'error');
+                ->addErrorMessage('authentication_error_technical');
         }
 
         $this->setFollowupUrlToReferer(false);
@@ -228,27 +239,27 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Redirects to authentication to connect a new library card
+     * Redirects to authentication to connect a new library card.
      *
      * @return \Laminas\Http\Response
      */
     public function connectCardLoginAction()
     {
-        if (!($user = $this->getUser())) {
+        if (!$this->getUser()) {
             return $this->forceLogin();
         }
         $url = $this->getServerUrl('librarycards-connectcard');
         $redirectUrl = $this->getAuthManager()->getSessionInitiator($url);
         if (!$redirectUrl) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_technical', 'error');
+                ->addErrorMessage('authentication_error_technical');
             return $this->redirect()->toRoute('librarycards-home');
         }
         return $this->redirect()->toUrl($redirectUrl);
     }
 
     /**
-     * Connects a new library card for authenticated user
+     * Connects a new library card for authenticated user.
      *
      * @return \Laminas\Http\Response
      */
@@ -260,8 +271,7 @@ class LibraryCardsController extends AbstractBase
         try {
             $this->getAuthManager()->connectLibraryCard($this->getRequest(), $user);
         } catch (\Exception $ex) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage($ex->getMessage());
+            $this->flashMessenger()->addErrorMessage($ex->getMessage());
         }
         return $this->redirect()->toRoute('librarycards-home');
     }
@@ -284,7 +294,7 @@ class LibraryCardsController extends AbstractBase
 
         if (!$username) {
             $this->flashMessenger()
-                ->addMessage('authentication_error_blank', 'error');
+                ->addErrorMessage('authentication_error_blank');
             return false;
         }
 
@@ -315,9 +325,29 @@ class LibraryCardsController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
                 return false;
             }
-            if ('password' === $loginMethod && !$patron) {
-                $this->flashMessenger()
-                    ->addMessage('authentication_error_invalid', 'error');
+            if ($patron) {
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::EditCard,
+                    $user,
+                    data: [
+                        'username' => $username,
+                        'card_id' => $id,
+                    ]
+                );
+            } else {
+                if ('password' === $loginMethod) {
+                    $this->flashMessenger()->addErrorMessage('authentication_error_invalid');
+                }
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::ILSLoginFailure,
+                    $user,
+                    data: [
+                        'username' => $username,
+                        'card_id' => $id,
+                    ]
+                );
                 return false;
             }
             if ('email' === $loginMethod) {
@@ -331,6 +361,16 @@ class LibraryCardsController extends AbstractBase
                         $info,
                         ['auth_method' => 'Email'],
                         'editLibraryCard'
+                    );
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::SendCardAuthEmail,
+                        $user,
+                        data: [
+                            'username' => $username,
+                            'card_id' => $id,
+                            'email' => $info['email'],
+                        ]
                     );
                 }
                 // Don't reveal the result
@@ -348,7 +388,7 @@ class LibraryCardsController extends AbstractBase
                 $password
             );
         } catch (\VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
             return false;
         }
 
@@ -356,7 +396,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Process library card addition via an email link
+     * Process library card addition via an email link.
      *
      * @param UserEntityInterface $user User object
      * @param string              $hash Hash
@@ -375,6 +415,16 @@ class LibraryCardsController extends AbstractBase
                 $info['cardName'],
                 $info['cat_username'],
                 ' '
+            );
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::ConnectCardByEmail,
+                $user,
+                data: [
+                    'username' => $info['cat_username'],
+                    'card_id' => $info['cardID'],
+                    'email' => $info['email'],
+                ]
             );
         } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -46,47 +46,47 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * The HTTP_Request object used for API transactions
+     * The HTTP_Request object used for API transactions.
      *
      * @var HttpClient
      */
     public $client;
 
     /**
-     * Institution code
+     * Institution code.
      *
      * @var string
      */
     protected $iid;
 
     /**
-     * Base URL for API
+     * Base URL for API.
      *
      * @var string
      */
     protected $host;
 
     /**
-     * API version number
+     * API version number.
      *
      * @var float
      */
     protected $apiVersion;
 
     /**
-     * Optionally load & display the description of each resource
+     * Optionally load & display the description of each resource.
      *
      * @var bool
      */
     protected $displayDescription;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the LibGuides Client
      *
@@ -114,7 +114,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
     /**
      * Execute a search. Adds all the querystring parameters into
-     * $this->client and returns the parsed response
+     * $this->client and returns the parsed response.
      *
      * @param array $params    Incoming search parameters.
      * @param int   $offset    Search offset
@@ -234,7 +234,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Prepare API parameters
+     * Prepare API parameters.
      *
      * @param array $params Incoming parameters
      *

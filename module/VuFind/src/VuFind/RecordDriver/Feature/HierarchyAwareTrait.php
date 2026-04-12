@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -47,14 +47,14 @@ use function in_array;
 trait HierarchyAwareTrait
 {
     /**
-     * Hierarchy driver plugin manager
+     * Hierarchy driver plugin manager.
      *
      * @var \VuFind\Hierarchy\Driver\PluginManager
      */
     protected $hierarchyDriverManager = null;
 
     /**
-     * Hierarchy driver for current object
+     * Hierarchy driver for current object.
      *
      * @var \VuFind\Hierarchy\Driver\AbstractBase
      */
@@ -184,7 +184,7 @@ trait HierarchyAwareTrait
     }
 
     /**
-     * Get the value of whether or not this is a collection level record
+     * Get the value of whether or not this is a collection level record.
      *
      * NOTE: \VuFind\Hierarchy\TreeDataFormatter\AbstractBase::isCollection()
      * duplicates some of this logic.
@@ -233,7 +233,7 @@ trait HierarchyAwareTrait
     }
 
     /**
-     * Get the Hierarchy Type (false if none)
+     * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
      */

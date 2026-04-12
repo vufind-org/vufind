@@ -1,6 +1,12 @@
 /* global VuFind, getFocusableNodes */
 
 VuFind.register('truncate', function Truncate() {
+  /**
+   * Initialize the truncation functionality for containers.
+   * @param {string|jQuery|HTMLElement} _container - The container element to apply truncation to
+   * @param {string}                    [_element] - Optional selector for specific elements within the container to truncate
+   * @param {Function}                  [_fill]    - Optional function to modify button markup before insertion
+   */
   function initTruncate(_container, _element, _fill) {
     const defaultSettings = {
       'btn-class': '',

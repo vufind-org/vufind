@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration Wrapper Test Class
+ * Configuration Wrapper Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\Config;
 
 /**
- * Configuration Wrapper Test Class
+ * Configuration Wrapper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,14 +43,14 @@ use VuFind\Config\Config;
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Config object to test
+     * Config object to test.
      *
      * @var ?Config
      */
     protected $config = null;
 
     /**
-     * Test configuration data
+     * Test configuration data.
      *
      * @var array
      */

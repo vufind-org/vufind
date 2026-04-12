@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Multiple ILS authentication module that works with MultiBackend driver
+ * Multiple ILS authentication module that works with MultiBackend driver.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -40,7 +40,7 @@ use VuFind\ILS\Driver\MultiBackend;
 use function in_array;
 
 /**
- * Multiple ILS authentication module that works with MultiBackend driver
+ * Multiple ILS authentication module that works with MultiBackend driver.
  *
  * @category VuFind
  * @package  Authentication
@@ -85,7 +85,7 @@ class MultiILS extends ILS
     }
 
     /**
-     * Get login targets (ILS drivers/source ID's)
+     * Get login targets (ILS drivers/source ID's).
      *
      * @return array
      */
@@ -95,7 +95,7 @@ class MultiILS extends ILS
     }
 
     /**
-     * Get default login target (ILS driver/source ID)
+     * Get default login target (ILS driver/source ID).
      *
      * @return string
      */
@@ -126,7 +126,7 @@ class MultiILS extends ILS
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -139,12 +139,12 @@ class MultiILS extends ILS
         if (!$target) {
             throw new \Exception(__METHOD__ . ' requires the target parameter!');
         }
-        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
+        // If a target is specified, use an arbitrary cat_username with the correct target prefix:
         $recoveryConfig = $this->getCatalog()->checkFunction(
             'resetPassword',
             ['cat_username' => "$target.123"]
         );
-        return $recoveryConfig ? true : false;
+        return (bool)$recoveryConfig;
     }
 
     /**

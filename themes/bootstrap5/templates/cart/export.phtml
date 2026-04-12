@@ -74,7 +74,18 @@
             }
           });
 
+          // Set selected option before formatChangeHandler below runs:
+          const lastExportFormat = sessionStorage.getItem('bulk-export-format');
+          if (lastExportFormat) {
+            Array.from(formatEl.options).forEach(option => {
+              if (option.value === lastExportFormat) {
+                option.selected = true;
+              }
+            });
+          }
+
           const formatChangeHandler = () => {
+            sessionStorage.setItem('bulk-export-format', formatEl.selectedOptions[0].value);
             const redirect = formatEl.selectedOptions[0].dataset.redirect;
             if (redirect === undefined) {
               delete exportBtn.dataset.lightboxIgnore;

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -47,14 +47,14 @@ class EIT extends DefaultRecord
     use \VuFind\Log\VarDumperTrait;
 
     /**
-     * Used for identifying search backends
+     * Used for identifying search backends.
      *
      * @var string
      */
     protected $sourceIdentifier = 'EIT';
 
     /**
-     * Reference to controlInfo section of fields, for readability
+     * Reference to controlInfo section of fields, for readability.
      *
      * @var array
      */
@@ -377,7 +377,7 @@ class EIT extends DefaultRecord
     }
 
     /**
-     * Support method for getContainerEndPage()
+     * Support method for getContainerEndPage().
      *
      * @return string
      */

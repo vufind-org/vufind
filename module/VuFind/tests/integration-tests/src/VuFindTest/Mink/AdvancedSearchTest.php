@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -68,7 +68,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test persistent
+     * Test persistent.
      *
      * @return void
      */
@@ -152,7 +152,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '[type=submit]')->press();
 
         // Check for proper search
-        $this->assertEquals(
+        $this->assertSame(
             '(All Fields:bride AND Title:tomb AND All Fields:garbage AND Year of Publication:1883) AND '
             . '(All Fields:miller)',
             $this->findCssAndGetHtml($page, '.adv_search_terms strong')
@@ -160,20 +160,20 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test edit search
         $this->editAdvancedSearch($page);
-        $this->assertEquals('bride', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
-        $this->assertEquals('tomb', $this->findCssAndGetValue($page, '#search_lookfor0_1'));
-        $this->assertEquals('Title', $this->findCssAndGetValue($page, '#search_type0_1'));
-        $this->assertEquals('garbage', $this->findCssAndGetValue($page, '#search_lookfor0_2'));
+        $this->assertSame('bride', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
+        $this->assertSame('tomb', $this->findCssAndGetValue($page, '#search_lookfor0_1'));
+        $this->assertSame('Title', $this->findCssAndGetValue($page, '#search_type0_1'));
+        $this->assertSame('garbage', $this->findCssAndGetValue($page, '#search_lookfor0_2'));
         $this->assertEquals('1883', $this->findCssAndGetValue($page, '#search_lookfor0_3'));
-        $this->assertEquals('year', $this->findCssAndGetValue($page, '#search_type0_3'));
-        $this->assertEquals('miller', $this->findCssAndGetValue($page, '#search_lookfor1_0'));
+        $this->assertSame('year', $this->findCssAndGetValue($page, '#search_type0_3'));
+        $this->assertSame('miller', $this->findCssAndGetValue($page, '#search_lookfor1_0'));
 
         // Term removal
         $session->executeScript('deleteSearch(0, 2)'); // search0_2 x click
         $this->assertNull($page->findById('search0_3'));
         // Terms collapsing up
         $this->assertEquals('1883', $this->findCssAndGetValue($page, '#search_lookfor0_2'));
-        $this->assertEquals('year', $this->findCssAndGetValue($page, '#search_type0_2'));
+        $this->assertSame('year', $this->findCssAndGetValue($page, '#search_type0_2'));
 
         // Group removal
         $session->executeScript('deleteGroup(0)');
@@ -182,14 +182,14 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '[type=submit]')->press();
 
         // Check for proper search (second group only)
-        $this->assertEquals(
+        $this->assertSame(
             '(All Fields:miller)',
             $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
 
         // Test edit search (modified search is restored properly)
         $this->editAdvancedSearch($page);
-        $this->assertEquals('miller', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
+        $this->assertSame('miller', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
 
         // Clear test
         $multiSel = $this->findCss($page, '#limit_callnumber-first');
@@ -198,7 +198,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount(2, $multiSel->getValue());
 
         $this->findCss($page, '.adv-submit .clear-btn')->press();
-        $this->assertEquals('', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
+        $this->assertSame('', $this->findCssAndGetValue($page, '#search_lookfor0_0'));
         $this->assertCount(0, $multiSel->getValue());
     }
 
@@ -213,14 +213,14 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
 
         // Check breadcrumb without link
-        $this->assertEquals('Search', $this->findCssAndGetHtml($page, '.breadcrumb-item'));
+        $this->assertSame('Search', $this->findCssAndGetHtml($page, '.breadcrumb-item'));
 
         // Enter and submit search
         $this->findCssAndSetValue($page, '#search_lookfor0_0', 'miller');
         $this->findCss($page, '[type=submit]')->press();
 
         // Check for proper search
-        $this->assertEquals(
+        $this->assertSame(
             '(All Fields:miller)',
             $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
@@ -228,7 +228,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Test breadcrumb link
         $this->editAdvancedSearch($page);
         $this->clickCss($page, '.breadcrumb-item a');
-        $this->assertEquals(
+        $this->assertSame(
             '(All Fields:miller)',
             $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
@@ -259,7 +259,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '[type=submit]')->press();
 
         // Check for proper search and result count
-        $this->assertEquals(
+        $this->assertSame(
             '(All Fields:building:"journals.mrc") NOT ((Title:rational))',
             $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
@@ -288,7 +288,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '[type=submit]')->press();
 
         // Check for proper search and result count
-        $this->assertEquals(
+        $this->assertSame(
             '() NOT ((Title:rational))',
             $this->findCssAndGetHtml($page, '.adv_search_terms strong')
         );
@@ -297,11 +297,11 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             trim($this->findCssAndGetText($page, '.search-stats')),
             $matches
         );
-        $this->assertTrue($matches[1] > 0);
+        $this->assertGreaterThan(0, $matches[1]);
     }
 
     /**
-     * Test default limit sorting
+     * Test default limit sorting.
      *
      * @return void
      */
@@ -310,8 +310,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
-        $this->assertEquals(
-            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm',
+        $this->assertSame(
+            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Manuscript Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
@@ -319,14 +319,14 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
-        $this->assertEquals(
-            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+        $this->assertSame(
+            'Artikel Buch Buchkapitel E-Book Elektronisch Manuskript Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
 
     /**
-     * Test limit sorting with order override
+     * Test limit sorting with order override.
      *
      * @return void
      */
@@ -346,8 +346,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
-        $this->assertEquals(
-            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm',
+        $this->assertSame(
+            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Manuscript Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
@@ -355,60 +355,58 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
-        $this->assertEquals(
-            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+        $this->assertSame(
+            'Buch E-Book Artikel Buchkapitel Elektronisch Manuskript Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
 
     /**
-     * Data provider for testHierarchicalFacetsFilters
+     * Data provider for testHierarchicalFacetsFilters.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function hierarchicalFacetFiltersProvider(): array
+    public static function hierarchicalFacetFiltersProvider(): \Iterator
     {
-        return [
-            'default sort' => [
-                null,
-                null,
-                'top',
-            ],
-            'top level alphabetical' => [
-                'top',
-                'all',
-                'top',
-            ],
-            'all alphabetical' => [
-                'all',
-                'top',
-                'all',
-            ],
-            'count' => [
-                'count',
-                'all',
-                'count',
-            ],
-            'default sort (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'top level alphabetical (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'all alphabetical (inherited)' => [
-                null,
-                'all',
-                'all',
-            ],
-            'count (inherited)' => [
-                null,
-                'count',
-                'count',
-            ],
+        yield 'default sort' => [
+            null,
+            null,
+            'top',
+        ];
+        yield 'top level alphabetical' => [
+            'top',
+            'all',
+            'top',
+        ];
+        yield 'all alphabetical' => [
+            'all',
+            'top',
+            'all',
+        ];
+        yield 'count' => [
+            'count',
+            'all',
+            'count',
+        ];
+        yield 'default sort (inherited)' => [
+            null,
+            'top',
+            'top',
+        ];
+        yield 'top level alphabetical (inherited)' => [
+            null,
+            'top',
+            'top',
+        ];
+        yield 'all alphabetical (inherited)' => [
+            null,
+            'all',
+            'all',
+        ];
+        yield 'count (inherited)' => [
+            null,
+            'count',
+            'count',
         ];
     }
 
@@ -419,10 +417,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $defaultSort  Default sort option
      * @param string  $expectedSort Expected sort order of options
      *
-     * @dataProvider hierarchicalFacetFiltersProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetFiltersProvider')]
     public function testHierarchicalFacetsFilters(?string $sort, ?string $defaultSort, string $expectedSort): void
     {
         $config = [
@@ -472,5 +469,45 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $expectedValue = $this->getExpectedHierarchicalFacetFilterText($expectedSort, 1);
         $this->assertAppliedFilter($page, 0, 'hierarchy', $expectedValue);
+    }
+
+    /**
+     * Test that checkbox facets work on the advanced search screen.
+     *
+     * @return void
+     */
+    public function testAdvancedCheckboxes(): void
+    {
+        // Activate checkboxes on advanced search:
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Advanced_Settings' => [
+                        'special_facets' => 'checkboxes,illustrated,daterange',
+                    ],
+                    'CheckboxFacets' => [
+                        'id:testbug2' => 'The Test Record',
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Confirm expected label text:
+        $checkboxSelector = '.checkbox-filters .checkbox label';
+        $this->assertSame('The Test Record', $this->findCssAndGetText($page, $checkboxSelector));
+
+        // Select checkbox and submit search:
+        $this->clickCss($page, $checkboxSelector);
+        $this->clickCss($page, '.adv-submit .btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm expected result -- just the record specified by the checkbox filter:
+        $this->assertSame('Showing 1 - 1 results of 1', $this->findCssAndGetText($page, '.js-search-stats'));
+        $this->assertStringStartsWith(
+            'La congiura dei Principi Napoletani 1701',
+            $this->findCssAndGetText($page, '.result-body .title')
+        );
     }
 }

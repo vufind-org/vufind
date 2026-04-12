@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class TemplateBased
+ * Class TemplateBased.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -32,7 +32,7 @@ namespace VuFind\ContentBlock;
 use function is_callable;
 
 /**
- * Class TemplateBased
+ * Class TemplateBased.
  *
  * @category VuFind
  * @package  VuFind\ContentBlock
@@ -43,14 +43,14 @@ use function is_callable;
 class TemplateBased implements ContentBlockInterface
 {
     /**
-     * Name of template for rendering
+     * Name of template for rendering.
      *
      * @var string
      */
     protected $templateName;
 
     /**
-     * Page content
+     * Page content.
      *
      * @var \VuFind\Content\PageLocator
      */
@@ -109,7 +109,7 @@ class TemplateBased implements ContentBlockInterface
     }
 
     /**
-     * Return context array for markdown
+     * Return context array for markdown.
      *
      * @param string $relativePath Relative path to template
      * @param string $path         Full path of template file
@@ -127,7 +127,7 @@ class TemplateBased implements ContentBlockInterface
     }
 
     /**
-     * Return context array of phtml
+     * Return context array of phtml.
      *
      * @param string $relativePath Relative path to template
      * @param string $path         Full path of template file

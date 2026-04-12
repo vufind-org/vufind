@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Libraryh3lp Recommendations Module
+ * Libraryh3lp Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * Libraryh3lp Recommendations Module
+ * Libraryh3lp Recommendations Module.
  *
  * This class provides access to the Libraryh3lp chat service.
  *
@@ -45,14 +45,14 @@ namespace VuFind\Recommend;
 class Libraryh3lp implements RecommendInterface
 {
     /**
-     * Chat identifier
+     * Chat identifier.
      *
      * @var string
      */
     protected $chatId;
 
     /**
-     * Widget skin number
+     * Widget skin number.
      *
      * @var int
      */
@@ -105,7 +105,7 @@ class Libraryh3lp implements RecommendInterface
     }
 
     /**
-     * Get queue name
+     * Get queue name.
      *
      * @return string
      */
@@ -115,7 +115,7 @@ class Libraryh3lp implements RecommendInterface
     }
 
     /**
-     * Get skin number
+     * Get skin number.
      *
      * @return int
      */

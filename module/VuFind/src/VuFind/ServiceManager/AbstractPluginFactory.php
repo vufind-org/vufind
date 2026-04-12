@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Abstract Plugin Factory
+ * VuFind Abstract Plugin Factory.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -44,14 +44,14 @@ use Psr\Container\ContainerInterface;
 abstract class AbstractPluginFactory implements AbstractFactoryInterface
 {
     /**
-     * Default namespace for building class names
+     * Default namespace for building class names.
      *
      * @var string
      */
     protected $defaultNamespace;
 
     /**
-     * Optional suffix to append to class names
+     * Optional suffix to append to class names.
      *
      * @var string
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Koha ILS Driver
+ * Koha ILS Driver.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -38,7 +38,7 @@ use VuFind\Exception\ILS as ILSException;
 use function count;
 
 /**
- * VuFind Driver for Koha (version: 3.02)
+ * VuFind Driver for Koha (version: 3.02).
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -50,28 +50,28 @@ use function count;
 class Koha extends AbstractBase
 {
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * ILS base URL
+     * ILS base URL.
      *
      * @var string
      */
     protected $ilsBaseUrl;
 
     /**
-     * Location codes
+     * Location codes.
      *
      * @var array
      */
     protected $locCodes;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
@@ -80,12 +80,12 @@ class Koha extends AbstractBase
     /**
      * Should we validate passwords against Koha system?
      *
-     * @var boolean
+     * @var bool
      */
     protected $validatePasswords;
 
     /**
-     * Default terms for block types, can be overridden by configuration
+     * Default terms for block types, can be overridden by configuration.
      *
      * @var array
      */
@@ -97,14 +97,14 @@ class Koha extends AbstractBase
     ];
 
     /**
-     * Display comments for patron debarments, see Koha.ini
+     * Display comments for patron debarments, see Koha.ini.
      *
      * @var array
      */
     protected $showBlockComments;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      */
@@ -175,7 +175,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -285,7 +285,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -305,7 +305,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -351,7 +351,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -391,7 +391,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -404,7 +404,6 @@ class Koha extends AbstractBase
     {
         $id = 0;
         $sql = $sqlStmt = $row = '';
-        $profile = [];
         try {
             $id = $patron['id'];
             $sql = 'select address as ADDR1, address2 as ADDR2, zipcode as ZIP, ' .
@@ -412,18 +411,16 @@ class Koha extends AbstractBase
                 'where borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
-            $row = $sqlStmt->fetch();
-            if ($row) {
-                $profile = [
-                    'firstname' => $patron['firstname'],
-                    'lastname' => $patron['lastname'],
-                    'address1' => $row['ADDR1'],
-                    'address2' => $row['ADDR2'],
-                    'zip' => $row['ZIP'],
-                    'phone' => $row['PHONE'],
-                    'group' => $row['GRP'],
-                ];
-                return $profile;
+            if ($row = $sqlStmt->fetch()) {
+                return $this->createProfileArray(
+                    firstname: $patron['firstname'],
+                    lastname: $patron['lastname'],
+                    address1: $row['ADDR1'],
+                    address2: $row['ADDR2'],
+                    zip: $row['ZIP'],
+                    phone: $row['PHONE'],
+                    group: $row['GRP']
+                );
             }
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
@@ -432,7 +429,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -515,7 +512,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
      * checked out and then returned), for a specific patron.
@@ -595,7 +592,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -614,7 +611,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -631,7 +628,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -666,7 +663,7 @@ class Koha extends AbstractBase
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -679,7 +676,6 @@ class Koha extends AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
         $row = '';
 
         $stored_hash = '';
@@ -728,18 +724,14 @@ class Koha extends AbstractBase
                 // saved in a clear text as user provided. If 'cat_password' =>
                 // $db_pwd was used, then password will be saved encrypted as in
                 // 'borrowers' table of 'koha' database
-                $patron = [
-                    'id' => $row['ID'],
-                    'firstname' => $row['FNAME'],
-                    'lastname' => $row['LNAME'],
-                    'cat_username' => $username,
-                    'cat_password' => $password,
-                    'email' => $row['EMAIL'],
-                    'major' => null,
-                    'college' => null,
-                ];
-
-                return $patron;
+                return $this->createPatronArray(
+                    id: $row['ID'],
+                    cat_username: $username,
+                    cat_password: $password,
+                    firstname:  $row['FNAME'],
+                    lastname: $row['LNAME'],
+                    email: $row['EMAIL']
+                );
             }
             return null;
         } catch (PDOException $e) {

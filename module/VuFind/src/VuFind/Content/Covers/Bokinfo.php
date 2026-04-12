@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin for Bokinfo coverimages
+ * Plugin for Bokinfo coverimages.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -35,7 +35,7 @@ use SimpleXMLElement;
 use function strlen;
 
 /**
- * Plugin for Bokinfo coverimages
+ * Plugin for Bokinfo coverimages.
  *
  * @category VuFind
  * @package  Content
@@ -44,14 +44,14 @@ use function strlen;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Bokinfo extends \VuFind\Content\AbstractCover implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -102,7 +102,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Return a HTTP Client object
+     * Return a HTTP Client object.
      *
      * @param string $url API Url
      *
@@ -120,7 +120,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Test that the url is really working
+     * Test that the url is really working.
      *
      * @param string $url image Url
      *
@@ -142,7 +142,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Find the image url in the XML returned from API
+     * Find the image url in the XML returned from API.
      *
      * @param string $rawXML XML returned from API
      *

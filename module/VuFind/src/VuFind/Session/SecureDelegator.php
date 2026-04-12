@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Secure session delegator
+ * Secure session delegator.
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -33,12 +33,11 @@ namespace VuFind\Session;
 
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\BlockCipher;
-use VuFind\Db\Table\PluginManager;
 
 use function func_get_args;
 
 /**
- * Secure session delegator
+ * Secure session delegator.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -149,7 +148,7 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
-     * Enable session writing (default)
+     * Enable session writing (default).
      *
      * @return void
      */
@@ -159,7 +158,7 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
-     * Disable session writing, i.e. make it read-only
+     * Disable session writing, i.e. make it read-only.
      *
      * @return void
      */
@@ -169,30 +168,7 @@ class SecureDelegator implements HandlerInterface
     }
 
     /**
-     * Get the plugin manager. Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return PluginManager
-     */
-    public function getDbTableManager()
-    {
-        return $this->__call(__FUNCTION__, []);
-    }
-
-    /**
-     * Set the plugin manager.
-     *
-     * @param PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(PluginManager $manager)
-    {
-        $this->__call(__FUNCTION__, func_get_args());
-    }
-
-    /**
-     * Pass calls to non-existing methods to the wrapped Handler
+     * Pass calls to non-existing methods to the wrapped Handler.
      *
      * @param string $name      Name of the method being called
      * @param array  $arguments Passed Arguments
