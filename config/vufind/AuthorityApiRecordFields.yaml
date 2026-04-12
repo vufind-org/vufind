@@ -1,5 +1,5 @@
 # Key is the field name that can be requested. It has the following subkeys:
-# - vufind.method: name to call (either in the SearchApiController class or the record driver)
+# - vufind.method: name to call (either in the AuthorityApiController class or the record driver)
 # - vufind.default: true if the field is displayed by default when the request does not specify fields
 # - OpenAPI 3 specification fields describing the returned data.
 #
@@ -12,7 +12,7 @@ id:
   description: Record unique ID (can be used in the record endpoint)
   type: string
 fullrecord:
-  vufind.method: getFullrecord
+  vufind.method: getFullRecord
   vufind.default: false
   description: Full record
   type: string
