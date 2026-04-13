@@ -59,7 +59,7 @@ class KeepAlive
      */
     public function __construct(
         #[Autowire(config: 'config', configType: 'array')]
-        protected array $config
+        array $config
     ) {
         $this->interval = $config['Session']['keepAlive'] ?? 0;
     }

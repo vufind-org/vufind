@@ -45,22 +45,14 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Feedback
 {
     /**
-     * Is the tab enabled?
-     *
-     * @var bool
-     */
-    protected $tab;
-
-    /**
      * Constructor.
      *
-     * @param array $config Configuration
+     * @param bool $enabled Is the tab enabled?
      */
     public function __construct(
-        #[Autowire(config: 'config', configType: 'object')]
-        protected array $config
+        #[Autowire(config: 'config', configType: 'array', path: 'Feedback/tab_enabled', default: false)]
+        protected bool $enabled = true
     ) {
-        $this->tab = $config['Feedback']['tab_enabled'] ?? false;
     }
 
     /**
@@ -70,6 +62,16 @@ class Feedback
      */
     public function tabEnabled()
     {
-        return $this->tab;
+        return $this->enabled;
+    }
+
+    /**
+     * Make the helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }
