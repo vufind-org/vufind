@@ -34,6 +34,7 @@ use Laminas\Router\Http\TreeRouteStack;
 use Laminas\View\Helper\EscapeJs;
 use Laminas\View\Helper\HeadTitle;
 use Laminas\View\Helper\ViewModel;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Config\Config;
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
@@ -52,7 +53,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Matomo extends \Laminas\View\Helper\AbstractHelper
+class Matomo
 {
     /**
      * Matomo URL (empty if disabled).
@@ -122,15 +123,16 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param Config         $config        VuFind configuration
-     * @param TreeRouteStack $router        Router
-     * @param Request        $request       Request
-     * @param AssetManager   $assetManager  AssetManager
-     * @param ViewModel      $viewModel     ViewModel
-     * @param EscapeJs       $escapejs      EscapeJs
-     * @param CookieConsent  $cookieConsent CookieConsent
-     * @param Translate      $translate     Translate
-     * @param HeadTitle      $headTitle     HeadTitle
+     * @param Config            $config        VuFind configuration
+     * @param TreeRouteStack    $router        Router
+     * @param Request           $request       Request
+     * @param RendererInterface $viewRenderer  View renderer
+     * @param AssetManager      $assetManager  AssetManager view helper
+     * @param ViewModel         $viewModel     ViewModel view helper
+     * @param EscapeJs          $escapejs      EscapeJs view helper
+     * @param CookieConsent     $cookieConsent CookieConsent view helper
+     * @param Translate         $translate     Translate view helper
+     * @param HeadTitle         $headTitle     HeadTitle view helper
      */
     public function __construct(
         #[Autowire(config: 'config', configType: 'object')]
@@ -139,6 +141,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         protected TreeRouteStack $router,
         #[Autowire(service: 'Request')]
         protected Request $request,
+        protected RendererInterface $viewRenderer,
         #[Autowire(container: 'ViewHelperManager')]
         protected AssetManager $assetManager,
         #[Autowire(container: 'ViewHelperManager')]
@@ -337,7 +340,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     {
         $current = $this->viewModel->getCurrent();
         if (null === $current) {
-            $driver = $this->getView()->vars('driver');
+            $driver = $this->viewRenderer->vars('driver');
             if ($driver instanceof RecordDriverBase) {
                 return $driver;
             }
