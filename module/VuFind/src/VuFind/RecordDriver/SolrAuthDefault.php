@@ -47,7 +47,7 @@ class SolrAuthDefault extends SolrDefault
      *
      * @return string
      */
-    public function getFullRecord()
+    public function getFullRecord(): string
     {
         return $this->fields['fullrecord'] ?? '';
     }
