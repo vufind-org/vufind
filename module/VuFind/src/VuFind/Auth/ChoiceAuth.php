@@ -289,7 +289,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         return $this->proxyAuthMethod('supportsPasswordChange', func_get_args());
     }
@@ -301,7 +301,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
     }

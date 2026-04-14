@@ -2851,11 +2851,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $function The name of the feature to be checked
      * @param array  $params   Optional feature-specific parameters (array)
      *
-     * @return array|false An array with key-value pairs.
+     * @return array An array with key-value pairs.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {
@@ -2900,7 +2900,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         if ($function == 'getMyTransactionHistory') {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             $config = [
                 'sort' => [
@@ -2943,7 +2943,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
-            return ($config['enabled'] ?? false) ? $config : false;
+            return ($config['enabled'] ?? false) ? $config : [];
         }
         if ($function == 'OnlinePayment') {
             return $this->config['OnlinePayment'] ?? [];
