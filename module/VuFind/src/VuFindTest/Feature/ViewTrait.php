@@ -64,12 +64,34 @@ trait ViewTrait
      *
      * @return AssetManager
      */
-    protected function getAssetManager(PhpRenderer $renderer): AssetManager
+    protected function getAssetManager(): AssetManager
     {
         $container = new MockContainer($this);
+        $container->set(\VuFindTheme\ThemeInfo::class, $this->createMock(\VuFindTheme\ThemeInfo::class));
+        $container->set(\VuFindTheme\AssetPipeline::class, $this->createMock(\VuFindTheme\AssetPipeline::class));
+        $headLink = new \Laminas\View\Helper\HeadLink();
+        $headStyle = new \Laminas\View\Helper\HeadStyle();
+        $inlineScript = new \Laminas\View\Helper\InlineScript();
+        $url = new \Laminas\View\Helper\Url();
+        $container->set(\Laminas\View\Helper\Url::class, $url);
+        $container->set(\Laminas\View\Helper\HeadLink::class, $headLink);
+        $container->set(\Laminas\View\Helper\HeadStyle::class, $headStyle);
+        $container->set(\Laminas\View\Helper\InlineScript::class, $inlineScript);
+        $nonceGenerator = $this->createMock(\VuFind\Security\NonceGenerator::class);
+        $nonceGenerator->method('getNonce')->willReturn('');
+        $container->set(\VuFind\Security\NonceGenerator::class, $nonceGenerator);
         $factory = new AssetManagerFactory();
-        $helper = $factory($container, AssetManager::class);
-        return $helper;
+        $assetManager = $factory($container, AssetManager::class);
+        $renderer = $this->getPhpRenderer(
+            [
+                'headLink' => $headLink,
+                'headStyle' => $headStyle,
+                'inlineScript' => $inlineScript,
+                'url' => $url,
+                'assetManager' => $assetManager
+            ]
+        );
+        return $assetManager;
     }
 
     /**

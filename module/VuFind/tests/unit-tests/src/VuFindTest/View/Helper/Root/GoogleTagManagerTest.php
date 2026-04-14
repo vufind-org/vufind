@@ -88,8 +88,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function renderGTMHeadCode(string $gtmContainerId): string
     {
-        $helper = new GoogleTagManager($gtmContainerId);
-        $helper->setView($this->getPhpRenderer());
+        $helper = new GoogleTagManager($gtmContainerId, $this->getAssetManager());
         return (string)$helper->getHeadCode();
     }
 
@@ -102,8 +101,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected function renderGTMBodyCode(string $gtmContainerId): string
     {
-        $helper = new GoogleTagManager($gtmContainerId);
-        $helper->setView($this->getPhpRenderer());
+        $helper = new GoogleTagManager($gtmContainerId, $this->getAssetManager());
         return (string)$helper->getBodyCode();
     }
 }

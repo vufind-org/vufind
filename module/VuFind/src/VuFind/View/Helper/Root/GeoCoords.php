@@ -31,7 +31,6 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\Url;
 use VuFind\Search\Base\Options;
-use VuFind\ServiceManager\Factory\Autowire;
 
 use function is_array;
 
@@ -60,9 +59,7 @@ class GeoCoords
      * @param Url    $url    URL helper
      */
     public function __construct(
-        #[Autowire(config: 'MapSelectionConfig', path: 'default_coordinates')]
         protected string $coords,
-        #[Autowire(container: 'ViewHelperManager')]
         protected Url $url
     ) {
     }

@@ -158,7 +158,6 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
                 return $script . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
             });
         $manager->method('outputStyleAssets')->willReturn('');
-        $manager->setView($this->getPhpRenderer());
         $manager->appendScriptString('foo')
             ->appendScriptLink('foo.js')
             ->prependScriptString('bar', ['attr'], options: ['allow_arbitrary_attributes' => true]);
@@ -246,16 +245,23 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             $this->assertSame('css', $type);
             return $styles;
         });
-        $manager = $this->getMockBuilder(AssetManager::class)
-            ->setConstructorArgs([$themeInfo, $pipeline])
-            ->onlyMethods(['outputScriptAssets'])
-            ->getMock();
-        $manager->method('outputScriptAssets')->willReturn('');
         $helpers = [
             'headLink' => $this->getMockStyleHelper('appendStylesheet'),
             'headStyle' => $this->getMockStyleHelper('appendStyle'),
         ];
-        $manager->setView($this->getPhpRenderer($helpers));
+        $view = $this->getPhpRenderer($helpers);
+        $manager = $this->getMockBuilder(AssetManager::class)
+            ->setConstructorArgs([
+                $themeInfo,
+                $pipeline,
+                $view->plugin('url'),
+                $view->plugin('headLink'),
+                $view->plugin('headStyle'),
+                $view->plugin('inlineScript')
+            ])
+            ->onlyMethods(['outputScriptAssets'])
+            ->getMock();
+        $manager->method('outputScriptAssets')->willReturn('');
         $manager->appendStyleString('foo')
             ->appendStyleLink('foo.css')
             ->forcePrependStyleLink('bar.css');
