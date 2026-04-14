@@ -390,7 +390,7 @@ var VuFind = (function VuFindModule() {
     const tmpDiv = document.createElement('div');
     tmpDiv.innerHTML = html;
     const scripts = [];
-    // Cloning scripts wont work as they pass internal executed state so save them for later
+    // Cloning scripts won't work as they pass internal executed state so save them for later
     tmpDiv.querySelectorAll('script').forEach(script => {
       const type = script.getAttribute('type');
       if (!type || 'text/javascript' === type) {

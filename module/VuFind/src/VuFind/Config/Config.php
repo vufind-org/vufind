@@ -259,6 +259,7 @@ class Config implements ArrayAccess, Countable, Iterator
      */
     public function valid(): bool
     {
-        return isset($this->data[$this->key()]);
+        $key = $this->key();
+        return null !== $key && isset($this->data[$key]);
     }
 }

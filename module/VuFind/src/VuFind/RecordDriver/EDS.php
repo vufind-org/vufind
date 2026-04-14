@@ -428,7 +428,7 @@ class EDS extends DefaultRecord
             // Only sort by label if we have a sort config:
             if (!empty($itemGlobalOrderConfig)) {
                 // We want unassigned labels to appear AFTER configured labels:
-                $nextPos = max(array_keys($itemGlobalOrderConfig));
+                $nextPos = (int)max(array_keys($itemGlobalOrderConfig));
                 foreach (array_keys($origItems) as $key) {
                     $label = $origItems[$key]['Label'] ?? '';
                     $configuredPos = array_search($label, $itemGlobalOrderConfig);
