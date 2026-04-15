@@ -46,6 +46,20 @@ class SortFacetList extends AbstractHelper implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
+     * Constructor.
+     *
+     * @param Url    $url    Url View Helper
+     * @param Sorter $sorter Sorter service
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        protected Sorter $sorter,
+    ) {
+        $this->setSorter($sorter);
+    }
+
+    /**
      * Turns facet information into an alphabetical list.
      *
      * @param \VuFind\Search\Base\Results $results      Search result object
@@ -64,9 +78,8 @@ class SortFacetList extends AbstractHelper implements
         $facets = [];
         // avoid limit on URL
         $results->getParams()->setLimit($results->getOptions()->getDefaultLimit());
-        $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
-            $url = $urlHelper($searchRoute) . $results->getUrlQuery()
+            $url = ($this->url)($searchRoute) . $results->getUrlQuery()
                 ->addFacet($field, $value['value'], ($value['operator'] ?? 'AND'))
                 ->getParams();
             $facets[$url] = $this->facetValueToString($value, $formatString);
