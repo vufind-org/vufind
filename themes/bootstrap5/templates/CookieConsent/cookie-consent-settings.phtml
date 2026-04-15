@@ -36,17 +36,20 @@
         <?=$this->translate($categoryConfig['Description'] ?? '') // Description may contain HTML, e.g. links ?>
       </div>
       <div class="cookie-consent__category-details">
-        <button class="btn btn-link icon-link cookie-consent__category-details-toggle collapsed"
-          type="button" data-bs-toggle="collapse" data-bs-target="#<?=$safeCategoryId?>" aria-expanded="false"
-          aria-controls="<?=$safeCategoryId?>"
-        >
-          <?=$this->icon('collapse-open', 'icon-link__icon collapse-icon-open') ?>
-          <?=$this->icon('collapse-close', 'icon-link__icon collapse-icon-close') ?>
-          <span class="icon-link__label">
-            <?=$this->transEsc('CookieConsent::toggle_category_details')?>
-            <span class="visually-hidden"><?=$this->transEsc($categoryConfig['Title'] ?? '')?></span>
-          </span>
-        </button>
+        <?php // Note: Using a p here improves screen reader compatibility e.g. with VoiceOver + Safari ?>
+        <p>
+          <button class="btn btn-link icon-link cookie-consent__category-details-toggle collapsed"
+            type="button" data-bs-toggle="collapse" data-bs-target="#<?=$safeCategoryId?>" aria-expanded="false"
+            aria-controls="<?=$safeCategoryId?>"
+          >
+            <?=$this->icon('collapse-open', 'icon-link__icon collapse-icon-open') ?>
+            <?=$this->icon('collapse-close', 'icon-link__icon collapse-icon-close') ?>
+            <span class="icon-link__label">
+              <?=$this->transEsc('CookieConsent::toggle_category_details')?>
+              <span class="visually-hidden"><?=$this->transEsc($categoryConfig['Title'] ?? '')?></span>
+            </span>
+          </button>
+        </p>
         <div class="collapse" id="<?=$safeCategoryId?>">
           <table class="table table-responsive table-striped">
             <thead>

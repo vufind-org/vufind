@@ -17,15 +17,7 @@
 ?>
 <div class="cookie-consent-wrapper">
   <div<?=$this->htmlAttributes($cookieConsentDivAttrs)?>>
-    <?php if (!$consentGiven): ?>
-      <?=$this->render('CookieConsent/cookie-consent-overlay.phtml')?>
-    <?php else: ?>
-      <div class="cookie-consent__overlay">
-        <div class="load-indicator">
-          <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
-        </div>
-      </div>
-    <?php endif; ?>
+    <?=$this->render('CookieConsent/cookie-consent-overlay.phtml', ['deferLoad' => $consentGiven])?>
   </div>
 </div>
 <?php echo $this->assetManager()->outputInlineScriptString("window.addEventListener('load', function() { VuFind.cookie.setupConsent($consentConfigJson); });");
