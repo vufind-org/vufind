@@ -76,8 +76,10 @@ class Yaml extends AbstractBase
             $parentPath = $data['@parent_yaml'] ?? false;
             unset($data['@parent_yaml']);
             if ($parentPath !== false) {
+                // Get file on absolute path
                 $parentConfigLocation = $this->getParentLocationOnPath($configLocation, $parentPath);
                 if ($parentConfigLocation === null) {
+                    // If config does not exist on absolute path get it on relative path
                     $parentConfigLocation = $this->getParentLocationOnPath(
                         $configLocation,
                         pathinfo($configLocation->getPath(), PATHINFO_DIRNAME)
