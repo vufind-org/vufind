@@ -89,19 +89,19 @@ class YamlConfigTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(
             [
-                'middle' => 'bar',
-                'bottom' => 'baz',
+                'parent' => 'bar',
+                'grandparent' => 'baz',
             ],
-            $configManager->getConfigArray('middle')
+            $configManager->getConfigArray('parent')
         );
 
         $this->assertSame(
             [
-                'top' => 'foo',
-                'middle' => 'bar',
-                'bottom' => 'baz',
+                'child' => 'foo',
+                'parent' => 'bar',
+                'grandparent' => 'baz',
             ],
-            $configManager->getConfigArray('top')
+            $configManager->getConfigArray('child')
         );
     }
 
