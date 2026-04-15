@@ -27,7 +27,6 @@ return [
             'VuFind\View\Helper\Root\Matomo' => 'VuFind\View\Helper\Root\MatomoFactory',
             'VuFind\View\Helper\Root\Metadata' => 'VuFind\View\Helper\Root\MetadataFactory',
             'VuFind\View\Helper\Root\OpenUrl' => 'VuFind\View\Helper\Root\OpenUrlFactory',
-            'VuFind\View\Helper\Root\OperatorToFieldPrefix' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Overdrive' => 'VuFind\View\Helper\Root\OverdriveFactory',
             'VuFind\View\Helper\Root\Piwik' => 'VuFind\View\Helper\Root\PiwikFactory',
             'VuFind\View\Helper\Root\Printms' => 'Laminas\ServiceManager\Factory\InvokableFactory',
