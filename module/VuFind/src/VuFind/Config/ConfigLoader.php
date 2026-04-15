@@ -174,8 +174,7 @@ class ConfigLoader
             if ($handleParentConfig) {
                 if ($parentLocation = $currentConfig['parentLocation'] ?? null) {
                     $currentConfigLocation = $parentLocation;
-                }
-                if ($parentConfigName = $currentConfig['parentConfigName'] ?? null) {
+                } elseif ($parentConfigName = $currentConfig['parentConfigName'] ?? null) {
                     $currentConfigLocation = $this->getConfigLocation($parentConfigName, $useLocalConfig);
                 }
             }
