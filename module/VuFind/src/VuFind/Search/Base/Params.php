@@ -1035,12 +1035,14 @@ class Params
      */
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
-        if ($newAlias == null) {
-            $newAlias = $newField;
-        }
-        $this->facetConfig[$newField] = $newAlias;
-        if ($ored) {
-            $this->orFacets[] = $newField;
+        if (!empty($newField) {
+            if ($newAlias == null) {
+                $newAlias = $newField;
+            }
+            $this->facetConfig[$newField] = $newAlias;
+            if ($ored) {
+                $this->orFacets[] = $newField;
+            }
         }
     }
 
