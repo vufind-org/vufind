@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Sort facet list view helper.
@@ -40,8 +40,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SortFacetList extends AbstractHelper implements
-    \VuFind\I18n\HasSorterInterface
+class SortFacetList implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\HasSorterTrait;
 
