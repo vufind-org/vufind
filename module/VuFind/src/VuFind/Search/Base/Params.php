@@ -50,6 +50,7 @@ use function intval;
 use function is_array;
 use function is_callable;
 use function is_object;
+use function strlen;
 
 /**
  * Abstract parameters search model.
@@ -1035,14 +1036,15 @@ class Params
      */
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
-        if (!empty($newField)) {
-            if ($newAlias == null) {
-                $newAlias = $newField;
-            }
-            $this->facetConfig[$newField] = $newAlias;
-            if ($ored) {
-                $this->orFacets[] = $newField;
-            }
+        if (strlen($newField) == 0) {
+            throw new \Exception('Can not add facet when no field provided');
+        }
+        if ($newAlias == null) {
+            $newAlias = $newField;
+        }
+        $this->facetConfig[$newField] = $newAlias;
+        if ($ored) {
+            $this->orFacets[] = $newField;
         }
     }
 
