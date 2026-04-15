@@ -141,7 +141,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function makeRecordApiCall($id = 'testbug2', ?string $apiKeyToken = null): Element
+    protected function makeRecordApiCall($id = 'testbug2', ?string $apiKeyToken = null, string $divId = 'operations-Record-get_record'): Element
     {
         $session = $this->getMinkSession();
         if ($apiKeyToken) {
@@ -149,10 +149,10 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         }
         $session->visit($this->getVuFindUrl() . '/api');
         $page = $session->getPage();
-        $this->clickCss($page, '#operations-Record-get_record button');
-        $this->clickCss($page, '#operations-Record-get_record .try-out button');
-        $this->findCssAndSetValue($page, '#operations-Record-get_record input[type="text"]', $id);
-        $this->clickCss($page, '#operations-Record-get_record .execute-wrapper button');
+        $this->clickCss($page, "#{$divId} button");
+        $this->clickCss($page, "#{$divId} .try-out button");
+        $this->findCssAndSetValue($page, "#{$divId} input[type=\"text\"]", $id);
+        $this->clickCss($page, "#{$divId} .execute-wrapper button");
         return $page;
     }
 
@@ -190,11 +190,24 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+
+        // Test /record.
         $page = $this->makeRecordApiCall();
         $this->assertEquals(
             '200',
             $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
         );
+
+        // TODO: Test /index2/record.
+
+        // Test /authority/record.
+        $page = $this->makeRecordApiCall(id: 'vtls000001427', divId: 'operations-Record-get_authority_record');
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        // TODO: Test /web/record.
     }
 
     /**
