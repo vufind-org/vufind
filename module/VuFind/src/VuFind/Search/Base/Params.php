@@ -1035,7 +1035,7 @@ class Params
      */
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
-        if (!empty($newField) {
+        if (!empty($newField)) {
             if ($newAlias == null) {
                 $newAlias = $newField;
             }
