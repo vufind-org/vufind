@@ -1037,7 +1037,7 @@ class Params
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
         if (strlen($newField) == 0) {
-            throw new \Exception('Can not add facet when no field provided');
+            throw new \VuFind\Exception\BadRequest('Can not add facet when no field provided');
         }
         if ($newAlias == null) {
             $newAlias = $newField;
