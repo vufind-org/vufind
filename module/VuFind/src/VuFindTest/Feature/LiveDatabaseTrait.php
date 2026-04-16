@@ -125,8 +125,7 @@ trait LiveDatabaseTrait
         );
         $config = $container->get('config');
         $options = $config['caches']['doctrinemodule.cache.filesystem']['options'];
-        $options['cache_dir']
-            = LOCAL_CACHE_DIR . '/' . $options['cache_dir'] . '_testmode';
+        $options['cache_dir'] .= '_testmode';
         if (!is_dir($options['cache_dir'])) {
             mkdir($options['cache_dir'], 0o777, true);
         }

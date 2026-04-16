@@ -80,7 +80,9 @@ class Ini extends AbstractBase
             }
 
             if ($parentPath !== null) {
-                $config['parentLocation'] = $this->getParentLocationOnPath($configLocation, $parentPath);
+                $parentConfigLocation = $this->getParentLocationOnPath($configLocation, $parentPath);
+                $parentConfigLocation->setSubsection($configLocation->getSubsection());
+                $config['parentLocation'] = $parentConfigLocation;
             } elseif ($parentConfig['use_parent_dir'] ?? false) {
                 $config['parentLocation'] = $configLocation->getDirLocationsParent();
             }

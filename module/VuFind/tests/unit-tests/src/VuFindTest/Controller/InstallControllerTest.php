@@ -226,11 +226,9 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMinimalPhpVersionMethod(): \ReflectionMethod
     {
-        $method = new \ReflectionMethod(
+        return new \ReflectionMethod(
             InstallController::class,
             'getMinimalPhpVersion'
         );
-        $method->setAccessible(true);
-        return $method;
     }
 }

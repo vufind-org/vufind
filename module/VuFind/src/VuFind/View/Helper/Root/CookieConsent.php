@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,11 +29,15 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\Auth\LoginTokenManager;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Cookie\CookieManager;
 use VuFind\Date\Converter as DateConverter;
+use VuFind\Http\PhpEnvironment\Request;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 use function is_string;
@@ -47,8 +51,9 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
+class CookieConsent implements TranslatorAwareInterface
 {
+    use ExplodeSettingTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -73,6 +78,18 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     protected $hostName = null;
 
     /**
+     * Category configuration elements exposed to client JavaScript.
+     *
+     * @var array
+     */
+    protected array $jsCategoryConfigElements = [
+        'DefaultEnabled',
+        'Essential',
+        'ControlVuFindServices',
+        'AutoClearCookies',
+    ];
+
+    /**
      * Constructor.
      *
      * @param array             $config            Main configuration
@@ -80,16 +97,29 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
      * @param CookieManager     $cookieManager     Cookie manager
      * @param DateConverter     $dateConverter     Date converter
      * @param LoginTokenManager $loginTokenManager Login token manager
+     * @param Request           $request           Request
+     * @param RendererInterface $renderer          View renderer
      */
     public function __construct(
+        #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire(config: 'CookieConsent', path: 'CookieConsent', configType: 'yaml')]
         protected array $consentConfig,
         protected CookieManager $cookieManager,
         protected DateConverter $dateConverter,
-        protected LoginTokenManager $loginTokenManager
+        protected LoginTokenManager $loginTokenManager,
+        #[Autowire(service: 'Request')]
+        protected Request $request,
+        #[Autowire(service: 'ViewRenderer')]
+        protected RendererInterface $renderer,
     ) {
         $this->consentCookieName = $this->consentConfig['CookieName'] ?? 'cc_cookie';
         $this->consentCookieExpiration = $this->consentConfig['CookieExpiration'] ?? 182; // half a year
+        // Filter out disabled categories from the configuration:
+        $this->consentConfig['Categories'] = array_intersect_key(
+            $this->consentConfig['Categories'] ?? [],
+            array_flip($this->getEnabledCategories())
+        );
     }
 
     /**
@@ -103,25 +133,33 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Render cookie consent initialization script.
+     * Render cookie consent.
+     *
+     * @param ?string $type Dialog type (only valid option is 'bottom'; null value will disable cookie consent)
      *
      * @return string
      */
-    public function render(): string
+    public function render(?string $type = null): string
     {
-        if (!$this->isEnabled()) {
+        // Don't render anything unless enabled and 'bottom' given as the type. Checking the type avoids rendering
+        // inside the head element if layout template has not been properly updated.
+        if (!$this->isEnabled() || 'bottom' !== $type) {
             return '';
         }
-        $params = [
-            'consentConfig' => $this->consentConfig,
-            'consentCookieName' => $this->consentCookieName,
-            'consentCookieExpiration' => $this->consentCookieExpiration,
-            'placeholders' => $this->getPlaceholders(),
-            'cookieManager' => $this->cookieManager,
-            'consentDialogConfig' => $this->getConsentDialogConfig(),
-            'controlledVuFindServices' => $this->getControlledVuFindServices(),
-        ];
-        return $this->getView()->render('Helpers/cookie-consent.phtml', $params);
+
+        // Hide from bots:
+        if ($this->consentConfig['HideFromBots'] ?? true) {
+            $headers = $this->request->getHeaders();
+            if ($headers->has('User-Agent')) {
+                $agent = $headers->get('User-Agent')->getFieldValue();
+                $crawlerDetect = new \Jaybizzle\CrawlerDetect\CrawlerDetect();
+                if ($crawlerDetect->isCrawler($agent)) {
+                    return '';
+                }
+            }
+        }
+
+        return $this->renderer->render('CookieConsent/cookie-consent.phtml');
     }
 
     /**
@@ -131,7 +169,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
      */
     public function isEnabled(): bool
     {
-        return !empty($this->config['Cookies']['consent']);
+        return (bool)($this->config['Cookies']['consent'] ?? false);
     }
 
     /**
@@ -231,7 +269,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
                         str_replace('Z', '+00:00', $result['lastConsentTimestamp'])
                     );
                 $result['domain'] = $this->cookieManager->getDomain()
-                    ?: $this->getView()->plugin('serverUrl')->getHost();
+                    ?: $this->renderer->plugin('serverUrl')->getHost();
                 $result['path'] = $this->cookieManager->getPath();
                 return $result;
             }
@@ -240,171 +278,43 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get configuration for the consent dialog.
+     * Check for consent given for another revision.
+     *
+     * @return bool
+     */
+    public function isInvalidConsentRevision(): bool
+    {
+        if ($consent = $this->getCurrentConsent(true)) {
+            return ($consent['revision'] ?? null) !== $this->getConsentRevision();
+        }
+        return false;
+    }
+
+    /**
+     * Get the enabled cookie categories.
      *
      * @return array
      */
-    protected function getConsentDialogConfig(): array
+    public function getEnabledCategories(): array
     {
-        $descriptionPlaceholders = $this->getDescriptionPlaceholders();
         $categories = $this->config['Cookies']['consentCategories'] ?? '';
-        $enabledCategories = $categories ? explode(',', $categories) : ['essential'];
-        $lang = $this->getTranslatorLocale();
-        $cookieSettings = [
-            'name' => $this->consentCookieName,
-            'path' => $this->cookieManager->getPath(),
-            'expiresAfterDays' => $this->consentCookieExpiration,
-            'sameSite' => $this->cookieManager->getSameSite(),
-        ];
-        // Set domain only if we have a value for it to avoid overriding the default
-        // (i.e. window.location.hostname):
-        if ($domain = $this->cookieManager->getDomain()) {
-            $cookieSettings['domain'] = $domain;
-        }
-        $rtl = ($this->getView()->plugin('layout'))()->rtl;
-        $consentDialogConfig = [
-            'autoClearCookies' => $this->consentConfig['AutoClear'] ?? true,
-            'manageScriptTags' => $this->consentConfig['ManageScripts'] ?? true,
-            'hideFromBots' => $this->consentConfig['HideFromBots'] ?? true,
-            'cookie' => $cookieSettings,
-            'revision' => $this->getConsentRevision(),
-            'guiOptions' => [
-                'consentModal' => [
-                    'layout' => 'bar',
-                    'position' => 'bottom center',
-                    'transition' => 'slide',
-                ],
-                'preferencesModal' => [
-                    'layout' => 'box',
-                    'transition' => 'none',
-                ],
-            ],
-            'language' => [
-                'default' => $lang,
-                'autoDetect' => false,
-                'rtl' => $rtl,
-                'translations' => [
-                    $lang => [
-                        'consentModal' => [
-                            'title' => $this->translate(
-                                'CookieConsent::popup_title_html'
-                            ),
-                            'description' => $this->translate(
-                                'CookieConsent::popup_description_html',
-                                $descriptionPlaceholders
-                            ),
-                            'revisionMessage' => $this->translate(
-                                'CookieConsent::popup_revision_message_html'
-                            ),
-                            'acceptAllBtn' => $this->translate(
-                                'CookieConsent::Accept All Cookies'
-                            ),
-                            'acceptNecessaryBtn' => $this->translate(
-                                'CookieConsent::Accept Only Essential Cookies'
-                            ),
-                        ],
-                        'preferencesModal' => [
-                            'title' => $this->translate(
-                                'CookieConsent::cookie_settings_html'
-                            ),
-                            'savePreferencesBtn' => $this->translate(
-                                'CookieConsent::Save Settings'
-                            ),
-                            'acceptAllBtn' => $this->translate(
-                                'CookieConsent::Accept All Cookies'
-                            ),
-                            'acceptNecessaryBtn' => $this->translate(
-                                'CookieConsent::Accept Only Essential Cookies'
-                            ),
-                            'closeIconLabel' => $this->translate('close'),
-                            'flipButtons' => $rtl,
-                            'sections' => [
-                                [
-                                    'description' => $this->translate(
-                                        'CookieConsent::category_description_html',
-                                        $descriptionPlaceholders
-                                    ),
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
-        $headers = [
-            'name' => $this->translate('CookieConsent::Name'),
-            'domain' => $this->translate('CookieConsent::Domain'),
-            'desc' => $this->translate('CookieConsent::Description'),
-            'exp' => $this->translate('CookieConsent::Expiration'),
-        ];
-        $categoryData = $this->consentConfig['Categories'] ?? [];
-        foreach ($categoryData as $categoryId => $categoryConfig) {
-            if ($enabledCategories && !in_array($categoryId, $enabledCategories)) {
-                continue;
-            }
-            $consentDialogConfig['categories'][$categoryId] = [
-                'enabled' => ($categoryConfig['Essential'] ?? false)
-                    || ($categoryConfig['DefaultEnabled'] ?? false),
-                'readOnly' => $categoryConfig['Essential'] ?? false,
-            ];
-            $section = [
-                'title' => $this->translate($categoryConfig['Title'] ?? ''),
-                'description'
-                    => $this->translate($categoryConfig['Description'] ?? ''),
-                'linkedCategory' => $categoryId,
-                'cookieTable' => [
-                    'headers' => $headers,
-                ],
-            ];
-            foreach ($categoryConfig['Cookies'] ?? [] as $cookie) {
-                $name = $cookie['Name'];
-                if (!empty($cookie['ThirdParty'])) {
-                    $name .= ' ('
-                        . $this->translate('CookieConsent::third_party_html') . ')';
-                }
-                switch ($cookie['Expiration']) {
-                    case 'never':
-                        $expiration
-                            = $this->translate('CookieConsent::expiration_never');
-                        break;
-                    case 'session':
-                        $expiration
-                            = $this->translate('CookieConsent::expiration_session');
-                        break;
-                    default:
-                        if (!empty($cookie['ExpirationUnit'])) {
-                            $expiration = ' ' . $this->translate(
-                                'CookieConsent::expiration_unit_'
-                                . $cookie['ExpirationUnit'],
-                                ['%%expiration%%' => $cookie['Expiration']],
-                                $cookie['Expiration'] . ' '
-                                . $cookie['ExpirationUnit']
-                            );
-                        } else {
-                            $expiration = $cookie['Expiration'];
-                        }
-                }
-                $section['cookieTable']['body'][] = [
-                    'name' => $name,
-                    'domain' => $cookie['Domain'],
-                    'desc' => $this->translate($cookie['Description'] ?? ''),
-                    'exp' => $expiration,
-                ];
-            }
-            if ($autoClear = $categoryConfig['AutoClearCookies'] ?? []) {
-                $section['autoClear']['cookies'] = $autoClear;
-            }
+        return $categories ? $this->explodeListSetting($categories) : ['essential'];
+    }
 
-            $translationsElem = &$consentDialogConfig['language']['translations'];
-            $translationsElem[$lang]['preferencesModal']['sections'][] = $section;
-            unset($translationsElem);
-        }
+    /**
+     * Get consent category configuration.
+     *
+     * @return array
+     */
+    public function getCategoryConfig(): array
+    {
+        $categoryConfig = $this->consentConfig['Categories'];
         // Replace placeholders:
         $placeholders = $this->getPlaceholders();
         $placeholderSearch = array_keys($placeholders);
-        $placeholderReplace =  array_values($placeholders);
+        $placeholderReplace = array_values($placeholders);
         array_walk_recursive(
-            $consentDialogConfig,
+            $categoryConfig,
             function (&$value) use ($placeholderSearch, $placeholderReplace): void {
                 if (is_string($value)) {
                     $value = str_replace(
@@ -415,8 +325,45 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
                 }
             }
         );
+        return $categoryConfig;
+    }
 
-        return $consentDialogConfig;
+    /**
+     * Check if non-essential categories are available.
+     *
+     * @return bool
+     */
+    public function hasNonEssentialCategories(): bool
+    {
+        foreach ($this->consentConfig['Categories'] as $category) {
+            if (!($category['Essential'] ?? false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get cookie consent configuration.
+     *
+     * @return array
+     */
+    public function getConsentConfig(): array
+    {
+        $categoryConfig = $this->consentConfig['Categories'];
+        foreach ($categoryConfig as &$category) {
+            $category = array_intersect_key($category, array_flip($this->jsCategoryConfigElements));
+        }
+        unset($category);
+
+        return [
+            'cookieName' => $this->consentCookieName,
+            'autoClearCookies' => $this->consentConfig['AutoClear'] ?? true,
+            'revision' => $this->getConsentRevision(),
+            'cookieExpirationDays' => $this->consentCookieExpiration,
+            'categoryConfig' => $categoryConfig,
+            'controlledVuFindServices' => $this->getControlledVuFindServices(),
+        ];
     }
 
     /**
@@ -439,21 +386,6 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     }
 
     /**
-     * Get placeholders for description translations.
-     *
-     * @return array
-     */
-    protected function getDescriptionPlaceholders(): array
-    {
-        $root = rtrim(($this->getView()->plugin('url'))('home'), '/');
-        $escapeHtmlAttr = $this->getView()->plugin('escapeHtmlAttr');
-        return [
-            '%%siteRoot%%' => $root,
-            '%%siteRootAttr%%' => $escapeHtmlAttr($root),
-        ];
-    }
-
-    /**
      * Get current host name.
      *
      * @return string
@@ -461,7 +393,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     protected function getHostName(): string
     {
         if (null === $this->hostName) {
-            $this->hostName = $this->getView()->plugin('serverUrl')->getHost();
+            $this->hostName = $this->renderer->plugin('serverUrl')->getHost();
         }
         return $this->hostName;
     }
@@ -479,13 +411,15 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     /**
      * Get current consent data.
      *
+     * @param bool $ignoreRevision Ignore revision mismatch?
+     *
      * @return array
      */
-    protected function getCurrentConsent(): array
+    protected function getCurrentConsent(bool $ignoreRevision = false): array
     {
         if ($consentJson = $this->cookieManager->get($this->consentCookieName)) {
             if ($consent = json_decode($consentJson, true)) {
-                if (($consent['revision'] ?? null) === $this->getConsentRevision()) {
+                if ($ignoreRevision || ($consent['revision'] ?? null) === $this->getConsentRevision()) {
                     return $consent;
                 }
             }

@@ -182,7 +182,6 @@ class GeneratorTools
 
         // Force getExpectedInterface() to be public so we can read it:
         $reflectionMethod = new \ReflectionMethod($pm, 'getExpectedInterface');
-        $reflectionMethod->setAccessible(true);
         return $reflectionMethod->invoke($pm);
     }
 
@@ -450,7 +449,6 @@ class GeneratorTools
     {
         // There is no "getFactories" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'factories');
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($container);
     }
 
@@ -479,7 +477,6 @@ class GeneratorTools
     {
         // There is no "getDelegators" method, so we need to use reflection:
         $reflectionProperty = new \ReflectionProperty($container, 'delegators');
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($container);
     }
 

@@ -558,6 +558,31 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                         'value2' => 'base',
                     ],
                 ],
+                'subdir-all' => [
+                    'all-sub-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'primary-sub-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                        ],
+                    ],
+                    'base-secondary-sub-sub' => [
+                        'Section' => [
+                            'value' => 'secondary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'base-sub-sub' => [
+                        'Section' => [
+                            'value' => 'base',
+                            'value2' => 'base',
+                        ],
+                    ],
+                ],
             ],
         ];
         yield 'all-sub' => [
@@ -588,6 +613,69 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         ];
         yield 'base-sub' => [
             'dir_config/base-sub',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
+                ],
+            ],
+        ];
+        yield 'subdir-all' => [
+            'dir_config/subdir-all',
+            [
+                'all-sub-sub' => [
+                    'Section' => [
+                        'value' => 'primary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+                'primary-sub-sub' => [
+                    'Section' => [
+                        'value' => 'primary',
+                    ],
+                ],
+                'base-secondary-sub-sub' => [
+                    'Section' => [
+                        'value' => 'secondary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+                'base-sub-sub' => [
+                    'Section' => [
+                        'value' => 'base',
+                        'value2' => 'base',
+                    ],
+                ],
+            ],
+        ];
+        yield 'all-sub-sub' => [
+            'dir_config/subdir-all/all-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'primary-sub-sub' => [
+            'dir_config/subdir-all/primary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                ],
+            ],
+        ];
+        yield 'base-secondary-sub-sub' => [
+            'dir_config/subdir-all/base-secondary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'base-sub-sub' => [
+            'dir_config/subdir-all/base-sub-sub',
             [
                 'Section' => [
                     'value' => 'base',

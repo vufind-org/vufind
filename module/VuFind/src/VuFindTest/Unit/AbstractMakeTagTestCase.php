@@ -45,38 +45,13 @@ abstract class AbstractMakeTagTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get makeTag helper with mock view.
      *
-     * @return \Laminas\View\Helper\EscapeHtml
+     * @return \VuFind\View\Helper\Root\MakeTag
      */
-    protected function getViewWithHelpers()
+    protected function getMakeTagHelper(): \VuFind\View\Helper\Root\MakeTag
     {
-        $helpers = [
-            'escapehtml' => new \Laminas\View\Helper\EscapeHtml(),
-            'escapehtmlattr' => new \Laminas\View\Helper\EscapeHtmlAttr(new \VuFind\Escaper\Escaper()),
-            'htmlattributes' => new \Laminas\View\Helper\HtmlAttributes(),
-            'maketag' => new \VuFind\View\Helper\Root\MakeTag(),
-        ];
-
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view
-            ->expects($this->atLeastOnce())
-            ->method('plugin')
-            ->with(
-                $this->callback(
-                    function ($helper) use ($helpers) {
-                        return isset($helpers[strtolower($helper)]);
-                    }
-                )
-            )
-            ->willReturnCallback(
-                function ($helper) use ($helpers) {
-                    return $helpers[strtolower($helper)];
-                }
-            );
-
-        foreach ($helpers as $helper) {
-            $helper->setView($view);
-        }
-
-        return $view;
+        return new \VuFind\View\Helper\Root\MakeTag(
+            new \Laminas\View\Helper\HtmlAttributes(),
+            new \Laminas\View\Helper\EscapeHtml(),
+        );
     }
 }

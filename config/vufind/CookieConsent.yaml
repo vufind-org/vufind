@@ -15,8 +15,8 @@
 # Cookie category configuration (see the VuFind wiki for additional examples:
 # https://vufind.org/wiki/configuration:cookie_consent)
 #
-#   Title             Category title displayed in the category heading
-#   Description       A longer description text
+#   Title             Category title displayed in the category heading (NOT escaped so that it can contain HTML)
+#   Description       A longer description text (NOT escaped so that it can contain HTML)
 #   DefaultEnabled    Whether the category defaults to enabled (true/false, default
 #                     is false)
 #   Essential         Whether the category contains only cookies essential for the
@@ -30,7 +30,7 @@
 #     Name              Cookie name (translatable text, no functionality)
 #     Domain            Cookie domain (translatable text, no functionality)
 #     Description       Description for the cookie (translatable text, no
-#                       functionality)
+#                       functionality, NOT escaped so that it can contain HTML)
 #     Expiration        Expiration time for the cookie (number or "session")
 #     ExpirationUnit    Unit of expiration for translation when Expiration is a
 #                       numeric value. Out of the box supported values are "days" and

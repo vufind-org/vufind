@@ -456,7 +456,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             EOT;
         if ($this->disableCookies) {
             $code .= "_paq.push(['disableCookies']);\n";
-        } elseif ($cookieConsent->isEnabled()) {
+        } elseif ($cookieConsent->isEnabled() && !$cookieConsent->isServiceAllowed('matomo')) {
             $code .= "_paq.push(['requireCookieConsent']);\n";
         }
 
