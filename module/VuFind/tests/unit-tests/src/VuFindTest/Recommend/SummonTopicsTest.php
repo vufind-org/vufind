@@ -96,7 +96,6 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
     {
         $class = new \ReflectionClass(SummonTopics::class);
         $method = $class->getMethod('configureSummonResults');
-        $method->setAccessible(true);
         $pm = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $obj = new SummonTopics($pm);

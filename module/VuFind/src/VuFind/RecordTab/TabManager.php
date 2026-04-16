@@ -233,7 +233,7 @@ class TabManager
 
         // Missing/invalid record driver configuration? Fall back to provided
         // default:
-        if ((!$default || !isset($tabs[$default])) && isset($tabs[$fallback])) {
+        if ((!$default || !isset($tabs[$default])) && isset($tabs[$fallback ?? ''])) {
             $default = $fallback;
         }
 

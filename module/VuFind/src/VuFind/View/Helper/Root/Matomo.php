@@ -466,7 +466,7 @@ class Matomo
             EOT;
         if ($this->disableCookies) {
             $code .= "_paq.push(['disableCookies']);\n";
-        } elseif ($this->cookieConsent->isEnabled()) {
+        } elseif ($this->cookieConsent->isEnabled() && !$this->cookieConsent->isServiceAllowed('matomo')) {
             $code .= "_paq.push(['requireCookieConsent']);\n";
         }
         return $code;
