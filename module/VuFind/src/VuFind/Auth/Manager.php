@@ -88,7 +88,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      *
      * @var array
      */
-    protected array $legalAuthOptions;
+    protected array $legalAuthOptions = [];
 
     /**
      * Cache for current logged in user object.
@@ -148,9 +148,9 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     ) {
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
-        $method = $config->Authentication->method ?? 'Database';
-        $this->legalAuthOptions = [$method];   // mark it as legal
-        $this->setAuthMethod($method);         // load it
+        $method = $this->getPreAuthenticationData()['authMethod'] ?? $config->Authentication->method ?? 'Database';
+        // Set the active authentication method and force it legal:
+        $this->setAuthMethod($method, true);
     }
 
     /**
