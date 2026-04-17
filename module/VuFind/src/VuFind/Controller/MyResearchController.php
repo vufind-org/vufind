@@ -40,7 +40,6 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Account\UserAccountService;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Auth\Manager as AuthManager;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Controller\Feature\OnlinePaymentTrait;
 use VuFind\Crypt\SecretCalculator;
