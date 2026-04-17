@@ -145,7 +145,15 @@ return [
             'Unicode' => [
                 'template' => 'unicode',
             ],
-            /* For an example of an images set, see Bootprint's theme.config.php. */
+            // Example of an image set:
+            /*
+            'Img' => [
+                'template' => 'images',
+                'src' => 'icons', // Points to a subdirectory under images; processed via imageLink.
+            ],
+            // With the above, you can point to e.g. images/icons/add.png by adding an alias below:
+            // 'cart-add' => 'Img:add.png'
+            */
         ],
         'aliases' => [
             /**

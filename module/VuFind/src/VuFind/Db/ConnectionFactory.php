@@ -200,14 +200,30 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
 
         // Apply MySQL-specific adjustments:
         if ($driver == 'pdo_mysql') {
-            $driverOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT]
-                = $this->config->Database->verify_server_certificate ?? false;
-            $sslKeyMap = [
-                'client_key' => PDO::MYSQL_ATTR_SSL_KEY,
-                'client_cert' => PDO::MYSQL_ATTR_SSL_CERT,
-                'ca_cert' => PDO::MYSQL_ATTR_SSL_CA,
-                'ca_path' => PDO::MYSQL_ATTR_SSL_CAPATH,
-            ];
+            if (PHP_VERSION_ID >= 80400) {
+                // @phpstan-ignore class.notFound
+                $driverOptions[Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT]
+                    = $this->config->Database->verify_server_certificate ?? false;
+                $sslKeyMap = [
+                    // @phpstan-ignore class.notFound
+                    'client_key' => Pdo\Mysql::ATTR_SSL_KEY,
+                    // @phpstan-ignore class.notFound
+                    'client_cert' => Pdo\Mysql::ATTR_SSL_CERT,
+                    // @phpstan-ignore class.notFound
+                    'ca_cert' => Pdo\Mysql::ATTR_SSL_CA,
+                    // @phpstan-ignore class.notFound
+                    'ca_path' => Pdo\Mysql::ATTR_SSL_CAPATH,
+                ];
+            } else {
+                $driverOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT]
+                    = $this->config->Database->verify_server_certificate ?? false;
+                $sslKeyMap = [
+                    'client_key' => PDO::MYSQL_ATTR_SSL_KEY,
+                    'client_cert' => PDO::MYSQL_ATTR_SSL_CERT,
+                    'ca_cert' => PDO::MYSQL_ATTR_SSL_CA,
+                    'ca_path' => PDO::MYSQL_ATTR_SSL_CAPATH,
+                ];
+            }
             $sslConfigured = false;
             foreach ($sslKeyMap as $oldKey => $newKey) {
                 if (isset($driverOptions[$oldKey])) {

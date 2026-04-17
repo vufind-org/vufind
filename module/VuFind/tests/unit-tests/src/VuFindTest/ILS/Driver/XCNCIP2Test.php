@@ -1330,7 +1330,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 '\VuFind\ILS\Driver\XCNCIP2',
                 $test['method']
             );
-            $method->setAccessible(true);
             $request = $method->invokeArgs($this->driver, $test['params'] ?? []);
             $file = realpath(
                 __DIR__ . '/../../../../../../tests/fixtures/xcncip2/request/'
@@ -1354,7 +1353,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             '\VuFind\ILS\Driver\XCNCIP2',
             'getCancelRequest'
         );
-        $method->setAccessible(true);
         $this->expectException(\VuFind\Exception\ILS::class);
         $this->expectExceptionMessage('No identifiers for CancelRequest');
         $method->invokeArgs(
@@ -1381,7 +1379,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 '\VuFind\ILS\Driver\XCNCIP2',
                 'getPatronBlocks'
             );
-            $method->setAccessible(true);
             $blocks = $method->invokeArgs(
                 $this->driver,
                 [['cat_username' => 'test']]
@@ -1424,7 +1421,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 '\VuFind\ILS\Driver\XCNCIP2',
                 'isPatronBlocked'
             );
-            $method->setAccessible(true);
             $blocked = $method->invokeArgs(
                 $this->driver,
                 [['cat_username' => 'test']]
@@ -1446,7 +1442,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             '\VuFind\ILS\Driver\XCNCIP2',
             'parseProblem'
         );
-        $method->setAccessible(true);
         $result = $method->invokeArgs($this->driver, [$xml]);
         $expected
             = 'ProblemType: Needed Data Missing, ProblemDetail: UserId or AuthenticationInput must be provided., '
@@ -1534,7 +1529,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             '\VuFind\ILS\Driver\XCNCIP2',
             'invalidateResponseCache'
         );
-        $method->setAccessible(true);
         $patron = [
             'cat_username' => 'my_login', 'cat_password' => 'my_password',
             'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
@@ -1564,7 +1558,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             '\VuFind\ILS\Driver\XCNCIP2',
             'getBibs'
         );
-        $method->setAccessible(true);
         $this->mockResponse(['lookupItemSetNextItemToken.xml', 'lookupItemSet.xml']);
         $bibs = $method->invokeArgs($this->driver, [['id1'], ['agency1']]);
         $this->assertCount(8, $bibs);
@@ -1595,7 +1588,6 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         );
         $driver->init();
         $property = new \ReflectionProperty(\VuFind\ILS\Driver\XCNCIP2::class, 'itemUseRestrictionTypesForStatus');
-        $property->setAccessible(true);
         $this->assertEquals(['In Library Use Only'], $property->getValue($driver));
 
         $driver->setConfig(

@@ -182,8 +182,12 @@ var VuFind = (function VuFindModule() {
         elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
         event.preventDefault();
       }
-      // Check also parent node for spans (e.g. a button with icon)
-      if (!event.defaultPrevented && elem.localName === 'span' && elem.parentNode) {
+      // Check also parent node for spans or other elements with the icon class (e.g. a button with icon)
+      if (
+        !event.defaultPrevented
+        && elem.parentNode instanceof HTMLElement
+        && (elem.localName === 'span' || elem.classList.contains('icon'))
+      ) {
         checkClickHandlers(event, elem.parentNode);
       }
     };
@@ -387,7 +391,7 @@ var VuFind = (function VuFindModule() {
     const tmpDiv = document.createElement('div');
     tmpDiv.innerHTML = html;
     const scripts = [];
-    // Cloning scripts wont work as they pass internal executed state so save them for later
+    // Cloning scripts won't work as they pass internal executed state so save them for later
     tmpDiv.querySelectorAll('script').forEach(script => {
       const type = script.getAttribute('type');
       if (!type || 'text/javascript' === type) {
