@@ -36,8 +36,6 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
-use function get_class;
-
 /**
  * ILS authentication module.
  *
@@ -93,6 +91,26 @@ class ILS extends AbstractBase
     public function setCatalog(\VuFind\ILS\Connection $connection)
     {
         $this->catalog = $connection;
+    }
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        if ($this->preAuthenticationData) {
+            return null;
+        }
+
+        $username = trim($request->getPost()->get('username', ''));
+        $loginMethod = $this->getILSLoginMethod();
+
+        return $this->handlePreAuthentication('', $username, $loginMethod);
     }
 
     /**
@@ -285,6 +303,47 @@ class ILS extends AbstractBase
     }
 
     /**
+     * Handle pre-authentication.
+     *
+     * @param string $target      MultiILS login target
+     * @param string $username    User name
+     * @param string $loginMethod Login method
+     *
+     * @return ?array
+     */
+    protected function handlePreAuthentication(
+        string $target,
+        string $username,
+        string $loginMethod,
+    ): ?array {
+        if ('email' !== $loginMethod) {
+            return null;
+        }
+
+        $username = trim($username);
+        if (!$username) {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        $data = [
+            'target' => $target,
+            'email' => $username,
+            'otp' => null,
+            'messageHtml' => 'email_login_code_sent_html',
+        ];
+
+        // Fetch user by email address and send a one-time password by email if found:
+        if ($target) {
+            $username = "$target.$username";
+        }
+        if ($patron = $this->getCatalog()->patronLogin($username, null)) {
+            $data['patronData'] = $patron;
+            $data['otp'] = $this->emailAuthenticator->sendAuthenticationCode($data['email']);
+        }
+        return $data;
+    }
+
+    /**
      * Handle the actual login with the ILS.
      *
      * @param string $username    User name
@@ -297,42 +356,33 @@ class ILS extends AbstractBase
      */
     protected function handleLogin($username, $password, $loginMethod, $rememberMe)
     {
-        if ($username == '' || ('password' === $loginMethod && $password == '')) {
+        if ($password == '') {
             throw new AuthException('authentication_error_blank');
         }
 
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin($username, $password);
-        } catch (AuthException $e) {
-            // Pass Auth exceptions through
-            throw $e;
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
+        $patron = null;
+        if ('email' === $loginMethod) {
+            if ($password === $this->preAuthenticationData['otp'] ?? null) {
+                if (!($patron = $this->preAuthenticationData['patronData'] ?? null)) {
+                    throw new AuthException('authentication_error_technical');
+                }
+            }
+        } else {
+            if ($username == '') {
+                throw new AuthException('authentication_error_blank');
+            }
+            // Connect to catalog:
+            try {
+                $patron = $this->getCatalog()->patronLogin($username, $password);
+            } catch (AuthException $e) {
+                // Pass Auth exceptions through
+                throw $e;
+            } catch (\Exception $e) {
+                throw new AuthException('authentication_error_technical');
+            }
         }
 
         // Did the patron successfully log in?
-        if ('email' === $loginMethod) {
-            if (null === $this->emailAuthenticator) {
-                throw new \Exception('Email authenticator not set');
-            }
-            if ($patron) {
-                $class = get_class($this);
-                if ($p = strrpos($class, '\\')) {
-                    $class = substr($class, $p + 1);
-                }
-                $this->emailAuthenticator->sendAuthenticationLink(
-                    $patron['email'],
-                    [
-                        'userData' => $patron,
-                        'rememberMe' => $rememberMe,
-                    ],
-                    ['auth_method' => $class]
-                );
-            }
-            // Don't reveal the result
-            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
-        }
         if ($patron) {
             return $this->processILSUser($patron);
         }

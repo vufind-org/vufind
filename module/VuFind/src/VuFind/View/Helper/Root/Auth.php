@@ -186,6 +186,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
+     * Render the one-time password login form fields.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getOtpLoginFields($context = [])
+    {
+        return $this->renderTemplate('otploginfields.phtml', $context);
+    }
+
+    /**
      * Render the login template.
      *
      * @param array $context Context for rendering template

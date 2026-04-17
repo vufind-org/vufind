@@ -29,8 +29,10 @@
 
 namespace VuFind\Auth;
 
+use DateTime;
 use Laminas\Http\Request;
 use Laminas\View\Renderer\PhpRenderer;
+use OTPHP\HOTP;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
@@ -150,6 +152,52 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $subject = str_replace('%%title%%', $viewParams['title'], $subject);
 
         $this->mailer->send($email, $from, $subject, $message);
+    }
+
+    /**
+     * Send an email authentication code to the specified email address.
+     *
+     * Stores the required information in the session.
+     *
+     * @param string $email          Email address to send the link to
+     * @param string $subject        Email subject
+     * @param string $template       Email message template
+     * @param array  $templateParams Extra params for rendering the email message
+     *
+     * @return string
+     */
+    public function sendAuthenticationCode(
+        string $email,
+        string $subject = 'email_login_subject',
+        string $template = 'Email/login-code.phtml',
+        $templateParams = []
+    ): string {
+        // Make sure we've waited long enough using an auth hash based on the email address:
+        $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
+        $hash = md5($email);
+        $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL);
+        if (time() - $row->getCreated()->getTimestamp() < $recoveryInterval) {
+            throw new AuthException('authentication_error_in_progress');
+        }
+        $row->setCreated(new DateTime());
+        $this->authHashService->persistEntity($row);
+
+        $otpObject = HOTP::create();
+        $otpObject->setLabel($email);
+        $otp = $otpObject->at($otpObject->getCounter());
+
+        $viewParams = $templateParams;
+        $viewParams['code'] = $otp;
+        $viewParams['title'] = $this->config->Site->title;
+
+        $message = $this->viewRenderer->render($template, $viewParams);
+        $from = $this->getEmailSenderAddress($this->config, $email);
+        $subject = $this->translator->translate($subject);
+        $subject = str_replace('%%title%%', $viewParams['title'], $subject);
+
+        $this->mailer->send($email, $from, $subject, $message);
+
+        return $otp;
     }
 
     /**

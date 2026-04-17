@@ -32,6 +32,7 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
@@ -52,6 +53,45 @@ use function in_array;
  */
 class MultiILS extends ILS
 {
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        if ($this->preAuthenticationData) {
+            // Set target from pre-authentication data:
+            // TODO: This is not a very nice way of carrying this information over to the authentication manager:
+            $request->getPost()->set('target', $this->preAuthenticationData['target']);
+            return null;
+        }
+
+        $username = trim($request->getPost()->get('username', ''));
+        $target = trim($request->getPost()->get('target', ''));
+        $loginMethod = $this->getILSLoginMethod($target);
+        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
+
+        // We should have target either separately or already embedded into username
+        if (!$target) {
+            $parts = explode('.', $username);
+            if (isset($parts[1])) {
+                $target = $parts[0];
+                $username = $parts[1];
+            }
+        }
+
+        // Check that the target is valid:
+        if (!in_array($target, $this->getLoginTargets())) {
+            throw new AuthException('authentication_error_admin');
+        }
+
+        return $this->handlePreAuthentication($target, $username, $loginMethod);
+    }
+
     /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *

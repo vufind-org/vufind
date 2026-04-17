@@ -83,4 +83,21 @@ interface UserSessionPersistenceInterface
      * @return bool
      */
     public function hasUserSessionData(): bool;
+
+    /**
+     * Store pre-authentication data in session.
+     *
+     * @param ?array $data Pre-authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setPreAuthenticationData(?array $data): void;
+
+    /**
+     * Get pre-authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getPreAuthenticationData(): ?array;
 }

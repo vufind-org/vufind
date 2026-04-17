@@ -302,6 +302,29 @@ class UserService extends AbstractDbService implements
     }
 
     /**
+     * Store pre-authentication data in session.
+     *
+     * @param ?array $data Pre-authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->userSessionContainer->preAuthData = $data;
+    }
+
+    /**
+     * Get pre-authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getPreAuthenticationData(): ?array
+    {
+        return $this->userSessionContainer->preAuthData ?? null;
+    }
+
+    /**
      * Get all rows with catalog usernames.
      *
      * @return UserEntityInterface[]

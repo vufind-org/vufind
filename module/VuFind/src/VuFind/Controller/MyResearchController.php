@@ -40,6 +40,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Account\UserAccountService;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Auth\Manager as AuthManager;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Controller\Feature\OnlinePaymentTrait;
 use VuFind\Crypt\SecretCalculator;
@@ -92,13 +93,6 @@ class MyResearchController extends AbstractBase
     use \VuFind\ILS\Logic\SummaryTrait;
     use ListItemSelectionTrait;
     use OnlinePaymentTrait;
-
-    /**
-     * Default life time for recovery hashes (one hour).
-     *
-     * @var int
-     */
-    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -205,23 +199,29 @@ class MyResearchController extends AbstractBase
         ) {
             try {
                 if (!$this->getAuthManager()->getIdentity()) {
-                    $this->getAuthManager()->login($this->getRequest());
-                    // Return early to avoid unnecessary processing if we are being
-                    // called from login lightbox and don't have a followup action or
-                    // followup is set to referrer.
-                    if (
-                        $this->params()->fromPost('processLogin')
-                        && $this->inLightbox()
-                        && (!$this->hasFollowupUrl()
-                        || $this->followup()->retrieve('isReferrer') === true)
-                    ) {
-                        $this->clearFollowupUrl();
-                        return $this->getRefreshResponse();
+                    if ($this->getAuthManager()->login($this->getRequest())) {
+                        // Return early to avoid unnecessary processing if we are being
+                        // called from login lightbox and don't have a followup action or
+                        // followup is set to referrer.
+                        if (
+                            $this->params()->fromPost('processLogin')
+                            && $this->inLightbox()
+                            && (!$this->hasFollowupUrl()
+                            || $this->followup()->retrieve('isReferrer') === true)
+                        ) {
+                            $this->clearFollowupUrl();
+                            return $this->getRefreshResponse();
+                        }
                     }
                 }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
             }
+        }
+
+        // Pre-authenticated? Try to complete authentication:
+        if ($this->getAuthManager()->getPreAuthenticationData()) {
+            return $this->forwardTo('MyResearch', 'Login');
         }
 
         // Not logged in?  Force user to log in:
@@ -1950,8 +1950,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfigArray();
             // Check if hash is expired
-            $hashLifetime = $config['Authentication']['recover_hash_lifetime']
-                ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+            $hashLifetime = $this->getAuthManager()->getRecoveryHashLifeTime();
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addErrorMessage('recovery_expired_hash');
@@ -2014,8 +2013,7 @@ class MyResearchController extends AbstractBase
             return $this->forwardTo('MyResearch', 'Login');
         }
         // Check if hash is expired (we do this here to ensure that repeated calls work but not for too long):
-        $config = $this->getConfigArray();
-        $hashLifetime = $config['Authentication']['recover_hash_lifetime'] ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+        $hashLifetime = $this->getAuthManager()->getRecoveryHashLifeTime();
         if (time() - $recoveryData['timestamp'] > $hashLifetime) {
             $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
             return $this->forwardTo('MyResearch', 'Login');
@@ -2057,8 +2055,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfigArray();
             // Check if hash is expired
-            $hashLifetime = $config['Authentication']['recover_hash_lifetime']
-                ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+            $hashLifetime = $this->getAuthManager()->getRecoveryHashLifeTime();
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addErrorMessage('recovery_expired_hash');
