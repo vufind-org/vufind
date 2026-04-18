@@ -27,15 +27,16 @@ on:
       # The current code simply uses the preinstalled PHP 8.3.
       # Supporting other PHP releases would require additional code.
       php-version:
-        description: 'PHP version (supports currently only preinstalled PHP 8.3)'
+        description: 'PHP version'
         required: true
-        default: '8.3'
+        default: 'default'
         type: choice
         options:
-    #     - '8.2'
+          - '8.2'
           - '8.3'
-    #     - '8.4'
-    #     - '8.5'
+          - '8.4'
+          - '8.5'
+          - 'default'
           - 'all'
 
 jobs:
@@ -49,14 +50,13 @@ jobs:
       SOLR_PORT: 8983
 
     strategy:
+      fail-fast: false
       matrix:
-        php-version: ${{ (github.event_name == 'push') && fromJSON('["8.3"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.3"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
+        php-version: ${{ (github.event_name == 'push') && fromJSON('["default"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4", "8.5", "default"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
       - name: Install Debian packages
+        if: ${{ matrix.php-version == 'default' }}
         run: |
           sudo apt-get update
           # apache2, chromium and most PHP packages are already installed.
@@ -66,7 +66,20 @@ jobs:
           sudo apt-get -y install mariadb-server
           sudo apt-get -y install libapache2-mod-php php-json php-memcached
 
+      - name: Setup PHP
+        if: ${{ matrix.php-version != 'default' }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: intl, xsl
+          tools: composer:2.8.1
+          ini-values: error_reporting=E_ALL
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Configure Apache for PHP ${{ matrix.php-version }}
+        if: ${{ inputs.phing_task_phpunit }}
         run: |
           # Enable required Apache modules
           sudo a2enmod rewrite proxy_fcgi setenvif
