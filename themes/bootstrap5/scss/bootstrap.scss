@@ -2,8 +2,6 @@
 @use "sass:map";
 @use "sass:math";
 
-$fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
-
 // Include Font Awesome
 @import "vendor/font-awesome/fontawesome";
 @import "vendor/font-awesome/regular";
