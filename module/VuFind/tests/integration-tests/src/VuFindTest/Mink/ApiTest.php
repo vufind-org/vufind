@@ -138,11 +138,15 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string  $id          Record    ID to retrieve.
      * @param ?string $apiKeyToken API key token.
+     * @param string  $divId       id of HTML div element for the record API call
      *
      * @return Element
      */
-    protected function makeRecordApiCall($id = 'testbug2', ?string $apiKeyToken = null, string $divId = 'operations-Record-get_record'): Element
-    {
+    protected function makeRecordApiCall(
+        string $id = 'testbug2',
+        ?string $apiKeyToken = null,
+        string $divId = 'operations-Record-get_record'
+    ): Element {
         $session = $this->getMinkSession();
         if ($apiKeyToken) {
             $session->setApiKeyToken($apiKeyToken);
