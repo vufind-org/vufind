@@ -268,6 +268,8 @@ class UserService extends AbstractDbService implements
     {
         unset($this->userSessionContainer->userId);
         unset($this->userSessionContainer->userDetails);
+        unset($this->userSessionContainer->preAuthData);
+        unset($this->userSessionContainer->cardAuthData);
     }
 
     /**
@@ -322,6 +324,52 @@ class UserService extends AbstractDbService implements
     public function getPreAuthenticationData(): ?array
     {
         return $this->userSessionContainer->preAuthData ?? null;
+    }
+
+    /**
+     * Store library card authentication data in session.
+     *
+     * @param ?array $data Library card authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setLibraryCardAuthenticationData(?array $data): void
+    {
+        $this->userSessionContainer->libraryCardAuthData = $data;
+    }
+
+    /**
+     * Get library card authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getLibraryCardAuthenticationData(): ?array
+    {
+        return $this->userSessionContainer->libraryCardAuthData ?? null;
+    }
+
+    /**
+     * Store account recovery data in session.
+     *
+     * @param ?array $data Account recovery data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setAccountRecoveryData(?array $data): void
+    {
+        $this->userSessionContainer->accountRecoveryData = $data;
+    }
+
+    /**
+     * Get account recovery data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getAccountRecoveryData(): ?array
+    {
+        return $this->userSessionContainer->accountRecoveryData ?? null;
     }
 
     /**

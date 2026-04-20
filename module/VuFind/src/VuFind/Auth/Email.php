@@ -78,13 +78,16 @@ class Email extends AbstractBase
 
         $data = [
             'email' => $email,
-            'otp' => null,
+            'messageHtml' => 'email_login_code_sent_html',
+            'authId' => null,
         ];
 
         // Fetch user by email address and send a one-time password by email if found:
         if ($user = $this->getUserService()->getUserByEmail($email)) {
-            $data['vufind_id'] = $user->getId();
-            $data['otp'] = $this->emailAuthenticator->sendAuthenticationCode($user->getEmail());
+            $data['authId'] = $this->emailAuthenticator->sendAuthenticationCode(
+                $user->getEmail(),
+                ['id' => $user->getId()]
+            );
         }
         return $data;
     }
@@ -108,22 +111,18 @@ class Email extends AbstractBase
             throw new AuthException('authentication_error_blank');
         }
 
-        if ($this->preAuthenticationData['otp'] !== $password) {
+        if (
+            !($authId = $this->preAuthenticationData['authId'] ?? null)
+            || !($authData = $this->emailAuthenticator->verifyAuthenticationCode($authId, $password))
+        ) {
             throw new AuthException('authentication_error_invalid');
         }
 
-        if (null !== ($userId = $this->preAuthenticationData['vufind_id'] ?? null)) {
+        if (null !== ($userId = $authData['id'] ?? null)) {
             return $this->getUserService()->getUserById($userId);
         } else {
-            // Check if we have more granular data available:
-            if (isset($this->preAuthenticationData['userData'])) {
-                $userData = $this->preAuthenticationData['userData'];
-                if ($this->preAuthenticationData['rememberMe'] ?? false) {
-                    // TODO: This is not a very nice way of carrying this information
-                    // over to the authentication manager:
-                    $request->getPost()->set('remember_me', '1');
-                }
-            } else {
+            // Check if we have more granular data available from ILSAuthenticator::sendEmailLoginLink:
+            if (!($userData = $authData['userData'] ?? null)) {
                 throw new AuthException('authentication_error_technical');
             }
             return $this->processUser($userData);

@@ -73,6 +73,23 @@ class AuthHashService extends AbstractDbService implements
     }
 
     /**
+     * Retrieve an object from the database based on id.
+     *
+     * @param string $id Hash ID
+     *
+     * @return ?AuthHashEntityInterface
+     */
+    public function getById(string $id): ?AuthHashEntityInterface
+    {
+        $dql = 'SELECT ah '
+            . 'FROM ' . AuthHashEntityInterface::class . ' ah '
+            . 'WHERE ah.id = :id ';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('id'));
+        return $query->getOneOrNullResult();
+    }
+
+    /**
      * Retrieve an object from the database based on hash and type; possibly create a new
      * row if no existing match is found.
      *

@@ -40,6 +40,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Account\UserAccountService;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
+use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Controller\Feature\OnlinePaymentTrait;
 use VuFind\Crypt\SecretCalculator;
@@ -92,6 +93,15 @@ class MyResearchController extends AbstractBase
     use \VuFind\ILS\Logic\SummaryTrait;
     use ListItemSelectionTrait;
     use OnlinePaymentTrait;
+
+    /**
+     * Default life time for recovery hashes (one hour).
+     *
+     * @var int
+     *
+     * @deprecated Use \VuFind\Auth\Manager::DEFAULT_RECOVERY_HASH_LIFE_TIME instead
+     */
+    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -1748,13 +1758,23 @@ class MyResearchController extends AbstractBase
 
             $config = $this->getConfigArray();
             try {
+                $userSessionService = $this->getDbService(UserSessionPersistenceInterface::class);
+                $authData = [
+                    'authId' => null,
+                ];
                 if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
-                    $this->sendRecoveryEmail($recoveryData);
+                    if ($authData['authId'] = $this->sendRecoveryEmail($recoveryData)) {
+                        $userSessionService->setAccountRecoveryData($authData);
+                        $this->flashMessenger()->addInfoMessage('recovery_email_sent');
+                        return $this->redirect()->toRoute('myresearch-verifyrecoveryotp');
+                    }
                 } else {
                     if (!empty($config['Authentication']['recover_be_honest'])) {
                         $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
                     } else {
-                        $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+                        $this->flashMessenger()->addInfoMessage('recovery_email_sent');
+                        $userSessionService->setAccountRecoveryData($authData);
+                        return $this->redirect()->toRoute('myresearch-verifyrecoveryotp');
                     }
                 }
             } catch (AuthException $e) {
@@ -1771,7 +1791,7 @@ class MyResearchController extends AbstractBase
      *
      * @param array $recoveryData Recovery information required by the authentication to reset the password
      *
-     * @return void (sends email or adds error message)
+     * @return ?int Authentication code id
      */
     protected function sendRecoveryEmail(array $recoveryData)
     {
@@ -1782,26 +1802,25 @@ class MyResearchController extends AbstractBase
         $authHelper = $this->getViewRenderer()->plugin('auth');
         $target = $this->params()->fromPost('target');
         try {
-            $emailAuthenticator->sendAuthenticationLink(
-                email: $recoveryData['email'],
-                data: $recoveryData,
-                urlParams: [],
-                linkRoute: 'myresearch-resetpassword',
-                subject: 'recovery_email_subject',
-                template: $authHelper->getPasswordRecoveryEmailTemplate(),
-                templateParams: compact('target'),
+            $authId = $emailAuthenticator->sendAuthenticationCode(
+                $recoveryData['email'],
+                $recoveryData,
+                'recovery_email_subject',
+                $authHelper->getPasswordRecoveryCodeEmailTemplate(),
+                compact('target'),
             );
-
-            $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
 
             $this->getAuditEventService()->addEvent(
                 AuditEventType::User,
-                AuditEventSubtype::SendEmailRecoveryLink,
+                AuditEventSubtype::SendEmailRecoveryCode,
                 $this->getUser(),
                 data: ['email' => $recoveryData['email']]
             );
+
+            return $authId;
         } catch (MailException $e) {
             $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
+            return null;
         }
     }
 
@@ -1938,8 +1957,6 @@ class MyResearchController extends AbstractBase
      *
      * Used for Alma and legacy password reset links.
      *
-     * @see resetPasswordAction
-     *
      * @return mixed
      */
     public function verifyAction()
@@ -1985,7 +2002,9 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Reset user's password with details from email authentication hash.
+     * Reset user's password with details from email authentication code.
+     *
+     * @see verifyRecoveryOtpAction
      *
      * @return mixed
      */
@@ -1995,26 +2014,8 @@ class MyResearchController extends AbstractBase
             'PasswordRecovery',
             $this->getService(\Laminas\Session\SessionManager::class)
         );
-        // Check for recovery hash in query:
-        if ($hash = ($this->params()->fromQuery('hash'))) {
-            $emailAuthenticator = $this->getService(EmailAuthenticator::class);
-            try {
-                $sessionStorage['recoveryData'] = $emailAuthenticator->authenticate($hash);
-                // Redirect to clear the query parameters before proceeding.
-                return $this->redirect()->toRoute('myresearch-resetpassword');
-            } catch (AuthException $e) {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
-                return $this->forwardTo('MyResearch', 'Login');
-            }
-        }
         if (!($recoveryData = $sessionStorage['recoveryData'])) {
             $this->flashMessenger()->addErrorMessage('recovery_invalid_hash');
-            return $this->forwardTo('MyResearch', 'Login');
-        }
-        // Check if hash is expired (we do this here to ensure that repeated calls work but not for too long):
-        $hashLifetime = $this->getAuthManager()->getRecoveryHashLifeTime();
-        if (time() - $recoveryData['timestamp'] > $hashLifetime) {
-            $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
             return $this->forwardTo('MyResearch', 'Login');
         }
 
@@ -2023,8 +2024,7 @@ class MyResearchController extends AbstractBase
         $this->getAuthManager()->setAuthMethod($recoveryData['auth_method']);
         if ($this->formWasSubmitted(useCaptcha: $useCaptcha)) {
             try {
-                $this->getAuthManager()
-                    ->resetPassword($recoveryData, $this->params()->fromPost());
+                $this->getAuthManager()->resetPassword($recoveryData, $this->params()->fromPost());
                 $sessionStorage['recoveryData'] = null;
                 $this->flashMessenger()->addSuccessMessage('new_password_success');
                 return $this->getNonRedirectingMyResearchHomeRedirect();
@@ -2085,6 +2085,101 @@ class MyResearchController extends AbstractBase
         }
         $this->flashMessenger()->addErrorMessage('recovery_invalid_hash');
         return $this->redirect()->toRoute('myresearch-profile');
+    }
+
+    /**
+     * Verify catalog login using a one-time password.
+     *
+     * @return mixed
+     */
+    public function verifyOtpAction()
+    {
+        // User must be logged in:
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        $userSessionService = $this->getDbService(UserSessionPersistenceInterface::class);
+        if (!($authData = $userSessionService->getLibraryCardAuthenticationData())) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+
+        // Process form submission:
+        if ($this->formWasSubmitted()) {
+            $csrf = $this->getService(CsrfInterface::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $csrf->trimTokenList(0);
+            }
+
+            $password = $this->getRequest()->getPost()->get('password', '');
+            $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
+            if (
+                ($authId = $authData['authId'] ?? null)
+                && ($cardData = $emailAuthenticator->verifyAuthenticationCode($authId, $password))
+                && ($username = $cardData['username'] ?? null)
+            ) {
+                $this->getILSAuthenticator()->saveUserCatalogCredentials($user, $username, '');
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::ConnectCardByEmail,
+                    $user,
+                    data: $cardData
+                );
+                $userSessionService->setLibraryCardAuthenticationData(null);
+                if ($url = $this->getAndClearFollowupUrl(true)) {
+                    return $this->redirect()->toUrl($url);
+                }
+                return $this->redirect()->toRoute('myresearch-home');
+            }
+            $this->flashMessenger()->addErrorMessage('authentication_error_invalid');
+        }
+
+        return $this->createViewModel(compact('authData'));
+    }
+
+    /**
+     * Verify account recovery request using a one-time password.
+     *
+     * @return mixed
+     */
+    public function verifyRecoveryOtpAction()
+    {
+        $userSessionService = $this->getDbService(UserSessionPersistenceInterface::class);
+        if (!($authData = $userSessionService->getAccountRecoveryData())) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+
+        // Process form submission (N.B. the submit element name is important to distinquish from the password reset
+        // form we forward to):
+        if ($this->formWasSubmitted('verify')) {
+            $csrf = $this->getService(CsrfInterface::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $csrf->trimTokenList(0);
+            }
+
+            $password = $this->getRequest()->getPost()->get('password', '');
+            $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
+            if (
+                ($authId = $authData['authId'] ?? null)
+                && ($recoveryData = $emailAuthenticator->verifyAuthenticationCode($authId, $password))
+            ) {
+                $sessionStorage = new \Laminas\Session\Container(
+                    'PasswordRecovery',
+                    $this->getService(\Laminas\Session\SessionManager::class)
+                );
+                $sessionStorage['recoveryData'] = $recoveryData;
+                return $this->redirect()->toRoute('myresearch-resetpassword');
+            }
+            $this->flashMessenger()->addErrorMessage('authentication_error_invalid');
+        }
+
+        return $this->createViewModel(compact('authData'));
     }
 
     /**

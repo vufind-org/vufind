@@ -398,6 +398,8 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @param ?UserEntityInterface $loggedInUser Logged-in user (optional, for auditing purposes)
      *
      * @return void
+     *
+     * @deprecated Use code-based authentication instead
      */
     public function sendEmailLoginLink(
         string $email,
@@ -441,6 +443,8 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @return array|bool
      * @throws ILSException
+     *
+     * @deprecated Use code-based authentication instead
      */
     public function processEmailLoginHash($hash)
     {

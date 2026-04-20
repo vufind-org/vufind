@@ -325,22 +325,23 @@ class ILS extends AbstractBase
             throw new AuthException('authentication_error_blank');
         }
 
-        $data = [
-            'target' => $target,
-            'email' => $username,
-            'otp' => null,
-            'messageHtml' => 'email_login_code_sent_html',
-        ];
-
         // Fetch user by email address and send a one-time password by email if found:
         if ($target) {
             $username = "$target.$username";
         }
+        $preAuthData = [
+            'authId' => null,
+            'target' => $target,
+            'email' => $username,
+            'messageHtml' => 'email_login_code_sent_html',
+        ];
         if ($patron = $this->getCatalog()->patronLogin($username, null)) {
-            $data['patronData'] = $patron;
-            $data['otp'] = $this->emailAuthenticator->sendAuthenticationCode($data['email']);
+            $preAuthData['authId'] = $this->emailAuthenticator->sendAuthenticationCode(
+                $preAuthData['email'],
+                compact('patron')
+            );
         }
-        return $data;
+        return $preAuthData;
     }
 
     /**
@@ -362,8 +363,11 @@ class ILS extends AbstractBase
 
         $patron = null;
         if ('email' === $loginMethod) {
-            if ($password === $this->preAuthenticationData['otp'] ?? null) {
-                if (!($patron = $this->preAuthenticationData['patronData'] ?? null)) {
+            if (
+                ($authId = $this->preAuthenticationData['authId'] ?? null)
+                && ($authData = $this->emailAuthenticator->verifyAuthenticationCode($authId, $password))
+            ) {
+                if (!($patron = $authData['patron'] ?? null)) {
                     throw new AuthException('authentication_error_technical');
                 }
             }

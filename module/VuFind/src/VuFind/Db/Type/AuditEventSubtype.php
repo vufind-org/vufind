@@ -80,6 +80,7 @@ enum AuditEventSubtype: string
     case SendAddressVerificationEmail = 'send_address_verification_email';
     case SendCardAuthEmail = 'send_card_auth_email';
     case SendEmailLoginLink = 'send_email_login_link';
+    case SendEmailRecoveryCode = 'send_email_recovery_code';
     case SendEmailRecoveryLink = 'send_email_recovery_link';
     case TokenLogin = 'token_login';
     case UnSaveSearch = 'un_save_search';

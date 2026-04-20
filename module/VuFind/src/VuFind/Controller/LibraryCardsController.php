@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015-2019.
+ * Copyright (C) The National Library of Finland 2015-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,11 +31,13 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Controller for the library card functionality.
@@ -86,14 +88,6 @@ class LibraryCardsController extends AbstractBase
             return $this->forceLogin();
         }
 
-        // Process email authentication:
-        if (
-            $this->params()->fromQuery('auth_method') === 'Email'
-            && ($hash = $this->params()->fromQuery('hash'))
-        ) {
-            return $this->processEmailLink($user, $hash);
-        }
-
         // Process form submission:
         if ($this->formWasSubmitted()) {
             if ($redirect = $this->processEditLibraryCard($user)) {
@@ -131,6 +125,63 @@ class LibraryCardsController extends AbstractBase
                 'loginMethods' => $loginSettings['loginMethods'],
             ]
         );
+    }
+
+    /**
+     * Verify new library card using a one-time password.
+     *
+     * @return mixed
+     */
+    public function verifyOtpAction()
+    {
+        // User must be logged in to edit library cards:
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        $userSessionService = $this->getDbService(UserSessionPersistenceInterface::class);
+        if (!($authData = $userSessionService->getLibraryCardAuthenticationData())) {
+            return $this->redirect()->toRoute('librarycards-home');
+        }
+
+        // Process form submission:
+        if ($this->formWasSubmitted()) {
+            $csrf = $this->getService(CsrfInterface::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
+            } else {
+                // After successful token verification, clear list to shrink session:
+                $csrf->trimTokenList(0);
+            }
+
+            $password = $this->getRequest()->getPost()->get('password', '');
+            $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
+            if (
+                ($authId = $authData['authId'] ?? null)
+                && ($cardData = $emailAuthenticator->verifyAuthenticationCode($authId, $password))
+                && ($cardId = $cardData['cardID'] ?? null)
+            ) {
+                $cardService = $this->getDbService(UserCardServiceInterface::class);
+                $cardService->persistLibraryCardData(
+                    $user,
+                    'NEW' === $cardId ? null : $cardId,
+                    $cardData['cardName'],
+                    $cardData['cat_username'],
+                    ' '
+                );
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::ConnectCardByEmail,
+                    $user,
+                    data: $cardData
+                );
+                $userSessionService->setLibraryCardAuthenticationData(null);
+                return $this->redirect()->toRoute('librarycards-home');
+            }
+            $this->flashMessenger()->addErrorMessage('authentication_error_invalid');
+        }
+
+        return $this->createViewModel(compact('authData'));
     }
 
     /**
@@ -298,6 +349,7 @@ class LibraryCardsController extends AbstractBase
             return false;
         }
 
+        $rawUsername = $username;
         if ($target) {
             $username = "$target.$username";
         }
@@ -351,31 +403,32 @@ class LibraryCardsController extends AbstractBase
                 return false;
             }
             if ('email' === $loginMethod) {
+                // Use raw (non-prefixed) username as email to display so that we don't accidentally reveal if a
+                // patron was found:
+                $authData = [
+                    'email' => $rawUsername,
+                    'authId' => null,
+                ];
                 if ($patron) {
-                    $info = $patron;
-                    $info['cardID'] = $id;
-                    $info['cardName'] = $cardName;
+                    $cardData = [
+                        'cat_username' => $patron['cat_username'],
+                        'email' => $patron['email'],
+                        'cardID' => $id,
+                        'cardName' => $cardName,
+                    ];
                     $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
-                    $emailAuthenticator->sendAuthenticationLink(
-                        $info['email'],
-                        $info,
-                        ['auth_method' => 'Email'],
-                        'editLibraryCard'
-                    );
+                    $authData['authId'] = $emailAuthenticator->sendAuthenticationCode($cardData['email'], $cardData);
                     $this->getAuditEventService()->addEvent(
                         AuditEventType::User,
                         AuditEventSubtype::SendCardAuthEmail,
                         $user,
-                        data: [
-                            'username' => $username,
-                            'card_id' => $id,
-                            'email' => $info['email'],
-                        ]
+                        data: $cardData
                     );
                 }
                 // Don't reveal the result
-                $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
-                return $this->redirect()->toRoute('librarycards-home');
+                $this->getDbService(UserSessionPersistenceInterface::class)
+                    ->setLibraryCardAuthenticationData($authData);
+                return $this->redirect()->toRoute('librarycards-verifyotp');
             }
         }
 
@@ -390,44 +443,6 @@ class LibraryCardsController extends AbstractBase
         } catch (\VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
             return false;
-        }
-
-        return $this->redirect()->toRoute('librarycards-home');
-    }
-
-    /**
-     * Process library card addition via an email link.
-     *
-     * @param UserEntityInterface $user User object
-     * @param string              $hash Hash
-     *
-     * @return \Laminas\Http\Response Response object
-     */
-    protected function processEmailLink($user, $hash)
-    {
-        $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
-        try {
-            $info = $emailAuthenticator->authenticate($hash);
-            $cardService = $this->getDbService(UserCardServiceInterface::class);
-            $cardService->persistLibraryCardData(
-                $user,
-                'NEW' === $info['cardID'] ? null : $info['cardID'],
-                $info['cardName'],
-                $info['cat_username'],
-                ' '
-            );
-            $this->getAuditEventService()->addEvent(
-                AuditEventType::User,
-                AuditEventSubtype::ConnectCardByEmail,
-                $user,
-                data: [
-                    'username' => $info['cat_username'],
-                    'card_id' => $info['cardID'],
-                    'email' => $info['email'],
-                ]
-            );
-        } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
         }
 
         return $this->redirect()->toRoute('librarycards-home');
