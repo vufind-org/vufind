@@ -78,6 +78,6 @@ class GoogleAnalyticsFactory implements FactoryInterface
             $key,
             $container->get('ViewHelperManager')->get(\VuFindTheme\View\Helper\AssetManager::class),
             $options
-        );                                                                              
+        );
     }
 }

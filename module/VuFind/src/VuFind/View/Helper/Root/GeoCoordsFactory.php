@@ -70,6 +70,6 @@ class GeoCoordsFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\GeoFeatures\MapSelectionConfig::class)
             ->getMapSelectionOptions();
-        return new $requestedName($config['default_coordinates'], $container->get('ViewHelperManager')->get('content'));
+        return new $requestedName($config['default_coordinates'], $container->get('ViewHelperManager')->get('url'));
     }
 }

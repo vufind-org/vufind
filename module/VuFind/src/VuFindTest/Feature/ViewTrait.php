@@ -60,8 +60,6 @@ trait ViewTrait
     /**
      * Get a working AssetManager helper.
      *
-     * @param PhpRenderer $renderer View for helper
-     *
      * @return AssetManager
      */
     protected function getAssetManager(): AssetManager
@@ -82,15 +80,6 @@ trait ViewTrait
         $container->set(\VuFind\Security\NonceGenerator::class, $nonceGenerator);
         $factory = new AssetManagerFactory();
         $assetManager = $factory($container, AssetManager::class);
-        $renderer = $this->getPhpRenderer(
-            [
-                'headLink' => $headLink,
-                'headStyle' => $headStyle,
-                'inlineScript' => $inlineScript,
-                'url' => $url,
-                'assetManager' => $assetManager
-            ]
-        );
         return $assetManager;
     }
 
@@ -119,7 +108,7 @@ trait ViewTrait
         $renderer->setResolver($resolver);
         $pluginManager = $renderer->getHelperPluginManager();
         if (!isset($plugins['assetManager'])) {
-            $plugins['assetManager'] = $this->getAssetManager($renderer);
+            $plugins['assetManager'] = $this->getAssetManager();
         }
         foreach ($plugins as $key => $value) {
             $pluginManager->setService($key, $value);

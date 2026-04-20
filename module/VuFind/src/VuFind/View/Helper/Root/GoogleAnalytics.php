@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\View\Helper\AssetManager;
 
 /**
@@ -52,8 +53,9 @@ class GoogleAnalytics
     /**
      * Constructor.
      *
-     * @param ?string $key     API key (null if disabled)
-     * @param array   $options Configuration options (supported option: 'create_options_js').
+     * @param ?string      $key          API key (null if disabled)
+     * @param AssetManager $assetManager AssetManager Helper
+     * @param array        $options      Configuration options (supported option: 'create_options_js').
      */
     public function __construct(
         protected ?string $key,
