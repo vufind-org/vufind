@@ -51,6 +51,7 @@ use function intval;
 use function is_array;
 use function is_callable;
 use function is_object;
+use function strlen;
 
 /**
  * Abstract parameters search model.
@@ -1037,6 +1038,9 @@ class Params
      */
     public function addFacet(string $newField, ?string $newAlias = null, bool $ored = false): void
     {
+        if (strlen($newField) == 0) {
+            throw new \VuFind\Exception\BadRequest('Can not add facet when no field provided');
+        }
         if ($newAlias == null) {
             $newAlias = $newField;
         }
