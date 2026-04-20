@@ -34,7 +34,6 @@ use Laminas\View\Helper\HeadScript;
 use Laminas\View\Helper\HeadStyle;
 use Laminas\View\Helper\InlineScript;
 use Laminas\View\Helper\Url;
-use VuFind\ServiceManager\Factory\Autowire;
 use VuFindTheme\AssetPipeline;
 use VuFindTheme\ThemeInfo;
 
@@ -93,13 +92,9 @@ class AssetManager
     public function __construct(
         protected ThemeInfo $themeInfo,
         protected AssetPipeline $pipeline,
-        #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
-        #[Autowire(container: 'ViewHelperManager')]
         protected HeadLink $headLink,
-        #[Autowire(container: 'ViewHelperManager')]
         protected HeadStyle $headStyle,
-        #[Autowire(container: 'ViewHelperManager')]
         protected InlineScript $inlineScript,
         protected string $cspNonce = ''
     ) {
@@ -409,7 +404,7 @@ class AssetManager
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $inlineScript = clone $this->inlineScript;
+        $inlineScript = $this->inlineScript;
         $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
@@ -438,7 +433,7 @@ class AssetManager
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $inlineScript = clone $this->inlineScript;
+        $inlineScript = $this->inlineScript;
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }

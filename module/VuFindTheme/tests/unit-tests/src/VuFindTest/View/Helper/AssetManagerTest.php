@@ -29,6 +29,7 @@
 
 namespace VuFindTest\View\Helper;
 
+use Exception;
 use Laminas\View\Helper\InlineScript;
 use VuFindTest\Feature\ViewTrait;
 use VuFindTheme\AssetPipeline;

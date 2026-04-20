@@ -101,13 +101,14 @@ class AssetManagerFactory implements FactoryInterface
         }
         $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
         $nonce = $nonceGenerator->getNonce();
+        $viewHelperManager = $container->get('ViewHelperManager');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
             $container->get(\VuFindTheme\AssetPipeline::class),
-            $container->get(\Laminas\View\Helper\Url::class),
-            $container->get(\Laminas\View\Helper\HeadLink::class),
-            $container->get(\Laminas\View\Helper\HeadStyle::class),
-            $container->get(\Laminas\View\Helper\InlineScript::class),
+            $viewHelperManager->get(\Laminas\View\Helper\Url::class),
+            $viewHelperManager->get(\Laminas\View\Helper\HeadLink::class),
+            $viewHelperManager->get(\Laminas\View\Helper\HeadStyle::class),
+            $viewHelperManager->get(\Laminas\View\Helper\InlineScript::class),
             $nonce
         );
     }

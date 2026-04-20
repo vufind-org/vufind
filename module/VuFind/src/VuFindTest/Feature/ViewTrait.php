@@ -65,8 +65,6 @@ trait ViewTrait
     protected function getAssetManager(): AssetManager
     {
         $container = new MockContainer($this);
-        $container->set(\VuFindTheme\ThemeInfo::class, $this->createMock(\VuFindTheme\ThemeInfo::class));
-        $container->set(\VuFindTheme\AssetPipeline::class, $this->createMock(\VuFindTheme\AssetPipeline::class));
         $headLink = new \Laminas\View\Helper\HeadLink();
         $headStyle = new \Laminas\View\Helper\HeadStyle();
         $inlineScript = new \Laminas\View\Helper\InlineScript();
@@ -75,9 +73,7 @@ trait ViewTrait
         $container->set(\Laminas\View\Helper\HeadLink::class, $headLink);
         $container->set(\Laminas\View\Helper\HeadStyle::class, $headStyle);
         $container->set(\Laminas\View\Helper\InlineScript::class, $inlineScript);
-        $nonceGenerator = $this->createMock(\VuFind\Security\NonceGenerator::class);
-        $nonceGenerator->method('getNonce')->willReturn('');
-        $container->set(\VuFind\Security\NonceGenerator::class, $nonceGenerator);
+        $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
         $factory = new AssetManagerFactory();
         $assetManager = $factory($container, AssetManager::class);
         return $assetManager;

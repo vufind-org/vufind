@@ -106,4 +106,14 @@ class GeoCoords
         ]);
         return ($this->url)('search-results') . '?' . $query;
     }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }

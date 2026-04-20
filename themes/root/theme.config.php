@@ -13,6 +13,7 @@ return [
             'VuFind\View\Helper\Root\CleanHtml' => 'VuFind\View\Helper\Root\CleanHtmlFactory',
             'VuFind\View\Helper\Root\CookieManager' => 'VuFind\View\Helper\Root\CookieManagerFactory',
             'VuFind\View\Helper\Root\CurrentPath' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Root\GeoCoords' => 'VuFind\View\Helper\Root\GeoCoordsFactory',
             'VuFind\View\Helper\Root\GoogleAnalytics' => 'VuFind\View\Helper\Root\GoogleAnalyticsFactory',
             'VuFind\View\Helper\Root\Icon' => 'VuFind\View\Helper\Root\IconFactory',
             'VuFind\View\Helper\Root\IdentifierLinker' => 'VuFind\View\Helper\Root\IdentifierLinkerFactory',
