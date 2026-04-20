@@ -53,7 +53,7 @@ class SortFacetList implements \VuFind\I18n\HasSorterInterface
     public function __construct(
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url,
-        protected Sorter $sorter,
+        Sorter $sorter,
     ) {
         $this->setSorter($sorter);
     }
