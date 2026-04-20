@@ -73,7 +73,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/badges";
 @import "components/buttons";
 @import "components/channels";
-@import "components/cookie-consent/index";
+@import "components/cookie-consent";
 @import "components/copy-to-clipboard";
 @import "components/devtools";
 @import "components/explain";
@@ -190,7 +190,7 @@ img { max-width: 100%; }
     padding-left: 5px;
     padding-right: 5px;
     color: $breadcrumb-color;
-    content: "#{$breadcrumb-divider}\00a0";
+    content: "#{$breadcrumb-divider}\00a 0";
   }
 }
 .tab-content { padding: 4px; }

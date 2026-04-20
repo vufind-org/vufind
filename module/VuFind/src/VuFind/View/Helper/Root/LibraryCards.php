@@ -32,6 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Db\Entity\UserCardEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * LibraryCards view helper.
@@ -42,15 +43,17 @@ use VuFind\Db\Service\UserCardServiceInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LibraryCards extends \Laminas\View\Helper\AbstractHelper
+class LibraryCards
 {
     /**
      * Constructor.
      *
      * @param UserCardServiceInterface $cardService User card database service
      */
-    public function __construct(protected UserCardServiceInterface $cardService)
-    {
+    public function __construct(
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
+        protected UserCardServiceInterface $cardService
+    ) {
     }
 
     /**
@@ -63,5 +66,15 @@ class LibraryCards extends \Laminas\View\Helper\AbstractHelper
     public function getCardsForUser(UserEntityInterface $user): array
     {
         return $this->cardService->getLibraryCards($user);
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

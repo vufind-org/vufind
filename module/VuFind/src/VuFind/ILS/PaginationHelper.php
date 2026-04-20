@@ -52,8 +52,8 @@ class PaginationHelper
      * Support method for getPagingSetup() -- validate the active sort option,
      * returning either a valid sort method or false.
      *
-     * @param array  $functionConfig Function config returned from the ILS
-     * @param string $sort           The unvalidated user sort parameter
+     * @param array   $functionConfig Function config returned from the ILS
+     * @param ?string $sort           The unvalidated user sort parameter (or null for none)
      *
      * @return string|bool
      */
@@ -64,7 +64,7 @@ class PaginationHelper
             return false;
         }
         // If provided setting is valid, use it...
-        if (isset($functionConfig['sort'][$sort])) {
+        if ($sort && isset($functionConfig['sort'][$sort])) {
             return $sort;
         }
         // At this point, we need to find a reasonable value, either the configured
@@ -101,10 +101,10 @@ class PaginationHelper
     /**
      * Get paging settings and request data for paged ILS requests.
      *
-     * @param int    $page            Current page (1-based)
-     * @param string $sort            Current sort setting (null for none)
-     * @param int    $defaultPageSize Default page size
-     * @param array  $functionConfig  Function config returned from the ILS
+     * @param int     $page            Current page (1-based)
+     * @param ?string $sort            Current sort setting (null for none)
+     * @param int     $defaultPageSize Default page size
+     * @param array   $functionConfig  Function config returned from the ILS
      *
      * @return array
      */

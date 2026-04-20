@@ -95,12 +95,12 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     /**
      * Generic support function for successful request tests.
      *
-     * @param string  $ilsMethod   ILS method to mock
-     * @param ?string $requestType Request type for params helper
+     * @param string $ilsMethod   ILS method to mock
+     * @param string $requestType Request type for params helper
      *
      * @return array
      */
-    protected function runSuccessfulTest($ilsMethod, $requestType = null): array
+    protected function runSuccessfulTest($ilsMethod, $requestType = ''): array
     {
         $ilsAuth = $this->container
             ->createMock(ILSAuthenticator::class, ['storedCatalogLogin']);

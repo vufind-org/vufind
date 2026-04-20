@@ -1158,10 +1158,11 @@ class MultiBackend extends AbstractMultiDriver
     {
         if (!$source) {
             // Check for default driver
-            if ($this->defaultDriver) {
-                $this->debug('Using default driver ' . $this->defaultDriver);
-                $source = $this->defaultDriver;
+            if (!$this->defaultDriver) {
+                return null;
             }
+            $this->debug('Using default driver ' . $this->defaultDriver);
+            $source = $this->defaultDriver;
         }
         return parent::getDriver($source);
     }
