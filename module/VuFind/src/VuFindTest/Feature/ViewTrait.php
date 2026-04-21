@@ -59,7 +59,7 @@ trait ViewTrait
 {
     /**
      * Get a working AssetManager helper.
-     * 
+     *
      * @param PhpRenderer $renderer View for helper
      *
      * @return AssetManager
@@ -67,19 +67,23 @@ trait ViewTrait
     protected function getAssetManager(PhpRenderer $renderer): AssetManager
     {
         $container = new MockContainer($this);
-        $headLink = new \Laminas\View\Helper\HeadLink();
-        $headStyle = new \Laminas\View\Helper\HeadStyle();
-        $inlineScript = new \Laminas\View\Helper\InlineScript();
-        $url = new \Laminas\View\Helper\Url();
-        $pluginManager = $renderer->getHelperPluginManager();
-        $pluginManager->setService(\Laminas\View\Helper\Url::class, $url);
-        $pluginManager->setService(\Laminas\View\Helper\HeadLink::class, $headLink);
-        $pluginManager->setService(\Laminas\View\Helper\HeadStyle::class, $headStyle);
-        $pluginManager->setService(\Laminas\View\Helper\InlineScript::class, $inlineScript);
-        $container->set('ViewHelperManager', $pluginManager);
         $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
+        $services = [
+            \Laminas\View\Helper\HeadLink::class => new \Laminas\View\Helper\HeadLink(),
+            \Laminas\View\Helper\HeadStyle::class => new \Laminas\View\Helper\HeadStyle(),
+            \Laminas\View\Helper\InlineScript::class => new \Laminas\View\Helper\InlineScript(),
+            \Laminas\View\Helper\Url::class => new \Laminas\View\Helper\Url(),
+        ];
+        $viewHelperManager = $renderer->getHelperPluginManager();
+        foreach ($services as $key => $value) {
+            if (!$viewHelperManager->has($key)) {
+                $viewHelperManager->setService($key, $value);
+            }
+        }
+        $container->set(\Laminas\View\HelperPluginManager::class, $viewHelperManager);
         $factory = new AssetManagerFactory();
         $assetManager = $factory($container, AssetManager::class);
+
         return $assetManager;
     }
 
