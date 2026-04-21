@@ -59,20 +59,24 @@ trait ViewTrait
 {
     /**
      * Get a working AssetManager helper.
+     * 
+     * @param PhpRenderer $renderer View for helper
      *
      * @return AssetManager
      */
-    protected function getAssetManager(): AssetManager
+    protected function getAssetManager(PhpRenderer $renderer): AssetManager
     {
         $container = new MockContainer($this);
         $headLink = new \Laminas\View\Helper\HeadLink();
         $headStyle = new \Laminas\View\Helper\HeadStyle();
         $inlineScript = new \Laminas\View\Helper\InlineScript();
         $url = new \Laminas\View\Helper\Url();
-        $container->set(\Laminas\View\Helper\Url::class, $url);
-        $container->set(\Laminas\View\Helper\HeadLink::class, $headLink);
-        $container->set(\Laminas\View\Helper\HeadStyle::class, $headStyle);
-        $container->set(\Laminas\View\Helper\InlineScript::class, $inlineScript);
+        $pluginManager = $renderer->getHelperPluginManager();
+        $pluginManager->setService(\Laminas\View\Helper\Url::class, $url);
+        $pluginManager->setService(\Laminas\View\Helper\HeadLink::class, $headLink);
+        $pluginManager->setService(\Laminas\View\Helper\HeadStyle::class, $headStyle);
+        $pluginManager->setService(\Laminas\View\Helper\InlineScript::class, $inlineScript);
+        $container->set('ViewHelperManager', $pluginManager);
         $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
         $factory = new AssetManagerFactory();
         $assetManager = $factory($container, AssetManager::class);
@@ -104,7 +108,7 @@ trait ViewTrait
         $renderer->setResolver($resolver);
         $pluginManager = $renderer->getHelperPluginManager();
         if (!isset($plugins['assetManager'])) {
-            $plugins['assetManager'] = $this->getAssetManager();
+            $plugins['assetManager'] = $this->getAssetManager($renderer);
         }
         foreach ($plugins as $key => $value) {
             $pluginManager->setService($key, $value);

@@ -173,7 +173,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $record->setDbServiceManager($serviceManager);
 
         return [
-            'assetManager' => $this->getAssetManager(),
+            'assetManager' => $this->getAssetManager($renderer),
             'auth' => $auth,
             'context' => $context,
             'config' => $configHelper,
