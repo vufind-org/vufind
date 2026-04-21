@@ -18,7 +18,7 @@
     <div class="form-group">
       <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEscAttr('Login')?>">
       <?php if ($preAuthenticationData): ?>
-        <input class="btn btn-link" type="submit" name="processCancel" value="<?=$this->transEscAttr('navigate_back')?>">
+        <input class="btn btn-link cancel-link" type="submit" name="processCancel" value="<?=$this->transEscAttr('navigate_back')?>">
       <?php else: ?>
         <?php if ($account->supportsCreation()): ?>
           <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>

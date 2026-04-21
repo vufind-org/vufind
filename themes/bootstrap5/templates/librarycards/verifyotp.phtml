@@ -22,10 +22,10 @@
   <div class="form-group">
     <label class="form-label">
       <?=$this->transEsc('Email')?>:
-      <span class="form-value">
-        <?=$this->escapeHtml($authData['email'] ?? '')?>
-      </span>
     </label>
+    <p class="form-control-static">
+      <?=$this->escapeHtml($authData['email'] ?? '')?>
+    </p>
   </div>
   <div class="form-group">
     <label class="form-label" for="card_password">
