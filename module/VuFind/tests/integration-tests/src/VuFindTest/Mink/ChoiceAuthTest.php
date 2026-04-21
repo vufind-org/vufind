@@ -105,6 +105,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
                 'testOnly' => true,
                 'message_log' => $this->getEmailLogPath(),
                 'message_log_format' => $this->getEmailLogFormat(),
+                'default_from' => 'noreply@vufind.org',
             ],
         ];
     }
