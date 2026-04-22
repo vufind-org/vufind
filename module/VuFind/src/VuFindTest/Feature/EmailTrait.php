@@ -134,6 +134,30 @@ trait EmailTrait
     }
 
     /**
+     * Extract one-time verification code from logged email.
+     *
+     * @param string $expectedRecipient Expected recipient address
+     *
+     * @return string
+     */
+    protected function extractVerificationCodeFromEmail(string $expectedRecipient): string
+    {
+        $email = $this->getLoggedEmail();
+        $headers = $email->getHeaders();
+        $body = $email->getBody()->getBody();
+        $this->assertSame('From: noreply@vufind.org', $headers->get('from')->toString());
+        $this->assertSame("To: $expectedRecipient", $headers->get('to')->toString());
+
+        preg_match('/Use the following code to verify your email address.*: (\\d+)/', $body, $matches);
+        $this->assertArrayHasKey(
+            1,
+            $matches,
+            "No verification code in email: $body"
+        );
+        return $matches[1];
+    }
+
+    /**
      * Extract account recovery code from logged email.
      *
      * @return string
