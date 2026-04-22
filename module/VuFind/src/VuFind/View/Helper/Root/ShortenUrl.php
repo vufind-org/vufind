@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 /**
@@ -40,23 +41,17 @@ use VuFind\UrlShortener\UrlShortenerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ShortenUrl extends \Laminas\View\Helper\AbstractHelper
+class ShortenUrl
 {
-    /**
-     * URL shortener.
-     *
-     * @var UrlShortenerInterface
-     */
-    protected $shortener;
-
     /**
      * Constructor.
      *
      * @param UrlShortenerInterface $shortener URL shortener
      */
-    public function __construct(UrlShortenerInterface $shortener)
-    {
-        $this->shortener = $shortener;
+    public function __construct(
+        #[Autowire()]
+        protected UrlShortenerInterface $shortener
+    ) {
     }
 
     /**
