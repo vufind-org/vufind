@@ -50,7 +50,7 @@ class GoogleTagManager
      * @param AssetManager $assetManager   Asset manager helper
      */
     public function __construct(
-        #[Autowire(config: 'config', path: 'GoogleTagManager:gtmContainerId', default: false)]
+        #[Autowire(config: 'config', path: 'GoogleTagManager/gtmContainerId', default: false)]
         protected $gtmContainerId,
         #[Autowire(container: 'ViewHelperManager')]
         protected AssetManager $assetManager

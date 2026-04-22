@@ -404,14 +404,13 @@ class AssetManager
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $inlineScript = $this->inlineScript;
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $inlineScript->setScript($script, $type, $attrs);
-        $result = ($inlineScript)();
+        $this->inlineScript->setScript($script, $type, $attrs);
+        $result = ($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
-            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
@@ -433,17 +432,16 @@ class AssetManager
         if (!empty($this->cspNonce)) {
             $attrs['nonce'] = $this->cspNonce;
         }
-        $inlineScript = $this->inlineScript;
         if ($this->isRelativePath($src)) {
             $src = $this->applyThemeToRelativePath('js/' . $src) ?? $src;
         }
-        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($inlineScript, $options);
+        $resetArbitraryAttributes = $this->applyArbitraryScriptAttributesOption($this->inlineScript, $options);
         $type = $attrs['type'] ?? 'text/javascript';
         unset($attrs['type']);
-        $inlineScript->setFile($src, $type, $attrs);
-        $result = ($inlineScript)();
+        $this->inlineScript->setFile($src, $type, $attrs);
+        $result = ($this->inlineScript)();
         if ($resetArbitraryAttributes !== null) {
-            $inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
+            $this->inlineScript->setAllowArbitraryAttributes($resetArbitraryAttributes);
         }
         return $result;
     }
