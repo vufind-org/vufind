@@ -40,6 +40,7 @@ use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
+use function array_slice;
 use function count;
 use function in_array;
 use function is_callable;
@@ -1841,61 +1842,87 @@ class Folio extends AbstractAPI implements
     {
         $limit = $params['limit'] ?? 1000;
         $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
-        $vufindSortMap = $this->config['Loans']['vufind_sort'] ?? [];
+
         $requestedSort = $params['sort'] ?? '';
+        $vufindSortMap = $this->config['Loans']['vufind_sort'] ?? [];
         $localSortField = $vufindSortMap[$requestedSort] ?? null;
 
         $query = 'userId==' . $patron['id'] . ' and status.name==Open';
-        // Only pass sort to API if it is NOT handled locally by VuFind
-        if (!empty($requestedSort) && !$localSortField) {
-            $query .= ' sortby ' . $this->escapeCql($params['sort']);
-        }
-        $resultPage = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
         $transactions = [];
-        foreach ($resultPage->loans ?? [] as $trans) {
-            $dueStatus = false;
-            $date = $this->getDateTimeFromString($trans->dueDate);
-            $dueDateTimestamp = $date->getTimestamp();
+        $count = null;
 
-            $now = time();
-            if ($now > $dueDateTimestamp) {
-                $dueStatus = 'overdue';
-            } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
-                $dueStatus = 'due';
-            }
-            $transactions[] = [
-                'duedate' =>
-                    $this->dateConverter->convertToDisplayDate(
-                        'U',
-                        $dueDateTimestamp
-                    ),
-                'dueTime' =>
-                    $this->dateConverter->convertToDisplayTime(
-                        'U',
-                        $dueDateTimestamp
-                    ),
-                'dueStatus' => $dueStatus,
-                'id' => $this->getBibId($trans->item->instanceId),
-                'item_id' => $trans->item->id,
-                'barcode' => $trans->item->barcode,
-                'renew' => $trans->renewalCount ?? 0,
-                'renewable' => true,
-                'title' => $trans->item->title,
-            ];
+        // Fetch data from FOLIO, only pass sort to API if it is NOT handled locally by VuFind
+        if ($localSortField) {
+            $rawItems = $this->getPagedResults('loans', '/circulation/loans', compact('query'));
+        } else {
+            $query .= ' sortby ' . $this->escapeCql($requestedSort);
+            $result = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
+            $rawItems = $result->loans ?? [];
         }
-        // If we have a full page or have applied an offset, we need to look up the total count of transactions:
+
+        // Format the transaction results
+        foreach ($rawItems as $trans) {
+            $transactions[] = $this->formatTransactionItem($trans);
+        }
+
+        // If we have a full page, have applied an offset, or are not using a vufind_sort option,
+        // we need to look up the total count of transactions:
         $count = count($transactions);
-        if ($offset > 0 || $count >= $limit) {
+        if (!$localSortField && ($offset > 0 || $count >= $limit)) {
             // We could use the count in the result page, but that may be an estimate;
             // safer to do a separate lookup to be sure we have the right number!
             $count = $this->getResultCount('/circulation/loans', compact('query'));
         }
-        // Add in post-sort if the sort param was used in the vufind_sort config
+
+        // Apply local sorted if requested
         if ($localSortField) {
             $transactions = $this->sortArray($transactions, $localSortField);
+            $transactions = array_slice($transactions, $offset, $limit);
         }
 
         return ['count' => $count, 'records' => $transactions];
+    }
+
+    /**
+     * Support method for getMyTransactions to parse a single
+     * transaction result.
+     *
+     * @param array $transaction An single transaction
+     * array from getMyTransactions
+     *
+     * @return string The FOLIO loan ID for this loan
+     */
+    protected function formatTransactionItem($transaction)
+    {
+        $dueStatus = false;
+        $date = $this->getDateTimeFromString($transaction->dueDate);
+        $dueDateTimestamp = $date->getTimestamp();
+
+        $now = time();
+        if ($now > $dueDateTimestamp) {
+            $dueStatus = 'overdue';
+        } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
+            $dueStatus = 'due';
+        }
+        return [
+            'duedate' =>
+                $this->dateConverter->convertToDisplayDate(
+                    'U',
+                    $dueDateTimestamp
+                ),
+            'dueTime' =>
+                $this->dateConverter->convertToDisplayTime(
+                    'U',
+                    $dueDateTimestamp
+                ),
+            'dueStatus' => $dueStatus,
+            'id' => $this->getBibId($transaction->item->instanceId),
+            'item_id' => $transaction->item->id,
+            'barcode' => $transaction->item->barcode,
+            'renew' => $transaction->renewalCount ?? 0,
+            'renewable' => true,
+            'title' => $transaction->item->title,
+        ];
     }
 
     /**
