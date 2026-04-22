@@ -52,7 +52,6 @@ class ShortenUrl
         #[Autowire()]
         protected UrlShortenerInterface $shortener
     ) {
-        $this->shortener = $shortener;
     }
 
     /**

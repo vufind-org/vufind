@@ -55,8 +55,6 @@ class SafeMoneyFormat
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtml
     ) {
-        $this->currencyFormatter = $currencyFormatter;
-        $this->escapeHtml = $escapeHtml;
     }
 
     /**

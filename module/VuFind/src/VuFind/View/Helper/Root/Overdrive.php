@@ -49,7 +49,6 @@ class Overdrive
      */
     public function __construct(protected ?OverdriveConnector $connector = null)
     {
-        $this->connector = $connector;
     }
 
     /**
