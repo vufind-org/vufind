@@ -1855,7 +1855,9 @@ class Folio extends AbstractAPI implements
         if ($localSortField) {
             $rawItems = $this->getPagedResults('loans', '/circulation/loans', compact('query'));
         } else {
-            $query .= ' sortby ' . $this->escapeCql($requestedSort);
+            if (!empty($requestedSort)) {
+                $query .= ' sortby ' . $this->escapeCql($requestedSort);
+            }
             $result = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
             $rawItems = $result->loans ?? [];
         }
