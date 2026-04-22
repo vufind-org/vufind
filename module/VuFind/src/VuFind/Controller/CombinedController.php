@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Combined Search Controller
+ * Combined Search Controller.
  *
  * PHP version 8
  *
@@ -56,7 +56,7 @@ class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareI
     use AjaxResponseTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -67,7 +67,7 @@ class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareI
     }
 
     /**
-     * Home action
+     * Home action.
      *
      * @return mixed
      */
@@ -81,7 +81,7 @@ class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareI
     }
 
     /**
-     * Single result action (used for AJAX)
+     * Single result action (used for AJAX).
      *
      * @return mixed
      */
@@ -143,7 +143,7 @@ class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareI
     }
 
     /**
-     * Results action
+     * Results action.
      *
      * @return mixed
      */

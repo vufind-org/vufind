@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait implementing ConfigSettingPropertiesInterface
+ * Trait implementing ConfigSettingPropertiesInterface.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Trait implementing ConfigSettingPropertiesInterface
+ * Trait implementing ConfigSettingPropertiesInterface.
  *
  * @category VuFind
  * @package  Config

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VTLS Virtua Driver
+ * VTLS Virtua Driver.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function is_array;
 use function sprintf;
 
 /**
- * VTLS Virtua Driver
+ * VTLS Virtua Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -52,7 +52,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Oracle connection
+     * Oracle connection.
      *
      * @var ?Oracle
      */
@@ -109,7 +109,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -323,7 +323,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -343,7 +343,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -658,7 +658,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /* START - Serials functions */
 
     /**
-     * Simple utility -- retrieve data matching a code
+     * Simple utility -- retrieve data matching a code.
      *
      * @param array  $data Data to search
      * @param string $code Code to search for
@@ -857,7 +857,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /**
      * Breaks up the full pattern into chrono and other
      *   chrono = (year) etc... ie. gets replaced inline
-     *   other  = most enum holdings or 'Pt.'... ie. get concatenated
+     *   other  = most enum holdings or 'Pt.'... ie. get concatenated.
      *
      *   The same sub function handles both, but they must be
      *    sent in like groups.
@@ -931,7 +931,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /**
      * Renders individual holdings against a pattern
      *   Note fields and prediction patterns are handled
-     *   separately
+     *   separately.
      *
      * @param array $patterns Pattern data
      * @param array $field    Field data
@@ -1063,7 +1063,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1112,7 +1112,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
     /**
      *  Used for TESTING only. Grabs all prediction
-     *     patterns in the system for analysis
+     *     patterns in the system for analysis.
      *
      * @return array
      */
@@ -1147,7 +1147,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /* END - Serials functions */
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1197,7 +1197,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1245,7 +1245,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1286,7 +1286,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1324,7 +1324,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1376,7 +1376,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -1404,7 +1404,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -1518,7 +1518,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -1602,7 +1602,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -1622,7 +1622,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -1720,7 +1720,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -1739,7 +1739,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -1816,7 +1816,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get suppressed authority records
+     * Get suppressed authority records.
      *
      * @return array ID numbers of suppressed authority records in the system.
      */
@@ -1906,7 +1906,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Get Offline Mode
+     * Get Offline Mode.
      *
      * This is responsible for returning the offline mode
      *

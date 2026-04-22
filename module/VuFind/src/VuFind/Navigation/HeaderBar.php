@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use function array_key_exists;
 use function count;
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -51,7 +51,7 @@ use function count;
 class HeaderBar extends AbstractMenu
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array          $sectionConfig  Menu configuration
      * @param array          $config         Main configuration
@@ -143,7 +143,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
@@ -159,24 +159,29 @@ class HeaderBar extends AbstractMenu
                   attributes:
                     id: feedbackLink
                     data-lightbox: data-lightbox
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-feedback.phtml
             
                 - template: Section/HeaderBar/HeaderBar-cart.phtml
                   checkMethod: checkCart
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-cart.phtml
             
                 - template: Section/HeaderBar/HeaderBar-account.phtml
                   checkMethod: checkAccount
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-account.phtml
             
                 - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
                   checkMethod: checkThemeOptions
+                  excludeFromSiteMapPage: true
             
                 - template: Section/HeaderBar/HeaderBar-allLangs.phtml
                   checkMethod: checkAllLangs
+                  excludeFromSiteMapPage: true
             YAML;
         return Yaml::parse($yaml);
     }
 
     /**
-     * Check whether to show feedback item
+     * Check whether to show feedback item.
      *
      * @return bool
      */
@@ -186,7 +191,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show cart item
+     * Check whether to show cart item.
      *
      * @return bool
      */
@@ -196,7 +201,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show account item
+     * Check whether to show account item.
      *
      * @return bool
      */
@@ -206,7 +211,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show theme options item
+     * Check whether to show theme options item.
      *
      * @return bool
      */
@@ -217,7 +222,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show all languages item
+     * Check whether to show all languages item.
      *
      * @return bool
      */

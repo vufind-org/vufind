@@ -239,7 +239,7 @@ VuFind.register('cart', function Cart() {
         if (inCart > 0 && orig.length > 0) {
           msgs.push(VuFind.translate('itemsInBag', {'%%count%%': inCart}));
         }
-        var msg = '';
+        var msg;
         if (msgs.length > 1) {
           var ul = document.createElement('ul');
           msgs.forEach((current) => {

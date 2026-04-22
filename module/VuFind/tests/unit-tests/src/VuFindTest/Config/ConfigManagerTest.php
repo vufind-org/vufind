@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFindTest\Feature\FixtureTrait;
 use function count;
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -87,6 +87,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             'unit-test-child2'
                 => new ConfigFile($this->getFixturePath('configs/inheritance/unit-test-child2.ini')),
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
+            'ini-file-with-include' => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test.ini')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
             'dir-config-with-inheritance'
                 => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
@@ -439,6 +440,37 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test loading of INI config with include statements.
+     *
+     * @return void
+     */
+    public function testIniConfigWithIncludeStatement(): void
+    {
+        $config = $this->getConfig('ini-file-with-include');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    'a' => 1,
+                    'b' => 2,
+                ],
+                'Section2' => [
+                    'c' => 3,
+                    'd' => 4,
+                    'e' => 5,
+                ],
+                'Section3' => [
+                    'f' => 6,
+                    'g' => 7,
+                    'h' => 8,
+                    'i' => 9,
+                    'j' => 10,
+                ],
+            ],
+            $config
+        );
+    }
+
+    /**
      * Test loading of directory config with handling of parent configuration disabled.
      *
      * @return void
@@ -526,6 +558,31 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                         'value2' => 'base',
                     ],
                 ],
+                'subdir-all' => [
+                    'all-sub-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'primary-sub-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                        ],
+                    ],
+                    'base-secondary-sub-sub' => [
+                        'Section' => [
+                            'value' => 'secondary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'base-sub-sub' => [
+                        'Section' => [
+                            'value' => 'base',
+                            'value2' => 'base',
+                        ],
+                    ],
+                ],
             ],
         ];
         yield 'all-sub' => [
@@ -556,6 +613,69 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         ];
         yield 'base-sub' => [
             'dir_config/base-sub',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
+                ],
+            ],
+        ];
+        yield 'subdir-all' => [
+            'dir_config/subdir-all',
+            [
+                'all-sub-sub' => [
+                    'Section' => [
+                        'value' => 'primary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+                'primary-sub-sub' => [
+                    'Section' => [
+                        'value' => 'primary',
+                    ],
+                ],
+                'base-secondary-sub-sub' => [
+                    'Section' => [
+                        'value' => 'secondary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+                'base-sub-sub' => [
+                    'Section' => [
+                        'value' => 'base',
+                        'value2' => 'base',
+                    ],
+                ],
+            ],
+        ];
+        yield 'all-sub-sub' => [
+            'dir_config/subdir-all/all-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'primary-sub-sub' => [
+            'dir_config/subdir-all/primary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                ],
+            ],
+        ];
+        yield 'base-secondary-sub-sub' => [
+            'dir_config/subdir-all/base-secondary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'base-sub-sub' => [
+            'dir_config/subdir-all/base-sub-sub',
             [
                 'Section' => [
                     'value' => 'base',

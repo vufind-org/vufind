@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Email
+ * Class Email.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\Mailer\Mailer;
 
 /**
- * Class Email
+ * Class Email.
  *
  * @category VuFind
  * @package  Form
@@ -55,28 +55,28 @@ class Email implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $viewRenderer;
 
     /**
-     * Main config
+     * Main config.
      *
      * @var Config
      */
     protected $mainConfig;
 
     /**
-     * Mailer
+     * Mailer.
      *
      * @var Mailer
      */
     protected $mailer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RendererInterface $viewRenderer View renderer
      * @param Config            $config       Main config

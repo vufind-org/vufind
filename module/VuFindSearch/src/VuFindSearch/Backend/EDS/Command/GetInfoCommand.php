@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Get information from the EDS backend
+ * Get information from the EDS backend.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\Command\CallMethodCommand;
 use VuFindSearch\ParamBag;
 
 /**
- * Get information from the EDS backend
+ * Get information from the EDS backend.
  *
  * @category VuFind
  * @package  Search

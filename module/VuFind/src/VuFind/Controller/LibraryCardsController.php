@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibraryCards Controller
+ * LibraryCards Controller.
  *
  * PHP version 8
  *
@@ -50,7 +50,7 @@ use VuFind\Exception\ILS as ILSException;
 class LibraryCardsController extends AbstractBase
 {
     /**
-     * Send user's library cards to the view
+     * Send user's library cards to the view.
      *
      * @return mixed
      */
@@ -75,7 +75,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Send user's library card to the edit view
+     * Send user's library card to the edit view.
      *
      * @return mixed
      */
@@ -134,7 +134,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Creates a confirmation box to delete or not delete the current list
+     * Creates a confirmation box to delete or not delete the current list.
      *
      * @return mixed
      */
@@ -198,7 +198,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Activates a library card
+     * Activates a library card.
      *
      * @return \Laminas\Http\Response
      */
@@ -239,7 +239,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Redirects to authentication to connect a new library card
+     * Redirects to authentication to connect a new library card.
      *
      * @return \Laminas\Http\Response
      */
@@ -259,7 +259,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Connects a new library card for authenticated user
+     * Connects a new library card for authenticated user.
      *
      * @return \Laminas\Http\Response
      */
@@ -396,7 +396,7 @@ class LibraryCardsController extends AbstractBase
     }
 
     /**
-     * Process library card addition via an email link
+     * Process library card addition via an email link.
      *
      * @param UserEntityInterface $user User object
      * @param string              $hash Hash

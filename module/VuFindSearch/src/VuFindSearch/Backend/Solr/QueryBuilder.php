@@ -75,7 +75,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
-     * Global extra Solr query parameters
+     * Global extra Solr query parameters.
      *
      * @var array
      */
@@ -98,7 +98,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected $createSpellingQuery = false;
 
     /**
-     * Lucene syntax helper
+     * Lucene syntax helper.
      *
      * @var LuceneSyntaxHelper
      */
@@ -149,7 +149,11 @@ class QueryBuilder implements QueryBuilderInterface
         } else {
             // Clone the query to avoid modifying the original user-visible query
             $finalQuery = clone $query;
-            $finalQuery->setString($this->getNormalizedQueryString($query));
+            $queryString = $query->getString();
+            if ($handler = $this->getSearchHandler($query->getHandler(), $queryString)) {
+                $queryString = $handler->preprocessQueryString($queryString);
+            }
+            $finalQuery->setString($this->getNormalizedQueryString($queryString));
         }
         $string = $finalQuery->getString() ?: '*:*';
 
@@ -211,7 +215,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Check if the conditions match for an extra parameter
+     * Check if the conditions match for an extra parameter.
      *
      * @param AbstractQuery $query      Search query
      * @param ?ParamBag     $params     Search backend parameters
@@ -277,7 +281,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Check if any of the given search types has the field in DismaxParams
+     * Check if any of the given search types has the field in DismaxParams.
      *
      * @param array  $searchTypes Search types to check
      * @param string $field       Field to check for
@@ -299,7 +303,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Get an array of search types used in the given search
+     * Get an array of search types used in the given search.
      *
      * @param AbstractQuery $query Query
      *
@@ -391,7 +395,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Get Lucene syntax helper
+     * Get Lucene syntax helper.
      *
      * @return LuceneSyntaxHelper
      */
@@ -404,7 +408,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Set Lucene syntax helper
+     * Set Lucene syntax helper.
      *
      * @param LuceneSyntaxHelper $helper Lucene syntax helper
      *
@@ -494,7 +498,7 @@ class QueryBuilder implements QueryBuilderInterface
                 $searchString = '(*:* NOT ' . $searchString . ')';
             }
         } else {
-            $searchString = $this->getNormalizedQueryString($component);
+            $searchString = $this->getNormalizedQueryString($component->getString());
             $searchHandler = $this->getSearchHandler(
                 $component->getHandler(),
                 $searchString
@@ -568,18 +572,14 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Given a Query object, return a fully normalized version of the query string.
+     * Given a Query string, return a fully normalized version.
      *
-     * @param Query $query Query object
+     * @param string $queryString Query string
      *
      * @return string
      */
-    protected function getNormalizedQueryString($query)
+    protected function getNormalizedQueryString($queryString)
     {
-        $queryString = $query->getString();
-        if ($handler = $this->getSearchHandler($query->getHandler(), $queryString)) {
-            $queryString = $handler->preprocessQueryString($queryString);
-        }
         return $this->fixTrailingQuestionMarks(
             $this->getLuceneHelper()->normalizeSearchString(
                 $queryString

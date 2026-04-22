@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart view helper
+ * Cart view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Cart view helper
+ * Cart view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,14 +41,14 @@ namespace VuFind\View\Helper\Root;
 class Cart extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * VuFind Cart Model
+     * VuFind Cart Model.
      *
      * @var \VuFind\Cart
      */
     protected $cart;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Cart $cart Cart model
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search api controller test
+ * Search api controller test.
  *
  * PHP version 8
  *
@@ -51,7 +51,7 @@ use VuFindApi\Formatter\RecordFormatter;
 use VuFindTest\Container\MockContainer;
 
 /**
- * Search api controller tests
+ * Search api controller tests.
  *
  * @category VuFind
  * @package  Tests
@@ -62,7 +62,7 @@ use VuFindTest\Container\MockContainer;
 class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testApiKeys functions
+     * Data provider for testApiKeys functions.
      *
      * @return Generator
      */
@@ -160,7 +160,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get an instance of a searchApiController
+     * Get an instance of a searchApiController.
      *
      * @param array $config      Main config
      * @param array $paramsArray Parameters
@@ -261,7 +261,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test API Keys record
+     * Test API Keys record.
      *
      * @param array $config        Main config
      * @param array $requestParams Users request as params array
@@ -279,7 +279,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test API Keys search
+     * Test API Keys search.
      *
      * @param array $config        Main config
      * @param array $requestParams Users request as params array

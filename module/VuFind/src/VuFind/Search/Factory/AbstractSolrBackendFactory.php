@@ -113,7 +113,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $searchYaml;
 
     /**
-     * VuFind configuration reader
+     * VuFind configuration reader.
      *
      * @var ConfigManagerInterface
      */
@@ -145,49 +145,49 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $allowFallbackForIndexName = false;
 
     /**
-     * Solr field used to store unique identifiers
+     * Solr field used to store unique identifiers.
      *
      * @var string
      */
     protected $uniqueKey = 'id';
 
     /**
-     * Solr connector class
+     * Solr connector class.
      *
      * @var string
      */
     protected $connectorClass = Connector::class;
 
     /**
-     * Solr backend class
+     * Solr backend class.
      *
      * @var string
      */
     protected $backendClass = Backend::class;
 
     /**
-     * Record collection class for RecordCollectionFactory
+     * Record collection class for RecordCollectionFactory.
      *
      * @var string
      */
     protected $recordCollectionClass = RecordCollection::class;
 
     /**
-     * Record collection factory class
+     * Record collection factory class.
      *
      * @var string
      */
     protected $recordCollectionFactoryClass = RecordCollectionFactory::class;
 
     /**
-     * Merged index configuration
+     * Merged index configuration.
      *
      * @var ?array
      */
     protected $mergedIndexConfig = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -195,7 +195,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name
@@ -426,7 +426,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get the Solr base URL(s) (without the path to the specific index)
+     * Get the Solr base URL(s) (without the path to the specific index).
      *
      * @return string[]
      */
@@ -531,7 +531,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get HTTP options for the client
+     * Get HTTP options for the client.
      *
      * @param string $url URL being requested
      *
@@ -623,7 +623,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a deduplication listener for the backend
+     * Get a deduplication listener for the backend.
      *
      * @param Backend $backend Search backend
      * @param bool    $enabled Whether deduplication is enabled
@@ -668,7 +668,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a hierarchical facet listener for the backend
+     * Get a hierarchical facet listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      *
@@ -684,7 +684,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a highlighting listener for the backend
+     * Get a highlighting listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
@@ -701,7 +701,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a Conditional Filter Listener
+     * Get a Conditional Filter Listener.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
@@ -721,7 +721,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a default parameters listener for the backend
+     * Get a default parameters listener for the backend.
      *
      * @param Backend $backend Search backend
      * @param array   $params  Default parameters

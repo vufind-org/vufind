@@ -94,7 +94,7 @@ class HeaderBarTest extends AbstractSectionTestCase
     }
 
     /**
-     * Data provider for testRequiredConfiguration
+     * Data provider for testRequiredConfiguration.
      *
      * @return \Iterator<string, array>
      */

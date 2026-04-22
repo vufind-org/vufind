@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * PHP version 8
  *
@@ -48,7 +48,7 @@ use function intval;
 use function is_array;
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -73,7 +73,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     protected $lazyDb;
 
     /**
-     * Name of database
+     * Name of database.
      *
      * @var string
      */
@@ -88,28 +88,28 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     protected $statusRankings = false;
 
     /**
-     * Date formatting object
+     * Date formatting object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateFormat;
 
     /**
-     * Whether to use holdings sort groups to sort holdings records
+     * Whether to use holdings sort groups to sort holdings records.
      *
      * @var bool
      */
     protected $useHoldingsSortGroups;
 
     /**
-     * Loan interval types for which to display the due time (empty = all)
+     * Loan interval types for which to display the due time (empty = all).
      *
      * @var array
      */
     protected $displayDueTimeIntervals;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -343,7 +343,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Helper function that returns SQL for getting a sort sequence for a location
+     * Helper function that returns SQL for getting a sort sequence for a location.
      *
      * @param string $locationColumn Column in the full where clause containing
      * the column id
@@ -556,7 +556,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -601,7 +601,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -810,7 +810,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Purchase History Data
+     * Get Purchase History Data.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial). It is used
@@ -857,7 +857,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get specified fields from an MFHD MARC Record
+     * Get specified fields from an MFHD MARC Record.
      *
      * @param MarcReader   $record     Marc reader
      * @param array|string $fieldSpecs Array or colon-separated list of
@@ -1146,7 +1146,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -1199,7 +1199,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1219,7 +1219,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly)
+     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly).
      *
      * @param string $pin PIN code to sanitize
      *
@@ -1232,7 +1232,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1499,7 +1499,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1625,7 +1625,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1770,7 +1770,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Process Holds List
+     * Process Holds List.
      *
      * This is responsible for processing holds to ensure only one record is shown
      * for each hold.
@@ -1799,7 +1799,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1978,7 +1978,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -2005,7 +2005,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -2097,7 +2097,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -2119,7 +2119,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -2208,7 +2208,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
@@ -2285,7 +2285,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -2318,7 +2318,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -2351,7 +2351,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -2384,7 +2384,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -2630,7 +2630,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Execute an SQL query
+     * Execute an SQL query.
      *
      * @param string|array $sql  SQL statement (string or array that includes
      * bind params)
@@ -2655,7 +2655,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Convert string from ISO 8859-1 into UTF-8
+     * Convert string from ISO 8859-1 into UTF-8.
      *
      * @param string $iso88591 String to convert
      *

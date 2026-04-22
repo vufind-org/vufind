@@ -102,7 +102,7 @@ class SolrDefault extends DefaultRecord implements
     protected $snippet = false;
 
     /**
-     * Highlighting details
+     * Highlighting details.
      *
      * @var array
      */
@@ -116,21 +116,21 @@ class SolrDefault extends DefaultRecord implements
     protected $containerLinking = false;
 
     /**
-     * Search results plugin manager
+     * Search results plugin manager.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService = null;
 
     /**
-     * If the explain feature is enabled
+     * If the explain feature is enabled.
      *
      * @var bool
      */
     protected $explainEnabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
@@ -284,7 +284,7 @@ class SolrDefault extends DefaultRecord implements
 
     /**
      * Attach a Search Results Plugin Manager connection and related logic to
-     * the driver
+     * the driver.
      *
      * @param \VuFindSearch\Service $service Search Service Manager
      *
@@ -296,7 +296,7 @@ class SolrDefault extends DefaultRecord implements
     }
 
     /**
-     * Get the number of child records belonging to this record
+     * Get the number of child records belonging to this record.
      *
      * @return int Number of records
      */
@@ -336,7 +336,7 @@ class SolrDefault extends DefaultRecord implements
     }
 
     /**
-     * Get work identification keys
+     * Get work identification keys.
      *
      * @return array
      */

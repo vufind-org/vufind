@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recommendation module view helper
+ * Recommendation module view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Recommend\RecommendInterface;
 
 /**
- * Recommendation module view helper
+ * Recommendation module view helper.
  *
  * @category VuFind
  * @package  View_Helpers

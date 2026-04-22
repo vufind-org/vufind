@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for EIT record collection
+ * Unit tests for EIT record collection.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\EIT\Response\XML\RecordCollection;
 
 /**
- * Unit tests for EIT record collection
+ * Unit tests for EIT record collection.
  *
  * @category VuFind
  * @package  Search

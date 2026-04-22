@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Truncate view helper
+ * Truncate view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\String\PropertyStringInterface;
 
 /**
- * Truncate view helper
+ * Truncate view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use VuFind\String\PropertyStringInterface;
 class Truncate extends AbstractHelper
 {
     /**
-     * Truncate a string
+     * Truncate a string.
      *
      * Note that any PropertyString with a plain string value that exceeds the maximum length is converted to a plain
      * string before truncation. This means that the returned value is a plain string without e.g. any HTML content.

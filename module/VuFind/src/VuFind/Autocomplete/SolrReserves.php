@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Reserves Autocomplete Module
+ * Solr Reserves Autocomplete Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Solr Reserves Autocomplete Module
+ * Solr Reserves Autocomplete Module.
  *
  * This class provides suggestions by using the local Solr reserves index.
  *
@@ -44,7 +44,7 @@ namespace VuFind\Autocomplete;
 class SolrReserves extends Solr
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */

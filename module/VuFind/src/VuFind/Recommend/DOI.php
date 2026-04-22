@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DOI Recommendations Module
+ * DOI Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * DOI Recommendations Module
+ * DOI Recommendations Module.
  *
  * This class directs the user to a DOI resolver when appropriate.
  *
@@ -45,14 +45,14 @@ namespace VuFind\Recommend;
 class DOI implements RecommendInterface
 {
     /**
-     * DOI found in search query (or null for none)
+     * DOI found in search query (or null for none).
      *
      * @var string
      */
     protected $match = null;
 
     /**
-     * URL prefix for resolving DOIs
+     * URL prefix for resolving DOIs.
      *
      * @var string
      */
@@ -129,7 +129,7 @@ class DOI implements RecommendInterface
     }
 
     /**
-     * Get the matched DOI (or null if no match found)
+     * Get the matched DOI (or null if no match found).
      *
      * @return string
      */
@@ -139,7 +139,7 @@ class DOI implements RecommendInterface
     }
 
     /**
-     * Get the URL to resolve the matched DOI (or null if no match found)
+     * Get the URL to resolve the matched DOI (or null if no match found).
      *
      * @return string
      */

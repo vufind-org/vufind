@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SMS test
+ * SMS test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\SMS\Clickatell;
 use function function_exists;
 
 /**
- * SMS test
+ * SMS test.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +52,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     protected $expectedBaseUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password';
 
     /**
-     * Setup method
+     * Setup method.
      *
      * @return void
      */
@@ -65,7 +65,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test carrier list
+     * Test carrier list.
      *
      * @return void
      */
@@ -79,12 +79,17 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unknown exception message error
+     * Test unknown exception message error.
      *
      * @return void
      */
     public function testUnknownException()
     {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
         $client = $this->getMockClient();
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $client->expects($this->once())
@@ -112,7 +117,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful query
+     * Test successful query.
      *
      * @return void
      */
@@ -139,7 +144,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unexpected response
+     * Test unexpected response.
      *
      * @return void
      */
@@ -169,7 +174,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful query
+     * Test unsuccessful query.
      *
      * @return void
      */
@@ -198,7 +203,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an exception in the mail client
+     * Test an exception in the mail client.
      *
      * @return void
      */
@@ -225,7 +230,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a test object
+     * Build a test object.
      *
      * @param \Laminas\Http\Client $client HTTP client (null for default)
      * @param array                $config Configuration (null for default)
@@ -247,7 +252,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get default configuration
+     * Get default configuration.
      *
      * @return array
      */
@@ -263,7 +268,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock HTTP client
+     * Get a mock HTTP client.
      *
      * @return \Laminas\Http\Client
      */

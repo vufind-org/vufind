@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for audit_event table
+ * Entity model for audit_event table.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Db\Type\AuditEventType;
 use function is_string;
 
 /**
- * Entity model for audit_event table
+ * Entity model for audit_event table.
  *
  * @category VuFind
  * @package  Database
@@ -163,7 +163,7 @@ class AuditEvent implements AuditEventEntityInterface
     protected ?array $data = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

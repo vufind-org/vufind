@@ -53,8 +53,9 @@ return [
          */
         ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
-        ['file' => 'vendor/popper.min.js', 'priority' => 120],
-        ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
+        ['file' => 'vendor/js.cookie.min.js', 'priority' => 120],
+        ['file' => 'vendor/popper.min.js', 'priority' => 130],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
@@ -144,7 +145,15 @@ return [
             'Unicode' => [
                 'template' => 'unicode',
             ],
-            /* For an example of an images set, see Bootprint's theme.config.php. */
+            // Example of an image set:
+            /*
+            'Img' => [
+                'template' => 'images',
+                'src' => 'icons', // Points to a subdirectory under images; processed via imageLink.
+            ],
+            // With the above, you can point to e.g. images/icons/add.png by adding an alias below:
+            // 'cart-add' => 'Img:add.png'
+            */
         ],
         'aliases' => [
             /**

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for resource_tags table
+ * Entity model for resource_tags table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for resource_tags table
+ * Entity model for resource_tags table.
  *
  * @category VuFind
  * @package  Database
@@ -113,7 +113,7 @@ class ResourceTags implements ResourceTagsEntityInterface
     protected ?UserEntityInterface $user = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

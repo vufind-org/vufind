@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mail log handler
+ * Mail log handler.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Mailer\Mailer;
 use function sprintf;
 
 /**
- * Custom Mail Handler for VuFind with verbosity support and VuFind mailer integration
+ * Custom Mail Handler for VuFind with verbosity support and VuFind mailer integration.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -51,7 +51,7 @@ class MailHandler extends MonologMailHandler
     use VerbosityTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $to      Recipient email address
      * @param string $subject Email subject
@@ -67,7 +67,7 @@ class MailHandler extends MonologMailHandler
     }
 
     /**
-     * Send the mail using VuFind's mailer
+     * Send the mail using VuFind's mailer.
      *
      * @param string $content The email content
      * @param array  $records The log records that triggered this handler
@@ -80,7 +80,7 @@ class MailHandler extends MonologMailHandler
     }
 
     /**
-     * Writes the record down to the log
+     * Writes the record down to the log.
      *
      * @param LogRecord $record Log record to process
      *
@@ -106,7 +106,7 @@ class MailHandler extends MonologMailHandler
     }
 
     /**
-     * Gets the formatted content for this handler
+     * Gets the formatted content for this handler.
      *
      * @param array $records Array of LogRecord objects
      *

@@ -56,7 +56,7 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testAdminTheme()
+     * Data provider for testAdminTheme().
      *
      * @return array[]
      */

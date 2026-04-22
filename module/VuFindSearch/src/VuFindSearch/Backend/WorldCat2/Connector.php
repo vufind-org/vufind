@@ -56,14 +56,14 @@ class Connector implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * API base URL
+     * API base URL.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Http\Client $client       An HTTP client object
      * @param GenericProvider      $authProvider OAuth2 provider

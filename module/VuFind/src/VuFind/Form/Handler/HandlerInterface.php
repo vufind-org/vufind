@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface HandlerInterface
+ * Interface HandlerInterface.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\Form\Handler;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
- * Interface HandlerInterface
+ * Interface HandlerInterface.
  *
  * @category VuFind
  * @package  Form

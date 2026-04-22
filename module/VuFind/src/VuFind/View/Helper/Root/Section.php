@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_callable;
 use function is_string;
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -159,7 +159,7 @@ class Section extends AbstractHelper
         } else {
             // Default to class-based template.
             $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = strtolower($this->section::class);
+            $className = $this->section::class;
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
     }

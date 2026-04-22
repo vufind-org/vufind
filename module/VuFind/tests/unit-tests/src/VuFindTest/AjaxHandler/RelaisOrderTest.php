@@ -59,7 +59,7 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testSearchResponse()
+     * Data provider for testSearchResponse().
      *
      * @return \Iterator
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MethodTimedBlocks View Helper Test Class
+ * MethodTimedBlocks View Helper Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
 /**
- * TimedMethodBlocks View Helper Test Class
+ * TimedMethodBlocks View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Data provider for testMethodTimedBlocks
+     * Data provider for testMethodTimedBlocks.
      *
      * @return \Iterator
      */
@@ -97,7 +97,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test methodTimedBlocks view helper
+     * Test methodTimedBlocks view helper.
      *
      * @param array  $timedBlocks Timed blocks
      * @param string $expected    Expected result

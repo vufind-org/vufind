@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TranslatableString Test Class
+ * TranslatableString Test Class.
  *
  * Note that most tests using TranslatableString are in
  * VuFindTest\View\Helper\Root\TranslateTest
@@ -35,7 +35,7 @@ namespace VuFindTest\I18n\Translator\Loader;
 use VuFind\I18n\TranslatableString;
 
 /**
- * TranslatableString Test Class
+ * TranslatableString Test Class.
  *
  * Note that most tests using TranslatableString are in
  * VuFindTest\View\Helper\Root\TranslateTest
