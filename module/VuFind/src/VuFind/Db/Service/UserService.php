@@ -270,6 +270,7 @@ class UserService extends AbstractDbService implements
         unset($this->userSessionContainer->userDetails);
         unset($this->userSessionContainer->preAuthData);
         unset($this->userSessionContainer->cardAuthData);
+        unset($this->userSessionContainer->emailVerificationData);
     }
 
     /**
@@ -370,6 +371,29 @@ class UserService extends AbstractDbService implements
     public function getAccountRecoveryData(): ?array
     {
         return $this->userSessionContainer->accountRecoveryData ?? null;
+    }
+
+    /**
+     * Store email verification data in session.
+     *
+     * @param ?array $data Email verification data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setEmailVerificationData(?array $data): void
+    {
+        $this->userSessionContainer->emailVerificationData = $data;
+    }
+
+    /**
+     * Get email verification data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getEmailVerificationData(): ?array
+    {
+        return $this->userSessionContainer->emailVerificationData ?? null;
     }
 
     /**

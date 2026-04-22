@@ -134,4 +134,21 @@ interface UserSessionPersistenceInterface
      * @return ?array
      */
     public function getAccountRecoveryData(): ?array;
+
+    /**
+     * Store email verification data in session.
+     *
+     * @param ?array $data Email verification data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setEmailVerificationData(?array $data): void;
+
+    /**
+     * Get email verification data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getEmailVerificationData(): ?array;
 }
