@@ -15,7 +15,6 @@ return [
             'VuFind\View\Helper\Root\CurrentPath' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\GeoCoords' => 'VuFind\View\Helper\Root\GeoCoordsFactory',
             'VuFind\View\Helper\Root\GoogleAnalytics' => 'VuFind\View\Helper\Root\GoogleAnalyticsFactory',
-            'VuFind\View\Helper\Root\GoogleTagManager' => 'VuFind\View\Helper\Root\GoogleTagManagerFactory',
             'VuFind\View\Helper\Root\Icon' => 'VuFind\View\Helper\Root\IconFactory',
             'VuFind\View\Helper\Root\IdentifierLinker' => 'VuFind\View\Helper\Root\IdentifierLinkerFactory',
             'VuFind\View\Helper\Root\JsIcons' => 'VuFind\View\Helper\Root\JsIconsFactory',
