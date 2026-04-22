@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "sass:map";
 @use "sass:math";
 
@@ -161,7 +162,7 @@ h3.popover-header {
 // Normalize highlighting
 .highlight,
 mark {
-  background: lighten(#FF0, 20%);
+  background: color.adjust(#FF0, $lightness: 20%);
   padding: .1em .2em;
 }
 
