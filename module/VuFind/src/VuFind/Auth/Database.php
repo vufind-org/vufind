@@ -392,6 +392,7 @@ class Database extends AbstractBase
     public function getPasswordRecoveryData(array $params): ?array
     {
         $userService = $this->getUserService();
+        $user = null;
         if ($email = $params['email'] ?? null) {
             $user = $userService->getUserByEmail($email);
         } elseif ($username = $params['username'] ?? null) {
