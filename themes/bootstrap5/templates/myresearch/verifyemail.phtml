@@ -1,11 +1,15 @@
 <h2><?=$this->transEsc('User Account')?></h2>
-<?=$flashMessages = $this->flashmessages()?>
+<?php
+  $flashMessages = $this->flashmessages();
+?>
 
 <?php
   // Note: Lightbox would close automatically after the initial login request when a flash-message is not found, so
   // include one even when we don't have a message to display:
-  if (!$flashMessages):
+  if ($flashMessages):
 ?>
+  <?=$flashMessages?>
+<?php else: ?>
   <div class="alert alert-info flash-message">
     <?=$this->transEsc('email_verification_pending')?>
   </div>
