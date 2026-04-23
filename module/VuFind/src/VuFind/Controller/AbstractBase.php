@@ -416,6 +416,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                         'email' => $rawUsername,
                         'authId' => null,
                     ];
+                    // Since we're using the email login method, no password is required here.
                     if ($patron = $this->getILS()->patronLogin($username, '')) {
                         $data = compact('username', 'patron');
                         $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
