@@ -81,12 +81,7 @@ class AuthHashService extends AbstractDbService implements
      */
     public function getById(string $id): ?AuthHashEntityInterface
     {
-        $dql = 'SELECT ah '
-            . 'FROM ' . AuthHashEntityInterface::class . ' ah '
-            . 'WHERE ah.id = :id ';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters(compact('id'));
-        return $query->getOneOrNullResult();
+        return $this->entityManager->find(AuthHashEntityInterface::class, $id);
     }
 
     /**
