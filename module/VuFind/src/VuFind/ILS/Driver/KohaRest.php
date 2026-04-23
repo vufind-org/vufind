@@ -1286,7 +1286,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
-            return $this->holdError('hold_invalid_pickup');
+            return $this->holdError('hold_invalid_pickup', false);
         }
 
         $request = [
@@ -1312,7 +1312,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if ($result['code'] >= 300) {
-            return $this->holdError($result['data']['error'] ?? 'hold_error_fail');
+            return empty($result['data']['error'])
+                ? $this->holdError('hold_error_fail', false)
+                : $this->holdError($result['data']['error']);
         }
 
         if ($holdDetails['startDateTS']) {
@@ -1403,8 +1405,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     );
                 }
                 if ($result && $result['code'] >= 300) {
-                    $results[$requestId]['status']
-                        = $result['data']['error'] ?? 'hold_error_update_failed';
+                    $results[$requestId]['status'] = empty($result['data']['error'])
+                        ? 'hold_error_update_failed'
+                        : $this->getPrefixedMessage($result['data']['error']);
                 }
             }
             if (empty($results[$requestId]['errors'])) {
@@ -1653,8 +1656,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if ($result['code'] >= 300) {
-            $message = $result['data']['error']
-                ?? 'storage_retrieval_request_error_fail';
+            $message = empty($result['data']['error'])
+                ? 'storage_retrieval_request_error_fail'
+                : $this->getPrefixedMessage($result['data']['error']);
             return [
                 'success' => false,
                 'sysMessage' => $message,
@@ -1915,7 +1919,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($result['code'] >= 300) {
             return [
                 'success' => false,
-                'error' => $result['data']['error'] ?? $result['code'],
+                'error' => $this->getPrefixedMessage($result['data']['error'] ?? $result['code']),
             ];
         }
         return [
@@ -2406,7 +2410,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     } else {
                         $parts = explode('::', $code, 2);
                         if (isset($parts[1])) {
-                            $statuses[] = $parts[1];
+                            $statuses[] = $this->getPrefixedMessage($parts[1]);
                         }
                     }
                 }
@@ -2472,7 +2476,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Replace ':' in status key if used as status since ':' is
         // the namespace separator in translatable strings:
         return $this->itemStatusMappings[$statusKey]
-            ?? $data['code'] ?? str_replace(':', '_', $statusKey);
+            ?? $this->getPrefixedMessage($data['code'])
+            ?? $this->getPrefixedMessage(str_replace(':', '_', $statusKey));
     }
 
     /**
@@ -2749,24 +2754,31 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Return a hold error message.
      *
-     * @param string $error Error message
+     * @param string $error  Error message
+     * @param bool   $ilsMsg Whether the error is an ILS error message (needs translation prefix)
      *
      * @return array
      */
-    protected function holdError($error)
+    protected function holdError($error, $ilsMsg = true)
     {
         switch ($error) {
             case 'Hold cannot be placed. Reason: tooManyReserves':
             case 'Hold cannot be placed. Reason: tooManyHoldsForThisRecord':
                 $error = 'hold_error_too_many_holds';
+                $ilsMsg = false;
                 break;
             case 'Hold cannot be placed. Reason: ageRestricted':
                 $error = 'hold_error_age_restricted';
+                $ilsMsg = false;
                 break;
         }
+
+        $message = $ilsMsg
+            ? $this->getPrefixedMessage($error)
+            : $error;
         return [
             'success' => false,
-            'sysMessage' => $error,
+            'sysMessage' => $message,
         ];
     }
 
@@ -3153,5 +3165,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $code = trim($kohaFine['debit_type']) ?? '';
         return $this->feeTypeToTaxRateMappings[$code] ?? 0;
+    }
+
+    /**
+     * Add translation prefix to a given message.
+     *
+     * @param string $msg Message
+     *
+     * @return string
+     */
+    protected function getPrefixedMessage(string $msg): string
+    {
+        return ($this->config['Catalog']['translationPrefix'] ?? '') . $msg;
     }
 }

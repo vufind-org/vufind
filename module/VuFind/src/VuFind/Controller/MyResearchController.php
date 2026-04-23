@@ -963,7 +963,7 @@ class MyResearchController extends AbstractBase
         $favorites = $this->getService(\VuFind\Favorites\FavoritesService::class);
         $didSomething = false;
         foreach ($lists as $list) {
-            $tags = $this->params()->fromPost('tags' . $list);
+            $tags = $this->params()->fromPost('tags' . $list, '');
             $favorites->save(
                 [
                     'list'  => $list,
