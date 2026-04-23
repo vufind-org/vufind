@@ -34,6 +34,7 @@ use Laminas\Router\Http\TreeRouteStack;
 use Laminas\View\Helper\EscapeJs;
 use Laminas\View\Helper\HeadTitle;
 use Laminas\View\Helper\ViewModel;
+use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Config\Config;
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
@@ -340,9 +341,11 @@ class Matomo
     {
         $current = $this->viewModel->getCurrent();
         if (null === $current) {
-            $driver = $this->viewRenderer->vars('driver');
-            if ($driver instanceof RecordDriverBase) {
-                return $driver;
+            if ($this->viewRenderer instanceof PhpRenderer) {
+                $driver = $this->viewRenderer->vars('driver');
+                if ($driver instanceof RecordDriverBase) {
+                    return $driver;
+                }
             }
             return null;
         }
