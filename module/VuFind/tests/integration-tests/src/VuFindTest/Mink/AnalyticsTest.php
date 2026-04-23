@@ -60,28 +60,24 @@ class AnalyticsTest extends \VuFindTest\Integration\MinkTestCase
             ['config' => ['GoogleTagManager' => ['gtmContainerId' => 'testGTMid']]],
             ['testGTMid'],
         ];
+        $basicMatomoConfig = ['config' => ['Matomo' => ['url' => 'http://fakeMatomo', 'site_id' => 987654321]]];
+        $customVariablesMatomoConfig = [
+            'config' => ['Matomo' => $basicMatomoConfig['config']['Matomo'] + ['custom_variables' => true]],
+        ];
         yield 'Matomo loads on home page (no custom variables by default)' => [
             '/',
-            ['config' => ['Matomo' => ['url' => 'http://localhost/fakeMatomo', 'site_id' => 987654321]]],
+            $basicMatomoConfig,
             ['fakeMatomo', '987654321'],
             ['setCustomVariable'],
         ];
         yield 'Matomo loads on home page with custom variables enabled' => [
             '/',
-            [
-                'config' => [
-                    'Matomo' => [
-                        'url' => 'http://localhost/fakeMatomo',
-                        'site_id' => 987654321,
-                        'custom_variables' => true,
-                    ],
-                ],
-            ],
+            $customVariablesMatomoConfig,
             ['fakeMatomo', '987654321', "'setCustomVariable',1,'Context'"],
         ];
         yield 'Matomo tracks search on search page (no custom variables by default)' => [
             '/Search/Results?lookfor=foo',
-            ['config' => ['Matomo' => ['url' => 'http://localhost/fakeMatomo', 'site_id' => 987654321]]],
+            $basicMatomoConfig,
             [
                 'fakeMatomo',
                 '987654321',
@@ -91,15 +87,7 @@ class AnalyticsTest extends \VuFindTest\Integration\MinkTestCase
         ];
         yield 'Matomo tracks search on search page (with custom variables enabled)' => [
             '/Search/Results?lookfor=foo',
-            [
-                'config' => [
-                    'Matomo' => [
-                        'url' => 'http://localhost/fakeMatomo',
-                        'site_id' => 987654321,
-                        'custom_variables' => true,
-                    ],
-                ],
-            ],
+            $customVariablesMatomoConfig,
             [
                 'fakeMatomo',
                 '987654321',
