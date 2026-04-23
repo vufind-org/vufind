@@ -1,11 +1,11 @@
 <?php
 
 /**
- * View helper for shortening URLs.
+ * "Get Cookie Consent Overlay" AJAX handler.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,48 +21,52 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  AJAX
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\AjaxHandler;
 
+use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\UrlShortener\UrlShortenerInterface;
 
 /**
- * View helper for formatting dates and times.
+ * "Get Cookie Consent Overlay" AJAX handler.
+ *
+ * Get contents for the cookie consent overlay.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  AJAX
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ShortenUrl
+class GetCookieConsent extends AbstractBase
 {
     /**
      * Constructor.
      *
-     * @param UrlShortenerInterface $shortener URL shortener
+     * @param RendererInterface $renderer View renderer
      */
     public function __construct(
-        #[Autowire()]
-        protected UrlShortenerInterface $shortener
+        #[Autowire(service: 'ViewRenderer')]
+        protected RendererInterface $renderer
     ) {
     }
 
     /**
-     * Shorten a URL.
+     * Handle a request.
      *
-     * @param string $url URL to shorten
+     * @param Params $params Parameter helper from controller
      *
-     * @return string
+     * @return array [response data, HTTP status code]
      */
-    public function __invoke($url)
+    public function handleRequest(Params $params)
     {
-        return $this->shortener->shorten($url);
+        $html = $this->renderer->render('CookieConsent/cookie-consent-overlay.phtml');
+        return $this->formatResponse(compact('html'));
     }
 }

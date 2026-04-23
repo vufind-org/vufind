@@ -142,10 +142,10 @@
 
       $this->assetManager()->appendScriptString(implode("\n", $appendScripts));
     ?>
-    <?=$this->cookieConsent()->render()?>
     <?=$this->assetManager()->outputHeaderAssets()?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+    <?=$this->cookieConsent()->render('bottom')?>
     <header class="hidden-print">
       <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
         <span class="visually-hidden" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
