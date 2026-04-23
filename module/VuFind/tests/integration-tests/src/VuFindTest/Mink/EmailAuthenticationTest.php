@@ -180,7 +180,6 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
             );
             if ($i < 3) {
                 $this->clickCss($page, '.modal-body .cancel-link');
-                $this->closeLightbox($page);
             }
         }
 
