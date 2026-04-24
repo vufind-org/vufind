@@ -216,7 +216,12 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
         );
 
-        // TODO: Test /web/record.
+        // Test /web/record.
+        $page = $this->makeRecordApiCall(id: '003', divId: 'operations-Record-get_web_record');
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
     }
 
     /**
