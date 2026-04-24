@@ -506,7 +506,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         } else {
             $this->assertSame(
                 'Password recovery instructions have been sent to the email address registered with this account.',
-                $this->findCssAndGetText($page, '.alert-success')
+                $this->findCssAndGetText($page, '.alert-info')
             );
         }
 
@@ -550,16 +550,23 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->assertSame(
             'Password recovery instructions have been sent to the email address registered with this account.',
-            $this->findCssAndGetText($page, '.alert-success')
+            $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract URL from email:
-        $email = $this->getLoggedEmail();
-        preg_match('/You can reset your password at this URL: (http.*)/', $email->getBody()->getBody(), $matches);
-        $link = $matches[1];
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#recovery_password', '123');
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
+        );
+
+        // Enter the one-time code:
+        $code = $this->extractRecoveryCodeFromEmail();
+        $this->findCssAndSetValue($page, '#recovery_password', $code);
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
 
         // Reset the password:
-        $session->visit($link);
         $this->assertSame('username1', $this->findCssAndGetText($page, '.form-control-static'));
         $this->findCssAndSetValue($page, '#password', 'recovered');
         $this->findCssAndSetValue($page, '#password2', 'recovered');
@@ -721,21 +728,23 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEqualsWithTimeout(
             'Password recovery instructions have been sent to the email address registered with this account.',
-            fn () => $this->findCssAndGetText($page, '.alert-success')
+            fn () => $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract URL from email:
-        $email = $this->getLoggedEmail()->getBody()->getBody();
-        preg_match('/You can reset your password at this URL: <(http.*)>/', $email, $matches);
-        $this->assertArrayHasKey(
-            1,
-            $matches,
-            "No recovery link in email: $email"
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#recovery_password', '123');
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
         );
-        $link = $matches[1];
+
+        // Enter the one-time code:
+        $code = $this->extractRecoveryCodeFromEmail();
+        $this->findCssAndSetValue($page, '#recovery_password', $code);
+        $this->clickCss($page, '.form-password-recovery .btn-primary');
 
         // Reset the password:
-        $session->visit($link);
         $this->assertSame('catuser', $this->findCssAndGetText($page, '.form-control-static'));
         $this->findCssAndSetValue($page, '#password', 'recovered');
         $this->findCssAndSetValue($page, '#password2', 'recovered');

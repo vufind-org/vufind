@@ -254,12 +254,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
                 };
             });
         $mockConnection->method('checkFunction')
-            ->willReturnCallback(function (string $function) use ($checkMethods) {
+            ->willReturnCallback(function (string $function) use ($checkMethods): array {
                 return match ($function) {
                     'getMyTransactionHistory' => $checkMethods['checkHistoricloans'] ?? true,
                     'StorageRetrievalRequests' => $checkMethods['checkStorageRetrievalRequests'] ?? true,
                     'ILLRequests' => $checkMethods['checkILLRequests'] ?? true,
-                };
+                } ? ['test' => true] : [];
             });
         $container->set(Connection::class, $mockConnection);
 

@@ -72,11 +72,30 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that appropriate values were created by the standard test environment setup.
+     *
+     * @return void
+     */
+    public function testMarcIndexingSucceeded(): void
+    {
+        // We index author_relators.mrc and author_relators_updated_record.mrc as part of the startup process.
+        // The second file contains the same records as the first, but with some of the 005 fields changed to
+        // newer dates to trigger change tracker updates. We want to test that a record with matching dates in
+        // both files is treated as unchanged (first indexed = last indexed) and a record with non-matching
+        // dates is treated as updated (first indexed != last indexed).
+        $tracker = $this->getDbService(ChangeTrackerService::class);
+        $unchanged = $tracker->getChangeTrackerEntity('biblio', '0000652212-0');
+        $this->assertEquals($unchanged->getFirstIndexed(), $unchanged->getLastIndexed());
+        $changed = $tracker->getChangeTrackerEntity('biblio', '0000183626-0');
+        $this->assertGreaterThan($changed->getFirstIndexed(), $changed->getLastIndexed());
+    }
+
+    /**
      * Test change tracking.
      *
      * @return void
      */
-    public function testChangeTracker()
+    public function testChangeTracker(): void
     {
         $core = 'testCore';
         $tracker = $this->getDbService(ChangeTrackerService::class);
