@@ -149,6 +149,10 @@ class Yaml extends AbstractBase
         array $path
     ) {
         foreach ($path as $pathPart) {
+            if (!array_key_exists($pathPart, $childConfig) && !array_key_exists($pathPart, $parentConfig)) {
+                return;
+            }
+
             if (!array_key_exists($pathPart, $childConfig) || !array_key_exists($pathPart, $parentConfig)) {
                 $childConfig[$pathPart] = array_merge($parentConfig[$pathPart] ?? [], $childConfig[$pathPart] ?? []);
                 return;
