@@ -1936,11 +1936,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             $limit = $this->config['TransactionHistory']['max_page_size'] ?? 100;
             return [
@@ -1985,10 +1985,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
-            return ($config['enabled'] ?? false) ? $config : false;
+            return ($config['enabled'] ?? false) ? $config : [];
         }
 
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**

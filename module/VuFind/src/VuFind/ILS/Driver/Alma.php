@@ -1405,7 +1405,7 @@ class Alma extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ($function == 'patronLogin') {
             return [
@@ -1435,7 +1435,7 @@ class Alma extends AbstractBase implements
                 'default_sort' => 'due asc',
             ];
         } else {
-            $functionConfig = false;
+            $functionConfig = [];
         }
 
         return $functionConfig;

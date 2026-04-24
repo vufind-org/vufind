@@ -492,7 +492,6 @@ class LoginHelperTest extends TestCase
      */
     public static function getILSLoginMethodProvider(): Generator
     {
-        yield 'defaults (null configuration)' => ['password', null, ''];
         yield 'defaults (empty array configuration)' => ['password', [], ''];
         yield 'non-default with empty target' => ['foo', ['loginMethod' => 'foo'], ''];
         yield 'non-default with non-empty target' => ['foo', ['loginMethod' => 'foo'], 'bar'];
@@ -502,13 +501,13 @@ class LoginHelperTest extends TestCase
      * Test getting the ILS login method.
      *
      * @param string $expectedMethod    Expected return value of getILSLoginMethod()
-     * @param ?array $patronLoginConfig Configuration for patronLogin method
+     * @param array  $patronLoginConfig Configuration for patronLogin method
      * @param string $target            Target to pass to getILSLoginMethod()
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getILSLoginMethodProvider')]
-    public function testGetILSLoginMethod(string $expectedMethod, ?array $patronLoginConfig, string $target): void
+    public function testGetILSLoginMethod(string $expectedMethod, array $patronLoginConfig, string $target): void
     {
         $ils = $this->getIls($patronLoginConfig, $target);
         $helper = $this->getAutowiredObject(ActionHelperLoginHelper::class, [Connection::class => $ils]);
@@ -518,12 +517,12 @@ class LoginHelperTest extends TestCase
     /**
      * Get mock ILS connection.
      *
-     * @param ?array $patronLoginConfig Configuration for patronLogin method
+     * @param array  $patronLoginConfig Configuration for patronLogin method
      * @param string $target            Target to pass to getILSLoginMethod()
      *
      * @return MockObject&Connection
      */
-    protected function getIls(?array $patronLoginConfig, string $target): Connection
+    protected function getIls(array $patronLoginConfig, string $target): Connection
     {
         $ils = $this->createMock(Connection::class);
         $ils->expects($this->once())

@@ -148,10 +148,9 @@ class Unicorn extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
-        $functionConfig = $this->config[$function] ?? false;
-        return $functionConfig;
+        return $this->config[$function] ?? [];
     }
 
     /**
