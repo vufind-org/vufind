@@ -268,6 +268,9 @@ class UserService extends AbstractDbService implements
     {
         unset($this->userSessionContainer->userId);
         unset($this->userSessionContainer->userDetails);
+        unset($this->userSessionContainer->preAuthData);
+        unset($this->userSessionContainer->cardAuthData);
+        unset($this->userSessionContainer->emailVerificationData);
     }
 
     /**
@@ -299,6 +302,98 @@ class UserService extends AbstractDbService implements
     {
         return isset($this->userSessionContainer->userId)
             || isset($this->userSessionContainer->userDetails);
+    }
+
+    /**
+     * Store pre-authentication data in session.
+     *
+     * @param ?array $data Pre-authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->userSessionContainer->preAuthData = $data;
+    }
+
+    /**
+     * Get pre-authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getPreAuthenticationData(): ?array
+    {
+        return $this->userSessionContainer->preAuthData ?? null;
+    }
+
+    /**
+     * Store library card authentication data in session.
+     *
+     * @param ?array $data Library card authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setLibraryCardAuthenticationData(?array $data): void
+    {
+        $this->userSessionContainer->libraryCardAuthData = $data;
+    }
+
+    /**
+     * Get library card authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getLibraryCardAuthenticationData(): ?array
+    {
+        return $this->userSessionContainer->libraryCardAuthData ?? null;
+    }
+
+    /**
+     * Store account recovery data in session.
+     *
+     * @param ?array $data Account recovery data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setAccountRecoveryData(?array $data): void
+    {
+        $this->userSessionContainer->accountRecoveryData = $data;
+    }
+
+    /**
+     * Get account recovery data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getAccountRecoveryData(): ?array
+    {
+        return $this->userSessionContainer->accountRecoveryData ?? null;
+    }
+
+    /**
+     * Store email verification data in session.
+     *
+     * @param ?array $data Email verification data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setEmailVerificationData(?array $data): void
+    {
+        $this->userSessionContainer->emailVerificationData = $data;
+    }
+
+    /**
+     * Get email verification data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getEmailVerificationData(): ?array
+    {
+        return $this->userSessionContainer->emailVerificationData ?? null;
     }
 
     /**

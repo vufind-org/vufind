@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,6 +31,7 @@ namespace VuFind\Auth;
 
 use Laminas\Http\Request;
 use Laminas\View\Renderer\PhpRenderer;
+use OTPHP\HOTP;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
@@ -98,6 +99,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param array  $templateParams Extra params for rendering the email message
      *
      * @return void
+     *
+     * @deprecated Use code-based authentication instead
      */
     public function sendAuthenticationLink(
         $email,
@@ -159,6 +162,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      *
      * @return array
      * @throws AuthException
+     *
+     * @deprecated Use code-based authentication instead
      */
     public function authenticate($hash)
     {
@@ -195,6 +200,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * @param Request $request Request object.
      *
      * @return bool
+     *
+     * @deprecated Use code-based authentication instead
      */
     public function isValidLoginRequest(Request $request)
     {
@@ -207,5 +214,93 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             return !empty($row);
         }
         return false;
+    }
+
+    /**
+     * Send an email authentication code to the specified email address.
+     *
+     * @param string $email          Email address to send the link to
+     * @param array  $data           Information from the authentication request (such as user details)
+     * @param string $subject        Email subject
+     * @param string $template       Email message template
+     * @param array  $templateParams Extra params for rendering the email message
+     *
+     * @return int Authentication code ID for subsequent call to verifyAuthenticationCode (not to be exposed to the
+     * user!)
+     */
+    public function sendAuthenticationCode(
+        string $email,
+        array $data,
+        string $subject = 'email_login_subject',
+        string $template = 'Email/login-code.phtml',
+        $templateParams = []
+    ): int {
+        // Make sure we've waited long enough
+        $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
+        $sessionId = $this->sessionManager->getId();
+
+        if (
+            ($row = $this->authHashService->getLatestBySessionId($sessionId))
+            && time() - $row->getCreated()->getTimestamp() < $recoveryInterval
+        ) {
+            throw new AuthException('authentication_error_in_progress');
+        }
+
+        $otpObject = HOTP::create();
+        $otpObject->setLabel($email);
+        $otp = $otpObject->at($otpObject->getCounter());
+
+        $hash = $otp . '||' . md5(random_bytes(32));
+        $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_OTP);
+
+        $row->setSessionId($sessionId)
+            ->setData(json_encode($data));
+        $this->authHashService->persistEntity($row);
+
+        $viewParams = $templateParams;
+        $viewParams['code'] = $otp;
+        $viewParams['title'] = $this->config->Site->title ?? '';
+
+        $message = $this->viewRenderer->render($template, $viewParams);
+        $from = $this->getEmailSenderAddress($this->config, $email);
+        $subject = $this->translator->translate($subject);
+        $subject = str_replace('%%title%%', $viewParams['title'], $subject);
+
+        $this->mailer->send($email, $from, $subject, $message);
+
+        return $row->getId();
+    }
+
+    /**
+     * Verify an authentication code sent by email.
+     *
+     * @param int    $id  Authentication code ID (from sendAuthenticationCode method)
+     * @param string $otp User-entered one-time password
+     *
+     * @return ?array Authentication information passed to sendAuthenticationCode on success; null on failure
+     */
+    public function verifyAuthenticationCode(
+        int $id,
+        string $otp
+    ): ?array {
+        if (!($row = $this->authHashService->getById($id))) {
+            // Assume the hash has expired
+            throw new AuthException('authentication_error_expired');
+        }
+
+        if (time() - $row->getCreated()->getTimestamp() > $this->loginRequestValidTime) {
+            throw new AuthException('authentication_error_expired');
+        }
+
+        // Verify password:
+        [$storedOtp] = explode('||', $row->getHash());
+        if ($otp === $storedOtp) {
+            // Success; extract data and clean up:
+            $authData = json_decode($row->getData(), true);
+            $this->authHashService->deleteAuthHash($row);
+            return $authData;
+        }
+        // Failure; keep the hash for retries.
+        return null;
     }
 }

@@ -772,13 +772,13 @@ class Folio extends AbstractAPI implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $key = match ($function) {
             'getMyTransactions' => 'Loans',
             default => $function
         };
-        return $this->config[$key] ?? false;
+        return $this->config[$key] ?? [];
     }
 
     /**

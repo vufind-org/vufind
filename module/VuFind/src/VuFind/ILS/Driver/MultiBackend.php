@@ -958,7 +958,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $source = null;
         if (!empty($params)) {

@@ -296,7 +296,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $params = null)
+    public function getConfig(string $function, array $params = []): array
     {
         return $this->defaultCall('getConfig', func_get_args());
     }

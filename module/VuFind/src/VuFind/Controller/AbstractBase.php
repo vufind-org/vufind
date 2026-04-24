@@ -35,12 +35,15 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Controller\Feature\RequestHelperTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -393,6 +396,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             if (!$account->allowsUserIlsLogin()) {
                 throw new \Exception('Unexpected ILS credential submission.');
             }
+            $rawUsername = $username;
             // Check for multiple ILS target selection
             $target = $this->params()->fromPost('target', false);
             if ($target) {
@@ -400,13 +404,29 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             }
             try {
                 if ('email' === $this->getILSLoginMethod($target)) {
-                    $routeMatch = $this->getEvent()->getRouteMatch();
-                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
-                        : 'myresearch-profile';
-                    $routeParams = $routeMatch ? $routeMatch->getParams() : [];
-                    $ilsAuth
-                        ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
-                    $this->getFlashMessenger()->addSuccessMessage('email_login_link_sent');
+                    // Use raw (non-prefixed) username as email to display so that we don't accidentally reveal if a
+                    // patron was found:
+                    $authData = [
+                        'email' => $rawUsername,
+                        'authId' => null,
+                    ];
+                    // Since we're using the email login method, no password is required here.
+                    if ($patron = $this->getILS()->patronLogin($username, '')) {
+                        $data = compact('username', 'patron');
+                        $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
+                        $authData['authId'] = $emailAuthenticator->sendAuthenticationCode($patron['email'], $data);
+                        $this->getAuditEventService()->addEvent(
+                            AuditEventType::User,
+                            AuditEventSubtype::SendCardAuthEmail,
+                            $user,
+                            data: $data
+                        );
+                    }
+                    // Don't reveal the result
+                    $this->getDbService(UserSessionPersistenceInterface::class)
+                        ->setLibraryCardAuthenticationData($authData);
+                    $this->setFollowupUrlToReferer();
+                    return $this->redirect()->toRoute('myresearch-verifyotp');
                 } else {
                     $patron = $ilsAuth->newCatalogLogin($username, $password, $user);
 
