@@ -95,7 +95,9 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     protected function getDefaultConfigYamlReader(): YamlReader
     {
         if (!isset($this->defaultConfigYamlReader)) {
-            $this->defaultConfigYamlReader = new YamlReader($this->getPathResolver());
+            $this->defaultConfigYamlReader = new YamlReader(
+                $this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class)
+            );
         }
         return $this->defaultConfigYamlReader;
     }

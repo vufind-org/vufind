@@ -132,13 +132,15 @@ class ConfigLoader
      * @param ConfigLocationInterface $configLocation     Config location
      * @param bool                    $handleParentConfig If parent configuration should be handled
      * @param bool                    $forceReload        If cache should be ignored
+     * @param bool                    $useLocalConfig     Use local configuration if available
      *
      * @return mixed
      */
     public function loadConfigFromLocation(
         ConfigLocationInterface $configLocation,
         bool $handleParentConfig = true,
-        bool $forceReload = false
+        bool $forceReload = false,
+        bool $useLocalConfig = true
     ): mixed {
         $cacheKey = $configLocation->getCacheKey();
         if (!$forceReload && isset($this->configCache[$cacheKey])) {
@@ -169,8 +171,12 @@ class ConfigLoader
                 ->parseConfig($currentConfigLocation, $handleParentConfig);
             $configs[] = $currentConfig;
             $currentConfigLocation = null;
-            if ($handleParentConfig && $parentLocation = $currentConfig['parentLocation'] ?? null) {
-                $currentConfigLocation = $parentLocation;
+            if ($handleParentConfig) {
+                if ($parentLocation = $currentConfig['parentLocation'] ?? null) {
+                    $currentConfigLocation = $parentLocation;
+                } elseif ($parentConfigName = $currentConfig['parentConfigName'] ?? null) {
+                    $currentConfigLocation = $this->getConfigLocation($parentConfigName, $useLocalConfig);
+                }
             }
         } while ($currentConfigLocation);
 

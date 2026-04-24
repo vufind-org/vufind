@@ -98,21 +98,20 @@ abstract class AbstractBase implements HandlerInterface
 
     /**
      * Create a new config location object on a path based on another config location.
+     * Returns null if no config exists on path.
      *
      * @param ConfigLocationInterface $configLocation Original config location
      * @param string                  $path           New config location path
      *
-     * @return ConfigLocationInterface
-     *
-     * @throws FileAccessException
+     * @return ?ConfigLocationInterface
      */
     protected function getParentLocationOnPath(
         ConfigLocationInterface $configLocation,
         string $path
-    ): ConfigLocationInterface {
+    ): ?ConfigLocationInterface {
         $parentLocation = $this->pathResolver->getConfigLocationOnPath($path);
         if ($parentLocation === null) {
-            throw new FileAccessException("Error: $path does not exist.");
+            return null;
         }
         $parentLocation->setConfigName($configLocation->getConfigName())
             // parent locations on a different path should still refer to the same
