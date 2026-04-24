@@ -75,6 +75,13 @@ abstract class AbstractBase implements
     protected $config = null;
 
     /**
+     * Pre-authentication data, if any.
+     *
+     * @var ?array
+     */
+    protected ?array $preAuthenticationData = null;
+
+    /**
      * Map of database column name to setter method for UserEntityInterface objects.
      *
      * @return array
@@ -189,6 +196,32 @@ abstract class AbstractBase implements
     protected function validateConfig()
     {
         // By default, do no checking.
+    }
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        // By default, do not perform pre-authentication.
+        return null;
+    }
+
+    /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->preAuthenticationData = $data;
     }
 
     /**

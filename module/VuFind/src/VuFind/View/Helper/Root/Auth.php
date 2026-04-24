@@ -77,6 +77,16 @@ class Auth implements DbServiceAwareInterface
     }
 
     /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
+
+    /**
      * Render a template within an auth module folder.
      *
      * @param string $name    Template name to render
@@ -183,6 +193,18 @@ class Auth implements DbServiceAwareInterface
     }
 
     /**
+     * Render the one-time password login form fields.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getOtpLoginFields($context = [])
+    {
+        return $this->renderTemplate('otploginfields.phtml', $context);
+    }
+
+    /**
      * Render the login template.
      *
      * @param array $context Context for rendering template
@@ -258,6 +280,8 @@ class Auth implements DbServiceAwareInterface
      * Get the password recovery email template path.
      *
      * @return string
+     *
+     * @deprecated Use getPasswordRecoveryCodeEmailTemplate instead
      */
     public function getPasswordRecoveryEmailTemplate()
     {
@@ -275,12 +299,22 @@ class Auth implements DbServiceAwareInterface
     }
 
     /**
-     * Make helper invokable.
+     * Get the password recovery code email template path.
      *
-     * @return static
+     * @return string
      */
-    public function __invoke(): static
+    public function getPasswordRecoveryCodeEmailTemplate()
     {
-        return $this;
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
+        $template = 'Auth/%s/recovery-email-code.phtml';
+        $classTemplate = $this->getCachedClassTemplate($template, $className);
+        if (!$classTemplate) {
+            throw new RuntimeException(
+                'Cannot find '
+                . $this->getTemplateWithClass($template, '[brief class name]')
+                . " for class $className or any of its parent classes"
+            );
+        }
+        return $classTemplate;
     }
 }
