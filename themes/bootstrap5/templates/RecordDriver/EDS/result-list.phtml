@@ -1,7 +1,5 @@
 <?php
   $this->assetManager()->appendStyleLink('EDS.css');
-  $accessLevel = $this->driver->getAccessLevel();
-  $restrictedView = empty($accessLevel) ? false : true;
   $recordLinker = $this->recordLinker($this->results);
   $largeImage = $this->record($this->driver)->getThumbnail('large');
   $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
@@ -39,6 +37,15 @@
         $formatter = $this->recordDataFormatter($this->driver);
         $items = $formatter->getData($formatter->getDefaults('result-list'));
       ?>
+      <?php if ($this->driver->isPlaceholder()): ?>
+        <div class="resultItemLine1">
+          <p>
+            <?=$this->transEsc('This result is not displayed to guests')?>
+            <br>
+            <?=$this->render('error/loginForAccess.phtml')?>
+          </p>
+        </div>
+      <?php endif; ?>
       <?php if (!empty($items)): ?>
         <?php foreach ($items as $item): ?>
           <div class="resultItemLine1">
@@ -55,14 +62,6 @@
             <?php endif;?>
           </div>
         <?php endforeach; ?>
-      <?php elseif ($restrictedView): ?>
-        <div class="resultItemLine1">
-          <p>
-            <?=$this->transEsc('This result is not displayed to guests')?>
-            <br>
-            <?=$this->render('error/loginForAccess.phtml')?>
-          </p>
-        </div>
       <?php endif; ?>
 
       <div class="resultItemLine4 custom-links">
@@ -161,7 +160,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+      <?=(!$this->driver->isRestrictedView() && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
