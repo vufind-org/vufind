@@ -271,7 +271,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Check whether access to the record is restricted
+     * Check whether access to the record is restricted.
      *
      * @return bool
      */
@@ -282,7 +282,7 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Check whether the record is a placeholder
+     * Check whether the record is a placeholder.
      *
      * @return bool
      */
