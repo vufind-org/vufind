@@ -202,7 +202,12 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
         );
 
-        // TODO: Test /index2/record.
+        // Test /index2/record.
+        $page = $this->makeRecordApiCall(id: 'geo20031', divId: 'operations-Record-get_index2_record');
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
 
         // Test /authority/record.
         $page = $this->makeRecordApiCall(id: 'vtls000001427', divId: 'operations-Record-get_authority_record');
