@@ -46,23 +46,21 @@
           </p>
         </div>
       <?php endif; ?>
-      <?php if (!empty($items)): ?>
-        <?php foreach ($items as $item): ?>
-          <div class="resultItemLine1">
-            <?php if ('Title' == $item['label']): ?>
-              <h2>
-                <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
-                <?=$item['value']?> </a>
-              </h2>
-            <?php else:?>
-              <p>
-                <b><?=$this->transEsc($item['label'])?>:</b>
-                <?=$item['value']?>
-              </p>
-            <?php endif;?>
-          </div>
-        <?php endforeach; ?>
-      <?php endif; ?>
+      <?php foreach ($items as $item): ?>
+        <div class="resultItemLine1">
+          <?php if ('Title' == $item['label']): ?>
+            <h2>
+              <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+              <?=$item['value']?> </a>
+            </h2>
+          <?php else:?>
+            <p>
+              <b><?=$this->transEsc($item['label'])?>:</b>
+              <?=$item['value']?>
+            </p>
+          <?php endif;?>
+        </div>
+      <?php endforeach; ?>
 
       <div class="resultItemLine4 custom-links">
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
