@@ -539,7 +539,7 @@ CREATE TABLE notice (
   style varchar(50) DEFAULT NULL,
   content_type varchar(50) NOT NULL DEFAULT 'text',
   conditions JSON DEFAULT NULL,
-  created datetime NOT NULL,
+  created timestamp NOT NULL,
   PRIMARY KEY (id)
 );
 

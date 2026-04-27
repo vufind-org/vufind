@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Doctrine\DBAL\Exception\TableNotFoundException;
+use Exception;
 use VuFind\Db\Entity\Notice;
 use VuFind\Db\Entity\NoticeEntityInterface;
 use VuFind\Db\Entity\NoticeTranslationEntityInterface;
@@ -85,7 +85,7 @@ class NoticeService extends AbstractDbService implements
         $query = $this->entityManager->createQuery($dql);
         try {
             return $query->getResult();
-        } catch (TableNotFoundException $e) {
+        } catch (Exception $e) {
             return [];
         }
     }
