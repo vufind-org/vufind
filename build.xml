@@ -1197,6 +1197,8 @@ ${git_status}
 
     <phingcall target="configure_install" />
     <phingcall target="setup_database" />
+    <phingcall target="importrec"><property name="filename" value="tests/data/author_relator_preload.mrc" /></phingcall>
+    <phingcall target="importrec"><property name="filename" value="tests/data/author_relators.mrc" /></phingcall>
     <phingcall target="delete_fake_records" />
   </target>
 
