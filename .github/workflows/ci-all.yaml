@@ -1,0 +1,253 @@
+# GitHub action - Run extended CI test for VuFind
+
+# This action can be used to manually start a complete integration test
+# for any branch of a GitHub repository.
+# It is not run automatically because it consumes much more resources
+# than the typical continuous integration tests.
+
+name: CI (all)
+
+on:
+  # Trigger workflow in GitHub web frontend or from API.
+  workflow_dispatch:
+    # Here we could support tests with different PHP versions,
+    # but the additional value is low.
+    # Therefore the current code simply uses the preinstalled PHP.
+    # It would also be possible to add an option to run a single integration test
+    # or to select other test and phing options.
+    #inputs:
+    #  php-version:
+    #    description: 'PHP version'
+    #    required: true
+    #    default: '8.4'
+    #    type: choice
+    #    options:
+    #      - '8.2'
+    #      - '8.3'
+    #      - '8.4'
+    #      - 'all'
+
+jobs:
+  run-tests:
+    name: Tests with PHP ${{ matrix.php-version }}
+    runs-on: ubuntu-latest
+
+    env:
+      VUFIND_HOME: ${{ github.workspace }}
+      VUFIND_LOCAL_DIR: ${{ github.workspace }}/local
+      SOLR_PORT: 8983
+
+    strategy:
+      matrix:
+        # The current code simply uses the preinstalled PHP.
+        php-version: ['8.3']
+        #php-version: ${{
+        #  (github.event_name == 'push') && fromJSON('["8.4"]') ||
+        #  (inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4"]') ||
+        #  fromJSON(format('["{0}"]', inputs.php-version))
+        #}}
+
+    # Running MariaDB as a service did not save much time and did not work.
+    #services:
+    #  mariadb:
+    #    image: mariadb:latest
+    #    env:
+    #      MARIADB_ROOT_PASSWORD: password # Sets root password to "password"
+    #    ports:
+    #      - 3306:3306
+    #    # Wait for MariaDB to be healthy
+    #    options: >-
+    #      --health-cmd="mariadb-admin ping -h localhost"
+    #      --health-interval=10s
+    #      --health-timeout=5s
+    #      --health-retries=5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Extract Solr version from build.xml
+        id: solr-version
+        run: |
+          SOLR_VERSION=$(grep -oP 'property name="solr_version" value="\K[^"]+' build.xml)
+          echo "version=$SOLR_VERSION" >> $GITHUB_OUTPUT
+          pwd
+          ls -la
+          export
+
+      - name: Restore Solr download cache
+        id: cache-solr
+        uses: actions/cache/restore@v5
+        with:
+          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
+          key: solr-${{ steps.solr-version.outputs.version }}
+          restore-keys: solr-
+
+      - name: Download Solr (unless in cache)
+        if: steps.cache-solr.outputs.cache-hit != 'true'
+        run: |
+          mkdir -pv downloads
+          curl -L -o downloads/solr-${{ steps.solr-version.outputs.version }}.tgz \
+            https://archive.apache.org/dist/solr/solr/${{ steps.solr-version.outputs.version }}/solr-${{ steps.solr-version.outputs.version }}.tgz
+
+      - name: Save Solr download cache
+        if: steps.cache-solr.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
+          key: solr-${{ steps.solr-version.outputs.version }}
+
+      # Here a terminal session can be enabled for debugging.
+      # Disable this code unless you really need it temporarily.
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3
+
+      - name: Install Debian packages
+        run: |
+          sudo apt-get update
+          # apache2, chromium and most PHP packages are already installed.
+          # sudo apt-get -y install apache2
+          # sudo apt-get -y install php-mbstring php-pear php php-dev php-gd php-intl php-json php-ldap php-mysql php-xml php-soap php-curl
+          # Install missing packages.
+          sudo apt-get -y install mariadb-server
+          sudo apt-get -y install libapache2-mod-php memcached php-json php-memcached
+
+      - name: Configure Apache for PHP ${{ matrix.php-version }}
+        run: |
+          # Enable required Apache modules
+          sudo a2enmod rewrite proxy_fcgi setenvif
+
+      - name: Setup node
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Cache NPM dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package.json') }}
+          restore-keys: npm-
+
+      - name: Install node dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        # Use --ignore-scripts to prevent pre/post install scripts from running
+        # (a security precaution).
+        run: npm install --ignore-scripts
+
+      - name: Rebuild node-sass dependency
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        # The --ignore-scripts parameter to npm install prevents node-sass from
+        # fully building. We need to force it to build so the SCSS check in the
+        # qa-console task runs successfully.
+        run: npm rebuild node-sass
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      # The following code is disabled because `hashFiles('**/composer.lock')` fails.
+      #- name: Cache composer dependencies
+      #  uses: actions/cache@v5
+      #  with:
+      #    path: ${{ steps.composer-cache.outputs.dir }}
+      #    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+      #    restore-keys: ${{ runner.os }}-composer-
+
+      - name: Cache php-cs-fixer data
+        uses: actions/cache@v5
+        with:
+          path: .php_cs_cache
+          key: "php-${{ matrix.php-version }}-php-cs-fixer-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-php-cs-fixer-"
+
+      - name: Cache phpstan data
+        uses: actions/cache@v5
+        with:
+          path: .phpstan_cache
+          key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpstan-"
+
+      - name: Cache PHP_CodeSniffer data
+        uses: actions/cache@v5
+        with:
+          path: tests/phpcs.cache.json
+          key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpcs-"
+
+      - name: Cache rector data
+        uses: actions/cache@v5
+        with:
+          path: .rector
+          key: "php-${{ matrix.php-version }}-rector-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-rector-"
+
+      - name: Install composer dependencies
+        run: composer install
+
+      - name: Start database
+        run: |
+          # Create admin user for MariaDB (not needed for mysql).
+          sudo mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('password'); FLUSH PRIVILEGES;"
+          #sudo mariadb --execute="CREATE USER root@localhost IDENTIFIED BY 'password';"
+          #sudo mariadb --execute="GRANT ALL ON *.* TO root@localhost WITH GRANT OPTION;"
+          sudo systemctl start mariadb
+
+      - name: Start memcached
+        run: |
+          sudo systemctl start memcached
+          sudo phpenmod memcached
+
+      - name: Start Chrome
+        run: |
+          # Google Chrome ($CHROME_BIN) does not work, so use chromium.
+          nohup chromium \
+            --headless=new \
+            --no-sandbox \
+            --disable-client-side-phishing-detection \
+            --disable-component-update \
+            --disable-dev-shm-usage \
+            --disable-domain-reliability \
+            --disable-gpu \
+            --disable-software-rasterizer \
+            --disable-extensions \
+            --disable-background-networking \
+            --disable-sync \
+            --disable-translate \
+            --metrics-recording-only \
+            --disable-default-apps \
+            --mute-audio \
+            --no-first-run \
+            --no-pings \
+            --password-store=basic \
+            --remote-debugging-address=127.0.0.1 \
+            --remote-debugging-port=9222 \
+            --use-mock-keychain \
+            --window-size=1600,1200 \
+            --disable-extensions --user-data-dir=$PWD/chromium-test-user-dir &
+
+      - name: Run phing startup
+        run: |
+          vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test startup
+
+      - name: Prepare Apache2 configuration and restart the web server.
+        run: |
+          # $HOME must be readable for Apache2 which writes cache files.
+          chmod +rx /home/runner/
+          # Add configuration which is needed for some tests.
+          grep -q "AllowEncodedSlashes On" /etc/apache2/sites-available/000-default.conf ||
+          sudo sed -i '/<VirtualHost \*/a \\tAllowEncodedSlashes On' /etc/apache2/sites-available/000-default.conf
+          # Enable development mode in VuFind configuration and add it to Apache2.
+          sed -i 's/#SetEnv VUFIND_ENV development/SetEnv VUFIND_ENV development/' local/httpd-vufind.conf
+          sudo cp local/httpd-vufind.conf /etc/apache2/conf-available/
+          sudo a2enconf httpd-vufind
+          sudo systemctl restart apache2
+
+      - name: Run tests
+        run: |
+          # The following line would start selected tests.
+          # vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit -Dphpunit_extra_params=module/VuFind/tests/integration-tests/src/VuFindTest/Mink/AccountActionsTest.php
+          # The following line runs all available tests.
+          vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit
