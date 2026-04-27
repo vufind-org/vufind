@@ -186,6 +186,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
+     * Render the one-time password login form fields.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getOtpLoginFields($context = [])
+    {
+        return $this->renderTemplate('otploginfields.phtml', $context);
+    }
+
+    /**
      * Render the login template.
      *
      * @param array $context Context for rendering template
@@ -261,11 +273,33 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
      * Get the password recovery email template path.
      *
      * @return string
+     *
+     * @deprecated Use getPasswordRecoveryCodeEmailTemplate instead
      */
     public function getPasswordRecoveryEmailTemplate()
     {
         $className = $this->getManager()->getAuthClassForTemplateRendering();
         $template = 'Auth/%s/recovery-email.phtml';
+        $classTemplate = $this->getCachedClassTemplate($template, $className);
+        if (!$classTemplate) {
+            throw new RuntimeException(
+                'Cannot find '
+                . $this->getTemplateWithClass($template, '[brief class name]')
+                . " for class $className or any of its parent classes"
+            );
+        }
+        return $classTemplate;
+    }
+
+    /**
+     * Get the password recovery code email template path.
+     *
+     * @return string
+     */
+    public function getPasswordRecoveryCodeEmailTemplate()
+    {
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
+        $template = 'Auth/%s/recovery-email-code.phtml';
         $classTemplate = $this->getCachedClassTemplate($template, $className);
         if (!$classTemplate) {
             throw new RuntimeException(

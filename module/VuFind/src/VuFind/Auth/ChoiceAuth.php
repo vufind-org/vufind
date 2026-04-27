@@ -165,6 +165,40 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->proxyAuthMethod('setPreAuthenticationData', func_get_args());
+    }
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        try {
+            return $this->proxyAuthMethod('preAuthenticate', func_get_args()) ?: null;
+        } catch (\Exception $e) {
+            // If an exception was thrown during login, we need to clear the
+            // stored strategy to ensure that we display the full ChoiceAuth
+            // form rather than the form for only the method that the user
+            // attempted to use.
+            $this->strategy = false;
+            throw $e;
+        }
+    }
+
+    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.

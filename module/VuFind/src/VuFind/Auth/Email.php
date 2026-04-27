@@ -29,6 +29,7 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
@@ -57,58 +58,72 @@ class Email extends AbstractBase
     }
 
     /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        if ($this->preAuthenticationData) {
+            return null;
+        }
+
+        $email = trim($request->getPost('username', ''));
+        if (!$email) {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        $data = [
+            'email' => $email,
+            'messageHtml' => 'email_login_code_sent_html',
+            'authId' => null,
+        ];
+
+        // Fetch user by email address and send a one-time password by email if found:
+        if ($user = $this->getUserService()->getUserByEmail($email)) {
+            $data['authId'] = $this->emailAuthenticator->sendAuthenticationCode(
+                $user->getEmail(),
+                ['id' => $user->getId()]
+            );
+        }
+        return $data;
+    }
+
+    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
-        // This is a dual-mode method:
-        // First, try to find a user account with the provided email address and send
-        // a login link.
-        // Second, log the user in with the hash from the login link.
+        if (!$this->preAuthenticationData) {
+            throw new AuthException('authentication_error_technical');
+        }
 
-        $email = trim($request->getPost()->get('username', ''));
-        $hash = $request->getQuery('hash');
-        if (!$email && !$hash) {
+        $password = trim($request->getPost()->get('password', ''));
+        if (!$password) {
             throw new AuthException('authentication_error_blank');
         }
 
-        if (!$hash) {
-            // Validate the credentials:
-            $user = $this->getUserService()->getUserByEmail($email);
-            if ($user) {
-                $loginData = [
-                    'vufind_id' => $user->getId(),
-                ];
-                $this->emailAuthenticator->sendAuthenticationLink(
-                    $user->getEmail(),
-                    $loginData,
-                    ['auth_method' => 'Email']
-                );
-            }
-            // Don't reveal the result
-            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
+        if (
+            !($authId = $this->preAuthenticationData['authId'] ?? null)
+            || !($authData = $this->emailAuthenticator->verifyAuthenticationCode($authId, $password))
+        ) {
+            throw new AuthException('authentication_error_invalid');
         }
 
-        $loginData = $this->emailAuthenticator->authenticate($hash);
-        if (isset($loginData['vufind_id'])) {
-            return $this->getUserService()->getUserById($loginData['vufind_id']);
+        if (null !== ($userId = $authData['id'] ?? null)) {
+            return $this->getUserService()->getUserById($userId);
         } else {
-            // Check if we have more granular data available:
-            if (isset($loginData['userData'])) {
-                $userData = $loginData['userData'];
-                if ($loginData['rememberMe'] ?? false) {
-                    // TODO: This is not a very nice way of carrying this information
-                    // over to the authentication manager:
-                    $request->getPost()->set('remember_me', '1');
-                }
-            } else {
-                $userData = $loginData;
+            // Check if we have more granular data available from ILSAuthenticator::sendEmailLoginLink:
+            if (!($userData = $authData['userData'] ?? null)) {
+                throw new AuthException('authentication_error_technical');
             }
             return $this->processUser($userData);
         }

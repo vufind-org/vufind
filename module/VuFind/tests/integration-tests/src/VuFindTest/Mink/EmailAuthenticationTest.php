@@ -84,22 +84,15 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@ignore.com');
         $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
         $this->assertSame(
-            'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
-            . " If you don't receive the link shortly, please check also your spam filter.",
-            $this->findCssAndGetText($page, '.alert-success')
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+            . " If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract the link from the provided message:
-        $email = $this->getLoggedEmail();
-        $headers = $email->getHeaders();
-        $body = $email->getBody()->getBody();
-        $this->assertSame('From: noreply@vufind.org', $headers->get('from')->toString());
-        $this->assertSame('To: username1@ignore.com', $headers->get('to')->toString());
-        preg_match('/Link to login: <(http.*)>/', $body, $matches);
-        $loginLink = $matches[1];
-
-        // Follow the verification link:
-        $session->visit($loginLink);
+        // Enter the one-time code:
+        $code = $this->extractLoginCodeFromEmail('username1@ignore.com');
+        $this->findCssAndSetValue($page, '#login_Email_password', $code);
+        $this->clickCss($page, '.form-login .btn-primary');
 
         // Log out (we can't log out unless we successfully logged in):
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -128,9 +121,9 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@foo.bar');
         $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
         $this->assertSame(
-            'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
-            . " If you don't receive the link shortly, please check also your spam filter.",
-            $this->findCssAndGetText($page, '.alert-success')
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+            . " If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-info')
         );
 
         $this->expectExceptionMessage('No serialized email message data found');
@@ -170,35 +163,39 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        $this->resetEmailLog();
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
 
         // Request login three times to ensure that repeated requests work:
         for ($i = 1; $i <= 3; $i++) {
+            $this->resetEmailLog();
             $this->clickCss($page, '#loginOptions a');
             $this->findCssAndSetValue($page, '.modal-body [name="username"]', 'catuser@vufind.org');
             $this->clickCss($page, '.modal-body .btn.btn-primary');
             $this->assertSame(
-                'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
-                . " If you don't receive the link shortly, please check also your spam filter.",
-                $this->findCssAndGetText($page, '.alert-success')
+                'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+                . " If you don't receive the code shortly, please check also your spam filter.",
+                $this->findCssAndGetText($page, '.alert-info')
             );
-            $this->closeLightbox($page);
+            if ($i < 3) {
+                $this->clickCss($page, '.modal-body .cancel-link');
+                $this->waitForPageLoad($page);
+            }
         }
 
-        // Extract the link from the first provided message:
-        $email = $this->getLoggedEmail();
-        $headers = $email->getHeaders();
-        $body = $email->getBody()->getBody();
-        $this->assertSame('From: noreply@vufind.org', $headers->get('from')->toString());
-        $this->assertSame('To: catuser@vufind.org', $headers->get('to')->toString());
-        preg_match('/Link to login: <(http.*)>/', $body, $matches);
-        $loginLink = $matches[1];
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#login_ILS_password', '123');
+        $this->clickCss($page, '.form-login .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
+        );
 
-        // Follow the verification link:
-        $session->visit($loginLink);
+        // Enter the one-time code:
+        $code = $this->extractLoginCodeFromEmail('catuser@vufind.org');
+        $this->findCssAndSetValue($page, '#login_ILS_password', $code);
+        $this->clickCss($page, '.form-login .btn-primary');
 
         // Log out (we can't log out unless we successfully logged in):
         $this->clickCss($page, '.logoutOptions a.logout');
