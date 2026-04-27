@@ -751,7 +751,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         // Add rating
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
-        $this->clickCss($page, '.modal form input.btn.btn-primary[type="submit"]', null, 10);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -763,6 +763,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -783,6 +784,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, $ratingLink);
             $this->waitForPageLoad($page);
             $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+            $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
             $this->waitForPageLoad($page);
         } else {
             // Check that remove button is not present
@@ -802,6 +804,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Add rating
         $this->clickCss($page, $ratingLink);
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -886,6 +889,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'div.rating-average a');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
 
