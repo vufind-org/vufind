@@ -203,6 +203,7 @@ var VuFind = (function VuFindModule() {
       function handleChange(event) {
         let elem = event.target;
         if (elem.hasAttribute('data-submit-on-change')) {
+          console.warn('Deprecation: "data-submit-on-change" will be removed in a future release.');
           elem.form.requestSubmit();
         }
       }
