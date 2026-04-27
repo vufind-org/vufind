@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'ini' => Ini::class,
+        'yaml' => Yaml::class,
     ];
 
     /**
@@ -60,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Dir::class => DirFactory::class,
         GenericFile::class => DefaultHandlerFactory::class,
         Ini::class => DefaultHandlerFactory::class,
+        Yaml::class => DefaultHandlerFactory::class,
     ];
 
     /**

@@ -81,6 +81,9 @@ class Ini extends AbstractBase
 
             if ($parentPath !== null) {
                 $parentConfigLocation = $this->getParentLocationOnPath($configLocation, $parentPath);
+                if ($parentConfigLocation === null) {
+                    throw new FileAccessException("Error: $parentPath does not exist.");
+                }
                 $parentConfigLocation->setSubsection($configLocation->getSubsection());
                 $config['parentLocation'] = $parentConfigLocation;
             } elseif ($parentConfig['use_parent_dir'] ?? false) {
