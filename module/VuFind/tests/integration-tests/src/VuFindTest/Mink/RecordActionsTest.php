@@ -751,6 +751,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         // Add rating
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal form input.btn.btn-primary[type="submit"]', null, 10);
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
