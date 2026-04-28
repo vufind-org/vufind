@@ -55,23 +55,23 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Best bets.
      *
-     * @var array|bool
+     * @var array
      */
-    protected array|bool $bestBets = false;
+    protected array $bestBets = [];
 
     /**
      * Database recommendations.
      *
-     * @var array|bool
+     * @var array
      */
-    protected array|bool $databaseRecommendations = false;
+    protected array $databaseRecommendations = [];
 
     /**
      * Topic recommendations.
      *
-     * @var array|bool
+     * @var array
      */
-    protected array|bool $topicRecommendations = false;
+    protected array $topicRecommendations = [];
 
     /**
      * Search backend identifier.
@@ -321,9 +321,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get best bets from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
-    public function getBestBets(): array|bool
+    public function getBestBets(): array
     {
         return $this->bestBets;
     }
@@ -331,9 +331,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get database recommendations from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
-    public function getDatabaseRecommendations(): array|bool
+    public function getDatabaseRecommendations(): array
     {
         return $this->databaseRecommendations;
     }
@@ -341,9 +341,9 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get topic recommendations from Summon, if any.
      *
-     * @return array|bool false if no recommendations, detailed array otherwise.
+     * @return array
      */
-    public function getTopicRecommendations(): array|bool
+    public function getTopicRecommendations(): array
     {
         return $this->topicRecommendations;
     }
