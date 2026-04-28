@@ -169,11 +169,9 @@ class NoticeService extends AbstractDbService implements
         $dql = 'SELECT COUNT(b) '
             . 'FROM ' . NoticeEntityInterface::class . ' b';
         $query = $this->entityManager->createQuery($dql);
-        try {
-            $displayOrder = intval($query->getSingleScalarResult());
-        } catch (\Exception $e) {
-            $displayOrder = 0;
-        }
+
+        $displayOrder = intval($query->getSingleScalarResult());
+
         $notice->setDisplayOrder($displayOrder);
 
         $this->setNoticeData($notice, $data);
