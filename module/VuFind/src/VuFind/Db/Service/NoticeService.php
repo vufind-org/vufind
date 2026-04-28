@@ -31,11 +31,13 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use Exception;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Notice;
 use VuFind\Db\Entity\NoticeEntityInterface;
 use VuFind\Db\Entity\NoticeTranslationEntityInterface;
 use VuFind\Exception\NotFound;
 
+use VuFind\Log\LoggerAwareTrait;
 use function intval;
 
 /**
@@ -48,8 +50,10 @@ use function intval;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class NoticeService extends AbstractDbService implements
-    NoticeServiceInterface
+    NoticeServiceInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Create a notice entity object.
      *
@@ -86,6 +90,7 @@ class NoticeService extends AbstractDbService implements
         try {
             return $query->getResult();
         } catch (Exception $e) {
+            $this->logError('Could not fetch notices from the database: ' . $e->getMessage());
             return [];
         }
     }
