@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Autowiring Factory
+ * VuFind Autowiring Factory.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use VuFind\Config\YamlReader;
 use function is_array;
 
 /**
- * VuFind Autowiring Factory
+ * VuFind Autowiring Factory.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -56,14 +56,14 @@ class AutowiringFactory implements FactoryInterface
     use ExplodeSettingTrait;
 
     /**
-     * Configuration manager
+     * Configuration manager.
      *
      * @var ?ConfigManagerInterface
      */
     protected ?ConfigManagerInterface $configManager = null;
 
     /**
-     * YAML reader
+     * YAML reader.
      *
      * @var ?YamlReader
      */

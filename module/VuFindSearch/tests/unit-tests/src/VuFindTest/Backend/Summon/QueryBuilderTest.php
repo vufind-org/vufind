@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for Summon query builder
+ * Unit tests for Summon query builder.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Summon\QueryBuilder;
 
 /**
- * Unit tests for Summon query builder
+ * Unit tests for Summon query builder.
  *
  * @category VuFind
  * @package  Search

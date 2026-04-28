@@ -51,7 +51,7 @@ use VuFind\ServiceManager\Factory\Autowire;
 class AccessTokenRepository extends AbstractTokenRepository implements AccessTokenRepositoryInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
@@ -75,7 +75,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
     }
 
     /**
-     * Create a new access token
+     * Create a new access token.
      *
      * @param ClientEntityInterface  $clientEntity   Client entity
      * @param ScopeEntityInterface[] $scopes         Scopes

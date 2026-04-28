@@ -55,14 +55,14 @@ class DefaultParametersListener
     protected $backend;
 
     /**
-     * Default parameters
+     * Default parameters.
      *
      * @var array
      */
     protected $defaultParams;
 
     /**
-     * Mapping from search methods to contexts
+     * Mapping from search methods to contexts.
      *
      * @var array
      */
@@ -104,7 +104,7 @@ class DefaultParametersListener
     }
 
     /**
-     * Add default parameters
+     * Add default parameters.
      *
      * @param EventInterface $event Event
      *

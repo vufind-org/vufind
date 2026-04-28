@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Short link controller
+ * Short link controller.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * Short link controller
+ * Short link controller.
  *
  * @category VuFind
  * @package  Controller
@@ -55,14 +55,14 @@ class ShortlinkController extends AbstractBase
     protected $redirectDelayHtml = 3;
 
     /**
-     * Which redirect mechanism to use (html, http, threshold:<urlLength>)
+     * Which redirect mechanism to use (html, http, threshold:<urlLength>).
      *
      * @var string
      */
     protected $redirectMethod = 'threshold:1000';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param Config                  $config VuFind configuration

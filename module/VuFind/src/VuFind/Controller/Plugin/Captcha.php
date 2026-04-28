@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Captcha handler
+ * VuFind Action Helper - Captcha handler.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function count;
 use function in_array;
 
 /**
- * Action helper to manage Captcha fields
+ * Action helper to manage Captcha fields.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -51,35 +51,35 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Captcha services
+     * Captcha services.
      *
      * @var array
      */
     protected $captchas = [];
 
     /**
-     * String array of forms where Captcha is active
+     * String array of forms where Captcha is active.
      *
      * @var bool|string[]
      */
     protected $domains = [];
 
     /**
-     * Captcha activated in config
+     * Captcha activated in config.
      *
      * @var bool
      */
     protected $active = false;
 
     /**
-     * Flash message or throw Exception
+     * Flash message or throw Exception.
      *
      * @var string
      */
     protected $errorMode = 'flash';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config   Config file
      * @param array                 $captchas CAPTCHA objects
@@ -101,7 +101,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     }
 
     /**
-     * Flash messages ('flash') or throw exceptions ('throw')
+     * Flash messages ('flash') or throw exceptions ('throw').
      *
      * @param string $mode 'flash' or 'throw'
      *
@@ -117,7 +117,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha field from controller params and check them for accuracy.
      *
      * @return bool
      */
@@ -160,7 +160,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     }
 
     /**
-     * Return whether a specific form is set for Captcha in the config
+     * Return whether a specific form is set for Captcha in the config.
      *
      * @param bool|string $domain The specific config term are we checking; ie. "sms"
      *

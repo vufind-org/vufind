@@ -49,7 +49,7 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Base fixture directory
+     * Base fixture directory.
      *
      * @var string
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract cover background layer
+ * Abstract cover background layer.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function ord;
 use function strlen;
 
 /**
- * Abstract cover background layer
+ * Abstract cover background layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -44,7 +44,7 @@ use function strlen;
 abstract class AbstractBackgroundLayer extends AbstractLayer
 {
     /**
-     * Generates a dynamic cover image from elements of the book
+     * Generates a dynamic cover image from elements of the book.
      *
      * @param string $title      Title of the book
      * @param string $callnumber Callnumber of the book

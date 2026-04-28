@@ -48,7 +48,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test next_prev_nav bug
      * Expect next_prev to behave like it's disabled if the last search didn't return
-     * any results
+     * any results.
      *
      * @return void
      */
@@ -73,7 +73,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test disabled behavior
+     * Test disabled behavior.
      *
      * @return void
      */
@@ -101,7 +101,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling on single-record set
+     * Test scrolling on single-record set.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record in the middle of the page
+     * Test scrolling for a record in the middle of the page.
      *
      * @return void
      */
@@ -251,7 +251,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record at the start of the first page
+     * Test scrolling for a record at the start of the first page.
      *
      * @return void
      */
@@ -272,7 +272,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record at the end of the last page (single-page example)
+     * Test scrolling for a record at the end of the last page (single-page example).
      *
      * @return void
      */
@@ -293,7 +293,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test scrolling for a record at the end of the last page (multi-page example)
+     * Test scrolling for a record at the end of the last page (multi-page example).
      *
      * @return void
      */
@@ -389,7 +389,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock search results
+     * Get mock search results.
      *
      * @param int    $page      Current page number
      * @param int    $limit     Page size
@@ -428,7 +428,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock result scroller
+     * Get mock result scroller.
      *
      * @param \VuFind\Search\Base\Results $results restoreSearch results (null to ignore)
      *
@@ -448,14 +448,14 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         // Create an anonymous class to stub out some behavior:
         $resultScroller = new class (...$params) extends ResultScroller {
             /**
-             * Search results to return
+             * Search results to return.
              *
              * @var \VuFind\Search\Base\Results
              */
             protected $testResults;
 
             /**
-             * Set results to remember for restoreSearch
+             * Set results to remember for restoreSearch.
              *
              * @param \VuFind\Search\Base\Results $testResults Results
              *
@@ -467,7 +467,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Stubbed
+             * Stubbed.
              *
              * @param int $searchId Search ID
              *
@@ -480,7 +480,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Stubbed
+             * Stubbed.
              *
              * @param \VuFind\Search\Base\Results $search Search object to remember.
              *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Renderer
+ * Hierarchy Tree Renderer.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Hierarchy\TreeRenderer;
 use function is_object;
 
 /**
- * Hierarchy Tree Renderer
+ * Hierarchy Tree Renderer.
  *
  * This is a base helper class for producing hierarchy Trees.
  *
@@ -45,21 +45,21 @@ use function is_object;
 abstract class AbstractBase
 {
     /**
-     * Hierarchical record to work on
+     * Hierarchical record to work on.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */
     protected $recordDriver = null;
 
     /**
-     * Source of hierarchy data
+     * Source of hierarchy data.
      *
      * @var \VuFind\Hierarchy\TreeDataSource\AbstractBase
      */
     protected $dataSource = null;
 
     /**
-     * Set the record driver to operate on
+     * Set the record driver to operate on.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
@@ -72,7 +72,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Get the current record driver
+     * Get the current record driver.
      *
      * @return \VuFind\RecordDriver\DefaultRecord
      * @throws \Exception
@@ -86,7 +86,7 @@ abstract class AbstractBase
     }
 
     /**
-     * Get the current hierarchy data source
+     * Get the current hierarchy data source.
      *
      * @return \VuFind\Hierarchy\TreeDataSource\AbstractBase
      * @throws \Exception
@@ -121,7 +121,7 @@ abstract class AbstractBase
     abstract public function getTreeList($hierarchyID = false);
 
     /**
-     * Render the Hierarchy Tree
+     * Render the Hierarchy Tree.
      *
      * @param string  $context     The context from which the call has been made
      * @param string  $mode        The mode in which the tree should be generated
@@ -138,7 +138,7 @@ abstract class AbstractBase
     );
 
     /**
-     * Get Hierarchy Name
+     * Get Hierarchy Name.
      *
      * @param string $hierarchyID        The hierarchy ID to find the title for
      * @param array  $inHierarchies      An array of hierarchy IDs

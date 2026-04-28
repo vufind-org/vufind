@@ -52,7 +52,7 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
     protected $useSyndeticsCoverImageFallback;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?\VuFind\Config\Config $config Syndetics configuration
      */

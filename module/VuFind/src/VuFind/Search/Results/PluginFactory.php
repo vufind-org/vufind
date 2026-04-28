@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Results;
 use Psr\Container\ContainerInterface;
 
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
  * @category VuFind
  * @package  Search
@@ -43,7 +43,7 @@ use Psr\Container\ContainerInterface;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

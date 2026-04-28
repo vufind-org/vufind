@@ -41,7 +41,7 @@ namespace VuFind\I18n\Locale;
 interface LocaleSettingsAwareInterface
 {
     /**
-     * Set locale settings
+     * Set locale settings.
      *
      * @param LocaleSettings $localeSettings Locale Settings
      *

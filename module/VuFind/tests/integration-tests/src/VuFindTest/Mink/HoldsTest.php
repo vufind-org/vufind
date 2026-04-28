@@ -113,7 +113,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Support method to place a hold and click through to "Your Holds and Recalls."
+     * Support method to place a hold and click through to "Your Holds and Recalls.".
      *
      * @param Element $page           Page element.
      * @param array   $extras         Associative array of selector => value for additional
@@ -155,7 +155,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Support method to place a hold and click through to "Your Holds and Recalls."
+     * Support method to place a hold and click through to "Your Holds and Recalls.".
      *
      * @param Element $page           Page element.
      * @param array   $extras         Associative array of selector => value for additional
@@ -185,7 +185,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test placing a hold
+     * Test placing a hold.
      *
      * @return void
      */
@@ -260,7 +260,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test placing a hold using SSO
+     * Test placing a hold using SSO.
      *
      * @return void
      */
@@ -308,7 +308,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test placing a hold using SSO and an existing catalog account
+     * Test placing a hold using SSO and an existing catalog account.
      *
      * @return void
      */
@@ -742,7 +742,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test create account path when in holds_mode = "all"
+     * Test create account path when in holds_mode = "all".
      *
      * IMPORTANT: this test uses an ID with a slash in it; if it fails, ensure
      * that Apache is configured with "AllowEncodedSlashes on" inside the
@@ -800,7 +800,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test placing a hold with no valid pick up locations
+     * Test placing a hold with no valid pick up locations.
      *
      * @return void
      */
@@ -845,7 +845,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test placing a hold for a proxy user
+     * Test placing a hold for a proxy user.
      *
      * @return void
      */

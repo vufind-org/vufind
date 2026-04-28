@@ -279,7 +279,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testTagSearchSort
+     * Data provider for testTagSearchSort.
      *
      * @return \Iterator
      */
@@ -690,7 +690,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRating
+     * Data provider for testRating.
      *
      * @return \Iterator
      */
@@ -751,6 +751,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         // Add rating
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -762,6 +763,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, $ratingLink);
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -782,6 +784,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, $ratingLink);
             $this->waitForPageLoad($page);
             $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+            $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
             $this->waitForPageLoad($page);
         } else {
             // Check that remove button is not present
@@ -801,6 +804,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Add rating
         $this->clickCss($page, $ratingLink);
         $this->clickCss($page, '.modal form div.star-rating label', null, 10);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
         // Check result
@@ -857,7 +861,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test adding comments, rating and tag to a record and then
-     * delete them from user account menu
+     * delete them from user account menu.
      *
      * @return void
      */
@@ -885,6 +889,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'div.rating-average a');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->clickCss($page, '.modal form input.btn-primary[type="submit"]');
         $this->waitForPageLoad($page);
         $this->assertSame('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
 
@@ -934,7 +939,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test export button found in toolbar
+     * Test export button found in toolbar.
      *
      * @return void
      */

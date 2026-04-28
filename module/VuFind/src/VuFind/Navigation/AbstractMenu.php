@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract menu base class
+ * Abstract menu base class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Section\Plugin\AbstractBase;
 use VuFind\Section\SectionServiceInterface;
 
 /**
- * Abstract menu base class
+ * Abstract menu base class.
  *
  * @category VuFind
  * @package  Navigation
@@ -290,7 +290,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Visualization Data" AJAX handler
+ * "Get Visualization Data" AJAX handler.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Visualization Data" AJAX handler
+ * "Get Visualization Data" AJAX handler.
  *
  * AJAX for timeline feature (PubDateVisAjax)
  *
@@ -56,14 +56,14 @@ class GetVisData extends AbstractBase
     use DateFacetTrait;
 
     /**
-     * Solr search results object
+     * Solr search results object.
      *
      * @var Results
      */
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings $ss      Session settings
      * @param Results         $results Solr search results object

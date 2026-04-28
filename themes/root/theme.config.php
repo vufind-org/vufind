@@ -25,7 +25,6 @@ return [
             'VuFind\View\Helper\Root\Component' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'VuFind\View\Helper\Root\Content' => 'VuFind\View\Helper\Root\ContentFactory',
-            'VuFind\View\Helper\Root\CookieConsent' => 'VuFind\View\Helper\Root\CookieConsentFactory',
             'VuFind\View\Helper\Root\CookieManager' => 'VuFind\View\Helper\Root\CookieManagerFactory',
             'VuFind\View\Helper\Root\ContentBlock' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Context' => 'Laminas\ServiceManager\Factory\InvokableFactory',

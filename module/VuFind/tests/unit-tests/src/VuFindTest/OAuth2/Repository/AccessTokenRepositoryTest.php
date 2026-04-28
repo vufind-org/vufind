@@ -43,7 +43,7 @@ use VuFind\OAuth2\Entity\ScopeEntity;
 class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * Test access token repository
+     * Test access token repository.
      *
      * @return void
      */
@@ -90,7 +90,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test persisting wrong type of token
+     * Test persisting wrong type of token.
      *
      * @return void
      */

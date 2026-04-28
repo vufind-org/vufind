@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Amicus ILS Driver
+ * Amicus ILS Driver.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function count;
 use function in_array;
 
 /**
- * Amicus ILS Driver
+ * Amicus ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -52,7 +52,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
@@ -185,7 +185,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     /**
      * Function that returns the number or on loan items for a given copy number.
      * If there is no on loan items it returns 0.
-     * Used in getHolding and getStatus functions
+     * Used in getHolding and getStatus functions.
      *
      * @param int $copyId The copy id number to check.
      *
@@ -219,7 +219,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     /**
      * Function that returns the due date or a special message.
      * If the difference is greater than 50 days it will return one special message
-     * If not it returns the due date
+     * If not it returns the due date.
      *
      * @param int $copyId The copy id number to check.
      *
@@ -274,7 +274,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -410,7 +410,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -431,7 +431,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -514,7 +514,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -545,7 +545,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -579,7 +579,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -613,7 +613,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -650,7 +650,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -689,7 +689,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -743,7 +743,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -762,7 +762,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -835,7 +835,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
@@ -865,7 +865,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *

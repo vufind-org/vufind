@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CollectionSideFacets recommendation module Test Class
+ * CollectionSideFacets recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\CollectionSideFacets;
 
 /**
- * CollectionSideFacets recommendation module Test Class
+ * CollectionSideFacets recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
-     * Test "getResults"
+     * Test "getResults".
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param ?\VuFind\Search\Solr\Results $results  results object
      * @param string                       $settings settings

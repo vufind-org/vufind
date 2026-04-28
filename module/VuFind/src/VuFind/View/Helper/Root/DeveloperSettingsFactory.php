@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Developer settings helper factory
+ * Developer settings helper factory.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Developer settings helper factory
+ * Developer settings helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
 class DeveloperSettingsFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

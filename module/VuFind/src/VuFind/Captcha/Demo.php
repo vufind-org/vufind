@@ -43,7 +43,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 class Demo extends AbstractBase
 {
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha field from controller params and check them for accuracy.
      *
      * @param Params $params Controller params
      *

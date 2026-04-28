@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ProQuest Federated Search Gateway Search Results
+ * ProQuest Federated Search Gateway Search Results.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\ProQuestFSG;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * ProQuest Federated Search Gateway Search Parameters
+ * ProQuest Federated Search Gateway Search Parameters.
  *
  * @category VuFind
  * @package  Search_ProQuestFSG
@@ -106,7 +106,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
 use VuFind\RecordTab\TabManager;
 
 /**
- * RecordTab Manager Test Class
+ * RecordTab Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Default configuration for mock plugin manager
+     * Default configuration for mock plugin manager.
      *
      * @var array
      */

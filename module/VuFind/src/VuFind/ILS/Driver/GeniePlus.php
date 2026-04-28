@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeniePlus API driver
+ * GeniePlus API driver.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function count;
 use function in_array;
 
 /**
- * GeniePlus API driver
+ * GeniePlus API driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -46,14 +46,14 @@ use function in_array;
 class GeniePlus extends AbstractAPI
 {
     /**
-     * Status messages indicating available items
+     * Status messages indicating available items.
      *
      * @var string[]
      */
     protected $availableStatuses;
 
     /**
-     * Access token
+     * Access token.
      *
      * @var string
      */
@@ -67,14 +67,14 @@ class GeniePlus extends AbstractAPI
     protected $sessionFactory;
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable $sessionFactory Factory function returning SessionContainer
      * object
@@ -347,7 +347,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -375,7 +375,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -390,7 +390,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -411,7 +411,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -451,7 +451,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -512,7 +512,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -603,7 +603,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.

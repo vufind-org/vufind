@@ -61,7 +61,7 @@ class Content extends AbstractHelper
     protected $contextHelper;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TemplateBased $block         TemplateBased ContentBlock
      * @param Context       $contextHelper Context view helper

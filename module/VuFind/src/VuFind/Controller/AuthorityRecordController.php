@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authority Record Controller
+ * Authority Record Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use function is_callable;
 
 /**
- * Authority Record Controller
+ * Authority Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -45,7 +45,7 @@ use function is_callable;
 class AuthorityRecordController extends AbstractRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary plugin factory
+ * Metadata vocabulary plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary plugin factory
+ * Metadata vocabulary plugin factory.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -41,7 +41,7 @@ namespace VuFind\MetadataVocabulary;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

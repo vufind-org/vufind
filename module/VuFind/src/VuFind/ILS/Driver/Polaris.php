@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Polaris ILS Driver
+ * Polaris ILS Driver.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function intval;
 use function strlen;
 
 /**
- * VuFind Connector for Polaris
+ * VuFind Connector for Polaris.
  *
  * Based on Polaris 1.4 API
  *
@@ -51,42 +51,42 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Web services host
+     * Web services host.
      *
      * @var string
      */
     protected $ws_host;
 
     /**
-     * Web services application path
+     * Web services application path.
      *
      * @var string
      */
     protected $ws_app;
 
     /**
-     * Web services ID
+     * Web services ID.
      *
      * @var string
      */
     protected $ws_api_id;
 
     /**
-     * Web services key
+     * Web services key.
      *
      * @var string
      */
     protected $ws_api_key;
 
     /**
-     * Default pick up location
+     * Default pick up location.
      *
      * @var string
      */
     protected $defaultPickUpLocation;
 
     /**
-     * Web services requesting organization ID
+     * Web services requesting organization ID.
      *
      * @var string
      */
@@ -118,7 +118,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Make Request
+     * Make Request.
      *
      * Makes a request to the Polaris Restful API
      *
@@ -187,7 +187,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Return human-readable date from text like Date(1360051200000-0800)
+     * Return human-readable date from text like Date(1360051200000-0800).
      *
      * @param string $jsontime Input
      *
@@ -206,7 +206,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Encode from human-readable date to text like Date(1360051200000-0800)
+     * Encode from human-readable date to text like Date(1360051200000-0800).
      *
      * @param string $date Input
      *
@@ -225,7 +225,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -266,7 +266,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -319,7 +319,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -357,7 +357,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -378,7 +378,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details.
@@ -452,7 +452,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
@@ -499,7 +499,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in VoyagerRestful.ini
      *
@@ -520,7 +520,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -535,7 +535,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -560,7 +560,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -578,7 +578,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -604,7 +604,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -641,7 +641,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -667,7 +667,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -707,7 +707,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -769,7 +769,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -787,7 +787,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -832,7 +832,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * @param array $holdDetails A single hold array from getMyHolds
      * @param array $patron      Patron information from patronLogin
@@ -848,7 +848,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Checkout History
+     * Get Checkout History.
      *
      * Returns the patrons checkout / reading history
      *
@@ -911,7 +911,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Hold Count
+     * Get Hold Count.
      *
      * Returns the count of a hold based on API call to bibid
      *
@@ -938,7 +938,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Suspend Holds
+     * Suspend Holds.
      *
      * Attempts to Suspend a hold or recall on a particular item. The
      * data in $suspendDetails['details'] is determined by getSuspendHoldDetails().
@@ -991,7 +991,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Suspend Hold Details
+     * Get Suspend Hold Details.
      *
      * @param array $holdDetails An array of item data
      *
@@ -1004,7 +1004,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Reactivate Holds
+     * Reactivate Holds.
      *
      * Attempts to Reactivate a hold or recall on a particular item. The
      * data in $reactivateDetails['details'] is determined by

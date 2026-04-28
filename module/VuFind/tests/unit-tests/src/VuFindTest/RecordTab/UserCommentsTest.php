@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserComments Test Class
+ * UserComments Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\UserComments;
 
 /**
- * UserComments Test Class
+ * UserComments Test Class.
  *
  * @category VuFind
  * @package  Tests

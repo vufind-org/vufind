@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Resolver driver plugin factory
+ * Resolver driver plugin factory.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Resolver\Driver;
 
 /**
- * Resolver driver plugin factory
+ * Resolver driver plugin factory.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -41,7 +41,7 @@ namespace VuFind\Resolver\Driver;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {

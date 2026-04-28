@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Reserves aspect of the Search Multi-class (Results)
+ * Solr Reserves aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Search\SolrReserves;
 
 /**
- * Solr Reserves Search Parameters
+ * Solr Reserves Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrReserves

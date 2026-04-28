@@ -46,14 +46,14 @@ use function in_array;
 class Username implements PermissionProviderInterface
 {
     /**
-     * Authorization object
+     * Authorization object.
      *
      * @var AuthorizationService
      */
     protected $auth;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AuthorizationService $authorization Authorization service
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Service for managing API keys
+ * Service for managing API keys.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function count;
 use function strlen;
 
 /**
- * Service for managing API keys
+ * Service for managing API keys.
  *
  * @category VuFind
  * @package  Developer_Settings
@@ -76,7 +76,7 @@ class DeveloperSettingsService
     }
 
     /**
-     * Generate a new api key token
+     * Generate a new api key token.
      *
      * @param UserEntityInterface $user User to create salt for
      *
@@ -179,7 +179,7 @@ class DeveloperSettingsService
     }
 
     /**
-     * Delete an API key for a user
+     * Delete an API key for a user.
      *
      * @param UserEntityInterface $user User
      * @param int                 $id   API key id

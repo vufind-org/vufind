@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content loader view helper
+ * Content loader view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Content loader view helper
+ * Content loader view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,14 +41,14 @@ namespace VuFind\View\Helper\Root;
 class ContentLoader extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Content loader
+     * Content loader.
      *
      * @var \VuFind\Content\Loader
      */
     protected $loader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Content\Loader $loader Content loader
      */
