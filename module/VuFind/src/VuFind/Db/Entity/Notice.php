@@ -129,6 +129,7 @@ class Notice implements NoticeEntityInterface
      */
     public function __construct()
     {
+        $this->created = $this->getUnassignedDefaultDateTime();
         $this->translations = new ArrayCollection();
     }
 
