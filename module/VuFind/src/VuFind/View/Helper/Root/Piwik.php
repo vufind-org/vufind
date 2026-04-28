@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Router\Http\RouteMatch;
+use Laminas\Router\Http\TreeRouteStack;
 use Laminas\View\Helper\EscapeHtmlAttr;
 use Laminas\View\Helper\EscapeJs;
 use Laminas\View\Helper\ViewModel;
@@ -114,7 +115,7 @@ class Piwik
         protected string|bool $url,
         int|array $options,
         protected bool $customVars,
-        protected RouteMatch $router,
+        protected TreeRouteStack $router,
         protected Request $request,
         protected RendererInterface $viewRenderer,
         protected AssetManager $assetManager,
