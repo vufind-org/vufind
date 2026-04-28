@@ -30,7 +30,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\PhpEnvironment\Request;
-use Laminas\Router\Http\RouteMatch;
 use Laminas\Router\Http\TreeRouteStack;
 use Laminas\View\Helper\EscapeHtmlAttr;
 use Laminas\View\Helper\EscapeJs;
@@ -103,7 +102,7 @@ class Piwik
      * @param int|array         $options        Options array (or, if a single value, the Piwik site ID
      * -- for legacy backward compatibility)
      * @param bool              $customVars     Whether to track additional information in custom variables
-     * @param RouteMatch        $router         Request
+     * @param TreeRouteStack    $router         Request
      * @param Request           $request        Request
      * @param RendererInterface $viewRenderer   View renderer
      * @param AssetManager      $assetManager   AssetManager view helper
