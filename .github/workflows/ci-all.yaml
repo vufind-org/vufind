@@ -51,37 +51,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Extract Solr version from build.xml
-        id: solr-version
-        run: |
-          SOLR_VERSION=$(grep -oP 'property name="solr_version" value="\K[^"]+' build.xml)
-          echo "version=$SOLR_VERSION" >> $GITHUB_OUTPUT
-          pwd
-          ls -la
-          export
-
-      - name: Restore Solr download cache
-        id: cache-solr
-        uses: actions/cache/restore@v5
-        with:
-          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
-          key: solr-${{ steps.solr-version.outputs.version }}
-          restore-keys: solr-
-
-      - name: Download Solr (unless in cache)
-        if: steps.cache-solr.outputs.cache-hit != 'true'
-        run: |
-          mkdir -pv downloads
-          curl -L -o downloads/solr-${{ steps.solr-version.outputs.version }}.tgz \
-            https://archive.apache.org/dist/solr/solr/${{ steps.solr-version.outputs.version }}/solr-${{ steps.solr-version.outputs.version }}.tgz
-
-      - name: Save Solr download cache
-        if: steps.cache-solr.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
-        with:
-          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
-          key: solr-${{ steps.solr-version.outputs.version }}
-
       # Here a terminal session can be enabled for debugging.
       # Disable this code unless you really need it temporarily.
       #- name: Setup tmate session
@@ -169,8 +138,29 @@ jobs:
           key: "php-${{ matrix.php-version }}-rector-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-rector-"
 
+      - name: Extract Solr version from build.xml (used for Solr download cache)
+        id: solr-version
+        run: |
+          SOLR_VERSION=$(grep -oP 'property name="solr_version" value="\K[^"]+' build.xml)
+          echo "version=$SOLR_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Restore Solr download cache (used in `composer install`)
+        id: cache-solr
+        uses: actions/cache/restore@v5
+        with:
+          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
+          key: solr-${{ steps.solr-version.outputs.version }}
+          restore-keys: solr-
+
       - name: Install composer dependencies
         run: composer install
+
+      - name: Save Solr download cache (if downloaded in `composer install`)
+        if: steps.cache-solr.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
+          key: solr-${{ steps.solr-version.outputs.version }}
 
       - name: Start database
         run: |
