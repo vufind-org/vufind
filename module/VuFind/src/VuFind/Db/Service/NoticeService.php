@@ -176,9 +176,9 @@ class NoticeService extends AbstractDbService implements
             . 'FROM ' . NoticeEntityInterface::class . ' b';
         $query = $this->entityManager->createQuery($dql);
 
-        $displayOrder = intval($query->getSingleScalarResult());
-
-        $notice->setDisplayOrder($displayOrder);
+        if (!isset($data['displayOrder'])) {
+            $data['displayOrder'] = intval($query->getSingleScalarResult());
+        }
 
         $this->setNoticeData($notice, $data);
 
