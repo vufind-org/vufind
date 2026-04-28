@@ -29,8 +29,6 @@ return [
             'VuFind\View\Helper\Root\Relais' => 'VuFind\View\Helper\Root\RelaisFactory',
             'VuFind\View\Helper\Root\ResultFeed' => 'VuFind\View\Helper\Root\ResultFeedFactory',
             'VuFind\View\Helper\Root\SearchBox' => 'VuFind\View\Helper\Root\SearchBoxFactory',
-            'VuFind\View\Helper\Root\SearchOptions' => 'VuFind\View\Helper\Root\SearchOptionsFactory',
-            'VuFind\View\Helper\Root\SearchSettings' => 'VuFind\View\Helper\Root\SearchSettingsFactory',
             'VuFind\View\Helper\Root\Session' => 'VuFind\View\Helper\Root\SessionFactory',
             'VuFind\View\Helper\Root\Sorter' => 'VuFind\View\Helper\Root\SorterFactory',
             'VuFind\View\Helper\Root\Summaries' => 'VuFind\View\Helper\Root\ContentLoaderFactory',
@@ -38,8 +36,6 @@ return [
             'VuFind\View\Helper\Root\SystemEmail' => 'VuFind\View\Helper\Root\SystemEmailFactory',
             'VuFind\View\Helper\Root\TransEscAttr' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\TransEscWithPrefix' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-            'VuFind\View\Helper\Root\TranslationEmpty' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-            'VuFind\View\Helper\Root\Truncate' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Url' => 'VuFind\View\Helper\Root\UrlFactory',
             'VuFind\View\Helper\Root\UserList' => 'VuFind\View\Helper\Root\UserListFactory',
 
