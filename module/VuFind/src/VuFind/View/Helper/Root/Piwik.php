@@ -29,6 +29,15 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Router\Http\TreeRouteStack;
+use Laminas\View\Helper\EscapeHtmlAttr;
+use Laminas\View\Helper\EscapeJs;
+use Laminas\View\Helper\ViewModel;
+use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\RendererInterface;
+use VuFindTheme\View\Helper\AssetManager;
+
 use function is_array;
 use function strlen;
 
@@ -41,15 +50,8 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Piwik extends \Laminas\View\Helper\AbstractHelper
+class Piwik
 {
-    /**
-     * Piwik URL (false if disabled).
-     *
-     * @var string|bool
-     */
-    protected $url;
-
     /**
      * Piwik Site ID.
      *
@@ -70,27 +72,6 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      * @var bool
      */
     protected $disableCookies;
-
-    /**
-     * Whether to track use custom variables to track additional information.
-     *
-     * @var bool
-     */
-    protected $customVars;
-
-    /**
-     * Request object.
-     *
-     * @var \Laminas\Http\PhpEnvironment\Request
-     */
-    protected $request;
-
-    /**
-     * Router object.
-     *
-     * @var \Laminas\Router\Http\RouteMatch
-     */
-    protected $router;
 
     /**
      * Whether the tracker was initialized from lightbox.
@@ -117,18 +98,30 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param string|bool                         $url        Piwik address
-     * (false if disabled)
-     * @param int|array                           $options    Options array (or,
-     * if a single value, the Piwik site ID -- for legacy backward compatibility)
-     * @param bool                                $customVars Whether to track
-     * additional information in custom variables
-     * @param Laminas\Router\Http\RouteMatch      $router     Request
-     * @param Laminas\Http\PhpEnvironment\Request $request    Request
+     * @param string|bool       $url            Piwik address (false if disabled)
+     * @param int|array         $options        Options array (or, if a single value, the Piwik site ID
+     * -- for legacy backward compatibility)
+     * @param bool              $customVars     Whether to track additional information in custom variables
+     * @param TreeRouteStack    $router         Request
+     * @param Request           $request        Request
+     * @param RendererInterface $viewRenderer   View renderer
+     * @param AssetManager      $assetManager   AssetManager view helper
+     * @param ViewModel         $viewModel      ViewModel view helper
+     * @param EscapeJs          $escapejs       EscapeJs view helper
+     * @param EscapeHtmlAttr    $escapeHtmlAttr EscapeHtmlAttr view helper
      */
-    public function __construct($url, $options, $customVars, $router, $request)
-    {
-        $this->url = $url;
+    public function __construct(
+        protected string|bool $url,
+        int|array $options,
+        protected bool $customVars,
+        protected TreeRouteStack $router,
+        protected Request $request,
+        protected RendererInterface $viewRenderer,
+        protected AssetManager $assetManager,
+        protected ViewModel $viewModel,
+        protected EscapeJs $escapejs,
+        protected EscapeHtmlAttr $escapeHtmlAttr,
+    ) {
         if ($url && !str_ends_with($url, '/')) {
             $this->url .= '/';
         }
@@ -139,9 +132,6 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
         } else {
             $this->siteId = $options;
         }
-        $this->customVars = $customVars;
-        $this->router = $router;
-        $this->request = $request;
         $this->timestamp = round(microtime(true) * 1000);
     }
 
@@ -174,7 +164,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             $code = $this->trackPageView();
         }
 
-        return $this->getView()->plugin('assetManager')->outputInlineScriptString($code);
+        return $this->assetManager->outputInlineScriptString($code);
     }
 
     /**
@@ -268,8 +258,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getSearchResults()
     {
-        $viewModel = $this->getView()->plugin('view_model');
-        $current = $viewModel->getCurrent();
+        $current = $this->viewModel->getCurrent();
         if (null === $current || 'layout/lightbox' === $current->getTemplate()) {
             return null;
         }
@@ -294,8 +283,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCombinedSearchResults()
     {
-        $viewModel = $this->getView()->plugin('view_model');
-        $current = $viewModel->getCurrent();
+        $current = $this->viewModel->getCurrent();
         if (null === $current) {
             return null;
         }
@@ -317,13 +305,13 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getRecordDriver()
     {
-        $view = $this->getView();
-        $viewModel = $view->plugin('view_model');
-        $current = $viewModel->getCurrent();
+        $current = $this->viewModel->getCurrent();
         if (null === $current) {
-            $driver = $view->vars('driver');
-            if ($driver instanceof \VuFind\RecordDriver\AbstractBase) {
-                return $driver;
+            if ($this->viewRenderer instanceof PhpRenderer) {
+                $driver = $this->viewRenderer->vars('driver');
+                if ($driver instanceof \VuFind\RecordDriver\AbstractBase) {
+                    return $driver;
+                }
             }
             return null;
         }
@@ -436,7 +424,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getOpeningTrackingCode()
     {
-        $escape = $this->getView()->plugin('escapejs');
+        $escape = $this->escapejs;
         $code = <<<EOT
 
             function initVuFindPiwikTracker{$this->timestamp}(){
@@ -514,7 +502,6 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCustomVarsCode($customVars)
     {
-        $escape = $this->getView()->plugin('escapeHtmlAttr');
         $code = '';
         $i = 0;
         foreach ($customVars as $key => $value) {
@@ -526,7 +513,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
                 $i = 6;
             }
 
-            $value = $escape($value);
+            $value = ($this->escapeHtmlAttr)($value);
             $code .= <<<EOT
                     VuFindPiwikTracker.setCustomVariable($i, '$key', '$value', 'page');
 
@@ -544,10 +531,9 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getTrackSearchCode($results)
     {
-        $escape = $this->getView()->plugin('escapeHtmlAttr');
         $params = $results->getParams();
-        $searchTerms = $escape($params->getDisplayQuery());
-        $searchType = $escape($params->getSearchType());
+        $searchTerms = ($this->escapeHtmlAttr)($params->getDisplayQuery());
+        $searchType = ($this->escapeHtmlAttr)($params->getSearchType());
         $resultCount = $results->getResultTotal();
         $backendId = $results->getOptions()->getSearchClassId();
 
@@ -570,10 +556,9 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getTrackCombinedSearchCode($results, $combinedResults)
     {
-        $escape = $this->getView()->plugin('escapeHtmlAttr');
         $params = $results->getParams();
-        $searchTerms = $escape($params->getDisplayQuery());
-        $searchType = $escape($params->getSearchType());
+        $searchTerms = ($this->escapeHtmlAttr)($params->getDisplayQuery());
+        $searchType = ($this->escapeHtmlAttr)($params->getSearchType());
         $resultCount = 0;
         foreach ($combinedResults as $currentSearch) {
             if (!empty($currentSearch['ajax'])) {

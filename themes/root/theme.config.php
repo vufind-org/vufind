@@ -8,7 +8,6 @@ return [
         'factories' => [
             'Laminas\View\Helper\HeadTitle' => 'VuFind\View\Helper\Root\HeadTitleFactory',
             'VuFind\View\Helper\Root\AuthorNotes' => 'VuFind\View\Helper\Root\ContentLoaderFactory',
-            'VuFind\View\Helper\Root\Browse' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Captcha' => 'VuFind\View\Helper\Root\CaptchaFactory',
             'VuFind\View\Helper\Root\CleanHtml' => 'VuFind\View\Helper\Root\CleanHtmlFactory',
             'VuFind\View\Helper\Root\CookieManager' => 'VuFind\View\Helper\Root\CookieManagerFactory',
@@ -39,7 +38,6 @@ return [
             'VuFind\View\Helper\Root\SystemEmail' => 'VuFind\View\Helper\Root\SystemEmailFactory',
             'VuFind\View\Helper\Root\TransEscAttr' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\TransEscWithPrefix' => 'Laminas\ServiceManager\Factory\InvokableFactory',
-            'VuFind\View\Helper\Root\Translate' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\TranslationEmpty' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Truncate' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Url' => 'VuFind\View\Helper\Root\UrlFactory',
