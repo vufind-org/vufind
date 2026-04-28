@@ -22,10 +22,10 @@ title:
   description: Title including any subtitle
   type: string
 # Extra identifiers - where did authority record originate?
-institution:
+institutions:
   vufind.method: getInstitutions
   vufind.default: true
-  description: Institution
+  description: Institutions the record belongs to
   type: array
   items:
     type: string
