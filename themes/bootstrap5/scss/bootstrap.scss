@@ -191,7 +191,7 @@ img { max-width: 100%; }
     padding-left: 5px;
     padding-right: 5px;
     color: $breadcrumb-color;
-    content: "#{$breadcrumb-divider}\00a 0";
+    content: "#{$breadcrumb-divider}\00a0";
   }
 }
 .tab-content { padding: 4px; }
