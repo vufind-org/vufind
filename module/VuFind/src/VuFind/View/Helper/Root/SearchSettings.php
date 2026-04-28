@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Cart;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -60,7 +61,6 @@ class SearchSettings
     public function __construct(
         #[Autowire(config: 'config', configType: 'array')]
         protected array $config,
-        #[Autowire(container: 'ViewHelperManager')]
         protected Cart $cart,
     ) {
     }
@@ -70,7 +70,7 @@ class SearchSettings
      *
      * @param Params $params Search params
      *
-     * @return SearchResults
+     * @return static
      */
     public function __invoke(Params $params)
     {
@@ -100,8 +100,8 @@ class SearchSettings
     {
         return
             $this->getOptions()->supportsCart()
-            && ($this->cart)()->isActive()
-            && ($this->bulkOptionsEnabled() || !($this->cart)()->isActiveInSearch());
+            && $this->cart->isActive()
+            && ($this->bulkOptionsEnabled() || !$this->cart->isActiveInSearch());
     }
 
     /**
