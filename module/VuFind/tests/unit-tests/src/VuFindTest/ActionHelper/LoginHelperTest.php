@@ -50,7 +50,6 @@ use VuFind\ILS\Connection;
 use VuFind\Session\Helper\FollowupHelper;
 use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\FlashMessenger\FlashMessengerInterface;
-use VuFindTest\ActionHelper\TestHarness\Connection as ConnectionHarness;
 use VuFindTest\Feature\AutowireTrait;
 
 /**
