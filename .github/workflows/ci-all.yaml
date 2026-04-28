@@ -47,21 +47,6 @@ jobs:
         #  fromJSON(format('["{0}"]', inputs.php-version))
         #}}
 
-    # Running MariaDB as a service did not save much time and did not work.
-    #services:
-    #  mariadb:
-    #    image: mariadb:latest
-    #    env:
-    #      MARIADB_ROOT_PASSWORD: password # Sets root password to "password"
-    #    ports:
-    #      - 3306:3306
-    #    # Wait for MariaDB to be healthy
-    #    options: >-
-    #      --health-cmd="mariadb-admin ping -h localhost"
-    #      --health-interval=10s
-    #      --health-timeout=5s
-    #      --health-retries=5
-
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -191,8 +176,6 @@ jobs:
         run: |
           # Create admin user for MariaDB (not needed for mysql).
           sudo mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('password'); FLUSH PRIVILEGES;"
-          #sudo mariadb --execute="CREATE USER root@localhost IDENTIFIED BY 'password';"
-          #sudo mariadb --execute="GRANT ALL ON *.* TO root@localhost WITH GRANT OPTION;"
           sudo systemctl start mariadb
 
       - name: Start memcached
