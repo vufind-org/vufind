@@ -360,8 +360,8 @@ class LoginHelperTest extends TestCase
 
         $ils = $this->getIls(['loginMethod' => 'email'], 'ils1');
         $ils->expects($this->once())
-            ->method('patronLogin')
-            ->with('ils1.USER@LOCALHOST', '')
+            ->method('__call')
+            ->with('patronLogin', ['ils1.USER@LOCALHOST', ''])
             ->willReturn(
                 [
                     'cat_username' => 'ils1.USER@LOCALHOST',
@@ -478,8 +478,7 @@ class LoginHelperTest extends TestCase
      */
     protected function getIls(array $patronLoginConfig, string $target): Connection
     {
-        // Use a class that allows us to mock the patronLogin method:
-        $ils = $this->createMock(ConnectionHarness::class);
+        $ils = $this->createMock(Connection::class);
         $ils->expects($this->once())
             ->method('checkFunction')
             ->with('patronLogin', ['patron' => ['cat_username' => "$target.login"]])
