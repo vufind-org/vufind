@@ -478,6 +478,7 @@ class LoginHelperTest extends TestCase
      */
     protected function getIls(array $patronLoginConfig, string $target): Connection
     {
+        // Use a class that allows us to mock the patronLogin method:
         $ils = $this->createMock(ConnectionHarness::class);
         $ils->expects($this->once())
             ->method('checkFunction')

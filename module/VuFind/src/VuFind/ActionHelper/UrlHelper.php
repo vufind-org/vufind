@@ -45,6 +45,20 @@ use VuFind\ServiceManager\Factory\Autowire;
 class UrlHelper implements HelperInterface
 {
     /**
+     * Cache for isLocalUrl.
+     *
+     * @var array
+     */
+    protected array $localUrlCheckCache = [];
+
+    /**
+     * Normalized service base URL.
+     *
+     * @var ?array
+     */
+    protected ?string $normalizedBaseUrl = null;
+
+    /**
      * Constructor.
      *
      * @param RouteHelper     $routeHelper     Route helper
@@ -66,12 +80,13 @@ class UrlHelper implements HelperInterface
      */
     public function isLocalUrl(string $url): bool
     {
-        $baseUrlNorm = $this->normalizeUrlForComparison(
-            $this->serverUrlHelper->getUrlForPath(
-                $this->routeHelper->getUrlFromRoute('home')
-            )
-        );
-        return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
+        if (!isset($this->localUrlCheckCache[$url])) {
+            $this->localUrlCheckCache[$url] = str_starts_with(
+                $this->normalizeUrlForComparison($url),
+                $this->getNormalizedBaseUrl()
+            );
+        }
+        return $this->localUrlCheckCache[$url];
     }
 
     /**
@@ -85,5 +100,22 @@ class UrlHelper implements HelperInterface
     {
         $parts = explode('://', $url, 2);
         return trim(end($parts), '/');
+    }
+
+    /**
+     * Get normalized base URL.
+     *
+     * @return string
+     */
+    protected function getNormalizedBaseUrl(): string
+    {
+        if (null === $this->normalizedBaseUrl) {
+            $this->normalizedBaseUrl = $this->normalizeUrlForComparison(
+                $this->serverUrlHelper->getUrlForPath(
+                    $this->routeHelper->getUrlFromRoute('home')
+                )
+            );
+        }
+        return $this->normalizedBaseUrl;
     }
 }
