@@ -10,12 +10,15 @@ name: CI (all)
 on:
   # Trigger workflow in GitHub web frontend or from API.
   workflow_dispatch:
+    inputs:
+      phpunit_extra_params:
+        description: 'Optional extra params for phpunit'
+        required: false
     # Here we could support tests with different PHP versions,
     # but the additional value is low.
     # Therefore the current code simply uses the preinstalled PHP.
     # It would also be possible to add an option to run a single integration test
     # or to select other test and phing options.
-    #inputs:
     #  php-version:
     #    description: 'PHP version'
     #    required: true
@@ -218,9 +221,12 @@ jobs:
           sudo a2enconf httpd-vufind
           sudo systemctl restart apache2
 
-      - name: Run tests
+      - name: Run selected tests
         run: |
-          # The following line would start selected tests.
-          # vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit -Dphpunit_extra_params=module/VuFind/tests/integration-tests/src/VuFindTest/Mink/AccountActionsTest.php
-          # The following line runs all available tests.
-          vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit
+          if [ -n "${{ github.event.inputs.phpunit_extra_params }}" ]; then
+            # Start selected tests.
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit -Dphpunit_extra_params="${{ github.event.inputs.phpunit_extra_params }}"
+          else
+            # Runs all available tests.
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit
+          fi
