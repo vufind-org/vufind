@@ -47,7 +47,7 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
     {
         $this->defaultIndexName = 'reserves';
         $this->searchConfig = 'reserves';
-        $this->searchYaml = 'reservessearchspecs.yaml';
+        $this->searchSpecsConfig = 'reservessearchspecs';
         $this->facetConfig = 'reserves';
     }
 
