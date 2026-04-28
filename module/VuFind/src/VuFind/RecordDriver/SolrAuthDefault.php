@@ -53,13 +53,13 @@ class SolrAuthDefault extends SolrDefault
     }
 
     /**
-     * Get the institution.
+     * Get the institutions.
      *
-     * @return string
+     * @return string[]
      */
-    public function getInstitution(): string
+    public function getInstitutions(): array
     {
-        return $this->fields['institution'] ?? '';
+        return $this->fields['institution'] ?? [];
     }
 
     /**

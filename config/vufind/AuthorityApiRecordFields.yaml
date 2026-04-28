@@ -23,10 +23,12 @@ title:
   type: string
 # Extra identifiers - where did authority record originate?
 institution:
-  vufind.method: getInstitution
+  vufind.method: getInstitutions
   vufind.default: true
   description: Institution
-  type: string
+  type: array
+  items:
+    type: string
 # More fields could be added here if desired:
 # String Fields for Exact Match / Faceting
 # [...]
