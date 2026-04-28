@@ -1308,7 +1308,7 @@ abstract class Options implements TranslatorAwareInterface
         ) {
             $recommend['top'] = $searchSettings['TopRecommendations'][$handler];
         } else {
-            $recommend['top'] = $searchSettings['General']['default_top_recommend'] ?? false;
+            $recommend['top'] = $searchSettings['General']['default_top_recommend'] ?? [];
         }
         if (
             null !== $handler
@@ -1316,7 +1316,7 @@ abstract class Options implements TranslatorAwareInterface
         ) {
             $recommend['side'] = $searchSettings['SideRecommendations'][$handler];
         } else {
-            $recommend['side'] = $searchSettings['General']['default_side_recommend'] ?? false;
+            $recommend['side'] = $searchSettings['General']['default_side_recommend'] ?? [];
         }
         if (
             null !== $handler
@@ -1324,7 +1324,7 @@ abstract class Options implements TranslatorAwareInterface
         ) {
             $recommend['noresults'] = $searchSettings['NoResultsRecommendations'][$handler];
         } else {
-            $recommend['noresults'] = $searchSettings['General']['default_noresults_recommend'] ?? false;
+            $recommend['noresults'] = $searchSettings['General']['default_noresults_recommend'] ?? [];
         }
 
         return $recommend;
