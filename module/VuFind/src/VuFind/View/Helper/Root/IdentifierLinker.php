@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 use function in_array;
@@ -61,11 +62,15 @@ class IdentifierLinker
     /**
      * Constructor.
      *
-     * @param Context $contextHelper Context helper
-     * @param array   $config        Identifier-based linking configuration settings
+     * @param Context           $contextHelper Context helper
+     * @param RendererInterface $view          View renderer
+     * @param array             $config        Identifier-based linking configuration settings
      */
-    public function __construct(protected Context $contextHelper, protected array $config = [])
-    {
+    public function __construct(
+        protected Context $contextHelper,
+        protected RendererInterface $view,
+        protected array $config = []
+    ) {
         if (!empty($config['supportedIdentifiers'])) {
             $this->supportedIdentifiers = $config['supportedIdentifiers'];
         }
@@ -120,7 +125,7 @@ class IdentifierLinker
         $params = $this->getIdentifiers($driver) + compact('instance');
 
         // Render the subtemplate:
-        return ($this->contextHelper)($this->getView())
+        return ($this->contextHelper)($this->view)
             ->renderInContext('Helpers/identifierLinks.phtml', $params);
     }
 
