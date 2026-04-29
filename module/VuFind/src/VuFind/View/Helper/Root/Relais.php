@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Config\Config;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * Relais view helper.
@@ -46,21 +47,23 @@ class Relais
     /**
      * Constructor.
      *
-     * @param Config            $config   Relais configuration (or null if none found)
+     * @param ?Config           $config   Relais configuration (or null if none found)
      * @param string            $loginUrl Login base URL
      * @param RendererInterface $view     View renderer
+     * @param TransEsc          $transEsc TransEsc view helper
      */
     public function __construct(
-        protected $config,
-        protected $loginUrl,
+        protected ?Config $config,
+        protected string $loginUrl,
         protected RendererInterface $view,
+        protected TransEsc $transEsc
     ) {
     }
 
     /**
      * Create a Relais search link from a record driver.
      *
-     * @param object $driver Record driver
+     * @param RecordDriver $driver Record driver
      *
      * @return string
      */
@@ -88,7 +91,7 @@ class Relais
     /**
      * Render a button if Relais is active.
      *
-     * @param object $driver Record driver
+     * @param ?RecordDriver $driver Record driver
      *
      * @return string
      */
@@ -99,9 +102,9 @@ class Relais
             return $this->view->render('relais/button.phtml');
         }
         // Case 2: Search links enabled:
-        if ($this->config->loginUrl ?? false) {
+        if ($this->config->loginUrl ?? false && $driver) {
             return '<a href="' . htmlspecialchars($this->getSearchLink($driver))
-                . '" target="new">' . $this->view->transEsc('relais_search')
+                . '" target="new">' . ($this->transEsc)('relais_search')
                 . '</a>';
         }
         // Case 3: Nothing enabled:
