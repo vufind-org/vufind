@@ -158,6 +158,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
             'config' => [
                 'Authentication' => [
                     'method' => 'MultiILS',
+                    'recover_interval' => 0,
                 ],
                 'Catalog' => [
                     'driver' => 'MultiBackend',
