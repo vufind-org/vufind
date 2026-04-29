@@ -51,7 +51,7 @@ class Metadata
      */
     public function __construct(
         protected \VuFind\MetadataVocabulary\PluginManager $pluginManager,
-        #[Autowire(config: 'metadata')]
+        #[Autowire(config: 'metadata', configType: 'object')]
         protected \VuFind\Config\Config $config,
         #[Autowire(container: 'ViewHelperManager')]
         protected \Laminas\View\Helper\HeadMeta $metaHelper
