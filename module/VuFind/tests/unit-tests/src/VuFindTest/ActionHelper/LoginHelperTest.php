@@ -41,10 +41,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper as ActionHelperLoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\User;
-use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
 use VuFind\Session\Helper\FollowupHelper;
@@ -345,7 +345,7 @@ class LoginHelperTest extends TestCase
     public function testEmailCatalogLogin(?string $route, array $routeParams): void
     {
         $request = (new ServerRequest())
-            ->withParsedBody(['cat_username' => 'user@localhost', 'cat_password' => '****', 'target' => 'ils1']);
+            ->withParsedBody(['cat_username' => 'USER@LOCALHOST', 'cat_password' => '****', 'target' => 'ils1']);
         if ($route) {
             $routeMatch = $this->createMock(RouteMatch::class);
             $routeMatch
@@ -357,97 +357,50 @@ class LoginHelperTest extends TestCase
             $request = $request->withAttribute('route-match', $routeMatch);
         }
 
+        $ils = $this->getIls(['loginMethod' => 'email'], 'ils1');
+        $ils->expects($this->once())
+            ->method('__call')
+            ->with('patronLogin', ['ils1.USER@LOCALHOST', ''])
+            ->willReturn(
+                [
+                    'cat_username' => 'ils1.USER@LOCALHOST',
+                    'email' => 'user@localhost',
+                ]
+            );
+
         $response = new Response();
         $user = $this->createMock(User::class);
 
-        $ilsAuthenticator = $this->createMock(ILSAuthenticator::class);
-        $ilsAuthenticator->expects($this->once())
-            ->method('sendEmailLoginLink')
+        $emailAuthenticator = $this->createMock(EmailAuthenticator::class);
+        $emailAuthenticator->expects($this->once())
+            ->method('sendAuthenticationCode')
             ->with(
-                'ils1.user@localhost',
-                $route ?? 'myresearch-profile',
-                $routeParams,
-                ['catalogLogin' => 'true'],
-                $user
+                'user@localhost',
+                [
+                    'username' => 'ils1.USER@LOCALHOST',
+                    'patron' => [
+                        'cat_username' => 'ils1.USER@LOCALHOST',
+                        'email' => 'user@localhost',
+                    ],
+                ],
             );
 
-        $flashMessenger = $this->createMock(FlashMessenger::class);
-        $flashMessenger->expects($this->once())
-            ->method('addSuccessMessage')
-            ->with('email_login_link_sent');
+        $redirectHelper = $this->createMock(RedirectHelper::class);
+        $redirectHelper->expects($this->once())
+            ->method('redirectToRoute')
+            ->with($response, 'myresearch-verifyotp');
 
         $helper = $this->getAutowiredObject(
             ActionHelperLoginHelper::class,
             [
                 AuthManager::class => $this->getAuthManager($user, true),
-                Connection::class => $this->getIls(['loginMethod' => 'email'], 'ils1'),
-                ILSAuthenticator::class => $ilsAuthenticator,
-                FlashMessengerInterface::class => $flashMessenger,
+                Connection::class => $ils,
+                EmailAuthenticator::class => $emailAuthenticator,
+                RedirectHelper::class => $redirectHelper,
             ]
         );
 
         $helper->catalogLogin($request, $response);
-    }
-
-    /**
-     * Data provider for testEmailCatalogLoginHash().
-     *
-     * @return Generator<string, array>
-     */
-    public static function emailCatalogLoginHashProvider(): Generator
-    {
-        yield 'valid hash' => [true];
-        yield 'invalid hash' => [false];
-    }
-
-    /**
-     * Test email catalog login hash handling.
-     *
-     * @param bool $validHash Is the hash valid?
-     *
-     * @return void
-     */
-    #[\PHPUnit\Framework\Attributes\DataProvider('emailCatalogLoginHashProvider')]
-    public function testEmailCatalogLoginHash(bool $validHash): void
-    {
-        $request = (new ServerRequest())
-            ->withQueryParams(['auth_method' => 'ILS', 'hash' => $validHash ? 'correct' : 'incorrect']);
-        $response = new Response();
-        $patron = ['id' => 'patron'];
-
-        $ilsAuthenticator = $this->createMock(ILSAuthenticator::class);
-        $ilsAuthenticator->expects($this->once())
-            ->method('processEmailLoginHash')
-            ->willReturnCallback(
-                function ($hash) use ($patron) {
-                    if ('correct' === $hash) {
-                        return $patron;
-                    }
-                    throw new AuthException('Invalid hash');
-                }
-            );
-
-        $flashMessenger = $this->createMock(FlashMessenger::class);
-        $flashMessenger->expects($validHash ? $this->never() : $this->once())
-            ->method('addErrorMessage')
-            ->with('Invalid hash');
-
-        $helper = $this->getAutowiredObject(
-            ActionHelperLoginHelper::class,
-            [
-                AuthManager::class => $this->getAuthManager($this->createMock(User::class), false),
-                ILSAuthenticator::class => $ilsAuthenticator,
-                FlashMessengerInterface::class => $flashMessenger,
-                ForwardHelper::class => $this->getForwardHelper($validHash ? null : 'myresearch/cataloglogin'),
-            ]
-        );
-
-        $result = $helper->catalogLogin($request, $response);
-        if ($validHash) {
-            $this->assertSame($patron, $result);
-        } else {
-            $this->assertSame(['forward'], $result->getHeader('X-Method'));
-        }
     }
 
     /**
