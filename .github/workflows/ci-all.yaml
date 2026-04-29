@@ -14,21 +14,19 @@ on:
       phpunit_extra_params:
         description: 'Optional extra params for phpunit'
         required: false
-    # Here we could support tests with different PHP versions,
-    # but the additional value is low.
-    # Therefore the current code simply uses the preinstalled PHP.
-    # It would also be possible to add an option to run a single integration test
-    # or to select other test and phing options.
-    #  php-version:
-    #    description: 'PHP version'
-    #    required: true
-    #    default: '8.4'
-    #    type: choice
-    #    options:
-    #      - '8.2'
-    #      - '8.3'
-    #      - '8.4'
-    #      - 'all'
+      # The current code simply uses the preinstalled PHP 8.3.
+      # Supporting other PHP releases would require additional code.
+      php-version:
+        description: 'PHP version (supports currently only preinstalled PHP 8.3)'
+        required: true
+        default: '8.3'
+        type: choice
+        options:
+    #     - '8.2'
+          - '8.3'
+    #     - '8.4'
+    #     - '8.5'
+          - 'all'
 
 jobs:
   run-tests:
@@ -42,13 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        # The current code simply uses the preinstalled PHP.
-        php-version: ['8.3']
-        #php-version: ${{
-        #  (github.event_name == 'push') && fromJSON('["8.4"]') ||
-        #  (inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4"]') ||
-        #  fromJSON(format('["{0}"]', inputs.php-version))
-        #}}
+        php-version: ${{ (github.event_name == 'push') && fromJSON('["8.3"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
 
     steps:
       - name: Checkout
