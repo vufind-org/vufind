@@ -76,7 +76,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      * Constructor.
      *
      * @param OptionsManager $optionsManager  Search options plugin manager
-     * @param array          $config          Main config.ini settings
+     * @param array          $mainConfig      Main config.ini settings
      * @param array          $searchboxConfig Settings from searchbox.ini
      * @param array          $combinedConfig  Settings from combined.ini
      * @param Url            $url             Url Helper
@@ -84,7 +84,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
     public function __construct(
         protected OptionsManager $optionsManager,
         #[Autowire(config: 'config', configType: 'array')]
-        protected array $config,
+        protected array $mainConfig,
         #[Autowire(config: 'searchbox', configType: 'array')]
         protected array $searchboxConfig,
         #[Autowire(config: 'combined', configType: 'array')]
@@ -92,10 +92,10 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url
     ) {
-        $this->placeholders = $config['SearchPlaceholder'] ?? [];
+        $this->placeholders = $mainConfig['SearchPlaceholder'] ?? [];
         $includeAlphaOptions = $searchboxConfig['General']['includeAlphaBrowse'] ?? false;
-        $this->alphabrowseConfig = $includeAlphaOptions && isset($config['AlphaBrowse_Types'])
-            ? $config['AlphaBrowse_Types'] : [];
+        $this->alphabrowseConfig = $includeAlphaOptions && isset($mainConfig['AlphaBrowse_Types'])
+            ? $mainConfig['AlphaBrowse_Types'] : [];
     }
 
     /**
@@ -257,7 +257,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      */
     public function combinedHandlersActive()
     {
-        return $this->config['General']['combinedHandlers'] ?? false;
+        return $this->searchboxConfig['General']['combinedHandlers'] ?? false;
     }
 
     /**
@@ -342,7 +342,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      */
     public function getKeyboardLayouts()
     {
-        return $this->config['VirtualKeyboard']['layouts'] ?? [];
+        return $this->searchboxConfig['VirtualKeyboard']['layouts'] ?? [];
     }
 
     /**
@@ -417,7 +417,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
     {
         if (!isset($this->cachedConfigs[$activeSearchClass])) {
             // Load and validate configuration:
-            $settings = $this->config['CombinedHandlers'] ?? [];
+            $settings = $this->searchboxConfig['CombinedHandlers'] ?? [];
             if (empty($settings)) {
                 throw new \Exception('CombinedHandlers configuration missing.');
             }
@@ -440,8 +440,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
                 $settings['type'][] = 'VuFind';
                 $settings['target'][] = $activeSearchClass;
                 $settings['label'][] = $activeSearchClass;
-                $settings['group'][]
-                    = $this->config['General']['defaultGroupLabel'] ?? false;
+                $settings['group'][] = $this->searchboxConfig['General']['defaultGroupLabel'] ?? false;
             }
 
             $this->cachedConfigs[$activeSearchClass] = $settings;
@@ -471,7 +470,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
                 'label' => $labelPrefix . $this->translate($label),
                 'indent' => $indent,
                 'selected' => $activeHandler == 'AlphaBrowse:' . $source,
-                'group' => $this->config['General']['alphaBrowseGroup'] ?? false,
+                'group' => $this->searchboxConfig['General']['alphaBrowseGroup'] ?? false,
             ];
         }
         return $handlers;
@@ -498,7 +497,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
             foreach ($handlerConfig['type'] as $i => $type) {
                 $target = $handlerConfig['target'][$i] ?? '';
                 if ($type === 'VuFind' && str_starts_with($target, $activeSearchClass . ':')) {
-                    $rawHFConfig = $this->config['SearchTabsFilters'][$target]
+                    $rawHFConfig = $this->mainConfig['SearchTabsFilters'][$target]
                         ?? $this->combinedConfig[$target]['filter']
                         ?? [];
                     // Account for all possible configuration formats -- an array or a string:
@@ -573,7 +572,8 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
                 if (empty($basic)) {
                     $basic = ['' => ''];
                 }
-                $collapseInactiveBackends = $this->config['General']['collapseInactiveBackendOptions'] ?? false;
+                $collapseInactiveBackends = $this->searchboxConfig['General']['collapseInactiveBackendOptions']
+                    ?? false;
                 foreach ($basic as $searchVal => $searchDesc) {
                     $j++;
                     $selected = $target == $filteredActiveSearchClass
