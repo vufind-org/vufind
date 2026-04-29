@@ -32,7 +32,6 @@ namespace VuFind\View\Helper\Root;
 use DateTime;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\ServerUrl;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -51,7 +50,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
+class ResultFeed implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -138,7 +137,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if (null === $currentPath) {
             $currentPath = ($this->currentPath)();
         }
-        $baseUrl = ($this->serverurl)($currentPath);
+        $baseUrl = ($this->serverUrl)($currentPath);
         $lang = $this->getTranslatorLocale();
 
         // Create the parent feed

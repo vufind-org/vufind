@@ -45,8 +45,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
+class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -65,13 +66,27 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
      * backend
      * @param array          $alphabrowseConfig source => label config for
      * alphabrowse options to display in combined box (empty for none)
+     * @param Url            $url               Url Helper
+     * @param Config         $configHelper      Config Helper
      */
     public function __construct(
         protected OptionsManager $optionsManager,
-        protected array $config = [],
-        protected array $placeholders = [],
-        protected array $alphabrowseConfig = []
+        protected array $config,
+        protected array $placeholders,
+        protected array $alphabrowseConfig,
+        protected Url $url,
+        protected Config $configHelper,
     ) {
+    }
+
+    /**
+     * Make the helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 
     /**
@@ -426,15 +441,15 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
      */
     protected function getAlphabrowseHandlers($activeHandler, $indent = true)
     {
-        $alphaBrowseBase = ($this->getView()->plugin('url'))('alphabrowse-home');
-        $labelPrefix = $this->getView()->translate('Browse Alphabetically') . ': ';
+        $alphaBrowseBase = ($this->url)('alphabrowse-home');
+        $labelPrefix = $this->translate('Browse Alphabetically') . ': ';
         $handlers = [];
         foreach ($this->alphabrowseConfig as $source => $label) {
             $alphaBrowseUrl = $alphaBrowseBase . '?source=' . urlencode($source)
                 . '&from=';
             $handlers[] = [
                 'value' => 'External:' . $alphaBrowseUrl,
-                'label' => $labelPrefix . $this->getView()->translate($label),
+                'label' => $labelPrefix . $this->translate($label),
                 'indent' => $indent,
                 'selected' => $activeHandler == 'AlphaBrowse:' . $source,
                 'group' => $this->config['General']['alphaBrowseGroup'] ?? false,
@@ -458,15 +473,14 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
         string $activeSearchClass,
         array $hiddenFilters
     ): string {
-        $configHelper = $this->getView()->plugin('config');
 
         // If we have hidden filters, let's try to match them up with a configured option:
         if (!empty($hiddenFilters)) {
             foreach ($handlerConfig['type'] as $i => $type) {
                 $target = $handlerConfig['target'][$i] ?? '';
                 if ($type === 'VuFind' && str_starts_with($target, $activeSearchClass . ':')) {
-                    $rawHFConfig = $configHelper->get('config')->toArray()['SearchTabsFilters'][$target]
-                        ?? $configHelper->get('combined')->toArray()[$target]['filter']
+                    $rawHFConfig = $this->configHelper->get('config')->toArray()['SearchTabsFilters'][$target]
+                        ?? $this->configHelper->get('combined')->toArray()[$target]['filter']
                         ?? [];
                     // Account for all possible configuration formats -- an array or a string:
                     $hiddenFilterConfig = (array)($rawHFConfig);
