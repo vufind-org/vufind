@@ -71,6 +71,16 @@ class SolrWeb extends SolrDefault
     }
 
     /**
+     * Get the fulltext for the current record.
+     *
+     * @return string
+     */
+    public function getFulltext(): string
+    {
+        return $this->fields['fulltext'] ?? '';
+    }
+
+    /**
      * Get the URL for the current record.
      *
      * @return string

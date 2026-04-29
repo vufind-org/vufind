@@ -667,7 +667,7 @@ class Loader extends \VuFind\ImageLoader
             $imagePath = substr($url, 7);
 
             // Display the image:
-            $this->contentType = mime_content_type($imagePath);
+            $this->contentType = $this->getImageMimeTypeFromFile($imagePath);
             $this->image = file_get_contents($imagePath);
             return true;
         } else {
