@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function in_array;
@@ -58,25 +59,43 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
     protected $cachedConfigs = [];
 
     /**
+     * Array of placeholders keyed by backend.
+     *
+     * @var array
+     */
+    protected array $placeholders;
+
+    /**
+     * source => label config for alphabrowse options to display in combined box (empty for none).
+     *
+     * @var array
+     */
+    protected array $alphabrowseConfig;
+
+    /**
      * Constructor.
      *
-     * @param OptionsManager $optionsManager    Search options plugin manager
-     * @param array          $config            Configuration for search box
-     * @param array          $placeholders      Array of placeholders keyed by
-     * backend
-     * @param array          $alphabrowseConfig source => label config for
-     * alphabrowse options to display in combined box (empty for none)
-     * @param Url            $url               Url Helper
-     * @param Config         $configHelper      Config Helper
+     * @param OptionsManager $optionsManager  Search options plugin manager
+     * @param array          $mainConfig      Main config.ini settings
+     * @param array          $searchboxConfig Settings from searchbox.ini
+     * @param array          $combinedConfig  Settings from combined.ini
+     * @param Url            $url             Url Helper
      */
     public function __construct(
         protected OptionsManager $optionsManager,
-        protected array $config,
-        protected array $placeholders,
-        protected array $alphabrowseConfig,
-        protected Url $url,
-        protected Config $configHelper,
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $mainConfig,
+        #[Autowire(config: 'searchbox', configType: 'array')]
+        protected array $searchboxConfig,
+        #[Autowire(config: 'combined', configType: 'array')]
+        protected array $combinedConfig,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url
     ) {
+        $this->placeholders = $mainConfig['SearchPlaceholder'] ?? [];
+        $includeAlphaOptions = $searchboxConfig['General']['includeAlphaBrowse'] ?? false;
+        $this->alphabrowseConfig = $includeAlphaOptions && isset($mainConfig['AlphaBrowse_Types'])
+            ? $mainConfig['AlphaBrowse_Types'] : [];
     }
 
     /**
@@ -479,8 +498,8 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
             foreach ($handlerConfig['type'] as $i => $type) {
                 $target = $handlerConfig['target'][$i] ?? '';
                 if ($type === 'VuFind' && str_starts_with($target, $activeSearchClass . ':')) {
-                    $rawHFConfig = $this->configHelper->get('config')->toArray()['SearchTabsFilters'][$target]
-                        ?? $this->configHelper->get('combined')->toArray()[$target]['filter']
+                    $rawHFConfig = $this->mainConfig['SearchTabsFilters'][$target]
+                        ?? $this->combinedConfig[$target]['filter']
                         ?? [];
                     // Account for all possible configuration formats -- an array or a string:
                     $hiddenFilterConfig = (array)($rawHFConfig);

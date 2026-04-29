@@ -24,7 +24,6 @@ return [
             'VuFind\View\Helper\Root\RecordDataFormatter' => 'VuFind\View\Helper\Root\RecordDataFormatterFactory',
             'VuFind\View\Helper\Root\Relais' => 'VuFind\View\Helper\Root\RelaisFactory',
             'VuFind\View\Helper\Root\ResultFeed' => 'VuFind\View\Helper\Root\ResultFeedFactory',
-            'VuFind\View\Helper\Root\SearchBox' => 'VuFind\View\Helper\Root\SearchBoxFactory',
             'VuFind\View\Helper\Root\Session' => 'VuFind\View\Helper\Root\SessionFactory',
             'VuFind\View\Helper\Root\Sorter' => 'VuFind\View\Helper\Root\SorterFactory',
             'VuFind\View\Helper\Root\Summaries' => 'VuFind\View\Helper\Root\ContentLoaderFactory',
