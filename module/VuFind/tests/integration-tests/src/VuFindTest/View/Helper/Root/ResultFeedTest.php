@@ -138,8 +138,14 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
 
         $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);
-
-        $helper = new ResultFeed($options);
+        $plugins = $this->getPlugins();
+        $helper = new ResultFeed(
+            $plugins['serverurl'],
+            $plugins['currentPath'],
+            $plugins['recordLinker'],
+            $plugins['record'],
+            $options
+        );
         $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $translator = $this->getMockTranslator(
             [
@@ -151,7 +157,6 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $helper->setTranslator($translator);
-        $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper($results, '/test/path');
         $this->assertIsObject($feed);
         $rss = $feed->export('rss');
