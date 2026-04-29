@@ -33,6 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFind\ActionHelper\UrlHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFindTest\Feature\AutowireTrait;
+use VuFindTest\Feature\ReflectionTrait;
 
 /**
  * UrlHelper test class.
@@ -46,6 +47,7 @@ use VuFindTest\Feature\AutowireTrait;
 class UrlHelperTest extends TestCase
 {
     use AutowireTrait;
+    use ReflectionTrait;
 
     /**
      * Test the isLocalUrl method.
@@ -67,11 +69,18 @@ class UrlHelperTest extends TestCase
         );
 
         // Check each address twice to ensure that caching works:
+        $this->assertCount(0, $this->getProperty($helper, 'localUrlCheckCache'));
         $this->assertTrue($helper->isLocalUrl('http://vufind.org/'));
+        $this->assertCount(1, $this->getProperty($helper, 'localUrlCheckCache'));
         $this->assertTrue($helper->isLocalUrl('http://vufind.org/'));
+        $this->assertCount(1, $this->getProperty($helper, 'localUrlCheckCache'));
         $this->assertTrue($helper->isLocalUrl('http://vufind.org/foo'));
+        $this->assertCount(2, $this->getProperty($helper, 'localUrlCheckCache'));
         $this->assertTrue($helper->isLocalUrl('http://vufind.org/foo'));
+        $this->assertCount(2, $this->getProperty($helper, 'localUrlCheckCache'));
         $this->assertFalse($helper->isLocalUrl('http://vufind.com/foo'));
+        $this->assertCount(3, $this->getProperty($helper, 'localUrlCheckCache'));
         $this->assertFalse($helper->isLocalUrl('http://vufind.com/foo'));
+        $this->assertCount(3, $this->getProperty($helper, 'localUrlCheckCache'));
     }
 }
