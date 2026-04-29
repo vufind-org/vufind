@@ -66,7 +66,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
     protected array $placeholders;
 
     /**
-     * source => label config for alphabrowse options to display in combined box (empty for none).
+     * Source => label config for alphabrowse options to display in combined box (empty for none).
      *
      * @var array
      */
