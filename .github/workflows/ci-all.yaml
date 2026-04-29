@@ -11,6 +11,16 @@ on:
   # Trigger workflow in GitHub web frontend or from API.
   workflow_dispatch:
     inputs:
+      phing_task_qa_console:
+        description: 'Run "phing qa-console"'
+        required: true
+        default: false
+        type: boolean
+      phing_task_phpunit:
+        description: 'Run "phing phpunit"'
+        required: true
+        default: true
+        type: boolean
       phpunit_extra_params:
         description: 'Optional extra params for phpunit'
         required: false
@@ -46,11 +56,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      # Here a terminal session can be enabled for debugging.
-      # Disable this code unless you really need it temporarily.
-      #- name: Setup tmate session
-      #  uses: mxschmitt/action-tmate@v3
-
       - name: Install Debian packages
         run: |
           sudo apt-get update
@@ -66,32 +71,18 @@ jobs:
           # Enable required Apache modules
           sudo a2enmod rewrite proxy_fcgi setenvif
 
+      - name: Disable Solr installation
+        if: ${{ !inputs.phing_task_phpunit }}
+        run: touch solr/.disableAutomaticInstall
+
       - name: Setup node
-        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        if: ${{ inputs.phing_task_qa_console }}
         uses: actions/setup-node@v6
         with:
           node-version: '20'
 
-      - name: Cache NPM dependencies
-        if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/cache@v5
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('**/package.json') }}
-          restore-keys: npm-
-
-      - name: Install node dependencies
-        if: ${{ matrix.phing_tasks == 'qa-console' }}
-        # Use --ignore-scripts to prevent pre/post install scripts from running
-        # (a security precaution).
-        run: npm install --ignore-scripts
-
-      - name: Rebuild node-sass dependency
-        if: ${{ matrix.phing_tasks == 'qa-console' }}
-        # The --ignore-scripts parameter to npm install prevents node-sass from
-        # fully building. We need to force it to build so the SCSS check in the
-        # qa-console task runs successfully.
-        run: npm rebuild node-sass
+      - name: Debug list all package.json
+        run: find $GITHUB_WORKSPACE -name package.json
 
       - name: Get composer cache directory
         id: composer-cache
@@ -157,18 +148,34 @@ jobs:
           path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
           key: solr-${{ steps.solr-version.outputs.version }}
 
+      - name: Cache NPM dependencies
+        if: ${{ inputs.phing_task_qa_console }}
+        uses: actions/cache@v5
+        with:
+          key: npm-${{ hashFiles('**/package.json') }}
+          path: ~/.npm
+          restore-keys: npm-
+
+      - name: Install node dependencies
+        if: ${{ inputs.phing_task_qa_console }}
+        # Run NPM via Composer for consistency and centralization.
+        run: composer run install-build-deps
+
       - name: Start database
+        if: ${{ inputs.phing_task_phpunit }}
         run: |
           # Create admin user for MariaDB (not needed for mysql).
           sudo mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('password'); FLUSH PRIVILEGES;"
           sudo systemctl start mariadb
 
       - name: Start memcached
+        if: ${{ inputs.phing_task_phpunit }}
         run: |
           sudo systemctl start memcached
           sudo phpenmod memcached
 
       - name: Start Chrome
+        if: ${{ inputs.phing_task_phpunit }}
         run: |
           # Google Chrome ($CHROME_BIN) does not work, so use chromium.
           nohup chromium \
@@ -197,10 +204,12 @@ jobs:
             --disable-extensions --user-data-dir=$PWD/chromium-test-user-dir &
 
       - name: Run phing startup
+        if: ${{ inputs.phing_task_phpunit }}
         run: |
           vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test startup
 
       - name: Prepare Apache2 configuration and restart the web server.
+        if: ${{ inputs.phing_task_phpunit }}
         run: |
           # $HOME must be readable for Apache2 which writes cache files.
           chmod +rx /home/runner/
@@ -213,7 +222,17 @@ jobs:
           sudo a2enconf httpd-vufind
           sudo systemctl restart apache2
 
+      - name: Run tests
+        if: ${{ inputs.phing_task_qa_console }}
+        run: |
+          if [ "${{ github.event.inputs.phing_task_phpunit }}" ]; then
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test qa-console
+          else
+            vendor/bin/phing qa-console
+          fi
+
       - name: Run selected tests
+        if: ${{ inputs.phing_task_phpunit }}
         run: |
           if [ -n "${{ github.event.inputs.phpunit_extra_params }}" ]; then
             # Start selected tests.
