@@ -80,7 +80,7 @@ class ReceiptFactory implements FactoryInterface
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
             $dbServiceManager->get(\VuFind\Db\Service\PaymentFeeServiceInterface::class),
-            $container->get(\VuFind\Cache\Manager::class)->getCacheDir() . 'objects'
+            $container->get(\VuFind\Cache\Manager::class)->getNamedCacheDir('object')
         );
     }
 }
