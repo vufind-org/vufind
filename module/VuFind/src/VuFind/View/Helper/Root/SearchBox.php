@@ -76,7 +76,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
      * Constructor.
      *
      * @param OptionsManager $optionsManager  Search options plugin manager
-     * @param array          $mainConfig      Main config.ini settings
+     * @param array          $config          Main config.ini settings
      * @param array          $searchboxConfig Settings from searchbox.ini
      * @param array          $combinedConfig  Settings from combined.ini
      * @param Url            $url             Url Helper
@@ -84,7 +84,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
     public function __construct(
         protected OptionsManager $optionsManager,
         #[Autowire(config: 'config', configType: 'array')]
-        protected array $mainConfig,
+        protected array $config,
         #[Autowire(config: 'searchbox', configType: 'array')]
         protected array $searchboxConfig,
         #[Autowire(config: 'combined', configType: 'array')]
@@ -92,10 +92,10 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $url
     ) {
-        $this->placeholders = $mainConfig['SearchPlaceholder'] ?? [];
+        $this->placeholders = $config['SearchPlaceholder'] ?? [];
         $includeAlphaOptions = $searchboxConfig['General']['includeAlphaBrowse'] ?? false;
-        $this->alphabrowseConfig = $includeAlphaOptions && isset($mainConfig['AlphaBrowse_Types'])
-            ? $mainConfig['AlphaBrowse_Types'] : [];
+        $this->alphabrowseConfig = $includeAlphaOptions && isset($config['AlphaBrowse_Types'])
+            ? $config['AlphaBrowse_Types'] : [];
     }
 
     /**
@@ -498,7 +498,7 @@ class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translato
             foreach ($handlerConfig['type'] as $i => $type) {
                 $target = $handlerConfig['target'][$i] ?? '';
                 if ($type === 'VuFind' && str_starts_with($target, $activeSearchClass . ':')) {
-                    $rawHFConfig = $this->mainConfig['SearchTabsFilters'][$target]
+                    $rawHFConfig = $this->config['SearchTabsFilters'][$target]
                         ?? $this->combinedConfig[$target]['filter']
                         ?? [];
                     // Account for all possible configuration formats -- an array or a string:
