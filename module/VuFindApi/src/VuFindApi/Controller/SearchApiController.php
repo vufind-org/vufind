@@ -66,6 +66,13 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     protected $defaultRecordFields = [];
 
     /**
+     * Optional record fields to return only if a request defines them.
+     *
+     * @var array
+     */
+    protected $optionalRecordFields = [];
+
+    /**
      * Permission required for the record endpoint.
      *
      * @var string
@@ -155,6 +162,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
         foreach ($recordFormatter->getRecordFields() as $fieldName => $fieldSpec) {
             if (!empty($fieldSpec['vufind.default'])) {
                 $this->defaultRecordFields[] = $fieldName;
+            } else {
+                $this->optionalRecordFields[] = $fieldName;
             }
         }
         // Load configurations from the search options class:
@@ -194,6 +203,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             'defaultSearchType' => $options->getDefaultHandler(),
             'recordFields' => $this->recordFormatter->getRecordFieldSpec(),
             'defaultFields' => $this->defaultRecordFields,
+            'optionalFields' => $this->optionalRecordFields,
             'facetConfig' => $params->getFacetConfig(),
             'sortOptions' => $options->getSortOptions(),
             'defaultSort' => $options->getDefaultSortByHandler(),

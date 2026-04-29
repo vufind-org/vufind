@@ -39,7 +39,7 @@ use Laminas\Session\SessionManager;
 use Laminas\Translator\TranslatorInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Http\GuzzleService;
 
@@ -77,7 +77,7 @@ class ZoteroServiceFactory implements FactoryInterface
             'zotero_oauth',
             $container->get(SessionManager::class)
         );
-        $config = $container->get(ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(ConfigManagerInterface::class)->getConfigArray('config');
         $clientCredentials = (array)($config['Zotero'] ?? []);
         if (empty($clientCredentials['callback_uri'])) {
             $serverHelper = $container->get('ViewRenderer')->plugin('serverurl');

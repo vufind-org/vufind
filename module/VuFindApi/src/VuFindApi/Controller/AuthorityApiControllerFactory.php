@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Default factory for payment handlers.
+ * Factory for AuthorityApiController.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2025.
+ * Copyright (C) Universität Mannheim 2026
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,37 +21,30 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  OnlinePayment
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Controller
+ * @author   Stefan Weil <stefan.weil@uni-mannheim.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
-declare(strict_types=1);
-
-namespace VuFind\OnlinePayment\Handler;
+namespace VuFindApi\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManagerInterface;
-use VuFind\Db\Service\AuditEventServiceInterface;
-use VuFind\I18n\Locale\LocaleSettings;
-use VuFind\OnlinePayment\OnlinePaymentManager;
-use VuFindHttp\HttpService;
 
 /**
- * Default factory for payment handlers.
+ * Factory for AuthorityApiController.
  *
  * @category VuFind
- * @package  OnlinePayment
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Controller
+ * @author   Stefan Weil <stefan.weil@uni-mannheim.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class AbstractBaseFactory implements FactoryInterface
+class AuthorityApiControllerFactory implements FactoryInterface
 {
     /**
      * Create an object.
@@ -75,13 +68,10 @@ class AbstractBaseFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(ConfigManagerInterface::class)->getConfigArray('config'),
-            $container->get(HttpService::class),
-            $container->get(LocaleSettings::class),
-            $container->get(OnlinePaymentManager::class),
-            $dbServiceManager->get(AuditEventServiceInterface::class)
+            $container,
+            $container->get(\VuFindApi\Formatter\AuthorityRecordFormatter::class),
+            $container->get(\VuFindApi\Formatter\FacetFormatter::class)
         );
     }
 }
