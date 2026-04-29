@@ -326,15 +326,15 @@ class ILS extends AbstractBase
         }
 
         // Fetch user by email address and send a one-time password by email if found:
-        if ($target) {
-            $username = "$target.$username";
-        }
         $preAuthData = [
             'authId' => null,
             'target' => $target,
             'email' => $username,
             'messageHtml' => 'email_login_code_sent_html',
         ];
+        if ($target) {
+            $username = "$target.$username";
+        }
         if ($patron = $this->getCatalog()->patronLogin($username, null)) {
             $preAuthData['authId'] = $this->emailAuthenticator->sendAuthenticationCode(
                 $preAuthData['email'],
