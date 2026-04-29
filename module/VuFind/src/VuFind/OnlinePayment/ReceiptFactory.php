@@ -72,7 +72,7 @@ class ReceiptFactory implements FactoryInterface
         }
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
             $container->get(\VuFind\Date\Converter::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
             $container->get(\VuFind\Service\CurrencyFormatter::class),
