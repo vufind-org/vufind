@@ -171,12 +171,11 @@ class NoticeService extends AbstractDbService implements
     {
         $notice = $this->createEntity();
 
-        // Set display order to last position in notice list.
-        $dql = 'SELECT COUNT(b) '
-            . 'FROM ' . NoticeEntityInterface::class . ' b';
-        $query = $this->entityManager->createQuery($dql);
-
         if (!isset($data['displayOrder'])) {
+            // Set display order to last position in notice list if not already provided.
+            $dql = 'SELECT COUNT(b) '
+                . 'FROM ' . NoticeEntityInterface::class . ' b';
+            $query = $this->entityManager->createQuery($dql);
             $data['displayOrder'] = intval($query->getSingleScalarResult());
         }
 
