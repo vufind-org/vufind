@@ -59,7 +59,7 @@ class SolrAuthDefault extends SolrDefault
      */
     public function getInstitutions(): array
     {
-        return $this->fields['institution'] ?? [];
+        return (array)($this->fields['institution'] ?? []);
     }
 
     /**
