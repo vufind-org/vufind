@@ -185,6 +185,8 @@ return [
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'content-delete' => 'FontAwesome:trash',
+            'content-edit' => 'FontAwesome:edit',
             'user-content' => 'FontAwesome:comment',
             'cover-replacement' => 'FontAwesome:question',
             'currency-eur' => 'FontAwesome:euro-sign',
