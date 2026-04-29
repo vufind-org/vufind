@@ -33,6 +33,7 @@ use DateTime;
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
 use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\ServerUrl;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -64,10 +65,19 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param array $options Options array (valid key = 'prioritizeRecordDriverLinks')
+     * @param ServerUrl    $serverUrl    ServerUrl Helper
+     * @param CurrentPath  $currentPath  CurrentPath Helper
+     * @param RecordLinker $recordLinker RecordLinker Helper
+     * @param Record       $record       Record  Helper
+     * @param array        $options      Options array (valid key = 'prioritizeRecordDriverLinks')
      */
-    public function __construct(protected array $options = [])
-    {
+    public function __construct(
+        protected ServerUrl $serverUrl,
+        protected CurrentPath $currentPath,
+        protected RecordLinker $recordLinker,
+        protected Record $record,
+        protected array $options = []
+    ) {
     }
 
     /**
@@ -126,10 +136,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         // Determine base URL if not already provided:
         if (null === $currentPath) {
-            $currentPath = ($this->getView()->plugin('currentPath'))();
+            $currentPath = ($this->currentPath)();
         }
-        $serverUrl = $this->getView()->plugin('serverurl');
-        $baseUrl = $serverUrl($currentPath);
+        $baseUrl = ($this->serverurl)($currentPath);
         $lang = $this->getTranslatorLocale();
 
         // Create the parent feed
@@ -270,10 +279,8 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
      */
     protected function getLinkFromRecordLinker(RecordDriver $record): ?string
     {
-        $serverUrl = $this->getView()->plugin('serverurl');
-        $recordLinker = $this->getView()->plugin('recordLinker');
         try {
-            $url = $serverUrl($recordLinker->getUrl($record));
+            $url = ($this->serverUrl)($this->recordLinker->getUrl($record));
         } catch (\Laminas\Router\Exception\RuntimeException $e) {
             // Not every record driver has a route defined; return null if the
             // record linker fails to give us anything usable.
@@ -299,8 +306,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         }
 
         // Next try picking the first usable value from getUrls() via the Record helper.
-        $recordHelper = $this->getView()->plugin('record');
-        foreach (($recordHelper)($record)->getLinkDetails() as $link) {
+        foreach (($this->record)($record)->getLinkDetails() as $link) {
             if (!empty($link['url'])) {
                 return $link['url'];
             }

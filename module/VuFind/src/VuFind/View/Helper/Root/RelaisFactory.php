@@ -32,6 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Renderer\RendererInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -71,6 +72,6 @@ class RelaisFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $urlHelper = $container->get('ViewHelperManager')->get('url');
         $loginUrl = $urlHelper('relais-login');
-        return new $requestedName($config->Relais ?? null, $loginUrl);
+        return new $requestedName($config->Relais ?? null, $loginUrl, $container->get(RendererInterface::class));
     }
 }

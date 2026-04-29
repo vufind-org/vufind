@@ -44,7 +44,7 @@ use VuFind\Search\Results\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
+class SearchTabsHelper
 {
     /**
      * Search manager.
@@ -112,6 +112,16 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
         $this->request = $request;
         $this->permissionConfig = $permConfig;
         $this->settings = $settings;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 
     /**
