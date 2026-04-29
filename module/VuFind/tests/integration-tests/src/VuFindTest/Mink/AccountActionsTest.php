@@ -439,7 +439,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Delete the account
-        $this->clickCss($page, '.fa-trash-o');
+        $this->clickCss($page, '.fa-trash-can');
         $this->clickCss($page, '.modal #delete-account-submit');
         $this->waitForPageLoad($page);
 
