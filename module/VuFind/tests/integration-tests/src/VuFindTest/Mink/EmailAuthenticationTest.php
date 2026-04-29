@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 /**
  * Email authentication test class.
  *
@@ -131,37 +133,80 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testILSEmailAuthentication.
+     *
+     * @return \Iterator
+     */
+    public static function ilsEmailAuthenticationProvider(): \Iterator
+    {
+        yield 'ILS' => [false];
+        yield 'MultiILS' => [true];
+    }
+
+    /**
      * Test the ILS email authentication process.
+     *
+     * @param bool $multiIls Use MultiILS driver?
      *
      * @return void
      */
-    public function testILSEmailAuthentication(): void
+    #[DataProvider('ilsEmailAuthenticationProvider')]
+    public function testILSEmailAuthentication(bool $multiIls): void
     {
         // Set up configs, session and message logging:
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Authentication' => [
-                        'method' => 'ILS',
-                        'recover_interval' => 0,
-                    ],
-                    'Catalog' => [
-                        'driver' => 'Demo',
-                    ],
-                    'Mail' => [
-                        'testOnly' => true,
-                        'message_log' => $this->getEmailLogPath(),
-                        'message_log_format' => $this->getEmailLogFormat(),
-                        'default_from' => 'noreply@vufind.org',
+        $configs = $multiIls ? [
+            'config' => [
+                'Authentication' => [
+                    'method' => 'MultiILS',
+                    'recover_interval' => 0,
+                ],
+                'Catalog' => [
+                    'driver' => 'MultiBackend',
+                ],
+            ],
+            'MultiBackend' => [
+                'Drivers' => [
+                    'ils1' => 'Demo',
+                    'ils2' => 'Demo',
+                ],
+                'Login' => [
+                    'default_driver' => 'ils1',
+                    'drivers' => [
+                        'ils1',
+                        'ils2',
                     ],
                 ],
-                'Demo' => [
-                    'Catalog' => [
-                        'loginMethod' => 'email',
-                    ],
+            ],
+            'Demo:ils1' => [
+                'Catalog' => [
+                    'loginMethod' => 'email',
                 ],
-            ]
-        );
+            ],
+            'Demo:ils2' => [],
+        ] : [
+            'config' => [
+                'Authentication' => [
+                    'method' => 'ILS',
+                    'recover_interval' => 0,
+                ],
+                'Catalog' => [
+                    'driver' => 'Demo',
+                ],
+            ],
+            'Demo' => [
+                'Catalog' => [
+                    'loginMethod' => 'email',
+                ],
+            ],
+        ];
+        $configs['config']['Mail'] = [
+            'testOnly' => true,
+            'message_log' => $this->getEmailLogPath(),
+            'message_log_format' => $this->getEmailLogFormat(),
+            'default_from' => 'noreply@vufind.org',
+        ];
+
+        $this->changeConfigs($configs);
 
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
@@ -185,7 +230,8 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         }
 
         // Try wrong code first:
-        $this->findCssAndSetValue($page, '#login_ILS_password', '123');
+        $passwordField = $multiIls ? '#login_MultiILS_password' : '#login_ILS_password';
+        $this->findCssAndSetValue($page, $passwordField, '123');
         $this->clickCss($page, '.form-login .btn-primary');
         $this->assertSame(
             'Invalid login -- please try again.',
@@ -194,7 +240,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Enter the one-time code:
         $code = $this->extractLoginCodeFromEmail('catuser@vufind.org');
-        $this->findCssAndSetValue($page, '#login_ILS_password', $code);
+        $this->findCssAndSetValue($page, $passwordField, $code);
         $this->clickCss($page, '.form-login .btn-primary');
 
         // Log out (we can't log out unless we successfully logged in):
@@ -211,7 +257,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'catuser@vufind.org']);
+        static::removeUsers(['username1', 'catuser@vufind.org', 'ils1.catuser@vufind.org']);
     }
 
     /**

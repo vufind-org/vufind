@@ -957,7 +957,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
                 }
                 // Pre-authentication completed or bypassed, try to authenticate the user:
                 $user = $this->getAuth()->authenticate($request);
-                // Clear pre-authentication data after successful authencation:
+                // Clear pre-authentication data after successful authentication:
                 $this->userSession->setPreAuthenticationData(null);
             } catch (AuthException $e) {
                 $this->auditEventService->addEvent(

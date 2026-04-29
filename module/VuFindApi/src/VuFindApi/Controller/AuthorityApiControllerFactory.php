@@ -1,11 +1,11 @@
 <?php
 
 /**
- * SearchOptions helper factory.
+ * Factory for AuthorityApiController.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Universität Mannheim 2026
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
+ * @author   Stefan Weil <stefan.weil@uni-mannheim.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFindApi\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * SearchOptions helper factory.
+ * Factory for AuthorityApiController.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Controller
+ * @author   Stefan Weil <stefan.weil@uni-mannheim.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class SearchOptionsFactory implements FactoryInterface
+class AuthorityApiControllerFactory implements FactoryInterface
 {
     /**
      * Create an object.
@@ -69,7 +69,9 @@ class SearchOptionsFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Search\Options\PluginManager::class)
+            $container,
+            $container->get(\VuFindApi\Formatter\AuthorityRecordFormatter::class),
+            $container->get(\VuFindApi\Formatter\FacetFormatter::class)
         );
     }
 }

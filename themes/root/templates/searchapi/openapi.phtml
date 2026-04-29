@@ -3,13 +3,23 @@
                     {
                         "name": "field[]",
                         "in": "query",
-                        "description": "Fields to return.<?php if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><?php endif; ?>",
+                        "description": "Fields to return.<?php if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><?php endif; ?><?php if ($this->optionalFields): ?><?php if ($this->defaultFields): ?>\n\n<?php endif; ?>These fields are optional and not returned by default:\n- <?=implode('\n- ', array_map('addslashes', $this->optionalFields)) ?><?php endif; ?>",
                         "style": "form",
                         "explode": true,
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "type": "string",
+                                "enum": [<?php
+                                    $allFields = array_merge(
+                                        $this->defaultFields ?? [],
+                                        $this->optionalFields ?? []
+                                    );
+                                    echo implode(', ', array_map(
+                                        fn ($f) => '"' . addslashes($f) . '"',
+                                        $allFields
+                                    ));
+                                ?>]
                             }
                         }
                     }

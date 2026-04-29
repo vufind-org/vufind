@@ -32,6 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Renderer\RendererInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -78,6 +79,19 @@ class PiwikFactory implements FactoryInterface
         $customVars = $config->Piwik->custom_variables ?? false;
         $request = $container->get('Request');
         $router = $container->get('Router');
-        return new $requestedName($url, $settings, $customVars, $router, $request);
+        $renderer = $container->get(RendererInterface::class);
+        $helperManager = $container->get('ViewHelperManager');
+        return new $requestedName(
+            $url,
+            $settings,
+            $customVars,
+            $router,
+            $request,
+            $renderer,
+            $helperManager->get(\VuFindTheme\View\Helper\AssetManager::class),
+            $helperManager->get('view_model'),
+            $helperManager->get('escapejs'),
+            $helperManager->get('escapeHtmlAttr'),
+        );
     }
 }

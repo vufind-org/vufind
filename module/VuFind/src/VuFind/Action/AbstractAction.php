@@ -169,6 +169,16 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Check if method is POST.
+     *
+     * @return bool
+     */
+    protected function isPost(): bool
+    {
+        return $this->request->getMethod() === 'POST';
+    }
+
+    /**
      * Get a parameter from POST fields or query string.
      *
      * @param string            $param   Param name
