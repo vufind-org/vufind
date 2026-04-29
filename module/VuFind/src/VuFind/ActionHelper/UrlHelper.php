@@ -54,7 +54,7 @@ class UrlHelper implements HelperInterface
     /**
      * Normalized service base URL.
      *
-     * @var ?array
+     * @var ?string
      */
     protected ?string $normalizedBaseUrl = null;
 

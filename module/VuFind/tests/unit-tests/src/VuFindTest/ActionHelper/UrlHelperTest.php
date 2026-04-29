@@ -55,7 +55,8 @@ class UrlHelperTest extends TestCase
     public function testIsLocalUrl(): void
     {
         $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
-        $serverUrlHelper->method('getUrlForPath')
+        $serverUrlHelper->expects($this->once())
+            ->method('getUrlForPath')
             ->willReturn('http://vufind.org/');
 
         $helper = $this->getAutowiredObject(
