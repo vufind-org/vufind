@@ -110,4 +110,14 @@ class Relais
         // Case 3: Nothing enabled:
         return '';
     }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }
