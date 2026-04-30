@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search Options for GVI Solr index
+ * Search Options for GVI Solr index.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\GVI;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Search Options for second Solr index
+ * Search Options for second Solr index.
  *
  * @category VuFind
  * @package  Search_GVI
@@ -43,7 +43,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

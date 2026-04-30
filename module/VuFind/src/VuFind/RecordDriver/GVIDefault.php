@@ -47,7 +47,7 @@ namespace VuFind\RecordDriver;
 class GVIDefault extends SolrMarc
 {
     /**
-     * Used for identifying search backends
+     * Used for identifying search backends.
      *
      * @var string
      */
@@ -58,7 +58,7 @@ class GVIDefault extends SolrMarc
     protected $sourceIdentifier = 'GVI';
 
     /**
-     * Get the Hierarchy Type (false if none)
+     * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
      */

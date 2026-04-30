@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search Results for GVI Solr index
+ * Search Results for GVI Solr index.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\GVI;
 
 /**
- * Search Results for second Solr index
+ * Search Results for second Solr index.
  *
  * @category VuFind
  * @package  Search_GVI
@@ -41,7 +41,7 @@ namespace VuFind\Search\GVI;
 class Results extends \VuFind\Search\Solr\Results
 {
     /**
-     * Backend ID
+     * Backend ID.
      *
      * @var string
      */

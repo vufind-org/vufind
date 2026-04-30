@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for the Solr based GVI backend
+ * Factory for the Solr based GVI backend.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Factory;
 
 /**
- * Factory for a second Solr backend
+ * Factory for a second Solr backend.
  *
  * @category VuFind
  * @package  Search_Factory
@@ -41,7 +41,7 @@ namespace VuFind\Search\Factory;
 class GVIBackendFactory extends SolrDefaultBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
