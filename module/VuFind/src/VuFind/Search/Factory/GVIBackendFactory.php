@@ -47,7 +47,7 @@ class GVIBackendFactory extends SolrDefaultBackendFactory
     {
         parent::__construct();
         $this->mainConfig = $this->searchConfig = $this->facetConfig = 'GVI';
-        $this->searchYaml = 'searchspecs2.yaml';
+        $this->searchSpecsConfig = 'gvisearchspecs.yaml';
     }
 
     /**

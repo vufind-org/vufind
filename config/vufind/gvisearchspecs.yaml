@@ -1,0 +1,3 @@
+# This is the search configuration for the secondary search handler.
+# By default, it simply inherits rules from the parent handler.
+"@parent_yaml": "searchspecs.yaml"
