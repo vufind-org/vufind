@@ -55,6 +55,16 @@ jobs:
         php-version: ${{ (github.event_name == 'push') && fromJSON('["default"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4", "8.5", "default"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
 
     steps:
+      - name: Update old PHP xdebug
+        if: ${{ matrix.php-version == 'default' }}
+        run: |
+          # Test failure caused by pre-installed php-xdebug 3.2, so remove it and installer newer 3.5.
+          sudo apt-get -y purge php8.3-xdebug
+          sudo pecl channel-update pecl.php.net
+          sudo pecl install xdebug
+          echo "zend_extension=xdebug.so" | sudo tee /etc/php/8.3/mods-available/xdebug.ini
+          sudo phpenmod xdebug
+
       - name: Install Debian packages
         if: ${{ matrix.php-version == 'default' }}
         run: |
@@ -101,13 +111,12 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      # The following code is disabled because `hashFiles('**/composer.lock')` fails.
-      #- name: Cache composer dependencies
-      #  uses: actions/cache@v5
-      #  with:
-      #    path: ${{ steps.composer-cache.outputs.dir }}
-      #    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-      #    restore-keys: ${{ runner.os }}-composer-
+      - name: Cache composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Cache php-cs-fixer data
         uses: actions/cache@v5
@@ -180,7 +189,12 @@ jobs:
         if: ${{ inputs.phing_task_qa_console }}
         run: |
           if [ "${{ github.event.inputs.phing_task_phpunit }}" ]; then
-            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test qa-console
+            # No need to run phpunitfast as phpunit will be run later.
+            vendor/bin/phing qa-js-and-scss
+            vendor/bin/phing phpcs-console
+            vendor/bin/phing php-cs-fixer-dryrun
+            vendor/bin/phing phpstan-console
+            vendor/bin/phing rector-console
           else
             vendor/bin/phing qa-console
           fi
