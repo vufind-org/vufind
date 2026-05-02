@@ -125,12 +125,14 @@ jobs:
           restore-keys: "php-${{ matrix.php-version }}-rector-"
 
       - name: Extract Solr version from build.xml (used for Solr download cache)
+        if: ${{ inputs.phing_task_phpunit }}
         id: solr-version
         run: |
           SOLR_VERSION=$(grep -oP 'property name="solr_version" value="\K[^"]+' build.xml)
           echo "version=$SOLR_VERSION" >> $GITHUB_OUTPUT
 
       - name: Restore Solr download cache (used in `composer install`)
+        if: ${{ inputs.phing_task_phpunit }}
         id: cache-solr
         uses: actions/cache/restore@v5
         with:
@@ -142,7 +144,7 @@ jobs:
         run: composer install
 
       - name: Save Solr download cache (if downloaded in `composer install`)
-        if: steps.cache-solr.outputs.cache-hit != 'true'
+        if: ${{ inputs.phing_task_phpunit && steps.cache-solr.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
           path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
@@ -160,6 +162,15 @@ jobs:
         if: ${{ inputs.phing_task_qa_console }}
         # Run NPM via Composer for consistency and centralization.
         run: composer run install-build-deps
+
+      - name: Run phing qa-console
+        if: ${{ inputs.phing_task_qa_console }}
+        run: |
+          if [ "${{ github.event.inputs.phing_task_phpunit }}" ]; then
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test qa-console
+          else
+            vendor/bin/phing qa-console
+          fi
 
       - name: Start database
         if: ${{ inputs.phing_task_phpunit }}
@@ -215,15 +226,6 @@ jobs:
           sudo cp local/httpd-vufind.conf /etc/apache2/conf-available/
           sudo a2enconf httpd-vufind
           sudo systemctl restart apache2
-
-      - name: Run tests
-        if: ${{ inputs.phing_task_qa_console }}
-        run: |
-          if [ "${{ github.event.inputs.phing_task_phpunit }}" ]; then
-            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test qa-console
-          else
-            vendor/bin/phing qa-console
-          fi
 
       - name: Run selected tests
         if: ${{ inputs.phing_task_phpunit }}
