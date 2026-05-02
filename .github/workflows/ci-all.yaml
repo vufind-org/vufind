@@ -58,7 +58,8 @@ jobs:
       - name: Update old PHP xdebug
         if: ${{ matrix.php-version == 'default' }}
         run: |
-          # Test failure caused by pre-installed php-xdebug 3.2, so remove it and installer newer 3.5.
+          # A test failure is caused by pre-installed php-xdebug 3.2,
+          # so remove it and install newer 3.5.
           sudo apt-get -y purge php8.3-xdebug
           sudo pecl channel-update pecl.php.net
           sudo pecl install xdebug
@@ -66,7 +67,7 @@ jobs:
           sudo phpenmod xdebug
 
       - name: Install Debian packages
-        if: ${{ matrix.php-version == 'default' }}
+        if: ${{ inputs.phing_task_phpunit || matrix.php-version == 'default' }}
         run: |
           sudo apt-get update
           # apache2, chromium and most PHP packages are already installed.
