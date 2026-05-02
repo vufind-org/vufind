@@ -41,7 +41,7 @@ on:
 jobs:
   run-tests:
     name: Tests with PHP ${{ matrix.php-version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       VUFIND_HOME: ${{ github.workspace }}
@@ -50,7 +50,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ${{ (github.event_name == 'push') && fromJSON('["8.3"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
+        php-version: ${{ (github.event_name == 'push') && fromJSON('["8.3"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.3"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
 
     steps:
       - name: Checkout
@@ -64,7 +64,7 @@ jobs:
           # sudo apt-get -y install php-mbstring php-pear php php-dev php-gd php-intl php-json php-ldap php-mysql php-xml php-soap php-curl
           # Install missing packages.
           sudo apt-get -y install mariadb-server
-          sudo apt-get -y install libapache2-mod-php memcached php-json php-memcached
+          sudo apt-get -y install libapache2-mod-php php-json php-memcached
 
       - name: Configure Apache for PHP ${{ matrix.php-version }}
         run: |
@@ -167,12 +167,6 @@ jobs:
           # Create admin user for MariaDB (not needed for mysql).
           sudo mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('password'); FLUSH PRIVILEGES;"
           sudo systemctl start mariadb
-
-      - name: Start memcached
-        if: ${{ inputs.phing_task_phpunit }}
-        run: |
-          sudo systemctl start memcached
-          sudo phpenmod memcached
 
       - name: Start Chrome
         if: ${{ inputs.phing_task_phpunit }}
