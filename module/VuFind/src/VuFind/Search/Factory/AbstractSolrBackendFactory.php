@@ -626,7 +626,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function loadSpecs(): array
     {
-        return $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray($this->searchSpecsConfig);
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->searchSpecsConfig);
     }
 
     /**
