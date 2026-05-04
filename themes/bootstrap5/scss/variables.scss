@@ -18,3 +18,37 @@ $nav-link-hover-bg:       $gray-lighter !default;
 
 $alert-default-bg: #f5f5f5 !default;
 $alert-default-border-color: color.adjust($alert-default-bg, $lightness: -7%) !default;
+
+// HOME FACET LAYOUT
+// The following variables are used to define the layout of the outer facet container ('.home-facet-container') on the home page:
+// Defines the visual division of facet container columns
+$home-facet-container-left-padding: .25rem !default; // Defines left padding for better visual division
+$home-facet-container-right-padding: 1rem !default; // Defines right padding for better visual division
+
+$home-facet-container-height: 95% !default; // Set this to 100% to make visual division line between the containers go full height, when a ul split into two columns has the setting 'column-fill: balance;'; reduce as needed
+$home-facet-container-bottom-margin: 1rem !default; // Defines the container bottom margin; might be used to prevent divisions between 'home-facet-list' elements from running onto the content below
+
+// The following variables are used to define the layout of ul lists ('ul.home-facet-list') inside the '.home-facet-container' elements:
+$home-facet-list-border-right-style: 1px solid $gray-dark !default; // Defines the border between the facet list containers
+$home-facet-list-last-of-type-border-right-style: 0 !default; // Defines the border of the last facet list container
+
+$home-facet-list-column-count-default: 1; // Defines the default number of columns into which a default 'ul.home-facet-list' will be split for devices
+$home-facet-list-column-width-default: 100%; // Defines the width of a default 'ul.home-facet-list'; e.g.: 100% makes sure single column has same width as double column, such as e.g.: '.callnumber-first'
+
+$home-facet-list-column-count-md: 2 !default; // Defines the maximum number of columns into which a facet list can be split for MD sized devices
+$home-facet-list-column-rule-md: 1px dotted grey !default;
+$home-facet-list-column-count-sm: 1 !default; // Defines the maximum number of columns into which a facet list can be split for SM sized devices
+$home-facet-list-column-count-xs: 1 !default; // Defines the maximum number of columns into which a facet list can be split for XS sized devices
+
+$home-facet-list-non-default-column-count: 2 !default; // Defines the maximum number of columns into which a non-default facet list, such as '.callnumber-first' will be split for devices >=992px
+$home-facet-list-non-default-column-rule: 1px dotted grey !default; // Defines column rule between the <li> columns for non-default facet lists, such as '.callnumber-first' on devices >=992px
+
+$home-facet-list-column-fill: balance !default; // Set this to 'balance' to distribute available <li>entries evenly across the max. number of columns, set this to 'auto' for distribution that fills first column and places remaining entries in 2nd column etc.
+
+$home-facet-list-column-gap: 1rem !default; // Defines the gap between <li>columns if more than one
+$home-facet-list-column-height: auto !default; // Defines the height of each <li>column before the column breaks, 1rem should roughly equal one line
+$home-facet-list-column-overflow: clip !default; // Defines what's to be done if there are more <li>entries than fit the columns
+
+$home-facet-list-left-padding: 0 !default; // Overwrites the default left padding for uls (2rem)
+$home-facet-list-list-style: none !default; // Removes list style bullets from <li>
+$home-facet-list-right-padding: 1rem !default; // Adds greater visual separation
