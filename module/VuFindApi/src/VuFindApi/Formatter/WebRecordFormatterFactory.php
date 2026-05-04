@@ -45,5 +45,5 @@ class WebRecordFormatterFactory extends RecordFormatterFactory
      *
      * @var string
      */
-    protected $configFile = 'WebApiRecordFields.yaml';
+    protected $configFile = 'WebApiRecordFields';
 }
