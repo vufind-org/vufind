@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Interface for config handler classes.
+ * Environment variable config handler.
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2025.
+ * Copyright (C) Hebis Verbundzentrale 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,17 +30,12 @@
 namespace VuFind\Config\Handler;
 
 use VuFind\Config\Location\ConfigLocationInterface;
+use VuFind\Exception\ConfigException;
+
+use function is_string;
 
 /**
- * Interface for config handler classes.
- *
- * This interface class is the definition of the required methods for
- * loading configuration.
- *
- * The parameters are of no major concern as you can define the purpose of the
- * parameters for each method for whatever purpose your driver needs.
- * The most important element here is what the method will return. All methods
- * may throw exceptions in case of errors.
+ * Environment variable config handler.
  *
  * @category VuFind
  * @package  Config_Handlers
@@ -48,23 +43,23 @@ use VuFind\Config\Location\ConfigLocationInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-interface HandlerInterface
+class Env extends AbstractBase
 {
     /**
      * Parses the configuration in a config location.
-     *
-     * Returns an associative array.
-     * Must contain the configuration as an array under the key 'data'.
-     * May contain the following keys:
-     * - parentLocation (Config location of the parent config)
-     * - mergeCallback (A callback that specifies how the parent config should be merged)
      *
      * @param ConfigLocationInterface $configLocation     Config location
      * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array;
+    public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
+    {
+        $environmentVariable = trim(file_get_contents($configLocation->getPath()));
+        return ['data' => $this->getEnvVar($environmentVariable)];
+    }
 
     /**
      * Handle an include statement.
@@ -74,21 +69,24 @@ interface HandlerInterface
      *
      * @return mixed
      */
-    public function handleInclude(string $includeSetting, string $basePath): mixed;
+    public function handleInclude(string $includeSetting, string $basePath): mixed
+    {
+        return $this->getEnvVar($includeSetting);
+    }
 
     /**
-     * Write configuration to a specific location.
+     * Get environment variable or throw exception if it does not exist.
      *
-     * @param ConfigLocationInterface  $destinationLocation Destination location for the config
-     * @param array|string             $config              Config to write
-     * @param ?ConfigLocationInterface $baseLocation        Location of a base configuration that can provide additional
-     * structure (e.g. comments)
+     * @param string $name Environemnt variable name
      *
-     * @return void
+     * @return string
      */
-    public function writeConfig(
-        ConfigLocationInterface $destinationLocation,
-        array|string $config,
-        ?ConfigLocationInterface $baseLocation
-    ): void;
+    protected function getEnvVar(string $name): string
+    {
+        $config = getenv($name);
+        if (!is_string($config)) {
+            throw new ConfigException('Environment variable ' . $name . ' does not exist.');
+        }
+        return $config;
+    }
 }

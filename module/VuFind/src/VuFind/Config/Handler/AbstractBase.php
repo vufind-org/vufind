@@ -60,6 +60,29 @@ abstract class AbstractBase implements HandlerInterface
     }
 
     /**
+     * Handle an include statement.
+     *
+     * @param string $includeSetting Settings of the include statement
+     * @param string $basePath       Base path used for relative includes
+     *
+     * @return mixed
+     */
+    public function handleInclude(string $includeSetting, string $basePath): mixed
+    {
+        // default for file based configuration handlers
+        $includeSettingParts = explode(':', $includeSetting, 2);
+        $configurationPath = $includeSettingParts[0];
+        if ($includeSettingParts[1] === 'relative') {
+            $configurationPath = $basePath . DIRECTORY_SEPARATOR . $configurationPath;
+        }
+        $configLocation = $this->pathResolver->getConfigLocationOnPath($configurationPath);
+        if ($configLocation === null) {
+            throw new ConfigException('Can not include file ' . $configurationPath . '. File not found.');
+        }
+        return $this->parseConfig($configLocation)['data'];
+    }
+
+    /**
      * Write configuration to a specific location.
      *
      * @param ConfigLocationInterface  $destinationLocation Destination location for the config
