@@ -74,17 +74,17 @@ class AltchaFactory implements FactoryInterface
             ->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        $secret = $config->Captcha->altcha_secret ?? null;
+        $secret = $config['Captcha']['altcha_secret'] ?? null;
 
         if (empty($secret)) {
             throw new \Exception('Secret key needed for Altcha. See config.ini.');
         }
 
-        $algorithm = Algorithm::from($config->Captcha->altcha_algorithm ?? 'SHA-256');
-        $maxNumber = $config->Captcha->altcha_max_number ?? 100000;
-        $saltLength = $config->Captcha->altcha_salt_len ?? 12;
-        $expiresInterval = $config->Captcha->altcha_expires_interval ?? null;
-        $params = $config->Captcha->altcha_params ?? [];
+        $algorithm = Algorithm::from($config['Captcha']['altcha_algorithm'] ?? 'SHA-256');
+        $maxNumber = $config['Captcha']['altcha_max_number'] ?? 100000;
+        $saltLength = $config['Captcha']['altcha_salt_len'] ?? 12;
+        $expiresInterval = $config['Captcha']['altcha_expires_interval'] ?? null;
+        $params = $config['Captcha']['altcha_params'] ?? [];
 
         $expires = !empty($expiresInterval)
             ? (new \DateTimeImmutable())->add(new \DateInterval($expiresInterval))
