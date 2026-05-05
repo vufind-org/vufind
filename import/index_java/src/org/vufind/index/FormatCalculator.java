@@ -605,11 +605,19 @@ public class FormatCalculator
             String desc = getSubfieldOrDefault(typeField, 'a', "");
             String code = getSubfieldOrDefault(typeField, 'b', "");
             String source = getSubfieldOrDefault(typeField, '2', "");
-            if ((desc.equals("two-dimensional moving image") || code.equals("tdi")) && source.equals("rdacontent")) {
+            if (desc.equals("computer program")) {
+                return List.of(); // rely on getFormatFromRecordType(), 008/26 is more precise
+            }
+            if (desc.equals("two-dimensional moving image") || (source.equals("rdacontent") && code.equals("tdi"))) {
                 formats.add("Video");
                 if (isOnline) {
                     formats.add("VideoOnline");
                 }
+            }
+            boolean computerOrCartographicDS = desc.equals("computer dataset") || desc.equals("cartographic dataset");
+            boolean crdOrCod = code.equals("crd") || code.equals("cod");
+            if (computerOrCartographicDS || (source.equals("rdacontent") && crdOrCod)) {
+                formats.add("DataSet");
             }
         }
         return formats;

@@ -138,21 +138,25 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string  $id          Record    ID to retrieve.
      * @param ?string $apiKeyToken API key token.
+     * @param string  $divId       id of HTML div element for the record API call
      *
      * @return Element
      */
-    protected function makeRecordApiCall($id = 'testbug2', ?string $apiKeyToken = null): Element
-    {
+    protected function makeRecordApiCall(
+        string $id = 'testbug2',
+        ?string $apiKeyToken = null,
+        string $divId = 'operations-Record-get_record'
+    ): Element {
         $session = $this->getMinkSession();
         if ($apiKeyToken) {
             $session->setApiKeyToken($apiKeyToken);
         }
         $session->visit($this->getVuFindUrl() . '/api');
         $page = $session->getPage();
-        $this->clickCss($page, '#operations-Record-get_record button');
-        $this->clickCss($page, '#operations-Record-get_record .try-out button');
-        $this->findCssAndSetValue($page, '#operations-Record-get_record input[type="text"]', $id);
-        $this->clickCss($page, '#operations-Record-get_record .execute-wrapper button');
+        $this->clickCss($page, "#{$divId} button");
+        $this->clickCss($page, "#{$divId} .try-out button");
+        $this->findCssAndSetValue($page, "#{$divId} input[type=\"text\"]", $id);
+        $this->clickCss($page, "#{$divId} .execute-wrapper button");
         return $page;
     }
 
@@ -190,7 +194,30 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+
+        // Test /record.
         $page = $this->makeRecordApiCall();
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        // Test /index2/record.
+        $page = $this->makeRecordApiCall(id: 'geo20031', divId: 'operations-Record-get_index2_record');
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        // Test /authority/record.
+        $page = $this->makeRecordApiCall(id: 'vtls000001427', divId: 'operations-Record-get_authority_record');
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        // Test /web/record.
+        $page = $this->makeRecordApiCall(id: '003', divId: 'operations-Record-get_web_record');
         $this->assertEquals(
             '200',
             $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
