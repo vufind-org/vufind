@@ -71,10 +71,9 @@ abstract class AbstractBase implements HandlerInterface
     {
         // default for file based configuration handlers
         $includeSettingParts = explode(':', $includeSetting, 2);
-        $configurationPath = $includeSettingParts[0];
-        if ($includeSettingParts[1] === 'relative') {
-            $configurationPath = $basePath . DIRECTORY_SEPARATOR . $configurationPath;
-        }
+        $configurationPath = (($includeSettingParts[1] ?? 'absolute') === 'relative')
+            ? $basePath . DIRECTORY_SEPARATOR . $includeSettingParts[0]
+            : $includeSettingParts[0];
         $configLocation = $this->pathResolver->getConfigLocationOnPath($configurationPath);
         if ($configLocation === null) {
             throw new ConfigException('Can not include file ' . $configurationPath . '. File not found.');
