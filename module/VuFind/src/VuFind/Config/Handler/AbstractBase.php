@@ -70,7 +70,7 @@ abstract class AbstractBase implements HandlerInterface
     public function handleInclude(string $includeSetting, string $basePath): mixed
     {
         // default for file based configuration handlers
-        $includeSettingParts = explode(':', $includeSetting, 2);
+        $includeSettingParts = explode('::', $includeSetting, 2);
         $configurationPath = (($includeSettingParts[1] ?? 'absolute') === 'relative')
             ? $basePath . DIRECTORY_SEPARATOR . $includeSettingParts[0]
             : $includeSettingParts[0];

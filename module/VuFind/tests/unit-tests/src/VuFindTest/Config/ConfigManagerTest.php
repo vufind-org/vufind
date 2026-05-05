@@ -534,7 +534,6 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     {
         putenv($this->testEnvVar . '=EnvVarValue');
         $config = $this->getConfig('including');
-        print_r($config);
         $this->assertEquals(
             [
                 'Section1' => [

@@ -211,10 +211,10 @@ class ConfigLoader
         if (is_array($config)) {
             return array_map(fn ($value) => $this->handleIncludeStatements($value, $basePath), $config);
         }
-        if (!is_string($config) || !str_starts_with($config, 'include:')) {
+        if (!is_string($config) || !str_starts_with($config, 'include::')) {
             return $config;
         }
-        $includeStatementParts = explode(':', $config, 3);
+        $includeStatementParts = explode('::', $config, 3);
         $handlerName = $includeStatementParts[1] ?? null;
         $includeSettings = $includeStatementParts[2] ?? null;
         if (
