@@ -47,7 +47,7 @@
         </div>
       <?php endif; ?>
       <?php
-        // We prefer the title from the items, but sometimes it is missing, so use getTitle() to set a default.
+        // We prefer the title from the items (for highlighting), but sometimes it is missing, so use getTitle() to set a default.
         $mainTitleHtml = $this->escapeHtml($this->driver->getTitle());
         foreach ($items as $item) {
           if ('Title' == $item['label']) {
