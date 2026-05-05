@@ -57,6 +57,8 @@ class Env extends AbstractBase
      */
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
+        // This handler primarily exists to provide handleInclude functionality (see below), but if used to load a
+        // file, it will return the contents of the environment variable named in the provided file.
         $environmentVariable = trim(file_get_contents($configLocation->getPath()));
         return ['data' => $this->getEnvVar($environmentVariable)];
     }
