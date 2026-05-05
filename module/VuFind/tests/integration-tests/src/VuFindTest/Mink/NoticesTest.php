@@ -340,7 +340,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue(
             $page,
             'textarea[name="translations[en]"]',
-            'Test Content1'
+            '<strong>Test Content1</strong>'
         );
 
         $this->clickCss($page, 'button[name="cancel"]');
@@ -355,7 +355,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue(
             $page,
             'textarea[name="translations[en]"]',
-            'Test Content1'
+            '<strong>Test Content1</strong>'
         );
 
         $this->clickCss($page, 'button[name="submit"]');
@@ -364,10 +364,15 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'a[href*="Notices/Add"]');
         $this->waitForPageLoad($page);
 
+        // change content type to markdown and check that markdown hint link becomes visible
+        $this->findCss($page, '.content_type_fieldset-markdown.hidden');
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="markdown"]');
+        $this->unFindCss($page, '.content_type_fieldset-markdown.hidden');
+
         $this->findCssAndSetValue(
             $page,
             'textarea[name="translations[en]"]',
-            'Test Content2'
+            '**Test Content2**'
         );
 
         $this->clickCss($page, '#tab-button-de');
@@ -384,9 +389,9 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
 
         // test notices exist
         $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
-        $this->assertSame('Test Content1', $notice1);
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
 
-        $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning');
+        $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning strong');
         $this->assertSame('Test Content2', $notice2);
 
         // test switching language
@@ -394,7 +399,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
-        $this->assertSame('Test Content1', $notice1);
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
 
         $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning');
         $this->assertSame('German Test Content', $notice2);
@@ -416,9 +421,9 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
 
         // verify notices exist
         $notice1 = $this->findCssAndGetText($page, '.notice-list .alert-success');
-        $this->assertSame('Test Content1', $notice1);
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
 
-        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning strong');
         $this->assertSame('Test Content2', $notice2);
 
         // test cancel
@@ -435,16 +440,29 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'button[name="cancel"]');
         $this->waitForPageLoad($page);
 
-        // edit notice
+        // edit notices
         $this->clickCss($page, '.notice-list a[title="Edit"]');
         $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="clean_html"]');
 
         $this->findCssAndSetValue(
             $page,
             'textarea[name="translations[en]"]',
-            'Changed Content'
+            '<strong>Changed Content</strong>'
         );
         $this->clickCss($page, 'fieldset[name="style_fieldset"] input[value="danger"]');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '.notice-list a[title="Edit"]', index: 1);
+        $this->waitForPageLoad($page);
+
+        // change content type to text and check that markdown hint link becomes hidden
+        $this->unFindCss($page, '.content_type_fieldset-markdown.hidden');
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="text"]');
+        $this->findCss($page, '.content_type_fieldset-markdown.hidden');
 
         $this->clickCss($page, 'button[name="submit"]');
         $this->waitForPageLoad($page);
@@ -452,11 +470,11 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         // test notice changed
         $this->unFindCss($page, '#content > .notices .alert-success');
 
-        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-danger');
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-danger strong');
         $this->assertSame('Changed Content', $notice1);
 
         $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning');
-        $this->assertSame('Test Content2', $notice2);
+        $this->assertSame('**Test Content2**', $notice2);
     }
 
     /**
@@ -478,7 +496,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame('Changed Content', $notice1);
 
         $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
-        $this->assertSame('Test Content2', $notice2);
+        $this->assertSame('**Test Content2**', $notice2);
 
         // test cancel
         $this->clickCss($page, '.notice-list a[title="Delete"]');
@@ -492,7 +510,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame('Changed Content', $notice1);
 
         $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
-        $this->assertSame('Test Content2', $notice2);
+        $this->assertSame('**Test Content2**', $notice2);
 
         // test delete first
         $this->clickCss($page, '.notice-list a[title="Delete"]');
@@ -504,7 +522,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '#content > .notices .alert-danger');
 
         $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
-        $this->assertSame('Test Content2', $notice2);
+        $this->assertSame('**Test Content2**', $notice2);
 
         // test delete second
         $this->clickCss($page, '.notice-list a[title="Delete"]');

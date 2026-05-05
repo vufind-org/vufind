@@ -34,6 +34,7 @@ use VuFind\ContentBlock\TemplateBased;
 use VuFind\View\Helper\Root\Content;
 use VuFind\View\Helper\Root\Context;
 use VuFind\View\Helper\Root\Markdown;
+use VuFindTest\Feature\ViewTrait;
 
 /**
  * Content View Helper Test Class.
@@ -46,6 +47,8 @@ use VuFind\View\Helper\Root\Markdown;
  */
 class ContentTest extends \PHPUnit\Framework\TestCase
 {
+    use ViewTrait;
+
     /**
      * Perform a test of the helper.
      *
@@ -83,6 +86,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
             $mockTemplateBased,
             $mockContext,
             new EscapeHtml(),
+            $this->createCleanHtmlHelper(),
             $mockMarkdownHelper
         );
         // Confirm that expected content was rendered:

@@ -104,6 +104,14 @@
   }
 }
 
+.content-form {
+  fieldset legend {
+    border-bottom: 0;
+    font-size: $font-size-base;
+    margin-bottom: 0;
+  }
+}
+
 .content-form-tabs {
   margin-bottom: 15px;
 

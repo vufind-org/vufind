@@ -1,4 +1,5 @@
 <?php
+  $this->assetManager()->appendScriptLink('content_form.js');
   $tabs = [];
 ?>
 <?php foreach ($this->formData['translations'] as $language => $translation): ?>
@@ -14,6 +15,7 @@
       id="<?=$id?>"
       class="form-control"
     ><?=$this->escapeHtml($translation ?? '')?></textarea>
+    <a href="<?=$this->url('help-home', [], ['query' => ['topic' => 'markdown']])?>" data-lightbox class="help-link content_type_fieldset-markdown"><?=$this->transEsc('Markdown Help')?></a>
   </div>
   <?php
     $content = ob_get_contents();
@@ -25,7 +27,18 @@
   ?>
 <?php endforeach; ?>
 
-<form method="POST" class="notice-form">
+<form method="POST" class="content-form notice-form">
+  <?php if (count($this->formData['contentTypes']) > 1): ?>
+    <?=$this->component(
+      'radio-fieldset',
+      [
+        'groupName' => 'content_type',
+        'displayName' => 'Content Type',
+        'values' => $this->formData['contentTypes'],
+        'checkedValue' => $this->formData['activeContentType'] ?? null,
+      ]
+    )?>
+  <?php endif; ?>
   <div class="content-form-tabs">
     <?php if (count($tabs) > 1): ?>
       <?=$this->component(
