@@ -245,7 +245,7 @@ jobs:
         if: ${{ inputs.phing_task_phpunit }}
         run: |
           # $HOME must be readable for Apache2 which writes cache files.
-          chmod +rx /home/runner/
+          chmod +rx $HOME
           # Add configuration which is needed for some tests.
           grep -q "AllowEncodedSlashes On" /etc/apache2/sites-available/000-default.conf ||
           sudo sed -i '/<VirtualHost \*/a \\tAllowEncodedSlashes On' /etc/apache2/sites-available/000-default.conf
@@ -265,3 +265,6 @@ jobs:
             # Runs all available tests.
             vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit
           fi
+          # The test creates directories and files which are not accessible by the test user.
+          # Therefore fix the ownership to allow caching of selected files.
+          sudo chown -R $USER: $HOME
