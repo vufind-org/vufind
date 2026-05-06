@@ -260,7 +260,7 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.phpunit_extra_params }}" ]; then
             # Start selected tests.
-            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit -Dphpunit_extra_params="${{ github.event.inputs.phpunit_extra_params }}"
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test -Dscreenshot_dir=/tmp/build/vufind/screenshots phpunit -Dphpunit_extra_params="${{ github.event.inputs.phpunit_extra_params }}"
           else
             # Runs all available tests.
             vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit
@@ -268,3 +268,12 @@ jobs:
           # The test creates directories and files which are not accessible by the test user.
           # Therefore fix the ownership to allow caching of selected files.
           sudo chown -R $USER: $HOME
+
+      - name: Upload vufind artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: vufind-${{ matrix.php-version }}
+          path: |
+            /tmp/build/vufind
+            **/*.log
+          retention-days: 14
