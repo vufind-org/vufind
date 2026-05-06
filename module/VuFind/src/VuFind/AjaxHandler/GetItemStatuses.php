@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Item Status" AJAX handler
+ * "Get Item Status" AJAX handler.
  *
  * PHP version 8
  *
@@ -52,7 +52,7 @@ use function is_array;
 use function is_string;
 
 /**
- * "Get Item Status" AJAX handler
+ * "Get Item Status" AJAX handler.
  *
  * This is responsible for printing the holdings information for a
  * collection of records in JSON format.
@@ -74,7 +74,7 @@ class GetItemStatuses extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings           $ss                        Session settings
      * @param Config                    $config                    Top-level configuration
@@ -325,7 +325,7 @@ class GetItemStatuses extends AbstractBase implements
             'id' => $record[0]['id'],
             'availability' => $combinedAvailability->availabilityAsString(),
             'availability_message' => $availabilityMessage,
-            'location' => htmlentities(implode(",\t", $location), ENT_COMPAT, 'UTF-8'),
+            'location' => implode(",\t", $location),
             'locationList' => false,
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
@@ -370,11 +370,7 @@ class GetItemStatuses extends AbstractBase implements
 
             $locationInfo = [
                 'availability' => $locationStatus['availability'],
-                'location' => htmlentities(
-                    $this->translateWithPrefix('location_', $location),
-                    ENT_COMPAT,
-                    'UTF-8'
-                ),
+                'location' => $this->translateWithPrefix('location_', $location),
                 'callnumberHtml' =>
                     $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
             ];
@@ -425,7 +421,7 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Get a message for availability status
+     * Get a message for availability status.
      *
      * @param AvailabilityStatusInterface $availability Availability Status
      *
@@ -571,7 +567,7 @@ class GetItemStatuses extends AbstractBase implements
         foreach ($missingIds as $missingId => $recordNumber) {
             $availabilityStatus = $this->availabilityStatusManager->createAvailabilityStatus(false);
             $statuses[] = [
-                'id'                   => $missingId,
+                'id'                   => (string)$missingId, // array_flip may have converted to int
                 'availability'         => 'false',
                 'availability_message' => $this->getAvailabilityMessage($availabilityStatus),
                 'location'             => $this->translate('Unknown'),

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sitemap Generator Test Class
+ * Sitemap Generator Test Class.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Sitemap Generator Test Class
+ * Sitemap Generator Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
     use FixtureTrait;
 
     /**
-     * Mock container
+     * Mock container.
      *
      * @var MockContainer
      */
@@ -153,9 +153,9 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      */
     protected function setRelativeFileIndexExpectations(MockObject&SitemapIndex $mockIndex): void
     {
-        $mockIndex->expects($this->once())->method('addUrl')->with($this->equalTo('http://foo/staticIndex.xml'));
+        $mockIndex->expects($this->once())->method('addUrl')->with('http://foo/staticIndex.xml');
         $mockIndex->expects($this->once())->method('write')
-            ->with($this->equalTo($this->getFixturePath('sitemap') . '/sitemapIndex.xml'));
+            ->with($this->getFixturePath('sitemap') . '/sitemapIndex.xml');
     }
 
     /**
@@ -167,9 +167,9 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      */
     protected function setAbsoluteUrlIndexExpectations(MockObject&SitemapIndex $mockIndex): void
     {
-        $mockIndex->expects($this->once())->method('addUrl')->with($this->equalTo('http://foo/my-url.xml'));
+        $mockIndex->expects($this->once())->method('addUrl')->with('http://foo/my-url.xml');
         $mockIndex->expects($this->once())->method('write')
-            ->with($this->equalTo($this->getFixturePath('sitemap') . '/sitemapIndex.xml'));
+            ->with($this->getFixturePath('sitemap') . '/sitemapIndex.xml');
     }
 
     /**
@@ -192,7 +192,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         };
         $mockIndex->expects($this->exactly(2))->method('addUrl')->with($this->callback($checkCallback));
         $mockIndex->expects($this->once())->method('write')
-            ->with($this->equalTo($this->getFixturePath('sitemap') . '/sitemapIndex.xml'));
+            ->with($this->getFixturePath('sitemap') . '/sitemapIndex.xml');
     }
 
     /**
@@ -217,7 +217,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         $this->$expectationMethod($mockIndex);
         $generator = new class ($config, $pluginManager, $mockIndex) extends Generator {
             /**
-             * Constructor
+             * Constructor.
              *
              * @param Config        $config        Sitemap configuration settings
              * @param PluginManager $pluginManager Generator plugin manager
@@ -232,7 +232,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Generate sitemaps from all mandatory and configured plugins
+             * Generate sitemaps from all mandatory and configured plugins.
              *
              * @return array
              */

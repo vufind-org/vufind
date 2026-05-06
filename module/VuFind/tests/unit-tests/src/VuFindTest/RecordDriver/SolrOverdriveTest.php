@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrOverdrive Record Driver Test Class
+ * SolrOverdrive Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\RecordDriver\SolrOverdrive;
 
 /**
- * SolrOverdrive Record Driver Test Class
+ * SolrOverdrive Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Test supportsOpenUrl()
+     * Test supportsOpenUrl().
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getOverdriveID in MARC mode
+     * Test getOverdriveID in MARC mode.
      *
      * @return void
      */
@@ -76,7 +76,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getOverdriveID in non-MARC mode
+     * Test getOverdriveID in non-MARC mode.
      *
      * @return void
      */
@@ -91,7 +91,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBreadcrumb()
+     * Test getBreadcrumb().
      *
      * @return void
      */
@@ -107,7 +107,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getThumbnail without MARC
+     * Test getThumbnail without MARC.
      *
      * @return void
      */
@@ -129,7 +129,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTitleSection()
+     * Test getTitleSection().
      *
      * @return void
      */
@@ -144,7 +144,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getGeneralNotes()
+     * Test getGeneralNotes().
      *
      * @return void
      */
@@ -162,7 +162,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getSummary() with MARC
+     * Test getSummary() with MARC.
      *
      * @return void
      */
@@ -180,7 +180,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getSummary() without MARC
+     * Test getSummary() without MARC.
      *
      * @return void
      */
@@ -191,14 +191,14 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             ['description' => '<tag>&#8217;&#8217;Summary.</tag>']
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Summary.'],
             array_values($driver->getSummary())
         );
     }
 
     /**
-     * Test getAllSubjectHeadings() with MARC
+     * Test getAllSubjectHeadings() with MARC.
      *
      * @return void
      */
@@ -216,7 +216,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getAllSubjectHeadings() without MARC
+     * Test getAllSubjectHeadings() without MARC.
      *
      * @return void
      */
@@ -263,10 +263,8 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConnector(string $config = '{}'): OverdriveConnector
     {
-        $connector = $this->getMockBuilder(OverdriveConnector::class)
-            ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->any())->method('getConfig')
-            ->willReturn(json_decode($config));
+        $connector = $this->createMock(OverdriveConnector::class);
+        $connector->method('getConfig')->willReturn(json_decode($config));
         return $connector;
     }
 }

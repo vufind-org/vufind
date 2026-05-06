@@ -105,6 +105,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
                 'testOnly' => true,
                 'message_log' => $this->getEmailLogPath(),
                 'message_log_format' => $this->getEmailLogFormat(),
+                'default_from' => 'noreply@vufind.org',
             ],
         ];
     }
@@ -207,7 +208,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test login on record page with ILS and SSO authentication
+     * Test login on record page with ILS and SSO authentication.
      *
      * @return void
      */
@@ -235,7 +236,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check that we're still on the same page after login
         $this->findCss($page, '.logoutOptions');
-        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+        $this->assertSame($recordUrl, $this->getCurrentUrlWithoutSid());
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -244,7 +245,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
 
         // Login with SSO
-        $this->assertEquals(
+        $this->assertSame(
             'Institutional Login',
             $this->findCssAndGetText($page, '.modal-body .authmethod1 .btn.btn-link')
         );
@@ -252,7 +253,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check that we're still on the same page after login
         $this->findCss($page, '.logoutOptions');
-        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+        $this->assertSame($recordUrl, $this->getCurrentUrlWithoutSid());
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -280,19 +281,30 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->findCssAndSetValue($page, '#login_Email_username', 'username1@ignore.com');
         $this->clickCss($page, '.authmethod1 input[type="submit"]');
-        $this->assertEquals(
-            'We have sent a login link to your email address. It may take a few moments for the link to arrive. '
-            . "If you don't receive the link shortly, please check also your spam filter.",
-            $this->findCssAndGetText($page, '.modal .alert-success')
+        $this->assertSame(
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive. '
+            . "If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.modal .alert-info')
         );
 
-        // Extract the link from the provided message:
-        $email = $this->getLoggedEmail();
-        preg_match('/Link to login: <(http.*)>/', $email->getBody()->getBody(), $matches);
-        $session->visit($matches[1]);
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#login_Email_password', '123');
+        $this->clickCss($page, '.form-login .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
+        );
 
-        // Log out
+        // Enter the one-time code:
+        $code = $this->extractLoginCodeFromEmail('username1@ignore.com');
+        $this->findCssAndSetValue($page, '#login_Email_password', $code);
+        $this->clickCss($page, '.form-login .btn-primary');
+
+        // Log out (we can't log out unless we successfully logged in):
         $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Clean up the email log:
+        $this->resetEmailLog();
     }
 
     /**

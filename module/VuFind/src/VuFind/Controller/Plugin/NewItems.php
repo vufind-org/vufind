@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - New Items Support Methods
+ * VuFind Action Helper - New Items Support Methods.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function intval;
 use function is_string;
 
 /**
- * Action helper to perform new items-related actions
+ * Action helper to perform new items-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -50,14 +50,14 @@ use function is_string;
 class NewItems extends AbstractPlugin
 {
     /**
-     * Configuration
+     * Configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config $config Configuration
      */
@@ -76,6 +76,8 @@ class NewItems extends AbstractPlugin
      * @param FlashMessenger             $flash   Flash messenger
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getBibIDsFromCatalog($catalog, $params, $range, $dept, $flash)
     {
@@ -98,7 +100,7 @@ class NewItems extends AbstractPlugin
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $flash->addMessage('too_many_new_items', 'info');
+            $flash->addInfoMessage('too_many_new_items');
         }
 
         return $bibIDs;
@@ -125,9 +127,11 @@ class NewItems extends AbstractPlugin
     }
 
     /**
-     * Get fund list
+     * Get fund list.
      *
      * @return array
+     *
+     * @deprecated
      */
     public function getFundList()
     {
@@ -170,7 +174,7 @@ class NewItems extends AbstractPlugin
     }
 
     /**
-     * Get method setting
+     * Get method setting.
      *
      * @return string
      */
@@ -180,7 +184,7 @@ class NewItems extends AbstractPlugin
     }
 
     /**
-     * Get range settings
+     * Get range settings.
      *
      * @return array
      */

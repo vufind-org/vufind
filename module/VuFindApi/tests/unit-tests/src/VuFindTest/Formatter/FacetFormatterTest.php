@@ -197,15 +197,13 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
         $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);
         $params->initFromRequest(new \Laminas\Stdlib\Parameters($request));
-        $ss = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()->getMock();
+        $ss = $this->createMock(\VuFindSearch\Service::class);
+        $rl = $this->createMock(\VuFind\Record\Loader::class);
         return new Results($params, $ss, $rl, 100, $facetData);
     }
 
     /**
-     * Test the facet formatter
+     * Test the facet formatter.
      *
      * @return void
      */
@@ -264,7 +262,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the facet formatter with filtering turned on
+     * Test the facet formatter with filtering turned on.
      *
      * @return void
      */

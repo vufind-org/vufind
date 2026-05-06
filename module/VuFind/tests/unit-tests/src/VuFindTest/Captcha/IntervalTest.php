@@ -44,7 +44,7 @@ namespace VuFindTest\Captcha;
 class IntervalTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test Interval captchas
+     * Test Interval captchas.
      *
      * @return void
      */
@@ -65,7 +65,7 @@ class IntervalTest extends \PHPUnit\Framework\TestCase
         // Check that first check passes if session data has not been initialized:
         $this->assertTrue($interval->verify($params));
         $this->assertFalse($interval->verify($params));
-        $this->assertEquals(
+        $this->assertSame(
             'interval_captcha_not_passed',
             $interval->getErrorMessage()
         );

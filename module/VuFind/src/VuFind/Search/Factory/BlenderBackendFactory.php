@@ -54,7 +54,7 @@ class BlenderBackendFactory implements FactoryInterface
     protected $container;
 
     /**
-     * VuFind configuration reader
+     * VuFind configuration reader.
      *
      * @var ConfigManagerInterface
      */
@@ -79,10 +79,10 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @var string
      */
-    protected $mappingsConfig = 'BlenderMappings.yaml';
+    protected $mappingsConfig = 'BlenderMappings';
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -108,7 +108,10 @@ class BlenderBackendFactory implements FactoryInterface
         foreach (array_keys($backendConfig) as $backendId) {
             $backends[$backendId] = $backendManager->get($backendId);
         }
-        $blenderMappings = $yamlReader->get($this->mappingsConfig);
+        // Legacy code may already include the '.yaml' extension; ignore it for safety:
+        $blenderMappings = $yamlReader->get(str_ends_with($this->mappingsConfig, '.yaml')
+            ? $this->mappingsConfig
+            : $this->mappingsConfig . '.yaml');
         $backend = new Backend(
             $backends,
             $blenderConfig,

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for BrowZine record collection
+ * Unit tests for BrowZine record collection.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\BrowZine\Response\RecordCollection;
 
 /**
- * Unit tests for BrowZine record collection
+ * Unit tests for BrowZine record collection.
  *
  * @category VuFind
  * @package  Search

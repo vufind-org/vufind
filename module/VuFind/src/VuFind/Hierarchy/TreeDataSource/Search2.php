@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Data Source (Search2)
+ * Hierarchy Tree Data Source (Search2).
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 
 /**
- * Hierarchy Tree Data Source (Search2)
+ * Hierarchy Tree Data Source (Search2).
  *
  * This is a base helper class for producing hierarchy Trees.
  *

@@ -80,7 +80,7 @@
           <?php endif; ?>
         </div>
       </div>
-      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" id="search-cart-form">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + ['idPrefix' => ''])?>
         <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
         <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $results]])?>

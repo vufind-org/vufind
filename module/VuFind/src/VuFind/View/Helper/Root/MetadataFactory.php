@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata helper factory
+ * Metadata helper factory.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Metadata helper factory
+ * Metadata helper factory.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
 class MetadataFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service Manager
      * @param string             $requestedName Service being created

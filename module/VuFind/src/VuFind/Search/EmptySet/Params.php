@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EmptySet aspect of the Search Multi-class (Params)
+ * EmptySet aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\EmptySet;
 
 /**
- * Search EmptySet Parameters
+ * Search EmptySet Parameters.
  *
  * @category VuFind
  * @package  Search_Tags

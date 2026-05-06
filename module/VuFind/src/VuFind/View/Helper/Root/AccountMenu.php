@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Account menu view helper
+ * Account menu view helper.
  *
  * PHP version 8
  *
@@ -30,18 +30,20 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Account menu view helper
+ * Account menu view helper.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Josef Moravec <josef.moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
 class AccountMenu extends AbstractMenuHelper
 {
     /**
-     * Create icon name for fines item
+     * Create icon name for fines item.
      *
      * @return string
      */
@@ -53,7 +55,7 @@ class AccountMenu extends AbstractMenuHelper
     }
 
     /**
-     * Render account menu
+     * Render account menu.
      *
      * @param ?string $activeItem The name of current active item (optional)
      * @param string  $idPrefix   Element ID prefix

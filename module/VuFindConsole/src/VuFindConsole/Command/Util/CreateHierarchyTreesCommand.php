@@ -55,21 +55,21 @@ use function count;
 class CreateHierarchyTreesCommand extends Command
 {
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Search results manager
+     * Search results manager.
      *
      * @var PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader        $loader  Record loader
      * @param PluginManager $results Search results manager

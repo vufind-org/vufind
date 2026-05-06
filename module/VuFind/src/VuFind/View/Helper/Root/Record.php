@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record driver view helper
+ * Record driver view helper.
  *
  * PHP version 8
  *
@@ -49,7 +49,7 @@ use function is_callable;
 use function is_string;
 
 /**
- * Record driver view helper
+ * Record driver view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -63,35 +63,35 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     use DbServiceAwareTrait;
 
     /**
-     * Context view helper
+     * Context view helper.
      *
      * @var \VuFind\View\Helper\Root\Context
      */
     protected $contextHelper;
 
     /**
-     * Cover router
+     * Cover router.
      *
      * @var CoverRouter
      */
     protected $coverRouter = null;
 
     /**
-     * Search memory
+     * Search memory.
      *
      * @var Memory
      */
     protected $searchMemory = null;
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */
     protected $driver;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TagsService $tagsService Tags service
      * @param ?Config     $config      Configuration from config.ini
@@ -102,7 +102,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Inject the cover router
+     * Inject the cover router.
      *
      * @param CoverRouter $router Cover router
      *
@@ -114,7 +114,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Inject the search memory
+     * Inject the search memory.
      *
      * @param Memory $memory Search memory
      *
@@ -264,13 +264,14 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     /**
      * Render an entry in a favorite list.
      *
-     * @param ?UserListEntityInterface $list Currently selected list (null for
+     * @param ?UserListEntityInterface $list         Currently selected list (null for
      * combined favorites)
-     * @param ?UserEntityInterface     $user Current logged in user (null if none)
+     * @param ?UserEntityInterface     $user         Current logged in user (null if none)
+     * @param ?int                     $recordNumber Record number (null to omit/hide)
      *
      * @return string
      */
-    public function getListEntry($list = null, $user = null)
+    public function getListEntry($list = null, $user = null, $recordNumber = null)
     {
         // Get list of lists containing this entry
         $lists = null;
@@ -283,11 +284,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         }
         return $this->renderTemplate(
             'list-entry.phtml',
-            [
+            compact('list', 'user', 'lists', 'recordNumber') + [
                 'driver' => $this->driver,
-                'list' => $list,
-                'user' => $user,
-                'lists' => $lists,
             ]
         );
     }
@@ -354,7 +352,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Collects ISBN, LCCN, and OCLC numbers to use in calling preview APIs
+     * Collects ISBN, LCCN, and OCLC numbers to use in calling preview APIs.
      *
      * @return array
      */
@@ -655,7 +653,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Get the configured thumbnail size for record lists
+     * Get the configured thumbnail size for record lists.
      *
      * @param string $context Context of code being generated
      * @param string $default The default size of the cover
@@ -676,7 +674,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Get the configured thumbnail alignment
+     * Get the configured thumbnail alignment.
      *
      * @param string $context telling the context asking, prepends the config key
      *
@@ -861,7 +859,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Get the source identifier + unique id of the record without spaces
+     * Get the source identifier + unique id of the record without spaces.
      *
      * @param string $idPrefix Prefix for HTML ids
      *
@@ -881,7 +879,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Get the source identifier + unique id of the record
+     * Get the source identifier + unique id of the record.
      *
      * @return string
      */

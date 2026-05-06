@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online payment manager
+ * Online payment manager.
  *
  * PHP version 8
  *
@@ -53,7 +53,7 @@ use VuFind\OnlinePayment\Handler\HandlerInterface;
 use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
 
 /**
- * Online payment manager
+ * Online payment manager.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -96,7 +96,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get online payment handler
+     * Get online payment handler.
      *
      * @param string $sourceIls Source ILS
      *
@@ -192,7 +192,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Process a response from a payment handler
+     * Process a response from a payment handler.
      *
      * @param PaymentEntityInterface $payment    Payment
      * @param RequestInterface       $request    Request
@@ -277,7 +277,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Find patron for a payment
+     * Find patron for a payment.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -292,7 +292,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         // Check if user's current credentials match (typical case):
         $catPassword = $this->ilsAuthenticator->getCatPasswordForUser($user);
         if (
-            mb_strtolower($user->getCatUsername(), 'UTF-8') === mb_strtolower($payment->getCatUsername(), 'UTF-8')
+            mb_strtolower($user->getCatUsername() ?? '', 'UTF-8') === mb_strtolower($payment->getCatUsername(), 'UTF-8')
             && ($patron = $this->ils->patronLogin($user->getCatUsername(), $catPassword))
         ) {
             // Success!
@@ -325,7 +325,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Register the given payment with ILS
+     * Register the given payment with ILS.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -395,7 +395,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Register a payment with ILS for the given patron
+     * Register a payment with ILS for the given patron.
      *
      * @param PaymentEntityInterface $payment Payment
      * @param array                  $patron  Patron information
@@ -502,13 +502,14 @@ class OnlinePaymentManager implements LoggerAwareInterface
                         'Registration failed: fines updated'
                     );
                 } else {
+                    $error = $res['reason'] ?? 'no error information';
                     $payment->applyRegistrationFailedStatus(
-                        'Failed to mark fees paid: ' . ($res ?: 'no error information')
+                        "Failed to mark fees paid: $error"
                     );
                     $this->persistEntityWithAuditEvent(
                         $payment,
                         AuditEventSubtype::PaymentRegistration,
-                        'Registration failed: ' . ($res['reason'] ?? 'no error information')
+                        "Registration failed: $error"
                     );
                 }
                 return false;
@@ -570,13 +571,10 @@ class OnlinePaymentManager implements LoggerAwareInterface
             return [];
         }
 
-        // Check that mandatory settings exist
-        $mandatory = ['currency', 'handler'];
-        foreach ($mandatory as $current) {
-            if (empty($paymentConfig[$current])) {
-                $this->logError("Mandatory setting '$current' missing from ILS driver for $sourceIls");
-                return [];
-            }
+        // Check that mandatory handler setting exists
+        if (empty($paymentConfig['handler'])) {
+            $this->logError("Mandatory setting 'handler' missing from ILS driver for $sourceIls");
+            return [];
         }
 
         return $paymentConfig;
@@ -661,7 +659,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get stored payable amount from session
+     * Get stored payable amount from session.
      *
      * @param array $patron Patron
      *
@@ -685,7 +683,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get any successful payment flag from session and clear the session
+     * Get any successful payment flag from session and clear the session.
      *
      * @return bool
      */
@@ -716,7 +714,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         $this->paymentService->beginTransaction();
         try {
             $this->paymentService->persistEntity($payment);
-            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData);
+            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData, 1);
         } catch (\Exception $e) {
             $this->paymentService->rollbackTransaction();
             throw $e;
@@ -726,7 +724,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get patron's source ILS
+     * Get patron's source ILS.
      *
      * @param array $patron Patron
      *
@@ -738,7 +736,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Store a flag for successful payment in the session
+     * Store a flag for successful payment in the session.
      *
      * @return void
      */

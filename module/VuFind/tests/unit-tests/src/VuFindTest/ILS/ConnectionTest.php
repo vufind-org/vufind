@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Connection test
+ * Connection test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\ILS\Connection;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Connnection test
+ * Connnection test.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Connection object
+     * Connection object.
      *
      * @var Connection
      */
@@ -72,7 +72,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set TimedBlocks driver configuration
+     * Set TimedBlocks driver configuration.
      *
      * @param array $timedBlocks timed blocks as defined in Demo.ini
      *
@@ -88,146 +88,144 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testIsMethodBlocked
+     * Data provider for testIsMethodBlocked.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isMethodBlockedProvider()
+    public static function isMethodBlockedProvider(): \Iterator
     {
         $oneHourAgo = new \DateTime('now - 1 hours');
         $oneHourInFuture = new \DateTime('now + 1 hours');
-        return [
-            'only startDate' => [
-                [
-                    'Renewals' => [
-                        date('Y-m-d', strtotime('now')) . '/',
-                    ],
-                ],
-                [
-                    'start' => new \DateTime('today'),
-                    'end' => null,
-                    'recurring' => false,
+        yield 'only startDate' => [
+            [
+                'Renewals' => [
+                    date('Y-m-d', strtotime('now')) . '/',
                 ],
             ],
-            'only endDate' => [
-                [
-                    'Renewals' => [
-                        '/' . date('Y-m-d', strtotime('now + 1 days')),
-                    ],
-                ],
-                [
-                    'start' => null,
-                    'end' => new \DateTime('tomorrow 23:59:59'),
-                    'recurring' => false,
+            [
+                'start' => new \DateTime('today'),
+                'end' => null,
+                'recurring' => false,
+            ],
+        ];
+        yield 'only endDate' => [
+            [
+                'Renewals' => [
+                    '/' . date('Y-m-d', strtotime('now + 1 days')),
                 ],
             ],
-            'future startDate' => [
-                [
-                    'Renewals' => [
-                        date('Y-m-d', strtotime('now + 1 days')) . '/' . date('Y-m-d', strtotime('now + 2 days')),
-                    ],
-                ],
-                [],
+            [
+                'start' => null,
+                'end' => new \DateTime('tomorrow 23:59:59'),
+                'recurring' => false,
             ],
-            'startDate in the past and endDate in the future' => [
-                [
-                    'Renewals' => [
-                        date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now + 1 days')),
-                    ],
-                ],
-                [
-                    'start' => new \DateTime('yesterday'),
-                    'end' => new \DateTime('tomorrow 23:59:59'),
-                    'recurring' => false,
+        ];
+        yield 'future startDate' => [
+            [
+                'Renewals' => [
+                    date('Y-m-d', strtotime('now + 1 days')) . '/' . date('Y-m-d', strtotime('now + 2 days')),
                 ],
             ],
-            'inside recurring limits' => [
-                [
-                    'Renewals' => [
-                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
-                    ],
-                ],
-                [
-                    'start' => $oneHourAgo,
-                    'end' => $oneHourInFuture,
-                    'recurring' => true,
+            [],
+        ];
+        yield 'startDate in the past and endDate in the future' => [
+            [
+                'Renewals' => [
+                    date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now + 1 days')),
                 ],
             ],
-            'outside recurring limits' => [
-                [
-                    'Renewals' => [
-                        date('H:i', strtotime('now + 1 hours')) . '/' . date('H:i', strtotime('now - 1 hours')),
-                    ],
-                ],
-                [],
+            [
+                'start' => new \DateTime('yesterday'),
+                'end' => new \DateTime('tomorrow 23:59:59'),
+                'recurring' => false,
             ],
-            'recurring block active, fixed date block inactive' => [
-                [
-                    'Renewals' => [
-                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
-                        date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
-                    ],
-                ],
-                [
-                    'start' => $oneHourAgo,
-                    'end' => $oneHourInFuture,
-                    'recurring' => true,
+        ];
+        yield 'inside recurring limits' => [
+            [
+                'Renewals' => [
+                    $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
                 ],
             ],
-            'recurring block inactive, fixed date block active' => [
-                [
-                    'Renewals' => [
-                        date('H:i', strtotime('now + 1 hours')) . '/' . date('H:i', strtotime('now + 2 hours')),
-                        date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now + 1 days')),
-                    ],
-                ],
-                [
-                    'start' => new \DateTime('yesterday'),
-                    'end' => new \DateTime('tomorrow 23:59:59'),
-                    'recurring' => false,
+            [
+                'start' => $oneHourAgo,
+                'end' => $oneHourInFuture,
+                'recurring' => true,
+            ],
+        ];
+        yield 'outside recurring limits' => [
+            [
+                'Renewals' => [
+                    date('H:i', strtotime('now + 1 hours')) . '/' . date('H:i', strtotime('now - 1 hours')),
                 ],
             ],
-            'empty configuration' => [
-                [],
-                [],
-            ],
-            'startDate and endDate in the past' => [
-                [
-                    'Renewals' => [
-                        date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
-                    ],
+            [],
+        ];
+        yield 'recurring block active, fixed date block inactive' => [
+            [
+                'Renewals' => [
+                    $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
+                    date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
                 ],
-                [],
             ],
-            'startDate after endDate' => [
-                [
-                    'Renewals' => [
-                        date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now - 2 days')),
-                    ],
+            [
+                'start' => $oneHourAgo,
+                'end' => $oneHourInFuture,
+                'recurring' => true,
+            ],
+        ];
+        yield 'recurring block inactive, fixed date block active' => [
+            [
+                'Renewals' => [
+                    date('H:i', strtotime('now + 1 hours')) . '/' . date('H:i', strtotime('now + 2 hours')),
+                    date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now + 1 days')),
                 ],
-                [],
             ],
-            'only startTime defined' => [
-                [
-                    'Renewals' => [
-                        date('H:i', strtotime('now')) . '/',
-                    ],
+            [
+                'start' => new \DateTime('yesterday'),
+                'end' => new \DateTime('tomorrow 23:59:59'),
+                'recurring' => false,
+            ],
+        ];
+        yield 'empty configuration' => [
+            [],
+            [],
+        ];
+        yield 'startDate and endDate in the past' => [
+            [
+                'Renewals' => [
+                    date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
                 ],
-                [],
             ],
-            'only endTime defined' => [
-                [
-                    'Renewals' => [
-                        '/' . date('H:i', strtotime('now')),
-                    ],
+            [],
+        ];
+        yield 'startDate after endDate' => [
+            [
+                'Renewals' => [
+                    date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now - 2 days')),
                 ],
-                [],
             ],
+            [],
+        ];
+        yield 'only startTime defined' => [
+            [
+                'Renewals' => [
+                    date('H:i', strtotime('now')) . '/',
+                ],
+            ],
+            [],
+        ];
+        yield 'only endTime defined' => [
+            [
+                'Renewals' => [
+                    '/' . date('H:i', strtotime('now')),
+                ],
+            ],
+            [],
         ];
     }
 
     /**
-     * Test that methods are blocked correctly according to configuration
+     * Test that methods are blocked correctly according to configuration.
      *
      * @param array $timedBlocks    timedBlocks as defined in Demo.ini
      * @param bool  $expectedResult The expected result

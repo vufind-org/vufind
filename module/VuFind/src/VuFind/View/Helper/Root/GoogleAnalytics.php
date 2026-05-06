@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use function is_array;
 
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ use function is_array;
 class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * API key (false if disabled)
+     * API key (false if disabled).
      *
      * @var string|bool
      */
@@ -57,20 +57,21 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     protected $createOptions;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|bool $key     API key (false if disabled)
-     * @param bool|array  $options Configuration options (supported options:
-     * 'universal' and 'create_options_js'). If a boolean is provided instead of
-     * an array, that value is used as the 'universal' setting and no other options
-     * are set (for backward compatibility).
+     * @param bool|array  $options Configuration options (supported option:
+     * 'create_options_js'). If a Boolean is provided instead of an array,
+     * no options will be set (for backward compatibility).
      */
     public function __construct($key, $options = [])
     {
-        // The second constructor parameter used to be a boolean representing
-        // the "universal" setting, so convert to an array for legacy compatibility:
+        // The second constructor parameter used to be a Boolean representing
+        // an obsolete setting, but that is no longer meaningful, so treat it as
+        // an empty array for legacy compatibility. We should remove Boolean
+        // support entirely in a future release.
         if (!is_array($options)) {
-            $options = ['universal' => (bool)$options];
+            $options = [];
         }
         $this->key = $key;
         $this->createOptions = $options['create_options_js'] ?? "'auto'";

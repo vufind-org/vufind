@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Dynamic Role Provider Test Class
+ * Dynamic Role Provider Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Role\DynamicRoleProvider;
 use VuFind\Role\PermissionProvider\PluginManager;
 
 /**
- * Dynamic Role Provider Test Class
+ * Dynamic Role Provider Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use VuFind\Role\PermissionProvider\PluginManager;
 class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test that configurations get processed correctly
+     * Test that configurations get processed correctly.
      *
      * @return void
      */
@@ -70,19 +70,16 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
         ];
         $pm = $this->getFakePluginManager();
         $pm->get('a')
-            ->expects($this->any())
             ->method('getPermissions')
-            ->with($this->equalTo('foo'))
+            ->with('foo')
             ->willReturn([]);
         $pm->get('b')
-            ->expects($this->any())
             ->method('getPermissions')
-            ->with($this->equalTo('bar'))
+            ->with('bar')
             ->willReturn(['role']);
         $pm->get('c')
-            ->expects($this->any())
             ->method('getPermissions')
-            ->with($this->equalTo([1, 2, 3]))
+            ->with([1, 2, 3])
             ->willReturn(['role']);
         $result = $this->getDynamicRoleProvider($pm, $config)->getRoles(['role']);
         $this->assertCount(1, $result);

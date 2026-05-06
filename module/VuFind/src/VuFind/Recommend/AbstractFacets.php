@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\Config;
 use function in_array;
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * This class provides recommendations displaying facets beside search results
  *
@@ -47,28 +47,28 @@ use function in_array;
 abstract class AbstractFacets implements RecommendInterface
 {
     /**
-     * Facets with "exclude" links enabled
+     * Facets with "exclude" links enabled.
      *
      * @var array
      */
     protected $excludableFacets = [];
 
     /**
-     * Facets that are "ORed" instead of "ANDed."
+     * Facets that are "ORed" instead of "ANDed.".
      *
      * @var array
      */
     protected $orFacets = [];
 
     /**
-     * Search results
+     * Search results.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
@@ -103,7 +103,7 @@ abstract class AbstractFacets implements RecommendInterface
     }
 
     /**
-     * Get the facet boolean operator
+     * Get the facet boolean operator.
      *
      * @param string $field Field name
      *
@@ -125,7 +125,7 @@ abstract class AbstractFacets implements RecommendInterface
     }
 
     /**
-     * Read boolean (OR/NOT) settings from the provided configuration
+     * Read boolean (OR/NOT) settings from the provided configuration.
      *
      * @param Config $config    Configuration to read
      * @param array  $allFacets All facets (to use when config = *)

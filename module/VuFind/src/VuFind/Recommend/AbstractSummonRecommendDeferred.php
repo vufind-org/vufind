@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base for deferred-load Summon recommendations modules
+ * Abstract base for deferred-load Summon recommendations modules.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function is_object;
 
 /**
- * Abstract base for deferred-load Summon recommendations modules
+ * Abstract base for deferred-load Summon recommendations modules.
  *
  * @category VuFind
  * @package  Recommendations
@@ -44,7 +44,7 @@ use function is_object;
 abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Number of expected module parameters (from .ini config)
+     * Number of expected module parameters (from .ini config).
      *
      * @var int
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPF Record Controller
+ * EPF Record Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * EPF Record Controller
+ * EPF Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -45,7 +45,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class EPFrecordController extends AbstractRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

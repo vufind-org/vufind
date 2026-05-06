@@ -52,7 +52,7 @@ abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractB
     use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings            $sessionSettings      Session settings
      * @param PaymentServiceInterface    $paymentService       Payment database service

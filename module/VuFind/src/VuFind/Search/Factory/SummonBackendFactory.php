@@ -56,21 +56,21 @@ class SummonBackendFactory extends AbstractBackendFactory
     protected $logger;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Summon configuration
+     * Summon configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $summonConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -159,7 +159,7 @@ class SummonBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AlphaBrowse Test Class
+ * AlphaBrowse Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\ParamBag;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * AlphaBrowse Test Class
+ * AlphaBrowse Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -223,12 +223,12 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
 
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
-            ->with($this->equalTo($driver), $this->equalTo('medium'))
+            ->with($driver, 'medium')
             ->willReturn('foo_Thumbnail');
         $alpha->setCoverRouter($coverRouter);
         $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
-            ->with($this->equalTo($driver))
+            ->with($driver)
             ->willReturn($routeDetails);
         $this->expectConsecutiveCalls(
             $url,
@@ -268,7 +268,10 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 'id' => 'foo_id'],
             ],
         ]];
-        return [$alpha, $expectedResult];
+        return [
+            $alpha,
+            $expectedResult,
+        ];
     }
 
     /**
@@ -286,7 +289,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            $this->assertSame($class, $command::class);
+            $this->assertSame($command::class, $class);
             $this->assertEquals($args, $command->getArguments());
             $this->assertSame($target, $command->getTargetIdentifier());
             return true;
@@ -294,7 +297,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param array $data Test data (solrField is only supported field)
      *
@@ -315,7 +318,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get AlphaBrowse object
+     * Get AlphaBrowse object.
      *
      * @param array $options options for the provider
      *

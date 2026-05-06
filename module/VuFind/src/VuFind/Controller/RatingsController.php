@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ratings Controller
+ * Ratings Controller.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ class RatingsController extends AbstractBase
     use Feature\UserContentTrait;
 
     /**
-     * Array of sort options for userListAction
+     * Array of sort options for userListAction.
      *
      * @var array
      */
@@ -57,7 +57,7 @@ class RatingsController extends AbstractBase
     ];
 
     /**
-     * Get all ratings for the logged in user
+     * Get all ratings for the logged in user.
      *
      * @return View
      */
@@ -90,7 +90,7 @@ class RatingsController extends AbstractBase
     }
 
     /**
-     * Delete given ratings by the logged in user
+     * Delete given ratings by the logged in user.
      *
      * @return View
      */

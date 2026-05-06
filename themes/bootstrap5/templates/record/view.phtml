@@ -25,7 +25,7 @@
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
-    $this->breadcrumbs()->add($this->translate('Search'), $url);
+    $this->breadcrumbs()->add($this->translate('search_results_breadcrumb'), $url);
   }
   $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
   $this->layout()->title = $this->driver->getShortTitle();

@@ -49,7 +49,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo    $info         Theme info object
      * @param PathResolver $pathResolver Config file path resolver

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Results as feed" view helper
+ * "Results as feed" view helper.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function is_string;
 use function strlen;
 
 /**
- * "Results as feed" view helper
+ * "Results as feed" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -55,14 +55,14 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Override title
+     * Override title.
      *
      * @var string
      */
     protected $overrideTitle = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $options Options array (valid key = 'prioritizeRecordDriverLinks')
      */

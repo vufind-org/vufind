@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related records view helper
+ * Related records view helper.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Related\PluginManager as RelatedManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
 /**
- * Related records view helper
+ * Related records view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -47,7 +47,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     use ClassBasedTemplateRendererTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RelatedManager         $relatedPluginManager Plugin manager for related record modules
      * @param ConfigManagerInterface $configManager        Configuration manager

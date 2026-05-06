@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LDAP authentication class
+ * LDAP authentication class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Exception\Auth as AuthException;
 use function in_array;
 
 /**
- * LDAP authentication class
+ * LDAP authentication class.
  *
  * @category VuFind
  * @package  Authentication
@@ -48,7 +48,7 @@ use function in_array;
 class LDAP extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
@@ -67,16 +67,15 @@ class LDAP extends AbstractBase
     protected function validateConfig()
     {
         // Check for missing parameters:
-        $requiredParams = ['host', 'port', 'basedn', 'username'];
-        foreach ($requiredParams as $param) {
-            if (
-                !isset($this->config->LDAP->$param)
-                || empty($this->config->LDAP->$param)
-            ) {
-                throw new AuthException(
-                    'One or more LDAP parameters are missing. Check your config.ini!'
-                );
-            }
+        if (
+            empty($this->config->LDAP->basedn ?? '')
+            || empty($this->config->LDAP->username ?? '')
+            || (empty($this->config->LDAP->uri ?? '')
+                && empty($this->config->LDAP->host ?? ''))
+        ) {
+            throw new AuthException(
+                'One or more LDAP parameters are missing. Check your config.ini!'
+            );
         }
     }
 
@@ -159,10 +158,23 @@ class LDAP extends AbstractBase
         // will successfully return a resource from ldap_connect even if the server
         // is unavailable -- we need to check for bad return values again at search
         // time!
-        $host = $this->getSetting('host');
-        $port = $this->getSetting('port');
-        $this->debug("connecting to host=$host, port=$port");
-        $connection = @ldap_connect($host, $port);
+        $uri = $this->getSetting('uri');
+        if (!$uri) {
+            // Use deprecated old settings.
+            $host = $this->getSetting('host');
+            if (str_starts_with($host, 'ldap://') || str_starts_with($host, 'ldaps://')) {
+                $uri = $host;
+            } else {
+                $port = $this->getSetting('port');
+                if ($port === '') {
+                    $port = 389;
+                }
+                $uri = 'ldap://' . $host . ':' . $port;
+            }
+        }
+
+        $this->debug("connecting to URI=$uri");
+        $connection = @ldap_connect($uri);
         if (!$connection) {
             $this->debug('connection failed');
             throw new AuthException('authentication_error_technical');
@@ -173,12 +185,12 @@ class LDAP extends AbstractBase
             $this->debug('Failed to set protocol version 3');
         }
 
-        // if the host parameter is not specified as ldaps://
+        // if the uri parameter is not specified as ldaps://
         // then (unless TLS is disabled) we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
         $disableTls = isset($this->config->LDAP->disable_tls)
             && $this->config->LDAP->disable_tls;
-        if (stripos($host, 'ldaps://') === false && !$disableTls) {
+        if (!str_starts_with($uri, 'ldaps://') && !$disableTls) {
             $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {
                 $this->debug('TLS failed');
@@ -190,7 +202,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * If configured, bind an administrative user in order to perform a search
+     * If configured, bind an administrative user in order to perform a search.
      *
      * @param resource $connection LDAP connection
      *
@@ -214,7 +226,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Find the specified username in the directory
+     * Find the specified username in the directory.
      *
      * @param resource $connection LDAP connection
      * @param string   $username   Username
@@ -236,7 +248,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Validate credentials
+     * Validate credentials.
      *
      * @param resource $connection LDAP connection
      * @param array    $info       Data from findUsername()

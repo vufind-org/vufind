@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RetryTrait Test Class
+ * RetryTrait Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Service\Feature;
 use VuFind\Service\Feature\RetryTrait;
 
 /**
- * RetryTrait Test Class
+ * RetryTrait Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
             use RetryTrait;
 
             /**
-             * Call a method and retry the call if an exception is thrown
+             * Call a method and retry the call if an exception is thrown.
              *
              * @param callable  $callback       Method to call
              * @param ?callable $statusCallback Status callback called before retry and after
@@ -72,7 +72,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Get the delay before a try
+             * Get the delay before a try.
              *
              * @param int   $attempt Attempt number
              * @param array $options Current options
@@ -88,7 +88,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retry with an eventually successful method
+     * Test retry with an eventually successful method.
      *
      * @return void
      */
@@ -110,7 +110,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the trait with a failing method
+     * Test the trait with a failing method.
      *
      * @return void
      */
@@ -137,7 +137,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the trait with retryableExceptionCallback
+     * Test the trait with retryableExceptionCallback.
      *
      * @return void
      */
@@ -170,35 +170,33 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         } catch (\Exception $e) {
             // Do nothing
         }
-        $this->assertEquals(2, $retries);
+        $this->assertSame(2, $retries);
     }
 
     /**
-     * Data provider for testBackoff
+     * Data provider for testBackoff.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function backoffDataProvider(): array
+    public static function backoffDataProvider(): \Iterator
     {
-        return [
-            [0, 0],
-            [0, 1],
-            [0, 2],
-            [200, 3],
-            [400, 4],
-            [800, 5],
-            [1000, 6],
-            [1000, 7],
-            [1600, 6, ['maximumBackoff' => 2000]],
-            [1500, 6, ['maximumBackoff' => 1500]],
-            [200, 2, ['firstBackoff' => 200]],
-            [300, 3, ['subsequentBackoff' => 300]],
-            [200, 7, ['exponentialBackoff' => false]],
-        ];
+        yield [0, 0];
+        yield [0, 1];
+        yield [0, 2];
+        yield [200, 3];
+        yield [400, 4];
+        yield [800, 5];
+        yield [1000, 6];
+        yield [1000, 7];
+        yield [1600, 6, ['maximumBackoff' => 2000]];
+        yield [1500, 6, ['maximumBackoff' => 1500]];
+        yield [200, 2, ['firstBackoff' => 200]];
+        yield [300, 3, ['subsequentBackoff' => 300]];
+        yield [200, 7, ['exponentialBackoff' => false]];
     }
 
     /**
-     * Test the backoff duration handling
+     * Test the backoff duration handling.
      *
      * @param int   $expected Expected result
      * @param int   $attempt  Attempt number
