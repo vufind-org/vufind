@@ -27,10 +27,7 @@
     ?>
   </div>
 <?php endif; ?>
-<div role="radiogroup" class="star-rating<?=$this->readonly ? ' readonly' : ''?>" <?=$this->readonly ? 'aria-hidden="true"' : ''?>>
-  <?php if (!$this->readonly): ?>
-    <div class="visually-hidden"><?=$this->transEsc('rating_instructions_screenreader')?></div>
-  <?php endif; ?>
+<div role="radiogroup" class="star-rating<?=$this->readonly ? ' readonly' : ''?>" <?=$this->readonly ? 'aria-hidden="true"' : 'aria-label="' . $this->transEscAttr('rating_instructions_screenreader') . '"'?>>
   <label inert class="rating__label hidden" for="rating_<?=$id?>_none" <?=$labelAttrs?>>
     &nbsp;
   </label>
