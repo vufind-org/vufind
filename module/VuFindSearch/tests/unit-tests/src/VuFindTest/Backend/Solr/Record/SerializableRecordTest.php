@@ -43,7 +43,7 @@ use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 class SerializableRecordTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test field retrieval
+     * Test field retrieval.
      *
      * @return void
      */

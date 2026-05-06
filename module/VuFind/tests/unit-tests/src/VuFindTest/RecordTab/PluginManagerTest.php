@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordTab Plugin Manager Test Class
+ * RecordTab Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\PluginManager;
 
 /**
- * RecordTab Plugin Manager Test Class
+ * RecordTab Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

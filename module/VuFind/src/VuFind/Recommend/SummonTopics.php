@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonTopics Recommendations Module
+ * SummonTopics Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SummonTopics Recommendations Module
+ * SummonTopics Recommendations Module.
  *
  * This class provides database recommendations by doing a search of Summon.
  *

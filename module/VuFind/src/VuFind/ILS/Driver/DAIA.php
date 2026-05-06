@@ -66,56 +66,56 @@ class DAIA extends AbstractBase implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base URL for DAIA Service
+     * Base URL for DAIA Service.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Timeout in seconds to be used for DAIA http requests
+     * Timeout in seconds to be used for DAIA http requests.
      *
      * @var string
      */
     protected $daiaTimeout = null;
 
     /**
-     * Flag to switch on/off caching for DAIA items
+     * Flag to switch on/off caching for DAIA items.
      *
      * @var bool
      */
     protected $daiaCacheEnabled = false;
 
     /**
-     * DAIA query identifier prefix
+     * DAIA query identifier prefix.
      *
      * @var string
      */
     protected $daiaIdPrefix;
 
     /**
-     * DAIA response format
+     * DAIA response format.
      *
      * @var string
      */
     protected $daiaResponseFormat;
 
     /**
-     * Flag to enable multiple DAIA-queries
+     * Flag to enable multiple DAIA-queries.
      *
      * @var bool
      */
     protected $multiQuery = false;
 
     /**
-     * Acceptable ContentTypes delivered by DAIA server in HTTP header
+     * Acceptable ContentTypes delivered by DAIA server in HTTP header.
      *
      * @var array
      */
     protected $contentTypesResponse;
 
     /**
-     * ContentTypes to use in DAIA HTTP requests in HTTP header
+     * ContentTypes to use in DAIA HTTP requests in HTTP header.
      *
      * @var array
      */
@@ -125,14 +125,14 @@ class DAIA extends AbstractBase implements
     ];
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $converter Date converter
      */
@@ -239,7 +239,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -260,7 +260,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -305,7 +305,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -392,7 +392,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -413,7 +413,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -431,7 +431,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Support method to handle date uniformly
+     * Support method to handle date uniformly.
      *
      * @param string $date String representing a date
      *
@@ -449,7 +449,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Support method to handle datetime uniformly
+     * Support method to handle datetime uniformly.
      *
      * @param string $datetime String representing a datetime
      *
@@ -534,7 +534,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Generate a DAIA URI necessary for the query
+     * Generate a DAIA URI necessary for the query.
      *
      * @param string $id Id of the record whose DAIA document should be queried
      *
@@ -548,7 +548,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Combine several ids to DAIA Query API conform URIs
+     * Combine several ids to DAIA Query API conform URIs.
      *
      * @param array $ids Array of ids which shall be converted into URIs and
      *                  combined for querying multiple DAIA documents.
@@ -592,7 +592,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Extract a DAIA document identified by an id
+     * Extract a DAIA document identified by an id.
      *
      * This method loops through all the existing DAIA document-elements in
      * the given DAIA response and returns the first document whose id matches
@@ -1118,7 +1118,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the evaluated value of the provided limitation element
+     * Returns the evaluated value of the provided limitation element.
      *
      * @param array $limitations Array with DAIA limitation data
      *
@@ -1138,7 +1138,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.department.content (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1154,7 +1154,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.department.id (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1168,7 +1168,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.department.href (e.g. to be used in VuFind
-     * getStatus/getHolding array for linking the location)
+     * getStatus/getHolding array for linking the location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1181,7 +1181,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.storage.content (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1197,7 +1197,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.storage.id (e.g. to be used in VuFind
-     * getStatus/getHolding array as location)
+     * getStatus/getHolding array as location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1211,7 +1211,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the value of item.storage.href (e.g. to be used in VuFind
-     * getStatus/getHolding array for linking the location)
+     * getStatus/getHolding array for linking the location).
      *
      * @param array $item Array with DAIA item data
      *
@@ -1224,7 +1224,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the evaluated values of the provided limitations element
+     * Returns the evaluated values of the provided limitations element.
      *
      * @param array $limitations Array with DAIA limitation data
      *
@@ -1243,7 +1243,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the evaluated values of the provided limitations element
+     * Returns the evaluated values of the provided limitations element.
      *
      * @param array $limitations Array with DAIA limitation data
      *
@@ -1262,7 +1262,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "number" in VuFind getStatus/getHolding array
+     * Returns the value for "number" in VuFind getStatus/getHolding array.
      *
      * @param array $item    Array with DAIA item data
      * @param int   $counter Integer counting items as alternative return value
@@ -1277,7 +1277,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "location" in VuFind getStatus/getHolding array
+     * Returns the value for "location" in VuFind getStatus/getHolding array.
      *
      * @param array $item Array with DAIA item data
      *
@@ -1291,7 +1291,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "reserve" in VuFind getStatus/getHolding array
+     * Returns the value for "reserve" in VuFind getStatus/getHolding array.
      *
      * @param array $item Array with DAIA item data
      *
@@ -1305,7 +1305,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Returns the value for "callnumber" in VuFind getStatus/getHolding array
+     * Returns the value for "callnumber" in VuFind getStatus/getHolding array.
      *
      * @param array $item Array with DAIA item data
      *
@@ -1320,7 +1320,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Returns the available services of the given set of available and unavailable
-     * services
+     * services.
      *
      * @param array $services Array with DAIA services available/unavailable
      *
@@ -1343,7 +1343,7 @@ class DAIA extends AbstractBase implements
     }
 
     /**
-     * Logs content of message elements in DAIA response for debugging
+     * Logs content of message elements in DAIA response for debugging.
      *
      * @param array  $messages Array with message elements to be logged
      * @param string $context  Description of current message context

@@ -48,7 +48,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testHomePage(): void
     {
         $page = $this->getSearchHomePage();
-        $this->assertStringContainsString('VuFind', $page->getContent());
+        $this->assertStringContainsString('VuFind', (string)$page->getContent());
     }
 
     /**
@@ -69,18 +69,18 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         // only appear after AJAX returns):
         $this->unFindCss($page, '.callnumber.ajax-availability');
         $this->unFindCss($page, '.location.ajax-availability');
-        $this->assertEquals(
+        $this->assertSame(
             'A1234.567',
             $this->findCssAndGetText($page, '.callnumber')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.location')
         );
     }
 
     /**
-     * Test language switching by checking a link in the footer
+     * Test language switching by checking a link in the footer.
      *
      * @return void
      */
@@ -88,7 +88,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getSearchHomePage();
         // Check footer help-link
-        $this->assertEquals(
+        $this->assertSame(
             'Search Tips',
             $this->findCssAndGetHtml($page, 'footer .help-link')
         );
@@ -97,14 +97,14 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Check footer help-link
-        $this->assertNotEquals(
+        $this->assertNotSame(
             'Search Tips',
             $this->findCssAndGetHtml($page, 'footer .help-link')
         );
     }
 
     /**
-     * Test theme switching by checking for a phrase from the example theme
+     * Test theme switching by checking for a phrase from the example theme.
      *
      * @return void
      */
@@ -136,7 +136,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Check h1 again -- it should exist now
-        $this->assertEquals(
+        $this->assertSame(
             'Welcome to your custom theme!',
             $this->findCssAndGetHtml($page, 'h1')
         );
@@ -164,7 +164,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->getSearchHomePage();
-        $this->assertStringContainsString('An error has occurred', $page->getContent());
+        $this->assertStringContainsString('An error has occurred', (string)$page->getContent());
     }
 
     /**
@@ -190,9 +190,9 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->getSearchHomePage();
         $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
-        $this->assertStringNotContainsString('Other Search', $page->getContent());
-        $this->assertStringNotContainsString('ServiceNotFoundException', $page->getContent());
-        $this->assertEquals(
+        $this->assertStringNotContainsString('Other Search', (string)$page->getContent());
+        $this->assertStringNotContainsString('ServiceNotFoundException', (string)$page->getContent());
+        $this->assertSame(
             'Catalog',
             $this->findCssAndGetHtml($page, '#searchForm .nav-link')
         );
@@ -240,7 +240,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test lightbox jump links
+     * Test lightbox jump links.
      *
      * @return void
      */

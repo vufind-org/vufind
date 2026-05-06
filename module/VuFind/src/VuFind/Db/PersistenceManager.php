@@ -51,7 +51,7 @@ class PersistenceManager implements DbServiceAwareInterface
     use DbServiceAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManagerInterface $entityManager Doctrine ORM entity manager
      * @param bool                   $privacy       Is user privacy mode enabled?
@@ -112,6 +112,18 @@ class PersistenceManager implements DbServiceAwareInterface
                 ? new DuplicateKeyException($e->getMessage(), $e->getCode(), $e)
                 : $e;
         }
+    }
+
+    /**
+     * Clear all entities from EntityManager.
+     *
+     * Allows all managed entities to be detached so that they don't pile up during batch processing.
+     *
+     * @return void
+     */
+    public function clearAllEntities(): void
+    {
+        $this->entityManager->clear();
     }
 
     /**

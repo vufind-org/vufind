@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base Search Object Parameters Test
+ * Base Search Object Parameters Test.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\Search\QueryAdapter;
 use VuFindSearch\Query\Query;
 
 /**
- * Base Search Object Parameters Test
+ * Base Search Object Parameters Test.
  *
  * @category VuFind
  * @package  Tests
@@ -57,7 +57,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Get mock Params object
+     * Get mock Params object.
      *
      * @param Options                $options       Options object to send to Params
      *                                              constructor (null for new mock)
@@ -313,7 +313,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test query adapters
+     * Test query adapters.
      *
      * @return void
      */
@@ -337,7 +337,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(50, $minified->scp['limit']);
 
-        $customAdapter = $this->getMockBuilder(QueryAdapter::class)->getMock();
+        $customAdapter = $this->createMock(QueryAdapter::class);
         $customAdapter->expects($this->once())
             ->method('minify')
             ->willReturn('CUSTOM');

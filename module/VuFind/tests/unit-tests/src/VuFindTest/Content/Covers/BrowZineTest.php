@@ -49,23 +49,21 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCoverLoading.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function coverProvider(): array
+    public static function coverProvider(): \Iterator
     {
-        return [
-            'no issn' => [[], null, false],
-            'default cover' => [['issn' => '12345678'], 'browzine/cover-default.json', false],
-            'non-default cover' => [
-                ['issn' => '12345678'],
-                'browzine/cover-non-default.json',
-                'https://assets.thirdiron.com/simulated-real-cover.png',
-            ],
+        yield 'no issn' => [[], null, false];
+        yield 'default cover' => [['issn' => '12345678'], 'browzine/cover-default.json', false];
+        yield 'non-default cover' => [
+            ['issn' => '12345678'],
+            'browzine/cover-non-default.json',
+            'https://assets.thirdiron.com/simulated-real-cover.png',
         ];
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @param array       $ids      Array of IDs to look up
      * @param ?string     $fixture  Fixture to return from backend (null to assume backend will not be called)

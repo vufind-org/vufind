@@ -58,7 +58,7 @@ final class LoggingTest extends MinkTestCase
     protected const INFO_LEVEL_REGEX = '/INFO/';
 
     /**
-     * Data provider for email logging test scenarios
+     * Data provider for email logging test scenarios.
      *
      * @return array
      */
@@ -67,6 +67,21 @@ final class LoggingTest extends MinkTestCase
         return [
             'debug_error_and_alert_logging' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:debug-5,alert-5,error-5',
+                'expectedPatterns'   => [
+                    self::CRITICAL_LEVEL_REGEX,
+                    '/404 Not Found/',
+                    '/RequestErrorException/',
+                    '/VuFindSearch\\\\Backend\\\\Exception/',
+                    '/Search\/Results.*lookfor.*test/',
+                    self::DEBUG_LEVEL_REGEX,
+                ],
+                'unexpectedPatterns' => [
+                ],
+                'minEmails'          => 2,
+                'description'         => 'Should log critical errors when Solr connection fails',
+            ],
+            'psr_debug_error_and_alert_logging' => [
+                'emailConfig'        => 'alerts@myuniversity.edu:DEBUG-5,CRITICAL-5',
                 'expectedPatterns'   => [
                     self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
@@ -98,6 +113,17 @@ final class LoggingTest extends MinkTestCase
             ],
             'debug_logging_only'      => [
                 'emailConfig'        => 'debug@myuniversity.edu:debug-5',
+                'expectedPatterns'   => [
+                    self::DEBUG_LEVEL_REGEX,
+                ],
+                'unexpectedPatterns' => [
+                    self::CRITICAL_LEVEL_REGEX,
+                ],
+                'minEmails'          => 1,
+                'description'         => 'Should capture debug messages when debug logging is enabled',
+            ],
+            'psr_debug_logging_only'      => [
+                'emailConfig'        => 'debug@myuniversity.edu:DEBUG-5',
                 'expectedPatterns'   => [
                     self::DEBUG_LEVEL_REGEX,
                 ],
@@ -187,6 +213,22 @@ final class LoggingTest extends MinkTestCase
                 'minEmails'          => 1,
                 'description'         => 'Should provide maximum detail at level 5',
             ],
+            'invalid_priority_logs_everything' => [
+                'emailConfig'        => 'alerts@myuniversity.edu:foo-5',
+                'expectedPatterns'   => [
+                    self::CRITICAL_LEVEL_REGEX,
+                    '/404 Not Found/',
+                    '/RequestErrorException/',
+                    '/VuFindSearch\\\\Backend\\\\Exception/',
+                    '/Search\/Results.*lookfor.*test/',
+                    self::DEBUG_LEVEL_REGEX,
+                    '/Invalid priority/',
+                ],
+                'unexpectedPatterns' => [
+                ],
+                'minEmails'          => 1,
+                'description'         => 'Should log everything with invalid configuration',
+            ],
         ];
     }
 
@@ -231,7 +273,7 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
-     * Wait for a minimum number of emails to be logged, with retry logic
+     * Wait for a minimum number of emails to be logged, with retry logic.
      *
      * @param int $minEmails     Minimum number of emails expected
      * @param int $maxWaitSecs   Maximum time to wait in seconds
@@ -266,7 +308,7 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
-     * Test email logging functionality with various configurations
+     * Test email logging functionality with various configurations.
      *
      * @param string $emailConfig        Email configuration string
      * @param array  $expectedPatterns   Patterns that should be found in log
@@ -359,7 +401,7 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
-     * Data provider for file logging test scenarios
+     * Data provider for file logging test scenarios.
      *
      * @return array
      */
@@ -385,7 +427,7 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
-     * Test file logging functionality with various configurations
+     * Test file logging functionality with various configurations.
      *
      * @param string $loggingConfig      Logging configuration string
      * @param array  $expectedPatterns   Patterns that should be found in log
@@ -429,7 +471,7 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
-     * Test that no emails are sent when logging is disabled
+     * Test that no emails are sent when logging is disabled.
      *
      * @return void
      */
@@ -475,7 +517,7 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
-     * Data provider for database logging test scenarios
+     * Data provider for database logging test scenarios.
      *
      * @return array
      */
@@ -498,7 +540,7 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
-     * Test database logging functionality with various configurations
+     * Test database logging functionality with various configurations.
      *
      * @param string $loggingConfig      Logging configuration string
      * @param array  $expectedPatterns   Patterns that should be found in log

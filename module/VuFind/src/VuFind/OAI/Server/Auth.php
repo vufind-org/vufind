@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OAI Server class for Authority core
+ * OAI Server class for Authority core.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\OAI\Server;
 use VuFind\OAI\Server as Base;
 
 /**
- * OAI Server class for Authority core
+ * OAI Server class for Authority core.
  *
  * This class provides OAI server functionality.
  *
@@ -45,7 +45,7 @@ use VuFind\OAI\Server as Base;
 class Auth extends Base
 {
     /**
-     * Search object class to use
+     * Search object class to use.
      *
      * @var string
      */

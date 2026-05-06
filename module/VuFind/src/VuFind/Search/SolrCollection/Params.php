@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Collection aspect of the Search Multi-class (Params)
+ * Solr Collection aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrCollection;
 use function sprintf;
 
 /**
- * Solr Collection Search Options
+ * Solr Collection Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -45,14 +45,14 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * The field which defines something as being a collection
      * this is usually either hierarchy_parent_id or
-     * hierarchy_top_id
+     * hierarchy_top_id.
      *
      * @var string
      */
     protected $collectionField = null;
 
     /**
-     * The ID of the collection being searched
+     * The ID of the collection being searched.
      *
      * @var string
      */
@@ -104,7 +104,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Get collection field
+     * Get collection field.
      *
      * @return string
      */
@@ -114,7 +114,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Get collection id
+     * Get collection id.
      *
      * @return string
      */

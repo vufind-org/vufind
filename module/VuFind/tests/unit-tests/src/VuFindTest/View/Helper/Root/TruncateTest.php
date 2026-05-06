@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Truncate view helper Test Class
+ * Truncate view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\String\PropertyString;
 use VuFind\View\Helper\Root\Truncate;
 
 /**
- * Truncate view helper Test Class
+ * Truncate view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -44,28 +44,26 @@ use VuFind\View\Helper\Root\Truncate;
 class TruncateTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testTruncate
+     * Data provider for testTruncate.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function truncateProvider(): array
+    public static function truncateProvider(): \Iterator
     {
         $shortPropertyString = PropertyString::fromHtml('<strong>short</strong>');
         $longPropertyString = PropertyString::fromHtml('<strong>long string</strong>');
-        return [
-            'short string, no append specified' => ['short', 5, null, 'short'],
-            'long string, no append specified' => ['long string', 5, null, 'long...'],
-            'long string, append specified' => ['long string', 5, '…', 'long…'],
-            'long string, long limit' => ['long string', 11, null, 'long string'],
-            'long string, zero limit' => ['long string', 0, null, ''],
-            'short PropertyString, no append specified' => [$shortPropertyString, 5, null, $shortPropertyString],
-            'long PropertyString, no append specified' => [$longPropertyString, 5, null, 'long...'],
-            'long PropertyString, append specified' => [$longPropertyString, 5, '…', 'long…'],
-        ];
+        yield 'short string, no append specified' => ['short', 5, null, 'short'];
+        yield 'long string, no append specified' => ['long string', 5, null, 'long...'];
+        yield 'long string, append specified' => ['long string', 5, '…', 'long…'];
+        yield 'long string, long limit' => ['long string', 11, null, 'long string'];
+        yield 'long string, zero limit' => ['long string', 0, null, ''];
+        yield 'short PropertyString, no append specified' => [$shortPropertyString, 5, null, $shortPropertyString];
+        yield 'long PropertyString, no append specified' => [$longPropertyString, 5, null, 'long...'];
+        yield 'long PropertyString, append specified' => [$longPropertyString, 5, '…', 'long…'];
     }
 
     /**
-     * Test truncation
+     * Test truncation.
      *
      * @param string|PropertyString $input    Input string
      * @param int                   $len      Maximum result string length

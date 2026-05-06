@@ -54,14 +54,14 @@ class CAS extends AbstractBase
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Already Setup phpCAS
+     * Already Setup phpCAS.
      *
      * @var bool
      */
     protected $phpCASSetup = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      */
@@ -294,7 +294,7 @@ class CAS extends AbstractBase
     }
 
     /**
-     * Establishes phpCAS Configuration and Enables the phpCAS Client
+     * Establishes phpCAS Configuration and Enables the phpCAS Client.
      *
      * @return object     Returns phpCAS Object
      */

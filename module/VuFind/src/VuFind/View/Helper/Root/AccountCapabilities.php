@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AccountCapabilities view helper
+ * AccountCapabilities view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use VuFind\Config\AccountCapabilities as Helper;
 
 /**
- * AccountCapabilities view helper
+ * AccountCapabilities view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,14 +43,14 @@ use VuFind\Config\AccountCapabilities as Helper;
 class AccountCapabilities extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Capabilities helper
+     * Capabilities helper.
      *
      * @var Helper
      */
     protected $helper;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Helper $helper Capabilities helper
      */

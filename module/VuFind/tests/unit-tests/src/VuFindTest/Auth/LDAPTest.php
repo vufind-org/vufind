@@ -61,7 +61,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a working configuration for the LDAP object
+     * Get a working configuration for the LDAP object.
      *
      * @return array
      */
@@ -78,15 +78,13 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testWithMissingConfiguration.
      *
-     * @return void
+     * @return \Iterator
      */
-    public static function configKeyProvider(): array
+    public static function configKeyProvider(): \Iterator
     {
-        return [
-            'missing uri' => ['uri'],
-            'missing basedn' => ['basedn'],
-            'missing username' => ['username'],
-        ];
+        yield 'missing uri' => ['uri'];
+        yield 'missing basedn' => ['basedn'];
+        yield 'missing username' => ['username'];
     }
 
     /**

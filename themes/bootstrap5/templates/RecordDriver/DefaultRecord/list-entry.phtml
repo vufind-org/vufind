@@ -216,7 +216,7 @@
           <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool icon-link">
             <?=$this->icon('user-list-entry-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
-          </a><br>
+          </a>
           <?php /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
             $deleteUrl = null === $list_id
                 ? $this->url('myresearch-favorites')

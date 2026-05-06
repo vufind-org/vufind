@@ -56,7 +56,7 @@ trait RetryClickTrait
     {
         // For some reason, the click action does not always succeed here; resizing
         // the window and retrying seems to prevent intermittent test failures.
-        echo "\n\nMink click failed; retrying with resized window!\n";
+        echo "\n\nMink click '{$selector}' failed; retrying with resized window!\n";
         $session->resizeWindow(1280, 200, 'current');
         $this->clickCss($page, $selector);
         $session->resizeWindow(1280, 768, 'current');

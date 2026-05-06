@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CSS minifier extension
+ * CSS minifier extension.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTheme\Minify;
 
 /**
- * CSS minifier extensions
+ * CSS minifier extensions.
  *
  * @category VuFind
  * @package  View_Helpers

@@ -48,7 +48,7 @@ use function count;
 trait SearchFacetFilterTrait
 {
     /**
-     * CSS selector for finding the active filter nodes
+     * CSS selector for finding the active filter nodes.
      *
      * @var string
      */
@@ -56,56 +56,56 @@ trait SearchFacetFilterTrait
         = '.active-filters--uncollapsible .filters > a, .active-filters--uncollapsible .filters > div';
 
     /**
-     * CSS selector for finding the active filter values
+     * CSS selector for finding the active filter values.
      *
      * @var string
      */
     protected $activeFilterSelector = '.active-filters--uncollapsible .filters .filter-value';
 
     /**
-     * CSS selector for finding the active filter list
+     * CSS selector for finding the active filter list.
      *
      * @var string
      */
     protected $activeFilterListSelector = '.active-filters--uncollapsible .filters .title-value-pair';
 
     /**
-     * CSS selector for finding the first hierarchical facet expand button
+     * CSS selector for finding the first hierarchical facet expand button.
      *
      * @var string
      */
     protected $facetExpandSelector = '.facet-tree .facet-tree__toggle-expanded .facet-tree__expand';
 
     /**
-     * CSS selector for finding the first expanded hierarchical facet
+     * CSS selector for finding the first expanded hierarchical facet.
      *
      * @var string
      */
     protected $facetExpandedSelector = '.facet-tree button[aria-expanded=true] ~ ul';
 
     /**
-     * CSS selector for finding the first second level hierarchical facet
+     * CSS selector for finding the first second level hierarchical facet.
      *
      * @var string
      */
     protected $facetSecondLevelLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a';
 
     /**
-     * CSS selector for finding the first active second level hierarchical facet
+     * CSS selector for finding the first active second level hierarchical facet.
      *
      * @var string
      */
     protected $facetSecondLevelActiveLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul .active a';
 
     /**
-     * CSS selector for finding the first second level hierarchical facet
+     * CSS selector for finding the first second level hierarchical facet.
      *
      * @var string
      */
     protected $facetSecondLevelExcludeLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.exclude';
 
     /**
-     * Expected hierarchical facet options by sort setting
+     * Expected hierarchical facet options by sort setting.
      *
      * @var array
      */
@@ -311,7 +311,7 @@ trait SearchFacetFilterTrait
     ];
 
     /**
-     * Check that a filter is applied
+     * Check that a filter is applied.
      *
      * @param Element $page           Page
      * @param int     $index          Filter index (0-based)
@@ -336,7 +336,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Check that a set of filters (and nothing more) is applied
+     * Check that a set of filters (and nothing more) is applied.
      *
      * @param Element $page    Page
      * @param array   $filters Filters (array of 'type:filter')
@@ -353,7 +353,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Get textual content of a facet element by facet link CSS selector
+     * Get textual content of a facet element by facet link CSS selector.
      *
      * @param Element $page     Page
      * @param string  $selector CSS selector for facet link
@@ -404,7 +404,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Assert that the given number of facets are present in the full facet list
+     * Assert that the given number of facets are present in the full facet list.
      *
      * @param Element $page            Mink page object
      * @param string  $list            List type ('count' or 'index')
@@ -426,7 +426,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Apply a range facet and load results
+     * Apply a range facet and load results.
      *
      * @param Element $page           Mink page object
      * @param string  $facet          Facet name (e.g. 'publishDate')
@@ -467,7 +467,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Get expected <select> field options for a hierarchical facet
+     * Get expected <select> field options for a hierarchical facet.
      *
      * @param string $sort Sort setting
      *
@@ -488,7 +488,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Get expected facet tree contents as a list for a hierarchical facet
+     * Get expected facet tree contents as a list for a hierarchical facet.
      *
      * @param string $sort Sort setting
      *
@@ -507,7 +507,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Get expected display text for a hierarchical facet filter
+     * Get expected display text for a hierarchical facet filter.
      *
      * @param string $sort  Sort setting
      * @param int    $index Item index
@@ -537,7 +537,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Flatten a hierarchical facet list to a simple array
+     * Flatten a hierarchical facet list to a simple array.
      *
      * @param array $facetList Facet list
      *
@@ -563,7 +563,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Return a displayed hierarchical facet as a list of items
+     * Return a displayed hierarchical facet as a list of items.
      *
      * @param Element $page                  Mink page object
      * @param string  $treeContainerSelector Tree container element selector (ul needs to be an immediate child of this)
@@ -576,7 +576,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Recursive helper for getHierarchicalFacetTreeItems to return a facet level and its children
+     * Recursive helper for getHierarchicalFacetTreeItems to return a facet level and its children.
      *
      * @param Element $node Container element for the list
      *
@@ -593,7 +593,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Toggle the state of multi facet selection
+     * Toggle the state of multi facet selection.
      *
      * @param Element   $container Container containing the checkbox
      * @param bool|null $activate  True to activate, false to deactivate, null to toggle
@@ -611,7 +611,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Deactivate multi facet selection
+     * Deactivate multi facet selection.
      *
      * @param Element $container Container containing the checkbox
      *
@@ -624,7 +624,7 @@ trait SearchFacetFilterTrait
     }
 
     /**
-     * Activate multi facet selection
+     * Activate multi facet selection.
      *
      * @param Element $container Container containing the checkbox
      *

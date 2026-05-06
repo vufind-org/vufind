@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Navigation plugin manager
+ * Navigation plugin manager.
  *
  * PHP version 8
  *
@@ -30,13 +30,15 @@
 namespace VuFind\Navigation;
 
 /**
- * Navigation plugin manager
+ * Navigation plugin manager.
  *
  * @category VuFind
  * @package  Navigation
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use \VuFind\Section\Plugin\PluginManager instead
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {

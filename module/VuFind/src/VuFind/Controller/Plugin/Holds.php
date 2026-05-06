@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Holds Support Methods
+ * VuFind Action Helper - Holds Support Methods.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Date\DateException;
 use function in_array;
 
 /**
- * Action helper to perform holds-related actions
+ * Action helper to perform holds-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -173,7 +173,7 @@ class Holds extends AbstractRequestBase
                 ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->addMessage('hold_cancel_fail', 'error');
+                $flashMsg->addErrorMessage('hold_cancel_fail');
             } else {
                 $failed = 0;
                 foreach ($cancelResults['items'] ?? [] as $item) {
@@ -194,7 +194,7 @@ class Holds extends AbstractRequestBase
                 return $cancelResults;
             }
         } else {
-            $flashMsg->addMessage('hold_empty_selection', 'error');
+            $flashMsg->addErrorMessage('hold_empty_selection');
         }
         return [];
     }

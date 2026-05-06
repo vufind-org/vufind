@@ -50,14 +50,14 @@ use Psr\Log\LoggerInterface;
 trait ConnectorCacheTrait
 {
     /**
-     * Request cache
+     * Request cache.
      *
      * @var StorageInterface
      */
     protected $cache = null;
 
     /**
-     * Set the cache storage
+     * Set the cache storage.
      *
      * @param StorageInterface $cache Cache
      *
@@ -69,7 +69,7 @@ trait ConnectorCacheTrait
     }
 
     /**
-     * Create a cache key from client's request state
+     * Create a cache key from client's request state.
      *
      * @param HttpClient $client HTTP Client
      *
@@ -81,7 +81,7 @@ trait ConnectorCacheTrait
     }
 
     /**
-     * Get a request from cache if available
+     * Get a request from cache if available.
      *
      * @param string $key Cache key
      *
@@ -135,7 +135,7 @@ trait ConnectorCacheTrait
     }
 
     /**
-     * Log a warning message
+     * Log a warning message.
      *
      * @param string $msg Message
      *
@@ -151,7 +151,7 @@ trait ConnectorCacheTrait
     }
 
     /**
-     * Log a debug message
+     * Log a debug message.
      *
      * @param string $msg Message
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Driver Plugin Manager Test Class
+ * Hierarchy Driver Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Hierarchy\Driver;
 use VuFind\Hierarchy\Driver\PluginManager;
 
 /**
- * Hierarchy Driver Plugin Manager Test Class
+ * Hierarchy Driver Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

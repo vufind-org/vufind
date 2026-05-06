@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for oai_resumption table
+ * Entity model for oai_resumption table.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for oai_resumption table
+ * Entity model for oai_resumption table.
  *
  * @category VuFind
  * @package  Database
@@ -106,7 +106,7 @@ class OaiResumption implements OaiResumptionEntityInterface
     }
 
     /**
-     * Resumption parameters setter
+     * Resumption parameters setter.
      *
      * @param ?string $params Resumption parameters.
      *
@@ -171,6 +171,7 @@ class OaiResumption implements OaiResumptionEntityInterface
      */
     public function getExpiry(): DateTime
     {
-        return $this->expires;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->expires);
     }
 }

@@ -67,7 +67,7 @@ class ConfigLoader
     protected array $configCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
      * @param PathResolver         $pathResolver         Path resolver
@@ -93,10 +93,11 @@ class ConfigLoader
         $configLocation = $useLocalConfig
             ? $this->pathResolver->getConfigLocation($configName)
             : $this->pathResolver->getBaseConfigLocation($configName);
-        if ($configLocation === null) {
-            return null;
+        $currentConfigLocation = $configLocation;
+        while ($currentConfigLocation !== null) {
+            $currentConfigLocation->setSubsection($subsection);
+            $currentConfigLocation = $currentConfigLocation->getDirLocationsParent();
         }
-        $configLocation->setSubsection($subsection);
         return $configLocation;
     }
 

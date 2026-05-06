@@ -264,12 +264,7 @@
 
   </query>
 
-  <!--
-    Let the dispatch filter handler /select?qt=XXX
-    handleSelect=true will use consistent error handling for /select and /update
-    handleSelect=false will use solr1.1 style error formatting
-    -->
-  <requestDispatcher handleSelect="true" >
+  <requestDispatcher>
     <requestParsers multipartUploadLimitInKB="2048"
                     formdataUploadLimitInKB="2048"/>
 
@@ -319,6 +314,16 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
+  <!-- Explicit /select handler to replace deprecated requestDispatcher handleSelect handling.
+       This mirrors the "standard" handler so that requests to /select behave the same as before. -->
+  <requestHandler name="/select" class="solr.SearchHandler">
+    <lst name="defaults">
+      <str name="echoParams">explicit</str>
+      <str name="q.op">AND</str>
+      <str name="df">allfields</str>
+    </lst>
+  </requestHandler>
+
   <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters may optionally be defined here
      <lst name="defaults">

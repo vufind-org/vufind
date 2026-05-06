@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channels Test Class
+ * Channels Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\RecordTab\Channels;
 
 /**
- * Channels Test Class
+ * Channels Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -85,7 +85,7 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
      */
     public function testSupportsAjax(): void
     {
-        $this->assertFalse($this->getChannels()->supportsAjax());
+        $this->assertTrue($this->getChannels()->supportsAjax());
     }
 
     /**

@@ -46,21 +46,21 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * Relais configuration
+     * Relais configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Client $client HTTP client
      * @param Config $config Relais configuration
@@ -110,7 +110,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Make an API request
+     * Make an API request.
      *
      * @param string $uri  Endpoint to request from
      * @param array  $data Data to send with request
@@ -134,7 +134,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Authenticate a patron
+     * Authenticate a patron.
      *
      * @param string $patron           Patron ID (null to use default from config)
      * @param bool   $returnFullObject True to return the full API response object;
@@ -155,7 +155,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Place a request
+     * Place a request.
      *
      * @param string $oclc   OCLC number to look up
      * @param string $auth   Authentication ID from authenticatePatron()
@@ -175,7 +175,7 @@ class Relais implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Perform a search
+     * Perform a search.
      *
      * @param string $oclc   OCLC number to look up
      * @param string $auth   Authentication ID from authenticatePatron()

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MoreByAuthorSolr Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Related\MoreByAuthorSolr;
 use VuFindSearch\Query\Query;
 
 /**
- * MoreByAuthorSolr Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -73,14 +73,13 @@ class MoreByAuthorSolrTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($expectedQuery, $command->getArguments()[0]);
             return true;
         };
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
             ->willReturn($commandObj);
         $related = new MoreByAuthorSolr($service);
         $related->init('', $driver);
-        $this->assertEquals('Smith, John', $related->getName());
+        $this->assertSame('Smith, John', $related->getName());
         $this->assertEquals([$driver2], $related->getResults());
     }
 }

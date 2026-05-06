@@ -47,7 +47,7 @@ use VuFind\Route\RouteGenerator;
 class AbstractRouteCommandFactory extends AbstractCommandFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

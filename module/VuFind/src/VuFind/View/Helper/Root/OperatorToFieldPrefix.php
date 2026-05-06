@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OperatorToFieldPrefix view helper
+ * OperatorToFieldPrefix view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * OperatorToFieldPrefix view helper
+ * OperatorToFieldPrefix view helper.
  *
  * @category VuFind
  * @package  View_Helpers

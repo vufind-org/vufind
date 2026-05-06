@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Generic factory for instantiating session handlers
+ * Generic factory for instantiating session handlers.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Generic factory for instantiating session handlers
+ * Generic factory for instantiating session handlers.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -49,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class RedisFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

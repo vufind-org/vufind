@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DeveloperSettingsService Test Class
+ * DeveloperSettingsService Test Class.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsStatus;
 use function is_bool;
 
 /**
- * DeveloperSettingsService Test Class
+ * DeveloperSettingsService Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -96,13 +96,13 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     {
         $mockObject = $this->createMock($name);
         foreach ($methodsAndReturns as $method => $return) {
-            $mockObject->expects($this->any())->method($method)->willReturn($return);
+            $mockObject->method($method)->willReturn($return);
         }
         return $mockObject;
     }
 
     /**
-     * Get test generate new key data
+     * Get test generate new key data.
      *
      * @return Generator
      */
@@ -200,7 +200,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generating new apiKey for user
+     * Test generating new apiKey for user.
      *
      * @param array $config   Config
      * @param array $tokens   Token methods and returns
@@ -243,12 +243,12 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         if (is_bool($result)) {
             $this->assertEquals($expected['result'], $result);
         } else {
-            $this->assertEquals('test', $result->getTitle());
+            $this->assertSame('test', $result->getTitle());
         }
     }
 
     /**
-     * Get testIsApiKeyAllowed data
+     * Get testIsApiKeyAllowed data.
      *
      * @return Generator
      */
@@ -345,7 +345,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test token is valid method
+     * Test token is valid method.
      *
      * @param ?string $token    Token provided in request or null
      * @param array   $config   Config
@@ -360,7 +360,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         $apiKey = $apiKey ? $this->createMockWithMethods(ApiKeyEntityInterface::class, $apiKey) : null;
         $apiKeyService = $this->createMockWithMethods(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $result = $this->getService($config, $apiKeyService)->isApiKeyAllowed($token);
-        $this->assertEquals($expected, $result);
+        $this->assertSame($expected, $result);
     }
 
     /**

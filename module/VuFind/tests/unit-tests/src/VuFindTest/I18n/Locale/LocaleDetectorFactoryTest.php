@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LocaleDetectorFactory Test Class
+ * LocaleDetectorFactory Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 use function func_get_args;
 
 /**
- * LocaleDetectorFactory Test Class
+ * LocaleDetectorFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -91,8 +91,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testStrategyListWithBrowserDetection(): void
     {
-        $mockSettings = $this->getMockBuilder(LocaleSettings::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockSettings = $this->createMock(LocaleSettings::class);
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
             ->willReturn(true);
@@ -115,8 +114,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testStrategyListWithoutBrowserDetection(): void
     {
-        $mockSettings = $this->getMockBuilder(LocaleSettings::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockSettings = $this->createMock(LocaleSettings::class);
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
             ->willReturn(false);
