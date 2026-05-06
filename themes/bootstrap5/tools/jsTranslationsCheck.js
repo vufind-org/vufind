@@ -10,6 +10,10 @@ const jsAppendsRe = /appendScriptLink\('([^']+?)'/g;
 const jsTranslateRe = /VuFind\.(translate|loading)\(['"]([^,)]+?)['"](,|\))/g;
 const phpTranslationsRe = /\$this->jsTranslations\(\)->(addStrings|getJSONFromArray)\(\s*\[([^\]]+?)\]/gm;
 
+const verbose = process.argv.includes('--verbose');
+
+let retVal = 0;
+
 /**
  * @param {string} templateContents - PHTML from template
  * @returns {Set<string>} translations used in file
@@ -146,7 +150,9 @@ try {
 
   // show global translations
   const globalPhpStringsJSON = JSON.stringify(Array.from(globalPhpStrings).toSorted(), null, "\t");
-  console.log(`global JS strings: ${globalPhpStringsJSON}.`);
+  if (verbose) {
+    console.log(`global JS strings: ${globalPhpStringsJSON}.`);
+  }
 
   const red = (str) => `\x1b[31m${str}\x1b[0m`;
   const blue = (str) => `\x1b[34m${str}\x1b[0m`;
@@ -164,6 +170,7 @@ try {
       continue;
     }
 
+    retVal = 1;
     console.log(`\n${template.path}`);
     console.log(`- ${blue("JS files:")} ${setJoin(template.jsFiles)}.`);
     console.log(`- ${blue("JS uses:")} ${setJoin(neededJsStrings)}.`);
@@ -177,4 +184,6 @@ try {
   }
 } catch (err) {
   console.error("Error globbing synchronously:", err);
+  retVal = 1;
 }
+process.exit(retVal);
