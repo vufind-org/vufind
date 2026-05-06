@@ -47,7 +47,7 @@ use function is_array;
 class Altcha extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \AltchaOrg\Altcha\Altcha $altcha     Required HMAC key for challenge calculation/solution verification.
      * @param Algorithm                $algorithm  Hashing algorithm to use (SHA-1, SHA-256, SHA-512, default: SHA-256).
@@ -78,7 +78,7 @@ class Altcha extends AbstractBase
     }
 
     /**
-     * Generate challenge
+     * Generate challenge.
      *
      * @return Challenge
      */
@@ -97,7 +97,7 @@ class Altcha extends AbstractBase
 
     /**
      * Pull the captcha field from controller params and check them for accuracy
-     * We pull from the form in case config changed since challenge was sent
+     * We pull from the form in case config changed since challenge was sent.
      *
      * @param Params $params Controller params
      *
