@@ -170,9 +170,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             $manager = new \Laminas\Session\SessionManager();
             return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
+        $webhookConnection = $this->createMock(\VuFind\Connection\Webhook::class);
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(Folio::class)
-            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
+            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, $webhookConnection])
             ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
