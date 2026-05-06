@@ -7,8 +7,8 @@ const path = require("node:path");
 const themeRoot = path.resolve(__dirname, "..");
 
 const jsAppendsRe = /appendScriptLink\('([^']+?)'/g;
-const jsTranslateRe = /VuFind\.translate\(['"]([^,)]+?)['"](,|\))/g;
-const phpTranslationsRe = /\$this->jsTranslations\(\)->addStrings\(\s*\[([^\]]+?)\]/gm;
+const jsTranslateRe = /VuFind\.(translate|loading)\(['"]([^,)]+?)['"](,|\))/g;
+const phpTranslationsRe = /\$this->jsTranslations\(\)->(addStrings|getJSONFromArray)\(\s*\[([^\]]+?)\]/gm;
 
 /**
  * @param {string} templateContents - PHTML from template
@@ -60,7 +60,7 @@ function getJsTranslations(contents) {
   }
   const strings = [];
   for (const script of matches) {
-    strings.push(script[1]);
+    strings.push(script[2]);
   }
   return new Set(strings);
 }
