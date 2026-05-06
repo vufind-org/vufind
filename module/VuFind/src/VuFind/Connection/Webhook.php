@@ -30,6 +30,10 @@
 namespace VuFind\Connection;
 
 use Psr\Log\LoggerAwareInterface;
+use VuFind\Http\GuzzleServiceAwareInterface;
+use VuFind\Http\GuzzleServiceAwareTrait;
+
+use function in_array;
 
 /**
  * Webhook connection class.
@@ -41,10 +45,10 @@ use Psr\Log\LoggerAwareInterface;
  * @link     https://vufind.org
  */
 class Webhook implements
-    \VuFindHttp\HttpServiceAwareInterface,
+    GuzzleServiceAwareInterface,
     LoggerAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use GuzzleServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
@@ -52,20 +56,22 @@ class Webhook implements
     /**
      * Send a webhook post to the given URL. Log but do not throw any errors.
      *
-     * @param string $url     Target URL (required for proper proxy setup for non-local addresses)
-     * @param ?float $timeout Request timeout in seconds (overrides configuration)
+     * @param string $url                Target URL (required for proper proxy setup for non-local addresses)
+     * @param ?float $timeout            Request timeout in seconds (overrides configuration)
+     * @param array  $successStatusCodes Array of status codes to treat as a successful post
      *
      * @return void
      */
-    public function post(string $url, ?float $timeout = null): void
+    public function post(string $url, ?float $timeout = null, array $successStatusCodes = [200, 204]): void
     {
-        $client = $this->httpService->createClient($url, 'POST', $timeout);
-
         try {
-            $response = $client->send();
-            if (!$response->isSuccess()) {
+            $response = $this->guzzleService->post($url, null, null, $timeout, []);
+            $statusCode = $response->getStatusCode();
+            if (in_array($statusCode, $successStatusCodes)) {
+                $this->debug('Webhook posted successfully');
+            } else {
                 $this->logError(
-                    "Failed to post to webhook. Code: {$response->getStatusCode()}, body: {$response->getBody()}"
+                    "Failed to post to webhook. Code: {$statusCode}, body: {$response->getBody()}"
                 );
             }
         } catch (\Exception $e) {

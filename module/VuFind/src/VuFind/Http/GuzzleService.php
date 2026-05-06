@@ -145,7 +145,7 @@ class GuzzleService implements HttpServiceInterface
      *
      * @param string  $url     Request URL
      * @param ?string $body    Request body document
-     * @param string  $type    Request body content type
+     * @param ?string $type    Request body content type
      * @param float   $timeout Request timeout in seconds
      * @param array   $headers Request HTTP headers
      *
@@ -154,21 +154,21 @@ class GuzzleService implements HttpServiceInterface
     public function post(
         string $url,
         ?string $body = null,
-        string $type = 'application/octet-stream',
+        ?string $type = null,
         ?float $timeout = null,
         array $headers = []
     ): ResponseInterface {
         $client = $this->createGuzzleClient($url, $timeout);
 
+        $extraHeaders = [
+            'Content-Length' => strlen($body ?? ''),
+        ];
+        if ($body) {
+            $extraHeaders['Content-Type'] = ($type ?? 'application/octet-stream');
+        }
         $options = [
             'body' => $body,
-            'headers' => array_merge(
-                [
-                    'Content-Type' => $type,
-                    'Content-Length' => strlen($body ?? ''),
-                ],
-                $headers
-            ),
+            'headers' => array_merge($extraHeaders, $headers),
         ];
 
         return $client->request('POST', $url, $options);
