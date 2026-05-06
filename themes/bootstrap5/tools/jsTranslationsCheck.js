@@ -1,4 +1,4 @@
-/* global __dirname, require */
+/* global __dirname, process, require */
 /* eslint no-console: "off" -- this is a cli script */
 
 const fs = require("node:fs");
