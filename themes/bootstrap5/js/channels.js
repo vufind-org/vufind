@@ -168,7 +168,6 @@ VuFind.register("channels", function Channels() {
    * @param {Event} event Click event from .channel-load-more-btn
    * @returns {void}
    */
-  let loadMoreBtnReq = null;
   function loadMoreItems(event) {
     const btn = event.target;
     if (btn.classList.contains("disabled")) {
@@ -211,7 +210,7 @@ VuFind.register("channels", function Channels() {
     // AJAX load more records
     // should fire when we have only have one page of items left
     const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
-    loadMoreBtnReq = fetch(url.toString() + "&layout=lightbox")
+    fetch(url.toString() + "&layout=lightbox")
       .then((res) => res.text())
       .then(function loadMoreItemsParseHTML(resHTML) {
         const parser = new DOMParser();
@@ -241,7 +240,6 @@ VuFind.register("channels", function Channels() {
           clampLines(record.querySelector(".channel-item-title"));
         }
 
-        loadMoreBtnReq = null;
         enableLoadMoreBtn(btn);
       });
 
