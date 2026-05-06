@@ -34,6 +34,7 @@ use DateTimeZone;
 use Exception;
 use Laminas\Http\Response;
 use VuFind\Config\Feature\SecretTrait;
+use VuFind\Connection\Webhook;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Logic\AvailabilityStatus;
@@ -147,13 +148,15 @@ class Folio extends AbstractAPI implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param callable               $sessionFactory Factory function returning
-     * SessionContainer object
+     * @param \VuFind\Date\Converter $dateConverter     Date converter object
+     * @param callable               $sessionFactory    Factory function returning
+     *                                                  SessionContainer object
+     * @param Webhook                $webhookConnection Connection for webhooks
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory,
+        protected Webhook $webhookConnection
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -2366,6 +2369,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for placeHold(): Notify an external process
+     * that a request was successfully submitted.
+     *
+     * @return void
+     */
+    protected function sendWebhookAfterHoldRequest()
+    {
+        $url = $this->config['Holds']['webhook'] ?? null;
+        if ($url && $this->webhookConnection) {
+            // Short timeout -- don't impact user.
+            $this->webhookConnection->post($url, 5);
+        }
+    }
+
+    /**
      * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
      * @param string  $instanceId  Instance UUID being requested
@@ -2499,6 +2517,7 @@ class Folio extends AbstractAPI implements
             $requestBody['requestType'] = $requestType;
             $result = $this->performHoldRequest($requestBody);
             if ($result['success']) {
+                $this->sendWebhookAfterHoldRequest();
                 break;
             }
         }
