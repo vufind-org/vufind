@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tags aspect of the Search Multi-class (Options)
+ * Tags aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Tags;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Search Tags Options
+ * Search Tags Options.
  *
  * @category VuFind
  * @package  Search_Tags
@@ -51,7 +51,7 @@ class Options extends \VuFind\Search\Base\Options
     protected $useSolrSearchOptions;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

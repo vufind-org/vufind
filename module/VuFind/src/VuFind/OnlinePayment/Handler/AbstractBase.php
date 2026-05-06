@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract payment handler
+ * Abstract payment handler.
  *
  * PHP version 8
  *
@@ -48,7 +48,7 @@ use function is_array;
 use function is_object;
 
 /**
- * Abstract payment handler
+ * Abstract payment handler.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -67,7 +67,7 @@ abstract class AbstractBase implements
     use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
-     * Result codes for processPaymentResponse
+     * Result codes for processPaymentResponse.
      *
      * @var int
      */
@@ -84,21 +84,21 @@ abstract class AbstractBase implements
     protected array $paymentConfig = [];
 
     /**
-     * Basic mappings from fine types to product codes
+     * Basic mappings from fine types to product codes.
      *
      * @var array
      */
     protected array $productCodeMappings = [];
 
     /**
-     * Fine organization-specific mappings from fine types to product codes
+     * Fine organization-specific mappings from fine types to product codes.
      *
      * @var array
      */
     protected array $organizationProductCodePrefixMappings = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                      $config               VuFind configuration
      * @param HttpService                $httpService          HTTP service
@@ -117,7 +117,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Initialize the handler
+     * Initialize the handler.
      *
      * @param array $paymentConfig Online payment configuration
      *
@@ -155,7 +155,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Add query parameters to an url
+     * Add query parameters to an url.
      *
      * @param string $url    URL
      * @param array  $params Parameters to add
@@ -219,7 +219,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Parse a mappings configuration to an array
+     * Parse a mappings configuration to an array.
      *
      * @param string $mappings Mappings
      *
@@ -246,7 +246,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Log an error
+     * Log an error.
      *
      * @param string $msg  Error message
      * @param array  $data Additional data to log
@@ -263,7 +263,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Dump a data array with mixed content
+     * Dump a data array with mixed content.
      *
      * @param array $data  Data array
      * @param int   $level Indentation level
@@ -302,7 +302,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get user's locale string (e.g. 'en' or 'en-GB')
+     * Get user's locale string (e.g. 'en' or 'en-GB').
      *
      * @return string
      */
@@ -313,7 +313,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get two character language code from user's current locale
+     * Get two character language code from user's current locale.
      *
      * @return string
      */
@@ -324,7 +324,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get the currency code
+     * Get the currency code.
      *
      * @return string
      */
@@ -334,7 +334,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get service fee
+     * Get service fee.
      *
      * @return int
      */
@@ -344,7 +344,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get the default product code
+     * Get the default product code.
      *
      * @return ?string
      */
@@ -354,7 +354,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get the service fee product code
+     * Get the service fee product code.
      *
      * @return ?string
      */
@@ -364,7 +364,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get the service fee tax rate
+     * Get the service fee tax rate.
      *
      * @return ?int Tax rate percent (1/100ths of a percent) or null if not defined
      */
@@ -374,7 +374,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get source ILS for patron
+     * Get source ILS for patron.
      *
      * @param array $patron Patron
      *
@@ -386,7 +386,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get a product code for a fine
+     * Get a product code for a fine.
      *
      * @param array $fine Fine
      *
@@ -428,7 +428,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get fine description
+     * Get fine description.
      *
      * Description includes fine type and record title
      *

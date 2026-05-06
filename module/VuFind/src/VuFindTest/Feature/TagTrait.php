@@ -43,7 +43,7 @@ use Behat\Mink\Element\Element;
 trait TagTrait
 {
     /**
-     * Add tags to a record
+     * Add tags to a record.
      *
      * @param Element $page Page object
      * @param string  $tags Tag(s) to add (space delimited string formatted for the tag input box)

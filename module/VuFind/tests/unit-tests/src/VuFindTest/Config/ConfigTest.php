@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration Wrapper Test Class
+ * Configuration Wrapper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\Config;
 
 /**
- * Configuration Wrapper Test Class
+ * Configuration Wrapper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,14 +43,14 @@ use VuFind\Config\Config;
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Config object to test
+     * Config object to test.
      *
      * @var ?Config
      */
     protected $config = null;
 
     /**
-     * Test configuration data
+     * Test configuration data.
      *
      * @var array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SFX Link Resolver Driver
+ * SFX Link Resolver Driver.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@
 namespace VuFind\Resolver\Driver;
 
 /**
- * SFX Link Resolver Driver
+ * SFX Link Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -44,14 +44,14 @@ namespace VuFind\Resolver\Driver;
 class Sfx extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $httpClient;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string               $baseUrl    Base URL for link resolver
      * @param \Laminas\Http\Client $httpClient HTTP client
@@ -63,7 +63,7 @@ class Sfx extends AbstractBase
     }
 
     /**
-     * Fetch Links
+     * Fetch Links.
      *
      * Fetches a set of links corresponding to an OpenURL
      *
@@ -82,7 +82,7 @@ class Sfx extends AbstractBase
     }
 
     /**
-     * Parse Links
+     * Parse Links.
      *
      * Parses an XML file returned by a link resolver
      * and converts it to a standardised format for display

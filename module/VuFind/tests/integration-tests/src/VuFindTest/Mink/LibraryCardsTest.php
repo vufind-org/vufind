@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
 
 /**
  * Mink library card actions test class.
@@ -145,7 +146,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLibraryCardForm($page, 'card 1', 'catuser1', 'bad');
         $this->clickCss($page, '.form-edit-card .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid login -- please try again.',
             $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -154,7 +155,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLibraryCardForm($page, 'card 1', 'catuser1', 'catpass1');
         $this->clickCss($page, '.form-edit-card .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'card 1',
             $this->findCssAndGetText($page, 'tr:nth-child(2) td')
         );
@@ -165,7 +166,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLibraryCardForm($page, 'card 2', 'catuser2', 'catpass2');
         $this->clickCss($page, '.form-edit-card .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'card 2',
             $this->findCssAndGetText($page, 'tr:nth-child(3) td')
         );
@@ -185,7 +186,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
-        $this->assertEquals('Library Cards', $this->findCssAndGetText($page, 'h2'));
+        $this->assertSame('Library Cards', $this->findCssAndGetText($page, 'h2'));
         $this->unfindCss($page, '.add-card span.icon-link__label');
     }
 
@@ -213,7 +214,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('card 2', $secondCard->getText());
 
         // Check that the appropriate username is reflected in the output:
-        $this->assertEquals(
+        $this->assertSame(
             'Lib-catuser1',
             $this->findCssAndGetText($page, '.catalog-profile tr:nth-child(1) td:nth-child(2)')
         );
@@ -224,7 +225,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Check that the appropriate username is reflected in the output:
-        $this->assertEquals(
+        $this->assertSame(
             'Lib-catuser2',
             $this->findCssAndGetText($page, '.catalog-profile tr:nth-child(1) td:nth-child(2)')
         );
@@ -246,7 +247,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
         // Confirm that we are on the profile page with no cards showing:
-        $this->assertEquals('Your Profile', $this->findCssAndGetText($page, 'h2'));
+        $this->assertSame('Your Profile', $this->findCssAndGetText($page, 'h2'));
         $this->unFindCss($page, '#library_card');
     }
 
@@ -272,7 +273,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.form-edit-card .btn.btn-primary');
         $this->waitForPageLoad($page);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Username is already in use in another library card',
             $this->findCssAndGetText($page, '.alert-danger')
         );
@@ -299,7 +300,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '[name="card_name"]', 'Edited Card');
         $this->clickCss($page, '.form-edit-card .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Edited Card',
             $this->findCssAndGetText($page, 'tr:nth-child(2) td')
         );
@@ -329,19 +330,20 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click the delete button
         $button = $this->findCss($page, 'tr:nth-child(3)')->findLink('Delete');
+        $this->assertInstanceOf(NodeElement::class, $button);
         $button->click();
         $this->waitForPageLoad($page);
         $this->clickCss($page, $this->firstOpenDropdownMenuItemSelector);
         $this->waitForPageLoad($page);
 
         // Check for success message
-        $this->assertEquals(
+        $this->assertSame(
             'Library Card Deleted',
             $this->findCssAndGetText($page, '.alert-success')
         );
 
         // Check that the deleted card is now gone, but the other card still exists.
-        $this->assertEquals(
+        $this->assertSame(
             'Edited Card',
             $this->findCssAndGetText($page, 'tr:nth-child(2) td')
         );

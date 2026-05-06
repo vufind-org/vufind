@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Export Support Test Class
+ * Export Support Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\Config;
 use VuFind\Export;
 
 /**
- * Export Support Test Class
+ * Export Support Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -93,7 +93,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "needs redirect"
+     * Test "needs redirect".
      *
      * @return void
      */
@@ -109,7 +109,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test non-XML case of process group
+     * Test non-XML case of process group.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test XML case of process group
+     * Test XML case of process group.
      *
      * @return void
      */
@@ -134,7 +134,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                 'combineXpath' => '/marc21:collection/marc21:record',
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             "<?xml version=\"1.0\"?>\n"
             . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
             . '<record><id>a</id></record><record><id>b</id></record></collection>',
@@ -148,7 +148,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test recordSupportsFormat
+     * Test recordSupportsFormat.
      *
      * @return void
      */
@@ -177,7 +177,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getFormatsForRecord
+     * Test getFormatsForRecord.
      *
      * @return void
      */
@@ -196,7 +196,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getFormatsForRecords
+     * Test getFormatsForRecords.
      *
      * @return void
      */
@@ -223,7 +223,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHeaders
+     * Test getHeaders.
      *
      * @return void
      */
@@ -235,7 +235,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getRedirectUrl
+     * Test getRedirectUrl.
      *
      * @return void
      */
@@ -253,7 +253,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLabelForFormat
+     * Test getLabelForFormat.
      *
      * @return void
      */
@@ -271,7 +271,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBulkExportType()
+     * Test getBulkExportType().
      *
      * @return void
      */
@@ -293,23 +293,19 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBulkUrl() method
+     * Test getBulkUrl() method.
      *
      * @return void
      */
     public function testGetBulkUrl(): void
     {
-        $url = $this->getMockBuilder(\Laminas\View\Helper\Url::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $url = $this->createMock(\Laminas\View\Helper\Url::class);
         $url->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('cart-doexport'))
+            ->with('cart-doexport')
             ->willReturn('/cart/doExport');
-        $serverUrl = $this->getMockBuilder(\Laminas\View\Helper\ServerUrl::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('/cart/doExport'))
+            ->with('/cart/doExport')
             ->willReturn('http://localhost/cart/doExport');
         $renderer = $this->createMock(PhpRenderer::class);
         $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
@@ -320,7 +316,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPostField()
+     * Test getPostField().
      *
      * @return void
      */
@@ -335,7 +331,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTargetWindow()
+     * Test getTargetWindow().
      *
      * @return void
      */
@@ -350,7 +346,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake MARCXML record
+     * Get a fake MARCXML record.
      *
      * @param string $id ID to put in record.
      *

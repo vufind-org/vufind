@@ -45,33 +45,31 @@ class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
     use CacheManagementTrait;
 
     /**
-     * Data provider for configuration caching tests
+     * Data provider for configuration caching tests.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function cacheSettingsProvider(): array
+    public static function cacheSettingsProvider(): \Iterator
     {
-        return [
-            'no caching' => [
-                false,
-                false,
-                false,
-            ],
-            'override no caching' => [
-                false,
-                true,
-                true,
-            ],
-            'override caching' => [
-                true,
-                false,
-                false,
-            ],
-            'all caching' => [
-                true,
-                true,
-                true,
-            ],
+        yield 'no caching' => [
+            false,
+            false,
+            false,
+        ];
+        yield 'override no caching' => [
+            false,
+            true,
+            true,
+        ];
+        yield 'override caching' => [
+            true,
+            false,
+            false,
+        ];
+        yield 'all caching' => [
+            true,
+            true,
+            true,
         ];
     }
 

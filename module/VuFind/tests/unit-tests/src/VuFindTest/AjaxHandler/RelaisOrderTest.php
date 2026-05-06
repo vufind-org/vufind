@@ -59,16 +59,14 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testSearchResponse()
+     * Data provider for testSearchResponse().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function authenticatedBehaviorProvider(): array
+    public static function authenticatedBehaviorProvider(): \Iterator
     {
-        return [
-            'failure' => ['error: it is broken', ['error: it is broken', 500]],
-            'success' => ['success', [['result' => 'success']]],
-        ];
+        yield 'failure' => ['error: it is broken', ['error: it is broken', 500]];
+        yield 'success' => ['success', [['result' => 'success']]];
     }
 
     /**

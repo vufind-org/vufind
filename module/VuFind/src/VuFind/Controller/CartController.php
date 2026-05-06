@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Book Bag / Bulk Action Controller
+ * Book Bag / Bulk Action Controller.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function is_array;
 use function strlen;
 
 /**
- * Book Bag / Bulk Action Controller
+ * Book Bag / Bulk Action Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -56,7 +56,7 @@ class CartController extends AbstractBase
     use ListItemSelectionTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface               $sm            Service manager
      * @param Container                             $session       Session container
@@ -179,7 +179,7 @@ class CartController extends AbstractBase
                     $msg = $this->translate('bookbag_full_msg') . '. '
                         . $addItems['notAdded'] . ' '
                         . $this->translate('items_already_in_bookbag') . '.';
-                    $this->flashMessenger()->addMessage($msg, 'info');
+                    $this->flashMessenger()->addInfoMessage($msg);
                 }
             }
         }
@@ -310,7 +310,7 @@ class CartController extends AbstractBase
                 );
                 return $this->redirectToSource('success', 'bulk_email_success', true);
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -422,7 +422,7 @@ class CartController extends AbstractBase
         // No legal export options?  Display a warning:
         if (empty($view->exportOptions)) {
             $this->flashMessenger()
-                ->addMessage('bulk_export_not_supported', 'error');
+                ->addErrorMessage('bulk_export_not_supported');
         }
         return $view;
     }
@@ -537,7 +537,7 @@ class CartController extends AbstractBase
                 . '<a href="' . $listUrl . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
             ];
-            $this->flashMessenger()->addMessage($message, 'success');
+            $this->flashMessenger()->addSuccessMessage($message);
             return $this->redirect()->toUrl($listUrl);
         }
 

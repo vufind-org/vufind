@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Maintenance Controller
+ * Admin Maintenance Controller.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function ini_get;
 use function intval;
 
 /**
- * Class helps maintain database
+ * Class helps maintain database.
  *
  * @category VuFind
  * @package  Controller
@@ -54,28 +54,28 @@ use function intval;
 class MaintenanceController extends AbstractAdmin
 {
     /**
-     * Cache manager
+     * Cache manager.
      *
      * @var CacheManager
      */
     protected $cacheManager;
 
     /**
-     * Guzzle service
+     * Guzzle service.
      *
      * @var GuzzleService
      */
     protected $guzzleService;
 
     /**
-     * Logger
+     * Logger.
      *
      * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm            Service locator
      * @param CacheManager            $cacheManager  Cache manager
@@ -95,7 +95,7 @@ class MaintenanceController extends AbstractAdmin
     }
 
     /**
-     * System Maintenance
+     * System Maintenance.
      *
      * @return \Laminas\View\Model\ViewModel
      */

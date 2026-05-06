@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Database
+ * Class Database.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Service\UserService;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
- * Class Database
+ * Class Database.
  *
  * @category VuFind
  * @package  Form
@@ -52,7 +52,7 @@ class Database implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FeedbackServiceInterface $feedbackService Feedback database service
      * @param UserService              $userService     User database service

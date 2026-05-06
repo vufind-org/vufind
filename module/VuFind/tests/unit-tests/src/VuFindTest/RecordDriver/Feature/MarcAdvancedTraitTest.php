@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Driver Marc Advanced Trait Test Class
+ * Record Driver Marc Advanced Trait Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordDriver\Feature;
 use VuFind\RecordDriver\SolrMarc;
 
 /**
- * Record Driver Marc Advanced Trait Test Class
+ * Record Driver Marc Advanced Trait Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -56,12 +56,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $record = new \VuFind\Marc\MarcReader($this->getFixture($fixture));
         $obj = $this->getMockBuilder(SolrMarc::class)
             ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->willReturn($record);
-        $obj->expects($this->any())
-            ->method('getUniqueId')
-            ->willReturn('123');
+        $obj->method('getMarcReader')->willReturn($record);
+        $obj->method('getUniqueId')->willReturn('123');
         return $obj;
     }
 
@@ -150,16 +146,16 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString(
             '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
             . ' xmlns="http://www.loc.gov/mods/v3">',
-            $rdfXml
+            (string)$rdfXml
         );
-        $this->assertStringContainsString('<nonSort>The </nonSort>', $rdfXml);
+        $this->assertStringContainsString('<nonSort>The </nonSort>', (string)$rdfXml);
         $this->assertStringContainsString(
             '<namePart>Author, Test</namePart>',
-            $rdfXml
+            (string)$rdfXml
         );
         $this->assertStringContainsString(
             '<identifier type="isbn">978-3-16-148410-0</identifier>',
-            $rdfXml
+            (string)$rdfXml
         );
     }
 
@@ -183,30 +179,30 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMockDriverFromFixture('marc/altscript.xml');
 
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия /'],
             $obj->getTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия / 1'],
             $obj->getFullTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия :'],
             $obj->getShortTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['лирическая поэзия /'],
             $obj->getSubTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['1'],
             $obj->getTitleSectionsAltScript()
         );
     }
 
     /**
-     * Test getMarcFieldWithInd when a single indicator value is sent
+     * Test getMarcFieldWithInd when a single indicator value is sent.
      *
      * @return void
      */
@@ -222,7 +218,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMarcFieldWithInd when multiple values for the indicator are sent
+     * Test getMarcFieldWithInd when multiple values for the indicator are sent.
      *
      * @return void
      */
@@ -239,7 +235,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getMarcFieldWithInd when multiple indicators are requested
-     * as AND conditions
+     * as AND conditions.
      *
      * @return void
      */
@@ -256,7 +252,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getMarcFieldWithInd when multiple indicators are requested
-     * as OR conditions
+     * as OR conditions.
      *
      * @return void
      */
@@ -272,7 +268,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMarcFieldWithInd when no indicator filters are sent
+     * Test getMarcFieldWithInd when no indicator filters are sent.
      *
      * @return void
      */
@@ -288,7 +284,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getSummary to get expected marc data
+     * Test calling getSummary to get expected marc data.
      *
      * @return void
      */
@@ -303,7 +299,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getSummaryNotes to get expected marc data
+     * Test calling getSummaryNotes to get expected marc data.
      *
      * @return void
      */
@@ -318,7 +314,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getAbstractNotes to get expected marc data
+     * Test calling getAbstractNotes to get expected marc data.
      *
      * @return void
      */
@@ -333,7 +329,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getReviewtNotes to get expected marc data
+     * Test calling getReviewtNotes to get expected marc data.
      *
      * @return void
      */
@@ -348,7 +344,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getContentAdviceNotes to get expected marc data
+     * Test calling getContentAdviceNotes to get expected marc data.
      *
      * @return void
      */
@@ -363,7 +359,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data
+     * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data.
      *
      * @return void
      */

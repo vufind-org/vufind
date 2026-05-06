@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User account service factory
+ * User account service factory.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\Favorites\FavoritesService;
 
 /**
- * User account service factory
+ * User account service factory.
  *
  * @category VuFind
  * @package  Account
@@ -48,7 +48,7 @@ use VuFind\Favorites\FavoritesService;
 class UserAccountServiceFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

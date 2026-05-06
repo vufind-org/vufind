@@ -51,14 +51,12 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for SQL-only or non-SQL-only scenarios.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function sqlOnlyProvider(): array
+    public static function sqlOnlyProvider(): \Iterator
     {
-        return [
-            'sql-only' => [true],
-            'not sql-only' => [false],
-        ];
+        yield 'sql-only' => [true];
+        yield 'not sql-only' => [false];
     }
 
     /**
@@ -104,7 +102,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
             $expectedMsg,
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -120,10 +118,10 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DatabaseCommand(Closure::fromCallable(fn () => $manager), $factory, $cacheManager);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
+        $this->assertSame(
             "Nothing to do.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 }

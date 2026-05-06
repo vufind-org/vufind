@@ -99,7 +99,7 @@ class PrintArrayHtml extends AbstractHelper
     /**
      * Check is a variable is and array and all keys are sequential
      * integers starting from index 0.
-     * TODO This function can be replaced by array_is_list() in PHP8
+     * TODO This function can be replaced by array_is_list() in PHP8.
      *
      * @param mixed $var A variable to perform the check on.
      *

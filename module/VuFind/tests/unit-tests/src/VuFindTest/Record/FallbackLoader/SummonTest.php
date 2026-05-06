@@ -56,7 +56,7 @@ class SummonTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->createMock(\VuFind\RecordDriver\Summon::class);
         $record->expects($this->once())->method('setPreviousUniqueId')
-            ->with($this->equalTo('oldId'));
+            ->with('oldId');
         $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Summon\Response\RecordCollection(
             ['recordCount' => 1]
@@ -81,16 +81,16 @@ class SummonTest extends \PHPUnit\Framework\TestCase
         $updater = $this->createMock(RecordIdUpdater::class);
         $updater->expects($this->once())->method('updateRecordId')
             ->with(
-                $this->equalTo('oldId'),
-                $this->equalTo('newId'),
-                $this->equalTo('Summon')
+                'oldId',
+                'newId',
+                'Summon'
             );
         $entity = $this->createMock(ResourceEntityInterface::class);
         $entity->expects($this->once())->method('getExtraMetadata')
             ->willReturn('{ "bookmark": "bar" }');
         $resourceService = $this->createMock(ResourceServiceInterface::class);
         $resourceService->expects($this->once())->method('getResourceByRecordId')
-            ->with($this->equalTo('oldId'), $this->equalTo('Summon'))
+            ->with('oldId', 'Summon')
             ->willReturn($entity);
         $loader = new Summon($resourceService, $updater, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));

@@ -52,9 +52,7 @@ class GetUniqueKeyCommandTest extends TestCase
     {
         $command = new GetUniqueKeyCommand('foo', []);
         $this->expectExceptionMessage('Unsupported backend');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('foo');
         $command->execute($backend);
@@ -70,9 +68,7 @@ class GetUniqueKeyCommandTest extends TestCase
         $command = new GetUniqueKeyCommand('foo', []);
         $this
             ->expectExceptionMessage('Expected backend instance foo instead of bar');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('bar');
         $command->execute($backend);
@@ -85,14 +81,10 @@ class GetUniqueKeyCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $connector = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
-            ->disableOriginalConstructor()->getMock();
+        $connector = $this->createMock(\VuFindSearch\Backend\Solr\Connector::class);
         $connector->expects($this->once())->method('getUniqueKey')
             ->willReturn('foo');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('bar');
         $backend->expects($this->once())->method('getConnector')

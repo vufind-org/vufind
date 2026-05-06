@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart Test Class
+ * Cart Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Cookie\CookieManager;
 
 /**
- * Cart Test Class
+ * Cart Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Mock record loader
+     * Mock record loader.
      *
      * @var MockObject&\VuFind\Record\Loader
      */
@@ -239,7 +239,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     {
         $this->loader->expects($this->once())
             ->method('loadBatch')
-            ->with($this->equalTo(['Solr|a']))
+            ->with(['Solr|a'])
             ->willReturn('success');
         $cart = $this->getCart();
         $cart->addItem('Solr|a');

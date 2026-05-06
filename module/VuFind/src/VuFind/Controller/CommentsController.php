@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Comments Controller
+ * Comments Controller.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ class CommentsController extends AbstractBase
     use Feature\UserContentTrait;
 
     /**
-     * Array of sort options for userListAction
+     * Array of sort options for userListAction.
      *
      * @var array
      */
@@ -57,7 +57,7 @@ class CommentsController extends AbstractBase
     ];
 
     /**
-     * Get all comments for the logged in user
+     * Get all comments for the logged in user.
      *
      * @return View
      */
@@ -90,7 +90,7 @@ class CommentsController extends AbstractBase
     }
 
     /**
-     * Delete given comments by the logged in user
+     * Delete given comments by the logged in user.
      *
      * @return View
      */

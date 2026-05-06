@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserListService test class
+ * UserListService test class.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function is_int;
 use function is_object;
 
 /**
- * UserListService test class
+ * UserListService test class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ use function is_object;
 class UserListServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get user list service
+     * Get user list service.
      *
      * @param ?EntityManager $entityManager Entity manager.
      * @param array          $onlyMethods   Array containing mock only methods values.
@@ -74,7 +74,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get entity manager
+     * Get entity manager.
      *
      * @param array $expected Expected values for setParameters
      *
@@ -84,7 +84,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     {
         $entityManager = $this->createMock(EntityManager::class);
         $queryObject = $this->createMock(Query::class);
-        $queryObject->expects($this->any())->method('getSingleColumnResult')->willReturn([]);
+        $queryObject->method('getSingleColumnResult')->willReturn([]);
         $queryObject->expects($this->once())->method('setParameters')->willReturnCallback(
             function ($params) use ($expected): void {
                 $params = array_map(
@@ -94,12 +94,12 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
                 $this->assertEquals($expected['params'], $params);
             }
         );
-        $queryObject->expects($this->any())->method('getResult')->willReturn([]);
+        $queryObject->method('getResult')->willReturn([]);
         $entityManager->expects($this->once())->method('createQuery')->willReturnCallback(
             function ($dql) use ($expected, $queryObject) {
                 // Assert that all the set parameters have been added to the dql properly in form of :param
                 foreach (array_keys($expected['params']) as $key) {
-                    $this->assertStringContainsString(":$key", $dql);
+                    $this->assertStringContainsString(":$key", (string)$dql);
                 }
                 return $queryObject;
             }
@@ -108,7 +108,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -183,7 +183,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get public lists query
+     * Test get public lists query.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for createQuery and setParameters
@@ -194,11 +194,11 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     public function testPublicLists($params, $expected): void
     {
         $result = $this->getService($this->getEntityManager($expected))->getPublicLists(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -241,7 +241,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get user lists and counts by user
+     * Test get user lists and counts by user.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
@@ -258,7 +258,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         } else {
             $referenceId = $params[0];
         }
-        $mockUser->expects($this->any())->method('getId')->willReturn($referenceId);
+        $mockUser->method('getId')->willReturn($referenceId);
         $service = $this->getService($this->getEntityManager($expected));
         $service->expects($this->once())->method('getDoctrineReference')->willReturnCallback(
             function ($className, $userOrId) use ($referenceId, $mockUser) {
@@ -268,11 +268,11 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             }
         );
         $result = $service->getUserListsAndCountsByUser(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -373,7 +373,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get user lists by tag and id
+     * Test get user lists by tag and id.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
@@ -386,11 +386,11 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         $service = $this->getService($this->getEntityManager($expected), ['getDoctrineReference', 'getUserListsById']);
         $service->expects($this->once())->method('getUserListsById')->willReturn([]);
         $result = $service->getUserListsByTagAndId(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Generator
      */
@@ -455,7 +455,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get lists containing record
+     * Test get lists containing record.
      *
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
@@ -473,7 +473,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             } else {
                 $referenceId = $params[2];
             }
-            $mockUser->expects($this->any())->method('getId')->willReturn($referenceId);
+            $mockUser->method('getId')->willReturn($referenceId);
 
             $service->expects($this->once())->method('getDoctrineReference')->willReturnCallback(
                 function ($className, $userOrId) use ($referenceId, $mockUser) {
@@ -485,6 +485,6 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         }
 
         $result = $service->getListsContainingRecord(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 }

@@ -53,9 +53,7 @@ class GetQueryBuilderCommandTest extends TestCase
         $command = new GetQueryBuilderCommand('foo');
         $this
             ->expectExceptionMessage('Expected backend instance foo instead of bar');
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('bar');
         $command->execute($backend);
@@ -68,12 +66,8 @@ class GetQueryBuilderCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $builder = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $builder = $this->createMock(\VuFindSearch\Backend\Solr\QueryBuilder::class);
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('bar');
         $backend->expects($this->once())->method('getQueryBuilder')

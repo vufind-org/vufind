@@ -44,7 +44,7 @@ use VuFind\AjaxHandler\SystemStatus;
 class SystemStatusTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the AJAX handler's "health check file" response
+     * Test the AJAX handler's "health check file" response.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the AJAX handler's Solr failure response
+     * Test the AJAX handler's Solr failure response.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
         $e = new \Exception('kaboom');
         $results->expects($this->once())->method('performAndProcessSearch')->willThrowException($e);
-        $resultsManager->expects($this->once())->method('get')->with($this->equalTo('Solr'))->willReturn($results);
+        $resultsManager->expects($this->once())->method('get')->with('Solr')->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
         $config = new \VuFind\Config\Config([]);
@@ -85,7 +85,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the AJAX handler's database failure response
+     * Test the AJAX handler's database failure response.
      *
      * @return void
      */
@@ -95,7 +95,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
         $results->expects($this->exactly(2))->method('performAndProcessSearch');
-        $resultsManager->expects($this->exactly(2))->method('get')->with($this->equalTo('Solr'))->willReturn($results);
+        $resultsManager->expects($this->exactly(2))->method('get')->with('Solr')->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->exactly(2))->method('getParams')->willReturn($params);
         $config = new \VuFind\Config\Config([]);
@@ -111,7 +111,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the AJAX handler's successful response
+     * Test the AJAX handler's successful response.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
         $results->expects($this->once())->method('performAndProcessSearch');
-        $resultsManager->expects($this->once())->method('get')->with($this->equalTo('Solr'))->willReturn($results);
+        $resultsManager->expects($this->once())->method('get')->with('Solr')->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
         $config = new \VuFind\Config\Config([]);
@@ -134,7 +134,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock Params class for request params
+     * Get mock Params class for request params.
      *
      * @param array $requestParams Parameters to return
      *
@@ -142,9 +142,8 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockRequestParams(array $requestParams = []): Params
     {
-        $params = $this->getMockBuilder(Params::class)->getMock();
-        $params->expects($this->any())
-            ->method('fromQuery')
+        $params = $this->createMock(Params::class);
+        $params->method('fromQuery')
             ->willReturnCallback(
                 function ($param, $default = null) use ($requestParams) {
                     return $requestParams[$param] ?? $default;

@@ -52,7 +52,7 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     protected $services = false;
 
     /**
-     * Get mock database service plugin manager
+     * Get mock database service plugin manager.
      *
      * @return \VuFind\Db\Service\PluginManager
      */
@@ -89,11 +89,11 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
         $search = $this->createMock(SearchServiceInterface::class);
         $search->expects($this->once())
             ->method('destroySession')
-            ->with($this->equalTo($sessId));
+            ->with($sessId);
         $external = $this->createMock(ExternalSessionServiceInterface::class);
         $external->expects($this->once())
             ->method('destroySession')
-            ->with($this->equalTo($sessId));
+            ->with($sessId);
         $services = $this->getServices();
         $services->set(SearchServiceInterface::class, $search);
         $services->set(ExternalSessionServiceInterface::class, $external);

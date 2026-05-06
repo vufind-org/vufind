@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Config Plugin Factory
+ * VuFind Config Plugin Factory.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Config Plugin Factory
+ * VuFind Config Plugin Factory.
  *
  * @category VuFind
  * @package  ServiceManager

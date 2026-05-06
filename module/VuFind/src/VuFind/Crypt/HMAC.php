@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HMAC hash generator
+ * HMAC hash generator.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Crypt;
 
 /**
- * HMAC hash generator wrapper
+ * HMAC hash generator wrapper.
  *
  * @category VuFind
  * @package  Crypt
@@ -41,14 +41,14 @@ namespace VuFind\Crypt;
 class HMAC
 {
     /**
-     * Hash key
+     * Hash key.
      *
      * @var string
      */
     protected $hashKey;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $key Hash key
      */
@@ -58,7 +58,7 @@ class HMAC
     }
 
     /**
-     * Accepts $keysToHash, a list of array keys, and $keyValueArray, a keyed array
+     * Accepts $keysToHash, a list of array keys, and $keyValueArray, a keyed array.
      *
      * @param array $keysToHash    A list of keys to hash
      * @param array $keyValueArray A keyed array

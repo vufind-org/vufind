@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Authenticator Test Class
+ * ILS Authenticator Test Class.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use VuFind\ILS\Connection as ILSConnection;
 use VuFindTest\Container\MockDbServicePluginManager;
 
 /**
- * ILS Authenticator Manager Test Class
+ * ILS Authenticator Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -63,8 +63,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getMockUser();
         $manager = $this->getMockManager(['getUserObject', 'updateSession']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
-        $manager->expects($this->once())->method('updateSession')->with($this->equalTo($user));
+        $manager->method('getUserObject')->willReturn($user);
+        $manager->expects($this->once())->method('updateSession')->with($user);
         $details = ['foo' => 'bar'];
         $connection = $this->getMockConnection();
         $this->addPatronLoginToMock($connection, $details);
@@ -88,7 +88,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testNewCatalogFailure(): void
     {
         $manager = $this->getMockManager(['getUserObject']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn(null);
+        $manager->method('getUserObject')->willReturn(null);
         $details = false;
         $connection = $this->getMockConnection();
         $this->addPatronLoginToMock($connection, $details);
@@ -121,7 +121,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testLoggedOutStoredLoginAttempt(): void
     {
         $manager = $this->getMockManager(['getUserObject']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn(null);
+        $manager->method('getUserObject')->willReturn(null);
         $auth = $this->getAuthenticator($manager);
         $this->assertEquals(false, $auth->storedCatalogLogin());
     }
@@ -134,10 +134,10 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testSuccessfulStoredLoginAttempt(): void
     {
         $user = $this->getMockUser();
-        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
-        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
+        $user->method('getCatUsername')->willReturn('user');
+        $user->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
+        $manager->method('getUserObject')->willReturn($user);
         $details = ['foo' => 'bar'];
         $connection = $this->getMockConnection();
         $this->addPatronLoginToMock($connection, $details);
@@ -157,13 +157,13 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     public function testUnsuccessfulStoredLoginAttempt(): void
     {
         $user = $this->getMockUser();
-        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
-        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
+        $user->method('getCatUsername')->willReturn('user');
+        $user->method('getRawCatPassword')->willReturn('pass');
         $user->expects($this->once())->method('setCatUsername')->with(null)->willReturn($user);
         $user->expects($this->once())->method('setRawCatPassword')->with(null)->willReturn($user);
         $user->expects($this->once())->method('setCatPassEnc')->with(null)->willReturn($user);
         $manager = $this->getMockManager(['getUserObject']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
+        $manager->method('getUserObject')->willReturn($user);
         $connection = $this->getMockConnection();
         $this->addPatronLoginToMock($connection, false);
         $auth = $this->getAuthenticator($manager, $connection);
@@ -181,10 +181,10 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('kaboom');
 
         $user = $this->getMockUser();
-        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
-        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
+        $user->method('getCatUsername')->willReturn('user');
+        $user->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
-        $manager->expects($this->any())->method('getUserObject')->willReturn($user);
+        $manager->method('getUserObject')->willReturn($user);
         $connection = $this->getMockConnection();
         $this->addPatronLoginToMock($connection, new \VuFind\Exception\ILS('kaboom'));
         $auth = $this->getAuthenticator($manager, $connection);
@@ -233,7 +233,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get an authenticator
+     * Get an authenticator.
      *
      * @param ?Manager            $manager    Auth manager (null for default mock)
      * @param ?ILSConnection      $connection ILS connection (null for default mock)
@@ -272,7 +272,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
      * @return MockObject&UserEntityInterface
      */
@@ -282,7 +282,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock auth manager
+     * Get a mock auth manager.
      *
      * @param array $methods Methods to mock
      *
@@ -297,7 +297,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock ILS connection
+     * Get a mock ILS connection.
      *
      * @return MockObject&ILSConnection
      */

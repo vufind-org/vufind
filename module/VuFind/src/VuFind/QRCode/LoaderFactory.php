@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for QR Code Generator
+ * Factory for QR Code Generator.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for QR Code Generator
+ * Factory for QR Code Generator.
  *
  * @category VuFind
  * @package  QRCode_Generator
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class LoaderFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

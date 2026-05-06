@@ -52,7 +52,7 @@ use function sprintf;
 trait ClassBasedTemplateRendererTrait
 {
     /**
-     * Cache for found templates
+     * Cache for found templates.
      *
      * @var array
      */
@@ -163,7 +163,7 @@ trait ClassBasedTemplateRendererTrait
     }
 
     /**
-     * Helper to grab the end of the class name
+     * Helper to grab the end of the class name.
      *
      * @param string $className Class name to abbreviate
      *
@@ -180,7 +180,7 @@ trait ClassBasedTemplateRendererTrait
     }
 
     /**
-     * Helper to put the template path and class name together
+     * Helper to put the template path and class name together.
      *
      * @param string $template  Template path (with %s as class name placeholder)
      * @param string $className Class name to abbreviate

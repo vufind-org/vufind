@@ -41,7 +41,7 @@ namespace VuFind\Db\Service;
 trait DbServiceAwareTrait
 {
     /**
-     * Database service plugin manager
+     * Database service plugin manager.
      *
      * @var PluginManager
      */
