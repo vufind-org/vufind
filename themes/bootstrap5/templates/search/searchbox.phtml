@@ -132,14 +132,17 @@
             title="<?=$this->transEscAttr('searchform_reset_button')?>"
             aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"
           ><?=$this->icon('ui-reset-search');?></button>
-          <button
-            id="searchForm-speech"
-            class="searchForm-speech hidden"
-            type="button"
-            title="<?=$this->transEscAttr('speech_search_button')?>"
-            aria-label="<?=$this->transEscAttr('speech_search_button')?>"
-            aria-pressed="false"
-          ><?=$this->icon('microphone');?></button>
+          <?php if ($this->searchbox()->voiceSearchEnabled()): ?>
+            <button
+              id="searchForm-speech"
+              class="searchForm-speech hidden"
+              type="button"
+              title="<?=$this->transEscAttr('speech_search_button')?>"
+              aria-label="<?=$this->transEscAttr('speech_search_button')?>"
+              aria-pressed="false"
+            ><?=$this->icon('microphone');?></button>
+            <?php $this->assetManager()->appendScriptLink('searchbox_speech.js'); ?>
+          <?php endif; ?>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
             $this->assetManager()->appendScriptLink('vendor/simple-keyboard/index.js');

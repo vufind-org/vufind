@@ -227,6 +227,16 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
+     * Is voice search enabled?
+     *
+     * @return bool
+     */
+    public function voiceSearchEnabled(): bool
+    {
+        return (bool)($this->config['General']['enableVoiceSearch'] ?? false);
+    }
+
+    /**
      * Helper method: get special character to represent operator in filter.
      *
      * @param string $operator Operator
