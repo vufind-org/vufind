@@ -146,6 +146,13 @@ class Folio extends AbstractAPI implements
     protected $courseCache = null;
 
     /**
+     * Timeout in seconds for webhook calls.
+     *
+     * @var float
+     */
+    protected float $webhookTimeout = 5;
+
+    /**
      * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter     Date converter object
@@ -2379,7 +2386,7 @@ class Folio extends AbstractAPI implements
         $url = $this->config['Holds']['webhook'] ?? null;
         if ($url && $this->webhookConnection) {
             // Short timeout -- don't impact user.
-            $this->webhookConnection->post($url, 5);
+            $this->webhookConnection->post($url, $this->webhookTimeout);
         }
     }
 
