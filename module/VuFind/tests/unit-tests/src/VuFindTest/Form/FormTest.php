@@ -32,7 +32,6 @@ namespace VuFindTest\Form;
 
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\ConfigManagerInterface;
-use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
@@ -51,19 +50,55 @@ class FormTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
     use ConfigRelatedServicesTrait;
 
-    protected $mockTestFormYamlReader = null;
+    /**
+     * Get a mock Form object.
+     *
+     * @param ?string $formId               Form identifier
+     * @param array   $params               Parameters to pass to setFormId
+     * @param array   $prefill              Prefill data to pass to setFormId
+     * @param array   $config               VuFind config
+     * @param bool    $useFormConfigFixture If the test feedback form config fixtrue should be used
+     *
+     * @return Form
+     * @throws \Exception
+     */
+    protected function getMockTestForm(
+        ?string $formId = null,
+        array $params = [],
+        array $prefill = [],
+        array $config = [],
+        bool $useFormConfigFixture = true
+    ): Form {
+        $feedBackFormConfig = $useFormConfigFixture
+            ? $this->getContainerWithConfigRelatedServices(
+                baseDir: $this->getFixtureDir() . 'configs/feedbackforms',
+                baseSubDir: ''
+            )->get(ConfigManagerInterface::class)
+                ->getConfigArray('test')
+            : $this->getContainerWithConfigRelatedServices()
+                ->get(ConfigManagerInterface::class)
+                ->getConfigArray('FeedbackForms');
+        $form = new Form(
+            $this->createMock(\Laminas\View\HelperPluginManager::class),
+            $this->createMock(\VuFind\Form\Handler\PluginManager::class),
+            $config,
+            $feedBackFormConfig
+        );
+        if ($formId !== null) {
+            $form->setFormId($formId, $params, $prefill);
+        }
+        return $form;
+    }
 
     /**
      * Test defaults with no configuration.
      *
      * @return void
      */
-    public function testDefaultsWithoutConfiguration()
+    public function testDefaultsWithoutConfiguration(): void
     {
-        $form = new Form(
-            new YamlReader($this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class)),
-            $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
+        $form = $this->getMockTestForm(
+            useFormConfigFixture: false
         );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
@@ -75,12 +110,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertNull($form->getTitle());
         $this->assertNull($form->getHelp());
-        $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
-        $this->assertEquals(
+        $this->assertSame('VuFind Feedback', $form->getEmailSubject([]));
+        $this->assertSame(
             'feedback_response',
             $form->getSubmitResponse()
         );
-        $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
+        $this->assertSame([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
         $this->assertInstanceOf(
@@ -95,24 +130,22 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultsWithConfiguration()
+    public function testDefaultsWithConfiguration(): void
     {
         $defaults = [
             'recipient_email' => 'me@example.com',
             'recipient_name' => 'me',
             'email_subject' => 'subject',
         ];
-        $form = new Form(
-            new YamlReader($this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class)),
-            $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $this->createMock(\VuFind\Form\Handler\PluginManager::class),
-            ['Feedback' => $defaults]
+        $form = $this->getMockTestForm(
+            config: ['Feedback' => $defaults],
+            useFormConfigFixture: false
         );
-        $this->assertEquals(
-            [['name' => 'me', 'email' => 'me@example.com']],
+        $this->assertSame(
+            [['email' => 'me@example.com', 'name' => 'me']],
             $form->getRecipient()
         );
-        $this->assertEquals('subject', $form->getEmailSubject([]));
+        $this->assertSame('subject', $form->getEmailSubject([]));
     }
 
     /**
@@ -120,17 +153,15 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUndefinedFormId()
+    public function testUndefinedFormId(): void
     {
         $this->expectException(\VuFind\Exception\RecordMissing::class);
         $this->expectExceptionMessage('Form \'foo\' not found');
 
-        $form = new Form(
-            new YamlReader($this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class)),
-            $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
+        $this->getMockTestForm(
+            'foo',
+            useFormConfigFixture: false
         );
-        $form->setFormId('foo');
     }
 
     /**
@@ -138,14 +169,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultsWithFormSet()
+    public function testDefaultsWithFormSet(): void
     {
-        $form = new Form(
-            new YamlReader($this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class)),
-            $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
+        $form = $this->getMockTestForm(
+            'FeedbackSite',
+            useFormConfigFixture: false
         );
-        $form->setFormId('FeedbackSite');
 
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
@@ -185,10 +214,10 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->getRecipient()
         );
 
-        $this->assertEquals('feedback_title', $form->getTitle());
+        $this->assertSame('feedback_title', $form->getTitle());
         $this->assertNull($form->getHelp());
-        $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
-        $this->assertEquals(
+        $this->assertSame('VuFind Feedback', $form->getEmailSubject([]));
+        $this->assertSame(
             'feedback_response',
             $form->getSubmitResponse()
         );
@@ -267,14 +296,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSenderFieldMerging()
+    public function testSenderFieldMerging(): void
     {
-        $form = new Form(
-            new YamlReader($this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class)),
-            $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
+        $form = $this->getMockTestForm(
+            'FeedbackSite',
+            useFormConfigFixture: false
         );
-        $form->setFormId('FeedbackSite');
 
         $this->assertEquals(
             [
@@ -352,7 +379,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSenderFieldMergingWithSettings()
+    public function testSenderFieldMergingWithSettings(): void
     {
         $form = $this->getMockTestForm('TestSenderFieldsWithSettings');
         $this->assertEquals(
@@ -400,53 +427,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock YamlReader object.
-     *
-     * @return YamlReader
-     */
-    protected function getMockTestFormYamlReader()
-    {
-        if (!isset($this->mockTestFormYamlReader)) {
-            $config = Yaml::parse($this->getFixture('configs/feedbackforms/test.yaml'));
-            $mock = $this->getMockBuilder(\VuFind\Config\YamlReader::class)
-                ->disableOriginalConstructor()
-                ->onlyMethods(['get'])
-                ->getMock();
-            $mock->method('get')
-                ->with('FeedbackForms.yaml')
-                ->willReturn($config);
-            $this->mockTestFormYamlReader = $mock;
-        }
-        return $this->mockTestFormYamlReader;
-    }
-
-    /**
-     * Get a mock Form object.
-     *
-     * @param string $formId  Form identifier
-     * @param array  $params  Parameters to pass to setFormId
-     * @param array  $prefill Prefill data to pass to setFormId
-     *
-     * @return Form
-     * @throws \Exception
-     */
-    protected function getMockTestForm($formId, $params = [], $prefill = [])
-    {
-        $form = new Form(
-            $this->getMockTestFormYamlReader(),
-            $this->createMock(\Laminas\View\HelperPluginManager::class),
-            $this->createMock(\VuFind\Form\Handler\PluginManager::class)
-        );
-        $form->setFormId($formId, $params, $prefill);
-        return $form;
-    }
-
-    /**
      * Test element options (select, radio, checkbox).
      *
      * @return void
      */
-    public function testElementOptions()
+    public function testElementOptions(): void
     {
         $form = $this->getMockTestForm('TestElementOptions');
 
@@ -595,7 +580,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testElementOptionValueValidators()
+    public function testElementOptionValueValidators(): void
     {
         $form = $this->getMockTestForm('TestElementOptions');
 
@@ -673,7 +658,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckboxRequiredValidators()
+    public function testCheckboxRequiredValidators(): void
     {
         // Test checkbox with all options required
         $ids = [
@@ -836,7 +821,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertTrue($form->isValid());
-        $this->assertEquals(
+        $this->assertSame(
             $expectedSubject,
             $form->getEmailSubject($form->getData())
         );
@@ -871,7 +856,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testFormActionRoute(string $id, string $expected): void
     {
         $form = $this->getMockTestForm($id);
-        $this->assertEquals($expected, $form->getFormActionRoute());
+        $this->assertSame($expected, $form->getFormActionRoute());
     }
 
     /**
@@ -890,20 +875,20 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'phone' => '123456789', //Should not be prefilled
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'type' => 'text',
                     'name' => 'name',
-                    'group' => '__sender__',
+                    'type' => 'text',
                     'label' => 'Sender Name',
+                    'group' => '__sender__',
                     'settings' => [],
                 ],
                 [
-                    'type' => 'email',
                     'name' => 'email',
-                    'group' => '__sender__',
+                    'type' => 'email',
                     'label' => 'feedback_email',
+                    'group' => '__sender__',
                     'settings' => [],
                 ],
                 [
@@ -954,20 +939,20 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'submit'    => 'Bad submit value',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'type' => 'text',
                     'name' => 'name',
-                    'group' => '__sender__',
+                    'type' => 'text',
                     'label' => 'Sender Name',
+                    'group' => '__sender__',
                     'settings' => [],
                 ],
                 [
-                    'type' => 'email',
                     'name' => 'email',
-                    'group' => '__sender__',
+                    'type' => 'email',
                     'label' => 'feedback_email',
+                    'group' => '__sender__',
                     'settings' => [],
                 ],
                 [
@@ -981,8 +966,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 [
                     'type' => 'hidden',
                     'name' => 'useragent',
-                    'label' => 'User Agent',
                     'settings' => ['value' => 'VuFind Browser 1.0'],
+                    'label' => 'User Agent',
                 ],
                 [
                     'type' => 'submit',

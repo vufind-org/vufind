@@ -37,7 +37,6 @@ use Laminas\Validator\EmailAddress;
 use Laminas\Validator\Identical;
 use Laminas\Validator\NotEmpty;
 use Laminas\View\HelperPluginManager;
-use VuFind\Config\YamlReader;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Form\Handler\PluginManager as HandlerManager;
 
@@ -63,9 +62,9 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Input filter.
      *
-     * @var InputFilter
+     * @var ?InputFilter
      */
-    protected $inputFilter;
+    protected ?InputFilter $inputFilter = null;
 
     /**
      * Default, untranslated validation messages.
@@ -78,78 +77,44 @@ class Form extends \Laminas\Form\Form implements
     ];
 
     /**
-     * VuFind main configuration.
-     *
-     * @var array
-     */
-    protected $vufindConfig;
-
-    /**
      * Default form configuration (from config.ini > Feedback).
      *
      * @var array
      */
-    protected $defaultFormConfig;
+    protected array $defaultFormConfig;
 
     /**
      * Form element configuration.
      *
      * @var array
      */
-    protected $formElementConfig = [];
+    protected array $formElementConfig = [];
 
     /**
      * Form configuration.
      *
      * @var array
      */
-    protected $formConfig;
-
-    /**
-     * YAML reader.
-     *
-     * @var YamlReader
-     */
-    protected $yamlReader;
-
-    /**
-     * View helper manager.
-     *
-     * @var HelperPluginManager
-     */
-    protected $viewHelperManager;
-
-    /**
-     * Handler plugin manager.
-     *
-     * @var HandlerManager
-     */
-    protected $handlerManager;
+    protected array $formConfig;
 
     /**
      * Constructor.
      *
-     * @param YamlReader          $yamlReader        YAML reader
-     * @param HelperPluginManager $viewHelperManager View helper manager
-     * @param HandlerManager      $handlerManager    Handler plugin manager
-     * @param ?array              $config            VuFind main configuration
-     * (optional)
+     * @param HelperPluginManager $viewHelperManager  View helper manager
+     * @param HandlerManager      $handlerManager     Handler plugin manager
+     * @param array               $config             VuFind main configuration
+     * @param array               $feedbackFormConfig Feedback form config
      *
      * @throws \Exception
      */
     public function __construct(
-        YamlReader $yamlReader,
-        HelperPluginManager $viewHelperManager,
-        HandlerManager $handlerManager,
-        ?array $config = null
+        protected HelperPluginManager $viewHelperManager,
+        protected HandlerManager $handlerManager,
+        protected array $config,
+        protected array $feedbackFormConfig
     ) {
         parent::__construct();
-
-        $this->vufindConfig = $config;
-        $this->defaultFormConfig = $config['Feedback'] ?? null;
-        $this->yamlReader = $yamlReader;
-        $this->viewHelperManager = $viewHelperManager;
-        $this->handlerManager = $handlerManager;
+        $this->defaultFormConfig = $this->config['Feedback'] ?? [];
     }
 
     /**
@@ -162,7 +127,7 @@ class Form extends \Laminas\Form\Form implements
      * @return void
      * @throws \Exception
      */
-    public function setFormId($formId, $params = [], $prefill = [])
+    public function setFormId(string $formId, array $params = [], array $prefill = []): void
     {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
@@ -178,13 +143,13 @@ class Form extends \Laminas\Form\Form implements
      * Get display string.
      *
      * @param string $translationKey Translation key
-     * @param bool   $escape         Whether to escape the output.
+     * @param ?bool  $escape         Whether to escape the output.
      * Default behaviour is to escape when the translation key does
      * not end with '_html'.
      *
      * @return string
      */
-    public function getDisplayString($translationKey, $escape = null)
+    public function getDisplayString(string $translationKey, ?bool $escape = null): string
     {
         $escape ??= !str_ends_with($translationKey, '_html');
         $helper = $this->viewHelperManager->get($escape ? 'transEsc' : 'translate');
@@ -196,7 +161,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         // Enabled unless explicitly disabled
         return ($this->formConfig['enabled'] ?? true) === true;
@@ -207,7 +172,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return bool
      */
-    public function useCaptcha()
+    public function useCaptcha(): bool
     {
         return (bool)($this->formConfig['useCaptcha'] ?? true);
     }
@@ -217,7 +182,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return bool
      */
-    public function reportReferrer()
+    public function reportReferrer(): bool
     {
         return (bool)($this->formConfig['reportReferrer'] ?? false);
     }
@@ -227,7 +192,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return bool
      */
-    public function reportUserAgent()
+    public function reportUserAgent(): bool
     {
         return (bool)($this->formConfig['reportUserAgent'] ?? false);
     }
@@ -237,7 +202,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return bool
      */
-    public function showOnlyForLoggedUsers()
+    public function showOnlyForLoggedUsers(): bool
     {
         return !empty($this->formConfig['onlyForLoggedUsers']);
     }
@@ -265,14 +230,14 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Return form recipient(s).
      *
-     * @param array $postParams Posted form data
+     * @param ?array $postParams Posted form data
      *
      * @return array of recipients, each consisting of an array with
      * name, email or null if not configured
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getRecipient($postParams = null)
+    public function getRecipient(?array $postParams = null): array
     {
         $recipient = $this->formConfig['recipient'] ?? [null];
         $recipients = isset($recipient['email']) || isset($recipient['name'])
@@ -289,9 +254,9 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Return form title.
      *
-     * @return string
+     * @return ?string
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->formConfig['title'] ?? null;
     }
@@ -299,9 +264,9 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Return form help texts.
      *
-     * @return array|null
+     * @return ?array
      */
-    public function getHelp()
+    public function getHelp(): ?array
     {
         return $this->formConfig['help'] ?? null;
     }
@@ -316,7 +281,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return string
      */
-    public function getEmailSubject($postParams)
+    public function getEmailSubject(array $postParams): string
     {
         $subject = 'VuFind Feedback';
 
@@ -359,7 +324,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return string
      */
-    public function getSubmitResponse()
+    public function getSubmitResponse(): string
     {
         return !empty($this->formConfig['response'])
             ? $this->formConfig['response']
@@ -399,7 +364,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @deprecated Use mapRequestParamsToFieldValues
      */
-    public function formatEmailMessage(array $requestParams = [])
+    public function formatEmailMessage(array $requestParams = []): array
     {
         return [
             $this->mapRequestParamsToFieldValues($requestParams),
@@ -459,7 +424,7 @@ class Form extends \Laminas\Form\Form implements
                 $valueLabel = $labels;
             } elseif ($type === 'date' && !empty($value)) {
                 $format = $el['format']
-                    ?? $this->vufindConfig['Site']['displayDateFormat'] ?? 'Y-m-d';
+                    ?? $this->config['Site']['displayDateFormat'] ?? 'Y-m-d';
                 $date = strtotime($value);
                 $value = date($format, $date);
             }
@@ -473,8 +438,6 @@ class Form extends \Laminas\Form\Form implements
      * Retrieve input filter used by this form.
      *
      * @return InputFilterInterface
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getInputFilter(): InputFilterInterface
     {
@@ -570,41 +533,20 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Get form configuration.
      *
-     * @param string $formId Form id
+     * @param ?string $formId Form id
      *
-     * @return mixed null|array
+     * @return ?array
      * @throws \Exception
      */
-    protected function getFormConfig($formId = null)
+    protected function getFormConfig(?string $formId = null): ?array
     {
-        $confName = 'FeedbackForms.yaml';
-        $config = $this->yamlReader->get($confName, false, true);
-        $localConfig = $this->yamlReader->get($confName, true, true);
-
         if (!$formId) {
-            $formId = $localConfig['default'] ?? $config['default'] ?? null;
+            $formId = $this->feedbackFormConfig['default'] ?? null;
             if (!$formId) {
                 return null;
             }
         }
-
-        $config = $config['forms'][$formId] ?? null;
-        $localConfig = $localConfig['forms'][$formId] ?? null;
-
-        return $this->mergeLocalConfig($config, $localConfig);
-    }
-
-    /**
-     * Merge local configuration into default configuration.
-     *
-     * @param array  $config      Default configuration
-     * @param ?array $localConfig Local configuration
-     *
-     * @return array
-     */
-    protected function mergeLocalConfig($config, $localConfig = null)
-    {
-        return $localConfig ?? $config;
+        return $this->feedbackFormConfig['forms'][$formId] ?? null;
     }
 
     /**
@@ -617,7 +559,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array
      */
-    protected function parseConfig($formId, $config, $params, $prefill)
+    protected function parseConfig(string $formId, array $config, array $params, array $prefill): array
     {
         $formConfig = [
            'id' => $formId,
@@ -855,7 +797,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array
      */
-    protected function getFormSettingFields()
+    protected function getFormSettingFields(): array
     {
         return [
             'emailFrom',
@@ -885,7 +827,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array
      */
-    protected function getFormElementSettingFields()
+    protected function getFormElementSettingFields(): array
     {
         return [
             'format',
@@ -920,7 +862,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return void
      */
-    protected function buildForm()
+    protected function buildForm(): void
     {
         foreach ($this->formElementConfig as $el) {
             if ($element = $this->getFormElement($el)) {
@@ -936,11 +878,11 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array
      */
-    protected function getFormElement($el)
+    protected function getFormElement(array $el): array
     {
         $type = $el['type'];
         if (!($class = $this->getFormElementClass($type))) {
-            return null;
+            return [];
         }
 
         $conf = [];
@@ -1064,9 +1006,9 @@ class Form extends \Laminas\Form\Form implements
      *
      * @param string $type Element type
      *
-     * @return string|null
+     * @return ?string
      */
-    protected function getFormElementClass($type)
+    protected function getFormElementClass(string $type): ?string
     {
         $map = [
             'checkbox' => '\Laminas\Form\Element\MultiCheckbox',
@@ -1091,7 +1033,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return string
      */
-    protected function getValidationMessage($messageId)
+    protected function getValidationMessage(string $messageId): string
     {
         return $this->translate(
             $this->messages[$messageId] ?? $messageId
@@ -1105,7 +1047,7 @@ class Form extends \Laminas\Form\Form implements
      *
      * @return array
      */
-    protected function getFormElements($config)
+    protected function getFormElements(array $config): array
     {
         $elements = [];
         foreach ($config['fields'] as $field) {
