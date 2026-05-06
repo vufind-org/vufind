@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleAnalytics view helper Test Class
+ * GoogleAnalytics view helper Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\GoogleAnalytics;
 
 /**
- * GoogleAnalytics view helper Test Class
+ * GoogleAnalytics view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test the helper (basic setup)
+     * Test the helper (basic setup).
      *
      * @return void
      */
@@ -63,7 +63,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey'));
+        $this->assertSame($expected, $this->renderGA('myfakekey'));
     }
 
     /**
@@ -89,21 +89,21 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey', $options));
+        $this->assertSame($expected, $this->renderGA('myfakekey', $options));
     }
 
     /**
-     * Test the helper (disabled mode)
+     * Test the helper (disabled mode).
      *
      * @return void
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGA(false));
+        $this->assertSame('', $this->renderGA(false));
     }
 
     /**
-     * Render the GA code
+     * Render the GA code.
      *
      * @param string $key     GA key (false for disabled)
      * @param array  $options Options for GA helper

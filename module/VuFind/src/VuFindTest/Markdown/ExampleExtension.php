@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ExampleExtension
+ * Class ExampleExtension.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use League\Config\ConfigurationBuilderInterface;
 use Nette\Schema\Expect;
 
 /**
- * Class ExampleExtension
+ * Class ExampleExtension.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use Nette\Schema\Expect;
 class ExampleExtension implements ConfigurableExtensionInterface
 {
     /**
-     * Set configuration schema
+     * Set configuration schema.
      *
      * @param ConfigurationBuilderInterface $builder Configuration builder
      *
@@ -65,7 +65,7 @@ class ExampleExtension implements ConfigurableExtensionInterface
     }
 
     /**
-     * Register extension to environment
+     * Register extension to environment.
      *
      * @param EnvironmentBuilderInterface $environment Environment builder
      *

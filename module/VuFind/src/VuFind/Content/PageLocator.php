@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class PageLocator
+ * Class PageLocator.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Content;
 
 /**
- * Class PageLocator
+ * Class PageLocator.
  *
  * @category VuFind
  * @package  Content
@@ -41,7 +41,7 @@ namespace VuFind\Content;
 class PageLocator
 {
     /**
-     * Types/formats of content
+     * Types/formats of content.
      *
      * @var array $types
      */
@@ -51,21 +51,21 @@ class PageLocator
     ];
 
     /**
-     * Theme info service
+     * Theme info service.
      *
      * @var \VuFindTheme\ThemeInfo
      */
     protected $themeInfo;
 
     /**
-     * Current language
+     * Current language.
      *
      * @var string
      */
     protected $language;
 
     /**
-     * Default language
+     * Default language.
      *
      * @var string
      */
@@ -126,7 +126,7 @@ class PageLocator
      * Try to find a template using
      * 1) Current language
      * 2) Default language
-     * 3) No language
+     * 3) No language.
      *
      * @param string $pathPrefix Subdirectory where the template should be located
      * @param string $pageName   Template name
@@ -162,7 +162,7 @@ class PageLocator
     }
 
     /**
-     * Try to find template information about desired page
+     * Try to find template information about desired page.
      *
      * @param string $pathPrefix Subdirectory where the template should be located
      * @param string $pageName   Template name

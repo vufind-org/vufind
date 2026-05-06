@@ -43,6 +43,26 @@ use function is_array;
 class SolrAuthDefault extends SolrDefault
 {
     /**
+     * Get the full record.
+     *
+     * @return string
+     */
+    public function getFullRecord(): string
+    {
+        return $this->fields['fullrecord'] ?? '';
+    }
+
+    /**
+     * Get the institutions.
+     *
+     * @return string[]
+     */
+    public function getInstitutions(): array
+    {
+        return (array)($this->fields['institution'] ?? []);
+    }
+
+    /**
      * Get the short (pre-subtitle) title of the record.
      *
      * @return string

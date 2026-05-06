@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RecordDriver\SolrMarcRemote;
 use VuFindHttp\HttpServiceInterface;
 
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -99,7 +99,7 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock HttpService for testing
+     * Get a mock HttpService for testing.
      *
      * @return HttpServiceInterface
      */
@@ -110,9 +110,9 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
             "HTTP/1.1 200 OK\n\n"
             . $marc
         );
-        $service = $this->getMockBuilder(HttpServiceInterface::class)->getMock();
+        $service = $this->createMock(HttpServiceInterface::class);
         $service->expects($this->once())->method('get')
-            ->with($this->equalTo('http://foo/1'))
+            ->with('http://foo/1')
             ->willReturn($response);
         return $service;
     }

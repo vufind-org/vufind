@@ -46,14 +46,12 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      * Data provider for testMarkdownContentRendering() to confirm that the initial part
      * of the content URL is case-insensitive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function basePathProvider(): array
+    public static function basePathProvider(): \Iterator
     {
-        return [
-            'capitalized path' => ['/Content'],
-            'lowercase path' => ['/content'],
-        ];
+        yield 'capitalized path' => ['/Content'];
+        yield 'lowercase path' => ['/content'];
     }
 
     /**
@@ -81,11 +79,11 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . $basePath . '/example');
         $page = $session->getPage();
         // Confirm that the Markdown was converted into appropriate h1/a tags:
-        $this->assertEquals(
+        $this->assertSame(
             'Static Content Example',
             $this->findCssAndGetText($page, 'h1')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Static Pages documentation',
             $this->findCssAndGetText($page, '#content a')
         );
@@ -94,65 +92,63 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testDirectoryHandling().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function requestPathProvider(): array
+    public static function requestPathProvider(): \Iterator
     {
-        return [
-            'main path en' => [
-                'en',
-                'test',
-                'MAIN LEVEL TEST',
-                'html',
-            ],
-            'main path de' => [
-                'de',
-                'test',
-                'MAIN LEVEL TEST',
-                'html',
-            ],
-            'main path fi' => [
-                'fi',
-                'test',
-                'FINNISH TEST',
-                'html',
-            ],
-            'sub path phtml' => [
-                'en',
-                'test/test',
-                'SUB LEVEL PHTML',
-                'html',
-            ],
-            'sub path md' => [
-                'en',
-                'test/testmd',
-                'SUB LEVEL MD',
-                'md',
-            ],
-            'sub sub path phtml' => [
-                'en',
-                'test/sub/test',
-                'SUB SUB LEVEL PHTML',
-                'html',
-            ],
-            'bad sub path phtml' => [
-                'en',
-                'test/sub/bad/test',
-                'An error has occurred',
-                'error',
-            ],
-            'bad path 1' => [
-                'en',
-                'test//testmd',
-                'An error has occurred',
-                'error',
-            ],
-            'bad path 2' => [
-                'en',
-                'test/.testmd',
-                'An error has occurred',
-                'error',
-            ],
+        yield 'main path en' => [
+            'en',
+            'test',
+            'MAIN LEVEL TEST',
+            'html',
+        ];
+        yield 'main path de' => [
+            'de',
+            'test',
+            'MAIN LEVEL TEST',
+            'html',
+        ];
+        yield 'main path fi' => [
+            'fi',
+            'test',
+            'FINNISH TEST',
+            'html',
+        ];
+        yield 'sub path phtml' => [
+            'en',
+            'test/test',
+            'SUB LEVEL PHTML',
+            'html',
+        ];
+        yield 'sub path md' => [
+            'en',
+            'test/testmd',
+            'SUB LEVEL MD',
+            'md',
+        ];
+        yield 'sub sub path phtml' => [
+            'en',
+            'test/sub/test',
+            'SUB SUB LEVEL PHTML',
+            'html',
+        ];
+        yield 'bad sub path phtml' => [
+            'en',
+            'test/sub/bad/test',
+            'An error has occurred',
+            'error',
+        ];
+        yield 'bad path 1' => [
+            'en',
+            'test//testmd',
+            'An error has occurred',
+            'error',
+        ];
+        yield 'bad path 2' => [
+            'en',
+            'test/.testmd',
+            'An error has occurred',
+            'error',
         ];
     }
 
@@ -185,7 +181,7 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . "/Content/$path");
         $page = $session->getPage();
         // Confirm that the correct page was retrieved:
-        $this->assertEquals($expected, $this->findCssAndGetText($page, 'h1'));
+        $this->assertSame($expected, $this->findCssAndGetText($page, 'h1'));
         // Confirm that we have the correct footer:
         if ('html' === $pageType) {
             $this->findCss($page, 'body.template-dir-content.template-name-content');

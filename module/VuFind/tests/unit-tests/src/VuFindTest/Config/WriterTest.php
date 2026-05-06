@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Writer Test Class
+ * Config Writer Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\Writer;
 
 /**
- * Config Writer Test Class
+ * Config Writer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -208,7 +208,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $cfg = "[test]\nkey1=val1 ; comment\n";
         $test = new Writer('fake.ini', $cfg);
         $test->set('test', 'key1', 'val2');
-        $this->assertEquals(
+        $this->assertSame(
             "[test]\nkey1 = \"val2\" ; comment",
             trim($test->getContent())
         );
@@ -252,7 +252,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test->clear('a', 'b[]');   // clear array
         $test->clear('b', 'c');     // clear single value
         $test->clear('z', 'z');     // clear value that does not exist
-        $this->assertEquals("[a]\n[b]", trim($test->getContent()));
+        $this->assertSame("[a]\n[b]", trim($test->getContent()));
     }
 
     /**

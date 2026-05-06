@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\SetupThemeResources;
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -120,7 +120,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['__invoke', '__call'])
             ->getMock();
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
+        $mock->method('__invoke')->willReturn($mock);
         $mock->expects($this->exactly(2))
             ->method('__call')
             ->willReturnCallback(function ($method, $args) use ($mock) {
@@ -147,7 +147,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     protected function getMockHeadLink(): MockObject&HeadLink
     {
         $mock = $this->createMock(HeadLink::class);
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
+        $mock->method('__invoke')->willReturn($mock);
         return $mock;
     }
 
@@ -159,7 +159,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     protected function getMockHeadScript(): MockObject&HeadScript
     {
         $mock = $this->createMock(HeadScript::class);
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
+        $mock->method('__invoke')->willReturn($mock);
         return $mock;
     }
 }

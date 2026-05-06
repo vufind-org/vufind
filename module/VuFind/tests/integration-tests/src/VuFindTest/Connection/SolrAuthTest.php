@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Auth Connection Test Class
+ * Solr Auth Connection Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Integration\Connection;
 use VuFindSearch\Query\Query;
 
 /**
- * Solr Auth Test Class
+ * Solr Auth Test Class.
  *
  * @category VuFind
  * @package  Tests

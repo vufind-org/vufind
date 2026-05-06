@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ProQuest Federated Search Gateway Record Controller
+ * ProQuest Federated Search Gateway Record Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Controller\Feature\CheckEnabledTrait;
 
 /**
- * ProQuest Federated Search Gateway Record Controller
+ * ProQuest Federated Search Gateway Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -48,7 +48,7 @@ class ProQuestFSGrecordController extends AbstractRecord
     use CheckEnabledTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

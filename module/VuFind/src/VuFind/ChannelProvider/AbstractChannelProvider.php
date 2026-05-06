@@ -46,21 +46,21 @@ use VuFind\Search\Base\Params;
 abstract class AbstractChannelProvider implements ChannelProviderInterface
 {
     /**
-     * Cover router
+     * Cover router.
      *
      * @var CoverRouter
      */
     protected $coverRouter = null;
 
     /**
-     * Provider ID
+     * Provider ID.
      *
      * @var string
      */
     protected $providerId = '';
 
     /**
-     * Record router
+     * Record router.
      *
      * @var RecordRouter
      */
@@ -82,7 +82,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     }
 
     /**
-     * Inject cover router
+     * Inject cover router.
      *
      * @param CoverRouter $coverRouter Cover router.
      *
@@ -94,7 +94,7 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     }
 
     /**
-     * Inject record router
+     * Inject record router.
      *
      * @param RecordRouter $recordRouter Record router.
      *

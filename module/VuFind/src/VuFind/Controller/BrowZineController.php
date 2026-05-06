@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine Controller
+ * BrowZine Controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * BrowZine Controller
+ * BrowZine Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -43,7 +43,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class BrowZineController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -54,7 +54,7 @@ class BrowZineController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */

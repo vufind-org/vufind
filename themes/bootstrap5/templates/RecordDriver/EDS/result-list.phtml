@@ -1,7 +1,5 @@
 <?php
   $this->assetManager()->appendStyleLink('EDS.css');
-  $accessLevel = $this->driver->getAccessLevel();
-  $restrictedView = empty($accessLevel) ? false : true;
   $recordLinker = $this->recordLinker($this->results);
   $largeImage = $this->record($this->driver)->getThumbnail('large');
   $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
@@ -39,23 +37,7 @@
         $formatter = $this->recordDataFormatter($this->driver);
         $items = $formatter->getData($formatter->getDefaults('result-list'));
       ?>
-      <?php if (!empty($items)): ?>
-        <?php foreach ($items as $item): ?>
-          <div class="resultItemLine1">
-            <?php if ('Title' == $item['label']): ?>
-              <h2>
-                <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
-                <?=$item['value']?> </a>
-              </h2>
-            <?php else:?>
-              <p>
-                <b><?=$this->transEsc($item['label'])?>:</b>
-                <?=$item['value']?>
-              </p>
-            <?php endif;?>
-          </div>
-        <?php endforeach; ?>
-      <?php elseif ($restrictedView): ?>
+      <?php if ($this->driver->isPlaceholder()): ?>
         <div class="resultItemLine1">
           <p>
             <?=$this->transEsc('This result is not displayed to guests')?>
@@ -64,6 +46,21 @@
           </p>
         </div>
       <?php endif; ?>
+      <?php foreach ($items as $item): ?>
+        <div class="resultItemLine1">
+          <?php if ('Title' == $item['label']): ?>
+            <h2>
+              <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+              <?=$item['value']?> </a>
+            </h2>
+          <?php else:?>
+            <p>
+              <b><?=$this->transEsc($item['label'])?>:</b>
+              <?=$item['value']?>
+            </p>
+          <?php endif;?>
+        </div>
+      <?php endforeach; ?>
 
       <div class="resultItemLine4 custom-links">
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
@@ -161,7 +158,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+      <?=(!$this->driver->isRestrictedView() && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

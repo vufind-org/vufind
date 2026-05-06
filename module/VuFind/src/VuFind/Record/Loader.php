@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record loader
+ * Record loader.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use function count;
 use function is_object;
 
 /**
- * Record loader
+ * Record loader.
  *
  * @category VuFind
  * @package  Record
@@ -58,35 +58,35 @@ class Loader implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Record factory
+     * Record factory.
      *
      * @var RecordFactory
      */
     protected $recordFactory;
 
     /**
-     * Search service
+     * Search service.
      *
      * @var SearchService
      */
     protected $searchService;
 
     /**
-     * Record cache
+     * Record cache.
      *
      * @var Cache
      */
     protected $recordCache;
 
     /**
-     * Fallback record loader
+     * Fallback record loader.
      *
      * @var FallbackLoader
      */
     protected $fallbackLoader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SearchService   $searchService  Search service
      * @param RecordFactory   $recordFactory  Record loader
@@ -364,7 +364,7 @@ class Loader implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the context to control cache behavior
+     * Set the context to control cache behavior.
      *
      * @param string $context Cache context
      *

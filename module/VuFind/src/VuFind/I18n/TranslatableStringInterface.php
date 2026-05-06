@@ -42,14 +42,14 @@ interface TranslatableStringInterface extends \Stringable
 {
     /**
      * Return string for display if raw value has no translation available (can be
-     * further translated)
+     * further translated).
      *
      * @return string
      */
     public function getDisplayString();
 
     /**
-     * Checks if the string can be translated
+     * Checks if the string can be translated.
      *
      * @return bool
      */

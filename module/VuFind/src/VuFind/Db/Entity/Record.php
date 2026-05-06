@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for record table
+ * Entity model for record table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for record table
+ * Entity model for record table.
  *
  * @category VuFind
  * @package  Database
@@ -221,7 +221,7 @@ class Record implements RecordEntityInterface
      */
     public function getUpdated(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->updated);
     }
 

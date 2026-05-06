@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database user service factory
+ * Database user service factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Database user service factory
+ * Database user service factory.
  *
  * @category VuFind
  * @package  Database
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class UserServiceFactory extends AbstractDbServiceFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

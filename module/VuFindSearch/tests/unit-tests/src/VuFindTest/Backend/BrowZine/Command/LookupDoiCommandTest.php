@@ -50,13 +50,11 @@ class LookupDoiCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('BrowZine');
         $backend->expects($this->once())->method('lookupDoi')
-            ->with($this->equalTo('doi'))
+            ->with('doi')
             ->willReturn('foo');
         $command = new LookupDoiCommand('BrowZine', 'doi');
         $this->assertEquals('foo', $command->execute($backend)->getResult());

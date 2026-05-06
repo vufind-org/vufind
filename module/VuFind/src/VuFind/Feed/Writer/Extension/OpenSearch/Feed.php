@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laminas\Feed\Feed extension for Open Search
+ * Laminas\Feed\Feed extension for Open Search.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function in_array;
 use function is_string;
 
 /**
- * Laminas\Feed\Feed extension for Open Search
+ * Laminas\Feed\Feed extension for Open Search.
  *
  * Note: There doesn't seem to be a generic base class for this functionality,
  * and creating a class with no parent blows up due to unexpected calls to
@@ -55,56 +55,56 @@ use function is_string;
 class Feed extends ParentFeed
 {
     /**
-     * Total results
+     * Total results.
      *
      * @var int
      */
     protected $totalResults = null;
 
     /**
-     * Start index
+     * Start index.
      *
      * @var int
      */
     protected $startIndex = null;
 
     /**
-     * Items per page
+     * Items per page.
      *
      * @var int
      */
     protected $itemsPerPage = null;
 
     /**
-     * Search terms
+     * Search terms.
      *
      * @var string
      */
     protected $searchTerms = null;
 
     /**
-     * Links
+     * Links.
      *
      * @var array
      */
     protected $links = [];
 
     /**
-     * Encoding of all text values
+     * Encoding of all text values.
      *
      * @var string
      */
     protected $encoding = 'UTF-8';
 
     /**
-     * The used string wrapper supporting encoding
+     * The used string wrapper supporting encoding.
      *
      * @var StringWrapperInterface
      */
     protected $stringWrapper;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -112,7 +112,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set feed encoding
+     * Set feed encoding.
      *
      * @param string $enc encoding to set
      *
@@ -126,7 +126,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get feed encoding
+     * Get feed encoding.
      *
      * @return string
      */
@@ -136,7 +136,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set total results
+     * Set total results.
      *
      * @param int $totalResults number to set
      *
@@ -149,7 +149,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get total results
+     * Get total results.
      *
      * @return int
      */
@@ -159,7 +159,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set start index
+     * Set start index.
      *
      * @param int $startIndex index to set
      *
@@ -172,7 +172,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get start index
+     * Get start index.
      *
      * @return int
      */
@@ -182,7 +182,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set items per page
+     * Set items per page.
      *
      * @param int $itemsPerPage number to set
      *
@@ -195,7 +195,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get items per page
+     * Get items per page.
      *
      * @return int
      */
@@ -205,7 +205,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Set search terms
+     * Set search terms.
      *
      * @param string $searchTerms search terms
      *
@@ -218,7 +218,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get search terms
+     * Get search terms.
      *
      * @return string
      */
@@ -228,7 +228,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Add a link
+     * Add a link.
      *
      * @param string $url   the url of the link
      * @param string $role  the role of the link
@@ -264,7 +264,7 @@ class Feed extends ParentFeed
     }
 
     /**
-     * Get the links
+     * Get the links.
      *
      * @return string
      */

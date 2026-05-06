@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sort facet list view helper
+ * Sort facet list view helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
- * Sort facet list view helper
+ * Sort facet list view helper.
  *
  * @category VuFind
  * @package  View_Helpers

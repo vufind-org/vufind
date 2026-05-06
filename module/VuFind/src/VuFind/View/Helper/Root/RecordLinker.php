@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Record linker view helper
+ * Record linker view helper.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -37,7 +37,7 @@ use function is_array;
 use function is_string;
 
 /**
- * Record linker view helper
+ * Record linker view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -49,28 +49,28 @@ use function is_string;
 class RecordLinker extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Record router
+     * Record router.
      *
      * @var \VuFind\Record\Router
      */
     protected $router;
 
     /**
-     * Search results (optional)
+     * Search results (optional).
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results = null;
 
     /**
-     * Cached record URLs
+     * Cached record URLs.
      *
      * @var array
      */
     protected $cachedDriverUrls = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Record\Router $router Record router
      */
@@ -89,8 +89,21 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($results = null)
     {
-        $this->results = $results;
+        // Avoid setting any existing results null:
+        if (null !== $results) {
+            $this->results = $results;
+        }
         return $this;
+    }
+
+    /**
+     * Reset any stored Results object.
+     *
+     * @return void
+     */
+    public function resetStoredResults(): void
+    {
+        $this->results = null;
     }
 
     /**
@@ -216,9 +229,9 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         $driverId = is_string($driver)
             ? $driver
             : ($driver->getSourceIdentifier() . '|' . $driver->getUniqueID());
+        $recordUrlParams = $this->getRecordUrlParams($options);
         $cacheKey = md5(
-            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true)
-            . var_export($options, true)
+            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true) . var_export($recordUrlParams, true)
         );
         if (!isset($this->cachedDriverUrls[$cacheKey])) {
             // Build the URL:
@@ -229,7 +242,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
                 $details['params'],
                 array_merge_recursive(
                     $details['options'] ?? [],
-                    ['query' => $this->getRecordUrlParams($options)]
+                    ['query' => $recordUrlParams]
                 )
             );
         }
@@ -302,7 +315,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Return search URL for all versions
+     * Return search URL for all versions.
      *
      * @param AbstractRecord $driver Record driver
      *
@@ -352,7 +365,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get query parameters for a record URL
+     * Get query parameters for a record URL.
      *
      * @param array $options Any additional options:
      * - excludeSearchId (default: false)

@@ -150,7 +150,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ->willReturn(1);
         $this->container->set(CommentsServiceInterface::class, $mockCommentsService);
 
-        $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();
+        $driver = $this->createMock(DefaultRecord::class);
         $driver->expects($this->once())
             ->method('isRatingAllowed')
             ->willReturn(true);

@@ -53,7 +53,7 @@ class RawXMLDocumentTest extends TestCase
     public function testBasicBehavior()
     {
         $document = new RawXMLDocument('<empty />');
-        $this->assertEquals(
+        $this->assertSame(
             'text/xml; charset=UTF-8',
             $document->getContentType()
         );

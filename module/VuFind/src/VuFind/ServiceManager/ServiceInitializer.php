@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * VuFind Service Initializer
+ * VuFind Service Initializer.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -92,6 +92,9 @@ class ServiceInitializer implements InitializerInterface
         }
         if ($instance instanceof \Psr\Log\LoggerAwareInterface) {
             $instance->setLogger($sm->get(\VuFind\Log\Logger::class));
+        }
+        if ($instance instanceof \VuFind\I18n\Locale\LocaleSettingsAwareInterface) {
+            $instance->setLocaleSettings($sm->get(\VuFind\I18n\Locale\LocaleSettings::class));
         }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
             $instance->setTranslator($sm->get(\Laminas\Mvc\I18n\Translator::class));

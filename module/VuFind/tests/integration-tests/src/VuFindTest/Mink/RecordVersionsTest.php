@@ -53,7 +53,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:0001732009-0', null, $path);
 
         // Confirm that "other versions" link exists:
-        $this->assertEquals(
+        $this->assertSame(
             'Show other versions (3)',
             $this->findCssAndGetText($page, 'div.record-versions a')
         );
@@ -63,7 +63,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that we've landed on an other versions tab:
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Other Versions (3)',
             $this->findCssAndGetText($page, $this->activeRecordTabSelector)
         );
@@ -73,7 +73,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that all four versions are now visible in the versions display:
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'The collected letters of Thomas and Jane Welsh Carlyle : Versions',
             $this->findCssAndGetText($page, 'ul.breadcrumb')
         );
@@ -151,7 +151,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:0001732009-0', null, '/Search');
 
         // Confirm that "all versions" link exists:
-        $this->assertEquals(
+        $this->assertSame(
             'Show all versions (4)',
             $this->findCssAndGetText($page, 'div.record-versions a')
         );
@@ -162,7 +162,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that we have jumped directly to the "show all versions" screen
         // and that all four versions are now visible in the versions display:
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'The collected letters of Thomas and Jane Welsh Carlyle : Versions',
             $this->findCssAndGetText($page, 'ul.breadcrumb')
         );

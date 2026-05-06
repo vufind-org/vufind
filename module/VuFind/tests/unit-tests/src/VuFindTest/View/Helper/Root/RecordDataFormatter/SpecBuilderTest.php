@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDataFormatter spec builder Test Class
+ * RecordDataFormatter spec builder Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
 
 /**
- * RecordDataFormatter spec builder Test Class
+ * RecordDataFormatter spec builder Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test the spec builder
+     * Test the spec builder.
      *
      * @return void
      */
@@ -92,6 +92,6 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         // Test that we can remove lines from the spec:
         $builder->removeLine('bar');
         $builder->removeLine('foo');
-        $this->assertEquals(['xyzzy' => $expected['xyzzy']], $builder->getArray());
+        $this->assertSame(['xyzzy' => $expected['xyzzy']], $builder->getArray());
     }
 }

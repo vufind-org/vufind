@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author aspect of the Search Multi-class (Params)
+ * Author aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\SolrAuthor;
 
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor

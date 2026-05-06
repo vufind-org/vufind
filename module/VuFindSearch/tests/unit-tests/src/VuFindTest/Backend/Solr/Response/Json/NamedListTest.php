@@ -55,7 +55,7 @@ class NamedListTest extends TestCase
         foreach ($list as $key => $value) {
             $keys[] = $key;
         }
-        $this->assertEquals(['first term', 'second term'], $keys);
+        $this->assertSame(['first term', 'second term'], $keys);
     }
 
     /**

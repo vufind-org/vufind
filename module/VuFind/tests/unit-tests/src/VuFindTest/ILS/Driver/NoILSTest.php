@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\NoILS;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -43,14 +43,14 @@ use VuFind\ILS\Driver\NoILS;
 class NoILSTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock record loader
+     * Mock record loader.
      *
      * @var \VuFind\Record\Loader
      */
     protected $loader;
 
     /**
-     * Driver object
+     * Driver object.
      *
      * @var NoILS
      */

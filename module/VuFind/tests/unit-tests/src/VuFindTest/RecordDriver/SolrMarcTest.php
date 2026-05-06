@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -34,11 +34,8 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 use VuFind\ILS\Logic\TitleHolds;
 
-use function count;
-use function in_array;
-
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -102,14 +99,14 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $record->setRawData($fixture['response']['docs'][0]);
 
         $this->assertEquals(
-            $record->getPrimaryAuthor(),
-            'Vico, Giambattista, 1668-1744.'
+            'Vico, Giambattista, 1668-1744.',
+            $record->getPrimaryAuthor()
         );
         $secondary = $record->getSecondaryAuthors();
-        $this->assertEquals(count($secondary), 1);
-        $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
+        $this->assertCount(1, $secondary);
+        $this->assertContains('Pandolfi, Claudia.', $secondary);
         $series = $record->getSeries();
-        $this->assertEquals(count($series), 1);
+        $this->assertCount(1, $series);
         $this->assertEquals(
             'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             $series[0]['name']
@@ -171,11 +168,11 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder)
+     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder).
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function marcSubjectHeadingsSortOptionsProvider(): array
+    public static function marcSubjectHeadingsSortOptionsProvider(): \Iterator
     {
         // Record order is the default; save it to a variable so we
         // can test both explicit and default configuration behaviors
@@ -195,33 +192,31 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 'Photobooks.',
             ],
         ];
-        return [
-            'field config' => [
-                'numerical',
+        yield 'field config' => [
+            'numerical',
+            [
                 [
-                    [
-                        'Street photography',
-                        'Mexico',
-                        'Guerrero (State)',
-                    ],
-                    [
-                        'Guerrero (Mexico : State)',
-                        'Social life and customs',
-                        'Pictorial works.',
-                    ],
-                    [
-                        'Photobooks.',
-                    ],
+                    'Street photography',
+                    'Mexico',
+                    'Guerrero (State)',
+                ],
+                [
+                    'Guerrero (Mexico : State)',
+                    'Social life and customs',
+                    'Pictorial works.',
+                ],
+                [
+                    'Photobooks.',
                 ],
             ],
-            'record config' => [
-                'record',
-                $recordOrderResults,
-            ],
-            'default config' => [
-                null,
-                $recordOrderResults,
-            ],
+        ];
+        yield 'record config' => [
+            'record',
+            $recordOrderResults,
+        ];
+        yield 'default config' => [
+            null,
+            $recordOrderResults,
         ];
     }
 
@@ -286,14 +281,12 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSchemaOrgFormatsArray().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getSchemaOrgFormatsArrayProvider(): array
+    public static function getSchemaOrgFormatsArrayProvider(): \Iterator
     {
-        return [
-            'with ILS' => [true, ['CreativeWork', 'Product']],
-            'without ILS' => [false, ['CreativeWork']],
-        ];
+        yield 'with ILS' => [true, ['CreativeWork', 'Product']];
+        yield 'without ILS' => [false, ['CreativeWork']];
     }
 
     /**
@@ -378,21 +371,17 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $record = new \VuFind\Marc\MarcReader($xml);
         $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
             ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->willReturn($record);
+        $obj->method('getMarcReader')->willReturn($record);
 
         $reflection = new \ReflectionObject($obj);
 
         $getFieldArray = $reflection->getMethod('getFieldArray');
-        $getFieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getFieldArray->invokeArgs($obj, [100, ['a', 'd']])
         );
 
         $getSubfieldArray = $reflection->getMethod('getSubfieldArray');
-        $getSubfieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getSubfieldArray
