@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get User Fines" AJAX handler
+ * "Get User Fines" AJAX handler.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -39,7 +39,7 @@ use VuFind\Service\CurrencyFormatter;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get User Fines" AJAX handler
+ * "Get User Fines" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -52,7 +52,7 @@ class GetUserFines extends AbstractIlsUserAndRendererAction
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings      $ss                Session settings
      * @param Connection           $ils               ILS connection
@@ -97,7 +97,7 @@ class GetUserFines extends AbstractIlsUserAndRendererAction
     }
 
     /**
-     * Get account status level for notification icon
+     * Get account status level for notification icon.
      *
      * @param array $status Status information
      *

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -41,28 +41,28 @@ namespace VuFind\I18n;
 class TranslatableString implements TranslatableStringInterface
 {
     /**
-     * Original string
+     * Original string.
      *
      * @var string
      */
     protected $string;
 
     /**
-     * Default display string
+     * Default display string.
      *
      * @var string
      */
     protected $displayString;
 
     /**
-     * Whether translation is allowed
+     * Whether translation is allowed.
      *
      * @var bool
      */
     protected $translatable;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $string        Original string
      * @param string $displayString Translatable display string
@@ -76,7 +76,7 @@ class TranslatableString implements TranslatableStringInterface
     }
 
     /**
-     * Return the original string by default
+     * Return the original string by default.
      *
      * @return string
      */
@@ -87,7 +87,7 @@ class TranslatableString implements TranslatableStringInterface
 
     /**
      * Return string for display if raw value has no translation available (can be
-     * further translated)
+     * further translated).
      *
      * @return string
      */
@@ -97,7 +97,7 @@ class TranslatableString implements TranslatableStringInterface
     }
 
     /**
-     * Checks if the string can be translated
+     * Checks if the string can be translated.
      *
      * @return bool
      */

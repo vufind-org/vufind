@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Restful Exception support class for Aleph ILS driver
+ * Restful Exception support class for Aleph ILS driver.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -32,7 +32,7 @@ namespace VuFind\ILS\Driver\Aleph;
 use VuFind\Exception\ILS as ILSException;
 
 /**
- * Restful Exception
+ * Restful Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -43,14 +43,14 @@ use VuFind\Exception\ILS as ILSException;
 class RestfulException extends ILSException
 {
     /**
-     * XML response (false for none)
+     * XML response (false for none).
      *
      * @var string|bool
      */
     protected $xmlResponse = false;
 
     /**
-     * Attach an XML response to the exception
+     * Attach an XML response to the exception.
      *
      * @param string $body XML
      *
@@ -62,7 +62,7 @@ class RestfulException extends ILSException
     }
 
     /**
-     * Return XML response (false if none)
+     * Return XML response (false if none).
      *
      * @return string|bool
      */

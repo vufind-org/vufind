@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesResultsDeferred recommendation module Test Class
+ * LibGuidesResultsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * LibGuidesResultsDeferred recommendation module Test Class
+ * LibGuidesResultsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ namespace VuFindTest\Recommend;
 class LibGuidesResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */

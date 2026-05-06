@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Alma ILS driver test
+ * Alma ILS driver test.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -38,7 +38,7 @@ use function func_get_args;
 use function is_array;
 
 /**
- * Alma ILS driver test
+ * Alma ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -52,7 +52,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -64,21 +64,21 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test data for simulated HTTP responses (reset by each test)
+     * Test data for simulated HTTP responses (reset by each test).
      *
      * @var array
      */
     protected $fixtureSteps = [];
 
     /**
-     * Current fixture step
+     * Current fixture step.
      *
      * @var int
      */
     protected $currentFixtureStep = 0;
 
     /**
-     * Current fixture name
+     * Current fixture name.
      *
      * @var string
      */
@@ -95,7 +95,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Replace makeRequest to inject test returns
+     * Replace makeRequest to inject test returns.
      *
      * @param string        $path          Path to retrieve from API (excluding base
      *                                     URL/API key)
@@ -147,7 +147,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Generate a new driver to return responses set in a json fixture
+     * Generate a new driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      *
@@ -188,14 +188,12 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $cache = new \Laminas\Cache\Storage\Adapter\Memory();
         $cache->setOptions(['memory_limit' => -1]);
         $this->driver->setCacheStorage($cache);
-        $this->driver->expects($this->any())
-            ->method('makeRequest')
-            ->will($this->returnCallback([$this, 'mockMakeRequest']));
+        $this->driver->method('makeRequest')->willReturnCallback([$this, 'mockMakeRequest']);
         $this->driver->init();
     }
 
     /**
-     * Testing getCourses
+     * Testing getCourses.
      *
      * @return void
      */
@@ -211,7 +209,23 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getHolding
+     * Testing getFunds.
+     *
+     * @return void
+     */
+    public function testGetFunds()
+    {
+        $this->createConnector('get-funds');
+        $result = $this->driver->getFunds();
+        $expected = [
+            'FUND-01' => 'VuFind Community',
+            'FUND-02' => 'VuFind Sponsors',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test getHolding.
      *
      * @return void
      */
@@ -227,7 +241,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testing getMyProfile
+     * Data provider for testing getMyProfile.
      *
      * @return Generator
      */
@@ -279,15 +293,15 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyProfile
+     * Test getMyProfile.
      *
      * @param string $fixtureKey Key which selects the correct test path in json file containing
      *                           multiple tests.
      * @param array  $expected   Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixtureKey, array $expected): void
     {
         $adjustedConfig = $this->defaultDriverConfig;
@@ -297,12 +311,12 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $result = $this->driver->getMyProfile(['id' => '1111']);
         $this->assertArrayHasKey('group', $result);
         // Alma uses Translatable strings in group field; make sure that passed through correctly.
-        $this->assertTrue($result['group'] instanceof TranslatableString);
+        $this->assertInstanceOf(TranslatableString::class, $result['group']);
         $this->assertEquals($expected, $result);
     }
 
     /**
-     * Data provider for testing patronLogin
+     * Data provider for testing patronLogin.
      *
      * @return Generator
      */
@@ -349,27 +363,41 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
             ],
             'fixtureKey' => 'test patron login password',
         ];
+        yield 'Test with login method password and password is null' => [
+            'config' => $localConfig,
+            'expected' => [
+                'id' => '21991',
+                'email' => null,
+                'firstname' => 'Sauna',
+                'lastname' => 'Tonttu',
+                'major' => null,
+                'college' => null,
+                'cat_username' => '1111',
+                'cat_password' => null,
+            ],
+            'fixtureKey' => 'test patron login password and password is null',
+        ];
     }
 
     /**
-     * Test patron login when login method is set to email
+     * Test patron login when login method is set to email.
      *
      * @param array  $config     Driver config
      * @param array  $expected   Expected results
      * @param string $fixtureKey Fixture key for response mapping
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $config, array $expected, string $fixtureKey): void
     {
         $this->createConnector('get-patron-response', $config, $fixtureKey);
-        $result = $this->driver->patronLogin('1111', '1212');
+        $result = $this->driver->patronLogin($expected['cat_username'], $expected['cat_password']);
         $this->assertEquals($expected, $result);
     }
 
     /**
-     * Test getHolding with location type to item status mappings
+     * Test getHolding with location type to item status mappings.
      *
      * @return void
      */
@@ -394,7 +422,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Convert TranslatableString instances for easier comparison
+     * Convert TranslatableString instances for easier comparison.
      *
      * @param array $array Array to process
      *

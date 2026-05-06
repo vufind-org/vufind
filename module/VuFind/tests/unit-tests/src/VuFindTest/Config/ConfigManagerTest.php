@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Exception\ConfigException;
@@ -41,7 +41,7 @@ use VuFindTest\Feature\FixtureTrait;
 use function count;
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -59,13 +59,13 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get config manager.
      *
-     * @return ConfigManager
+     * @return ConfigManagerInterface
      */
-    protected function getConfigManager(): ConfigManager
+    protected function getConfigManager(): ConfigManagerInterface
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $this->addConfigRelatedServicesToContainer($container);
-        return $container->get(ConfigManager::class);
+        return $container->get(ConfigManagerInterface::class);
     }
 
     /**
@@ -87,6 +87,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             'unit-test-child2'
                 => new ConfigFile($this->getFixturePath('configs/inheritance/unit-test-child2.ini')),
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
+            'ini-file-with-include' => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test.ini')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
             'dir-config-with-inheritance'
                 => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
@@ -175,14 +176,12 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testReadOnlyConfig().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function readOnlyConfigProvider(): array
+    public static function readOnlyConfigProvider(): \Iterator
     {
-        return [
-            'empty config' => ['unset'],
-            'override config' => ['title'],
-        ];
+        yield 'empty config' => ['unset'];
+        yield 'override config' => ['title'];
     }
 
     /**
@@ -190,10 +189,9 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $key Key to change
      *
-     * @dataProvider readOnlyConfigProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('readOnlyConfigProvider')]
     public function testReadOnlyConfig($key): void
     {
         $this->expectException(ConfigException::class);
@@ -225,7 +223,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     {
         // This should retrieve sms.ini, which should include a Carriers array.
         $config = $this->getConfig('sms');
-        $this->assertTrue(count($config['Carriers'] ?? []) > 0);
+        $this->assertGreaterThan(0, count($config['Carriers'] ?? []));
     }
 
     /**
@@ -442,6 +440,37 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test loading of INI config with include statements.
+     *
+     * @return void
+     */
+    public function testIniConfigWithIncludeStatement(): void
+    {
+        $config = $this->getConfig('ini-file-with-include');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    'a' => 1,
+                    'b' => 2,
+                ],
+                'Section2' => [
+                    'c' => 3,
+                    'd' => 4,
+                    'e' => 5,
+                ],
+                'Section3' => [
+                    'f' => 6,
+                    'g' => 7,
+                    'h' => 8,
+                    'i' => 9,
+                    'j' => 10,
+                ],
+            ],
+            $config
+        );
+    }
+
+    /**
      * Test loading of directory config with handling of parent configuration disabled.
      *
      * @return void
@@ -464,67 +493,90 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testConfigsInLocalDirStack().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function localDirStackTestProvider(): array
+    public static function localDirStackTestProvider(): \Iterator
     {
-        return [
-            'all' => [
-                'all',
-                [
+        yield 'all' => [
+            'all',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'primary' => [
+            'primary',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                ],
+            ],
+        ];
+        yield 'base-secondary' => [
+            'base-secondary',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'base' => [
+            'base',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
+                ],
+            ],
+        ];
+        yield 'dir_config' => [
+            'dir_config',
+            [
+                'all-sub' => [
                     'Section' => [
                         'value' => 'primary',
                         'value2' => 'secondary',
                     ],
                 ],
-            ],
-            'primary' => [
-                'primary',
-                [
+                'primary-sub' => [
                     'Section' => [
                         'value' => 'primary',
                     ],
                 ],
-            ],
-            'base-secondary' => [
-                'base-secondary',
-                [
+                'base-secondary-sub' => [
                     'Section' => [
                         'value' => 'secondary',
                         'value2' => 'secondary',
                     ],
                 ],
-            ],
-            'base' => [
-                'base',
-                [
+                'base-sub' => [
                     'Section' => [
                         'value' => 'base',
                         'value2' => 'base',
                     ],
                 ],
-            ],
-            'dir_config' => [
-                'dir_config',
-                [
-                    'all-sub' => [
+                'subdir-all' => [
+                    'all-sub-sub' => [
                         'Section' => [
                             'value' => 'primary',
                             'value2' => 'secondary',
                         ],
                     ],
-                    'primary-sub' => [
+                    'primary-sub-sub' => [
                         'Section' => [
                             'value' => 'primary',
                         ],
                     ],
-                    'base-secondary-sub' => [
+                    'base-secondary-sub-sub' => [
                         'Section' => [
                             'value' => 'secondary',
                             'value2' => 'secondary',
                         ],
                     ],
-                    'base-sub' => [
+                    'base-sub-sub' => [
                         'Section' => [
                             'value' => 'base',
                             'value2' => 'base',
@@ -532,39 +584,102 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            'all-sub' => [
-                'dir_config/all-sub',
-                [
+        ];
+        yield 'all-sub' => [
+            'dir_config/all-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'primary-sub' => [
+            'dir_config/primary-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                ],
+            ],
+        ];
+        yield 'base-secondary-sub' => [
+            'dir_config/base-secondary-sub',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'base-sub' => [
+            'dir_config/base-sub',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
+                ],
+            ],
+        ];
+        yield 'subdir-all' => [
+            'dir_config/subdir-all',
+            [
+                'all-sub-sub' => [
                     'Section' => [
                         'value' => 'primary',
                         'value2' => 'secondary',
                     ],
                 ],
-            ],
-            'primary-sub' => [
-                'dir_config/primary-sub',
-                [
+                'primary-sub-sub' => [
                     'Section' => [
                         'value' => 'primary',
                     ],
                 ],
-            ],
-            'base-secondary-sub' => [
-                'dir_config/base-secondary-sub',
-                [
+                'base-secondary-sub-sub' => [
                     'Section' => [
                         'value' => 'secondary',
                         'value2' => 'secondary',
                     ],
                 ],
-            ],
-            'base-sub' => [
-                'dir_config/base-sub',
-                [
+                'base-sub-sub' => [
                     'Section' => [
                         'value' => 'base',
                         'value2' => 'base',
                     ],
+                ],
+            ],
+        ];
+        yield 'all-sub-sub' => [
+            'dir_config/subdir-all/all-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'primary-sub-sub' => [
+            'dir_config/subdir-all/primary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                ],
+            ],
+        ];
+        yield 'base-secondary-sub-sub' => [
+            'dir_config/subdir-all/base-secondary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'base-sub-sub' => [
+            'dir_config/subdir-all/base-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
                 ],
             ],
         ];
@@ -577,9 +692,8 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedConfig Expected config
      *
      * @return void
-     *
-     * @dataProvider localDirStackTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('localDirStackTestProvider')]
     public function testConfigsInLocalDirStack(
         $configPath,
         $expectedConfig
@@ -588,7 +702,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         $configManager = $this->getContainerWithConfigRelatedServices(
             baseDir: $fixtureDir . 'base',
             localDir: $fixtureDir . 'primary'
-        )->get(ConfigManager::class);
+        )->get(ConfigManagerInterface::class);
 
         $config = $configManager->getConfigArray($configPath);
         $this->assertEquals(

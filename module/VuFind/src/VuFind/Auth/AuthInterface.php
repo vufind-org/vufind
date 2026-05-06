@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -94,6 +94,25 @@ interface AuthInterface
      * @return string|bool
      */
     public function getDelegateAuthMethod(Request $request);
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array;
+
+    /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void;
 
     /**
      * Attempt to authenticate the current user. Throws exception if login fails.
@@ -179,14 +198,14 @@ interface AuthInterface
     public function supportsCreation();
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
     public function supportsPasswordChange();
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -203,14 +222,14 @@ interface AuthInterface
     public function supportsConnectingLibraryCard();
 
     /**
-     * Get username policy for a new account (e.g. minLength, maxLength)
+     * Get username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
     public function getUsernamePolicy();
 
     /**
-     * Get password policy for a new password (e.g. minLength, maxLength)
+     * Get password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

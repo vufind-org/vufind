@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPF API Options
+ * EPF API Options.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -32,10 +32,11 @@
 
 namespace VuFind\Search\EPF;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\EDS\AbstractEDSOptions;
 
 /**
- * EPF API Options
+ * EPF API Options.
  *
  * @category VuFind
  * @package  EBSCO
@@ -48,16 +49,16 @@ use VuFind\Search\EDS\AbstractEDSOptions;
 class Options extends AbstractEDSOptions
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader
+        ConfigManagerInterface $configManager
     ) {
         $this->searchIni = $this->facetsIni = 'EPF';
 
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->setOptionsFromConfig();
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -56,7 +56,7 @@ trait RetryClickTrait
     {
         // For some reason, the click action does not always succeed here; resizing
         // the window and retrying seems to prevent intermittent test failures.
-        echo "\n\nMink click failed; retrying with resized window!\n";
+        echo "\n\nMink click '{$selector}' failed; retrying with resized window!\n";
         $session->resizeWindow(1280, 200, 'current');
         $this->clickCss($page, $selector);
         $session->resizeWindow(1280, 768, 'current');

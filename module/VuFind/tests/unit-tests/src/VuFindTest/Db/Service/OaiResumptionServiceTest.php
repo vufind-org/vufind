@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,10 @@
 
 namespace VuFindTest\Db\Service;
 
+use DateTime;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -39,6 +42,8 @@ use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Db\Entity\PluginManager;
 use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\OaiResumptionService;
+use VuFindTest\Feature\ReflectionTrait;
+use VuFindTest\Feature\WithConsecutiveTrait;
 
 use function count;
 use function intval;
@@ -55,7 +60,8 @@ use function intval;
  */
 class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ReflectionTrait;
+    use ReflectionTrait;
+    use WithConsecutiveTrait;
 
     /**
      * OaiResumption service object to test.
@@ -73,7 +79,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     ): MockObject&OaiResumptionService {
         $persistenceManager = $this->createMock(PersistenceManager::class);
         $serviceMock = $this->getMockBuilder(OaiResumptionService::class)
-            ->onlyMethods(['createEntity'])
+            ->onlyMethods(['createEntity', 'getDateTime'])
             ->setConstructorArgs([$entityManager, $pluginManager, $persistenceManager])
             ->getMock();
         if ($oaiResumption) {
@@ -95,7 +101,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->createMock(PluginManager::class);
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
-                ->with($this->equalTo(OaiResumptionEntityInterface::class))
+                ->with(OaiResumptionEntityInterface::class)
                 ->willReturn(new OaiResumption());
         }
         return $pluginManager;
@@ -126,16 +132,33 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager();
         $resumptionService = $this->getService($entityManager, $pluginManager);
-        $queryStmt = "DELETE FROM VuFind\Db\Entity\OaiResumptionEntityInterface O WHERE O.expires <= :now";
 
-        $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
-        $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+        $query = $this->createMock(AbstractQuery::class);
+        $query->expects($this->once())->method('execute')
+            ->willReturn(0);
+
+        $subQuery = $this->createMock(AbstractQuery::class);
+        $subQuery->expects($this->once())->method('getResult')
+            ->willReturn([]);
+        $subQueryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->setConstructorArgs([$entityManager])
+            ->onlyMethods(['getQuery', 'setMaxResults'])
+            ->getMock();
+        $subQueryBuilder->expects($this->once())->method('setMaxResults')
+            ->with(1000);
+        $subQueryBuilder->expects($this->once())->method('getQuery')
+            ->willReturn($subQuery);
+
+        $queryBuilder = $this->getMockBuilder(QueryBuilder::class)
+            ->setConstructorArgs([$entityManager])
+            ->onlyMethods(['getQuery'])
+            ->getMock();
+        $queryBuilder->expects($this->once())->method('getQuery')
             ->willReturn($query);
-        $query->expects($this->once())->method('execute');
-        $query->expects($this->once())->method('setParameters')
-            ->with($this->anything())
-            ->willReturn($query);
+
+        $this
+            ->expectConsecutiveCalls($entityManager, 'createQueryBuilder', [[], []], [$subQueryBuilder, $queryBuilder]);
+
         $resumptionService->removeExpired();
     }
 
@@ -149,35 +172,38 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager = $this->getEntityManager();
         $pluginManager = $this->getPluginManager();
         $resumptionService = $this->getService($entityManager, $pluginManager);
-        $queryStmt = "SELECT O FROM VuFind\Db\Entity\OaiResumptionEntityInterface O WHERE O.id = :id";
+        $queryStmt =
+            'SELECT O FROM VuFind\Db\Entity\OaiResumptionEntityInterface O WHERE O.id = :id AND O.expires > :now';
+
+        $dateTime = new DateTime();
+        $resumptionService->expects($this->once())->method('getDateTime')
+            ->willReturn($dateTime);
 
         $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $oaiResumption = $this->createMock(\VuFind\Db\Entity\OaiResumption::class);
         $query->expects($this->once())->method('getOneOrNullResult')
             ->willReturn($oaiResumption);
         $query->expects($this->once())->method('setParameters')
-            ->with(['id' => 'foo'])
+            ->with(['id' => 'foo', 'now' => $dateTime])
             ->willReturn($query);
         $this->assertEquals($oaiResumption, $resumptionService->findToken('foo'));
     }
 
     /**
-     * Data provide for testEncodeParams()
+     * Data provide for testEncodeParams().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function encodeParamsProvider(): array
+    public static function encodeParamsProvider(): \Iterator
     {
         // The expected result is encoded in the test below; both data sets represent the
         // same values, but in different orders. We want to be sure the result is the same
         // regardless of order.
-        return [
-            'sorted keys' => [['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar']],
-            'unsorted keys' => [['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20]],
-        ];
+        yield 'sorted keys' => [['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar']];
+        yield 'unsorted keys' => [['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20]];
     }
 
     /**
@@ -186,9 +212,8 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      * @param array $params Parameters to encode.
      *
      * @return void
-     *
-     * @dataProvider encodeParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('encodeParamsProvider')]
     public function testEncodeParams(array $params): void
     {
         $entityManager = $this->getEntityManager();
@@ -201,7 +226,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testCreateTokenSuccess
+     * Data provider for testCreateTokenSuccess.
      *
      * @return Generator
      */
@@ -212,7 +237,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
             'params' => [
               'param5' => 'cat',
             ],
-            'timestamp' => 1739870677 + 99999,
+            'expiry' => DateTime::createFromFormat('U', 1739870677 + 99999),
           ],
           [
             'onetokenonly',
@@ -225,7 +250,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
               'param2' => 'mainecoon',
               'param3' => 'calico',
             ],
-            'timestamp' => 1739870677 + 99999,
+            'expiry' => DateTime::createFromFormat('U', 1739870677 + 99999),
           ],
           [
             'testtokenfirstduplicate',
@@ -240,7 +265,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
               'param2' => 'norwegianforestcat',
               'param3' => 'turle',
             ],
-            'timestamp' => 1739870677 + 99999,
+            'expiry' => DateTime::createFromFormat('U', 1739870677 + 99999),
           ],
           [
             'testtokenfirstduplicate',
@@ -256,15 +281,15 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test duplicate tokens but success on the second try
+     * Test duplicate tokens but success on the second try.
      *
-     * @param array  $token               Array with params and timestamp
+     * @param array  $token               Array with params and expiry
      * @param array  $randomTokenSequence Array containing strings to simulate duplicate tokens
      * @param string $error               If set, will expect this iteration to throw this error message
      *
-     * @return       void
-     * @dataProvider getTestDuplicatesData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestDuplicatesData')]
     public function testDuplicates(array $token, array $randomTokenSequence, string $error = ''): void
     {
         if ($error) {
@@ -273,12 +298,12 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $previousToken = '';
         $container = new \VuFindTest\Container\MockContainer($this);
         $row = $container->createMock(OaiResumption::class, ['getToken', 'setToken']);
-        $row->expects($this->any())->method('getToken')->willReturnCallback(
+        $row->method('getToken')->willReturnCallback(
             function () use (&$previousToken) {
                 return $previousToken;
             }
         );
-        $row->expects($this->any())->method('setToken')->willReturnCallback(
+        $row->method('setToken')->willReturnCallback(
             function ($t) use (&$previousToken, $row) {
                 $previousToken = $t;
                 return $row;
@@ -288,7 +313,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
             OaiResumptionService::class,
             ['createRandomToken', 'createEntity', 'persistEntity']
         );
-        $oaiResumptionService->expects($this->any())->method('createRandomToken')->willReturnCallback(
+        $oaiResumptionService->method('createRandomToken')->willReturnCallback(
             function () use (&$randomTokenSequence, $row) {
                 $newToken = array_shift($randomTokenSequence);
                 if ($newToken === $row->getToken()) {
@@ -297,20 +322,20 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
                 return $newToken;
             }
         );
-        $oaiResumptionService->expects($this->any())->method('createEntity')->willReturn($row);
+        $oaiResumptionService->method('createEntity')->willReturn($row);
 
         // Create first token as baseline
-        $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['timestamp']);
+        $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['expiry']);
 
         if (count($randomTokenSequence) > 1) {
             // Create second token and try to assign new random token sequences
-            $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['timestamp']);
+            $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['expiry']);
         }
         $this->assertEmpty($randomTokenSequence, 'Used all the tokens in random token generation.');
     }
 
     /**
-     * Test simple get tokens data provider
+     * Test simple get tokens data provider.
      *
      * @return Generator
      */
@@ -331,7 +356,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Very simple array acting as a database
+     * Very simple array acting as a database.
      *
      * @var array
      */
@@ -351,14 +376,14 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test legacy retrieval
+     * Test legacy retrieval.
      *
      * @param string  $token          Token used to search for row
      * @param ?string $expectedParams Expected parameters to be returned or null for no results
      *
-     * @return       void
-     * @dataProvider getTestTokenRetrieval
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestTokenRetrieval')]
     public function testTokenRetrieval(string $token, ?string $expectedParams): void
     {
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -366,10 +391,10 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $mockDb = [];
         foreach ($this->mockEntities as $entity) {
             $rowClone = clone $mockRow;
-            $rowClone->expects($this->any())->method('getId')->willReturn($entity['id']);
+            $rowClone->method('getId')->willReturn($entity['id']);
             $rowClone->setExpiry(\DateTime::createFromFormat('U', $entity['expires']));
-            $rowClone->expects($this->any())->method('getResumptionParameters')->willReturn($entity['params']);
-            $rowClone->expects($this->any())->method('getToken')->willReturn($entity['token']);
+            $rowClone->method('getResumptionParameters')->willReturn($entity['params']);
+            $rowClone->method('getToken')->willReturn($entity['token']);
             $mockDb[] = $rowClone;
         }
         $mockService = $container->createMock(OaiResumptionService::class, ['findWithToken', 'findWithLegacyIdToken']);
@@ -385,12 +410,12 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
             }
             return null;
         };
-        $mockService->expects($this->any())->method('findWithToken')->willReturnCallback(
+        $mockService->method('findWithToken')->willReturnCallback(
             function ($token) use ($lookupFunction) {
                 return $lookupFunction(compact('token'));
             }
         );
-        $mockService->expects($this->any())->method('findWithLegacyIdToken')->willReturnCallback(
+        $mockService->method('findWithLegacyIdToken')->willReturnCallback(
             function ($id) use ($lookupFunction) {
                 return $lookupFunction(compact('id'));
             }

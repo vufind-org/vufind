@@ -1,0 +1,48 @@
+<h1>सहायक खोज सुझाव</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#boolean_operators">बूलियन ऑपरेटर्स</a>
+    <ul>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a id="boolean_operators"></a>बूलियन ऑपरेटर्स</dt>
+  <dd>
+    <p>
+      बूलियन ऑपरेटर्स का उपयोग शब्दों को तर्कसंगत (logical) ऑपरेटर्स के साथ जोड़ने के लिए किया जाता है।
+      निम्नलिखित ऑपरेटर्स की अनुमति है: <strong>AND</strong>, <strong>OR</strong> और <strong>NOT</strong>।
+    </p>
+    <p>नोट: बूलियन ऑपरेटर्स को हमेशा बड़े अक्षरों (ALL CAPS) में लिखा जाना चाहिए।</p>
+    <dl>
+      <dt><a id="boolean_and"></a>AND</dt>
+      <dd>
+        <p><strong>AND</strong> ऑपरेटर डिफ़ॉल्ट संयोजन (conjunction) ऑपरेटर होता है। इसका अर्थ है कि यदि दो शब्दों के बीच कोई बूलियन ऑपरेटर नहीं दिया गया है, तो AND स्वतः लागू होता है। AND ऑपरेटर उन रिकॉर्ड्स को मिलाता है जिनमें दोनों शब्द किसी भी फ़ील्ड में मौजूद हों।</p>
+        <p>ऐसे रिकॉर्ड खोजने के लिए जिनमें "economics" और "Keynes" दोनों हों, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">economics Keynes</pre>
+        <p>या</p>
+        <pre class="code">economics AND Keynes</pre>
+      </dd>
+
+      <dt><a id="boolean_or"></a>OR</dt>
+      <dd>
+        <p><strong>OR</strong> ऑपरेटर दो शब्दों को जोड़ता है और उन रिकॉर्ड्स को ढूँढता है जिनमें इन दोनों में से कोई एक शब्द मौजूद हो।</p>
+        <p>ऐसे दस्तावेज़ खोजने के लिए जिनमें या तो "economics Keynes" या केवल "Keynes" शामिल हो, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">"economics Keynes" OR Keynes</pre>
+      </dd>
+
+      <dt><a id="boolean_not"></a>NOT</dt>
+      <dd>
+        <p><strong>NOT</strong> ऑपरेटर उन रिकॉर्ड्स को निकाल देता है जिनमें NOT के बाद दिया गया शब्द मौजूद हो।</p>
+        <p>ऐसे दस्तावेज़ खोजने के लिए जिनमें "economics" हो लेकिन "Keynes" न हो, यह क्वेरी उपयोग करें:</p>
+        <pre class="code">economics NOT Keynes</pre>
+        <p>नोट: <strong>NOT</strong> ऑपरेटर का उपयोग केवल एक शब्द के साथ नहीं किया जा सकता। उदाहरण के लिए, निम्नलिखित खोज कोई परिणाम नहीं देगी:</p>
+        <pre class="code">NOT economics</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>

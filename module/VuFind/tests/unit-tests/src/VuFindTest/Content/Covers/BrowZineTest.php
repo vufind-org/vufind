@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,32 +49,29 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCoverLoading.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function coverProvider(): array
+    public static function coverProvider(): \Iterator
     {
-        return [
-            'no issn' => [[], null, false],
-            'default cover' => [['issn' => '12345678'], 'browzine/cover-default.json', false],
-            'non-default cover' => [
-                ['issn' => '12345678'],
-                'browzine/cover-non-default.json',
-                'https://assets.thirdiron.com/simulated-real-cover.png',
-            ],
+        yield 'no issn' => [[], null, false];
+        yield 'default cover' => [['issn' => '12345678'], 'browzine/cover-default.json', false];
+        yield 'non-default cover' => [
+            ['issn' => '12345678'],
+            'browzine/cover-non-default.json',
+            'https://assets.thirdiron.com/simulated-real-cover.png',
         ];
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @param array       $ids      Array of IDs to look up
      * @param ?string     $fixture  Fixture to return from backend (null to assume backend will not be called)
      * @param string|bool $expected Expected cover URL
      *
      * @return void
-     *
-     * @dataProvider coverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('coverProvider')]
     public function testCoverLoading(array $ids, ?string $fixture, string|bool $expected): void
     {
         $service = $this->createMock(\VuFindSearch\Service::class);

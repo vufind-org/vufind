@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Csp View Helper Test Class
+ * Csp View Helper Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 /**
- * Csp View Helper Test Class
+ * Csp View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\View\Helper\Root;
 class CspTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test disablePolicy when the CSP is enabled
+     * Test disablePolicy when the CSP is enabled.
      *
      * @return void
      */
@@ -52,6 +52,8 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
+                        'development' => true,
+                        'production' => true,
                         'testing' => true,
                     ],
                 ],
@@ -83,7 +85,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test disablePolicy when the CSP is in "report only" mode
+     * Test disablePolicy when the CSP is in "report only" mode.
      *
      * @return void
      */
@@ -125,7 +127,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test disablePolicy when the CSP is disabled
+     * Test disablePolicy when the CSP is disabled.
      *
      * @return void
      */
@@ -136,6 +138,8 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
+                        'development' => false,
+                        'production' => false,
                         'testing' => false,
                     ],
                 ],

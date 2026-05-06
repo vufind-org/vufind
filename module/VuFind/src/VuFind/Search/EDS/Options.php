@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Options
+ * EDS API Options.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -31,11 +31,13 @@
 
 namespace VuFind\Search\EDS;
 
+use VuFind\Config\ConfigManagerInterface;
+
 use function in_array;
 use function is_callable;
 
 /**
- * EDS API Options
+ * EDS API Options.
  *
  * @category VuFind
  * @package  EBSCO
@@ -49,110 +51,109 @@ class Options extends AbstractEDSOptions
     use \VuFind\Config\Feature\ExplodeSettingTrait;
 
     /**
-     * Default limit option
+     * Default limit option.
      *
      * @var ?int
      */
     protected $defaultLimit = null;
 
     /**
-     * Available search mode options
+     * Available search mode options.
      *
      * @var array
      */
     protected $modeOptions = [];
 
     /**
-     * Default search mode options
+     * Default search mode options.
      *
      * @var string
      */
     protected $defaultMode = 'all';
 
     /**
-     * The set search mode
+     * The search mode (null to use default mode).
      *
-     * @var string
+     * @var ?string
      */
-    protected $searchMode;
+    protected $searchMode = null;
 
     /**
-     * Default expanders to apply
+     * Default expanders to apply.
      *
      * @var array
      */
     protected $defaultExpanders = [];
 
     /**
-     * Available expander options
+     * Available expander options.
      *
      * @var array
      */
     protected $expanderOptions = [];
 
     /**
-     * Available limiter options
+     * Available limiter options.
      *
      * @var array
      */
     protected $limiterOptions = [];
 
     /**
-     * Limiters enabled on advanced search screen (empty for all available)
+     * Limiters enabled on advanced search screen (empty for all available).
      *
      * @var string[]
      */
     protected $advancedLimiters = [];
 
     /**
-     * Available Search Options from the API or null if not yet initialized
+     * Available Search Options from the API or null if not yet initialized.
      *
      * @var ?array
      */
     protected $apiInfo;
 
     /**
-     * Callback to get available Search Options from the API
+     * Callback to get available Search Options from the API.
      *
      * @var ?callable
      */
     protected $apiInfoCallback = null;
 
     /**
-     * Whether settings based on API info have been initialized
+     * Whether settings based on API info have been initialized.
      *
      * @var bool
      */
     protected $apiOptionsInitialized = false;
 
     /**
-     * Limiters to display on the basic search screen
+     * Limiters to display on the basic search screen.
      *
      * @var array
      */
     protected $commonLimiters = [];
 
     /**
-     * Expanders to display on the basic search screen
+     * Expanders to display on the basic search screen.
      *
      * @var array
      */
     protected $commonExpanders = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param array|callable               $apiInfo      API information or callback
-     * to retrieve it
+     * @param ConfigManagerInterface $configManager Config manager
+     * @param array|callable         $apiInfo       API information or callback to retrieve it
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
+        ConfigManagerInterface $configManager,
         $apiInfo = null
     ) {
         $this->searchIni = $this->facetsIni = 'EDS';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // If we get the API info as a callback, defer until it's actually needed to
         // avoid calling the API:
@@ -220,17 +221,17 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Obtain the set searchmode
+     * Obtain the set searchmode.
      *
      * @return string the search mode
      */
     public function getSearchMode()
     {
-        return $this->searchMode;
+        return $this->searchMode ?? $this->getDefaultMode();
     }
 
     /**
-     * Set the search mode
+     * Set the search mode.
      *
      * @param string $mode Mode
      *
@@ -252,7 +253,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Get an array of search mode options
+     * Get an array of search mode options.
      *
      * @return array
      */
@@ -262,7 +263,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Get the default search mode
+     * Get the default search mode.
      *
      * @return string
      */
@@ -272,7 +273,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Return the expander ids that have the default on flag set in admin
+     * Return the expander ids that have the default on flag set in admin.
      *
      * @return array
      */
@@ -293,7 +294,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Set the search options from the Eds API Info methods results
+     * Set the search options from the Eds API Info methods results.
      *
      * @return void
      */
@@ -470,7 +471,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Populate available search criteria from the EDS API Info method
+     * Populate available search criteria from the EDS API Info method.
      *
      * @return void
      */
@@ -558,7 +559,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Populate limiter values from the EDS API INFO method data
+     * Populate limiter values from the EDS API INFO method data.
      *
      * @param array $limiterValues Limiter values from the API
      *
@@ -594,7 +595,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Returns the available limiters
+     * Returns the available limiters.
      *
      * @return array
      */
@@ -604,7 +605,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Returns the enabled limiters for the advanced search
+     * Returns the enabled limiters for the advanced search.
      *
      * @return array
      */
@@ -638,7 +639,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Returns the available expanders
+     * Returns the available expanders.
      *
      * @return array
      */
@@ -648,7 +649,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Sets the view settings from EDS API info method call data
+     * Sets the view settings from EDS API info method call data.
      *
      * @return void
      */
@@ -665,7 +666,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Get a translation string (if available) or else use a default
+     * Get a translation string (if available) or else use a default.
      *
      * @param string $label   Translation string to look up
      * @param string $default Default to use if no translation found
@@ -682,7 +683,7 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Obtain limiters to display on the basic search screen
+     * Obtain limiters to display on the basic search screen.
      *
      * @return array
      */
@@ -698,14 +699,14 @@ class Options extends AbstractEDSOptions
                     'eds_limiter_' . $key,
                     $limiter['Label']
                 ),
-                'selected' => ('y' == $limiter['DefaultOn']) ? true : false,
+                'selected' => 'y' == $limiter['DefaultOn'],
             ];
         }
         return $ssLimiterOptions;
     }
 
     /**
-     * Obtain expanders to display on the basic search screen
+     * Obtain expanders to display on the basic search screen.
      *
      * @return array
      */

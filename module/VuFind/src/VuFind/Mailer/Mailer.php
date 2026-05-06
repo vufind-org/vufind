@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Mailer Class
+ * VuFind Mailer Class.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Mailer
@@ -36,6 +36,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
+use Symfony\Component\Mime\Part\DataPart;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase;
 
@@ -43,7 +44,7 @@ use function count;
 use function is_array;
 
 /**
- * VuFind Mailer Class
+ * VuFind Mailer Class.
  *
  * @category VuFind
  * @package  Mailer
@@ -54,13 +55,13 @@ use function is_array;
  */
 class Mailer implements
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Mail transport
+     * Mail transport.
      *
      * @var MailerInterface
      */
@@ -74,21 +75,21 @@ class Mailer implements
     protected $initialTransport;
 
     /**
-     * The maximum number of email recipients allowed (0 = no limit)
+     * The maximum number of email recipients allowed (0 = no limit).
      *
      * @var int
      */
     protected $maxRecipients = 1;
 
     /**
-     * "From" address override
+     * "From" address override.
      *
      * @var string
      */
     protected $fromAddressOverride = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param MailerInterface $transport Mail transport
      * @param array           $options   Message log options
@@ -209,6 +210,7 @@ class Mailer implements
      * none)
      * @param bool                                   $subjectInBody Allow subject to be extracted from body when
      * body text begins with "Subject: " and $body is a string (ignored when $body is an Email object)
+     * @param DataPart[]                             $parts         Data parts to add
      *
      * @throws MailException
      * @return void
@@ -220,7 +222,8 @@ class Mailer implements
         string|Email $body,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null,
-        bool $subjectInBody = true
+        bool $subjectInBody = true,
+        array $parts = []
     ) {
         try {
             if (!($from instanceof Address)) {
@@ -308,11 +311,14 @@ class Mailer implements
             foreach ($replyTo as $current) {
                 $email->addReplyTo($current);
             }
+            foreach ($parts as $part) {
+                $email->addPart($part);
+            }
             $this->getTransport()->send($email);
             if ($logFile = $this->options['message_log'] ?? null) {
                 $format = $this->options['message_log_format'] ?? 'plain';
                 $data = 'serialized' === $format
-                    ? serialize($email) . "\x1E" // use Record Separator to separate messages
+                    ? base64_encode(serialize($email)) . "\x1E" // Record Separator
                     : $email->toString() . "\n\n";
                 file_put_contents($logFile, $data, FILE_APPEND);
             }
@@ -408,7 +414,7 @@ class Mailer implements
     }
 
     /**
-     * Set the maximum number of email recipients
+     * Set the maximum number of email recipients.
      *
      * @param int $max Maximum
      *
@@ -420,7 +426,7 @@ class Mailer implements
     }
 
     /**
-     * Get the default subject line for sendRecord()
+     * Get the default subject line for sendRecord().
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      *
@@ -432,7 +438,7 @@ class Mailer implements
     }
 
     /**
-     * Get the "From" address override value
+     * Get the "From" address override value.
      *
      * @return string
      */
@@ -442,7 +448,7 @@ class Mailer implements
     }
 
     /**
-     * Set the "From" address override
+     * Set the "From" address override.
      *
      * @param string $address "From" address
      *
@@ -454,7 +460,7 @@ class Mailer implements
     }
 
     /**
-     * Convert the given addresses to an array
+     * Convert the given addresses to an array.
      *
      * @param string|Address|Address[]|null $addresses Addresses
      *

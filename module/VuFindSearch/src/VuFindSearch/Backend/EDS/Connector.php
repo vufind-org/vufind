@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO EDS API Connector
+ * EBSCO EDS API Connector.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -32,10 +32,10 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Laminas\Http\Client as HttpClient;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 /**
- * EBSCO EDS API Connector
+ * EBSCO EDS API Connector.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -51,14 +51,14 @@ class Connector extends Base implements LoggerAwareInterface
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
-     * The HTTP Request object to execute EDS API transactions
+     * The HTTP Request object to execute EDS API transactions.
      *
      * @var HttpClient
      */
     protected $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the EDS API Client
      *

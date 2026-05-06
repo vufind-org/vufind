@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ use function sprintf;
 use function strlen;
 
 /**
- * Citation view helper
+ * Citation view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -55,21 +55,21 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Citation details
+     * Citation details.
      *
      * @var array
      */
     protected $details = [];
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var \VuFind\RecordDriver\AbstractBase
      */
     protected $driver;
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var \VuFind\Date\Converter
      */
@@ -105,7 +105,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $converter Date converter
      */
@@ -262,7 +262,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * Retrieve a citation in a particular format
+     * Retrieve a citation in a particular format.
      *
      * Returns the citation in the format specified
      *
@@ -547,15 +547,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         if (in_array($str, $suffixes)) {
             return true;
         }
-
         // Is it a roman numeral?  (This check could be smarter, but it's probably
-        // good enough as it is).
-        if (preg_match('/^[MDCLXVI]+$/', $str)) {
-            return true;
-        }
-
-        // If we got this far, it's not a suffix.
-        return false;
+        // good enough as it is). Otherwise, if we got this far, it's not a suffix.
+        return (bool)preg_match('/^[MDCLXVI]+$/', $str);
     }
 
     /**

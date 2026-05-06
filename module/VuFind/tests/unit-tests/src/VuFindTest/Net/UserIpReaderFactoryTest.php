@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -35,7 +35,7 @@ use VuFind\Net\UserIpReaderFactory;
 use function func_get_args;
 
 /**
- * UserIpReaderFactory Test Class
+ * UserIpReaderFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -59,20 +59,18 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(
-            \VuFind\Config\ConfigManager::class,
+            \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(compact('config'), [], $this->once())
         );
-        $mockRequest = $this
-            ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockRequest->expects($this->once())->method('getServer')
-            ->will($this->returnValue(new Parameters($server)));
+            ->willReturn(new Parameters($server));
         $container->set('Request', $mockRequest);
         return $container;
     }
 
     /**
-     * Extend UserIpReader to capture constructor parameters
+     * Extend UserIpReader to capture constructor parameters.
      *
      * @return \VuFind\Net\UserIpReader
      */
@@ -87,7 +85,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             public $args;
 
             /**
-             * Constructor
+             * Constructor.
              */
             public function __construct()
             {
@@ -102,7 +100,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the factory's defaults
+     * Test the factory's defaults.
      *
      * @return void
      */
@@ -118,7 +116,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test non-default values, with a single filtered IP
+     * Test non-default values, with a single filtered IP.
      *
      * @return void
      */
@@ -141,7 +139,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test non-default values, with multiple filtered IPs
+     * Test non-default values, with multiple filtered IPs.
      *
      * @return void
      */

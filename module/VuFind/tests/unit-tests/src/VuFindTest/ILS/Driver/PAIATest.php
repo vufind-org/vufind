@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -36,7 +36,7 @@ use Laminas\Http\Response as HttpResponse;
 use VuFind\ILS\Driver\PAIA;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -368,7 +368,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -388,7 +388,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -401,7 +401,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -414,7 +414,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -427,7 +427,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -440,7 +440,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -453,7 +453,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -501,7 +501,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -514,7 +514,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -533,7 +533,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -552,7 +552,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test
+     * Test.
      *
      * @return void
      */
@@ -583,7 +583,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getAccountBlocks
+     * Test getAccountBlocks.
      *
      * @return void
      */
@@ -659,17 +659,15 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ->setConstructorArgs([$dateConverter, $sessionManager])
             ->onlyMethods(['getScope'])
             ->getMock();
-        $conn->expects($this->any())->method('getScope')
-            ->will(
-                $this->returnValue(
-                    [
-                    'write_items',
-                    'change_password',
-                    'read_fees',
-                    'read_items',
-                    'read_patron',
-                    ]
-                )
+        $conn->method('getScope')
+            ->willReturn(
+                [
+                'write_items',
+                'change_password',
+                'read_fees',
+                'read_items',
+                'read_patron',
+                ]
             );
         $conn->setHttpService($service);
         $conn->setConfig($this->validConfig);

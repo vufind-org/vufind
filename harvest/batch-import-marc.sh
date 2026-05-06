@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Make sure VUFIND_HOME is set:
 if [ -z "$VUFIND_HOME" ]

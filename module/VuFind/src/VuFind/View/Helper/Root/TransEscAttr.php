@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translate + escape view helper for HTML attributes
+ * Translate + escape view helper for HTML attributes.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -34,7 +34,7 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
- * Translate + escape view helper for HTML attributes
+ * Translate + escape view helper for HTML attributes.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,7 +46,7 @@ use Laminas\View\Helper\AbstractHelper;
 class TransEscAttr extends AbstractHelper
 {
     /**
-     * Translate and escape a string for an HTML attribute
+     * Translate and escape a string for an HTML attribute.
      *
      * @param string|object|array $str             String to translate or an array of text
      *                                             domain and string to translate

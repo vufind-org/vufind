@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -52,21 +52,21 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Path to base configurations
+     * Path to base configurations.
      *
      * @var string
      */
     protected string $baseDirPath;
 
     /**
-     * Path to local dir configurations
+     * Path to local dir configurations.
      *
      * @var string
      */
     protected string $localDirPath;
 
     /**
-     * Path to local dir backup
+     * Path to local dir backup.
      *
      * @var string
      */
@@ -154,10 +154,10 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
     public function tearDown(): void
     {
         // restore backup of local config dir
-        if (is_dir($this->localDirPath)) {
+        if (isset($this->localDirPath) && is_dir($this->localDirPath)) {
             self::rmDir($this->localDirPath);
         }
-        if (is_dir($this->localDirBackupPath)) {
+        if (isset($this->localDirBackupPath) && is_dir($this->localDirBackupPath)) {
             rename($this->localDirBackupPath, $this->localDirPath);
         }
     }

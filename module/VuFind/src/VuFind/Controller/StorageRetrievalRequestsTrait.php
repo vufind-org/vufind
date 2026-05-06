@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Storage retrieval requests trait (for subclasses of AbstractRecord)
+ * Storage retrieval requests trait (for subclasses of AbstractRecord).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -36,7 +36,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Storage retrieval requests trait (for subclasses of AbstractRecord)
+ * Storage retrieval requests trait (for subclasses of AbstractRecord).
  *
  * @category VuFind
  * @package  Controller
@@ -142,7 +142,7 @@ trait StorageRetrievalRequestsTrait
                                 ->fromRoute('myresearch-storageretrievalrequests'),
                         ],
                     ];
-                    $this->flashMessenger()->addMessage($msg, 'success');
+                    $this->flashMessenger()->addSuccessMessage($msg);
                     $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
 
                     $this->getAuditEventService()->addEvent(
@@ -164,7 +164,7 @@ trait StorageRetrievalRequestsTrait
                     }
                     if (isset($results['sysMessage'])) {
                         $this->flashMessenger()
-                            ->addMessage($results['sysMessage'], 'error');
+                            ->addErrorMessage($results['sysMessage']);
                     }
                 }
             }
@@ -182,8 +182,8 @@ trait StorageRetrievalRequestsTrait
             $defaultPickup = false;
         }
 
-        $config = $this->getConfig();
-        $homeLibrary = ($config->Account->set_home_library ?? true)
+        $config = $this->getConfigArray();
+        $homeLibrary = ($config['Account']['set_home_library'] ?? true)
             ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility with legacy code:
         $helpText = $helpTextHtml = $checkRequests['helpText'];

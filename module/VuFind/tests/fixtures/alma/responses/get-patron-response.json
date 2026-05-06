@@ -68,5 +68,41 @@
             ],
             "resultFixture": "get-patron-login-password.xml"
         }
+    ],
+    "test patron login password and password is null": [
+        {
+            "expectedParams": [
+                "/users/1111",
+                {
+                    "user_id_type": "all_unique",
+                    "op": "auth",
+                    "password": null
+                },
+                [],
+                "POST",
+                null,
+                null,
+                [400],
+                true
+            ],
+            "resultFixture": "get-patron-login-password.xml"
+        },
+        {
+            "expectedParams": [
+                "/users/1111",
+                {
+                    "user_id_type": "all_unique",
+                    "view": "full",
+                    "expand": "none"
+                },
+                [],
+                "GET",
+                null,
+                null,
+                [400],
+                true
+            ],
+            "resultFixture": "get-patron-login-password.xml"
+        }
     ]
 }

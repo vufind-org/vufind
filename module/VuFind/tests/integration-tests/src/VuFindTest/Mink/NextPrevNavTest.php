@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
      * If next_prev_navigation and first_last_navigation are set to true
      * and a search which returns no results is run
      * when a record page is visited no next prev navigation should be shown
-     * and no exception should be thrown
+     * and no exception should be thrown.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=__ReturnNoResults__&type=AllField');
-        $this->assertEquals($this->findCssAndGetText($page, '.search-stats > h2'), 'No Results!');
+        $this->assertSame('No Results!', $this->findCssAndGetText($page, '.search-stats > h2'));
 
         // collection should render as normal
         $session->visit($this->getVuFindUrl() . '/Record/geo20001');

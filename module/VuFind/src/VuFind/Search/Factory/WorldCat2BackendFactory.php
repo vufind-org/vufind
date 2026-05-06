@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -55,26 +55,26 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * WorldCat v2 configuration
+     * WorldCat v2 configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $wcConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -87,7 +87,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configManager = $this->getService(\VuFind\Config\ConfigManager::class);
+        $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
         $this->config = $configManager->getConfigObject('config');
         $this->wcConfig = $configManager->getConfigObject('WorldCat2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
@@ -172,7 +172,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

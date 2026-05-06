@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -99,7 +99,7 @@ class PrintArrayHtml extends AbstractHelper
     /**
      * Check is a variable is and array and all keys are sequential
      * integers starting from index 0.
-     * TODO This function can be replaced by array_is_list() in PHP8
+     * TODO This function can be replaced by array_is_list() in PHP8.
      *
      * @param mixed $var A variable to perform the check on.
      *
@@ -111,7 +111,7 @@ class PrintArrayHtml extends AbstractHelper
             return false;
         }
         $i = 0;
-        foreach ($var as $key => $_) {
+        foreach (array_keys($var) as $key) {
             if ($key !== $i++) {
                 return false;
             }

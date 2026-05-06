@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ResourceContainer Test Class
+ * ResourceContainer Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest;
 use VuFindTheme\ResourceContainer;
 
 /**
- * ResourceContainer Test Class
+ * ResourceContainer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -108,7 +108,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container = new ResourceContainer();
         $container->addCss(['a', 'b', 'c']);
         $container->addCss(['file' => 'b', 'disabled' => true]);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 ['file' => 'a'],
                 ['file' => 'c'],
@@ -185,7 +185,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
                 'position' => 'header',
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             $expectedHeaderResult,
             array_values($container->getJs('header'))
         );
@@ -193,7 +193,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $expectedFooterResult = [
             ['file' => 'df', 'position' => 'footer'],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             $expectedFooterResult,
             array_values($container->getJs('footer'))
         );
@@ -209,7 +209,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container = new ResourceContainer();
         $container->addJs(['a', 'b', 'c']);
         $container->addJs(['file' => 'b', 'disabled' => true]);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 ['file' => 'a', 'position' => 'header'],
                 ['file' => 'c', 'position' => 'header'],

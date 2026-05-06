@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session handler interface
+ * Session handler interface.
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -34,7 +34,7 @@ namespace VuFind\Session;
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
 
 /**
- * Session handler interface
+ * Session handler interface.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -46,14 +46,14 @@ use Laminas\Session\SaveHandler\SaveHandlerInterface;
 interface HandlerInterface extends SaveHandlerInterface
 {
     /**
-     * Enable session writing (default)
+     * Enable session writing (default).
      *
      * @return void
      */
     public function enableWrites();
 
     /**
-     * Disable session writing, i.e. make it read-only
+     * Disable session writing, i.e. make it read-only.
      *
      * @return void
      */

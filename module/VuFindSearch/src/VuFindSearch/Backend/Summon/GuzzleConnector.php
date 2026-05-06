@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search API Interface (Guzzle and Psr implementation)
+ * Summon Search API Interface (Guzzle and Psr implementation).
  *
  * PHP version 8
  *
@@ -17,12 +17,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
- * @author   Sambhav Pokharel <sambhavpokharel@gmail.com>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -35,18 +35,18 @@ use Psr\Log\LoggerInterface;
 use SerialsSolutions_Summon_Exception;
 
 /**
- * Guzzle and PSR-compliant port of SerialsSolutions\Summon\Laminas connector
+ * Guzzle and PSR-compliant port of SerialsSolutions\Summon\Laminas connector.
  *
  * @category VuFind
  * @package  Search
- * @author   Sambhav Pokharel <sambhavpokharel@gmail.com>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
 class GuzzleConnector extends \SerialsSolutions_Summon_Base implements LoggerAwareInterface
 {
     /**
-     * HTTP client instance
+     * HTTP client instance.
      *
      * @var HttpClient
      */

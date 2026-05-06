@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -60,11 +60,11 @@ class BackendTest extends TestCase
         $conn = $this->createMock(Connector::class);
         $conn->expects($this->once())
             ->method('getHoldings')
-            ->with($this->equalTo($params))
+            ->with($params)
             ->willReturn($mockResponse);
 
         $back = new Backend($conn);
-        $this->assertEquals($mockResponse, $back->getHoldings($params));
+        $this->assertSame($mockResponse, $back->getHoldings($params));
     }
 
     /**
@@ -83,7 +83,7 @@ class BackendTest extends TestCase
         $conn = $this->createMock(Connector::class);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->with($this->equalTo('foobar'))
+            ->with('foobar')
             ->willReturn($mockResponse);
 
         $back = new Backend($conn);
@@ -93,6 +93,7 @@ class BackendTest extends TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $this->assertEquals([], $coll->getErrors());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals($fakeRecord, $rec->getRawData());
     }
@@ -126,6 +127,7 @@ class BackendTest extends TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals($rec1, $rec->getRawData());
         $recs = $coll->getRecords();

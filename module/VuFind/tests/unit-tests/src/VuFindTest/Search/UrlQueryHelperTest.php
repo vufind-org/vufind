@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Search;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\UrlQueryHelper;
 use VuFindSearch\Query\Query;
@@ -69,7 +70,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         // Test basic getters
         $helper = $this->getHelper();
         $this->assertEquals('?foo=bar&amp;lookfor=search', $helper->getParams());
-        $this->assertEquals('?foo=bar&amp;lookfor=search', (string)$helper);
+        $this->assertSame('?foo=bar&amp;lookfor=search', (string)$helper);
         $this->assertEquals(
             ['foo' => 'bar', 'lookfor' => 'search'],
             $helper->getParamArray()
@@ -81,7 +82,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the behavior of setDefaultParameters
+     * Test the behavior of setDefaultParameters.
      *
      * @return void
      */
@@ -133,7 +134,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test replacing query terms
+     * Test replacing query terms.
      *
      * @return void
      */
@@ -151,7 +152,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test adding/removing facets and filters
+     * Test adding/removing facets and filters.
      *
      * @return void
      */
@@ -178,7 +179,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test stacking setters
+     * Test stacking setters.
      *
      * @return void
      */
@@ -219,7 +220,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     public function testFactory()
     {
         $factory = new UrlQueryHelperFactory();
-        $config = $this->createMock(\VuFind\Config\PluginManager::class);
+        $config = $this->createMock(ConfigManagerInterface::class);
         $params = new \VuFindTest\Search\TestHarness\Params(
             new \VuFindTest\Search\TestHarness\Options($config),
             $config

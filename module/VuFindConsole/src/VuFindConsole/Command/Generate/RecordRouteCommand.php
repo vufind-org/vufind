@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -81,7 +81,7 @@ class RecordRouteCommand extends AbstractRouteCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $base = $input->getArgument('base');
         $controller = $input->getArgument('controller');
@@ -99,6 +99,6 @@ class RecordRouteCommand extends AbstractRouteCommand
 
         // Write updated configuration
         $this->generatorTools->writeModuleConfig($configPath, $config);
-        return 0;
+        return self::SUCCESS;
     }
 }

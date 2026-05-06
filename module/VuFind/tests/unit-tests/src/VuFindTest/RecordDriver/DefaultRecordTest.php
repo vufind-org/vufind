@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -35,7 +35,7 @@ use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
 /**
- * DefaultRecord Record Driver Test Class
+ * DefaultRecord Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -336,9 +336,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getBookOpenUrlParams'])
             ->getMock();
         $mock->setRawData($fields);
-        $mock->expects($this->any())
-            ->method('getBookOpenUrlParams')
-            ->will($this->returnValue($openUrlParams));
+        $mock->method('getBookOpenUrlParams')->willReturn($openUrlParams);
 
         $this->assertEquals($openUrl, $mock->getOpenUrl());
     }
@@ -495,43 +493,41 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetCleanISBNs
+     * Data provider for testGetCleanISBNs.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getCleanISBNsProvider(): array
+    public static function getCleanISBNsProvider(): \Iterator
     {
-        return [
-            [
-                ['8820737493', '8072815563'],
-                'only10',
-                true,
-            ],
-            [
-                ['8820737493', '8072815563', 'invalid-isbn'],
-                'only10',
-                false,
-            ],
-            [
-                ['8820737493', '8072815563', '9798644293513'],
-                'prefer10',
-                true,
-            ],
-            [
-                ['8820737493', '8072815563', '9798644293513', 'invalid-isbn'],
-                'prefer10',
-                false,
-            ],
-            [
-                ['9798644293513', '9788820737498', '9788072815562'],
-                'normalize13',
-                true,
-            ],
-            [
-                ['9798644293513', '9788820737498', '9788072815562', 'invalid-isbn'],
-                'normalize13',
-                false,
-            ],
+        yield [
+            ['8820737493', '8072815563'],
+            'only10',
+            true,
+        ];
+        yield [
+            ['8820737493', '8072815563', 'invalid-isbn'],
+            'only10',
+            false,
+        ];
+        yield [
+            ['8820737493', '8072815563', '9798644293513'],
+            'prefer10',
+            true,
+        ];
+        yield [
+            ['8820737493', '8072815563', '9798644293513', 'invalid-isbn'],
+            'prefer10',
+            false,
+        ];
+        yield [
+            ['9798644293513', '9788820737498', '9788072815562'],
+            'normalize13',
+            true,
+        ];
+        yield [
+            ['9798644293513', '9788820737498', '9788072815562', 'invalid-isbn'],
+            'normalize13',
+            false,
         ];
     }
 
@@ -542,10 +538,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      * @param string $mode          Retrieval mode
      * @param bool   $filterInvalid Should we filter invalid ISBNs?
      *
-     * @dataProvider getCleanISBNsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanISBNsProvider')]
     public function testGetCleanISBNs($result, $mode, $filterInvalid)
     {
         $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));

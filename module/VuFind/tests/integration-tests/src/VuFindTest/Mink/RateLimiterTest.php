@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -62,36 +62,34 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testRateLimiter
+     * Data provider for testRateLimiter.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function rateLimiterDataProvider(): array
+    public static function rateLimiterDataProvider(): \Iterator
     {
         $searchPath = '/Search/Results';
         $searchQuery = ['lookfor' => 'foobar'];
-        return [
-            'search by bot' => [
-                true,
-                true,
-                2,
-                $searchPath,
-                $searchQuery,
-            ],
-            'search by user' => [
-                false,
-                false,
-                5,
-                $searchPath,
-                $searchQuery,
-            ],
-            'front page (unlimited)' => [
-                false,
-                false,
-                null,
-                '',
-                [],
-            ],
+        yield 'search by bot' => [
+            true,
+            true,
+            2,
+            $searchPath,
+            $searchQuery,
+        ];
+        yield 'search by user' => [
+            false,
+            false,
+            5,
+            $searchPath,
+            $searchQuery,
+        ];
+        yield 'front page (unlimited)' => [
+            false,
+            false,
+            null,
+            '',
+            [],
         ];
     }
 
@@ -105,9 +103,8 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $query   Request URL query params
      *
      * @return void
-     *
-     * @dataProvider rateLimiterDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rateLimiterDataProvider')]
     public function testRateLimiter(bool $crawler, bool $headers, ?int $limit, string $path, array $query): void
     {
         $this->changeYamlConfigs(
@@ -129,7 +126,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get RateLimiter.yaml overrides
+     * Get RateLimiter.yaml overrides.
      *
      * @param bool $addHeaders Add X-RateLimit-* headers?
      *
@@ -186,7 +183,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make a request and check the result
+     * Make a request and check the result.
      *
      * @param HttpService $http       HTTP Service
      * @param string      $path       Request URL path
@@ -218,7 +215,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
             $headerLimit = $headers->get('X-RateLimit-Limit')->getFieldValue();
             $this->assertEquals($limit, $headerLimit);
             if (null !== $current) {
-                $this->assertEquals($current, $limit - $headerRemaining);
+                $this->assertSame($current, $limit - $headerRemaining);
             }
         }
     }

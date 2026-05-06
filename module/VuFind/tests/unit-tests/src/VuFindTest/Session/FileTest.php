@@ -1,7 +1,7 @@
 <?php
 
 /**
- * File Session Handler Test Class
+ * File Session Handler Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,7 +34,7 @@ use VuFind\Session\File;
 use function function_exists;
 
 /**
- * File Session Handler Test Class
+ * File Session Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,14 @@ use function function_exists;
 class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
 {
     /**
-     * Path to session files
+     * Path to session files.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * Generic setup method
+     * Generic setup method.
      *
      * @return void
      */
@@ -64,7 +64,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
     }
 
     /**
-     * Generic teardown method
+     * Generic teardown method.
      *
      * @return void
      */

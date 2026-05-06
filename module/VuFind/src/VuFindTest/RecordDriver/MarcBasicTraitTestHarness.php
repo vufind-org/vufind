@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test harness for simulating MARC record drivers (ignore outside of test suite!)
+ * Test harness for simulating MARC record drivers (ignore outside of test suite!).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -34,7 +34,7 @@ use VuFind\RecordDriver\Feature\MarcBasicTrait;
 use VuFind\RecordDriver\Feature\MarcReaderTrait;
 
 /**
- * Test harness for simulating MARC record drivers (ignore outside of test suite!)
+ * Test harness for simulating MARC record drivers (ignore outside of test suite!).
  *
  * @category VuFind
  * @package  RecordDrivers

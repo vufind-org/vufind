@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Audit event database service factory
+ * Audit event database service factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -38,7 +38,7 @@ use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Net\UserIpReader;
 
 /**
- * Audit event database service factory
+ * Audit event database service factory.
  *
  * @category VuFind
  * @package  Database
@@ -51,7 +51,7 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
     use ExplodeSettingTrait;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,18 +69,20 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
-        $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? '');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? 'payment');
         $sessionId = null;
         $clientIp = null;
         $serverIp = null;
         $serverName = null;
+        $requestUri = null;
         if ('cli' !== PHP_SAPI) {
             $sessionId = $container->get(SessionManager::class)->getId();
             $clientIp = $container->get(UserIpReader::class)->getUserIp();
             $serverParams = $container->get('Request')->getServer();
             $serverIp = $serverParams->get('SERVER_ADDR');
             $serverName = $serverParams->get('SERVER_NAME');
+            $requestUri = $serverParams->get('REQUEST_URI');
         }
         return parent::__invoke(
             $container,
@@ -91,6 +93,7 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
                 $clientIp,
                 $serverIp,
                 $serverName,
+                $requestUri,
             ]
         );
     }

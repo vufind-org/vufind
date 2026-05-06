@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unpaywall identifier linker
+ * Unpaywall identifier linker.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -33,7 +33,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
 /**
- * Unpaywall identifier linker
+ * Unpaywall identifier linker.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -50,21 +50,21 @@ class Unpaywall implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * URL to Unpaywall API
+     * URL to Unpaywall API.
      *
      * @var string api url
      */
     protected $apiUrl;
 
     /**
-     * E-mail used as parameter when calling API
+     * E-mail used as parameter when calling API.
      *
      * @var string email
      */
     protected $email;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config DOI section of main VuFind config
      *
@@ -109,11 +109,13 @@ class Unpaywall implements
                 $response[$key][] = [
                     'link' => $data['best_oa_location']['url_for_pdf'],
                     'label' => $this->translate('PDF Full Text'),
+                    'linkType' => 'fullTextPdf',
                 ];
             } elseif (!empty($data['best_oa_location']['url'])) {
                 $response[$key][] = [
                     'link' => $data['best_oa_location']['url'],
                     'label' => $this->translate('online_resources'),
+                    'linkType' => 'fullText',
                 ];
             }
         }
@@ -121,7 +123,7 @@ class Unpaywall implements
     }
 
     /**
-     * Takes a DOI and do an API call to Unpaywall service
+     * Takes a DOI and do an API call to Unpaywall service.
      *
      * @param string $doi DOI
      *

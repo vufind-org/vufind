@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -49,14 +49,14 @@ use function is_array;
 class SimulatedSSO extends AbstractBase
 {
     /**
-     * Session initiator URL callback
+     * Session initiator URL callback.
      *
      * @var callable
      */
     protected $getSessionInitiatorCallback;
 
     /**
-     * Configuration settings
+     * Configuration settings.
      *
      * @var array
      */
@@ -74,7 +74,7 @@ class SimulatedSSO extends AbstractBase
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable         $url              Session initiator URL callback
      * @param array            $config           Configuration settings
@@ -148,7 +148,7 @@ class SimulatedSSO extends AbstractBase
     }
 
     /**
-     * Add session id mapping to external_session table for single logout support
+     * Add session id mapping to external_session table for single logout support.
      *
      * Using 'EXTERNAL_SESSION_ID' as the id -- for testing only.
      *

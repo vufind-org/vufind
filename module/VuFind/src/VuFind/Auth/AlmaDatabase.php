@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Alma Database authentication class
+ * Alma Database authentication class.
  *
  * PHP version 8
  *
- * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018.
+ * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,12 +17,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
- * @author   Michael Birkner <michael.birkner@akwien.at>
+ * @author   Michael Birkner-Tröger <michael.birkner@akwien.at>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
@@ -30,6 +30,7 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
@@ -39,38 +40,41 @@ use VuFind\Exception\Auth as AuthException;
  *
  * @category VuFind
  * @package  Authentication
- * @author   Michael Birkner <michael.birkner@akwien.at>
+ * @author   Michael Birkner-Tröger <michael.birkner@akwien.at>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 class AlmaDatabase extends Database
 {
     /**
-     * Alma driver
+     * Alma driver.
      *
      * @var \VuFind\ILS\Driver\Alma
      */
     protected $almaDriver = null;
 
     /**
-     * Alma config
+     * Alma config.
      *
      * @var array
      */
     protected $almaConfig = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection        $catalog       The ILS connection
      * @param \VuFind\Auth\ILSAuthenticator $authenticator The ILS authenticator
+     * @param ?PasswordHasher               $hasher        Password hash service (null to create one)
      */
     public function __construct(
         protected \VuFind\ILS\Connection $catalog,
-        protected \VuFind\Auth\ILSAuthenticator $authenticator
+        protected \VuFind\Auth\ILSAuthenticator $authenticator,
+        ?PasswordHasher $hasher = null
     ) {
         $this->almaDriver = $catalog->getDriver();
         $this->almaConfig = $catalog->getDriverConfig();
+        parent::__construct($hasher);
     }
 
     /**
@@ -117,9 +121,15 @@ class AlmaDatabase extends Database
 
             // Save the credentials to cat_username and cat_password to bypass
             // the ILS login screen from VuFind
-            $this->authenticator->saveUserCatalogCredentials($user, $params['username'], $params['password']);
+            $this->authenticator->saveUserCatalogCredentials(
+                $user,
+                $params['username'],
+                $params['password']
+            );
         } else {
-            throw new AuthException($this->translate('ils_account_create_error'));
+            throw new AuthException(
+                $this->translate('ils_account_create_error')
+            );
         }
 
         return $user;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILL trait (for subclasses of AbstractRecord)
+ * ILL trait (for subclasses of AbstractRecord).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -36,7 +36,7 @@ use function in_array;
 use function is_array;
 
 /**
- * ILL trait (for subclasses of AbstractRecord)
+ * ILL trait (for subclasses of AbstractRecord).
  *
  * @category VuFind
  * @package  Controller
@@ -123,7 +123,7 @@ trait ILLRequestsTrait
                             ->fromRoute('myresearch-illrequests'),
                     ],
                 ];
-                $this->flashMessenger()->addMessage($msg, 'success');
+                $this->flashMessenger()->addSuccessMessage($msg);
                 $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
 
                 $this->getAuditEventService()->addEvent(
@@ -142,11 +142,11 @@ trait ILLRequestsTrait
                 // the current form.
                 if (isset($results['status'])) {
                     $this->flashMessenger()
-                        ->addMessage($results['status'], 'error');
+                        ->addErrorMessage($results['status']);
                 }
                 if (isset($results['sysMessage'])) {
                     $this->flashMessenger()
-                        ->addMessage($results['sysMessage'], 'error');
+                        ->addErrorMessage($results['sysMessage']);
                 }
             }
         }
@@ -177,8 +177,8 @@ trait ILLRequestsTrait
             return $this->redirectToRecord('#top');
         }
 
-        $config = $this->getConfig();
-        $homeLibrary = ($config->Account->set_home_library ?? true)
+        $config = $this->getConfigArray();
+        $homeLibrary = ($config['Account']['set_home_library'] ?? true)
             ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility with legacy code:
         $helpText = $helpTextHtml = $checkRequests['helpText'];

@@ -13,10 +13,11 @@
     <li<?php if (empty($this->excludeResultIds)): ?> id="result<?=$i?>"<?php endif; ?> class="result<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>" data-record-number="<?=$this->escapeHtmlAttr($recordNumber)?>">
       <?php if ($showCheckboxes): ?>
         <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
+      <?php else: ?>
+        <div class="record-number">
+          <?=$recordNumber ?>
+        </div>
       <?php endif; ?>
-      <div class="record-number">
-        <?=$recordNumber ?>
-      </div>
       <?=$this->record($current)->getSearchResult('list', $this->results)?>
     </li>
     <?php

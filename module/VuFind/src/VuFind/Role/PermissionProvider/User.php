@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -29,13 +29,13 @@
 
 namespace VuFind\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 
 use function count;
 
 /**
  * LDAP permission provider for VuFind.
- * based on permission provider Username.php
+ * based on permission provider Username.php.
  *
  * @category VuFind
  * @package  Authorization
@@ -45,19 +45,19 @@ use function count;
  */
 class User implements
     PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Authorization object
+     * Authorization object.
      *
      * @var AuthorizationService
      */
     protected $auth;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param AuthorizationService $authorization Authorization service
      */

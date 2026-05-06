@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Upgrade Controller
+ * Upgrade Controller.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -48,20 +48,17 @@ use VuFind\Crypt\Base62;
 use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
-use VuFind\Db\MigrationManager;
+use VuFind\Db\Migration\MigrationManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\ShortlinksServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Tags\TagsService;
 
 use function count;
 use function dirname;
-use function get_class;
 use function in_array;
 use function strlen;
 
@@ -81,14 +78,14 @@ class UpgradeController extends AbstractBase
     use Feature\SecureDatabaseTrait;
 
     /**
-     * Cookie container
+     * Cookie container.
      *
      * @var CookieContainer
      */
     protected $cookie;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var Container
      */
@@ -102,7 +99,7 @@ class UpgradeController extends AbstractBase
     protected $logsql = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm               Service manager
      * @param CookieManager           $cookieManager    Cookie manager
@@ -147,18 +144,15 @@ class UpgradeController extends AbstractBase
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
-        $config = $this->getConfig();
-        if (
-            !isset($config->System->autoConfigure)
-            || !$config->System->autoConfigure
-        ) {
+        $config = $this->getConfigArray();
+        if (!($config['System']['autoConfigure'] ?? false)) {
             $routeMatch = $e->getRouteMatch();
             $routeMatch->setParam('action', 'disabled');
         }
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -213,10 +207,7 @@ class UpgradeController extends AbstractBase
         } catch (Exception $e) {
             $extra = is_a($e, \VuFind\Exception\FileAccess::class)
                 ? '  Check file permissions.' : '';
-            $this->flashMessenger()->addMessage(
-                'Config upgrade failed: ' . $e->getMessage() . $extra,
-                'error'
-            );
+            $this->flashMessenger()->addErrorMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
             return $this->forwardTo('Upgrade', 'Error');
         }
     }
@@ -312,24 +303,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Look up relevant database migrations and return them as a string (empty string if none needed).
-     *
-     * @return string
-     */
-    public function getDatabaseMigrations(): string
-    {
-        $connection = $this->getService(Connection::class);
-        $rawPlatform = strtolower(get_class($connection->getDatabasePlatform()));
-        $platform = str_contains($rawPlatform, 'postgres') ? 'pgsql' : 'mysql';
-        $migrationManager = new MigrationManager();
-        $sql = '';
-        foreach ($migrationManager->getMigrations($platform, $this->cookie->oldVersion) as $migration) {
-            $sql .= file_get_contents($migration) . "\n";
-        }
-        return $sql;
-    }
-
-    /**
      * Apply migrations to the database. Return null if successful, or a Laminas view model if
      * user input is required.
      *
@@ -337,25 +310,29 @@ class UpgradeController extends AbstractBase
      */
     public function applyDatabaseMigrations(): ?ViewModel
     {
-        $migrationSql = trim($this->getDatabaseMigrations());
-        if (!empty($migrationSql) && !$this->logsql) {
+        $this->clearDoctrineMetadataCache();
+        $migrationManager = $this->getService(MigrationManager::class);
+        $migrations = $migrationManager->getMigrations($this->cookie->oldVersion);
+        $failedMigrations = $migrationManager->getFailedMigrations();
+        if (!empty($failedMigrations)) {
+            $this->flashMessenger()->addErrorMessage(
+                'Failed migration(s) detected: ' . implode(' ', $failedMigrations)
+                . ' -- see migrations table in database for details; manual intervention may be needed.'
+            );
+        }
+        if (!empty($migrations) && !$this->logsql) {
             if (!$this->hasDatabaseRootCredentials()) {
                 return $this->forwardTo('Upgrade', 'GetDbCredentials');
             }
-            $connection = $this->getRootDbConnection();
-            foreach (explode(';', $migrationSql) as $sqlLine) {
-                $trimmedLine = trim($sqlLine);
-                if (!empty($trimmedLine)) {
-                    $connection->executeQuery($trimmedLine);
-                }
-            }
+            $migrationManager->applyMigrations($migrations, $this->getRootDbConnection());
             // Don't keep DB credentials in session longer than necessary:
             unset($this->session->dbRootUser);
             unset($this->session->dbRootPass);
             $this->session->sql = '';
         } else {
-            $this->session->sql = $migrationSql;
+            $this->session->sql = $migrationManager->applyMigrations($migrations, null);
         }
+        $this->clearDoctrineMetadataCache();
         return null;
     }
 
@@ -400,10 +377,7 @@ class UpgradeController extends AbstractBase
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
         } catch (Exception $e) {
-            $this->flashMessenger()->addMessage(
-                'Database upgrade failed: ' . $e->getMessage(),
-                'error'
-            );
+            $this->flashMessenger()->addErrorMessage('Database upgrade failed: ' . $e->getMessage());
             return $this->forwardTo('Upgrade', 'Error');
         }
 
@@ -470,10 +444,7 @@ class UpgradeController extends AbstractBase
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 } catch (Exception $e) {
-                    $this->flashMessenger()->addMessage(
-                        'Could not connect; please try again.',
-                        'error'
-                    );
+                    $this->flashMessenger()->addErrorMessage('Could not connect; please try again.');
                 }
             }
         }
@@ -499,11 +470,11 @@ class UpgradeController extends AbstractBase
             $username = $this->params()->fromPost('username');
             if (empty($username)) {
                 $this->flashMessenger()
-                    ->addMessage('Username must not be empty.', 'error');
+                    ->addErrorMessage('Username must not be empty.');
             } else {
                 $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($username);
                 if (!$user) {
-                    $this->flashMessenger()->addMessage("User {$username} not found.", 'error');
+                    $this->flashMessenger()->addErrorMessage("User {$username} not found.");
                 } else {
                     $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(
@@ -547,53 +518,20 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Fix missing metadata in the resource table.
+     * Check for missing metadata in the resource table.
      *
      * @return mixed
      * @throws Exception
      */
     public function fixmetadataAction()
     {
-        // User requested skipping this step?  No need to do further work:
-        if (strlen($this->params()->fromPost('skip', '')) > 0) {
-            $this->cookie->metadataOkay = true;
-            return $this->forwardTo('Upgrade', 'Home');
-        }
-
-        // This can take a while -- don't time out!
-        set_time_limit(0);
-
         // Check for problems:
+        $this->clearDoctrineMetadataCache();
         $resourceService = $this->getDbService(ResourceServiceInterface::class);
-        $problems = $resourceService->findMissingMetadata();
+        $problems = $resourceService->findMetadataToUpdate(null, 1);
 
-        // No problems?  We're done here!
-        if (count($problems) == 0) {
-            $this->cookie->metadataOkay = true;
-            return $this->forwardTo('Upgrade', 'Home');
-        }
-
-        // Process submit button:
-        if ($this->formWasSubmitted()) {
-            $resourcePopulator = $this->getService(ResourcePopulator::class);
-            foreach ($problems as $problem) {
-                $recordId = $problem->getRecordId();
-                $source = $problem->getSource();
-                try {
-                    $driver = $this->getRecordLoader()->load($recordId, $source);
-                    $resourceService->persistEntity(
-                        $resourcePopulator->assignMetadata($problem, $driver)
-                    );
-                } catch (RecordMissingException $e) {
-                    $this->session->warnings->append(
-                        "Unable to load metadata for record {$source}:{$recordId}"
-                    );
-                } catch (\Exception $e) {
-                    $this->session->warnings->append(
-                        "Problem saving metadata updates for record {$source}:{$recordId}"
-                    );
-                }
-            }
+        // No problems or form submitted?  We're done here!
+        if (count($problems) == 0 || $this->formWasSubmitted()) {
             $this->cookie->metadataOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         }
@@ -628,11 +566,8 @@ class UpgradeController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage(
                     'Illegal version number; please upgrade to at least version 10.x before proceeding.'
                 );
-            } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
-                $this->flashMessenger()->addMessage(
-                    "Source version must be less than {$newVersion}.",
-                    'error'
-                );
+            } elseif (Comparator::greaterThan($version, $newVersion)) {
+                $this->flashMessenger()->addErrorMessage("Source version must be less than or equal to {$newVersion}.");
             } else {
                 $this->cookie->oldVersion = $version;
                 // Clear out request to avoid infinite loop:
@@ -641,10 +576,12 @@ class UpgradeController extends AbstractBase
                 return $this->forwardTo('Upgrade', 'Home');
             }
         }
+        $oldVersion = $this->getService(MigrationManager::class)->determineOldVersion();
+        return $this->createViewModel(compact('oldVersion'));
     }
 
     /**
-     * Organize and run critical, blocking checks
+     * Organize and run critical, blocking checks.
      *
      * @return string|null
      */
@@ -657,7 +594,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Display summary of installation status
+     * Display summary of installation status.
      *
      * @return mixed
      */
@@ -705,7 +642,7 @@ class UpgradeController extends AbstractBase
             (array)$this->session->warnings
         );
         foreach ($allWarnings as $warning) {
-            $this->flashMessenger()->addMessage($warning, 'info');
+            $this->flashMessenger()->addInfoMessage($warning);
         }
 
         return $this->createViewModel(
@@ -730,7 +667,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Generate base62 encoding to migrate old shortlinks
+     * Generate base62 encoding to migrate old shortlinks.
      *
      * @throws Exception
      *
@@ -764,7 +701,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Check for insecure database settings
+     * Check for insecure database settings.
      *
      * @return string|null
      */
@@ -777,21 +714,20 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Check for deprecated and insecure use of blowfish encryption
+     * Check for deprecated and insecure use of blowfish encryption.
      *
      * @return string|null
      */
     protected function criticalCheckForBlowfishEncryption()
     {
-        $config = $this->getConfig();
-        $encryptionEnabled = $config->Authentication->encrypt_ils_password ?? false;
-        $algo = $config->Authentication->ils_encryption_algo ?? 'blowfish';
-        return ($encryptionEnabled && $algo === 'blowfish')
-            ? 'CriticalFixBlowfish' : null;
+        $config = $this->getConfigArray();
+        $encryptionEnabled = $config['Authentication']['encrypt_ils_password'] ?? false;
+        $algo = $config['Authentication']['ils_encryption_algo'] ?? 'blowfish';
+        return ($encryptionEnabled && $algo === 'blowfish') ? 'CriticalFixBlowfish' : null;
     }
 
     /**
-     * Lead users through the steps required to fix an insecure database
+     * Lead users through the steps required to fix an insecure database.
      *
      * @return mixed
      */
@@ -805,7 +741,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Lead users through the steps required to replace blowfish quickly and easily
+     * Lead users through the steps required to replace blowfish quickly and easily.
      *
      * @return mixed
      */
@@ -826,5 +762,16 @@ class UpgradeController extends AbstractBase
         return $this->createViewModel(
             compact('newAlgorithm', 'exampleKey', 'blowfishIsWorking')
         );
+    }
+
+    /**
+     * Clear Doctrine's metadata cache to ensure the schema information is up to date.
+     *
+     * @return void
+     */
+    protected function clearDoctrineMetadataCache(): void
+    {
+        $entityManager = $this->getService('doctrine.entitymanager.orm_vufind');
+        $entityManager->getConfiguration()->getMetadataCache()?->clear();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function in_array;
 
 /**
- * SideFacets Recommendations Module
+ * SideFacets Recommendations Module.
  *
  * This class provides recommendations displaying facets beside search results
  *
@@ -47,14 +47,14 @@ use function in_array;
 class TopFacets extends AbstractFacets
 {
     /**
-     * Facet configuration
+     * Facet configuration.
      *
      * @var array
      */
     protected $facets;
 
     /**
-     * Basic configurations
+     * Basic configurations.
      *
      * @var array
      */
@@ -78,7 +78,7 @@ class TopFacets extends AbstractFacets
         $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information:
-        $config = $this->configLoader->get($iniName);
+        $config = $this->configManager->getConfigObject($iniName);
         $this->facets = isset($config->$mainSection)
             ? $config->$mainSection->toArray() : [];
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Helper class for creating copy to clipboard button
+ * Helper class for creating copy to clipboard button.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\View\Helper\Bootstrap5;
 
 /**
- * Class CopyClipboardButton
+ * Class CopyClipboardButton.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,7 +43,7 @@ namespace VuFind\View\Helper\Bootstrap5;
 class CopyToClipboardButton extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * This helper creates button for copying content of an element into clipboard
+     * This helper creates button for copying content of an element into clipboard.
      *
      * @param string $elementSelector css selector for element to copy
      * @param bool   $hideButtonText  controls whether the description of the button's purpose

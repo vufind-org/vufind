@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search options plugin factory
+ * Search options plugin factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,9 +30,10 @@
 namespace VuFind\Search\Options;
 
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Search options plugin factory
+ * Search options plugin factory.
  *
  * @category VuFind
  * @package  Search
@@ -43,7 +44,7 @@ use Psr\Container\ContainerInterface;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -68,6 +69,6 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
         ?array $options = null
     ) {
         $class = $this->getClassName($requestedName);
-        return new $class($container->get(\VuFind\Config\PluginManager::class));
+        return new $class($container->get(ConfigManagerInterface::class));
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -163,7 +163,7 @@ class BackendManager
         if (!$this->listeners->offsetExists($events)) {
             $listener = [$this, 'onResolve'];
             $events->attach(Service::class, Service::EVENT_RESOLVE, $listener);
-            $this->listeners->attach($events, $listener);
+            $this->listeners->offsetSet($events, $listener);
         }
     }
 
@@ -179,7 +179,7 @@ class BackendManager
         if ($this->listeners->offsetExists($events)) {
             $listener = $this->listeners->offsetGet($events);
             $events->detach($listener, Service::class);
-            $this->listeners->detach($events);
+            $this->listeners->offsetUnset($events);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * RemoveFilters Recommendations Module
- * Recommends to remove filters
+ * Recommends to remove filters.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -34,7 +34,7 @@ use function count;
 
 /**
  * RemoveFilters Recommendations Module
- * Recommends to remove filters
+ * Recommends to remove filters.
  *
  * This class recommends to remove filters from a query to extend the result.
  *
@@ -47,7 +47,7 @@ use function count;
 class RemoveFilters implements RecommendInterface
 {
     /**
-     * Search handler to try
+     * Search handler to try.
      *
      * @var string
      */

@@ -1,0 +1,91 @@
+.form-admin-maintenance {
+  .form-control, .form-select {
+    display: inline-block;
+    width: 8rem;
+  }
+}
+.form-feedback-search {
+  margin-bottom: 1rem;
+
+  label {
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  input {
+    display: block;
+  }
+}
+
+.form-feedback-list {
+  > input {
+    margin-top: 0.5rem;
+  }
+
+  table {
+    margin-top: 1rem;
+  }
+}
+
+.admin-payments {
+  .payment-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .multiselect {
+      vertical-align: top;
+    }
+
+    .form-control {
+      width: 10rem;
+    }
+
+    .form-select {
+      width: 15rem;
+    }
+
+    .date-range {
+      flex: 1 1 100%;
+
+      label {
+        display: block;
+      }
+
+      .form-control {
+        width: initial;
+        display: inline-block;
+      }
+    }
+  }
+
+  .payment-table {
+    @extend .table;
+    @extend .table-striped;
+    @extend .table-responsive;
+
+    margin-top: 1rem;
+
+    td {
+      min-width: 4rem;
+
+      &.actions {
+        min-width: 8rem;
+
+        .action-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          word-wrap: break-word;
+        }
+      }
+      &.date-time {
+        word-wrap: break-word;
+      }
+    }
+  }
+
+  .no-hits {
+    margin-top: 1rem;
+  }
+}

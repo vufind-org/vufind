@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mobile Device Detection Wrapper
+ * Mobile Device Detection Wrapper.
  *
  * PHP version 8
  *
@@ -23,8 +23,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -38,7 +38,7 @@ namespace VuFindTheme;
 use uagent_info;
 
 /**
- * Mobile Device Detection Wrapper
+ * Mobile Device Detection Wrapper.
  *
  * @category VuFind
  * @package  Theme
@@ -49,14 +49,14 @@ use uagent_info;
 class Mobile
 {
     /**
-     * Mobile detection object
+     * Mobile detection object.
      *
      * @var uagent_info
      */
     protected $detector;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?uagent_info $detector Detector object to wrap (null to create one)
      */

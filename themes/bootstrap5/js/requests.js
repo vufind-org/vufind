@@ -27,8 +27,11 @@ $(function setupRequests() {
     $('#submitType').attr('name', 'updateSelected');
   });
 
-  var checkCheckboxes = function CheckCheckboxes() {
-    var checked = $('form[name="updateForm"] .result .checkbox input[type=checkbox]:checked');
+  /**
+   * Adjust action button state based on checkbox status; to be called when checkboxes change.
+   */
+  function checkCheckboxes() {
+    var checked = $('form[name="updateForm"] .checkbox-select-item:checked');
     if (checked.length > 0) {
       $('#update_selected').removeAttr('disabled');
       $('#cancelSelected').removeAttr('disabled');
@@ -36,8 +39,10 @@ $(function setupRequests() {
       $('#update_selected').attr('disabled', 'disabled');
       $('#cancelSelected').attr('disabled', 'disabled');
     }
-  };
-  $('form[name="updateForm"] .checkbox input[type=checkbox]').on('change', checkCheckboxes);
+  }
+
+  $('form[name="updateForm"] .checkbox-select-item').on('change', checkCheckboxes);
+  $('form[name="updateForm"] .checkbox-select-all').on('change', checkCheckboxes);
   $('#update_selected').removeClass('hidden');
   checkCheckboxes();
 });

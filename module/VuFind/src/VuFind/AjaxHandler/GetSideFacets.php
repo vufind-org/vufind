@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -43,7 +43,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -52,33 +52,33 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Recommend plugin manager
+     * Recommend plugin manager.
      *
      * @var RecommendPluginManager
      */
     protected $recommendPluginManager;
 
     /**
-     * Search runner
+     * Search runner.
      *
      * @var SearchRunner
      */
     protected $searchRunner;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings        $ss       Session settings
      * @param RecommendPluginManager $rpm      Recommend plugin manager
@@ -162,7 +162,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     }
 
     /**
-     * Perform search and return the results
+     * Perform search and return the results.
      *
      * @param array  $request Request params
      * @param string $index   Index of SideFacetsDeferred in configuration
@@ -172,7 +172,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
      */
     protected function getFacetResults(array $request, $index, $loc)
     {
-        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc) {
+        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc): void {
             $listener = new RecommendListener(
                 $this->recommendPluginManager,
                 $searchId
@@ -211,7 +211,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     }
 
     /**
-     * Format facets according to their type
+     * Format facets according to their type.
      *
      * @param array      $context   View rendering context
      * @param SideFacets $recommend Recommendation module

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Auth
@@ -83,4 +83,72 @@ interface UserSessionPersistenceInterface
      * @return bool
      */
     public function hasUserSessionData(): bool;
+
+    /**
+     * Store pre-authentication data in session.
+     *
+     * @param ?array $data Pre-authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setPreAuthenticationData(?array $data): void;
+
+    /**
+     * Get pre-authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getPreAuthenticationData(): ?array;
+
+    /**
+     * Store library card authentication data in session.
+     *
+     * @param ?array $data Library card authentication data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setLibraryCardAuthenticationData(?array $data): void;
+
+    /**
+     * Get library card authentication data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getLibraryCardAuthenticationData(): ?array;
+
+    /**
+     * Store account recovery data in session.
+     *
+     * @param ?array $data Account recovery data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setAccountRecoveryData(?array $data): void;
+
+    /**
+     * Get account recovery data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getAccountRecoveryData(): ?array;
+
+    /**
+     * Store email verification data in session.
+     *
+     * @param ?array $data Email verification data, or null for none
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function setEmailVerificationData(?array $data): void;
+
+    /**
+     * Get email verification data, if any, from session.
+     *
+     * @return ?array
+     */
+    public function getEmailVerificationData(): ?array;
 }

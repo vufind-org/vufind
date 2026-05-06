@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -30,9 +30,9 @@
 namespace VuFindTheme;
 
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Helper\Url;
 use MatthiasMullie\Minify\Minify;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindTheme\View\Helper\RelativePathTrait;
 
@@ -66,7 +66,7 @@ class AssetPipeline implements LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo   $themeInfo      Theme information service
      * @param Url         $urlHelper      URL view helper
@@ -102,7 +102,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Check if config is enabled for the specified file type
+     * Check if config is enabled for the specified file type.
      *
      * @param string $fileType File type to check for pipeline config
      *
@@ -111,7 +111,7 @@ class AssetPipeline implements LoggerAwareInterface
     protected function isPipelineEnabledForType(string $fileType): bool
     {
         $config = $this->pipelineConfig;
-        if ($config === false || $config === 'off' || $config === 'false' || $config === '0') {
+        if (in_array($config, [false, 'off', 'false', '0'], true)) {
             return false;
         }
         if ($config == '*' || $config === 'on' || $config === 'true' || $config === true || $config === '1') {
@@ -278,7 +278,7 @@ class AssetPipeline implements LoggerAwareInterface
 
     /**
      * Check if a file is minifiable i.e. does not have a pattern that denotes it's
-     * already minified
+     * already minified.
      *
      * @param string $filename File name
      *
@@ -312,7 +312,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Get minified data for a file
+     * Get minified data for a file.
      *
      * @param array  $details    File details
      * @param string $concatPath Target path for the resulting file (used in minifier
@@ -344,7 +344,7 @@ class AssetPipeline implements LoggerAwareInterface
     }
 
     /**
-     * Create a concatenated file from the given group of files
+     * Create a concatenated file from the given group of files.
      *
      * @param string $concatPath Resulting file path
      * @param array  $group      Object containing 'key' and stdobj file 'items'

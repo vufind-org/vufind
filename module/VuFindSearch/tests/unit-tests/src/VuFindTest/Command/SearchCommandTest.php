@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -49,7 +49,7 @@ use VuFindSearch\Query\Query;
 class SearchCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */
@@ -58,18 +58,16 @@ class SearchCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('search')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(1),
-                $this->equalTo($params)
-            )->will($this->returnValue('result'));  // not a realistic value!
+                $query,
+                0,
+                1,
+                $params
+            )->willReturn('result');  // not a realistic value!
         $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
@@ -160,7 +158,7 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test that the command throws an exception results are requested before execute
+     * Test that the command throws an exception results are requested before execute.
      *
      * @return void
      */
@@ -172,26 +170,24 @@ class SearchCommandTest extends TestCase
     }
 
     /**
-     * Test extra request details
+     * Test extra request details.
      *
      * @return void
      */
     public function testExtraRequestDetails(): void
     {
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('getExtraRequestDetails')
-            ->will($this->returnValue(['foo' => 'bar']));
+            ->willReturn(['foo' => 'bar']);
         $command = $this->getCommand();
         $this->assertEqualsCanonicalizing(['foo' => 'bar'], $command->execute($backend)->getExtraRequestDetails());
     }
 
     /**
-     * Get test SearchCommand Object
+     * Get test SearchCommand Object.
      *
      * @return SearchCommand
      */

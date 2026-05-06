@@ -58,6 +58,9 @@ copy('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
 // jQuery
 copy('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js');
 
+// js-cookie
+copy('node_modules/js-cookie/dist/js.cookie.min.js', 'js/vendor/js.cookie.min.js');
+
 // libphonenumber-js
 copy('node_modules/libphonenumber-js/bundle/libphonenumber-js.min.js', 'js/vendor/libphonenumber.js');
 copy('node_modules/libphonenumber-js/LICENSE', 'js/vendor/libphonenumber-js_LICENSE');

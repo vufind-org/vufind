@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OAI Server class
+ * OAI Server class.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAI_Server
@@ -46,7 +46,7 @@ use function intval;
 use function strlen;
 
 /**
- * OAI Server class
+ * OAI Server class.
  *
  * This class provides OAI server functionality.
  *
@@ -62,7 +62,7 @@ class Server
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
 
     /**
-     * Repository base URL
+     * Repository base URL.
      *
      * @var string
      */
@@ -76,14 +76,14 @@ class Server
     protected $baseHostURL;
 
     /**
-     * Incoming request parameters
+     * Incoming request parameters.
      *
      * @var array
      */
     protected $params;
 
     /**
-     * Search object class to use
+     * Search object class to use.
      *
      * @var string
      */
@@ -97,70 +97,70 @@ class Server
     protected $core = 'biblio';
 
     /**
-     * ISO-8601 date format
+     * ISO-8601 date format.
      *
      * @var string
      */
     protected $iso8601 = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * Records per page in lists
+     * Records per page in lists.
      *
      * @var int
      */
     protected $pageSize = 100;
 
     /**
-     * Solr field for set membership
+     * Solr field for set membership.
      *
      * @var string
      */
     protected $setField = null;
 
     /**
-     * Supported metadata formats
+     * Supported metadata formats.
      *
      * @var array
      */
     protected $metadataFormats = [];
 
     /**
-     * Namespace used for ID prefixing (if any)
+     * Namespace used for ID prefixing (if any).
      *
      * @var string
      */
     protected $idNamespace = null;
 
     /**
-     * Repository name used in "Identify" response
+     * Repository name used in "Identify" response.
      *
      * @var string
      */
     protected $repositoryName = 'VuFind';
 
     /**
-     * Earliest datestamp used in "Identify" response
+     * Earliest datestamp used in "Identify" response.
      *
      * @var string
      */
     protected $earliestDatestamp = '2000-01-01T00:00:00Z';
 
     /**
-     * Admin email used in "Identify" response
+     * Admin email used in "Identify" response.
      *
      * @var string
      */
     protected $adminEmail;
 
     /**
-     * Record link helper (optional)
+     * Record link helper (optional).
      *
      * @var \VuFind\View\Helper\Root\RecordLinker
      */
     protected $recordLinkerHelper = null;
 
     /**
-     * Set queries
+     * Set queries.
      *
      * @var array
      */
@@ -189,7 +189,7 @@ class Server
     protected $vufindApiFields = [];
 
     /**
-     * Filter queries specific to the requested record format
+     * Filter queries specific to the requested record format.
      *
      * @var array
      */
@@ -214,7 +214,7 @@ class Server
     protected $useCursorMark = true;
 
     /**
-     * List of possible valid OAI-PMH error codes
+     * List of possible valid OAI-PMH error codes.
      *
      * @var string[]
      */
@@ -230,7 +230,7 @@ class Server
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
      * @param \VuFind\Record\Loader                $recordLoader      Record loader
@@ -247,7 +247,7 @@ class Server
     }
 
     /**
-     * Initialize settings
+     * Initialize settings.
      *
      * @param \VuFind\Config\Config $config  VuFind configuration
      * @param string                $baseURL The base URL for the OAI server
@@ -482,11 +482,9 @@ class Server
 
         // Check for sets:
         $fields = $record->getRawData();
-        if (null !== $this->setField && !empty($fields[$this->setField])) {
-            $sets = (array)$fields[$this->setField];
-        } else {
-            $sets = [];
-        }
+        $sets = null !== $this->setField && !empty($fields[$this->setField])
+            ? (array)$fields[$this->setField]
+            : [];
         if (!empty($set)) {
             $sets = array_unique(array_merge($sets, [$set]));
         }
@@ -517,12 +515,12 @@ class Server
     }
 
     /**
-     * Get record as a metadata presentation
+     * Get record as a metadata presentation.
      *
      * @param AbstractRecordDriver $record A record driver object
      * @param string               $format Metadata format to obtain
      *
-     * @return string|false String or false if an error occured
+     * @return string|false String or false if an error occurred
      */
     protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
     {
@@ -957,12 +955,10 @@ class Server
         }
 
         // Iterate over custom sets:
-        if (!empty($this->setQueries)) {
-            foreach ($this->setQueries as $setName => $solrQuery) {
-                $set = $xml->addChild('set');
-                $set->setName = $set->setSpec = $setName;
-                $set->setDescription = $solrQuery;
-            }
+        foreach ($this->setQueries as $setName => $solrQuery) {
+            $set = $xml->addChild('set');
+            $set->setName = $set->setSpec = $setName;
+            $set->setDescription = $solrQuery;
         }
 
         // Display the list:
@@ -1188,14 +1184,11 @@ class Server
         if ($from_time > $until_time) {
             throw new \Exception('noRecordsMatch:from vs. until');
         }
-        if ($from_time < $this->normalizeDate($this->earliestDatestamp)) {
-            return true;
-        }
-        return false;
+        return $from_time < $this->normalizeDate($this->earliestDatestamp);
     }
 
     /**
-     * Check if a DateTime was successfully created without errors or warnings
+     * Check if a DateTime was successfully created without errors or warnings.
      *
      * @param \DateTime|false $dt DateTime or false (return value of createFromFormat)
      *
@@ -1346,7 +1339,7 @@ class Server
     protected function showError($code, $message)
     {
         // Certain errors should not echo parameters:
-        $echoParams = !($code == 'badVerb' || $code == 'badArgument');
+        $echoParams = $code != 'badVerb' && $code != 'badArgument';
         $response = $this->createResponse($echoParams);
 
         $xml = $response->addChild('error', htmlspecialchars($message));

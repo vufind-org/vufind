@@ -14,8 +14,8 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import java.sql.*;
@@ -162,14 +162,14 @@ public class UpdateDateTracker
         db.setAutoCommit(false);
         insertSql = db.prepareStatement(
             "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
-            "VALUES(?, ?, ?, ?, ?);");
+            "VALUES(?, ?, ?, ?, ?)");
         selectSql = db.prepareStatement(
             "SELECT first_indexed, last_indexed, last_record_change, deleted " +
-            "FROM change_tracker WHERE core = ? AND id = ?;",
+            "FROM change_tracker WHERE core = ? AND id = ?",
             ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         updateSql = db.prepareStatement("UPDATE change_tracker " +
             "SET first_indexed = ?, last_indexed = ?, last_record_change = ?, deleted = ? " +
-            "WHERE core = ? AND id = ?;");
+            "WHERE core = ? AND id = ?");
     }
 
     void shutdown() {

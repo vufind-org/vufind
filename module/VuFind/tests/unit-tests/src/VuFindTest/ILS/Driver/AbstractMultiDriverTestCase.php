@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract multi driver test
+ * Abstract multi driver test.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -40,7 +40,7 @@ use function count;
 use function in_array;
 
 /**
- * Abstract multi driver test
+ * Abstract multi driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -76,10 +76,8 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\ILS::class);
 
-        $container = new \VuFindTest\Container\MockContainer($this);
         $test = $this->getDriver(
             [
-                'configLoader' => new \VuFind\Config\PluginManager($container),
                 'driverManager' =>  $this->getMockSM($this->never()),
             ]
         );
@@ -94,7 +92,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithoutDriverConfigPath()
     {
-        $mockPM = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             ['d1' => ['config' => 'values']],
             [],
             $this->once()
@@ -102,7 +100,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockILS('Voyager');
         $driver = $this->initDriver(
             [
-                'configLoader' => $mockPM,
+                'configManager' => $mockConfigManager,
                 'driverManager' => $this->getMockSM(null, 'Voyager', $ils),
             ],
             ['d1' => 'Voyager']
@@ -119,7 +117,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithDriverConfigPath()
     {
-        $mockPM = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             ['configpath/d1' => ['config' => 'values']],
             [],
             $this->once()
@@ -127,7 +125,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockILS('Voyager');
         $driver = $this->initDriver(
             [
-                'configLoader' => $mockPM,
+                'configManager' => $mockConfigManager,
                 'driverManager' => $this->getMockSM(null, 'Voyager', $ils),
             ],
             ['d1' => 'Voyager'],
@@ -138,30 +136,31 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     *  Tests that logging works correctly
+     *  Tests that logging works correctly.
      *
      * @return array
      */
     public function testLogging()
     {
-        $logger = new \Laminas\Log\Logger();
-        $writer = new \Laminas\Log\Writer\Mock();
-        $logger->addWriter($writer);
+        $testHandler = new \Monolog\Handler\TestHandler();
+        $logger = new \Monolog\Logger('test', [$testHandler]);
 
         $driver = $this->initDriver(
             [
-                'configLoader' => $this->getMockFailingConfigPluginManager(new RuntimeException()),
+                'configManager' => $this->getMockFailingConfigManager(new RuntimeException()),
             ]
         );
         $driver->setLogger($logger);
 
         $this->callMethod($driver, 'getDriverConfig', ['bad']);
+        $records = $testHandler->getRecords();
+        $this->assertCount(1, $records);
         $this->assertEquals(
             $driver::class . ': Could not load config for bad',
-            $writer->events[0]['message']
+            $records[0]['message']
         );
 
-        return ['driver' => $driver, 'writer' => $writer];
+        return ['driver' => $driver, 'writer' => $testHandler];
     }
 
     /**
@@ -196,7 +195,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     *  Tests that getDriverConfig works correctly
+     *  Tests that getDriverConfig works correctly.
      *
      * @return void
      */
@@ -208,14 +207,14 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $this->assertEquals($configData, $val);
 
         $driver = $this->initDriver(
-            ['configLoader' => $this->getMockFailingConfigPluginManager(new RuntimeException())]
+            ['configManager' => $this->getMockFailingConfigManager(new RuntimeException())]
         );
         $val = $this->callMethod($driver, 'getDriverConfig', ['bad']);
         $this->assertEquals([], $val);
     }
 
     /**
-     * Method to get a patron with the given username
+     * Method to get a patron with the given username.
      *
      * @param string $username The username to use
      * @param string $instance The instance to append before the username
@@ -240,7 +239,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     /**
      * This function returns a mock service manager with the given parameters
      * For examples of what is to be passed, see:
-     * http://www.phpunit.de/manual/3.0/en/mock-objects.html
+     * http://www.phpunit.de/manual/3.0/en/mock-objects.html.
      *
      * @param object $times  The number of times it is expected to be called.
      * @param object $driver The driver type this SM will expect to be called with.
@@ -250,24 +249,22 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSM($times = null, $driver = 'Voyager', $return = null)
     {
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($times ?? $this->any())
             ->method('get')
             ->with($driver)
-            ->will($this->returnValue($return));
+            ->willReturn($return);
         return $sm;
     }
 
     /**
-     * Get a mock Demo driver
+     * Get a mock Demo driver.
      *
      * @return \VuFind\ILS\Driver\Demo
      */
     protected function getMockDemoDriver()
     {
-        $session = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->disableOriginalConstructor()->getMock();
+        $session = $this->createMock(\Laminas\Session\Container::class);
         return $this->getMockBuilder(__NAMESPACE__ . '\MultiDriverTest\DemoMock')
             ->setConstructorArgs(
                 [
@@ -281,7 +278,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock driver
+     * Get a mock driver.
      *
      * @param string $type    Type of driver to make
      * @param array  $methods Array of methods to stub
@@ -305,9 +302,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
                 ->getMock();
         }
         if ($methods && in_array('init', $methods)) {
-            $mock->expects($this->any())
-                ->method('init')
-                ->will($this->returnValue(null));
+            $mock->method('init')->willReturn(null);
         }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;
@@ -334,7 +329,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     abstract protected function getDriver($constructorArgs = []);
 
     /**
-     * Create a Multi Driver for the given ILS drivers
+     * Create a Multi Driver for the given ILS drivers.
      *
      * @param array $drivers Array of drivers with prefix as key and driver instance
      * as value
@@ -354,8 +349,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
             $driverMap[$driverName] = $driver;
             $driverNameMap[$name] = $driverName;
         }
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         // MultiBackend should always ask for a driver just once, so exactly can be
         // used here:
         $sm->expects(null !== $count ? $count : $this->exactly(count($driverMap)))
@@ -363,12 +357,10 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
             ->with(
                 call_user_func_array([$this, 'logicalOr'], array_keys($driverMap))
             )
-            ->will(
-                $this->returnCallback(
-                    function ($driver) use ($driverMap) {
-                        return $driverMap[$driver];
-                    }
-                )
+            ->willReturnCallback(
+                function ($driver) use ($driverMap) {
+                    return $driverMap[$driver];
+                }
             );
 
         $driver = $this->initDriver(['driverManager' => $sm]);

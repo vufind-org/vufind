@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -47,49 +47,49 @@ use function get_class;
 class NormalizedSearch
 {
     /**
-     * Search results manager
+     * Search results manager.
      *
      * @var ResultsManager
      */
     protected $resultsManager;
 
     /**
-     * Raw search object provided to constructor
+     * Raw search object provided to constructor.
      *
      * @var Results
      */
     protected $raw;
 
     /**
-     * Minified version of search
+     * Minified version of search.
      *
      * @var Minified
      */
     protected $minified;
 
     /**
-     * Normalized search object
+     * Normalized search object.
      *
      * @var Results
      */
     protected $normalized;
 
     /**
-     * Search URL from normalized search object
+     * Search URL from normalized search object.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * Checksum of normalized search URL
+     * Checksum of normalized search URL.
      *
      * @var string
      */
     protected $checksum;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager $resultsManager ResultsManager
      * @param Results        $results        Search results object

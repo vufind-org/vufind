@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SierraRest ILS driver test
+ * SierraRest ILS driver test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\SierraRest;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * SierraRest ILS driver test
+ * SierraRest ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     use FixtureTrait;
 
     /**
-     * Test bib IDs (raw value => formatted value)
+     * Test bib IDs (raw value => formatted value).
      *
      * @var array
      */
@@ -135,7 +135,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testGetMyProfileData
+     * Data provider for testGetMyProfileData.
      *
      * @return Generator
      */
@@ -190,15 +190,15 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyProfile
+     * Test getMyProfile.
      *
      * @param array  $patron   User patron
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(array $patron, string $fixture, array $expected): void
     {
         $requestMap = [
@@ -218,7 +218,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testPatronLogin
+     * Data provider for testPatronLogin.
      *
      * @return Generator
      */
@@ -263,15 +263,15 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test patronLogin
+     * Test patronLogin.
      *
      * @param array  $patron   User patron
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $patron, string $fixture, array $expected): void
     {
         $request = [
@@ -298,7 +298,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Create driver
+     * Create driver.
      *
      * @param ?Converter $dateConverter  Date converter
      * @param ?callable  $sessionFactory Session factory function
@@ -315,7 +315,7 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         $sessionFactory ??= fn ($namespace) => $this->createMock(Container::class);
         $driver = $this->getMockBuilder(SierraRest::class)->setConstructorArgs([$dateConverter, $sessionFactory])
             ->onlyMethods(['makeRequest'])->getMock();
-        $driver->expects($this->any())->method('makeRequest')->willReturnMap($requestMap);
+        $driver->method('makeRequest')->willReturnMap($requestMap);
         return $driver;
     }
 }

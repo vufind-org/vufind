@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest;
 use VuFindTheme\Mobile;
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,12 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDetection.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function detectionProvider(): array
+    public static function detectionProvider(): \Iterator
     {
-        return [
-            'mobile detected' => [true],
-            'mobile not detected' => [false],
-        ];
+        yield 'mobile detected' => [true];
+        yield 'mobile not detected' => [false];
     }
 
     /**
@@ -61,9 +59,8 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
      * @param bool $active Result of mobile detection
      *
      * @return void
-     *
-     * @dataProvider detectionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('detectionProvider')]
     public function testDetection(bool $active): void
     {
         $detector = $this->createMock(\uagent_info::class);

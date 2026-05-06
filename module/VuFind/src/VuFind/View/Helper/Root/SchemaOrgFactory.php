@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for schema.org view helper
+ * Factory for schema.org view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for schema.org view helper
+ * Factory for schema.org view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -49,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class SchemaOrgFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,9 +70,9 @@ class SchemaOrgFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         return new $requestedName(
             $container->get('ViewHelperManager')->get('htmlAttributes'),
             $config->Record->includeSchemaOrgMetadata ?? true

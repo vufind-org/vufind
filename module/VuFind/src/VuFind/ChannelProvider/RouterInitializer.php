@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channel Provider Router Initializer
+ * Channel Provider Router Initializer.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Initializer\InitializerInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Channel Provider Router Initializer
+ * Channel Provider Router Initializer.
  *
  * @category VuFind
  * @package  Channels

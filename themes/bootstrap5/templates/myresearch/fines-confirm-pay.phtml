@@ -1,0 +1,21 @@
+<?php
+  $termsTemplate = 'myresearch/payment/terms-' . strtolower($this->paymentHandler);
+  if (!$this->resolver($termsTemplate)):
+?>
+  <div class="alert alert-danger">Template <strong><?=$this->escapeHtml($termsTemplate)?></strong> missing</div>
+  <?php return; ?>
+<?php endif; ?>
+<h2><?=$this->transEsc('Payment::terms_heading')?></h2>
+<form id="confirm_pay" class="confirm-payment confirm-payment__<?=$this->escapeHtmlAttr($this->paymentHandler)?>" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox-ignore data-disable-on-submit>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+  <?=$this->render($termsTemplate)?>
+  <?php foreach ($this->selectedIds as $fineId): ?>
+    <input name="selectedIDS[]" type="hidden" value="<?=$this->escapeHtmlAttr($fineId)?>">
+  <?php endforeach; ?>
+  <button type="submit" name="reset" class="btn btn-primary" data-bs-dismiss="modal" value="1">
+    <?=$this->transEsc('Payment::Cancel')?>
+  </button>
+  <button type="submit" name="pay-confirm" class="btn btn-primary" value="1">
+    <?=$this->transEsc('Payment::Accept')?>
+  </button>
+</form>

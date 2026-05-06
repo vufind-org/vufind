@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart Test Class
+ * Cart Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Cookie\CookieManager;
 
 /**
- * Cart Test Class
+ * Cart Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Mock record loader
+     * Mock record loader.
      *
      * @var MockObject&\VuFind\Record\Loader
      */
@@ -239,8 +239,8 @@ class CartTest extends \PHPUnit\Framework\TestCase
     {
         $this->loader->expects($this->once())
             ->method('loadBatch')
-            ->with($this->equalTo(['Solr|a']))
-            ->will($this->returnValue('success'));
+            ->with(['Solr|a'])
+            ->willReturn('success');
         $cart = $this->getCart();
         $cart->addItem('Solr|a');
         $this->assertEquals('success', $cart->getRecordDetails());

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -56,42 +56,42 @@ abstract class AbstractBase implements
     use \VuFindSearch\Response\RecordTrait;
 
     /**
-     * For storing extra data with record
+     * For storing extra data with record.
      *
      * @var array
      */
     protected $extraDetails = [];
 
     /**
-     * Main VuFind configuration
+     * Main VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $mainConfig;
 
     /**
-     * Record-specific configuration
+     * Record-specific configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $recordConfig;
 
     /**
-     * Raw data
+     * Raw data.
      *
      * @var array
      */
     protected $fields = [];
 
     /**
-     * Cache for rating data
+     * Cache for rating data.
      *
      * @var array
      */
     protected $ratingCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig   VuFind main configuration (omit
      * for built-in defaults)

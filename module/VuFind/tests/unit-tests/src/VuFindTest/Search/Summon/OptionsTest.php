@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search Object Options Test
+ * Summon Search Object Options Test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,12 +30,12 @@
 namespace VuFindTest\Search\Summon;
 
 use VuFind\Config\Config;
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Summon\Options;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Summon Search Object Options Test
+ * Summon Search Object Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -217,7 +217,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param array $config Configuration to get from config manager
      *
@@ -225,9 +225,10 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getOptions(array $config = []): Options
     {
-        $mockConfig = $this->createMock(PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         $configObj = new Config($config);
-        $mockConfig->method('get')->willReturn($configObj);
-        return new Options($mockConfig);
+        $mockConfigManager->method('getConfigObject')->willReturn($configObj);
+        $mockConfigManager->method('getConfigArray')->willReturn($config);
+        return new Options($mockConfigManager);
     }
 }

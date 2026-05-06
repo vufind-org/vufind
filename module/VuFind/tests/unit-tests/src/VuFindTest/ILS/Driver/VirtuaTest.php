@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     use ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -75,7 +75,7 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testing getMyProfile
+     * Data provider for testing getMyProfile.
      *
      * @return Generator
      */
@@ -168,25 +168,25 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get my profile
+     * Test get my profile.
      *
      * @param array $profiles Profiles mocking db select
      * @param array $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(array $profiles, array $expected): void
     {
         $db = $this->getMockBuilder(Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
-        $db->expects($this->any())->method('simpleSelect')->willReturn($profiles);
+        $db->method('simpleSelect')->willReturn($profiles);
         $result = $this->createConnector(db: $db)->getMyProfile(['id' => '1111']);
         $this->assertEquals($expected, $result);
     }
 
     /**
-     * Generate a new driver to return responses set in a json fixture
+     * Generate a new driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      *

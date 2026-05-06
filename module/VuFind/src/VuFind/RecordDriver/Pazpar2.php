@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -45,7 +45,7 @@ use function is_array;
 class Pazpar2 extends DefaultRecord
 {
     /**
-     * Pazpar2 fields
+     * Pazpar2 fields.
      *
      * @var array
      */
@@ -68,7 +68,7 @@ class Pazpar2 extends DefaultRecord
     }
 
     /**
-     * Converts a SimpleXMLElement to an array
+     * Converts a SimpleXMLElement to an array.
      *
      * @param \SimpleXMLElement $xml to be converted
      *

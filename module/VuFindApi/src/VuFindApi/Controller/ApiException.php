@@ -1,7 +1,7 @@
 <?php
 
 /**
- * API exception
+ * API exception.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Exceptions
@@ -32,7 +32,7 @@ namespace VuFindApi\Controller;
 use Exception;
 
 /**
- * API exception class
+ * API exception class.
  *
  * @category VuFind
  * @package  Exceptions
@@ -43,28 +43,28 @@ use Exception;
 class ApiException extends Exception
 {
     /**
-     * Error if limit is out of bounds < 0 or > max
+     * Error if limit is out of bounds < 0 or > max.
      *
      * @var string
      */
     public const INVALID_LIMIT = 'Invalid limit';
 
     /**
-     * Error if search has encountered an error
+     * Error if search has encountered an error.
      *
      * @var string
      */
     public const INVALID_SEARCH = 'Invalid search';
 
     /**
-     * Error if token is invalid or expired
+     * Error if token is invalid or expired.
      *
      * @var string
      */
     public const INVALID_OR_EXPIRED_TOKEN = 'Invalid or expired token';
 
     /**
-     * Error if invalid or no record fields were defined
+     * Error if invalid or no record fields were defined.
      *
      * @var string
      */

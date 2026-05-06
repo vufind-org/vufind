@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PubDateVisAjax Recommendations Module
+ * PubDateVisAjax Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
 use function array_slice;
 
 /**
- * PubDateVisAjax Recommendations Module
+ * PubDateVisAjax Recommendations Module.
  *
  * This class displays a visualisation of facet values in a recommendation module
  *
@@ -47,14 +47,14 @@ class PubDateVisAjax implements RecommendInterface
     use DateFacetTrait;
 
     /**
-     * Raw settings string
+     * Raw settings string.
      *
      * @var string
      */
     protected string $settings;
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
@@ -75,7 +75,7 @@ class PubDateVisAjax implements RecommendInterface
     protected bool $initiallyHideControls = false;
 
     /**
-     * Facet fields to use
+     * Facet fields to use.
      *
      * @var array
      */
@@ -157,7 +157,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Get zoom setting
+     * Get zoom setting.
      *
      * @return bool
      */
@@ -167,7 +167,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Get zoom setting
+     * Get zoom setting.
      *
      * @return bool
      */
@@ -177,7 +177,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Get facet fields
+     * Get facet fields.
      *
      * @return string
      */
@@ -187,7 +187,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Get search parameters
+     * Get search parameters.
      *
      * @return string of params
      */

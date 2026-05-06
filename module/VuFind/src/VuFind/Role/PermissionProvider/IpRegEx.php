@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -44,21 +44,21 @@ use VuFind\Net\UserIpReader;
 class IpRegEx implements PermissionProviderInterface
 {
     /**
-     * Request object
+     * Request object.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * User IP address reader
+     * User IP address reader.
      *
      * @var UserIpReader
      */
     protected $userIpReader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Request      $request      Request object
      * @param UserIpReader $userIpReader User IP address reader

@@ -357,25 +357,26 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
    * @param {HTMLElement} elem The facet element to toggle.
    */
   function toggleSelectedFacetStyle(elem) {
-    if (elem.classList.contains('exclude')) {
-      elem.classList.toggle('selected');
+    let excluded = elem.classList.contains('exclude');
+    let facet;
+    if (elem.classList.contains('facet')) {
+      facet = elem;
     } else {
-      let facet;
-      if (elem.classList.contains('facet')) {
-        facet = elem;
-      } else {
-        facet = elem.closest('.facet');
-      }
-      facet.classList.toggle('active');
+      facet = elem.closest('.facet');
+    }
+    excluded = excluded || facet.classList.contains('excluded');
+    facet.classList.toggle(excluded ? 'excluded' : 'active');
 
-      const icon = elem.closest('a').querySelector('.icon');
-      if (icon !== null) {
-        const newCheckedState = icon.dataset.checked === 'false';
-        let attrs = {};
-        attrs.class = 'icon-link__icon';
-        attrs['data-checked'] = (newCheckedState ? 'true' : 'false');
-        icon.outerHTML = VuFind.icon(newCheckedState ? 'facet-checked' : 'facet-unchecked', attrs);
-      }
+    if (excluded) {
+      return;
+    }
+    const icon = elem.closest('a').querySelector('.icon');
+    if (icon !== null) {
+      const newCheckedState = icon.dataset.checked === 'false';
+      let attrs = {};
+      attrs.class = 'icon-link__icon';
+      attrs['data-checked'] = (newCheckedState ? 'true' : 'false');
+      icon.outerHTML = VuFind.icon(newCheckedState ? 'facet-checked' : 'facet-unchecked', attrs);
     }
   }
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -44,7 +44,7 @@ use VuFindSearch\Query\Query;
 class QueryTest extends TestCase
 {
     /**
-     * Test containsTerm() method
+     * Test containsTerm() method.
      *
      * @return void
      */
@@ -69,7 +69,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test replaceTerm() method
+     * Test replaceTerm() method.
      *
      * @return void
      */
@@ -130,7 +130,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test normalization-related logic
+     * Test normalization-related logic.
      *
      * @return void
      */
@@ -154,7 +154,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test setHandler() method
+     * Test setHandler() method.
      *
      * @return void
      */
@@ -166,7 +166,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test setOperator() method
+     * Test setOperator() method.
      *
      * @return void
      */

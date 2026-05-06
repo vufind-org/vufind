@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -42,14 +42,14 @@ interface TranslatableStringInterface extends \Stringable
 {
     /**
      * Return string for display if raw value has no translation available (can be
-     * further translated)
+     * further translated).
      *
      * @return string
      */
     public function getDisplayString();
 
     /**
-     * Checks if the string can be translated
+     * Checks if the string can be translated.
      *
      * @return bool
      */

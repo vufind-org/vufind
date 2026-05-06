@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -45,14 +45,14 @@ use function sprintf;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overridable for testing purposes)
+     * Method for logging errors (overridable for testing purposes).
      *
      * @var callable
      */
     public static $logMethod = 'error_log';
 
     /**
-     * Log an error message
+     * Log an error message.
      *
      * @param string $msg Message
      *

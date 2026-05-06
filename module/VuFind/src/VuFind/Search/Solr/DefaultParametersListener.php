@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,6 +32,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Service;
 
 /**
  * Solr default parameters listener.
@@ -54,14 +55,14 @@ class DefaultParametersListener
     protected $backend;
 
     /**
-     * Default parameters
+     * Default parameters.
      *
      * @var array
      */
     protected $defaultParams;
 
     /**
-     * Mapping from search methods to contexts
+     * Mapping from search methods to contexts.
      *
      * @var array
      */
@@ -94,27 +95,34 @@ class DefaultParametersListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
-        $manager->attach(\VuFindSearch\Service::class, 'pre', [$this, 'onSearchPre']);
+    ): void {
+        $manager->attach(
+            Service::class,
+            Service::EVENT_PRE,
+            [$this, 'onSearchPre']
+        );
     }
 
     /**
-     * Add default parameters
+     * Add default parameters.
      *
      * @param EventInterface $event Event
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
-        $backend = $event->getTarget();
-        if ($backend === $this->backend) {
-            $context = $event->getParam('context');
+        $command = $event->getParam('command');
+        if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
+            $context = $command->getContext();
+            if (empty($context)) {
+                $context = null;
+            }
             $context = $this->contextMap[$context] ?? $context;
             $defaultParams = $this->defaultParams[$context]
                 ?? $this->defaultParams['*']
                 ?? '';
-            if ($defaultParams && $params = $event->getParam('params')) {
+            if ($defaultParams && $params = $command->getSearchParameters()) {
                 foreach (explode('&', $defaultParams) as $keyVal) {
                     $parts = explode('=', $keyVal, 2);
                     if (!isset($parts[1])) {

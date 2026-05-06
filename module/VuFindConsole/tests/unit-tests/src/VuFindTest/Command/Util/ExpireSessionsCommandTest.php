@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -40,17 +40,17 @@ use VuFindConsole\Command\Util\ExpireSessionsCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireSessionsCommandTest extends AbstractExpireCommandTest
+class ExpireSessionsCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireSessionsCommand::class;
 
     /**
-     * Name of a valid service class to test with
+     * Name of a valid service class to test with.
      *
      * @var string
      */
@@ -71,9 +71,9 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTest
     protected $illegalAge = 0.01;
 
     /**
-     * Expected minimum age in error message.
+     * Expected minimum age in error message or null if not applicable.
      *
-     * @var float
+     * @var ?float
      */
     protected $expectedMinAge = 0.1;
 }

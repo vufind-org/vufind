@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default Controller
+ * Default Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -44,21 +44,21 @@ use VuFind\Config\Config;
 class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
 {
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Auth manager
+     * Auth manager.
      *
      * @var AuthManager
      */
     protected $authManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config      $config      VuFind configuration
      * @param AuthManager $authManager Auth manager

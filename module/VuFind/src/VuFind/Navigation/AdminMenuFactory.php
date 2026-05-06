@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin menu factory
+ * Admin menu factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Navigation
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Admin menu factory
+ * Admin menu factory.
  *
  * @category VuFind
  * @package  Navigation
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class AdminMenuFactory extends AbstractMenuFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -64,13 +64,14 @@ class AdminMenuFactory extends AbstractMenuFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('Overdrive');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('Overdrive');
         return parent::__invoke(
             $container,
             $requestedName,
             [
                 'AdminMenu.yaml',
                 $config['Overdrive']['showOverdriveAdminMenu'] ?? false,
+                ...($options ?? []),
             ]
         );
     }

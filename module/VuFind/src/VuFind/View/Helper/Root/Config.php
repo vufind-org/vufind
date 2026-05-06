@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,10 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,21 +43,14 @@ use VuFind\Config\PluginManager;
 class Config extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Configuration plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Display date format
+     * Display date format.
      *
      * @var ?string
      */
     protected $displayDateFormat = null;
 
     /**
-     * Display time format
+     * Display time format.
      *
      * @var ?string
      */
@@ -66,11 +59,10 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     /**
      * Config constructor.
      *
-     * @param PluginManager $configLoader Configuration loader
+     * @param ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(PluginManager $configLoader)
+    public function __construct(protected ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -82,7 +74,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function get($config)
     {
-        return $this->configLoader->get($config);
+        return $this->configManager->getConfigObject($config);
     }
 
     /**
@@ -129,7 +121,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Check if index record should always be displayed (i.e. also when a
-     * format-specific template is available)
+     * format-specific template is available).
      *
      * @return bool
      */
@@ -140,7 +132,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get offcanvas sidebar side
+     * Get offcanvas sidebar side.
      *
      * @return ?string 'left', 'right' or null for no offcanvas
      */
@@ -156,7 +148,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get date display format
+     * Get date display format.
      *
      * @return string
      */
@@ -170,7 +162,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get time display format
+     * Get time display format.
      *
      * @return string
      */
@@ -184,7 +176,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get date+time display format
+     * Get date+time display format.
      *
      * @param string $separator String between date and time
      *
@@ -196,7 +188,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if the loan type should be displayed in holdings
+     * Check if the loan type should be displayed in holdings.
      *
      * @return bool
      */

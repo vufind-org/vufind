@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +49,7 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Base fixture directory
+     * Base fixture directory.
      *
      * @var string
      */
@@ -95,11 +95,11 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ImportLokaliseCommand(new ExtendedIniNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
-        $this->assertEquals(
+        $this->assertSame(
             "{$source} does not exist or is not a directory.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -114,11 +114,11 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ImportLokaliseCommand(new ExtendedIniNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
-        $this->assertEquals(
+        $this->assertSame(
             "{$target} does not exist or is not a directory.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -143,7 +143,7 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
-        $this->assertEquals(
+        $this->assertSame(
             "Warning: unexpected missing key in $source/en.ini - bar\nImport complete.\n",
             $commandTester->getDisplay()
         );

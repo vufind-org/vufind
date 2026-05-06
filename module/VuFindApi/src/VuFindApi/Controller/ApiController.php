@@ -1,7 +1,7 @@
 <?php
 
 /**
- * API Controller
+ * API Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -32,7 +32,7 @@ namespace VuFindApi\Controller;
 use function in_array;
 
 /**
- * API Controller
+ * API Controller.
  *
  * Controls the API functionality
  *
@@ -47,14 +47,14 @@ class ApiController extends \VuFind\Controller\AbstractBase
     use ApiTrait;
 
     /**
-     * Array of available API controllers
+     * Array of available API controllers.
      *
      * @var array
      */
     protected $apiControllers = [];
 
     /**
-     * Add an API controller to the list of available controllers
+     * Add an API controller to the list of available controllers.
      *
      * @param Laminas\Mvc\Controller\AbstractActionController $controller API
      * Controller
@@ -69,7 +69,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Index action
+     * Index action.
      *
      * Return API specification or redirect to Swagger UI
      *
@@ -98,22 +98,26 @@ class ApiController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Get API specification JSON fragment for the root nodes
+     * Get API specification JSON fragment for the root nodes.
      *
      * @return string
      */
     protected function getApiSpecFragment()
     {
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
+        $this->initApiKeySettings($config['API_Keys'] ?? []);
         $params = [
             'config' => $config,
+            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
+            'apiKeyHeaderField' => $this->apiKeyHeaderField,
+            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
             'version' => \VuFind\Config\Version::getBuildVersion(),
         ];
         return $this->getViewRenderer()->render('api/openapi', $params);
     }
 
     /**
-     * Merge specification fragments from all APIs to an array
+     * Merge specification fragments from all APIs to an array.
      *
      * @return array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search results plugin manager
+ * Search results plugin manager.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Results;
 
 /**
- * Search results plugin manager
+ * Search results plugin manager.
  *
  * @category VuFind
  * @package  Search
@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'blender' => \VuFind\Search\Blender\Results::class,
+        'blender2' => \VuFind\Search\Blender2\Results::class,
         'browzine' => \VuFind\Search\BrowZine\Results::class,
         'combined' => \VuFind\Search\Combined\Results::class,
         'eds' => \VuFind\Search\EDS\Results::class,
@@ -85,7 +86,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             => \VuFind\Search\Solr\ResultsFactory::class,
         \VuFind\Search\BrowZine\Results::class => ResultsFactory::class,
         \VuFind\Search\Combined\Results::class => ResultsFactory::class,
-        \VuFind\Search\EDS\Results::class => ResultsFactory::class,
+        \VuFind\Search\EDS\Results::class => \VuFind\Search\EDS\ResultsFactory::class,
         \VuFind\Search\EIT\Results::class => ResultsFactory::class,
         \VuFind\Search\EPF\Results::class => ResultsFactory::class,
         \VuFind\Search\EmptySet\Results::class => ResultsFactory::class,
@@ -117,7 +118,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

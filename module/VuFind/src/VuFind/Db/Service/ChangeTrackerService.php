@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -31,7 +31,7 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ChangeTracker;
 use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
@@ -67,9 +67,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
         $parameters = ['core' => $indexName, 'id' => $id];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $queryResult = $query->getResult();
-        $result = current($queryResult);
-        return $result ? $result : null;
+        return $query->getOneOrNullResult();
     }
 
     /**
@@ -89,8 +87,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
         $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $result = $query->getResult();
-        return current($result)['deletedcount'];
+        return $query->getSingleScalarResult();
     }
 
     /**

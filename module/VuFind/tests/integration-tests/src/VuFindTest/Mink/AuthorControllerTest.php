@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -60,7 +60,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test searching for an author in the author module
+     * Test searching for an author in the author module.
      *
      * @return void
      */
@@ -93,26 +93,23 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider that offers various author controller paths for testing.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function authorPathsProvider(): array
+    public static function authorPathsProvider(): \Iterator
     {
-        return [
-            'home page' => ['/Author/Home'],
-            'results page' => ['/Author/Search?lookfor=shakespeare'],
-            'author page' => ['/Author/Home?author=Shakespeare%2C+William+1564+-+1616'],
-        ];
+        yield 'home page' => ['/Author/Home'];
+        yield 'results page' => ['/Author/Search?lookfor=shakespeare'];
+        yield 'author page' => ['/Author/Home?author=Shakespeare%2C+William+1564+-+1616'];
     }
 
     /**
-     * Confirm that the author controller does not interfere with the regular search box
+     * Confirm that the author controller does not interfere with the regular search box.
      *
      * @param string $path Starting URL path to test
      *
      * @return void
-     *
-     * @dataProvider authorPathsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authorPathsProvider')]
     public function testAuthorSearchDoesNotBreakSearchBox(string $path): void
     {
         $session = $this->getMinkSession();

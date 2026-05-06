@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -48,7 +48,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     use Feature\PreviousUniqueIdTrait;
 
     /**
-     * Fields that may contain subject headings, and their descriptions
+     * Fields that may contain subject headings, and their descriptions.
      *
      * @var array
      */
@@ -60,7 +60,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     ];
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var \VuFind\Date\Converter
      */
@@ -304,7 +304,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     }
 
     /**
-     * Pass in a date converter
+     * Pass in a date converter.
      *
      * @param \VuFind\Date\Converter $dc Date converter
      *
@@ -316,7 +316,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     }
 
     /**
-     * Get a date converter
+     * Get a date converter.
      *
      * @return \VuFind\Date\Converter
      */

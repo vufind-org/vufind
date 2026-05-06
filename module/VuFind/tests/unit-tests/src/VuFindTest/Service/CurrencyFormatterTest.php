@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CurrencyFormatter Test Class
+ * CurrencyFormatter Test Class.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,7 +34,7 @@ namespace VuFindTest\Service;
 use NumberFormatter;
 
 /**
- * CurrencyFormatter Test Class
+ * CurrencyFormatter Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,15 +46,14 @@ use NumberFormatter;
 class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the class
+     * Test the class.
      *
      * @return void
      */
     public function testFormatting()
     {
         // test default settings
-        $locale = setlocale(LC_MONETARY, '');
-        $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+        $formatter = new NumberFormatter('', NumberFormatter::CURRENCY);
         $defaultCurrencyCode = trim($formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE) ?: '') ?: 'USD';
         $cc = new \VuFind\Service\CurrencyFormatter();
         $this->assertEquals(

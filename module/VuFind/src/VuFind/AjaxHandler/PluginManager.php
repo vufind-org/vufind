@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -29,8 +29,10 @@
 
 namespace VuFind\AjaxHandler;
 
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
+
 /**
- * AJAX handler plugin manager
+ * AJAX handler plugin manager.
  *
  * @category VuFind
  * @package  AJAX
@@ -51,6 +53,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'deleteRecordComment' => DeleteRecordComment::class,
         'identifierLinksLookup' => IdentifierLinksLookup::class,
         'getACSuggestions' => GetACSuggestions::class,
+        'getCookieConsent' => GetCookieConsent::class,
         'getIlsStatus' => GetIlsStatus::class,
         'getItemStatuses' => GetItemStatuses::class,
         'getLibraryPickupLocations' => GetLibraryPickupLocations::class,
@@ -73,6 +76,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getUserTransactions' => GetUserTransactions::class,
         'getVisData' => GetVisData::class,
         'keepAlive' => KeepAlive::class,
+        'onlinePaymentNotify' => OnlinePaymentNotify::class,
+        'onlinePaymentRegister' => OnlinePaymentRegister::class,
         'recommend' => Recommend::class,
         'relaisAvailability' => RelaisAvailability::class,
         'relaisInfo' => RelaisInfo::class,
@@ -115,6 +120,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetUserTransactions::class => AbstractIlsUserAndRendererActionFactory::class,
         GetVisData::class => GetVisDataFactory::class,
         KeepAlive::class => KeepAliveFactory::class,
+        OnlinePaymentNotify::class => AbstractOnlinePaymentActionFactory::class,
+        OnlinePaymentRegister::class => AbstractOnlinePaymentActionFactory::class,
         Recommend::class => RecommendFactory::class,
         RelaisAvailability::class => AbstractRelaisActionFactory::class,
         RelaisInfo::class =>  AbstractRelaisActionFactory::class,
@@ -122,6 +129,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SystemStatus::class => SystemStatusFactory::class,
         TagRecord::class => TagRecordFactory::class,
     ];
+
+    /**
+     * Constructor.
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

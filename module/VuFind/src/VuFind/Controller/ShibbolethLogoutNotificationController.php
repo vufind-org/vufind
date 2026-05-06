@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Shibboleth Logout Notification API Controller
+ * Shibboleth Logout Notification API Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -47,7 +47,7 @@ use function extension_loaded;
 class ShibbolethLogoutNotificationController extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -59,7 +59,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * GET method handler for the logout handler
+     * GET method handler for the logout handler.
      *
      * @return Response
      */
@@ -76,7 +76,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * POST method handler for the logout handler
+     * POST method handler for the logout handler.
      *
      * @return Response
      */
@@ -108,7 +108,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * Logout notification handler
+     * Logout notification handler.
      *
      * @param string $sessionId External session id
      *
@@ -128,7 +128,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     }
 
     /**
-     * Get WSDL for the service
+     * Get WSDL for the service.
      *
      * @return string
      */

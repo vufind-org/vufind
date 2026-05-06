@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Map tab
+ * Map tab.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -35,7 +35,7 @@ use VuFind\Config\PathResolver;
 use function count;
 
 /**
- * Map tab
+ * Map tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -75,14 +75,14 @@ class Map extends AbstractBase
     protected $graticule = false;
 
     /**
-     * Basemap settings
+     * Basemap settings.
      *
      * @var array
      */
     protected $basemapOptions = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver $pathResolver   Config file path resolver
      * @param bool         $mapTabDisplay  Display Map

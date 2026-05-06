@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -40,40 +40,40 @@ use Laminas\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * The base URI for API requests
+     * The base URI for API requests.
      *
      * @var string
      */
     protected $base = 'https://api.thirdiron.com/public/v1/';
 
     /**
-     * The HTTP Request client used for API transactions
+     * The HTTP Request client used for API transactions.
      *
      * @var HttpClient
      */
     protected $client;
 
     /**
-     * The API access token
+     * The API access token.
      *
      * @var string
      */
     protected $token;
 
     /**
-     * The library ID number to use
+     * The library ID number to use.
      *
      * @var string
      */
     protected $libraryId;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the BrowZine Client
      *
@@ -89,7 +89,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Perform a DOI lookup
+     * Perform a DOI lookup.
      *
      * @param string $doi            DOI
      * @param bool   $includeJournal Include journal data in response?
@@ -120,7 +120,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Perform a search
+     * Perform a search.
      *
      * @param string $query Search query
      *
@@ -132,7 +132,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Get a full request URL for a relative path
+     * Get a full request URL for a relative path.
      *
      * @param string $path URL path for service
      *
@@ -144,7 +144,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Perform an API request and return the response body
+     * Perform an API request and return the response body.
      *
      * @param string $path   URL path for service
      * @param array  $params GET parameters

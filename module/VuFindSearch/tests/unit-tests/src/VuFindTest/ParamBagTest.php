@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -44,7 +44,7 @@ use VuFindSearch\ParamBag;
 class ParamBagTest extends TestCase
 {
     /**
-     * Test "contains"
+     * Test "contains".
      *
      * @return void
      */
@@ -58,7 +58,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "hasParam"
+     * Test "hasParam".
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "remove"
+     * Test "remove".
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test "merge with all"
+     * Test "merge with all".
      *
      * @return void
      */
@@ -114,7 +114,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test deduplication
+     * Test deduplication.
      *
      * @return void
      */
@@ -135,7 +135,7 @@ class ParamBagTest extends TestCase
     }
 
     /**
-     * Test disabling deduplication
+     * Test disabling deduplication.
      *
      * @return void
      */

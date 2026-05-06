@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search Options
+ * Summon Search Options.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -29,8 +29,10 @@
 
 namespace VuFind\Search\Summon;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * Summon Search Options
+ * Summon Search Options.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -43,25 +45,25 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Maximum number of topic recommendations to show (false for none)
+     * Maximum number of topic recommendations to show (false for none).
      *
      * @var int|bool
      */
     protected $maxTopicRecommendations = false;
 
     /**
-     * Relevance sort override for empty searches
+     * Relevance sort override for empty searches.
      *
      * @var string
      */
     protected $emptySearchRelevanceOverride = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'Summon';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
@@ -69,7 +71,7 @@ class Options extends \VuFind\Search\Base\Options
         // Override the default result limit with a value that we can always support:
         $this->defaultResultLimit = 400;
 
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Set up highlighting preference
         if (null !== ($highlighting = $this->searchSettings['General']['highlighting'] ?? null)) {
@@ -134,7 +136,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get the maximum number of topic recommendations (false for none)
+     * Get the maximum number of topic recommendations (false for none).
      *
      * @return bool|int
      */
@@ -144,7 +146,7 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Set the maximum number of topic recommendations (false for none)
+     * Set the maximum number of topic recommendations (false for none).
      *
      * @param bool|int $max New maximum setting
      *

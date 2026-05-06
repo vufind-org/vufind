@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Explanation for second Solr index
+ * Solr Explanation for second Solr index.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -31,7 +31,7 @@
 namespace VuFind\Search\Search2;
 
 /**
- * Solr Explanation for second Solr index
+ * Solr Explanation for second Solr index.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -43,7 +43,7 @@ namespace VuFind\Search\Search2;
 class Explanation extends \VuFind\Search\Solr\Explanation
 {
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * @var string
      */

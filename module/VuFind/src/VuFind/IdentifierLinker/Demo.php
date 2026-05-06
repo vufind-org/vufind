@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Demo (fake data) identifier linker
+ * Demo (fake data) identifier linker.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -32,7 +32,7 @@ namespace VuFind\IdentifierLinker;
 use function count;
 
 /**
- * Demo (fake data) identifier linker
+ * Demo (fake data) identifier linker.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -43,7 +43,7 @@ use function count;
 class Demo implements IdentifierLinkerInterface
 {
     /**
-     * Possible icon values
+     * Possible icon values.
      *
      * @var array
      */
@@ -73,6 +73,7 @@ class Demo implements IdentifierLinkerInterface
                         'label' => 'Demonstrating ' . strtoupper($type) . " link for $id with icon "
                             . ($icon ?? '[null]'),
                         'localIcon' => $icon,
+                        'linkType' => rand(0, 1) ? 'foo-link-type' : 'bar-link-type',
                     ];
                 }
             }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for tags table
+ * Entity model interface for tags table.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -30,7 +30,7 @@
 namespace VuFind\Db\Entity;
 
 /**
- * Entity model interface for tags table
+ * Entity model interface for tags table.
  *
  * @category VuFind
  * @package  Database
@@ -48,7 +48,7 @@ interface TagsEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Tag setter
+     * Tag setter.
      *
      * @param string $tag Tag
      *
@@ -57,7 +57,7 @@ interface TagsEntityInterface extends EntityInterface
     public function setTag(string $tag): static;
 
     /**
-     * Tag getter
+     * Tag getter.
      *
      * @return string
      */

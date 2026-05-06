@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for resource table
+ * Entity model for resource table.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -29,10 +29,12 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Resource
+ * Entity model for resource table.
  *
  * @category VuFind
  * @package  Database
@@ -42,9 +44,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'resource')]
 #[ORM\Index(name: 'resource_record_id_idx', columns: ['record_id'], options: ['lengths' => [190]])]
+#[ORM\Index(name: 'resource_updated_idx', columns: ['updated'])]
 #[ORM\Entity]
 class Resource implements ResourceEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -72,6 +77,14 @@ class Resource implements ResourceEntityInterface
     protected string $title = '';
 
     /**
+     * Record display title.
+     *
+     * @var ?string
+     */
+    #[ORM\Column(name: 'display_title', type: 'string', length: 255, nullable: true)]
+    protected ?string $displayTitle = null;
+
+    /**
      * Primary author.
      *
      * @var ?string
@@ -96,12 +109,29 @@ class Resource implements ResourceEntityInterface
     protected string $source = 'Solr';
 
     /**
-     * Record Metadata
+     * Record Metadata.
      *
      * @var ?string
      */
     #[ORM\Column(name: 'extra_metadata', type: 'text', length: 16777215, nullable: true)]
     protected ?string $extraMetadata = null;
+
+    /**
+     * Last update date.
+     *
+     * @var DateTime
+     */
+    #[ORM\Column(name: 'updated', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
+    protected DateTime $updated;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        // Set the default value as a DateTime object
+        $this->updated = $this->getNonNullableDateTimeFromNullable(null);
+    }
 
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -114,7 +144,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Record Id setter
+     * Record Id setter.
      *
      * @param string $recordId recordId
      *
@@ -127,7 +157,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Record Id getter
+     * Record Id getter.
      *
      * @return string
      */
@@ -137,7 +167,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Title setter
+     * Title setter.
      *
      * @param string $title Title of the record.
      *
@@ -150,7 +180,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Title getter
+     * Title getter.
      *
      * @return string
      */
@@ -160,7 +190,30 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Author setter
+     * Display title setter.
+     *
+     * @param string $title Display title of the record.
+     *
+     * @return static
+     */
+    public function setDisplayTitle(string $title): static
+    {
+        $this->displayTitle = $title;
+        return $this;
+    }
+
+    /**
+     * Display title getter.
+     *
+     * @return ?string
+     */
+    public function getDisplayTitle(): ?string
+    {
+        return $this->displayTitle;
+    }
+
+    /**
+     * Author setter.
      *
      * @param ?string $author Author of the title.
      *
@@ -173,7 +226,17 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Year setter
+     * Author getter.
+     *
+     * @return ?string
+     */
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
+    /**
+     * Year setter.
      *
      * @param ?int $year Year title is published.
      *
@@ -186,7 +249,17 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Source setter
+     * Year getter.
+     *
+     * @return ?int
+     */
+    public function getYear(): ?int
+    {
+        return $this->year;
+    }
+
+    /**
+     * Source setter.
      *
      * @param string $source Source (a search backend ID).
      *
@@ -199,7 +272,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Source getter
+     * Source getter.
      *
      * @return string
      */
@@ -209,7 +282,7 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Extra Metadata setter
+     * Extra Metadata setter.
      *
      * @param ?string $extraMetadata ExtraMetadata.
      *
@@ -222,12 +295,35 @@ class Resource implements ResourceEntityInterface
     }
 
     /**
-     * Extra Metadata getter
+     * Extra Metadata getter.
      *
      * @return ?string
      */
     public function getExtraMetadata(): ?string
     {
         return $this->extraMetadata;
+    }
+
+    /**
+     * Set last update date.
+     *
+     * @param DateTime $date Update date
+     *
+     * @return static
+     */
+    public function setUpdated(DateTime $date): static
+    {
+        $this->updated = $date;
+        return $this;
+    }
+
+    /**
+     * Get last update date.
+     *
+     * @return ?DateTime
+     */
+    public function getUpdated(): ?DateTime
+    {
+        return $this->getNullableDateTimeFromNonNullable($this->updated);
     }
 }

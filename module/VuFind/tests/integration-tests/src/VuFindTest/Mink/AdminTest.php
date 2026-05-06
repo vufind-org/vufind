@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -52,11 +52,11 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin');
         $page = $session->getPage();
-        $this->assertEquals('The Admin module is currently disabled.', $this->findCssAndGetText($page, 'p.error b'));
+        $this->assertSame('The Admin module is currently disabled.', $this->findCssAndGetText($page, 'p.error b'));
     }
 
     /**
-     * Data provider for testAdminTheme()
+     * Data provider for testAdminTheme().
      *
      * @return array[]
      */
@@ -74,9 +74,8 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $enabled Should we enable the admin theme?
      *
      * @return void
-     *
-     * @dataProvider adminThemeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('adminThemeProvider')]
     public function testAdminTheme(bool $enabled): void
     {
         $config = [

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides Profile Recommendations Module
+ * LibGuides Profile Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -38,7 +38,7 @@ use function is_string;
 use function strlen;
 
 /**
- * LibGuides Profile Recommendations Module
+ * LibGuides Profile Recommendations Module.
  *
  * @category VuFind
  * @package  Recommendations
@@ -53,56 +53,56 @@ class LibGuidesProfile implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * LibGuides connector
+     * LibGuides connector.
      *
      * @var LibGuides
      */
     protected $libGuides;
 
     /**
-     * List of strategies enabled to find a matching LibGuides profile
+     * List of strategies enabled to find a matching LibGuides profile.
      *
      * @var array
      */
     protected $strategies = [];
 
     /**
-     * Map of call number pattern to config alias
+     * Map of call number pattern to config alias.
      *
      * @var array
      */
     protected $callNumberToAlias;
 
     /**
-     * Map of config alias to LibGuides account ID
+     * Map of config alias to LibGuides account ID.
      *
      * @var array
      */
     protected $aliasToAccountId;
 
     /**
-     * Facet field name containing the call numbers to match against
+     * Facet field name containing the call numbers to match against.
      *
      * @var string
      */
     protected $callNumberField;
 
     /**
-     * Length of the substring at the start of a call number to match against
+     * Length of the substring at the start of a call number to match against.
      *
      * @var int
      */
     protected $callNumberLength;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param LibGuides    $libGuides LibGuides API connection
      * @param Config       $config    LibGuides API configuration object

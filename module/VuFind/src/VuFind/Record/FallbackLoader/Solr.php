@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr record fallback loader
+ * Solr record fallback loader.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -35,7 +35,7 @@ use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Service;
 
 /**
- * Solr record fallback loader
+ * Solr record fallback loader.
  *
  * @category VuFind
  * @package  Record
@@ -46,14 +46,14 @@ use VuFindSearch\Service;
 class Solr extends AbstractFallbackLoader
 {
     /**
-     * Record source
+     * Record source.
      *
      * @var string
      */
     protected $source = 'Solr';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourceServiceInterface $resourceService Resource database service
      * @param RecordIdUpdater          $recordIdUpdater Record ID updater service

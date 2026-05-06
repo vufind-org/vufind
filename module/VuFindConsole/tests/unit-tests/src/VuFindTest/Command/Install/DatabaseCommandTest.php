@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -67,11 +67,11 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DatabaseCommand($builder);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newName' => 'name', 'newUser' => 'user', 'newPass' => 'pass']);
-        $this->assertEquals(
+        $this->assertSame(
             "Successfully created database.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -97,10 +97,10 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DatabaseCommand($builder);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newName' => 'name', 'newUser' => 'user', 'newPass' => 'pass', '--sql-only' => true]);
-        $this->assertEquals(
+        $this->assertSame(
             "foo\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 }

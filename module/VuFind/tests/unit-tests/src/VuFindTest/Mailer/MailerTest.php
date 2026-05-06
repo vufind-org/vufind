@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,14 +31,14 @@ namespace VuFindTest\Mailer;
 
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
+use VuFind\Mailer\MailerFactory;
 use VuFindTest\Container\MockContainer;
 
 use function count;
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -75,7 +75,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         ];
         $cm = $this->getMockConfigManager(compact('config'));
         $sm = new MockContainer($this);
-        $sm->set(\VuFind\Config\ConfigManager::class, $cm);
+        $sm->set(\VuFind\Config\ConfigManagerInterface::class, $cm);
         $factory = new MailerFactory();
 
         $this->assertEquals(
@@ -224,7 +224,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject in the body
+     * Test sending an email with subject in the body.
      *
      * @return void
      */
@@ -250,7 +250,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject not allowed in the body
+     * Test sending an email with subject not allowed in the body.
      *
      * @return void
      */
@@ -334,7 +334,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we only accept one recipient by default
+     * Test that we only accept one recipient by default.
      *
      * @return void
      */
@@ -374,7 +374,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Boom');
 
         $transport = $this->createMock(MailerInterface::class);
-        $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
+        $transport->expects($this->once())->method('send')->willThrowException(new \Exception('Boom'));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
@@ -386,40 +386,47 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnknownException()
     {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
         $mailer = $this->createMock(Mailer::class);
-        $mailer->expects($this->once())->method('send')->will(
-            $this->throwException(
-                new \VuFind\Exception\Mail(
-                    'Technical message',
-                    \VuFind\Exception\Mail::ERROR_UNKNOWN
-                )
+        $mailer->expects($this->once())->method('send')->willThrowException(
+            new \VuFind\Exception\Mail(
+                'Technical message',
+                \VuFind\Exception\Mail::ERROR_UNKNOWN
             )
         );
         try {
             $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
         } catch (\VuFind\Exception\Mail $e) {
-            $this->assertEquals('email_failure', $e->getDisplayMessage());
+            $this->assertSame('email_failure', $e->getDisplayMessage());
         }
     }
 
     /**
-     * Test sendLink
+     * Test sendLink.
      *
      * @return void
      */
     public function testSendLink()
     {
-        $viewCallback = function ($in): bool {
-            return $in['msgUrl'] == 'http://foo'
-                && $in['to'] == 'to@example.com;to2@example.com'
-                && $in['from'] == 'from@example.com'
-                && $in['message'] == 'message';
-        };
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->addMethods(['partial'])->getMock();
-        $view->expects($this->once())->method('partial')
-            ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
-            ->will($this->returnValue('body'));
+        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $view->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method === 'partial') {
+                        $this->assertSame('Email/share-link.phtml', $args[0]);
+                        $this->assertSame('http://foo', $args[1]['msgUrl']);
+                        $this->assertSame('to@example.com;to2@example.com', $args[1]['to']);
+                        $this->assertSame('from@example.com', $args[1]['from']);
+                        $this->assertSame('message', $args[1]['message']);
+                        return 'body';
+                    }
+                    return null;
+                }
+            );
 
         $callback = function ($message): bool {
             $to = $message->getTo();
@@ -445,26 +452,32 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sendRecord
+     * Test sendRecord.
      *
      * @return void
      */
     public function testSendRecord()
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
+        $driver->expects($this->once())->method('getBreadcrumb')->willReturn('breadcrumb');
 
-        $viewCallback = function ($in) use ($driver): bool {
-            return $in['driver'] == $driver
-                && $in['to'] == 'to@example.com'
-                && $in['from'] == 'from@example.com'
-                && $in['message'] == 'message';
-        };
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->addMethods(['partial'])->getMock();
-        $view->expects($this->once())->method('partial')
-            ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
-            ->will($this->returnValue('body'));
+        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $view->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) use ($driver) {
+                    if ($method === 'partial') {
+                        $this->assertSame('Email/record.phtml', $args[0]);
+                        $in = $args[1];
+                        $this->assertSame($driver, $in['driver']);
+                        $this->assertSame('to@example.com', $in['to']);
+                        $this->assertSame('from@example.com', $in['from']);
+                        $this->assertSame('message', $in['message']);
+
+                        return 'body';
+                    }
+                    return null;
+                }
+            );
 
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
@@ -500,7 +513,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create mailer with a mock transport
+     * Create mailer with a mock transport.
      *
      * @param ?callable $callback Mock send method result callback
      *

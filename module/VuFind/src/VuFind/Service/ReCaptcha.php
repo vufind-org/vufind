@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recaptcha service
+ * Recaptcha service.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -35,7 +35,7 @@ use function func_get_args;
 use function is_callable;
 
 /**
- * Recaptcha service
+ * Recaptcha service.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,14 +46,14 @@ use function is_callable;
 class ReCaptcha
 {
     /**
-     * Proxied helper
+     * Proxied helper.
      *
      * @var LaminasRecaptcha
      */
     protected $recaptcha;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -77,7 +77,7 @@ class ReCaptcha
     }
 
     /**
-     * Get the HTML code for the captcha
+     * Get the HTML code for the captcha.
      *
      * This method uses the public key to fetch a recaptcha form.
      *

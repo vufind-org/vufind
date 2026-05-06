@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -58,21 +58,21 @@ use function sprintf;
 class IndexReservesCommand extends AbstractSolrAndIlsCommand
 {
     /**
-     * Output interface
+     * Output interface.
      *
      * @var OutputInterface
      */
     protected $output;
 
     /**
-     * Default delimiter for reading files
+     * Default delimiter for reading files.
      *
      * @var string
      */
     protected $defaultDelimiter = ',';
 
     /**
-     * Default template for reading files
+     * Default template for reading files.
      *
      * @var string
      */
@@ -126,7 +126,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
     /**
      * Build the reserves index from date returned by the ILS driver,
-     * specifically: getInstructors, getDepartments, getCourses, findReserves
+     * specifically: getInstructors, getDepartments, getCourses, findReserves.
      *
      * @param array $instructors Array of instructors $instructor_id => $instructor
      * @param array $courses     Array of courses     $course_id => $course
@@ -216,7 +216,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
         }
 
         $updates = new UpdateDocument();
-        foreach ($index as $id => $data) {
+        foreach ($index as $data) {
             if (!empty($data['bib_id'])) {
                 $updates->addRecord(new SerializableRecord($data));
             }
@@ -263,7 +263,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $startTime = date('Y-m-d H:i:s');
@@ -294,14 +294,14 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                 $this->showTimestampedMessage('Found reserve count: ' . count($reserves));
             } catch (\Exception $e) {
                 $this->showTimestampedMessage($e->getMessage());
-                return 1;
+                return self::FAILURE;
             }
         } elseif ($delimiter !== $this->defaultDelimiter) {
             $this->output->writeln('-d (delimiter) is meaningless without -f (filename)');
-            return 1;
+            return self::FAILURE;
         } elseif ($template !== $this->defaultTemplate) {
             $this->output->writeln('-t (template) is meaningless without -f (filename)');
-            return 1;
+            return self::FAILURE;
         } else {
             try {
                 $this->showTimestampedMessage('Starting reserves processing from ILS');
@@ -321,7 +321,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                 $this->showTimestampedMessage('Found reserve count: ' . count($reserves ?? []));
             } catch (\Exception $e) {
                 $this->showTimestampedMessage($e->getMessage());
-                return 1;
+                return self::FAILURE;
             }
         }
 
@@ -353,7 +353,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             $this->showTimestampedMessage('Successfully loaded ' . count($reserves) . ' rows.');
             $endTime = date('Y-m-d H:i:s');
             $this->showTimestampedMessage('Started at: ' . $startTime . ' Completed at: ' . $endTime);
-            return 0;
+            return self::SUCCESS;
         }
         $missing = array_merge(
             empty($instructors) ? ['instructors'] : [],
@@ -362,6 +362,6 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             empty($reserves) ? ['reserves'] : []
         );
         $this->showTimestampedMessage('Unable to load data. No data found for: ' . implode(', ', $missing));
-        return 1;
+        return self::FAILURE;
     }
 }

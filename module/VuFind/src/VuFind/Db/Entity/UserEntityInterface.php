@@ -17,11 +17,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -35,7 +35,7 @@ use DateTime;
  * Interface for representing a user account record.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -44,7 +44,7 @@ use DateTime;
 interface UserEntityInterface extends
     EntityInterface,
     ExchangeArrayInterface,
-    \LmcRbacMvc\Identity\IdentityInterface
+    \Lmc\Rbac\Identity\IdentityInterface
 {
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -54,7 +54,7 @@ interface UserEntityInterface extends
     public function getId(): ?int;
 
     /**
-     * Username setter
+     * Username setter.
      *
      * @param string $username Username
      *
@@ -166,7 +166,7 @@ interface UserEntityInterface extends
     public function getPendingEmail(): string;
 
     /**
-     * Catalog id setter
+     * Catalog id setter.
      *
      * @param ?string $catId Catalog id
      *
@@ -182,7 +182,7 @@ interface UserEntityInterface extends
     public function getCatId(): ?string;
 
     /**
-     * Catalog username setter
+     * Catalog username setter.
      *
      * @param ?string $catUsername Catalog username
      *
@@ -198,7 +198,7 @@ interface UserEntityInterface extends
     public function getCatUsername(): ?string;
 
     /**
-     * Home library setter
+     * Home library setter.
      *
      * @param ?string $homeLibrary Home library
      *
@@ -214,7 +214,7 @@ interface UserEntityInterface extends
     public function getHomeLibrary(): ?string;
 
     /**
-     * Raw catalog password setter
+     * Raw catalog password setter.
      *
      * @param ?string $catPassword Cat password
      *
@@ -230,7 +230,7 @@ interface UserEntityInterface extends
     public function getRawCatPassword(): ?string;
 
     /**
-     * Encrypted catalog password setter
+     * Encrypted catalog password setter.
      *
      * @param ?string $passEnc Encrypted password
      *
@@ -351,14 +351,14 @@ interface UserEntityInterface extends
     public function setLastLogin(?DateTime $dateTime): static;
 
     /**
-     * Last login getter
+     * Last login getter.
      *
      * @return ?DateTime
      */
     public function getLastLogin(): ?DateTime;
 
     /**
-     * Created setter
+     * Created setter.
      *
      * @param DateTime $dateTime Last login date
      *
@@ -367,11 +367,11 @@ interface UserEntityInterface extends
     public function setCreated(DateTime $dateTime): static;
 
     /**
-     * Created getter
+     * Created getter.
      *
      * @return DateTime
      */
-    public function getCreated(): Datetime;
+    public function getCreated(): DateTime;
 
     /**
      * Set email verification date (or null for unverified).

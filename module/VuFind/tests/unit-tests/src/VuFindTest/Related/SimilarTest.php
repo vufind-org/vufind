@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Similar Related Items Test Class
+ * Similar Related Items Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\Related;
 use VuFind\Related\Similar;
 
 /**
- * Similar Related Items Test Class
+ * Similar Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -56,9 +56,7 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $driver->expects($this->once())->method('getUniqueId')->willReturn('fakeid');
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn(['fakeresponse']);
         $checkCommand = function ($command) {

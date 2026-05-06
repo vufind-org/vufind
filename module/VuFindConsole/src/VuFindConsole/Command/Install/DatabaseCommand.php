@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: database builder
+ * Console command: database builder.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -40,7 +40,7 @@ use VuFind\Db\DbBuilder;
 use function is_callable;
 
 /**
- * Console command: database builder
+ * Console command: database builder.
  *
  * @category VuFind
  * @package  Console
@@ -55,7 +55,7 @@ use function is_callable;
 class DatabaseCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param DbBuilder   $builder Database builder
      * @param string|null $name    The name of the command; passing null means it
@@ -139,9 +139,9 @@ class DatabaseCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $sqlOnly = $input->getOption('sql-only') ? true : false;
+        $sqlOnly = (bool)$input->getOption('sql-only');
         $driver = $input->getOption('driver');
         $dbHost = $input->getOption('dbHost');
         $vufindHost = $input->getOption('vufindHost');
@@ -176,11 +176,11 @@ class DatabaseCommand extends Command
                     $e = $e->getPrevious();
                 }
             }
-            return 1;
+            return self::FAILURE;
         }
         if (!$sqlOnly) {
             $output->writeln('Successfully created database.');
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

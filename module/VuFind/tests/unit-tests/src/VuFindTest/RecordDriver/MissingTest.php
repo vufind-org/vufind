@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Missing Record Driver Test Class
+ * Missing Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\Missing;
 
 /**
- * Missing Record Driver Test Class
+ * Missing Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -63,16 +63,14 @@ class MissingTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testDetermineMissingTitleWithoutDetails
+     * Data provider for testDetermineMissingTitleWithoutDetails.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleProvider(): array
+    public static function titleProvider(): \Iterator
     {
-        return [
-            'non-empty title' => ['fake title', 'fake title'],
-            'empty title' => ['', 'Title not available'],
-        ];
+        yield 'non-empty title' => ['fake title', 'fake title'];
+        yield 'empty title' => ['', 'Title not available'];
     }
 
     /**
@@ -82,9 +80,8 @@ class MissingTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedTitle Expected title returned by driver
      *
      * @return void
-     *
-     * @dataProvider titleProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleProvider')]
     public function testDetermineMissingTitleWithoutDetails(string $resourceTitle, string $expectedTitle): void
     {
         $resource = $this->createMock(ResourceEntityInterface::class);

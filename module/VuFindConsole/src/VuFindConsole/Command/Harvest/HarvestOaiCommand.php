@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: VuFind-specific customizations to OAI-PMH harvest command
+ * Console command: VuFind-specific customizations to OAI-PMH harvest command.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -36,7 +36,7 @@ use VuFind\Config\PathResolver;
 use VuFindHarvest\OaiPmh\HarvesterFactory;
 
 /**
- * Console command: VuFind-specific customizations to OAI-PMH harvest command
+ * Console command: VuFind-specific customizations to OAI-PMH harvest command.
  *
  * @category VuFind
  * @package  Console
@@ -51,7 +51,7 @@ use VuFindHarvest\OaiPmh\HarvesterFactory;
 class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver      $pathResolver Config file path resolver
      * @param Client            $client       HTTP client (omit for default)
@@ -105,7 +105,7 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->checkLocalSetting($output);
 

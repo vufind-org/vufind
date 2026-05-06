@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -46,21 +46,21 @@ use VuFindSearch\ParamBag;
 abstract class AbstractBase implements CommandInterface
 {
     /**
-     * Search backend identifier
+     * Search backend identifier.
      *
      * @var string
      */
     protected $backendId;
 
     /**
-     * Command context
+     * Command context.
      *
      * @var mixed
      */
     protected $context;
 
     /**
-     * Search backend parameters
+     * Search backend parameters.
      *
      * @var ParamBag
      */
@@ -74,7 +74,7 @@ abstract class AbstractBase implements CommandInterface
     protected $executed = false;
 
     /**
-     * Result of executed operation
+     * Result of executed operation.
      *
      * @var mixed
      */

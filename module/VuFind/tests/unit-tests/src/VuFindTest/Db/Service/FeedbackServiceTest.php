@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FeedbackService Test Class
+ * FeedbackService Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -36,7 +36,7 @@ use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\FeedbackService;
 
 /**
- * FeedbackService Test Class
+ * FeedbackService Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
     {
         $configuredService = $this->getConfiguredFeedbackService();
         $configuredService['entityPluginManager']->expects($this->once())->method('get')
-            ->with($this->equalTo(FeedbackEntityInterface::class))
+            ->with(FeedbackEntityInterface::class)
             ->willReturn(new Feedback());
 
         $this->assertInstanceOf(
@@ -78,10 +78,10 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
             . 'ORDER BY f.status';
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getResult', 'getSQL', '_doExecute'])
+            ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $query->expects($this->once())->method('getResult')
             ->willReturn([]);
@@ -102,10 +102,10 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['execute', 'setParameters'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['execute', 'setParameters', 'getSQL', '_doExecute'])
+            ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $query->expects($this->once())->method('execute');
         $query->expects($this->once())->method('setParameters')
@@ -134,7 +134,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['setParameters', 'setFirstResult', 'setMaxResults'])
             ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
 
         $query->expects($this->once())->method('setParameters')

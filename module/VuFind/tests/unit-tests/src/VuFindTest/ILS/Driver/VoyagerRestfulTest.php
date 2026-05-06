@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,7 +34,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ILS\Driver\VoyagerRestful;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\ILS\Driver\VoyagerRestful;
 class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
-     * Default configuration for driver
+     * Default configuration for driver.
      *
      * @var array
      */
@@ -71,7 +71,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test encoding conversion in getPickupLocations()
+     * Test encoding conversion in getPickupLocations().
      *
      * @return void
      */
@@ -117,7 +117,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test encoding conversion in getRequestGroups()
+     * Test encoding conversion in getRequestGroups().
      *
      * @return void
      */
@@ -168,7 +168,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         return new class ($mockResult) extends VoyagerRestful {
             /**
-             * Constructor
+             * Constructor.
              *
              * @param MockObject&PDOStatement $mockResult Mock result to return from executeSQL
              */
@@ -178,7 +178,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
             }
 
             /**
-             * Execute an SQL query
+             * Execute an SQL query.
              *
              * @param string|array $sql  SQL statement (string or array that includes
              * bind params)

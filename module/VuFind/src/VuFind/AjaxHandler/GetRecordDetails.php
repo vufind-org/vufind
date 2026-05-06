@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Record Details" AJAX handler
+ * "Get Record Details" AJAX handler.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -36,7 +36,7 @@ use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 
 /**
- * "Get Record Details" AJAX handler
+ * "Get Record Details" AJAX handler.
  *
  * Get record for integrated list view.
  *
@@ -49,42 +49,42 @@ use VuFind\RecordTab\TabManager;
 class GetRecordDetails extends AbstractBase
 {
     /**
-     * Framework configuration
+     * Framework configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Request
+     * Request.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $recordLoader;
 
     /**
-     * Record tab plugin manager
+     * Record tab plugin manager.
      *
      * @var TabManager
      */
     protected $tabManager;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array             $config   Framework configuration
      * @param Request           $request  HTTP request

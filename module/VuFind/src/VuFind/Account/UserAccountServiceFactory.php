@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User account service factory
+ * User account service factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Account
@@ -37,7 +37,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\Favorites\FavoritesService;
 
 /**
- * User account service factory
+ * User account service factory.
  *
  * @category VuFind
  * @package  Account
@@ -48,7 +48,7 @@ use VuFind\Favorites\FavoritesService;
 class UserAccountServiceFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

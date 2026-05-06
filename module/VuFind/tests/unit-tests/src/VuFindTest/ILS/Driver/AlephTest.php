@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Aleph ILS driver test
+ * Aleph ILS driver test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use RuntimeException;
 use VuFind\ILS\Driver\Aleph;
 
 /**
- * Aleph ILS driver test
+ * Aleph ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -61,7 +61,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test the getMyFines() method
+     * Test the getMyFines() method.
      *
      * @return void
      */
@@ -153,7 +153,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Data provider for testing getMyProfile
+     * Data provider for testing getMyProfile.
      *
      * @return Generator
      */
@@ -213,23 +213,23 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test getMyProfile
+     * Test getMyProfile.
      *
      * @param string $fixture         Fixture file name located in aleph fixtures folder
      * @param bool   $xserver_enabled Use xserver
      * @param array  $expected        Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixture, bool $xserver_enabled, array $expected): void
     {
         $mockRequest = $xserver_enabled ? 'doXRequest' : 'doRestDLFRequest';
         $driver = $this->getMockBuilder(Aleph::class)->disableOriginalConstructor()
             ->onlyMethods([$mockRequest, 'parseDate'])->getMock();
-        $driver->expects($this->any())->method('parseDate')->willReturnCallback(fn ($date) => $date);
+        $driver->method('parseDate')->willReturnCallback(fn ($date) => $date);
         $fixture = $this->getFixture('aleph/' . $fixture);
-        $driver->expects($this->any())->method($mockRequest)->willReturn(simplexml_load_string($fixture));
+        $driver->method($mockRequest)->willReturn(simplexml_load_string($fixture));
         $config = [
             'Catalog' => [
                 'host' => 'test.test',
@@ -252,7 +252,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Mock fixture as HTTP client response
+     * Mock fixture as HTTP client response.
      *
      * @param string|array|null $fixture Fixture file
      *
@@ -280,7 +280,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Load response from file
+     * Load response from file.
      *
      * @param string $filename File name of raw HTTP response
      *

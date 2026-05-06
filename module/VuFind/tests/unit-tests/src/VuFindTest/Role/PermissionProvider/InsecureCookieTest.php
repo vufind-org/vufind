@@ -1,7 +1,7 @@
 <?php
 
 /**
- * InsecureCookie PermissionProvider Test Class
+ * InsecureCookie PermissionProvider Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Role\PermissionProvider\InsecureCookie;
 
 /**
- * InsecureCookie PermissionProvider Test Class
+ * InsecureCookie PermissionProvider Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,10 +49,9 @@ class InsecureCookieTest extends \PHPUnit\Framework\TestCase
      * @param string|string[] $options       Cookie(s) to check
      * @param array           $expectedRoles Expected roles from provider
      *
-     * @dataProvider getPermissionsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPermissionsProvider')]
     public function testGetPermissions(string|array $options, array $expectedRoles)
     {
         $cookieProvider = $this->createMock(CookieManager::class);
@@ -69,21 +68,19 @@ class InsecureCookieTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testGetPermissions()
+     * Data provider for testGetPermissions().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getPermissionsProvider(): array
+    public static function getPermissionsProvider(): \Iterator
     {
         $granted = ['guest', 'loggedin'];
         $notGranted = [];
-        return [
-            'single string with value' => ['foo', $granted],
-            'single string, unset' => ['baz', $notGranted],
-            'single string with value in array' => [['foo'], $granted],
-            'multiple strings with values' => [['foo', 'bar'], $granted],
-            'mixed set/unset cookies' => [['foo', 'baz'], $notGranted],
-            'multiple unset cookies' => [['xyzzy', 'baz'], $notGranted],
-        ];
+        yield 'single string with value' => ['foo', $granted];
+        yield 'single string, unset' => ['baz', $notGranted];
+        yield 'single string with value in array' => [['foo'], $granted];
+        yield 'multiple strings with values' => [['foo', 'bar'], $granted];
+        yield 'mixed set/unset cookies' => [['foo', 'baz'], $notGranted];
+        yield 'multiple unset cookies' => [['xyzzy', 'baz'], $notGranted];
     }
 }

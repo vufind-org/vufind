@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cookie Manager
+ * Cookie Manager.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cookie
@@ -34,7 +34,7 @@ namespace VuFind\Cookie;
 use function is_array;
 
 /**
- * Cookie Manager
+ * Cookie Manager.
  *
  * @category VuFind
  * @package  Cookie
@@ -46,21 +46,21 @@ use function is_array;
 class CookieManager
 {
     /**
-     * Cookie array to work with
+     * Cookie array to work with.
      *
      * @var array
      */
     protected $cookies;
 
     /**
-     * Cookie base path
+     * Cookie base path.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * Cookie domain
+     * Cookie domain.
      *
      * @var string
      */
@@ -81,21 +81,21 @@ class CookieManager
     protected $httpOnly;
 
     /**
-     * The name of the session cookie
+     * The name of the session cookie.
      *
      * @var ?string
      */
     protected $sessionName;
 
     /**
-     * Default SameSite attribute
+     * Default SameSite attribute.
      *
      * @var string
      */
     protected $sameSite;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array   $cookies     Cookie array to manipulate (e.g. $_COOKIE)
      * @param string  $path        Cookie base path (default = /)
@@ -175,7 +175,7 @@ class CookieManager
     }
 
     /**
-     * Get the name of the cookie
+     * Get the name of the cookie.
      *
      * @return ?string
      */

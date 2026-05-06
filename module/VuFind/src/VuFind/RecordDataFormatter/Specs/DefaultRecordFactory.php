@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDataFormatter
@@ -53,7 +53,7 @@ use function get_class;
 class DefaultRecordFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -74,9 +74,9 @@ class DefaultRecordFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $config = $configManager->getConfigArray('RecordDataFormatter/DefaultRecord');
         // check deprecated legacy RecordDataFormatter.ini for backward compatibility
         $oldConfig = $configManager->getConfigArray('RecordDataFormatter.ini');

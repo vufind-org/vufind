@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS
@@ -48,7 +48,7 @@ use VuFind\Service\CurrencyFormatter;
 trait SummaryTrait
 {
     /**
-     * Get a status summary for an array of fines
+     * Get a status summary for an array of fines.
      *
      * @param iterable          $fines     Fines
      * @param CurrencyFormatter $formatter Currency formatter
@@ -68,7 +68,7 @@ trait SummaryTrait
     }
 
     /**
-     * Get a status summary for an array of requests
+     * Get a status summary for an array of requests.
      *
      * @param iterable $requests Requests
      *
@@ -92,7 +92,7 @@ trait SummaryTrait
     }
 
     /**
-     * Get a status summary for an array of checkouts
+     * Get a status summary for an array of checkouts.
      *
      * @param iterable $transactions Checkouts
      *

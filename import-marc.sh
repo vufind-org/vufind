@@ -1,5 +1,4 @@
-#!/bin/bash
-# $Id: index_file.sh 17 2008-06-20 14:40:13Z wayne.graham $
+#!/usr/bin/env bash
 #
 # Bash script to start the import of a binary marc file for Solr indexing.
 #
@@ -150,9 +149,27 @@ then
   SOLRJ_DIR="$VUFIND_HOME/solr/vendor/.solrj"
 fi
 
+REGENERATE_SOLRJ_DIR=0
+if [ -d "$SOLRJ_DIR" ]
+then
+  # validate the .solrj symlinks in case an upgrade has messed something up:
+  find $SOLRJ_DIR -type l ! -exec test -e {} \; -print | grep . > /dev/null
+  if [ $? -eq 0 ]
+  then
+    echo "Bad symlinks found in $SOLRJ_DIR; regenerating directory..."
+    find $SOLRJ_DIR -type l -exec rm {} \+
+    REGENERATE_SOLRJ_DIR=1
+  fi
+fi
+
 if [ ! -d "$SOLRJ_DIR" ]
 then
   mkdir -p $SOLRJ_DIR
+  REGENERATE_SOLRJ_DIR=1
+fi
+
+if [ $REGENERATE_SOLRJ_DIR -eq 1 ]
+then
   for file in $VUFIND_HOME/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/solr*.jar $VUFIND_HOME/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/http*.jar
   do
     ln -s $file $SOLRJ_DIR/`basename "$file"`

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Oracle support code for VTLS Virtua Driver
+ * Oracle support code for VTLS Virtua Driver.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Oracle
@@ -33,7 +33,7 @@ use function count;
 use function is_array;
 
 /**
- * Oracle support code for VTLS Virtua Driver
+ * Oracle support code for VTLS Virtua Driver.
  *
  * @category VuFind
  * @package  Oracle
@@ -44,35 +44,35 @@ use function is_array;
 class Oracle
 {
     /**
-     * Database Handle
+     * Database Handle.
      *
      * @var resource
      */
     protected $dbHandle;
 
     /**
-     * Error information - message
+     * Error information - message.
      *
      * @var string
      */
     protected $lastError;
 
     /**
-     * Error information - type
+     * Error information - type.
      *
      * @var string
      */
     protected $lastErrorType;
 
     /**
-     * Error information - bind params
+     * Error information - bind params.
      *
      * @var array
      */
     protected $lastErrorFields;
 
     /**
-     * Error information - SQL attempted
+     * Error information - SQL attempted.
      *
      * @var string
      */
@@ -109,7 +109,7 @@ class Oracle
     }
 
     /**
-     * Destructor
+     * Destructor.
      *
      * @return void
      */
@@ -154,7 +154,7 @@ class Oracle
     }
 
     /**
-     * Convert data type name into constant
+     * Convert data type name into constant.
      *
      * @param string $data_type Data type (string, integer, float, long, date,
      * row_id, clob, or blob)
@@ -432,11 +432,9 @@ class Oracle
             // For building the sql
             $columns[]      = $column;
             // Dates are special
-            if (count($tmp) > 0 && null !== $datum) {
-                $values[] = "TO_DATE(:$column, '" . implode(':', $tmp) . "')";
-            } else {
-                $values[] = ":$column";
-            }
+            $values[] = count($tmp) > 0 && null !== $datum
+                ? "TO_DATE(:$column, '" . implode(':', $tmp) . "')"
+                : ":$column";
         }
 
         $sql  = "INSERT INTO $table (" . implode(', ', $columns) . ') VALUES (' .

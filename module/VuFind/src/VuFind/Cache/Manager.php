@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * PHP version 8
  *
@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -36,7 +36,7 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -45,7 +45,7 @@ use function is_array;
 use function strlen;
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * Creates caches based on configuration
  *
@@ -151,7 +151,7 @@ class Manager implements LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                 $config  Main VuFind configuration
      * @param StorageAdapterFactory $factory Cache storage adapter factory
@@ -232,6 +232,23 @@ class Manager implements LoggerAwareInterface
         }
 
         return $dir;
+    }
+
+    /**
+     * Get the path to a specific cache.
+     *
+     * @param string $name Name of the cache
+     *
+     * @return string
+     */
+    public function getNamedCacheDir(string $name): string
+    {
+        $config = $this->cacheSpecs[$name] ?? null;
+        $directory = $config['directory'] ?? null;
+        if ($directory === null) {
+            throw new \Exception('Directory not specified for cache ' . $name);
+        }
+        return $this->getCacheDir($config['cliOverride'] ?? true) . $directory;
     }
 
     /**
@@ -323,7 +340,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Ensure that a file cache is properly set up
+     * Ensure that a file cache is properly set up.
      *
      * @param string $name Cache name
      *
@@ -333,8 +350,8 @@ class Manager implements LoggerAwareInterface
     {
         // Use $this->cacheSettings to determine if $this->createFileCache() has been called yet:
         if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
-            $base = $this->getCacheDir($config['cliOverride'] ?? true);
-            $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
+            $cacheDir = $this->getNamedCacheDir($name);
+            $this->createFileCache($name, $cacheDir, $config['options'] ?? []);
         }
     }
 
@@ -354,24 +371,16 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Add a file cache to the manager and ensure that necessary directory exists.
+     * Ensure that a cache directory exists.
      *
-     * @param string $cacheName    Name of new cache to create
      * @param string $dirName      Directory to use for storage
      * @param array  $overrideOpts Options to override default values.
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    public function ensureCacheDirectoryExists($dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
-        if ($opts['disabled'] ?? false) {
-            $this->createNoCache($cacheName);
-            return;
-        } else {
-            // Laminas does not support "disabled = false"; unset to avoid error.
-            unset($opts['disabled']);
-        }
 
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
@@ -401,6 +410,30 @@ class Manager implements LoggerAwareInterface
                 $this->directoryCreationError = true;
             }
         }
+    }
+
+    /**
+     * Add a file cache to the manager and ensure that necessary directory exists.
+     *
+     * @param string $cacheName    Name of new cache to create
+     * @param string $dirName      Directory to use for storage
+     * @param array  $overrideOpts Options to override default values.
+     *
+     * @return void
+     */
+    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    {
+        $opts = array_merge($this->defaults, $overrideOpts);
+        if ($opts['disabled'] ?? false) {
+            $this->createNoCache($cacheName);
+            return;
+        } else {
+            // Laminas does not support "disabled = false"; unset to avoid error.
+            unset($opts['disabled']);
+        }
+
+        $this->ensureCacheDirectoryExists($dirName, $opts);
+
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];
         } elseif (is_array($opts)) {
@@ -421,7 +454,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Create an in-memory cache
+     * Create an in-memory cache.
      *
      * @param array $storageConfig See Storage in RateLimiter.yaml
      *
@@ -441,7 +474,7 @@ class Manager implements LoggerAwareInterface
             $eventManager = $laminasCache->getEventManager();
             $eventManager->attach(
                 'getCapabilities.post',
-                function ($event) use ($laminasCache) {
+                function ($event) use ($laminasCache): void {
                     $oldCapacities = $event->getResult();
                     $newCapacities = new Capabilities(
                         $laminasCache,

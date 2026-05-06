@@ -62,7 +62,7 @@
                 </field>
 
                 <!-- LANGUAGE -->
-                <xsl:for-each select="/oai_doaj:doajArticle/oai_doaj:language">
+                <xsl:for-each select="oai_doaj:language">
                     <xsl:if test="string-length() > 0">
                         <field name="language">
                             <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>

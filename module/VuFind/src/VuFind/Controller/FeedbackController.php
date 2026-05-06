@@ -16,8 +16,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Model\ViewModel;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
@@ -38,7 +38,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Feedback form class
+     * Feedback form class.
      *
      * @var string
      */
@@ -157,7 +157,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check if sender email is blocked
+     * Check if sender email is blocked.
      *
      * @param Form $form Form
      *
@@ -165,12 +165,12 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
      */
     protected function senderIsBlocked(Form $form): bool
     {
-        $config = $this->getConfig()->toArray();
+        $config = $this->getConfigArray();
         return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['blocked_senders'] ?? []));
     }
 
     /**
-     * Check if sender email is ignored
+     * Check if sender email is ignored.
      *
      * @param Form $form Form
      *
@@ -178,12 +178,12 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
      */
     protected function senderIsIgnored(Form $form): bool
     {
-        $config = $this->getConfig()->toArray();
+        $config = $this->getConfigArray();
         return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['ignored_senders'] ?? []));
     }
 
     /**
-     * Check if an email address matches any of the given patterns
+     * Check if an email address matches any of the given patterns.
      *
      * @param Form  $form     Form
      * @param array $patterns Patterns (substring or regexp)

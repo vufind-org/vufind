@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -46,14 +46,14 @@ use VuFindSearch\Query\Query;
 class CursorMarkIdFetcher extends AbstractIdFetcher
 {
     /**
-     * Previous cursor mark
+     * Previous cursor mark.
      *
      * @var string
      */
     protected $prevCursorMark = '';
 
     /**
-     * Default parameters to send to Solr with each request
+     * Default parameters to send to Solr with each request.
      *
      * @var array
      */
@@ -67,7 +67,7 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
     ];
 
     /**
-     * Get the initial offset to seed the search process
+     * Get the initial offset to seed the search process.
      *
      * @return string
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Record Controller
+ * EDS Record Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -34,7 +34,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFindSearch\ParamBag;
 
 /**
- * EDS Record Controller
+ * EDS Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -44,8 +44,10 @@ use VuFindSearch\ParamBag;
  */
 class EdsrecordController extends AbstractRecord
 {
+    use HoldsTrait;
+
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */

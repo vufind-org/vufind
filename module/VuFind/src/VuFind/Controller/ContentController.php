@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content Controller
+ * Content Controller.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -49,7 +49,7 @@ use function is_callable;
 class ContentController extends AbstractBase
 {
     /**
-     * Types/formats of content
+     * Types/formats of content.
      *
      * @var array $types
      */
@@ -59,7 +59,7 @@ class ContentController extends AbstractBase
     ];
 
     /**
-     * Default action if none provided
+     * Default action if none provided.
      *
      * @return ViewModel
      */
@@ -75,7 +75,7 @@ class ContentController extends AbstractBase
         if (false !== ($p = strrpos($page, '/'))) {
             $subPath = substr($page, 0, $p + 1);
             $pathPrefix .= $subPath;
-            // Ensure the the path prefix does not contain extra slashes:
+            // Ensure the path prefix does not contain extra slashes:
             if (str_ends_with($pathPrefix, '//')) {
                 return $this->notFoundAction();
             }
@@ -92,13 +92,15 @@ class ContentController extends AbstractBase
     }
 
     /**
-     * Get ViewModel for markdown based page
+     * Get ViewModel for markdown based page.
      *
      * @param string $page    Page name/route (if applicable)
      * @param string $relPath Relative path to file with content (if applicable)
      * @param string $path    Full path to file with content (if applicable)
      *
      * @return ViewModel
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getViewForMd(string $page, string $relPath, string $path): ViewModel
     {
@@ -108,13 +110,15 @@ class ContentController extends AbstractBase
     }
 
     /**
-     * Get ViewModel for phtml base page
+     * Get ViewModel for phtml base page.
      *
      * @param string $page    Page name/route (if applicable)
      * @param string $relPath Relative path to file with content (if applicable)
      * @param string $path    Full path to file with content (if applicable)
      *
      * @return ViewModel
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getViewForPhtml(string $page, string $relPath, string $path): ViewModel
     {

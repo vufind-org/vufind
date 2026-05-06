@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -57,48 +57,48 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
+class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
-     * HTTP client factory
+     * HTTP client factory.
      *
      * @var callable
      */
     protected $clientFactory;
 
     /**
-     * Primo JWT API URL
+     * Primo JWT API URL.
      *
      * @var string
      */
     protected $jwtUrl;
 
     /**
-     * Primo REST API search URL
+     * Primo REST API search URL.
      *
      * @var string
      */
     protected $searchUrl;
 
     /**
-     * Institution code
+     * Institution code.
      *
      * @var string
      */
     protected $inst;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var SessionContainer
      */
     protected $session;
 
     /**
-     * Response for an empty search
+     * Response for an empty search.
      *
      * @var array
      */
@@ -110,7 +110,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     ];
 
     /**
-     * Mappings from VuFind index names to Primo
+     * Mappings from VuFind index names to Primo.
      *
      * @var array
      */
@@ -124,7 +124,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     ];
 
     /**
-     * Legacy sort mappings
+     * Legacy sort mappings.
      *
      * @var array
      */
@@ -135,7 +135,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Sets up the Primo API Client
      *
@@ -163,7 +163,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
 
     /**
      * Execute a search. Adds all the querystring parameters into
-     * $this->client and returns the parsed response
+     * $this->client and returns the parsed response.
      *
      * @param string $institution Institution
      * @param array  $terms       Associative array:
@@ -259,7 +259,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
 
     /**
      * Get the institution code based on user IP. If user is coming from
-     * off campus return
+     * off campus return.
      *
      * @return string
      */
@@ -269,7 +269,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Support method for query() -- perform inner search logic
+     * Support method for query() -- perform inner search logic.
      *
      * @param array $terms Associative array:
      *     index       string: primo index to search (default "any")
@@ -474,7 +474,16 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
             $control = $pnx->control;
             $display = $pnx->display;
             $search = $pnx->search ?? null;
-            $item['recordid'] = $this->getRecordId($control->recordid[0]);
+            $recordId = $control->recordid[0];
+            if (str_starts_with($recordId, 'dedupmrg')) {
+                $recordId = $control->almaid[0] ?? false;
+                if (!$recordId) {
+                    $recordId = $control->sourcerecordid[0];
+                }
+                $parts = explode('$$', $recordId);
+                $recordId = substr(end($parts), 1);
+            }
+            $item['recordid'] = $this->getRecordId($recordId);
             $item['title'] = $display->title[0] ?? '';
             $item['format'] = $display->type ?? [];
             // creators (use the search fields instead of display (if available) to get them as an array instead of a
@@ -613,7 +622,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Process highlighting tags of the record fields
+     * Process highlighting tags of the record fields.
      *
      * @param array     $record    Record data
      * @param array     $params    Request params
@@ -621,7 +630,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
      *
      * @return void
      */
-    protected function processHighlighting(array &$record, array $params, \StdClass $highlight): void
+    protected function processHighlighting(array &$record, array $params, \stdClass $highlight): void
     {
         if (empty($params['highlight'])) {
             return;
@@ -691,7 +700,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get a JWT token for the session
+     * Get a JWT token for the session.
      *
      * @param bool $renew Whether to renew the token
      *
@@ -720,7 +729,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Build a URL from a configured one
+     * Build a URL from a configured one.
      *
      * @param string $url URL
      *
@@ -732,7 +741,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get a working identifier from an identifier of a search result
+     * Get a working identifier from an identifier of a search result.
      *
      * @param string $id Identifier
      *
@@ -745,7 +754,7 @@ class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInter
     }
 
     /**
-     * Get first subfield from a field that can contain subfields
+     * Get first subfield from a field that can contain subfields.
      *
      * Example field: 'Mattila, Jaakko$$QMattila, Jaakko'
      *

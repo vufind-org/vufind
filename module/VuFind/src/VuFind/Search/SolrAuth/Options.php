@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Authority aspect of the Search Multi-class (Options)
+ * Solr Authority aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuth
@@ -29,8 +29,10 @@
 
 namespace VuFind\Search\SolrAuth;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * Solr Authority Search Options
+ * Solr Authority Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuth
@@ -41,14 +43,14 @@ namespace VuFind\Search\SolrAuth;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->facetsIni = $this->searchIni = 'authority';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
         $this->spellcheck = false;
     }
 

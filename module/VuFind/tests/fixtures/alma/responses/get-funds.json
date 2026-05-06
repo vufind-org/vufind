@@ -1,0 +1,15 @@
+[
+    {
+        "expectedParams": [
+            "/acq/funds",
+            [],
+            [],
+            "GET",
+            null,
+            null,
+            [],
+            false
+        ],
+        "resultFixture": "get-funds.xml"
+    }
+]

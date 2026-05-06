@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -73,6 +73,18 @@ class AuthHashService extends AbstractDbService implements
     }
 
     /**
+     * Retrieve an object from the database based on id.
+     *
+     * @param string $id Hash ID
+     *
+     * @return ?AuthHashEntityInterface
+     */
+    public function getById(string $id): ?AuthHashEntityInterface
+    {
+        return $this->entityManager->find(AuthHashEntityInterface::class, $id);
+    }
+
+    /**
      * Retrieve an object from the database based on hash and type; possibly create a new
      * row if no existing match is found.
      *
@@ -117,8 +129,8 @@ class AuthHashService extends AbstractDbService implements
             . 'ORDER BY ah.created DESC';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('sessionId', $sessionId);
-        $result = $query->getOneOrNullResult();
-        return $result;
+        $query->setMaxResults(1);
+        return $query->getOneOrNullResult();
     }
 
     /**

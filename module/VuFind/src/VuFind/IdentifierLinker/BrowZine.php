@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine identifier linker
+ * BrowZine identifier linker.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -34,10 +34,12 @@ use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
 use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
 use VuFindSearch\Service;
 
+use function count;
 use function in_array;
+use function is_array;
 
 /**
- * BrowZine identifier linker
+ * BrowZine identifier linker.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -50,7 +52,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service $searchService       Search service
      * @param array   $config              Configuration settings
@@ -92,15 +94,15 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     }
 
     /**
-     * Format a single service link.
+     * Format a single service link, or return null if it should not be displayed.
      *
      * @param array  $data       Raw API response data
      * @param string $serviceKey Key being extracted from response
      * @param array  $config     Service-specific configuration settings
      *
-     * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string}
+     * @return ?array{link: string, label: string, data: array, localIcon: ?string, icon: ?string, linkType: ?string}
      */
-    protected function processServiceLink(array $data, string $serviceKey, array $config): array
+    protected function processServiceLink(array $data, string $serviceKey, array $config): ?array
     {
         $serviceData = $data[$serviceKey];
         $result = [
@@ -113,10 +115,16 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         if ('bestIntegratorLink' == $serviceKey) {
             $result['link'] = $serviceData['bestLink'] ?? $result['link'];
 
-            $linkType = $serviceData['linkType'] ?? false;
+            $linkType = $serviceData['linkType'] ?? null;
             $specificConfig = $this->getBestIntegratorLinks()[$linkType] ?? false;
-            if ($specificConfig) {
+            // False means there is no specific config; use the bestIntegratorLink default.
+            // Non-empty array means actually use this specific config.
+            // Empty array means this integrator link type is disabled.
+            if (is_array($specificConfig)) {
                 $config = $specificConfig;
+                if (empty($config)) {
+                    return null;
+                }
             }
             if ($this->config['useBrowzineLabel'] ?? false) {
                 $config['linkText'] = $serviceData['recommendedLinkText'] ?? $config['linkText'];
@@ -130,6 +138,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         } else {
             $result['localIcon'] = $config['localIcon'];
         }
+        $result['linkType'] = $linkType ?? $serviceKey;
         return $result;
     }
 
@@ -153,24 +162,39 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
             if (isset($ids['doi']) && ($doiServices = $this->getDoiServices())) {
                 $command = new LookupDoiCommand('BrowZine', $ids['doi']);
                 $result = $this->searchService->invoke($command)->getResult();
-                $data = $result['data'] ?? null;
-                foreach ($doiServices as $serviceKey => $config) {
-                    if ($this->arrayKeyAvailable($serviceKey, $data)) {
-                        $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
-                    }
-                }
+                $data = $result['data'] ?? [];
+                $response += $this->getLinksByType($data, $idKey, $doiServices);
             } elseif (isset($ids['issn']) && ($issnServices = $this->getIssnServices())) {
                 $command = new LookupIssnsCommand('BrowZine', $ids['issn']);
                 $result = $this->searchService->invoke($command)->getResult();
-                $data = $result['data'][0] ?? null;
-                foreach ($issnServices as $serviceKey => $config) {
-                    if ($this->arrayKeyAvailable($serviceKey, $data)) {
-                        $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
-                    }
-                }
+                $data = $result['data'][0] ?? [];
+                $response += $this->getLinksByType($data, $idKey, $issnServices);
             }
         }
         return $response;
+    }
+
+    /**
+     * Helper method for getLinks. Generate links by link type.
+     *
+     * @param array  $data     Response data from search service
+     * @param string $idKey    Identifier key
+     * @param array  $services Configured services by link type
+     *
+     * @return array An array of link type to an array of links.
+     */
+    protected function getLinksByType(array $data, string $idKey, array $services): array
+    {
+        $links = [];
+        foreach ($services as $serviceKey => $config) {
+            if (
+                $this->arrayKeyAvailable($serviceKey, $data) &&
+                $serviceLink = $this->processServiceLink($data, $serviceKey, $config)
+            ) {
+                $links[] = $serviceLink;
+            }
+        }
+        return $links ? [$idKey => $links] : [];
     }
 
     /**
@@ -184,18 +208,22 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     {
         $result = [];
         foreach ($config as $key => $configLine) {
-            $parts = explode('|', $configLine);
-            $result[$key] = [
-                'linkText' => $parts[0],
-                'localIcon' => $parts[1],
-                'icon' => $parts[2] ?? null,
-            ];
+            if (empty($configLine)) {
+                $result[$key] = [];
+            } else {
+                $parts = explode('|', $configLine);
+                $result[$key] = count($parts) < 2 ? [] : [
+                    'linkText' => $parts[0],
+                    'localIcon' => $parts[1],
+                    'icon' => $parts[2] ?? null,
+                ];
+            }
         }
         return $result;
     }
 
     /**
-     * Get an array of DOI services and their configuration
+     * Get an array of DOI services and their configuration.
      *
      * @return array
      */
@@ -205,7 +233,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     }
 
     /**
-     * Get an array of ISSN services and their configuration
+     * Get an array of ISSN services and their configuration.
      *
      * @return array
      */

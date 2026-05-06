@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -39,6 +39,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function is_callable;
+
 /**
  * CleanHtml helper factory.
  *
@@ -52,14 +54,14 @@ use Psr\Container\ContainerInterface;
 class CleanHtmlFactory implements FactoryInterface
 {
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected ContainerInterface $container;
 
     /**
-     * List of allowed elements in different rendering contexts
+     * List of allowed elements in different rendering contexts.
      *
      * See e.g. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#technical_summary for more
      * information on headings. Note that the defaults below are subsets of all allowed elements.
@@ -73,7 +75,7 @@ class CleanHtmlFactory implements FactoryInterface
     ];
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -92,11 +94,11 @@ class CleanHtmlFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
 
         // Modify default context settings per configuration
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $this->allowedElements = ($config['HTML_Rendering_Contexts']['allowed_elements'] ?? [])
             + $this->allowedElements;
 
@@ -119,8 +121,9 @@ class CleanHtmlFactory implements FactoryInterface
     {
         $config = \HTMLPurifier_Config::createDefault();
         // Set cache path to the object cache
-        $cacheDir
-            = $this->container->get(\VuFind\Cache\Manager::class)->getCache('object')->getOptions()->getCacheDir();
+        $cacheOptions = $this->container->get(\VuFind\Cache\Manager::class)->getCache('object')->getOptions();
+        $cacheDir = is_callable([$cacheOptions, 'getCacheDir']) ? $cacheOptions->getCacheDir() : null;
+
         if ($cacheDir) {
             $config->set('Cache.SerializerPath', $cacheDir);
         }
@@ -144,7 +147,7 @@ class CleanHtmlFactory implements FactoryInterface
     }
 
     /**
-     * Sets additional configuration
+     * Sets additional configuration.
      *
      * @param HTMLPurifier_Config $config  Configuration
      * @param array               $options Additional options

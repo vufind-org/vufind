@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\OAuth2\Entity\ScopeEntity;
 class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * Test access token repository
+     * Test access token repository.
      *
      * @return void
      */
@@ -90,7 +90,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test persisting wrong type of token
+     * Test persisting wrong type of token.
      *
      * @return void
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind CSV importer configuration
+ * VuFind CSV importer configuration.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CSV
@@ -30,7 +30,7 @@
 namespace VuFind\CSV;
 
 /**
- * VuFind CSV importer configuration
+ * VuFind CSV importer configuration.
  *
  * @category VuFind
  * @package  CSV
@@ -41,35 +41,35 @@ namespace VuFind\CSV;
 class ImporterConfig
 {
     /**
-     * Column data
+     * Column data.
      *
      * @var array
      */
     protected $columns = [];
 
     /**
-     * Field data
+     * Field data.
      *
      * @var array
      */
     protected $fields = [];
 
     /**
-     * Batch size
+     * Batch size.
      *
      * @var int
      */
     protected $batchSize = 100;
 
     /**
-     * Input character encoding
+     * Input character encoding.
      *
      * @var string
      */
     protected $encoding = 'UTF-8';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $options Config options
      */
@@ -84,7 +84,7 @@ class ImporterConfig
     }
 
     /**
-     * Get batch size setting
+     * Get batch size setting.
      *
      * @return int
      */
@@ -94,7 +94,7 @@ class ImporterConfig
     }
 
     /**
-     * Get encoding setting
+     * Get encoding setting.
      *
      * @return string
      */
@@ -104,7 +104,7 @@ class ImporterConfig
     }
 
     /**
-     * Add column configuration
+     * Add column configuration.
      *
      * @param int   $column Column number
      * @param array $config Column configuration
@@ -128,7 +128,7 @@ class ImporterConfig
     }
 
     /**
-     * Add field configuration
+     * Add field configuration.
      *
      * @param string $name   Field name
      * @param array  $config Field configuration
@@ -166,7 +166,7 @@ class ImporterConfig
     }
 
     /**
-     * Get all field names
+     * Get all field names.
      *
      * @return string[]
      */

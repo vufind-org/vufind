@@ -17,13 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -41,6 +42,7 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -75,23 +77,32 @@ interface UserListServiceInterface extends DbServiceInterface
     /**
      * Get public lists.
      *
-     * @param array $includeFilter List of list ids or entities to include in result.
-     * @param array $excludeFilter List of list ids or entities to exclude from result.
+     * @param array           $includeFilter List of list ids or entities to include in result.
+     * @param array           $excludeFilter List of list ids or entities to exclude from result.
+     * @param string|string[] $types         Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
-    public function getPublicLists(array $includeFilter = [], array $excludeFilter = []): array;
+    public function getPublicLists(
+        array $includeFilter = [],
+        array $excludeFilter = [],
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
+    ): array;
 
     /**
      * Get lists belonging to the user and their count. Returns an array of arrays with
      * list_entity and count keys.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
+     * @param string|string[]         $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return array
      * @throws Exception
      */
-    public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array;
+    public function getUserListsAndCountsByUser(
+        UserEntityInterface|int $userOrId,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
+    ): array;
 
     /**
      * Get lists associated with a particular tag and/or list of IDs. If IDs and
@@ -102,6 +113,7 @@ interface UserListServiceInterface extends DbServiceInterface
      * @param bool                 $publicOnly        Whether to return only public lists
      * @param bool                 $andTags           Use AND operator when filtering by tag.
      * @param bool                 $caseSensitiveTags Should we treat tags case-sensitively?
+     * @param string|string[]      $types             Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
@@ -110,17 +122,22 @@ interface UserListServiceInterface extends DbServiceInterface
         int|array|null $listId = null,
         bool $publicOnly = true,
         bool $andTags = true,
-        bool $caseSensitiveTags = false
+        bool $caseSensitiveTags = false,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array;
 
     /**
      * Get list objects belonging to the specified user.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
+     * @param string|string[]         $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
-    public function getUserListsByUser(UserEntityInterface|int $userOrId): array;
+    public function getUserListsByUser(
+        UserEntityInterface|int $userOrId,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
+    ): array;
 
     /**
      * Get lists containing a specific record.
@@ -129,12 +146,14 @@ interface UserListServiceInterface extends DbServiceInterface
      * @param string                       $source   Source of record to look up
      * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
      * to a particular user).
+     * @param string|string[]              $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
     public function getListsContainingRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        UserEntityInterface|int|null $userOrId = null
+        UserEntityInterface|int|null $userOrId = null,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array;
 }

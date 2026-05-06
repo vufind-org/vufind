@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Feature Trait - Configuration file path methods
+ * VuFind Action Feature Trait - Configuration file path methods.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -30,7 +30,7 @@
 namespace VuFind\Controller\Feature;
 
 /**
- * VuFind Action Feature Trait - Configuration file path methods
+ * VuFind Action Feature Trait - Configuration file path methods.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -41,7 +41,7 @@ namespace VuFind\Controller\Feature;
 trait ConfigPathTrait
 {
     /**
-     * Get path to base configuration file
+     * Get path to base configuration file.
      *
      * @param string $filename Configuration file name
      *
@@ -54,7 +54,7 @@ trait ConfigPathTrait
     }
 
     /**
-     * Get path to local configuration file (even if it does not yet exist)
+     * Get path to local configuration file (even if it does not yet exist).
      *
      * @param string $filename Configuration file name
      *

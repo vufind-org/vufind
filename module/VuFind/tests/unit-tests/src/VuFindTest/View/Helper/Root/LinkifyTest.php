@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Linkify Test Class
+ * Linkify Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,7 +34,7 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 use VuFind\View\Helper\Root\Linkify;
 
 /**
- * Linkify Test Class
+ * Linkify Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -58,13 +58,13 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
         $urlHighlight
             ->expects($this->once())
             ->method('highlightUrls')
-            ->with($this->equalTo('input text'))
+            ->with('input text')
             ->willReturn('Text with highlighted urls');
 
         $urlHighlightExceptEmail
             ->expects($this->once())
             ->method('highlightUrls')
-            ->with($this->equalTo('input text'))
+            ->with('input text')
             ->willReturn('Text with highlighted urls except emails');
 
         $actual = ($linkify)('input text');

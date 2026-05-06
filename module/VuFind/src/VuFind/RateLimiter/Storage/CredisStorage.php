@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -44,21 +44,21 @@ use Symfony\Component\RateLimiter\Storage\StorageInterface;
 class CredisStorage implements StorageInterface
 {
     /**
-     * Redis version
+     * Redis version.
      *
      * @var int
      */
     protected $redisVersion;
 
     /**
-     * Cache namespace
+     * Cache namespace.
      *
      * @var string
      */
     protected $namespace;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Credis_Client $redis  Redis connection object
      * @param array          $config Redis configuration
@@ -71,7 +71,7 @@ class CredisStorage implements StorageInterface
     }
 
     /**
-     * Save limiter state
+     * Save limiter state.
      *
      * @param LimiterStateInterface $limiterState Limiter state
      *
@@ -87,7 +87,7 @@ class CredisStorage implements StorageInterface
     }
 
     /**
-     * Get limiter state by ID
+     * Get limiter state by ID.
      *
      * @param string $limiterStateId Limiter state ID
      *
@@ -100,7 +100,7 @@ class CredisStorage implements StorageInterface
     }
 
     /**
-     * Delete limiter state by ID
+     * Delete limiter state by ID.
      *
      * @param string $limiterStateId Limiter state ID
      *
@@ -114,7 +114,7 @@ class CredisStorage implements StorageInterface
     }
 
     /**
-     * Create a Redis key from a Limiter state ID
+     * Create a Redis key from a Limiter state ID.
      *
      * @param string $id Limiter state ID
      *

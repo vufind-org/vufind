@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SMS Exception
+ * SMS Exception.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Exceptions
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * SMS Exception
+ * SMS Exception.
  *
  * @category VuFind
  * @package  Exceptions
@@ -48,7 +48,7 @@ class SMS extends \VuFind\Exception\Mail
     public const ERROR_UNKNOWN_CARRIER = 5;
 
     /**
-     * Safe error message to return
+     * Safe error message to return.
      *
      * @var string
      */

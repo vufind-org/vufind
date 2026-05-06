@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata vocabulary implementation for Highwire Press
+ * Metadata vocabulary implementation for Highwire Press.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -30,7 +30,7 @@
 namespace VuFind\MetadataVocabulary;
 
 /**
- * Metadata vocabulary implementation for Highwire Press
+ * Metadata vocabulary implementation for Highwire Press.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -42,7 +42,7 @@ class HighwirePress extends AbstractBase
 {
     /**
      * Mapping from Highwire Press to VuFind fields; see
-     * https://jira.duraspace.org/secure/attachment/13020/Invisible_institutional.pdf
+     * https://jira.duraspace.org/secure/attachment/13020/Invisible_institutional.pdf.
      *
      * @var array
      */
@@ -63,7 +63,7 @@ class HighwirePress extends AbstractBase
     ];
 
     /**
-     * Special implementation for date formats
+     * Special implementation for date formats.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -45,7 +45,7 @@ trait ResourceSortTrait
     /**
      * Apply a sort parameter to a query on the resource table. Returns an
      * array with two keys: 'orderByClause' (the actual ORDER BY) and
-     * 'extraSelect' (extra values to add to SELECT, if necessary)
+     * 'extraSelect' (extra values to add to SELECT, if necessary).
      *
      * @param string $sort  Field to use for sorting (may include
      *                      'desc' qualifier)

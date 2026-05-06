@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Factory;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerInterface;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
@@ -57,33 +57,33 @@ class PrimoBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $primoConfig;
 
     /**
-     * Primo backend class
+     * Primo backend class.
      *
      * @var string
      */
     protected $backendClass = Backend::class;
 
     /**
-     * Primo REST API connector class
+     * Primo REST API connector class.
      *
      * @var string
      */
     protected $restConnectorClass = RestConnector::class;
 
     /**
-     * CDI attribute mappings
+     * CDI attribute mappings.
      *
      * @var array
      */
@@ -119,7 +119,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     ];
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -132,7 +132,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->primoConfig = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject('Primo');
+        $this->primoConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('Primo');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -241,7 +241,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */
@@ -264,7 +264,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a OnCampus Listener
+     * Get a OnCampus Listener.
      *
      * @return InjectOnCampusListener
      */
@@ -275,7 +275,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a PrimoPermissionHandler
+     * Get a PrimoPermissionHandler.
      *
      * @return ?PrimoPermissionHandler
      */
@@ -296,7 +296,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get HTTP options for the client
+     * Get HTTP options for the client.
      *
      * @param string $url URL being requested
      *

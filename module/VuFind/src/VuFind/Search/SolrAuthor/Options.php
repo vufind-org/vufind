@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author aspect of the Search Multi-class (Options)
+ * Author aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -29,8 +29,10 @@
 
 namespace VuFind\Search\SolrAuthor;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -41,13 +43,13 @@ namespace VuFind\Search\SolrAuthor;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // No spell check needed in author module:
         $this->spellcheck = false;
@@ -88,13 +90,13 @@ class Options extends \VuFind\Search\Solr\Options
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $ss = $this->configLoader->get($this->getSearchIni());
+        $ss = $this->configManager->getConfigArray($this->getSearchIni());
 
         // Load the AuthorModuleRecommendations configuration if available, use
         // standard defaults otherwise:
-        if (isset($ss->AuthorModuleRecommendations)) {
+        if (isset($ss['AuthorModuleRecommendations'])) {
             $recommend = [];
-            foreach ($ss->AuthorModuleRecommendations as $section => $content) {
+            foreach ($ss['AuthorModuleRecommendations'] as $section => $content) {
                 $recommend[$section] = [];
                 foreach ($content as $current) {
                     $recommend[$section][] = $current;
@@ -111,7 +113,7 @@ class Options extends \VuFind\Search\Solr\Options
      * Get the search class ID for identifying search box options; this is normally
      * the same as the current search class ID, but some "special purpose" search
      * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
-     * generation
+     * generation.
      *
      * @return string
      */

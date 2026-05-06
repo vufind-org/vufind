@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Db
@@ -55,7 +55,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     use SecretTrait;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
@@ -76,7 +76,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     protected string $wrapperClass = \VuFind\Db\Connection::class;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ?Config             $config    VuFind configuration (provided when used
      * as service; omitted when used as factory)
@@ -91,7 +91,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     }
 
     /**
-     * Create an object (glue code for FactoryInterface compliance)
+     * Create an object (glue code for FactoryInterface compliance).
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -103,6 +103,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -112,7 +114,13 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $this->config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject($this->configName);
+        $doctrineCacheDir = $container
+            ->get('config')['caches']['doctrinemodule.cache.filesystem']['options']['cache_dir'];
+        $cacheManager = $container->get(\VuFind\Cache\Manager::class);
+        $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
+
+        $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }
@@ -192,14 +200,30 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
 
         // Apply MySQL-specific adjustments:
         if ($driver == 'pdo_mysql') {
-            $driverOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT]
-                = $this->config->Database->verify_server_certificate ?? false;
-            $sslKeyMap = [
-                'client_key' => PDO::MYSQL_ATTR_SSL_KEY,
-                'client_cert' => PDO::MYSQL_ATTR_SSL_CERT,
-                'ca_cert' => PDO::MYSQL_ATTR_SSL_CA,
-                'ca_path' => PDO::MYSQL_ATTR_SSL_CAPATH,
-            ];
+            if (PHP_VERSION_ID >= 80400) {
+                // @phpstan-ignore-next-line
+                $driverOptions[Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT]
+                    = $this->config->Database->verify_server_certificate ?? false;
+                $sslKeyMap = [
+                    // @phpstan-ignore-next-line
+                    'client_key' => Pdo\Mysql::ATTR_SSL_KEY,
+                    // @phpstan-ignore-next-line
+                    'client_cert' => Pdo\Mysql::ATTR_SSL_CERT,
+                    // @phpstan-ignore-next-line
+                    'ca_cert' => Pdo\Mysql::ATTR_SSL_CA,
+                    // @phpstan-ignore-next-line
+                    'ca_path' => Pdo\Mysql::ATTR_SSL_CAPATH,
+                ];
+            } else {
+                $driverOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT]
+                    = $this->config->Database->verify_server_certificate ?? false;
+                $sslKeyMap = [
+                    'client_key' => PDO::MYSQL_ATTR_SSL_KEY,
+                    'client_cert' => PDO::MYSQL_ATTR_SSL_CERT,
+                    'ca_cert' => PDO::MYSQL_ATTR_SSL_CA,
+                    'ca_path' => PDO::MYSQL_ATTR_SSL_CAPATH,
+                ];
+            }
             $sslConfigured = false;
             foreach ($sslKeyMap as $oldKey => $newKey) {
                 if (isset($driverOptions[$oldKey])) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -34,7 +34,7 @@ namespace VuFindTest\Backend\Solr;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * @category VuFind
  * @package  Search
@@ -59,7 +59,7 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
         $q = $response->get('q');
         $this->assertEquals('id:"testrecord"', $q[0]);
         $qt = $response->get('qt');
-        $this->assertEquals('morelikethis', $qt[0]);
+        $this->assertNull($qt);
     }
 
     /**

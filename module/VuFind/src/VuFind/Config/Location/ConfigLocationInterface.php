@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for configuration locations
+ * Interface for configuration locations.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config_Location
@@ -30,7 +30,7 @@
 namespace VuFind\Config\Location;
 
 /**
- * Interface for configuration locations
+ * Interface for configuration locations.
  *
  * This is a representation for the location of a configuration. It is based on a file or directory
  * on the system.

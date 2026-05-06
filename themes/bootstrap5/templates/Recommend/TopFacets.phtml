@@ -24,14 +24,17 @@
           <?php foreach ($cluster['list'] as $index => $thisFacet): ?>
             <li class="facet top-facet">
               <span class="top-facet-inner">
-                <?php if ($thisFacet['isApplied']):
+                <?php if ($thisFacet['isApplied'] || $thisFacet['isExcluded']):
                   if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
                     $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
                   } else {
                     $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
                   } ?>
-                  <a href="<?=$removeLink ?>" class="applied">
-                    <?=$this->escapeHtml($thisFacet['displayText'])?> <?=$this->icon('facet-applied') ?><!--
+                  <a href="<?=$removeLink ?>" class="<?=$thisFacet['isApplied'] ? 'applied' : 'excluded'?>">
+                    <?php if ($thisFacet['isExcluded']): ?>
+                      <span class="visually-hidden"><?=$this->transEsc('excluded') ?></span>
+                    <?php endif; ?>
+                    <?=$this->escapeHtml($thisFacet['displayText'])?> <?=$thisFacet['isApplied'] ? $this->icon('facet-applied') : '' ?><!--
                --></a>
                 <?php else: ?>
                   <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
@@ -39,7 +42,7 @@
                --></a>
                   <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
                   <?php if ($allowExclude): ?>
-                    <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
+                    <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEscAttr('exclude_facet') ?>">
                       <?=$this->icon('facet-exclude') ?>
                       <span class="visually-hidden"><?=$this->transEsc('exclude_facet') ?></span>
                     </a>

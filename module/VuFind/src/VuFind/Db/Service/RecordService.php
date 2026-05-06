@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -65,8 +65,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $records = $query->getResult();
-        return count($records) > 0 ? current($records) : null;
+        return $query->getOneOrNullResult();
     }
 
     /**
@@ -118,7 +117,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
     }
 
     /**
-     * Clean up orphaned entries (i.e. entries that are not in favorites anymore)
+     * Clean up orphaned entries (i.e. entries that are not in favorites anymore).
      *
      * @return int Number of records deleted
      */
@@ -142,7 +141,7 @@ class RecordService extends AbstractDbService implements RecordServiceInterface
     }
 
     /**
-     * Delete a record by source and id
+     * Delete a record by source and id.
      *
      * @param string $id     Record ID
      * @param string $source Record source

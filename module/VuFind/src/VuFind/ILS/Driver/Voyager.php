@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -48,7 +48,7 @@ use function intval;
 use function is_array;
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -58,7 +58,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
+class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -73,7 +73,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     protected $lazyDb;
 
     /**
-     * Name of database
+     * Name of database.
      *
      * @var string
      */
@@ -88,28 +88,28 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     protected $statusRankings = false;
 
     /**
-     * Date formatting object
+     * Date formatting object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateFormat;
 
     /**
-     * Whether to use holdings sort groups to sort holdings records
+     * Whether to use holdings sort groups to sort holdings records.
      *
      * @var bool
      */
     protected $useHoldingsSortGroups;
 
     /**
-     * Loan interval types for which to display the due time (empty = all)
+     * Loan interval types for which to display the due time (empty = all).
      *
      * @var array
      */
     protected $displayDueTimeIntervals;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -343,7 +343,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Helper function that returns SQL for getting a sort sequence for a location
+     * Helper function that returns SQL for getting a sort sequence for a location.
      *
      * @param string $locationColumn Column in the full where clause containing
      * the column id
@@ -556,7 +556,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -601,7 +601,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -810,7 +810,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Purchase History Data
+     * Get Purchase History Data.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial). It is used
@@ -857,7 +857,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get specified fields from an MFHD MARC Record
+     * Get specified fields from an MFHD MARC Record.
      *
      * @param MarcReader   $record     Marc reader
      * @param array|string $fieldSpecs Array or colon-separated list of
@@ -1146,7 +1146,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -1199,7 +1199,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1219,7 +1219,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly)
+     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly).
      *
      * @param string $pin PIN code to sanitize
      *
@@ -1232,7 +1232,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1499,7 +1499,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1625,7 +1625,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1732,7 +1732,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function processMyHoldsData($sqlRow)
     {
-        $available = ($sqlRow['HOLD_RECALL_STATUS'] == 2) ? true : false;
+        $available = $sqlRow['HOLD_RECALL_STATUS'] == 2;
         $expireDate = $this->translate('Unknown');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
@@ -1770,7 +1770,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Process Holds List
+     * Process Holds List.
      *
      * This is responsible for processing holds to ensure only one record is shown
      * for each hold.
@@ -1799,7 +1799,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1925,7 +1925,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function processMyStorageRetrievalRequestsData($sqlRow)
     {
-        $available = ($sqlRow['STATUS'] == 4) ? true : false;
+        $available = $sqlRow['STATUS'] == 4;
         $expireDate = '';
         $processedDate = '';
         $statusDate = '';
@@ -1978,7 +1978,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -2005,7 +2005,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -2097,7 +2097,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -2119,14 +2119,14 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -2135,6 +2135,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     *
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -2206,12 +2208,14 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @throws ILSException
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -2281,7 +2285,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -2314,7 +2318,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -2347,7 +2351,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -2380,7 +2384,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -2626,7 +2630,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Execute an SQL query
+     * Execute an SQL query.
      *
      * @param string|array $sql  SQL statement (string or array that includes
      * bind params)
@@ -2651,7 +2655,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     }
 
     /**
-     * Convert string from ISO 8859-1 into UTF-8
+     * Convert string from ISO 8859-1 into UTF-8.
      *
      * @param string $iso88591 String to convert
      *

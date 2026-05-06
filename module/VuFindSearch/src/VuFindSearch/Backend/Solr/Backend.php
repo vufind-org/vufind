@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -108,7 +108,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Set the limit for batch queries
+     * Set the limit for batch queries.
      *
      * @param int $pageSize Records per Query
      *
@@ -183,7 +183,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Clears all accumulated extra request details
+     * Clears all accumulated extra request details.
      *
      * @return void
      */
@@ -228,7 +228,7 @@ class Backend extends AbstractBackend implements
     }
 
     /**
-     * Get Random records
+     * Get Random records.
      *
      * @param AbstractQuery $query  Search query
      * @param int           $limit  Search limit

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Currency formatter
+ * Currency formatter.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -33,7 +33,7 @@ namespace VuFind\Service;
 use NumberFormatter;
 
 /**
- * Currency formatter
+ * Currency formatter.
  *
  * @category VuFind
  * @package  Service
@@ -59,16 +59,15 @@ class CurrencyFormatter
     protected $formatter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string  $defaultCurrency Default currency format (ISO 4217) to use (null for default from system locale)
      * @param ?string $locale          Locale to use for number formatting (null for default system locale)
      */
     public function __construct($defaultCurrency = null, $locale = null)
     {
-        // Initialize number formatter:
-        $locale ??= setlocale(LC_MONETARY, '');
-        $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+        // Initialize number formatter (an empty string makes NumberFormatter use the default locale):
+        $this->formatter = new NumberFormatter($locale ?? '', NumberFormatter::CURRENCY);
 
         // Initialize default currency:
         if (null === $defaultCurrency) {
@@ -78,7 +77,7 @@ class CurrencyFormatter
     }
 
     /**
-     * Convert currency from float to display format
+     * Convert currency from float to display format.
      *
      * @param float  $number   The number to format
      * @param string $currency Currency format (ISO 4217) to use (null for default)

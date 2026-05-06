@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Backend
+ * EDS API Backend.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -46,7 +46,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use function in_array;
 
 /**
- *  EDS API Backend
+ *  EDS API Backend.
  *
  * @category VuFind
  * @package  Search
@@ -59,35 +59,35 @@ class Backend extends AbstractBackend
     use SecretTrait;
 
     /**
-     * Client user to make the actually requests to the EdsApi
+     * Client user to make the actually requests to the EdsApi.
      *
      * @var Connector
      */
     protected $client;
 
     /**
-     * Query builder
+     * Query builder.
      *
      * @var QueryBuilder
      */
     protected $queryBuilder;
 
     /**
-     * User name for EBSCO EDS API account if using UID Authentication
+     * User name for EBSCO EDS API account if using UID Authentication.
      *
      * @var string
      */
     protected $userName;
 
     /**
-     * Password for EBSCO EDS API account if using UID Authentication
+     * Password for EBSCO EDS API account if using UID Authentication.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Profile for EBSCO EDS API account (may be overridden)
+     * Profile for EBSCO EDS API account (may be overridden).
      *
      * @var string
      */
@@ -95,42 +95,42 @@ class Backend extends AbstractBackend
 
     /**
      * Default profile for EBSCO EDS API account (taken from initial config and
-     * never changed)
+     * never changed).
      *
      * @var string
      */
     protected $defaultProfile;
 
     /**
-     * Whether or not to use IP Authentication for communication with the EDS API
+     * Whether or not to use IP Authentication for communication with the EDS API.
      *
      * @var bool
      */
     protected $ipAuth;
 
     /**
-     * Organization EDS API requests are being made for
+     * Organization EDS API requests are being made for.
      *
      * @var string
      */
     protected $orgId;
 
     /**
-     * VuFind Authentication manager
+     * VuFind Authentication manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $authManager = null;
 
     /**
-     * Object cache (for storing authentication tokens)
+     * Object cache (for storing authentication tokens).
      *
      * @var CacheAdapter
      */
     protected $cache;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var SessionContainer
      */
@@ -144,14 +144,14 @@ class Backend extends AbstractBackend
     protected $isGuest;
 
     /**
-     * Backend type
+     * Backend type.
      *
      * @var string
      */
     protected $backendType = null;
 
     /**
-     * Validation config
+     * Validation config.
      *
      * @var array
      */
@@ -307,6 +307,62 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Support method for retrieve(): do the actual EBSCO lookup.
+     *
+     * @param string    $id                  Document identifier
+     * @param string    $authenticationToken Authentication token
+     * @param string    $sessionToken        Session token
+     * @param ?ParamBag $params              Search backend parameters
+     *
+     * @return array
+     * @throws BackendException
+     * @throws ApiException
+     */
+    protected function performEbscoRetrieval(
+        string $id,
+        string $authenticationToken,
+        string $sessionToken,
+        ?ParamBag $params
+    ): array {
+        if ('EDS' === $this->backendType) {
+            $parts = explode(',', $id, 2);
+            if (!isset($parts[1])) {
+                throw new BackendException(
+                    'Retrieval id is not in the correct format.'
+                );
+            }
+            [$dbId, $an] = $parts;
+            $hlTerms = $params?->get('highlightterms') ?? null;
+            $extras = [];
+            if (
+                null !== $params
+                && ($eBookFormat = $params->get('ebookpreferredformat'))
+            ) {
+                $extras['ebookpreferredformat'] = $eBookFormat;
+            }
+            return $this->client->retrieveEdsItem(
+                $an,
+                $dbId,
+                $authenticationToken,
+                $sessionToken,
+                $hlTerms,
+                $extras
+            );
+        } elseif ('EPF' === $this->backendType) {
+            $pubId = $id;
+            return $this->client->retrieveEpfItem(
+                $pubId,
+                $authenticationToken,
+                $sessionToken
+            );
+        } else {
+            throw new BackendException(
+                'Unknown backendType: ' . $this->backendType
+            );
+        }
+    }
+
+    /**
      * Retrieve a single document.
      *
      * @param string    $id     Document identifier
@@ -325,44 +381,7 @@ class Backend extends AbstractBackend
                 $this->profile = $overrideProfile;
             }
             $sessionToken = $this->getSessionToken();
-
-            if ('EDS' === $this->backendType) {
-                $parts = explode(',', $id, 2);
-                if (!isset($parts[1])) {
-                    throw new BackendException(
-                        'Retrieval id is not in the correct format.'
-                    );
-                }
-                [$dbId, $an] = $parts;
-                $hlTerms = (null !== $params)
-                    ? $params->get('highlightterms') : null;
-                $extras = [];
-                if (
-                    null !== $params
-                    && ($eBookFormat = $params->get('ebookpreferredformat'))
-                ) {
-                    $extras['ebookpreferredformat'] = $eBookFormat;
-                }
-                $response = $this->client->retrieveEdsItem(
-                    $an,
-                    $dbId,
-                    $authenticationToken,
-                    $sessionToken,
-                    $hlTerms,
-                    $extras
-                );
-            } elseif ('EPF' === $this->backendType) {
-                $pubId = $id;
-                $response = $this->client->retrieveEpfItem(
-                    $pubId,
-                    $authenticationToken,
-                    $sessionToken
-                );
-            } else {
-                throw new BackendException(
-                    'Unknown backendType: ' . $this->backendType
-                );
-            }
+            $response = $this->performEbscoRetrieval($id, $authenticationToken, $sessionToken, $params);
         } catch (ApiException $e) {
             // Error codes can be reviewed at
             // https://connect.ebsco.com/s/article
@@ -381,13 +400,7 @@ class Backend extends AbstractBackend
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
-                        $response = $this->client->retrieve(
-                            $an,
-                            $dbId,
-                            $authenticationToken,
-                            $sessionToken,
-                            $hlTerms
-                        );
+                        $response = $this->performEbscoRetrieval($id, $authenticationToken, $sessionToken, $params);
                     } catch (Exception $e) {
                         throw new BackendException(
                             $e->getMessage(),
@@ -513,7 +526,7 @@ class Backend extends AbstractBackend
      * Obtain the authentication to use with the EDS API from cache if it exists. If
      * not, then generate a new one.
      *
-     * @param bool $isInvalid whether or not the the current token is invalid
+     * @param bool $isInvalid whether or not the current token is invalid
      *
      * @return string
      */
@@ -564,7 +577,7 @@ class Backend extends AbstractBackend
      * Obtain the autocomplete authentication to use with the EDS API from cache
      * if it exists. If not, then generate a new set.
      *
-     * @param bool $isInvalid whether or not the the current autocomplete data
+     * @param bool $isInvalid whether or not the current autocomplete data
      * is invalid and should be regenerated
      *
      * @return array autocomplete data
@@ -707,7 +720,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Obtain data from the INFO method
+     * Obtain data from the INFO method.
      *
      * @param string $sessionToken Session token (optional)
      *
@@ -767,7 +780,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Set the VuFind Authentication Manager
+     * Set the VuFind Authentication Manager.
      *
      * @param \VuFind\Auth\Manager $authManager Authentication Manager
      *

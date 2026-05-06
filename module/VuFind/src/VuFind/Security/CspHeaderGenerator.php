@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class CspHeaderGenerator
+ * Class CspHeaderGenerator.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Security
@@ -49,26 +49,26 @@ use function in_array;
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class CspHeaderGenerator implements
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Configuration for generator from contensecuritypolicy.ini
+     * Configuration for generator from contensecuritypolicy.ini.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Generated nonce used for one request
+     * Generated nonce used for one request.
      *
      * @var string
      */
     protected $nonce;
 
     /**
-     * List of directives that can work with nonce
+     * List of directives that can work with nonce.
      *
      * @var string[]
      */
@@ -87,7 +87,7 @@ class CspHeaderGenerator implements
     }
 
     /**
-     * Create all relevant CSP-related headers based on given configuration
+     * Create all relevant CSP-related headers based on given configuration.
      *
      * @return array
      */
@@ -107,7 +107,7 @@ class CspHeaderGenerator implements
     }
 
     /**
-     * Create CSP header base on given configuration
+     * Create CSP header base on given configuration.
      *
      * @return ContentSecurityPolicy
      */
@@ -139,7 +139,7 @@ class CspHeaderGenerator implements
     }
 
     /**
-     * Create header object
+     * Create header object.
      *
      * @return ContentSecurityPolicy
      */
@@ -155,7 +155,7 @@ class CspHeaderGenerator implements
     }
 
     /**
-     * Create Report-To header based on given configuration
+     * Create Report-To header based on given configuration.
      *
      * @return ?GenericHeader
      */
@@ -192,7 +192,7 @@ class CspHeaderGenerator implements
     }
 
     /**
-     * Create NEL (Network Error Logging) header based on given configuration
+     * Create NEL (Network Error Logging) header based on given configuration.
      *
      * @return ?GenericHeader
      */

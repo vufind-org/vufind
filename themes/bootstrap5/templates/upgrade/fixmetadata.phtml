@@ -6,21 +6,16 @@
 <?=$this->component('page-title', ['title' => $this->translate('Upgrade VuFind')]);?>
 <?=$this->flashmessages()?>
 
-<p>Some of the items in your resource table appear to be missing metadata.  Adding this metadata may take some time,
-but it will improve the user experience by allowing proper sorting of favorites and tagged records.</p>
-
-<br>
+<p>
+  Some of the items in your resource table appear to be missing metadata. It is recommended to run the
+  <strong>util/update_resource_metadata</strong> utility to update the resources. It can be a time-consuming process,
+  but it will improve the user experience by allowing proper sorting of favorites and tagged records, as well as
+  displaying basic metadata for records that are not available in the search index.
+</p>
+<p>
+  See the <a href="https://vufind.org/wiki/administration:command_line_utilities">Command Line Utilities</a> wiki page for more details.
+</p>
 
 <form method="post" action="<?=$this->url('upgrade-fixmetadata')?>">
-  <input type="submit" name="submitButton" value="<?=$this->transEscAttr('fix_metadata') ?>."><br><br>
-  <input type="submit" name="skip" value="<?=$this->transEscAttr('skip_fix_metadata') ?>." id="skip">
+  <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Next') ?>"><br><br>
 </form>
-<?php
-$confirmText = $this->transEsc('skip_confirm');
-$script = <<<JS
-    $('#skip').click(function(e) {
-      return confirm('{$confirmText}');
-    });
-    JS;
-?>
-<?=$this->assetManager()->outputInlineScriptString($script);

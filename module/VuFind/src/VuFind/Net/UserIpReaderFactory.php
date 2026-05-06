@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Net
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,7 +69,7 @@ class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $allowForwardedIps = $config['Proxy']['allow_forwarded_ips'] ?? false;
         $ipFilter = $config['Proxy']['forwarded_ip_filter'] ?? [];
         return new $requestedName(

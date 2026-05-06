@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get ILS Status" AJAX handler
+ * "Get ILS Status" AJAX handler.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -36,7 +36,7 @@ use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get ILS Status" AJAX handler
+ * "Get ILS Status" AJAX handler.
  *
  * This will check the ILS for being online and will return the ils-offline
  * template upon failure.
@@ -51,21 +51,21 @@ use VuFind\Session\Settings as SessionSettings;
 class GetIlsStatus extends AbstractBase
 {
     /**
-     * ILS connection
+     * ILS connection.
      *
      * @var Connection
      */
     protected $ils;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings   $ss       Session settings
      * @param Connection        $ils      ILS connection

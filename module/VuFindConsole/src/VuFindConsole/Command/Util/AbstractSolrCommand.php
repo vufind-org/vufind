@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -44,14 +44,14 @@ use VuFind\Solr\Writer;
 abstract class AbstractSolrCommand extends Command
 {
     /**
-     * Solr writer
+     * Solr writer.
      *
      * @var Writer
      */
     protected $solr;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Writer      $solr Solr writer
      * @param string|null $name The name of the command; passing null means it

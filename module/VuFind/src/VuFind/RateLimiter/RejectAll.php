@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -59,6 +59,8 @@ class RejectAll implements LimiterInterface
      *                                          (in seconds)
      * @throws ReserveNotSupportedException     if this limiter implementation doesn't support reserving tokens
      * @throws \InvalidArgumentException        if $tokens is larger than the maximum burst size
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function reserve(int $tokens = 1, ?float $maxTime = null): Reservation
     {
@@ -72,6 +74,8 @@ class RejectAll implements LimiterInterface
      * @param int $tokens the number of tokens required
      *
      * @return RateLimit The limit counter
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function consume(int $tokens = 1): RateLimit
     {

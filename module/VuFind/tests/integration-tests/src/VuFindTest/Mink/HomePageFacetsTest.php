@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
-        $this->assertEquals('A - General Works', $this->findCssAndGetText($page, '.home-facet.callnumber-first a'));
+        $this->assertSame('A - General Works', $this->findCssAndGetText($page, '.home-facet.callnumber-first a'));
         $this->clickCss($page, '.home-facet.callnumber-first a');
         $this->waitForPageLoad($page);
         $this->assertStringEndsWith(
@@ -65,48 +65,46 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testHierarchicalFacets
+     * Data provider for testHierarchicalFacets.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function hierarchicalFacetsProvider(): array
+    public static function hierarchicalFacetsProvider(): \Iterator
     {
-        return [
-            'default sort' => [
-                null,
-                null,
-                'all',
-            ],
-            'top level alphabetical' => [
-                'top',
-                'all',
-                'top',
-            ],
-            'all alphabetical' => [
-                'all',
-                'top',
-                'all',
-            ],
-            'count' => [
-                'count',
-                'all',
-                'count',
-            ],
-            'top level alphabetical (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'all alphabetical (inherited)' => [
-                null,
-                'all',
-                'all',
-            ],
-            'count (inherited)' => [
-                null,
-                'count',
-                'count',
-            ],
+        yield 'default sort' => [
+            null,
+            null,
+            'all',
+        ];
+        yield 'top level alphabetical' => [
+            'top',
+            'all',
+            'top',
+        ];
+        yield 'all alphabetical' => [
+            'all',
+            'top',
+            'all',
+        ];
+        yield 'count' => [
+            'count',
+            'all',
+            'count',
+        ];
+        yield 'top level alphabetical (inherited)' => [
+            null,
+            'top',
+            'top',
+        ];
+        yield 'all alphabetical (inherited)' => [
+            null,
+            'all',
+            'all',
+        ];
+        yield 'count (inherited)' => [
+            null,
+            'count',
+            'count',
         ];
     }
 
@@ -117,10 +115,9 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $defaultSort  Default sort option
      * @param string  $expectedSort Expected sort order of options
      *
-     * @dataProvider hierarchicalFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetsProvider')]
     public function testHierarchicalFacets(?string $sort, ?string $defaultSort, string $expectedSort)
     {
         $config = [

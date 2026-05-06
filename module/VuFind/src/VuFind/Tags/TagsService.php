@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tags
@@ -34,7 +34,6 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\Feature\TransactionInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -56,18 +55,18 @@ use function is_array;
 class TagsService
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param TagServiceInterface                               $tagDbService        Tag database service
-     * @param ResourceTagsServiceInterface&TransactionInterface $resourceTagsService Resource/Tags database service
-     * @param UserListServiceInterface                          $userListService     User list database service
-     * @param ResourcePopulator                                 $resourcePopulator   Resource populator service
-     * @param int                                               $maxLength           Maximum tag length
-     * @param bool                                              $caseSensitive       Are tags case sensitive?
+     * @param TagServiceInterface          $tagDbService        Tag database service
+     * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
+     * @param UserListServiceInterface     $userListService     User list database service
+     * @param ResourcePopulator            $resourcePopulator   Resource populator service
+     * @param int                          $maxLength           Maximum tag length
+     * @param bool                         $caseSensitive       Are tags case sensitive?
      */
     public function __construct(
         protected TagServiceInterface $tagDbService,
-        protected ResourceTagsServiceInterface&TransactionInterface $resourceTagsService,
+        protected ResourceTagsServiceInterface $resourceTagsService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected int $maxLength = 64,
@@ -209,7 +208,7 @@ class TagsService
     }
 
     /**
-     * Support method for fixDuplicateTags()
+     * Support method for fixDuplicateTags().
      *
      * @param string $tag           Tag to deduplicate.
      * @param bool   $caseSensitive Treat tags as case-sensitive?
@@ -267,7 +266,7 @@ class TagsService
     }
 
     /**
-     * Get the tags that match a string
+     * Get the tags that match a string.
      *
      * @param string $text  Tag to look up.
      * @param string $sort  Sort type
@@ -302,7 +301,7 @@ class TagsService
      *
      * @param string $text Tag text to match
      *
-     * @return TagsEntityInterface[]
+     * @return ?TagsEntityInterface
      */
     public function getTagByText(string $text): ?TagsEntityInterface
     {
@@ -508,7 +507,7 @@ class TagsService
     }
 
     /**
-     * Get Resource Tags Paginator
+     * Get Resource Tags Paginator.
      *
      * @param ?int    $userId     ID of user (null for any)
      * @param ?int    $resourceId ID of the resource (null for any)

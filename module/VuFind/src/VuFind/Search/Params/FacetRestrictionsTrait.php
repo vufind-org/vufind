@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -44,14 +44,14 @@ use VuFind\Config\Config;
 trait FacetRestrictionsTrait
 {
     /**
-     * Per-field facet prefix
+     * Per-field facet prefix.
      *
      * @var array
      */
     protected $facetPrefixByField = [];
 
     /**
-     * Per-field facet matches
+     * Per-field facet matches.
      *
      * @var array
      */
@@ -75,7 +75,7 @@ trait FacetRestrictionsTrait
     }
 
     /**
-     * Set Facet Prefix by Field
+     * Set Facet Prefix by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
@@ -87,7 +87,7 @@ trait FacetRestrictionsTrait
     }
 
     /**
-     * Set Facet Matches by Field
+     * Set Facet Matches by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *

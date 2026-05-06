@@ -13,12 +13,6 @@
   <input type="hidden" name="redirectInLightbox" value="true">
   <?php if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls action-toolbar">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" name="selectAll" class="checkbox-select-all">
-          <?=$this->transEsc('select_page_cart')?>
-        </label>
-      </div>
       <ul class="cart-control-btns">
         <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
           <?=
@@ -103,6 +97,12 @@
           ?>
         </li>
       </ul>
+    </div>
+    <div class="cart-controls select-all-container">
+      <label class="select-all-label">
+        <input type="checkbox" name="selectAll" class="checkbox-select-all">
+        <?=$this->transEsc('select_page_cart')?>
+      </label>
     </div>
   <?php endif; ?>
   <?=$this->render('cart/contents.phtml')?>

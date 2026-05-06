@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -33,6 +33,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use VuFind\OAuth2\Entity\ScopeEntity;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function in_array;
 
@@ -48,20 +49,14 @@ use function in_array;
 class ScopeRepository implements ScopeRepositoryInterface
 {
     /**
-     * OAuth2 server configuration
+     * Constructor.
      *
-     * @var array
+     * @param array $oauth2Config OAuth2 configuration
      */
-    protected $oauth2Config = [];
-
-    /**
-     * Constructor
-     *
-     * @param array $config OAuth2 configuration
-     */
-    public function __construct(array $config)
-    {
-        $this->oauth2Config = $config;
+    public function __construct(
+        #[Autowire(container: \VuFind\Config\YamlReader::class, service: 'OAuth2Server.yaml')]
+        protected array $oauth2Config
+    ) {
     }
 
     /**

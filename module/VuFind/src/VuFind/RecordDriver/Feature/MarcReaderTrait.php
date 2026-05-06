@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -150,7 +150,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Get the item's publication information
+     * Get the item's publication information.
      *
      * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
      *
@@ -196,7 +196,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return first subfield with the given code in the provided MARC field
+     * Return first subfield with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get
@@ -209,7 +209,7 @@ trait MarcReaderTrait
     }
 
     /**
-     * Return all subfields with the given code in the provided MARC field
+     * Return all subfields with the given code in the provided MARC field.
      *
      * @param array  $field    Result from MarcReader::getFields
      * @param string $subfield The MARC subfield code to get

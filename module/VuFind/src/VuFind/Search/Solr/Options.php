@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr aspect of the Search Multi-class (Options)
+ * Solr aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -29,10 +29,11 @@
 
 namespace VuFind\Search\Solr;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 
 /**
- * Solr Search Options
+ * Solr Search Options.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -45,7 +46,14 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Available sort options for facets
+     * Facet list action route.
+     *
+     * @var string
+     */
+    protected string $facetListAction = 'search-facetlist';
+
+    /**
+     * Available sort options for facets.
      *
      * @var array
      */
@@ -54,14 +62,14 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     ];
 
     /**
-     * Relevance sort override for empty searches
+     * Relevance sort override for empty searches.
      *
      * @var ?string
      */
     protected $emptySearchRelevanceOverride;
 
     /**
-     * Whether to display record versions
+     * Whether to display record versions.
      *
      * @var bool
      */
@@ -75,13 +83,13 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     protected $sortTieBreaker;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->sortTieBreaker = $this->searchSettings['General']['tie_breaker_sort'] ?? null;
         $this->emptySearchRelevanceOverride
@@ -147,7 +155,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
                 $this->defaultSelectedShards = array_keys($this->shards);
             }
             // Apply checkbox visibility setting if applicable:
-            if (null !== ($visibleCheckboxes = $this->searchSettings['ShardPreferences']['showCheckboxes'])) {
+            if (null !== ($visibleCheckboxes = $this->searchSettings['ShardPreferences']['showCheckboxes'] ?? null)) {
                 $this->visibleShardCheckboxes = $visibleCheckboxes;
             }
         }
@@ -182,7 +190,19 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      */
     public function getFacetListAction()
     {
-        return 'search-facetlist';
+        return $this->facetListAction;
+    }
+
+    /**
+     * Override the facet list action (needed for new items).
+     *
+     * @param string $action New facet list action
+     *
+     * @return void
+     */
+    public function setFacetListAction(string $action): void
+    {
+        $this->facetListAction = $action;
     }
 
     /**

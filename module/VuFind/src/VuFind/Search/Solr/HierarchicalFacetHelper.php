@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facet Helper
+ * Facet Helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -45,7 +45,7 @@ use function count;
 use function strlen;
 
 /**
- * Functions for manipulating facets
+ * Functions for manipulating facets.
  *
  * @category VuFind
  * @package  Search
@@ -63,49 +63,49 @@ class HierarchicalFacetHelper implements
     use HasSorterTrait;
 
     /**
-     * Internal constant for sorting by count
+     * Internal constant for sorting by count.
      *
      * @var int
      */
     protected const SORT_COUNT = 0;
 
     /**
-     * Internal constant for sorting top level alphabetically and the rest by count
+     * Internal constant for sorting top level alphabetically and the rest by count.
      *
      * @var int
      */
     protected const SORT_TOP = 1;
 
     /**
-     * Internal constant for sorting all levels alphabetically
+     * Internal constant for sorting all levels alphabetically.
      *
      * @var int
      */
     protected const SORT_ALL = 2;
 
     /**
-     * Internal constant for sorting top level alphabetically by field value and the rest by count
+     * Internal constant for sorting top level alphabetically by field value and the rest by count.
      *
      * @var int
      */
     protected const SORT_TOP_VALUE = 3;
 
     /**
-     * Internal constant for sorting all levels alphabetically by field value
+     * Internal constant for sorting all levels alphabetically by field value.
      *
      * @var int
      */
     protected const SORT_ALL_VALUE = 4;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $viewRenderer = null;
 
     /**
-     * Set view renderer
+     * Set view renderer.
      *
      * @param RendererInterface $renderer View renderer
      *
@@ -122,8 +122,8 @@ class HierarchicalFacetHelper implements
      *
      * Supports both flattened and hierarchical facet lists.
      *
-     * @param array          $facetList Facet list returned from Solr
-     * @param boolean|string $order     Sort order:
+     * @param array       $facetList Facet list returned from Solr
+     * @param bool|string $order     Sort order:
      * - true|top  sort top level alphabetically and the rest by count
      * - false|all sort all levels alphabetically
      * - count     sort all levels by count
@@ -156,6 +156,10 @@ class HierarchicalFacetHelper implements
             // Different level?
             if ($a['level'] != $b['level']) {
                 return $a['level'] <=> $b['level'];
+            }
+            // Exclude first
+            if ($a['isExcluded'] != $b['isExcluded']) {
+                return $a['isExcluded'] ? -1 : 1;
             }
             // Sort by display text:
             if (($sort === static::SORT_ALL || ($a['level'] == 0 && $sort === static::SORT_TOP))) {
@@ -234,7 +238,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Flatten a hierarchical facet list to a simple array
+     * Flatten a hierarchical facet list to a simple array.
      *
      * @param array $facetList Facet list
      *
@@ -260,7 +264,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Format a facet display text for displaying
+     * Format a facet display text for displaying.
      *
      * @param string       $displayText Display text
      * @param bool         $allLevels   Whether to display all levels or only the
@@ -304,7 +308,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Format a filter string in parts suitable for displaying or translation
+     * Format a filter string in parts suitable for displaying or translation.
      *
      * @param string $filter Filter value
      *
@@ -358,7 +362,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Create an item for the hierarchical facet array
+     * Create an item for the hierarchical facet array.
      *
      * @param string         $facet     Facet name
      * @param array          $item      Facet item received from Solr
@@ -428,7 +432,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Update 'opened' of all facet items
+     * Update 'opened' of all facet items.
      *
      * @param array $list Facet list
      *
@@ -440,7 +444,7 @@ class HierarchicalFacetHelper implements
         foreach ($list as &$item) {
             $item['hasAppliedChildren'] = !empty($item['children'])
                 && $this->updateAppliedChildrenStatus($item['children']);
-            if ($item['isApplied'] || $item['hasAppliedChildren']) {
+            if ($item['isApplied'] || $item['isExcluded'] || $item['hasAppliedChildren']) {
                 $result = true;
             }
         }
@@ -448,7 +452,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Filter hierarchical facets
+     * Filter hierarchical facets.
      *
      * @param string  $name    Facet name
      * @param array   $facets  Facet list
