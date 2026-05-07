@@ -40,6 +40,11 @@ on:
           - 'all'
       debug_enabled:
         type: boolean
+        description: 'Finish the build even when tests failed (so artifacts will always be provided)'
+        required: false
+        default: false
+      tmate_enabled:
+        type: boolean
         description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
         required: false
         default: false
@@ -265,17 +270,17 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.phpunit_extra_params }}" ]; then
             # Start selected tests.
-            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test -Dscreenshot_dir=/tmp/build/vufind/screenshots phpunit -Dphpunit_extra_params="${{ github.event.inputs.phpunit_extra_params }}"
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test -Dscreenshot_dir=/tmp/build/vufind/screenshots -Dphpunit_extra_params="${{ github.event.inputs.phpunit_extra_params }}" phpunit || ${{ inputs.debug_enabled }}
           else
             # Runs all available tests.
-            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit || ${{ inputs.debug_enabled }}
           fi
           # The test creates directories and files which are not accessible by the test user.
           # Therefore fix the ownership to allow caching of selected files.
           sudo chown -R $USER: $HOME
 
       - name: Setup tmate session
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.tmate_enabled }}
         uses: mxschmitt/action-tmate@v3
 
       - name: Upload vufind artifacts
