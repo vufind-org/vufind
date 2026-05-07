@@ -47,6 +47,7 @@
     "require": {
         "php": ">=8.2",
         "ahand/mobileesp": "dev-master",
+        "altcha-org/altcha": "^1.1",
         "browscap/browscap-php": "^7.2",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.17.0",

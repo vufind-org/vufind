@@ -138,6 +138,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
                     $errorMessage = $captcha->getErrorMessage();
                 }
             } catch (\Exception $e) {
+                error_log($e);
                 $captchaPassed = false;
                 $errorMessage = $this->translate('captcha_technical_difficulties');
             }

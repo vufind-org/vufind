@@ -1,0 +1,11 @@
+{
+  "name": "vufind-root",
+  "description": "Dependencies for the root theme",
+  "scripts": {
+    "installDeps": "npm install --no-audit && node tools/copyDependencies.mjs",
+    "updateDeps": "npm update && node tools/copyDependencies.mjs"
+  },
+  "dependencies": {
+    "altcha": "^2.1.0"
+  }
+}

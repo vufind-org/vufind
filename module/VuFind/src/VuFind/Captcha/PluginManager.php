@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'altcha' => Altcha::class,
         'demo' => Demo::class,
         'dumb' => Dumb::class,
         'image' => Image::class,
@@ -61,6 +62,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        Altcha::class => AltchaFactory::class,
         Demo::class => InvokableFactory::class,
         Dumb::class => DumbFactory::class,
         Image::class => ImageFactory::class,
