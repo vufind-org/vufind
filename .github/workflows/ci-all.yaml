@@ -254,8 +254,8 @@ jobs:
           # Add configuration which is needed for some tests.
           grep -q "AllowEncodedSlashes On" /etc/apache2/sites-available/000-default.conf ||
           sudo sed -i '/<VirtualHost \*/a \\tAllowEncodedSlashes On' /etc/apache2/sites-available/000-default.conf
-          # Enable development mode in VuFind configuration and add it to Apache2.
-          sed -i 's/#SetEnv VUFIND_ENV development/SetEnv VUFIND_ENV development/' local/httpd-vufind.conf
+          # Enable testing mode in VuFind configuration and add it to Apache2.
+          sed -i 's/#SetEnv VUFIND_ENV development/SetEnv VUFIND_ENV testing/' local/httpd-vufind.conf
           sudo cp local/httpd-vufind.conf /etc/apache2/conf-available/
           sudo a2enconf httpd-vufind
           sudo systemctl restart apache2
