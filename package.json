@@ -1,43 +1,43 @@
 {
-    "name": "vufind",
-    "version": "11.0.4",
-    "description": "Dev tools to handle css preprocessing, js magic, and compression",
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/vufind-org/vufind"
-    },
-    "bugs": {
-        "url": "https://vufind.org/jira"
-    },
-    "scripts": {
-        "postinstall": "npm run installBuildDeps",
-        "installBuildDeps": "npm run installBuildDeps --workspaces --if-present --ignore-scripts",
-        "updateBuildDeps": "npm run updateBuildDeps --workspaces --if-present --ignore-scripts",
+  "name": "vufind",
+  "version": "11.0.4",
+  "description": "Dev tools to handle css preprocessing, js magic, and compression",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/vufind-org/vufind"
+  },
+  "bugs": {
+    "url": "https://vufind.org/jira"
+  },
+  "scripts": {
+    "postinstall": "npm run installBuildDeps",
+    "installBuildDeps": "npm run installBuildDeps --workspaces --if-present --ignore-scripts",
+    "updateBuildDeps": "npm run updateBuildDeps --workspaces --if-present --ignore-scripts",
 
-        "build": "npm run build:scss",
-        "watch": "npm run watch:scss",
-        "build:scss": "node tools/build-css.js --minify",
-        "check:scss": "node tools/build-css.js --check-only",
-        "watch:scss": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\"",
+    "build": "npm run build:scss",
+    "watch": "npm run watch:scss",
+    "build:scss": "node tools/build-css.js --minify",
+    "check:scss": "node tools/build-css.js --check-only",
+    "watch:scss": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\"",
 
-        "build:css": "npm run build:scss",
-        "watch:css": "npm run watch:scss"
-    },
-    "workspaces": [
-        "themes/bootstrap5"
-    ],
-    "dependencies": {
-        "clean-css": "^5.3.3",
-        "commander": "^14.0.0",
-        "nodemon": "^3.1.10",
-        "sass": "1.72.0"
-    },
-    "devDependencies": {
-        "@eslint/js": "^10.0.0",
-        "all-iso-language-codes": "^1.0.13",
-        "eslint": "^10.0.0",
-        "eslint-plugin-jsdoc": "^62.0.0",
-        "eslint-plugin-no-jquery": "^3.0.0",
-        "globals": "^16.0.0"
-    }
+    "build:css": "npm run build:scss",
+    "watch:css": "npm run watch:scss"
+  },
+  "workspaces": [
+    "themes/bootstrap5"
+  ],
+  "dependencies": {
+    "clean-css": "^5.3.3",
+    "commander": "^14.0.0",
+    "nodemon": "^3.1.10",
+    "sass": "1.72.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "all-iso-language-codes": "^1.0.13",
+    "eslint": "^10.0.0",
+    "eslint-plugin-jsdoc": "^62.0.0",
+    "eslint-plugin-no-jquery": "^3.0.0",
+    "globals": "^16.0.0"
+  }
 }
