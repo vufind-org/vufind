@@ -274,7 +274,7 @@ jobs:
             vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test -Dscreenshot_dir=/tmp/build/vufind/screenshots -Dphpunit_extra_params="${{ github.event.inputs.phpunit_extra_params }}" phpunit || ${{ inputs.debug_enabled }}
           else
             # Runs all available tests.
-            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test phpunit || ${{ inputs.debug_enabled }}
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test -Dscreenshot_dir=/tmp/build/vufind/screenshots phpunit || ${{ inputs.debug_enabled }}
           fi
           # The test creates directories and files which are not accessible by the test user.
           # Therefore fix the ownership to allow caching of selected files.
