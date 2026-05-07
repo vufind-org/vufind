@@ -17,14 +17,14 @@
     "watch:css": "npm run watch:scss",
 
     "install:scss-dependencies": "npm run installBuildDeps",
-    "update:scss-dependencies": "npm run updateBuildDeps",
+    "update:scss-dependencies": "npm run updateDeps",
     "build:scss": "npm run installBuildDeps && node tools/build-css.js --minify",
     "check:scss": "npm run installBuildDeps && node tools/build-css.js --check-only",
     "watch:scss": "npm run installBuildDeps && nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\"",
 
     "postinstall": "npm run installBuildDeps",
     "installBuildDeps": "npm run installBuildDeps --workspaces --if-present --ignore-scripts",
-    "updateBuildDeps": "npm run updateBuildDeps --workspaces --if-present --ignore-scripts"
+    "updateDeps": "npm run updateDeps --workspaces --if-present --ignore-scripts"
   },
   "workspaces": [
     "themes/bootstrap5"
