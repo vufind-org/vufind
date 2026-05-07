@@ -37,6 +37,7 @@ on:
           - '8.4'
           - '8.5'
           - 'default'
+          - '8.2, default (8.3), 8.4'
           - 'all'
       debug_enabled:
         type: boolean
@@ -62,7 +63,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ${{ (github.event_name == 'push') && fromJSON('["default"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4", "8.5", "default"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
+        php-version: ${{ (github.event_name == 'push') && fromJSON('["default"]') || (github.event.inputs.php-version == '8.2, default (8.3), 8.4') && fromJSON('["8.2", "8.4", "default"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4", "8.5", "default"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
 
     steps:
       - name: Update old PHP xdebug
