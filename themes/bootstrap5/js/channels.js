@@ -174,6 +174,9 @@ VuFind.register("channels", function Channels() {
       return false;
     }
 
+    // disable more paging
+    disableLoadMoreBtn(btn);
+
     // Reveal hidden items
     const targetChannel = btn.closest(".channel");
     const pageSize = Number(targetChannel.dataset.pageSize);
@@ -181,29 +184,27 @@ VuFind.register("channels", function Channels() {
 
     // If we're waiting for more records
     if (hiddenItems.length === 0) {
-      disableLoadMoreBtn(btn);
       return;
     }
 
     // Reveal hidden items (limit to pageSize)
-    hiddenItems.forEach((item, index) => {
-      if (index < pageSize) {
-        item.classList.remove("hidden-batch-item");
-        clampLines(item.querySelector(".channel-item-title"));
-      }
-    });
+    for (let i = 0; i < pageSize && i < hiddenItems.length; i++) {
+      hiddenItems[i].classList.remove("hidden-batch-item");
+      clampLines(hiddenItems[i].querySelector(".channel-item-title"));
+    }
 
+    // enable more paging
+    enableLoadMoreBtn(btn);
+
+    // do we have enough hidden items to add another page?
     const remainingHiddenItems = hiddenItems.length - pageSize;
-
-    // out of records?
-    if (remainingHiddenItems <= 0) {
-      hideLoadMoreBtn(btn);
+    if (remainingHiddenItems > pageSize) {
       return;
     }
 
-    // skip loading more records?
-    if (remainingHiddenItems > pageSize) {
-      enableLoadMoreBtn(btn);
+    // we don't have any more records to load
+    if (targetChannel.dataset.endReached) {
+      hideLoadMoreBtn(btn);
       return;
     }
 
@@ -221,11 +222,17 @@ VuFind.register("channels", function Channels() {
           ? firstChannel.querySelectorAll(".channel-item")
           : [];
 
+        // mark that we've loaded all records
+        if (records.length < pageSize) {
+          targetChannel.dataset.endReached = true;
+        }
+
+        // no new records to add
         if (records.length === 0) {
-          hideLoadMoreBtn(btn);
           return;
         }
 
+        // add new records (hidden)
         const targetList = targetChannel.querySelector(".channel-list");
         let index = Number(targetChannel.dataset.loaded);
         targetChannel.dataset.loaded = index + records.length;
@@ -240,6 +247,7 @@ VuFind.register("channels", function Channels() {
           clampLines(record.querySelector(".channel-item-title"));
         }
 
+      }).then(() => {
         enableLoadMoreBtn(btn);
       });
 
