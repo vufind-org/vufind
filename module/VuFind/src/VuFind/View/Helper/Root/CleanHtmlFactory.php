@@ -39,6 +39,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function is_callable;
+
 /**
  * CleanHtml helper factory.
  *
@@ -119,8 +121,9 @@ class CleanHtmlFactory implements FactoryInterface
     {
         $config = \HTMLPurifier_Config::createDefault();
         // Set cache path to the object cache
-        $cacheDir
-            = $this->container->get(\VuFind\Cache\Manager::class)->getCache('object')->getOptions()->getCacheDir();
+        $cacheOptions = $this->container->get(\VuFind\Cache\Manager::class)->getCache('object')->getOptions();
+        $cacheDir = is_callable([$cacheOptions, 'getCacheDir']) ? $cacheOptions->getCacheDir() : null;
+
         if ($cacheDir) {
             $config->set('Cache.SerializerPath', $cacheDir);
         }

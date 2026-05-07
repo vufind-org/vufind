@@ -62,6 +62,13 @@ class ExternalSearch implements RecommendInterface
     protected $lookfor;
 
     /**
+     * Name of query parameter containing search query.
+     *
+     * @var string
+     */
+    protected string $lookforParam = 'lookfor';
+
+    /**
      * Store the configuration of the recommendation module.
      *
      * @param string $settingsStr Settings from searches.ini.
@@ -71,9 +78,16 @@ class ExternalSearch implements RecommendInterface
     public function setConfig($settingsStr)
     {
         // Parse the settings:
-        $settings = explode(':', $settingsStr, 2);
-        $this->linkText = $settings[0] ?? null;
-        $this->template = $settings[1] ?? null;
+        $settings = explode(':', $settingsStr);
+        $this->linkText = array_shift($settings) ?? '';
+        $this->template = array_shift($settings) ?? '';
+        // Since URL template likely includes a colon because of ://, we need to reassemble accordingly:
+        $next = array_shift($settings);
+        if (str_starts_with($next ?? '', '//')) {
+            $this->template .= ':' . $next;
+            $next = array_shift($settings);
+        }
+        $this->lookforParam = $next ?? $this->lookforParam;
     }
 
     /**
@@ -91,7 +105,7 @@ class ExternalSearch implements RecommendInterface
      */
     public function init($params, $request)
     {
-        $this->lookfor = $request->get('lookfor');
+        $this->lookfor = $request->get($this->lookforParam);
     }
 
     /**

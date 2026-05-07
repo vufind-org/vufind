@@ -2,8 +2,7 @@
   $formatter = $this->recordDataFormatter($this->driver);
   $coreFields = $formatter->getData($formatter->getDefaults($this->defaults ?? 'core'));
   $dbLabel = $this->driver->getDbLabel();
-  $accessLevel = $this->driver->getAccessLevel();
-  $restrictedView = empty($accessLevel) ? false : true;
+  $restrictedView = $this->driver->isRestrictedView();
   $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
 ?>
 <?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>

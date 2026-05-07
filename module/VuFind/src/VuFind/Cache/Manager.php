@@ -235,6 +235,23 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
+     * Get the path to a specific cache.
+     *
+     * @param string $name Name of the cache
+     *
+     * @return string
+     */
+    public function getNamedCacheDir(string $name): string
+    {
+        $config = $this->cacheSpecs[$name] ?? null;
+        $directory = $config['directory'] ?? null;
+        if ($directory === null) {
+            throw new \Exception('Directory not specified for cache ' . $name);
+        }
+        return $this->getCacheDir($config['cliOverride'] ?? true) . $directory;
+    }
+
+    /**
      * Get the names of all available caches.
      *
      * @return array
@@ -333,8 +350,8 @@ class Manager implements LoggerAwareInterface
     {
         // Use $this->cacheSettings to determine if $this->createFileCache() has been called yet:
         if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
-            $base = $this->getCacheDir($config['cliOverride'] ?? true);
-            $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
+            $cacheDir = $this->getNamedCacheDir($name);
+            $this->createFileCache($name, $cacheDir, $config['options'] ?? []);
         }
     }
 
