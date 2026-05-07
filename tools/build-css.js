@@ -71,11 +71,11 @@ function compileTheme(themeName) {
   const compiled = sass.compile(
     themePath(themeName, `scss/${CLI_OPTIONS.entry}`),
     {
-      loadPaths: getLoadPaths(themeName),
       style: "expanded",
       sourceMap: DO_SOURCEMAPS,
       embedSources: true,
-      quietDeps: true,
+      // no equivalent for no-error-css
+      loadPaths: getLoadPaths(themeName),
     }
   );
 
@@ -91,10 +91,10 @@ function compileTheme(themeName) {
 
     // @link https://github.com/twbs/bootstrap/blob/main/package.json
     // cleancss -O1 --format breakWith=lf --with-rebase --source-map --source-map-inline-sources
-    // rebasing breaks Font Awesome icons
     const compressor = new CleanCSS({
       level: 1,
       format: { breakWith: 'lf' },
+      // rebasing breaks Font Awesome icons
       sourceMap: DO_SOURCEMAPS,
       sourceMapInlineSources: true,
     });
