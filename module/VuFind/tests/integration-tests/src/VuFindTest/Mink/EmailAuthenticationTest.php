@@ -133,6 +133,72 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testEmailAuthenticationAttemptLimit.
+     *
+     * @return \Iterator
+     */
+    public static function emailAuthenticationAttemptLimitProvider(): \Iterator
+    {
+        yield [null, 3];
+        yield [0, 1];
+        yield [1, 1];
+        yield [4, 4];
+    }
+
+    /**
+     * Test the email authentication maximum attempt limit.
+     *
+     * @param ?int $configuredLimit Limit to set in configuration, or null for default
+     * @param int  $limit           Limit to test for
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailAuthentication')]
+    #[DataProvider('emailAuthenticationAttemptLimitProvider')]
+    public function testEmailAuthenticationAttemptLimit(?int $configuredLimit, int $limit): void
+    {
+        $config = null === $configuredLimit
+            ? []
+            : [
+                'Authentication' => [
+                    'otp_max_attempts' => $configuredLimit,
+                ],
+            ];
+        $this->setUpDatabaseEmailConfig($config);
+
+        $this->resetEmailLog();
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
+        // Request login:
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@ignore.com');
+        $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
+        $this->assertSame(
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+            . " If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-info')
+        );
+
+        for ($attempt = 1; $attempt <= $limit + 1; $attempt++) {
+            // Enter an invalid code:
+            $this->findCssAndSetValue($page, '#login_Email_password', '123');
+            $this->clickCss($page, '.form-login .btn-primary');
+            $expectedError = $attempt === $limit + 1
+                ? 'The authentication request has expired.'
+                : 'Invalid login -- please try again.';
+            $this->assertSame(
+                $expectedError,
+                $this->findCssAndGetText($page, '.alert-danger')
+            );
+        }
+
+        // Clean up the email log:
+        $this->resetEmailLog();
+    }
+
+    /**
      * Data provider for testILSEmailAuthentication.
      *
      * @return \Iterator
@@ -263,27 +329,32 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Set up configuration for Database+Email authentication.
      *
+     * @param array $config Any configuration to augment or override defaults
+     *
      * @return void
      */
-    protected function setUpDatabaseEmailConfig(): void
+    protected function setUpDatabaseEmailConfig(array $config = []): void
     {
         // Set up configs, session and message logging:
         $this->changeConfigs(
             [
-                'config' => [
-                    'Authentication' => [
-                        'method' => 'ChoiceAuth',
+                'config' => array_merge_recursive(
+                    [
+                        'Authentication' => [
+                            'method' => 'ChoiceAuth',
+                        ],
+                        'ChoiceAuth' => [
+                            'choice_order' => 'Database,Email',
+                        ],
+                        'Mail' => [
+                            'testOnly' => true,
+                            'message_log' => $this->getEmailLogPath(),
+                            'message_log_format' => $this->getEmailLogFormat(),
+                            'default_from' => 'noreply@vufind.org',
+                        ],
                     ],
-                    'ChoiceAuth' => [
-                        'choice_order' => 'Database,Email',
-                    ],
-                    'Mail' => [
-                        'testOnly' => true,
-                        'message_log' => $this->getEmailLogPath(),
-                        'message_log_format' => $this->getEmailLogFormat(),
-                        'default_from' => 'noreply@vufind.org',
-                    ],
-                ],
+                    $config
+                ),
             ]
         );
     }

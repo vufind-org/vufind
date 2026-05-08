@@ -250,7 +250,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $otpObject->setLabel($email);
         $otp = $otpObject->at($otpObject->getCounter());
 
-        $hash = $otp . '||' . md5(random_bytes(32));
+        // Random bytes just ensure that the hash is unique:
+        $hash = $otp . '||' . md5(random_bytes(32)) . '||0';
         $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_OTP);
 
         $row->setSessionId($sessionId)
@@ -292,14 +293,27 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             throw new AuthException('authentication_error_expired');
         }
 
+        // Update attempt count:
+        $hashParts = explode('||', $row->getHash());
+        $storedOtp = $hashParts[0];
+        // Account for existing hashes that don't contain the attempt counter and increase the counter:
+        $attempts = ($hashParts[2] ?? 0) + 1;
+        $hashParts[2] = $attempts;
+        $row->setHash(implode('||', $hashParts));
+        $this->authHashService->persistEntity($row);
+        // Check the maximum attempt limit:
+        $maxAttempts = max($this->config->Authentication->otp_max_attempts ?? 3, 1);
+        if ($attempts > $maxAttempts) {
+            throw new AuthException('authentication_error_expired');
+        }
         // Verify password:
-        [$storedOtp] = explode('||', $row->getHash());
         if ($otp === $storedOtp) {
             // Success; extract data and clean up:
             $authData = json_decode($row->getData(), true);
             $this->authHashService->deleteAuthHash($row);
             return $authData;
         }
+
         // Failure; keep the hash for retries.
         return null;
     }
