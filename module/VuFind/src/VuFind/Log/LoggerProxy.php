@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Logger Proxy
+ * VuFind Logger Proxy.
  *
  * PHP version 8
  *
@@ -51,21 +51,21 @@ use function func_get_args;
 class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
 {
     /**
-     * Callback for creating the actual class
+     * Callback for creating the actual class.
      *
      * @var callable
      */
     protected $callback;
 
     /**
-     * Logger implementation
+     * Logger implementation.
      *
      * @var Logger
      */
     protected $logger = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable $callback Callback for creating the actual class. The first argument is passed by
      * reference and should be set to a PSR-3 logger by the callback (in order to populate $this->logger).
@@ -77,7 +77,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an emergency
+     * Log an emergency.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -90,7 +90,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an emergency
+     * Log an emergency.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -105,7 +105,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an alert
+     * Log an alert.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -118,7 +118,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log a critical error
+     * Log a critical error.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -131,7 +131,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log a critical error
+     * Log a critical error.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params
@@ -146,7 +146,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an error
+     * Log an error.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -159,7 +159,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an error
+     * Log an error.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params
@@ -174,7 +174,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log a warning
+     * Log a warning.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -187,7 +187,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log a warning
+     * Log a warning.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params
@@ -202,7 +202,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log a notice
+     * Log a notice.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -215,7 +215,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log an info message
+     * Log an info message.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -228,7 +228,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Log a debug message
+     * Log a debug message.
      *
      * @param Stringable|string $message Message
      * @param array             $context Extra params (context from PSR-3)
@@ -256,7 +256,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
 
     /**
      * Log an exception triggered by the framework for administrative purposes.
-     * (Part of ExtendedLoggerInterface)
+     * (Part of ExtendedLoggerInterface).
      *
      * @param \Exception                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
@@ -269,7 +269,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Proxy any other Logger method
+     * Proxy any other Logger method.
      *
      * @param string $methodName The name of the called method
      * @param array  $params     Array of passed parameters
@@ -282,7 +282,7 @@ class LoggerProxy implements LoggerInterface, ExtendedLoggerInterface
     }
 
     /**
-     * Get logger
+     * Get logger.
      *
      * @return Logger
      */

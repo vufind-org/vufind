@@ -52,7 +52,7 @@ use VuFind\OAuth2\Repository\IdentityRepository;
 class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * OAuth2 configuration
+     * OAuth2 configuration.
      *
      * @var array
      */
@@ -81,14 +81,14 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     ];
 
     /**
-     * User's birth date
+     * User's birth date.
      *
      * @var string
      */
     protected $userBirthDate;
 
     /**
-     * Setup tests
+     * Setup tests.
      *
      * @return void
      */
@@ -99,7 +99,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Data provider for testIdentityRepository
+     * Data provider for testIdentityRepository.
      *
      * @return \Iterator
      */
@@ -111,7 +111,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test identity repository
+     * Test identity repository.
      *
      * @param ?bool $blocks Blocks status
      *
@@ -158,7 +158,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Get a mock ILSAuthenticator
+     * Get a mock ILSAuthenticator.
      *
      * @return ILSAuthenticator
      * @throws InvalidArgumentException
@@ -177,7 +177,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test identity repository with a failing ILS connection
+     * Test identity repository with a failing ILS connection.
      *
      * @return void
      */
@@ -215,7 +215,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
      * @return MockObject&UserEntityInterface
      */
@@ -356,7 +356,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Create a hash from a user name
+     * Create a hash from a user name.
      *
      * @param string $username User name
      *

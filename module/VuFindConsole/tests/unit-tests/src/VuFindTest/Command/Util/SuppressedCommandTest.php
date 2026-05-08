@@ -86,7 +86,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test no results coming back from ILS
+     * Test no results coming back from ILS.
      *
      * @return void
      */
@@ -132,7 +132,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test no results coming back from ILS
+     * Test no results coming back from ILS.
      *
      * @return void
      */

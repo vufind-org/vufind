@@ -126,7 +126,13 @@ trait SectionTrait
         return array_filter(
             $list,
             function ($item) {
-                return !isset($item['checkMethod']) || $this->{$item['checkMethod']}();
+                if (!isset($item['checkMethod'])) {
+                    return true;
+                }
+                if ('alwaysFail' === $item['checkMethod']) {
+                    return false;
+                }
+                return $this->{$item['checkMethod']}();
             }
         );
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Timed method blocks view helper
+ * Timed method blocks view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Timed method blocks view helper
+ * Timed method blocks view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,7 +41,7 @@ namespace VuFind\View\Helper\Root;
 class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Returns a display string of timed blocks from driver configuration
+     * Returns a display string of timed blocks from driver configuration.
      *
      * @param string $methodName        Method to check
      * @param string $methodDisplayName Method display name translation key (Defaults to "This feature")

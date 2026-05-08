@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Writing Integration Test Class
+ * Config Writing Integration Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\PathResolver;
 use VuFindTest\Integration\ConfigTestCase;
 
 /**
- * Config Writing Integration Test Class
+ * Config Writing Integration Test Class.
  *
  * @category VuFind
  * @package  Tests

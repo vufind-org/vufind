@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get User Holds" AJAX handler
+ * "Get User Holds" AJAX handler.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 /**
- * "Get User Holds" AJAX handler
+ * "Get User Holds" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX

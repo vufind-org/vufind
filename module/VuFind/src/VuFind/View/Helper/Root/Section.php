@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function is_callable;
 use function is_string;
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -51,9 +51,19 @@ class Section extends AbstractHelper
     use ClassBasedTemplateRendererTrait;
 
     /**
+     * Section context key.
+     */
+    public const SECTION_PLUGIN_KEY = '__sectionPlugin';
+
+    /**
+     * Section context key.
+     */
+    public const SECTION_CONTEXT_KEY = '__sectionContext';
+
+    /**
      * Additional context key.
      */
-    public const ADDITIONAL_CONTEXT_KEY = '__context';
+    public const ADDITIONAL_CONTEXT_KEY = '__additionalContext';
 
     /**
      * Default template directory.
@@ -139,14 +149,17 @@ class Section extends AbstractHelper
      */
     public function render(array $context = []): string
     {
-        $mergedContext = array_merge($this->section->getSectionContext(), $context);
+        $sectionContext = $this->section->getSectionContext();
+        $mergedContext = array_merge($sectionContext, $context);
+        $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
+        $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
         if ($this->getView()->resolver()->resolve($this->template)) {
             return $this->getView()->render($this->template, $mergedContext);
         } else {
             // Default to class-based template.
             $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = strtolower($this->section::class);
+            $className = $this->section::class;
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
     }

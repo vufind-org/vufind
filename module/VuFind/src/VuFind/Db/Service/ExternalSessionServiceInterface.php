@@ -63,7 +63,7 @@ interface ExternalSessionServiceInterface extends DbServiceInterface
     ): ExternalSessionEntityInterface;
 
     /**
-     * Retrieve objects from the database based on an external session ID
+     * Retrieve objects from the database based on an external session ID.
      *
      * @param string $sid External session ID to retrieve
      *

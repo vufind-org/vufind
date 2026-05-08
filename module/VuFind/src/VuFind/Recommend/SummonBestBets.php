@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonBestBets Recommendations Module
+ * SummonBestBets Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * SummonBestBets Recommendations Module
+ * SummonBestBets Recommendations Module.
  *
  * This class provides best bets recommendations by doing a search of Summon.
  *

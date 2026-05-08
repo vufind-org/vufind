@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\RecordDriver\Response;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
 /**
- * SolrMarc Record Driver Test Class
+ * SolrMarc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use VuFind\RecordDriver\Response\PublicationDetails;
 class PublicationDetailsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test getters
+     * Test getters.
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class PublicationDetailsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test __toString
+     * Test __toString.
      *
      * @return void
      */

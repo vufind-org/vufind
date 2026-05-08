@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ObalkyKnihCoversFactory
+ * Class ObalkyKnihCoversFactory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class ObalkyKnihCoversFactory
+ * Class ObalkyKnihCoversFactory.
  *
  * @category VuFind
  * @package  Content
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class ObalkyKnihServiceFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get User Storage Retrieval Requests" AJAX handler
+ * "Get User Storage Retrieval Requests" AJAX handler.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 /**
- * "Get User Storage Retrieval Requests" AJAX handler
+ * "Get User Storage Retrieval Requests" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX

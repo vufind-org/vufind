@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2025.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -91,7 +91,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test disabled blended search
+     * Test disabled blended search.
      *
      * @return void
      */
@@ -119,7 +119,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testSearch
+     * Data provider for testSearch.
      *
      * @return \Iterator
      */
@@ -153,7 +153,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test blended search
+     * Test blended search.
      *
      * @param array  $queryParams    Query parameters
      * @param string $path           URL path
@@ -240,7 +240,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test checkbox filters
+     * Test checkbox filters.
      *
      * @return void
      */
@@ -276,7 +276,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test advanced search (and Blender as default)
+     * Test advanced search (and Blender as default).
      *
      * @return void
      */
@@ -351,7 +351,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test disabled advanced search
+     * Test disabled advanced search.
      *
      * @return void
      */
@@ -379,7 +379,65 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get expected labels for the first result pages
+     * Test facet default values.
+     *
+     * @return void
+     */
+    public function testFacetDefaultValues(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'Blender' => 'Blended',
+                    ],
+                ],
+                'Blender' => $this->getBlenderIniOverrides(),
+            ],
+            ['Blender']
+        );
+        $this->changeYamlConfigs(
+            [
+                'BlenderMappings' => [
+                    'Facets' => [
+                        'Fields' => [
+                            'def1' => [
+                                'Mappings' => [
+                                    'Solr' => [
+                                        'Field' => 'format',
+                                        'DefaultValue' => 'Book',
+                                    ],
+                                ],
+                            ],
+                            'def2' => [
+                                'Mappings' => [
+                                    'Solr' => [
+                                        'Field' => 'format',
+                                        'DefaultValue' => 'Manuscript',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Blender/Results?filter%5B%5D=blender_backend%3ASolr'));
+        $page = $session->getPage();
+
+        $text = $this->findCssAndGetText($page, '.search-stats strong');
+        [$start, $limit] = explode(' - ', $text);
+        $this->assertSame(1, intval($start));
+        $this->assertSame(2, intval($limit));
+        $this->assertSame('old1', $this->findCss($page, '#result0 .hiddenId')->getValue());
+        $this->assertSame('old2', $this->findCss($page, '#result1 .hiddenId')->getValue());
+    }
+
+    /**
+     * Get expected labels for the first result pages.
      *
      * @param int $page Page (1 or 2)
      *

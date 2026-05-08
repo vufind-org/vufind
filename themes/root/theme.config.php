@@ -2,6 +2,9 @@
 return [
     'extends' => false,
     'helpers' => [
+        'abstract_factories' => [
+            \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+        ],
         'factories' => [
             'Laminas\View\Helper\HeadTitle' => 'VuFind\View\Helper\Root\HeadTitleFactory',
             'VuFind\View\Helper\Root\AccountCapabilities' => 'VuFind\View\Helper\Root\AccountCapabilitiesFactory',
@@ -22,7 +25,6 @@ return [
             'VuFind\View\Helper\Root\Component' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Config' => 'VuFind\View\Helper\Root\ConfigFactory',
             'VuFind\View\Helper\Root\Content' => 'VuFind\View\Helper\Root\ContentFactory',
-            'VuFind\View\Helper\Root\CookieConsent' => 'VuFind\View\Helper\Root\CookieConsentFactory',
             'VuFind\View\Helper\Root\CookieManager' => 'VuFind\View\Helper\Root\CookieManagerFactory',
             'VuFind\View\Helper\Root\ContentBlock' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Context' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -167,6 +169,7 @@ return [
             'matomo' => 'VuFind\View\Helper\Root\Matomo',
             'metadata' => 'VuFind\View\Helper\Root\Metadata',
             'methodTimedBlocks' => 'VuFind\View\Helper\Root\MethodTimedBlocks',
+            'notices' => VuFind\View\Helper\Root\Notices::class,
             'openUrl' => 'VuFind\View\Helper\Root\OpenUrl',
             'operatorToFieldPrefix' => 'VuFind\View\Helper\Root\OperatorToFieldPrefix',
             'overdrive' => 'VuFind\View\Helper\Root\Overdrive',

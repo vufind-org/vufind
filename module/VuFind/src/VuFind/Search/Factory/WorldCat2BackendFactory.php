@@ -60,21 +60,21 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     protected $logger;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * WorldCat v2 configuration
+     * WorldCat v2 configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $wcConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -172,7 +172,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

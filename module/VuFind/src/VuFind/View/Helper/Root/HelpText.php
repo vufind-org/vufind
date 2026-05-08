@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Load help text" view helper
+ * "Load help text" view helper.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * "Load help text" view helper
+ * "Load help text" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,21 +41,21 @@ namespace VuFind\View\Helper\Root;
 class HelpText extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * The content view helper
+     * The content view helper.
      *
      * @var Content
      */
     protected $contentHelper;
 
     /**
-     * Warning messages
+     * Warning messages.
      *
      * @var array
      */
     protected $warnings = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Content $content The content view helper
      */

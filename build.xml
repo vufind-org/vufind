@@ -77,9 +77,18 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="11.0.0" />
+  <property name="version" value="11.0.4" />
 
-  <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
+  <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport}" />
+  <!-- Add user if not empty -->
+  <if>
+    <not>
+      <equals arg1="${mysqlrootuser}" arg2="" />
+    </not>
+    <then>
+      <property name="mysqlconnectionargs" override="true" value="${mysqlconnectionargs} -u ${mysqlrootuser}" />
+    </then>
+  </if>
   <!-- Add password if not empty -->
   <if>
     <not>
@@ -148,7 +157,6 @@
     <phingcall target="phpmd"/>
     <phingcall target="pdepend"/>
     <phingcall target="eslint-report"/>
-    <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
     <phingcall target="rector-console"/>
   </target>
@@ -163,7 +171,6 @@
   <!-- Quality Assurance Javascript Tasks -->
   <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
-    <phingcall target="jshint"/>
     <phingcall target="checkSassBuild"/>
   </target>
 
@@ -284,29 +291,17 @@
   <!-- ESLint -->
   <target name="eslint">
     <exec executable="npx" escape="false" checkreturn="true" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js" />
+      <arg line="eslint ${srcdir}/themes/**/*.js" />
     </exec>
   </target>
   <target name="eslint-fix">
     <exec executable="npx" escape="false" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --fix" />
+      <arg line="eslint ${srcdir}/themes/**/*.js --fix" />
     </exec>
   </target>
   <target name="eslint-report">
     <exec executable="npx" escape="false">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
-    </exec>
-  </target>
-
-  <!-- JSHint -->
-  <target name="jshint">
-    <exec executable="npx" checkreturn="true" passthru="true">
-      <arg line="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules ${srcdir}/themes" />
-    </exec>
-  </target>
-  <target name="jshint-report">
-    <exec executable="npx">
-      <arg line="jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor,themes/*/node_modules --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
+      <arg line="eslint ${srcdir}/themes/**/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
     </exec>
   </target>
 
@@ -1202,6 +1197,9 @@ ${git_status}
 
     <phingcall target="configure_install" />
     <phingcall target="setup_database" />
+    <!-- We need to reload these two MARC files to repopulate the change_tracker database table -->
+    <phingcall target="importrec"><property name="filename" value="tests/data/author_relator_preload.mrc" /></phingcall>
+    <phingcall target="importrec"><property name="filename" value="tests/data/author_relators.mrc" /></phingcall>
     <phingcall target="delete_fake_records" />
   </target>
 

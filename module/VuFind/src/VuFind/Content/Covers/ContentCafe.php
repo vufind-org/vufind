@@ -41,21 +41,21 @@ namespace VuFind\Content\Covers;
 class ContentCafe extends \VuFind\Content\AbstractCover
 {
     /**
-     * API password
+     * API password.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Base URL
+     * Base URL.
      *
      * @var string
      */
     protected $baseURL;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config Configuration
      */

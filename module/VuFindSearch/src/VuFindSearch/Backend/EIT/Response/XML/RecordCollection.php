@@ -34,7 +34,7 @@ use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
  * EIT record collection.
- * Largely copied from the WorldCat record collection
+ * Largely copied from the WorldCat record collection.
  *
  * @category VuFind
  * @package  Search

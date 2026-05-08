@@ -44,7 +44,7 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 class TermsTest extends TestCase
 {
     /**
-     * Test terms
+     * Test terms.
      *
      * @return void
      */

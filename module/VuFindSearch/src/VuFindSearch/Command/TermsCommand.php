@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Fetch terms from the backend (currently only supported by Solr)
+ * Fetch terms from the backend (currently only supported by Solr).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 
 /**
- * Fetch terms from the backend (currently only supported by Solr)
+ * Fetch terms from the backend (currently only supported by Solr).
  *
  * @category VuFind
  * @package  Search

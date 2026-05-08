@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translate with prefix + escape view helper
+ * Translate with prefix + escape view helper.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
- * Translate with prefix + escape view helper
+ * Translate with prefix + escape view helper.
  *
  * Like transEsc, but applies a prefix to the translation key.
  *
@@ -51,7 +51,7 @@ class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterf
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Translate and escape a value while applying a prefix
+     * Translate and escape a value while applying a prefix.
      *
      * @param string              $prefix          Translation key prefix
      * @param string|object|array $str             String to translate or an array of text

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonResults Test Class
+ * SummonResults Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Recommend\SummonResults;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * SummonResults Test Class
+ * SummonResults Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +54,6 @@ class SummonResultsTest extends \PHPUnit\Framework\TestCase
     {
         $class = new \ReflectionClass(SummonResults::class);
         $method = $class->getMethod('getSearchClassId');
-        $method->setAccessible(true);
         $runner = $this->createMock(\VuFind\Search\SearchRunner::class);
         $obj = new SummonResults($runner, $this->getMockConfigManager());
         $this->assertSame('Summon', $method->invoke($obj));

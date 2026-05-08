@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS Driver Plugin Manager Test Class
+ * ILS Driver Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\PluginManager;
 
 /**
- * ILS Driver Plugin Manager Test Class
+ * ILS Driver Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

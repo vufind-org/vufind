@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication view helper
+ * Authentication view helper.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
- * Authentication view helper
+ * Authentication view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,21 +52,21 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     use DbServiceAwareTrait;
 
     /**
-     * Authentication manager
+     * Authentication manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $manager;
 
     /**
-     * ILS Authenticator
+     * ILS Authenticator.
      *
      * @var \VuFind\Auth\ILSAuthenticator
      */
     protected $ilsAuthenticator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Auth\Manager          $manager          Authentication manager
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuthenticator ILS Authenticator
@@ -97,7 +97,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get manager
+     * Get manager.
      *
      * @return \VuFind\Auth\Manager
      */
@@ -117,7 +117,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get the logged-in user's identity (null if not logged in)
+     * Get the logged-in user's identity (null if not logged in).
      *
      * @return ?IdentityInterface
      */
@@ -186,6 +186,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
+     * Render the one-time password login form fields.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getOtpLoginFields($context = [])
+    {
+        return $this->renderTemplate('otploginfields.phtml', $context);
+    }
+
+    /**
      * Render the login template.
      *
      * @param array $context Context for rendering template
@@ -210,7 +222,7 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     }
 
     /**
-     * Get login token data
+     * Get login token data.
      *
      * @param int $userId user identifier
      *
@@ -261,11 +273,33 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
      * Get the password recovery email template path.
      *
      * @return string
+     *
+     * @deprecated Use getPasswordRecoveryCodeEmailTemplate instead
      */
     public function getPasswordRecoveryEmailTemplate()
     {
         $className = $this->getManager()->getAuthClassForTemplateRendering();
         $template = 'Auth/%s/recovery-email.phtml';
+        $classTemplate = $this->getCachedClassTemplate($template, $className);
+        if (!$classTemplate) {
+            throw new RuntimeException(
+                'Cannot find '
+                . $this->getTemplateWithClass($template, '[brief class name]')
+                . " for class $className or any of its parent classes"
+            );
+        }
+        return $classTemplate;
+    }
+
+    /**
+     * Get the password recovery code email template path.
+     *
+     * @return string
+     */
+    public function getPasswordRecoveryCodeEmailTemplate()
+    {
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
+        $template = 'Auth/%s/recovery-email-code.phtml';
         $classTemplate = $this->getCachedClassTemplate($template, $className);
         if (!$classTemplate) {
             throw new RuntimeException(

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Save Statuses" AJAX handler
+ * "Get Save Statuses" AJAX handler.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\Session\Settings as SessionSettings;
 use function is_array;
 
 /**
- * "Get Save Statuses" AJAX handler
+ * "Get Save Statuses" AJAX handler.
  *
  * Check one or more records to see if they are saved in one of the user's list.
  *
@@ -55,7 +55,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings              $ss                  Session settings
      * @param ?UserEntityInterface         $user                Logged in user (or null)

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Laminas\Feed\Renderer\Entry extension for Dublin Core
+ * Laminas\Feed\Renderer\Entry extension for Dublin Core.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use DOMElement;
 use Laminas\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
 
 /**
- * Laminas\Feed\Renderer\Entry extension for Dublin Core
+ * Laminas\Feed\Renderer\Entry extension for Dublin Core.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -45,7 +45,7 @@ use Laminas\Feed\Writer\Extension\DublinCore\Renderer\Entry as ParentEntry;
 class Entry extends ParentEntry
 {
     /**
-     * Render entry
+     * Render entry.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class Entry extends ParentEntry
     }
 
     /**
-     * Set entry format elements
+     * Set entry format elements.
      *
      * @param DOMDocument $dom  DOM document to update
      * @param DOMElement  $root Root of DOM document
@@ -83,7 +83,7 @@ class Entry extends ParentEntry
     }
 
     /**
-     * Set entry date elements
+     * Set entry date elements.
      *
      * @param DOMDocument $dom  DOM document to update
      * @param DOMElement  $root Root of DOM document

@@ -49,14 +49,14 @@ class Facebook extends AbstractBase implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\Container $container Session container for persisting
      * state information.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Backend
+ * EDS API Backend.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use function in_array;
 
 /**
- *  EDS API Backend
+ *  EDS API Backend.
  *
  * @category VuFind
  * @package  Search
@@ -59,35 +59,35 @@ class Backend extends AbstractBackend
     use SecretTrait;
 
     /**
-     * Client user to make the actually requests to the EdsApi
+     * Client user to make the actually requests to the EdsApi.
      *
      * @var Connector
      */
     protected $client;
 
     /**
-     * Query builder
+     * Query builder.
      *
      * @var QueryBuilder
      */
     protected $queryBuilder;
 
     /**
-     * User name for EBSCO EDS API account if using UID Authentication
+     * User name for EBSCO EDS API account if using UID Authentication.
      *
      * @var string
      */
     protected $userName;
 
     /**
-     * Password for EBSCO EDS API account if using UID Authentication
+     * Password for EBSCO EDS API account if using UID Authentication.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Profile for EBSCO EDS API account (may be overridden)
+     * Profile for EBSCO EDS API account (may be overridden).
      *
      * @var string
      */
@@ -95,42 +95,42 @@ class Backend extends AbstractBackend
 
     /**
      * Default profile for EBSCO EDS API account (taken from initial config and
-     * never changed)
+     * never changed).
      *
      * @var string
      */
     protected $defaultProfile;
 
     /**
-     * Whether or not to use IP Authentication for communication with the EDS API
+     * Whether or not to use IP Authentication for communication with the EDS API.
      *
      * @var bool
      */
     protected $ipAuth;
 
     /**
-     * Organization EDS API requests are being made for
+     * Organization EDS API requests are being made for.
      *
      * @var string
      */
     protected $orgId;
 
     /**
-     * VuFind Authentication manager
+     * VuFind Authentication manager.
      *
      * @var \VuFind\Auth\Manager
      */
     protected $authManager = null;
 
     /**
-     * Object cache (for storing authentication tokens)
+     * Object cache (for storing authentication tokens).
      *
      * @var CacheAdapter
      */
     protected $cache;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var SessionContainer
      */
@@ -144,14 +144,14 @@ class Backend extends AbstractBackend
     protected $isGuest;
 
     /**
-     * Backend type
+     * Backend type.
      *
      * @var string
      */
     protected $backendType = null;
 
     /**
-     * Validation config
+     * Validation config.
      *
      * @var array
      */
@@ -720,7 +720,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Obtain data from the INFO method
+     * Obtain data from the INFO method.
      *
      * @param string $sessionToken Session token (optional)
      *
@@ -780,7 +780,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Set the VuFind Authentication Manager
+     * Set the VuFind Authentication Manager.
      *
      * @param \VuFind\Auth\Manager $authManager Authentication Manager
      *

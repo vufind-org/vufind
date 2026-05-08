@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
  * PHP version 8
  *
@@ -43,7 +43,7 @@ use function in_array;
 use function is_callable;
 
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -57,28 +57,28 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Recommend plugin manager
+     * Recommend plugin manager.
      *
      * @var RecommendPluginManager
      */
     protected $recommendPluginManager;
 
     /**
-     * Search runner
+     * Search runner.
      *
      * @var SearchRunner
      */
     protected $searchRunner;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings        $ss       Session settings
      * @param RecommendPluginManager $rpm      Recommend plugin manager
@@ -162,7 +162,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
     }
 
     /**
-     * Perform search and return the results
+     * Perform search and return the results.
      *
      * @param array  $request Request params
      * @param string $index   Index of SideFacetsDeferred in configuration
@@ -211,7 +211,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
     }
 
     /**
-     * Format facets according to their type
+     * Format facets according to their type.
      *
      * @param array      $context   View rendering context
      * @param SideFacets $recommend Recommendation module

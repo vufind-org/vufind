@@ -2,7 +2,7 @@
 
 /**
  * This is a helper that lets the layout know whether or not to include the feedback
- * tab
+ * tab.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\View\Helper\Root;
 
 /**
  * This is a helper that lets the layout know whether or not to include the feedback
- * tab
+ * tab.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -50,7 +50,7 @@ class Feedback extends \Laminas\View\Helper\AbstractHelper
     protected $tab;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool $enabled Is the tab enabled?
      */

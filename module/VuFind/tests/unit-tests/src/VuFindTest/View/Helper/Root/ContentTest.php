@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content View Helper Test Class
+ * Content View Helper Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\View\Helper\Root\Content;
 use VuFind\View\Helper\Root\Context;
 
 /**
- * Content View Helper Test Class
+ * Content View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -79,7 +79,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
         $content = new Content($mockTemplateBased, $mockContext);
         // Confirm that expected content was rendered:
         $pageDetails = [];
-        $this->assertEquals(
+        $this->assertSame(
             'rendered-content',
             $content->renderTranslated(
                 $pageName,
