@@ -18,7 +18,8 @@ function waitForAjaxContentToLoad(fn) {
       ? window.location.hash.toLowerCase() : '';
     if (newTab.length <= 1 || newTab === '#tabnav') {
       // No tab hash, check for loading of the initial tab:
-      tabDone = initiallyActiveTab.classList.contains("active");
+      const tabLink = initiallyActiveTab.querySelector("a");
+      tabDone = tabLink && tabLink.classList.contains("active");
     } else {
       // Tab hash, check that the specified tab is active (if valid):
       var hashTab = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
