@@ -333,7 +333,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
             foreach (array_keys(get_object_vars($record)) as $field) {
                 if ($field === 'creators') {
                     continue;
-                }                
+                }
                 if (!isset($itemSchema['fields'][$field])) {
                     // Check for field mapping:
                     if ($target = $itemSchema['mappedFields'][$field] ?? null) {
