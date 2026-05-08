@@ -24,8 +24,6 @@ on:
       phpunit_extra_params:
         description: 'Optional extra params for phpunit'
         required: false
-      # The current code simply uses the preinstalled PHP 8.3.
-      # Supporting other PHP releases would require additional code.
       php-version:
         description: 'PHP version'
         required: true
