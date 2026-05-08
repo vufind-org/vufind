@@ -83,7 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $autoDiscoveryNamespaces = [
-        __NAMESPACE__,
+        __NAMESPACE__ => true,
     ];
 
     /**
@@ -119,7 +119,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         parent::configure($config);
         $this->categoryAliases = ($config['category_aliases'] ?? []) + $this->categoryAliases;
         if ($namespaces = $config['autodiscovery_namespaces'] ?? null) {
-            $this->autoDiscoveryNamespaces = $namespaces;
+            foreach ($namespaces as $ns => $active) {
+                if ($active) {
+                    $this->autoDiscoveryNamespaces[$ns] = true;
+                } else {
+                    unset($this->autoDiscoveryNamespaces[$ns]);
+                }
+            }
         }
         return $this;
     }
@@ -213,7 +219,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         }
         $actionClass = implode('\\', $nameParts) . 'Action';
 
-        foreach ($this->autoDiscoveryNamespaces as $ns) {
+        foreach (array_keys($this->autoDiscoveryNamespaces) as $ns) {
             $className = $ns . '\\' . $actionClass;
             if (class_exists($className)) {
                 $this->aliases[$alias] = $className;
