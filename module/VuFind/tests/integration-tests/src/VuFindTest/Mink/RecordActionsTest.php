@@ -676,6 +676,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
                 return $this->getCurrentQueryString(true);
             }
         );
+
+        // Make sure the expected test message was injected
+        $this->findCss($page, '.print-test-disabled-message');
     }
 
     /**
