@@ -1,0 +1,292 @@
+# GitHub action - Run extended CI test for VuFind
+
+# This action can be used to manually start a complete integration test
+# for any branch of a GitHub repository.
+# It is not run automatically because it consumes much more resources
+# than the typical continuous integration tests.
+
+name: CI (all)
+
+on:
+  # Trigger workflow in GitHub web frontend or from API.
+  workflow_dispatch:
+    inputs:
+      phing_task_qa_console:
+        description: 'Run "phing qa-console"'
+        required: true
+        default: false
+        type: boolean
+      phing_task_phpunit:
+        description: 'Run "phing phpunit"'
+        required: true
+        default: true
+        type: boolean
+      phpunit_extra_params:
+        description: 'Optional extra params for phpunit'
+        required: false
+      php-version:
+        description: 'PHP version'
+        required: true
+        default: 'default'
+        type: choice
+        options:
+          - '8.2'
+          - '8.3'
+          - '8.4'
+          - '8.5'
+          - 'default'
+          - '8.2, default (8.3), 8.4'
+          - 'all'
+      debug_enabled:
+        type: boolean
+        description: 'Finish the build even when tests failed (so artifacts will always be provided)'
+        required: false
+        default: false
+      tmate_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+
+jobs:
+  run-tests:
+    name: Tests with PHP ${{ matrix.php-version }}
+    runs-on: ubuntu-24.04
+
+    env:
+      VUFIND_HOME: ${{ github.workspace }}
+      VUFIND_LOCAL_DIR: ${{ github.workspace }}/local
+      SOLR_PORT: 8983
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ${{ (github.event_name == 'push') && fromJSON('["default"]') || (github.event.inputs.php-version == '8.2, default (8.3), 8.4') && fromJSON('["8.2", "8.4", "default"]') || (github.event.inputs.php-version == 'all') && fromJSON('["8.2", "8.3", "8.4", "8.5", "default"]') || fromJSON(format('["{0}"]', github.event.inputs.php-version)) }}
+
+    steps:
+      - name: Update old PHP xdebug
+        if: ${{ matrix.php-version == 'default' }}
+        run: |
+          # A test failure is caused by pre-installed php-xdebug 3.2,
+          # so remove it and install newer 3.5.
+          sudo apt-get -y purge php8.3-xdebug
+          sudo pecl channel-update pecl.php.net
+          sudo pecl install xdebug
+          echo "zend_extension=xdebug.so" | sudo tee /etc/php/8.3/mods-available/xdebug.ini
+          sudo phpenmod xdebug
+
+      - name: Install Debian packages
+        if: ${{ inputs.phing_task_phpunit || matrix.php-version == 'default' }}
+        run: |
+          sudo apt-get update
+          # apache2, chromium and most PHP packages are already installed.
+          # sudo apt-get -y install apache2
+          # sudo apt-get -y install php-mbstring php-pear php php-dev php-gd php-intl php-json php-ldap php-mysql php-xml php-soap php-curl
+          # Install missing packages.
+          sudo apt-get -y install mariadb-server
+          sudo apt-get -y install libapache2-mod-php php-json php-memcached
+
+      - name: Setup PHP
+        if: ${{ matrix.php-version != 'default' }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: intl, xsl
+          tools: composer:2.8.1
+          ini-values: error_reporting=E_ALL
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure Apache for PHP ${{ matrix.php-version }}
+        if: ${{ inputs.phing_task_phpunit }}
+        run: |
+          # Enable required Apache modules
+          sudo a2enmod rewrite proxy_fcgi setenvif
+
+      - name: Disable Solr installation
+        if: ${{ !inputs.phing_task_phpunit }}
+        run: touch solr/.disableAutomaticInstall
+
+      - name: Setup node
+        if: ${{ inputs.phing_task_qa_console }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Debug list all package.json
+        run: find $GITHUB_WORKSPACE -name package.json
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Cache php-cs-fixer data
+        uses: actions/cache@v5
+        with:
+          path: .php_cs_cache
+          key: "php-${{ matrix.php-version }}-php-cs-fixer-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-php-cs-fixer-"
+
+      - name: Cache phpstan data
+        uses: actions/cache@v5
+        with:
+          path: .phpstan_cache
+          key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpstan-"
+
+      - name: Cache PHP_CodeSniffer data
+        uses: actions/cache@v5
+        with:
+          path: tests/phpcs.cache.json
+          key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-phpcs-"
+
+      - name: Cache rector data
+        uses: actions/cache@v5
+        with:
+          path: .rector
+          key: "php-${{ matrix.php-version }}-rector-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-rector-"
+
+      - name: Extract Solr version from build.xml (used for Solr download cache)
+        if: ${{ inputs.phing_task_phpunit }}
+        id: solr-version
+        run: |
+          SOLR_VERSION=$(grep -oP 'property name="solr_version" value="\K[^"]+' build.xml)
+          echo "version=$SOLR_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Restore Solr download cache (used in `composer install`)
+        if: ${{ inputs.phing_task_phpunit }}
+        id: cache-solr
+        uses: actions/cache/restore@v5
+        with:
+          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
+          key: solr-${{ steps.solr-version.outputs.version }}
+          restore-keys: solr-
+
+      - name: Install composer dependencies
+        run: composer install
+
+      - name: Save Solr download cache (if downloaded in `composer install`)
+        if: ${{ inputs.phing_task_phpunit && steps.cache-solr.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
+          key: solr-${{ steps.solr-version.outputs.version }}
+
+      - name: Cache NPM dependencies
+        if: ${{ inputs.phing_task_qa_console }}
+        uses: actions/cache@v5
+        with:
+          key: npm-${{ hashFiles('**/package.json') }}
+          path: ~/.npm
+          restore-keys: npm-
+
+      - name: Install node dependencies
+        if: ${{ inputs.phing_task_qa_console }}
+        # Run NPM via Composer for consistency and centralization.
+        run: composer run install-build-deps
+
+      - name: Run phing qa-console
+        if: ${{ inputs.phing_task_qa_console }}
+        run: |
+          if [ "${{ github.event.inputs.phing_task_phpunit }}" ]; then
+            # No need to run phpunitfast as phpunit will be run later.
+            vendor/bin/phing qa-js-and-scss
+            vendor/bin/phing phpcs-console
+            vendor/bin/phing php-cs-fixer-dryrun
+            vendor/bin/phing phpstan-console
+            vendor/bin/phing rector-console
+          else
+            vendor/bin/phing qa-console
+          fi
+
+      - name: Start database
+        if: ${{ inputs.phing_task_phpunit }}
+        run: |
+          # Create admin user for MariaDB (not needed for mysql).
+          sudo mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('password'); FLUSH PRIVILEGES;"
+          sudo systemctl start mariadb
+
+      - name: Start Chrome
+        if: ${{ inputs.phing_task_phpunit }}
+        run: |
+          # Google Chrome ($CHROME_BIN) does not work, so use chromium.
+          nohup chromium \
+            --headless=new \
+            --no-sandbox \
+            --disable-client-side-phishing-detection \
+            --disable-component-update \
+            --disable-dev-shm-usage \
+            --disable-domain-reliability \
+            --disable-gpu \
+            --disable-software-rasterizer \
+            --disable-extensions \
+            --disable-background-networking \
+            --disable-sync \
+            --disable-translate \
+            --metrics-recording-only \
+            --disable-default-apps \
+            --mute-audio \
+            --no-first-run \
+            --no-pings \
+            --password-store=basic \
+            --remote-debugging-address=127.0.0.1 \
+            --remote-debugging-port=9222 \
+            --use-mock-keychain \
+            --window-size=1600,1200 \
+            --disable-extensions --user-data-dir=$PWD/chromium-test-user-dir &
+
+      - name: Run phing startup
+        if: ${{ inputs.phing_task_phpunit }}
+        run: |
+          vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test startup
+
+      - name: Prepare Apache2 configuration and restart the web server.
+        if: ${{ inputs.phing_task_phpunit }}
+        run: |
+          # $HOME must be readable for Apache2 which writes cache files.
+          chmod +rx $HOME
+          # Add configuration which is needed for some tests.
+          grep -q "AllowEncodedSlashes On" /etc/apache2/sites-available/000-default.conf ||
+          sudo sed -i '/<VirtualHost \*/a \\tAllowEncodedSlashes On' /etc/apache2/sites-available/000-default.conf
+          # Enable testing mode in VuFind configuration and add it to Apache2.
+          sed -i 's/#SetEnv VUFIND_ENV development/SetEnv VUFIND_ENV testing/' local/httpd-vufind.conf
+          sudo cp local/httpd-vufind.conf /etc/apache2/conf-available/
+          sudo a2enconf httpd-vufind
+          sudo systemctl restart apache2
+
+      - name: Run selected tests
+        if: ${{ inputs.phing_task_phpunit }}
+        run: |
+          if [ -n "${{ github.event.inputs.phpunit_extra_params }}" ]; then
+            # Start selected tests.
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test -Dscreenshot_dir=/tmp/build/vufind/screenshots -Dphpunit_extra_params="${{ github.event.inputs.phpunit_extra_params }}" phpunit || ${{ inputs.debug_enabled }}
+          else
+            # Runs all available tests.
+            vendor/bin/phing -Dmink_driver="chrome" -Dvufindurl=http://localhost/vufind_test -Dscreenshot_dir=/tmp/build/vufind/screenshots phpunit || ${{ inputs.debug_enabled }}
+          fi
+          # The test creates directories and files which are not accessible by the test user.
+          # Therefore fix the ownership to allow caching of selected files.
+          sudo chown -R $USER: $HOME
+
+      - name: Setup tmate session
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.tmate_enabled }}
+        uses: mxschmitt/action-tmate@v3
+
+      - name: Upload vufind artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: vufind-${{ matrix.php-version }}
+          path: |
+            /tmp/build/vufind
+            **/*.log
+          retention-days: 14

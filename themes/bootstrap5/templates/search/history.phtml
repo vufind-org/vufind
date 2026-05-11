@@ -50,7 +50,7 @@
     <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
     <a class="icon-link" href="?purge=true">
       <?=$this->icon('search-delete', 'icon-link__icon') ?>
-      <span class="icon-link__label"><?=$this->transEsc('history_purge')?></span>
+      <span class="icon-link__label"><?=$this->transEsc($saveSupported ? 'history_purge' : 'history_purge_all')?></span>
     </a>
   <?php else: ?>
     <?=$this->transEsc('history_no_searches')?>
