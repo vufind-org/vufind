@@ -158,12 +158,12 @@ class Folio extends AbstractAPI implements
      * @param \VuFind\Date\Converter $dateConverter     Date converter object
      * @param callable               $sessionFactory    Factory function returning
      *                                                  SessionContainer object
-     * @param Webhook                $webhookConnection Connection for webhooks
+     * @param ?Webhook               $webhookConnection Connection for webhooks
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
         $sessionFactory,
-        protected Webhook $webhookConnection
+        protected ?Webhook $webhookConnection = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
