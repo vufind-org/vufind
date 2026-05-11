@@ -2384,7 +2384,11 @@ class Folio extends AbstractAPI implements
     protected function sendWebhookAfterHoldRequest()
     {
         $url = $this->config['Holds']['webhook'] ?? null;
-        if ($url && $this->webhookConnection) {
+        if ($url) {
+            if (!$this->webhookConnection) {
+                throw new ILSException('Webhook connection not set.');
+            }
+
             // Short timeout -- don't impact user.
             $this->webhookConnection->post($url, $this->webhookTimeout);
         }
