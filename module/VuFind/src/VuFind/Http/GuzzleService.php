@@ -145,7 +145,7 @@ class GuzzleService implements HttpServiceInterface
      *
      * @param string  $url     Request URL
      * @param ?string $body    Request body document
-     * @param string $type    Request body content type
+     * @param string  $type    Request body content type
      * @param float   $timeout Request timeout in seconds
      * @param array   $headers Request HTTP headers
      *
