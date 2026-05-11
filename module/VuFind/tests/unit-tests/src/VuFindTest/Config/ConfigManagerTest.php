@@ -57,6 +57,13 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
+     * Test config environment variable.
+     *
+     * @var string
+     */
+    protected string $testEnvVar = 'VUFIND_TEST_CONFIG_ENV_VAR';
+
+    /**
      * Get config manager.
      *
      * @return ConfigManagerInterface
@@ -91,6 +98,8 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
             'dir-config-with-inheritance'
                 => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
+            'env-var' => new ConfigFile($this->getFixtureDir() . 'configs/env-var/test.env_var'),
+            'including' => new ConfigFile($this->getFixtureDir() . 'configs/include/child.ini'),
         ];
         $realResolver = $this->getPathResolver();
         $configLocation = $fileMap[$name]
@@ -421,6 +430,32 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test loading of configs from environment variable.
+     *
+     * @return void
+     */
+    public function testEnvVarConfig(): void
+    {
+        putenv($this->testEnvVar . '=testValue');
+        $config = $this->getConfig('env-var');
+        $this->assertEquals(
+            'testValue',
+            $config
+        );
+    }
+
+    /**
+     * Test loading of configs from environment variable.
+     *
+     * @return void
+     */
+    public function testMissingEnvVarConfig(): void
+    {
+        $this->expectExceptionMessage('Environment variable VUFIND_TEST_CONFIG_ENV_VAR does not exist.');
+        $this->getConfig('env-var');
+    }
+
+    /**
      * Test loading of INI config with handling of parent configuration disabled.
      *
      * @return void
@@ -488,6 +523,34 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(10, $subdirConfig['Section1']['j']);
         $this->assertArrayNotHasKey('Section3', $subdirConfig);
+    }
+
+    /**
+     * Test including configuration.
+     *
+     * @return void
+     */
+    public function testIncludingConfig(): void
+    {
+        putenv($this->testEnvVar . '=EnvVarValue');
+        $config = $this->getConfig('including');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    's1k1' => 'ChildValue1',
+                    's1k2' => 'Include1Value',
+                    's1k3' => 'EnvVarValue',
+                    's1k4' => 'ParentValue1',
+                ],
+                'Section2' => [
+                    's2k1' => 'include2Value1',
+                    's2k2' => 'include2Value2',
+                    's2k3' => 'ParentValue2',
+                    's2k4' => 'Include3Value',
+                ],
+            ],
+            $config
+        );
     }
 
     /**
@@ -709,5 +772,16 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             $expectedConfig,
             $config
         );
+    }
+
+    /**
+     * Clean up test environment.
+     *
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        putenv($this->testEnvVar);
     }
 }
