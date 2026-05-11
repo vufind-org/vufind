@@ -36,6 +36,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Controller\Feature\RequestHelperTrait;
@@ -66,7 +67,6 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  *
- * @method Plugin\Captcha captcha() Captcha plugin
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
  * @method Plugin\Permission permission() Permission plugin
@@ -607,7 +607,27 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
         // Fail if all expected submission elements were missing from the POST or
         // if the form was submitted but expected CAPTCHA does not validate.
-        return $buttonFound && (!$useCaptcha || $this->captcha()->verify());
+        return $buttonFound && (!$useCaptcha || $this->verifyCaptcha());
+    }
+
+    /**
+     * Get the captcha service.
+     *
+     * @return CaptchaService
+     */
+    protected function getCaptcha(): CaptchaService
+    {
+        return $this->getService(CaptchaService::class);
+    }
+
+    /**
+     * Verify submitted captcha.
+     *
+     * @return bool
+     */
+    protected function verifyCaptcha(): bool
+    {
+        return $this->getCaptcha()->verify($this->params()->fromPost(), $this->params()->fromQuery());
     }
 
     /**

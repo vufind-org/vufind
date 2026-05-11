@@ -94,15 +94,14 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy.
+     * Pull the captcha fields from request params and check them for accuracy.
      *
-     * @param Params $params Controller params
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function verify(Params $params): bool
+    public function verify(array $postParams, array $queryParams): bool
     {
         if (isset($this->sessionData->lastProtectedActionTime)) {
             $timestamp = $this->sessionData->lastProtectedActionTime;

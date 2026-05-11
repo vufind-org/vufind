@@ -43,14 +43,15 @@ use Laminas\Mvc\Controller\Plugin\Params;
 class Demo extends AbstractBase
 {
     /**
-     * Pull the captcha field from controller params and check them for accuracy.
+     * Pull the captcha fields from request params and check them for accuracy.
      *
-     * @param Params $params Controller params
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
      */
-    public function verify(Params $params): bool
+    public function verify(array $postParams, array $queryParams): bool
     {
-        return $params->fromPost('demo_captcha') === 'demo';
+        return ($postParams['demo_captcha'] ?? null) === 'demo';
     }
 }

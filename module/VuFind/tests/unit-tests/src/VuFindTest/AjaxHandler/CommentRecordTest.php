@@ -63,9 +63,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     {
         // For simplicity, let the top-level container stand in for the plugin
         // managers:
-        $this->container
-            ->set(\VuFind\Db\Service\PluginManager::class, $this->container);
-        $this->container->set('ControllerPluginManager', $this->container);
+        $this->container->set(\VuFind\Db\Service\PluginManager::class, $this->container);
 
         // Set up auth manager with user:
         $authManager = $this->getMockAuthManager($user);

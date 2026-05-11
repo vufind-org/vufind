@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for Captcha controller plugin.
+ * Factory for Captcha service.
  *
  * PHP version 8
  *
@@ -28,16 +28,17 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Captcha\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\FlashMessenger\FlashMessenger;
 
 /**
- * Factory for Captcha controller plugin.
+ * Factory for Captcha service.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -46,7 +47,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class CaptchaFactory implements FactoryInterface
+class CaptchaServiceFactory implements FactoryInterface
 {
     /**
      * Create an object.
@@ -71,19 +72,19 @@ class CaptchaFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
 
-        $captchaTypes = $config->Captcha->types ?? [];
+        $captchaTypes = $config['Captcha']['types'] ?? [];
 
         $captchas = [];
         foreach ($captchaTypes as $captchaType) {
-            $captchas[] = $container->get(\VuFind\Captcha\PluginManager::class)
-                ->get(trim($captchaType));
+            $captchas[] = $container->get(\VuFind\Captcha\PluginManager::class)->get(trim($captchaType));
         }
 
         return new $requestedName(
             $config,
-            $captchas
+            $captchas,
+            $container->get(FlashMessenger::class)
         );
     }
 }
