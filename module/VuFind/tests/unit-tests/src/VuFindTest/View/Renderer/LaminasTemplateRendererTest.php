@@ -35,7 +35,7 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\View\Model\ViewModel;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\View;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -227,7 +227,7 @@ class LaminasTemplateRendererTest extends TestCase
             LaminasTemplateRenderer::class,
             [
                 'config' => [],
-                'ViewRenderer' => $this->createMock(RendererInterface::class),
+                'ViewRenderer' => $this->createMock(PhpRenderer::class),
                 'ViewManager' => $viewManager,
                 InjectTemplateListener::class => $injectTemplateListener,
             ]

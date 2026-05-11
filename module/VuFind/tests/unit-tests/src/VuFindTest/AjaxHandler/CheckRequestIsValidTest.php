@@ -29,6 +29,7 @@
 
 namespace VuFindTest\AjaxHandler;
 
+use GuzzleHttp\Psr7\Response;
 use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
 use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\Auth\ILSAuthenticator;
@@ -72,9 +73,9 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     public function testLoggedOutUser(): void
     {
         $handler = $this->getHandler();
-        $this->assertEquals(
+        $this->assertSame(
             ['You must be logged in first', 401],
-            $handler->handleRequest($this->getParamsHelper(['id' => 1, 'data' => 1]))
+            $handler->handleRequest($this->getRequest(['id' => 1, 'data' => 1]))
         );
     }
 
@@ -86,9 +87,9 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     public function testEmptyQuery(): void
     {
         $handler = $this->getHandler($this->getMockUser());
-        $this->assertEquals(
+        $this->assertSame(
             ['bulk_error_missing', 400],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
@@ -113,7 +114,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->container->set(ILSAuthenticator::class, $ilsAuth);
         $handler = $this->getHandler($this->getMockUser());
         $params = ['id' => 1, 'data' => 2, 'requestType' => $requestType];
-        return $handler->handleRequest($this->getParamsHelper($params));
+        return $handler->handleRequest($this->getRequest($params));
     }
 
     /**

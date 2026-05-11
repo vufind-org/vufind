@@ -167,7 +167,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -243,8 +242,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'AJAX' => 'VuFind\Controller\AjaxController',
-            'ajax' => 'VuFind\Controller\AjaxController',
             'Alma' => 'VuFind\Controller\AlmaController',
             'alma' => 'VuFind\Controller\AlmaController',
             'Alphabrowse' => 'VuFind\Controller\AlphabrowseController',

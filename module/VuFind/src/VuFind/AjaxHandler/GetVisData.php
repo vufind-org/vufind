@@ -31,8 +31,8 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Recommend\DateFacetTrait;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\Results;
@@ -70,7 +70,7 @@ class GetVisData extends AbstractBase
      */
     public function __construct(SessionSettings $ss, Results $results)
     {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
         $this->results = $results;
     }
 
@@ -116,22 +116,22 @@ class GetVisData extends AbstractBase
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $paramsObj = $this->results->getParams();
-        $paramsObj->initFromRequest(new Parameters($params->fromQuery()));
-        foreach ($params->fromQuery('hf', []) as $hf) {
+        $paramsObj->initFromRequest(new Parameters($request->getQueryParams()));
+        foreach ((array)$this->getQueryParam($request, 'hf', []) as $hf) {
             $paramsObj->addHiddenFilter($hf);
         }
         $paramsObj->getOptions()->disableHighlighting();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $filters = $paramsObj->getRawFilters();
-        $rawDateFacets = $params->fromQuery('facetFields');
+        $rawDateFacets = $this->getQueryParam($request, 'facetFields');
         $dateFacets = empty($rawDateFacets) ? [] : explode(':', $rawDateFacets);
         $fields = $this->processDateFacets($this->results, $filters, $dateFacets);
         $facets = $this->processFacetValues($filters, $fields);

@@ -29,9 +29,9 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Record\Loader;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * AJAX handler to get list of comments for a record as HTML.
@@ -45,46 +45,32 @@ use VuFind\Record\Loader;
 class GetRecordCommentsAsHTML extends AbstractBase
 {
     /**
-     * Record loader.
-     *
-     * @var Loader
-     */
-    protected $loader;
-
-    /**
-     * View renderer.
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
      * Constructor.
      *
-     * @param Loader            $loader   Record loader
-     * @param RendererInterface $renderer View renderer
+     * @param Loader                    $loader   Record loader
+     * @param TemplateRendererInterface $renderer Template renderer
      */
-    public function __construct(Loader $loader, RendererInterface $renderer)
-    {
-        $this->loader = $loader;
-        $this->renderer = $renderer;
+    public function __construct(
+        protected Loader $loader,
+        protected TemplateRendererInterface $renderer
+    ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $driver = $this->loader->load(
-            $params->fromQuery('id'),
-            $params->fromQuery('source', DEFAULT_SEARCH_BACKEND)
+            $this->getQueryParam($request, 'id'),
+            $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND)
         );
-        $html = $this->renderer
-            ->render('record/comments-list.phtml', compact('driver'));
+        $html = $this->renderer->renderTemplateAsString($request, 'record/comments-list.phtml', compact('driver'));
         return $this->formatResponse(compact('html'));
     }
 }

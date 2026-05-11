@@ -100,8 +100,6 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
      * @param array $queryParams Query params
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function verify(array $postParams, array $queryParams): bool
     {
