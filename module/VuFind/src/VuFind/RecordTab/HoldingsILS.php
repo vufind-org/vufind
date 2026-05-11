@@ -48,13 +48,6 @@ use function strlen;
 class HoldingsILS extends AbstractBase
 {
     /**
-     * ILS connection (or null if not applicable).
-     *
-     * @var Connection
-     */
-    protected $catalog;
-
-    /**
      * Name of template to use for rendering holdings.
      *
      * @var string

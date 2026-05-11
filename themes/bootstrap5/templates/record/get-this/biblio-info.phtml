@@ -1,6 +1,10 @@
 <?php
-$callNum = $this->getThis->getCallNumber() ?? $this->translate('data_unavailable');
-$callNum = $this->escapeHtml($callNum);
+if ($callNumberData = $this->getThis->getCallNumber()) {
+    $rawCallNumber = $callNumberData['text'] ?? '';
+    $callNumber = ($callNumberData['translate'] ?? false) ? $this->translate($rawCallNumber) : $this->escapeHtml($rawCallNumber);
+} else {
+    $callNumber = $this->translate('data_unavailable');
+}
 ?>
 <div>
   <p>
@@ -9,7 +13,7 @@ $callNum = $this->escapeHtml($callNum);
   </p>
   <p>
     <strong><?= $this->transEsc('Call Number') ?> :</strong>
-    <span><?= $callNum ?></span>
+    <span><?= $callNumber ?></span>
     <?php if ($copyNumber = $this->getThis->getCopyNumber()): ?>
       <span> (<?= $this->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) ?>)</span>
     <?php endif; ?>

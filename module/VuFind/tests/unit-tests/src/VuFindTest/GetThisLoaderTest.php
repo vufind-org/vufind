@@ -655,10 +655,10 @@ class GetThisLoaderTest extends TestCase
                 'callnumber_prefix' => 'call',
             ],
         ]);
-        $this->assertSame('Online', $this->getThis->getCallNumber('9'));
+        $this->assertSame('Online', $this->getThis->getCallNumber('9')['text']);
         $this->assertNull($this->getThis->getCallNumber('16'));
-        $this->assertSame('call_me', $this->getThis->getCallNumber('18'));
-        $this->assertSame('call on me', $this->getThis->getCallNumber('42'));
+        $this->assertSame('call_me', $this->getThis->getCallNumber('18')['text']);
+        $this->assertSame('call on me', $this->getThis->getCallNumber('42')['text']);
     }
 
     /**

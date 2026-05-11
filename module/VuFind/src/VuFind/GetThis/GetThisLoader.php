@@ -15,7 +15,6 @@
 namespace VuFind\GetThis;
 
 use Exception;
-use Laminas\Mvc\I18n\Translator;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
@@ -79,14 +78,12 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Initializes the loader
      *
-     * @param array       $config     Config pulled from the config file defined above
-     * @param Regex       $regex      Regex service
-     * @param ?Translator $translator Translator
+     * @param array $config Config pulled from the config file defined above
+     * @param Regex $regex  Regex service
      */
     public function __construct(
         protected array $config,
-        protected Regex $regex,
-        protected ?Translator $translator
+        protected Regex $regex
     ) {
     }
 
@@ -392,33 +389,38 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @param ?string $itemId Item to filter the result for
      *
-     * @return ?string The description string
+     * @return ?array{
+     *     text: string,
+     *     translate: bool,
+     * } The call number and whether it's a string to translate
      */
-    public function getCallNumber(?string $itemId = null): ?string
+    public function getCallNumber(?string $itemId = null): ?array
     {
         $item = $this->getItem($itemId);
 
         if ($this->isOnlineResource($itemId)) {
-            $callNumber = 'Online';
-            if (isset($this->translator)) {
-                $callNumber = $this->translator->translate($callNumber);
-            }
-            return $callNumber;
+            return [
+                'text' => 'Online',
+                'translate' => true,
+            ];
         }
 
-        $callNum = '';
+        $callNumber = '';
         if (!empty($item['callnumber'])) {
             if (!empty($item['callnumber_prefix'])) {
-                $callNum .= $item['callnumber_prefix'] . ' ';
+                $callNumber .= $item['callnumber_prefix'] . ' ';
             }
-            $callNum .= $item['callnumber'];
+            $callNumber .= $item['callnumber'];
         }
 
         if (!empty($item['enumchron'])) {
-            $callNum .= ' ' . $item['enumchron'];
+            $callNumber .= ' ' . $item['enumchron'];
         }
 
-        return empty($callNum) ? null : $callNum;
+        return empty($callNumber) ? null : [
+            'text' => $callNumber,
+            'translate' => false,
+        ];
     }
 
     /**

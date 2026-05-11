@@ -1,4 +1,4 @@
-let KEY_CODE = {
+const KEY_CODE = {
   DOWN_ARROW: 40,
   UP_ARROW: 38,
 };

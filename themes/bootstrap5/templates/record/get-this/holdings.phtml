@@ -17,7 +17,9 @@ function getDisplay($view, $item)
     } else {
         $copyNumber = '';
     }
-    if ($callNumber = $view->getThis->getCallNumber($item['item_id'])) {
+    if ($callNumberData = $view->getThis->getCallNumber($item['item_id'])) {
+        $rawCallNumber = $callNumberData['text'] ?? '';
+        $callNumber = ($callNumberData['translate'] ?? false) ? $view->translate($rawCallNumber) : $view->escapeHtml($rawCallNumber);
         $callNumber = '(' . $callNumber . ')';
     } else {
         $callNumber = '';
