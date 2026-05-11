@@ -65,7 +65,7 @@ class Webhook implements
     public function post(string $url, ?float $timeout = null, array $successStatusCodes = [200, 204]): void
     {
         try {
-            $response = $this->guzzleService->post($url, null, null, $timeout, []);
+            $response = $this->guzzleService->post($url, null, '', $timeout, []);
             $statusCode = $response->getStatusCode();
             if (in_array($statusCode, $successStatusCodes)) {
                 $this->debug('Webhook posted successfully');
