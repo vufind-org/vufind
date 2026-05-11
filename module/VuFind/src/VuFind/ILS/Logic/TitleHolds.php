@@ -220,7 +220,7 @@ class TitleHolds
             compact('id', 'patron')
         );
 
-        if ($checkHolds != false) {
+        if ($checkHolds) {
             if ($type == 'always') {
                 $addlink = true;
             } elseif ($type == 'availability') {

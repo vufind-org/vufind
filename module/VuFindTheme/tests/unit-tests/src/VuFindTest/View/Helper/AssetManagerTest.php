@@ -29,7 +29,6 @@
 
 namespace VuFindTest\View\Helper;
 
-use Exception;
 use Laminas\View\Helper\InlineScript;
 use VuFindTest\Feature\ViewTrait;
 use VuFindTheme\AssetPipeline;
@@ -88,9 +87,16 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             ->with('setFile', [$script, $expectedType, $expectedAttrs]);
         $inlineScriptHelper->method('__invoke')->willReturn('output');
         $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
-        $assetManager = $view->plugin('assetManager');
+        $assetManager = new AssetManager(
+            $this->createMock(ThemeInfo::class),
+            $this->createMock(AssetPipeline::class),
+            $view->plugin('url'),
+            $view->plugin('headLink'),
+            $view->plugin('headStyle'),
+            $inlineScriptHelper
+        );
         $options = ['allow_arbitrary_attributes' => $arbitrary];
-        $this->assertEquals('output', $assetManager->outputInlineScriptLink($script, $attrs, $options));
+        $this->assertSame('output', $assetManager->outputInlineScriptLink($script, $attrs, $options));
     }
 
     /**
@@ -118,9 +124,16 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             ->with('setScript', [$script, $expectedType, $expectedAttrs]);
         $inlineScriptHelper->method('__invoke')->willReturn('output');
         $view = $this->getPhpRenderer(['inlineScript' => $inlineScriptHelper]);
-        $assetManager = $view->plugin('assetManager');
+        $assetManager = new AssetManager(
+            $this->createMock(ThemeInfo::class),
+            $this->createMock(AssetPipeline::class),
+            $view->plugin('url'),
+            $view->plugin('headLink'),
+            $view->plugin('headStyle'),
+            $inlineScriptHelper
+        );
         $options = ['allow_arbitrary_attributes' => $arbitrary];
-        $this->assertEquals('output', $assetManager->outputInlineScriptString($script, $attrs, $options));
+        $this->assertSame('output', $assetManager->outputInlineScriptString($script, $attrs, $options));
     }
 
     /**
@@ -136,8 +149,17 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             $this->assertSame('js', $type);
             return $scripts;
         });
+
+        $view = $this->getPhpRenderer();
         $manager = $this->getMockBuilder(AssetManager::class)
-            ->setConstructorArgs([$themeInfo, $pipeline])
+            ->setConstructorArgs([
+                $themeInfo,
+                $pipeline,
+                $view->plugin('url'),
+                $view->plugin('headLink'),
+                $view->plugin('headStyle'),
+                $view->plugin('inlineScript'),
+            ])
             ->onlyMethods(['outputInlineScriptLink', 'outputInlineScriptString', 'outputStyleAssets'])
             ->getMock();
         $manager->method('outputInlineScriptLink')
@@ -149,7 +171,6 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
                 return $script . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
             });
         $manager->method('outputStyleAssets')->willReturn('');
-        $manager->setView($this->getPhpRenderer());
         $manager->appendScriptString('foo')
             ->appendScriptLink('foo.js')
             ->prependScriptString('bar', ['attr'], options: ['allow_arbitrary_attributes' => true]);
@@ -177,51 +198,37 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function getMockStyleHelper(string $appendMethod): object
     {
-        $mockHelper = new class ($appendMethod) {
-            protected $data = [];
+        $data = [];
+        $baseClass = $appendMethod === 'appendStylesheet'
+            ? \Laminas\View\Helper\HeadLink::class
+            : \Laminas\View\Helper\HeadStyle::class;
 
-            /**
-             * Constructor.
-             *
-             * @param string $appendMethod Name of append method to simulate
-             */
-            public function __construct(protected string $appendMethod)
-            {
-            }
+        $mock = $this->getMockBuilder($baseClass)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['__invoke', '__call'])
+            ->getMock();
 
-            /**
-             * Return the collected data.
-             *
-             * @return string
-             */
-            public function __invoke()
-            {
-                $str = implode("\n", $this->data);
-                $this->data = [];
-                return $str;
-            }
-
-            /**
-             * Magic method to simulate appending.
-             *
-             * @param string $method Method name
-             * @param array  $args   Arguments sent to method
-             *
-             * @return void
-             * @throws Exception
-             */
-            public function __call($method, $args)
-            {
-                if ($method !== $this->appendMethod) {
-                    throw new Exception("Unexpected method call: $method");
+        $mock->method('__call')->willReturnCallback(
+            function ($method, $args) use ($appendMethod, &$data): void {
+                if ($method !== $appendMethod) {
+                    throw new \Exception("Unexpected method call: $method");
                 }
-                $this->data[] = implode(
+                $data[] = implode(
                     '/',
-                    array_map(fn ($data) => is_array($data) ? implode('|', $data) : $data, $args)
+                    array_map(fn ($d) => is_array($d) ? implode('|', $d) : $d, $args)
                 );
             }
-        };
-        return $mockHelper;
+        );
+
+        $mock->method('__invoke')->willReturnCallback(
+            function () use (&$data) {
+                $str = implode("\n", $data);
+                $data = [];
+                return $str;
+            }
+        );
+
+        return $mock;
     }
 
     /**
@@ -237,16 +244,24 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             $this->assertSame('css', $type);
             return $styles;
         });
-        $manager = $this->getMockBuilder(AssetManager::class)
-            ->setConstructorArgs([$themeInfo, $pipeline])
-            ->onlyMethods(['outputScriptAssets'])
-            ->getMock();
-        $manager->method('outputScriptAssets')->willReturn('');
+
         $helpers = [
             'headLink' => $this->getMockStyleHelper('appendStylesheet'),
             'headStyle' => $this->getMockStyleHelper('appendStyle'),
         ];
-        $manager->setView($this->getPhpRenderer($helpers));
+        $view = $this->getPhpRenderer($helpers);
+        $manager = $this->getMockBuilder(AssetManager::class)
+            ->setConstructorArgs([
+                $themeInfo,
+                $pipeline,
+                $view->plugin('url'),
+                $helpers['headLink'],
+                $helpers['headStyle'],
+                $view->plugin('inlineScript'),
+            ])
+            ->onlyMethods(['outputScriptAssets'])
+            ->getMock();
+        $manager->method('outputScriptAssets')->willReturn('');
         $manager->appendStyleString('foo')
             ->appendStyleLink('foo.css')
             ->forcePrependStyleLink('bar.css');

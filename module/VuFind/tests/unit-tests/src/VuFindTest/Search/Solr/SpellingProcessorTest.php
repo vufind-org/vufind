@@ -56,7 +56,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
     {
         $sp = new SpellingProcessor();
         $this->assertEquals(true, $sp->shouldSkipNumericSpelling());
-        $this->assertEquals(3, $sp->getSpellingLimit());
+        $this->assertSame(3, $sp->getSpellingLimit());
     }
 
     /**
@@ -69,7 +69,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $config = new Config(['limit' => 5, 'skip_numeric' => false]);
         $sp = new SpellingProcessor($config);
         $this->assertEquals(false, $sp->shouldSkipNumericSpelling());
-        $this->assertEquals(5, $sp->getSpellingLimit());
+        $this->assertSame(5, $sp->getSpellingLimit());
     }
 
     /**
@@ -99,7 +99,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $sp = new SpellingProcessor($config);
         $spelling = $this->unserializeFixture('spell1');
         $query = $this->unserializeFixture('query1');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'grumble' => [
                     'freq' => 2,
@@ -137,7 +137,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'grumble' => [
                     'freq' => 2,
@@ -200,7 +200,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Grumble' => [
                     'freq' => 2,
@@ -264,7 +264,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $config = new Config(['expand' => false, 'phrase' => true]);
         $sp = new SpellingProcessor($config);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'grumble' => [
                     'freq' => 2,
@@ -389,26 +389,26 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
     public function testSpellingTokenization()
     {
         $sp = new SpellingProcessor();
-        $this->assertEquals(['single'], $sp->tokenize('single'));
-        $this->assertEquals(['two', 'terms'], $sp->tokenize('two terms'));
-        $this->assertEquals(['two', 'terms'], $sp->tokenize('two    terms'));
-        $this->assertEquals(['apples', 'oranges'], $sp->tokenize('apples OR oranges'));
-        $this->assertEquals(['"word"'], $sp->tokenize('"word"'));
-        $this->assertEquals(['"word"', 'second'], $sp->tokenize('"word" second'));
-        $this->assertEquals([], $sp->tokenize(''));
-        $this->assertEquals(['0', 'is', 'zero'], $sp->tokenize('0 is zero'));
-        $this->assertEquals(["'twas", 'successful'], $sp->tokenize("'twas successful"));
-        $this->assertEquals(['word'], $sp->tokenize('(word)'));
-        $this->assertEquals(['word', 'second'], $sp->tokenize('(word) second'));
-        $this->assertEquals(['apples', 'oranges', 'pears'], $sp->tokenize('(apples OR oranges) AND pears'));
-        $this->assertEquals(['two', 'terms'], $sp->tokenize("two\tterms"));
-        $this->assertEquals(
+        $this->assertSame(['single'], $sp->tokenize('single'));
+        $this->assertSame(['two', 'terms'], $sp->tokenize('two terms'));
+        $this->assertSame(['two', 'terms'], $sp->tokenize('two    terms'));
+        $this->assertSame(['apples', 'oranges'], $sp->tokenize('apples OR oranges'));
+        $this->assertSame(['"word"'], $sp->tokenize('"word"'));
+        $this->assertSame(['"word"', 'second'], $sp->tokenize('"word" second'));
+        $this->assertSame([], $sp->tokenize(''));
+        $this->assertSame(['0', 'is', 'zero'], $sp->tokenize('0 is zero'));
+        $this->assertSame(["'twas", 'successful'], $sp->tokenize("'twas successful"));
+        $this->assertSame(['word'], $sp->tokenize('(word)'));
+        $this->assertSame(['word', 'second'], $sp->tokenize('(word) second'));
+        $this->assertSame(['apples', 'oranges', 'pears'], $sp->tokenize('(apples OR oranges) AND pears'));
+        $this->assertSame(['two', 'terms'], $sp->tokenize("two\tterms"));
+        $this->assertSame(
             ['"two words"', 'single', '"three word phrase"', 'single'],
             $sp->tokenize('((("two words" OR single) NOT "three word phrase") AND single)')
         );
-        $this->assertEquals(['"unfinished phrase'], $sp->tokenize('"unfinished phrase'));
-        $this->assertEquals(['"'], $sp->tokenize('"'));
-        $this->assertEquals(['""'], $sp->tokenize('""'));
+        $this->assertSame(['"unfinished phrase'], $sp->tokenize('"unfinished phrase'));
+        $this->assertSame(['"'], $sp->tokenize('"'));
+        $this->assertSame(['""'], $sp->tokenize('""'));
     }
 
     /**

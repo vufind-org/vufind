@@ -7,23 +7,13 @@
 function waitForAjaxContentToLoad(fn) {
   var itemDone = typeof VuFind.itemStatuses === "undefined";
   var saveDone = typeof VuFind.saveStatuses === "undefined";
-  var initiallyActiveTab = document.querySelector(".record-tab.initiallyActive");
+  var activeTabPane = document.querySelector(".record-tabs .tab-pane.active");
   var tabDone = false;
-  if (!initiallyActiveTab) {
+  if (!activeTabPane) {
     // No initially active tab? Then not on record page, so treat tab loading as done:
     tabDone = true;
   } else {
-    // Check for a tab hash, which could impact which element we check for activity:
-    var newTab = typeof window.location.hash !== 'undefined'
-      ? window.location.hash.toLowerCase() : '';
-    if (newTab.length <= 1 || newTab === '#tabnav') {
-      // No tab hash, check for loading of the initial tab:
-      tabDone = initiallyActiveTab.classList.contains("active");
-    } else {
-      // Tab hash, check that the specified tab is active (if valid):
-      var hashTab = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
-      tabDone = !hashTab || hashTab.classList.contains("active");
-    }
+    tabDone = activeTabPane.dataset.init === 'true';
   }
 
   var fnCalled = false;
@@ -80,7 +70,10 @@ VuFind.listen("ready", function triggerPrint() {
     // when the "test mode" cookie is set. This should never happen
     // under normal usage outside of the Phing startup process.
     if (document.cookie.indexOf('VuFindTestSuiteRunning=') > -1) {
-      console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
+      const message = document.createElement("p");
+      message.classList.add("print-test-disabled-message");
+      message.textContent = "Printing disabled due to test mode.";
+      document.body.insertBefore(message, document.body.firstChild);
       return;
     }
 

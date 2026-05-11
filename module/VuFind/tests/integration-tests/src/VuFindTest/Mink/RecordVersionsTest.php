@@ -123,7 +123,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Record/0001732009-0');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '#record-tab-versions a');
+        $this->clickCss($page, '#tab-button-versions');
         $this->waitForPageLoad($page);
         // Click the QR code link and verify that the image gets added dynamically:
         $this->clickCss($page, '.result-links .qrcodeLink');

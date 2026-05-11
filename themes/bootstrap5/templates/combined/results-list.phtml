@@ -10,10 +10,10 @@
 
   // Advanced search link
   $advancedSearchAction = ($currentSearch['advanced_link_bottom'] ?? false)
-    ? $params->getOptions()->getAdvancedSearchAction() : false;
+    ? $params->getOptions()->getAdvancedSearchAction() : null;
   $advancedSearchUrl = $advancedSearchAction
     ? $this->url($advancedSearchAction, [], ['query' => ['sid' => $results->getSearchId()]])
-    : false;
+    : null;
 
   // Generate JS code that will move a given recommendation module over to the sidebar
   $generateMoveRecommendationToSidebarJavascript = function ($recommendationClass) {

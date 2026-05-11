@@ -149,7 +149,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
 
         if (!empty($errorMessage)) {
             if ($this->errorMode == 'flash') {
-                $this->getController()->flashMessenger()
+                $this->getController()->getFlashMessenger()
                     ->addErrorMessage($errorMessage);
             }
             if ($this->errorMode == 'throw') {

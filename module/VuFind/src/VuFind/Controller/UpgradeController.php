@@ -207,7 +207,7 @@ class UpgradeController extends AbstractBase
         } catch (Exception $e) {
             $extra = is_a($e, \VuFind\Exception\FileAccess::class)
                 ? '  Check file permissions.' : '';
-            $this->flashMessenger()->addErrorMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
+            $this->getFlashMessenger()->addErrorMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
             return $this->forwardTo('Upgrade', 'Error');
         }
     }
@@ -315,7 +315,7 @@ class UpgradeController extends AbstractBase
         $migrations = $migrationManager->getMigrations($this->cookie->oldVersion);
         $failedMigrations = $migrationManager->getFailedMigrations();
         if (!empty($failedMigrations)) {
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 'Failed migration(s) detected: ' . implode(' ', $failedMigrations)
                 . ' -- see migrations table in database for details; manual intervention may be needed.'
             );
@@ -377,7 +377,7 @@ class UpgradeController extends AbstractBase
             // Clean up the "VuFind" source, if necessary.
             $this->fixVuFindSourceInDatabase();
         } catch (Exception $e) {
-            $this->flashMessenger()->addErrorMessage('Database upgrade failed: ' . $e->getMessage());
+            $this->getFlashMessenger()->addErrorMessage('Database upgrade failed: ' . $e->getMessage());
             return $this->forwardTo('Upgrade', 'Error');
         }
 
@@ -444,7 +444,7 @@ class UpgradeController extends AbstractBase
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
                 } catch (Exception $e) {
-                    $this->flashMessenger()->addErrorMessage('Could not connect; please try again.');
+                    $this->getFlashMessenger()->addErrorMessage('Could not connect; please try again.');
                 }
             }
         }
@@ -469,12 +469,12 @@ class UpgradeController extends AbstractBase
         if ($this->formWasSubmitted()) {
             $username = $this->params()->fromPost('username');
             if (empty($username)) {
-                $this->flashMessenger()
+                $this->getFlashMessenger()
                     ->addErrorMessage('Username must not be empty.');
             } else {
                 $user = $this->getDbService(UserServiceInterface::class)->getUserByUsername($username);
                 if (!$user) {
-                    $this->flashMessenger()->addErrorMessage("User {$username} not found.");
+                    $this->getFlashMessenger()->addErrorMessage("User {$username} not found.");
                 } else {
                     $this->getDbService(ResourceTagsServiceInterface::class)->assignAnonymousTags($user);
                     $this->session->warnings->append(
@@ -563,11 +563,12 @@ class UpgradeController extends AbstractBase
         if (!empty($version)) {
             $this->cookie->newVersion = $newVersion = Version::getBuildVersion();
             if (Comparator::lessThan($version, '10.0')) {
-                $this->flashMessenger()->addErrorMessage(
+                $this->getFlashMessenger()->addErrorMessage(
                     'Illegal version number; please upgrade to at least version 10.x before proceeding.'
                 );
             } elseif (Comparator::greaterThan($version, $newVersion)) {
-                $this->flashMessenger()->addErrorMessage("Source version must be less than or equal to {$newVersion}.");
+                $this->getFlashMessenger()
+                    ->addErrorMessage("Source version must be less than or equal to {$newVersion}.");
             } else {
                 $this->cookie->oldVersion = $version;
                 // Clear out request to avoid infinite loop:
@@ -642,7 +643,7 @@ class UpgradeController extends AbstractBase
             (array)$this->session->warnings
         );
         foreach ($allWarnings as $warning) {
-            $this->flashMessenger()->addInfoMessage($warning);
+            $this->getFlashMessenger()->addInfoMessage($warning);
         }
 
         return $this->createViewModel(

@@ -242,6 +242,17 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test isRestrictedView for a record.
+     *
+     * @return void
+     */
+    public function testIsRestrictedView(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertFalse($driver->isRestrictedView());
+    }
+
+    /**
      * Test getItemsAuthors for a record.
      *
      * @return void

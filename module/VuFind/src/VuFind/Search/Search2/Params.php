@@ -46,7 +46,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelSections = [
+    protected array $defaultFacetLabelSections = [
         'Advanced_Facets', 'HomePage_Facets', 'ResultsTop', 'Results',
         'ExtraFacetLabels',
     ];
@@ -56,7 +56,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function initAdvancedFacets()
+    public function initAdvancedFacets(): void
     {
         $this->initFacetList('Advanced_Facets', 'Advanced_Settings');
     }
@@ -66,7 +66,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function initHomePageFacets()
+    public function initHomePageFacets(): void
     {
         // Load Advanced settings if HomePage settings are missing (legacy support):
         if (!$this->initFacetList('HomePage_Facets', 'HomePage_Facet_Settings')) {

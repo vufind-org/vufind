@@ -38,6 +38,7 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Search\ResultScroller;
 use VuFind\Search\SearchNormalizer;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -117,6 +118,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param SearchNormalizer     $searchNormalizer Search normalizer
      * @param array                $config           Main configuration
      * @param Memory               $searchMemory     Search memory
+     * @param ResultScroller       $resultScroller   Result scroller helper
      */
     public function __construct(
         SessionSettings $sessionSettings,
@@ -127,7 +129,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         protected string $sessionId,
         protected SearchNormalizer $searchNormalizer,
         protected array $config,
-        protected Memory $searchMemory
+        protected Memory $searchMemory,
+        protected ResultScroller $resultScroller
     ) {
         $this->sessionSettings = $sessionSettings;
     }
@@ -171,7 +174,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         }
 
         if ($results->getOptions()->resultScrollerActive()) {
-            $requestParams->getController()->resultScroller()->init($results);
+            $this->resultScroller->init($results);
         }
 
         // Always save search parameters, since these are namespaced by search

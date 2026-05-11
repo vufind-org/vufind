@@ -60,7 +60,7 @@ abstract class FacetCache
     public function __construct(
         protected Results $results,
         protected CacheManager $cacheManager,
-        protected $language = 'en',
+        protected string $language = 'en',
         protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null,
         protected ?ConfigManagerInterface $configManager = null
     ) {
@@ -71,14 +71,14 @@ abstract class FacetCache
      *
      * @return string
      */
-    abstract protected function getCacheNamespace();
+    abstract protected function getCacheNamespace(): string;
 
     /**
      * Get the cache key for the provided method.
      *
      * @return string
      */
-    protected function getCacheKey()
+    protected function getCacheKey(): string
     {
         $params = $this->results->getParams();
         $facetConfig = $params->getFacetConfig();
@@ -98,7 +98,7 @@ abstract class FacetCache
      *
      * @return array
      */
-    protected function getFacetResults($initMethod)
+    protected function getFacetResults(string $initMethod): array
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->cacheManager->getCache('object', $this->getCacheNamespace());
@@ -132,7 +132,7 @@ abstract class FacetCache
      *
      * @return array
      */
-    public function getList($context = 'Advanced')
+    public function getList(string $context = 'Advanced'): array
     {
         if (!in_array($context, ['Advanced', 'HomePage', 'NewItems'])) {
             throw new \Exception('Invalid context: ' . $context);
@@ -143,8 +143,7 @@ abstract class FacetCache
         // Temporary context-specific sort fix for Advanced and HomePage:
         if (in_array($context, ['Advanced', 'HomePage']) && $this->hierarchicalFacetHelper && $this->configManager) {
             $options = $this->results->getOptions();
-            $facetConfigName = $options->getFacetsIni();
-            $facetConfig = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
+            $facetConfig = $this->configManager->getConfigArray($options->getFacetsIni());
             $sortOptions = array_merge(
                 $options->getHierarchicalFacetSortSettings(),
                 $facetConfig[$context . '_Settings']['hierarchicalFacetSortOptions'] ?? []
@@ -167,7 +166,7 @@ abstract class FacetCache
      *
      * @return Results
      */
-    public function getResults()
+    public function getResults(): Results
     {
         return $this->results;
     }

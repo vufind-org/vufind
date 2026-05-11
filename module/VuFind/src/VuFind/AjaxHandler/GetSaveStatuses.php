@@ -30,10 +30,10 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -59,13 +59,13 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
      *
      * @param SessionSettings              $ss                  Session settings
      * @param ?UserEntityInterface         $user                Logged in user (or null)
-     * @param Url                          $urlHelper           URL helper
+     * @param RouteHelper                  $routeHelper         Route helper
      * @param UserResourceServiceInterface $userResourceService User resource database service
      */
     public function __construct(
         SessionSettings $ss,
         protected ?UserEntityInterface $user,
-        protected Url $urlHelper,
+        protected RouteHelper $routeHelper,
         protected UserResourceServiceInterface $userResourceService
     ) {
         $this->sessionSettings = $ss;
@@ -82,8 +82,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     {
         $list = $data->getUserList();
         return !$list ? [] : [
-            'list_url' =>
-                $this->urlHelper->fromRoute('userList', ['id' => $list->getId()]),
+            'list_url' => $this->routeHelper->getUrlFromRoute('userList', ['id' => $list->getId()]),
             'list_title' => $list->getTitle(),
         ];
     }

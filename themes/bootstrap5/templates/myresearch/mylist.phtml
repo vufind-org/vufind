@@ -16,8 +16,13 @@
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != 'full') {
     $this->assetManager()->appendScriptLink('record.js');
-    $this->assetManager()->appendScriptLink('channels.js');
+    $this->assetManager()->appendScriptLink('record_tabs.js');
     $this->assetManager()->appendScriptLink('embedded_record.js');
+
+    // Add any extra scripts the tabs require:
+    foreach ($this->recordTabs()->getExtraScripts() as $script) {
+      $this->assetManager()->appendScriptLink($script);
+    }
   }
 
   $recordTotal = $this->results->getResultTotal();

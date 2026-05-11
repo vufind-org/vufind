@@ -6,7 +6,7 @@
 ?>
 <div class="alert alert-danger">
   <p><?=$this->transEsc('An error has occurred')?></p>
-  <p><?=$this->transEsc($this->message)?></p>
+  <?php if ($this->message): ?><p><?=$this->transEsc($this->message)?></p><?php endif; ?>
   <?=$this->render('error/contact.phtml')?>
 </div>
 

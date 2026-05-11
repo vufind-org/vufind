@@ -65,7 +65,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Solr', $this->getOptions()->getSearchClassId());
+        $this->assertSame('Solr', $this->getOptions()->getSearchClassId());
     }
 
     /**
@@ -87,6 +87,6 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     {
         $configs = ['searches' => ['General' => ['tie_breaker_sort' => 'foo']]];
         $options = $this->getOptions($this->getMockConfigManager($configs));
-        $this->assertEquals('foo', $options->getSortTieBreaker());
+        $this->assertSame('foo', $options->getSortTieBreaker());
     }
 }
