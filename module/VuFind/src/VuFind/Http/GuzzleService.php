@@ -170,6 +170,7 @@ class GuzzleService implements HttpServiceInterface
                 $headers
             ),
         ];
+
         return $client->request('POST', $url, $options);
     }
 
