@@ -81,12 +81,9 @@ class GetThisLoaderTest extends TestCase
         $this->config = $this->yamlReader->get('GetThis.yaml');
         $regexConfig = $this->yamlReader->get('Regex.yaml');
         $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
-        $translator = $this->createMock(Translator::class);
-        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
         $this->getThis = new GetThisLoader(
             $this->config,
-            new Regex($regexConfig),
-            $translator
+            new Regex($regexConfig)
         );
     }
 
