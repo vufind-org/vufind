@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Regex Test Class
+ * Regex Test Class.
  *
  * PHP version 8
  *
@@ -22,7 +22,7 @@ use VuFind\Regex\RegexFactory;
 use VuFindTest\Container\MockContainer;
 
 /**
- * Regex Test Class
+ * Regex Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ use VuFindTest\Container\MockContainer;
 class RegexTest extends TestCase
 {
     /**
-     * Getter for a sample config
+     * Getter for a sample config.
      *
      * @return array[]
      */
@@ -54,7 +54,7 @@ class RegexTest extends TestCase
     }
 
     /**
-     * Test for Regex class
+     * Test for Regex class.
      *
      * @return void
      * @throws Exception
@@ -87,7 +87,7 @@ class RegexTest extends TestCase
     }
 
     /**
-     * Test the Regex factory
+     * Test the Regex factory.
      *
      * @return void
      * @throws \PHPUnit\Framework\MockObject\Exception

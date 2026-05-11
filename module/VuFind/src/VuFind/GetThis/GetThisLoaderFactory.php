@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for GetThisLoader
+ * Factory for GetThisLoader.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Config\YamlReader;
 use VuFind\Regex\Regex;
 
 /**
- * Factory for GetThisLoader
+ * Factory for GetThisLoader.
  *
  * @category VuFind
  * @package  GetThis
@@ -47,7 +47,7 @@ use VuFind\Regex\Regex;
 class GetThisLoaderFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param class-string<T>    $requestedName Service being created

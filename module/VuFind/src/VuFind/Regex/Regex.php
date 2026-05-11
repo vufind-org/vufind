@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Allow to match regex from config file
+ * Allow to match regex from config file.
  *
  * PHP version 8
  *
@@ -19,7 +19,7 @@ use Exception;
 use function array_key_exists;
 
 /**
- * Class to hold data for the Get This button
+ * Class to hold data for the Get This button.
  *
  * @category VuFind
  * @package  Regex
@@ -30,7 +30,7 @@ use function array_key_exists;
 class Regex
 {
     /**
-     * Initializes the loader
+     * Initializes the loader.
      *
      * @param array $config Regular expression configuration
      */
@@ -39,7 +39,7 @@ class Regex
     }
 
     /**
-     * Set the config to use
+     * Set the config to use.
      *
      * @param array $config Config (usually from Regex.yaml)
      *
@@ -51,7 +51,7 @@ class Regex
     }
 
     /**
-     * Matches against regex in config
+     * Matches against regex in config.
      *
      * @param string $regexName Regex name within the config file
      * @param string $string    The string to test against

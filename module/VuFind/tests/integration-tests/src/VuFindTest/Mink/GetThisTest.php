@@ -49,14 +49,14 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\DemoDriverTestTrait;
 
     /**
-     * Search to perform
+     * Search to perform.
      *
      * @var string
      */
     protected const SEARCH = 'letterhead world';
 
     /**
-     * Mink test post-test function
+     * Mink test post-test function.
      *
      * @return void
      * @throws Exception
@@ -68,7 +68,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Mink test pre-test function
+     * Mink test pre-test function.
      *
      * @return void
      */
@@ -79,7 +79,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Available holdings to work with
+     * Available holdings to work with.
      *
      * @return array
      */
@@ -125,7 +125,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get an array of holdings with the specified call numbers for the specified record id
+     * Get an array of holdings with the specified call numbers for the specified record id.
      *
      * @param string $recordId       Record id to work with
      * @param string ...$callNumbers Call numbers of the holdings to use
@@ -146,7 +146,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Getter for the Demo config array
+     * Getter for the Demo config array.
      *
      * @param string $recordId   Record id to work with
      * @param bool   $fullStatus Whether to use full status (or standard status)
@@ -175,7 +175,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Provider for testGetThisStandardStatus
+     * Provider for testGetThisStandardStatus.
      *
      * @return \Iterator<(int | string), array<mixed>>
      */
@@ -230,7 +230,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test opening the GetThis dialog when using standard status and the presence of the expected blocks
+     * Test opening the GetThis dialog when using standard status and the presence of the expected blocks.
      *
      * @param array  $config           Config for the Demo driver
      * @param array  $expectedPresence Blocks which should be present or not
@@ -252,7 +252,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Provider for testGetThisFullStatus
+     * Provider for testGetThisFullStatus.
      *
      * @return \Iterator<(int | string), array<mixed>>
      */
@@ -330,7 +330,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test opening the GetThis dialog when using full status and the presence of the expected blocks
+     * Test opening the GetThis dialog when using full status and the presence of the expected blocks.
      *
      * @param array  $config                Config for the Demo driver
      * @param array  $expectedBlockPresence Blocks which should be present or not
@@ -364,7 +364,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * For the feature to comment the HTML with the template block name in the lightbox
-     * Testing if the disabling of the feature in the config works (the enabling is tested through other tests)
+     * Testing if the disabling of the feature in the config works (the enabling is tested through other tests).
      *
      * @return void
      * @throws Exception
@@ -393,7 +393,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test changing holdings in the dropdown
+     * Test changing holdings in the dropdown.
      *
      * @return void
      * @throws Exception
@@ -438,7 +438,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Perform a search and wait until the status are displayed
+     * Perform a search and wait until the status are displayed.
      *
      * @param string $search String to search for
      *
@@ -459,7 +459,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Perform a search and open the GetThis dialog
+     * Perform a search and open the GetThis dialog.
      *
      * @param string $search String to search for
      *
@@ -481,7 +481,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Perform a search and open the GetThis dialog for the specified callnumber
+     * Perform a search and open the GetThis dialog for the specified callnumber.
      *
      * @param string $search     String to search for
      * @param string $callNumber Callnumber to get
@@ -511,7 +511,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Getter for the lightbox
+     * Getter for the lightbox.
      *
      * @param Element $page Page element
      *
@@ -523,7 +523,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Assert block presence (or absence) in the lightbox
+     * Assert block presence (or absence) in the lightbox.
      *
      * @param Element $page             Page element
      * @param string  $blockName        Block to test the presence of
@@ -549,7 +549,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Set the value for commentTemplateName in the GetThis config to whether comment the displayed block
+     * Set the value for commentTemplateName in the GetThis config to whether comment the displayed block.
      *
      * @param bool $value Either to enable the comment feature
      *

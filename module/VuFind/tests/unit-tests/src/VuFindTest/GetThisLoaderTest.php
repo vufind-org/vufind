@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Get This loader Test Class
+ * Get This loader Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Get This loader Test Class
+ * Get This loader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,28 +49,28 @@ class GetThisLoaderTest extends TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Yaml reader needed for GetThis
+     * Yaml reader needed for GetThis.
      *
      * @var YamlReader
      */
     protected YamlReader $yamlReader;
 
     /**
-     * GetThis config
+     * GetThis config.
      *
      * @var array
      */
     protected array $config;
 
     /**
-     * Loader itself
+     * Loader itself.
      *
      * @var GetThisLoader
      */
     protected GetThisLoader $getThis;
 
     /**
-     * Test setUp function, before every test
+     * Test setUp function, before every test.
      *
      * @return void
      * @throws \PHPUnit\Framework\MockObject\Exception
@@ -91,7 +91,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Using reflection class replace current GetThis config
+     * Using reflection class replace current GetThis config.
      *
      * @param array $config Config to set
      *
@@ -107,7 +107,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Create a mock driver for solr
+     * Create a mock driver for solr.
      *
      * @return SolrDefault|MockObject
      */
@@ -121,7 +121,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Items to be re-used
+     * Items to be re-used.
      *
      * @return array[]
      */
@@ -157,7 +157,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method areItemsSupported
+     * Test method areItemsSupported.
      *
      * @return void
      */
@@ -169,7 +169,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getItems, getItem, setItems, setItemById
+     * Test method getItems, getItem, setItems, setItemById.
      *
      * @return void
      */
@@ -300,7 +300,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test the conditions functions including the "show" prefixed function
+     * Test the conditions functions including the "show" prefixed function.
      *
      * @param $items    array Items for GetThis loader
      * @param $expected array Expected templates to display
@@ -319,7 +319,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Iterator<(int | string), array<mixed>>
      */
@@ -370,7 +370,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getSubTemplates and indirect functions relating to GetThis config
+     * Test method getSubTemplates and indirect functions relating to GetThis config.
      *
      * @param $templateConfig array Sub config for GetThis loader templates
      * @param $expected       array Expected templates to display
@@ -390,7 +390,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getSubTemplates with error in config
+     * Test method getSubTemplates with error in config.
      *
      * @return void
      * @throws Exception
@@ -408,7 +408,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getSubTemplates with error in config
+     * Test method getSubTemplates with error in config.
      *
      * @return void
      * @throws Exception
@@ -428,7 +428,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Data provider
+     * Data provider.
      *
      * @return Iterator<(int | string), mixed>
      */
@@ -465,7 +465,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getSubTemplateParams
+     * Test method getSubTemplateParams.
      *
      * @param $templateConfig array Sub config for GetThis loader templates
      * @param $expected       array Expected templates params
@@ -486,7 +486,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method setSubTemplateParam
+     * Test method setSubTemplateParam.
      *
      * @return void
      * @throws ReflectionException
@@ -500,7 +500,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getItem, setItems, setItemById
+     * Test method getItem, setItems, setItemById.
      *
      * @return void
      */
@@ -524,7 +524,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getStatus
+     * Test method getStatus.
      *
      * @return void
      */
@@ -545,7 +545,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test getLocation + getLocationCode
+     * Test getLocation + getLocationCode.
      *
      * @return void
      */
@@ -560,7 +560,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getLink
+     * Test method getLink.
      *
      * @return void
      * @throws ReflectionException
@@ -613,7 +613,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getCallNumber
+     * Test method getCallNumber.
      *
      * @return void
      */
@@ -677,7 +677,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method showCopyNumber
+     * Test method showCopyNumber.
      *
      * @param bool|null $showCopyNumber Value for the config property of the same name
      * @param array     $holdings       Holdings available for the record
@@ -700,7 +700,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getCopyNumber
+     * Test method getCopyNumber.
      *
      * @return void
      */
@@ -716,7 +716,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method getSummary
+     * Test method getSummary.
      *
      * @return void
      * @throws ReflectionException
@@ -733,7 +733,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method isOnlineResource
+     * Test method isOnlineResource.
      *
      * @return void
      */
@@ -763,7 +763,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method isSerial
+     * Test method isSerial.
      *
      * @return void
      * @throws ReflectionException
@@ -788,7 +788,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method isOut
+     * Test method isOut.
      *
      * @return void
      */
@@ -833,7 +833,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method isAudioVideoMedia
+     * Test method isAudioVideoMedia.
      *
      * @return void
      */
@@ -866,7 +866,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method isLibUseOnly
+     * Test method isLibUseOnly.
      *
      * @return void
      */
@@ -880,7 +880,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method isUnavailable
+     * Test method isUnavailable.
      *
      * @return void
      */
@@ -895,7 +895,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test method setRecord
+     * Test method setRecord.
      *
      * @return void
      * @throws ReflectionException
@@ -912,7 +912,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Test factory
+     * Test factory.
      *
      * @return void
      * @throws \PHPUnit\Framework\MockObject\Exception

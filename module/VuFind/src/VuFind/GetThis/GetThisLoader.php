@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Prepares data for the Get This button
+ * Prepares data for the Get This button.
  *
  * PHP version 8
  *
@@ -28,7 +28,7 @@ use function count;
 use function is_array;
 
 /**
- * Class to hold data for the Get This button
+ * Class to hold data for the Get This button.
  *
  * @category VuFind
  * @package  GetThis
@@ -41,42 +41,42 @@ class GetThisLoader implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Items
+     * Items.
      *
      * @var ?array
      */
     protected $items;
 
     /**
-     * Id for holding item to default to when no id is passed
+     * Id for holding item to default to when no id is passed.
      *
      * @var ?string
      */
     protected $itemId;
 
     /**
-     * Sub-templates to display
+     * Sub-templates to display.
      *
      * @var ?array
      */
     protected $subTemplates;
 
     /**
-     * Sub-templates params from config
+     * Sub-templates params from config.
      *
      * @var ?array
      */
     protected $subTemplatesParams;
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var RecordDriver
      */
     protected RecordDriver $record;
 
     /**
-     * Initializes the loader
+     * Initializes the loader.
      *
      * @param array $config Config pulled from the config file defined above
      * @param Regex $regex  Regex service
@@ -88,7 +88,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Return the result of the function passed, negates the result if the first char is "!"
+     * Return the result of the function passed, negates the result if the first char is "!".
      *
      * @param string $function The function to test
      *
@@ -105,7 +105,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Whether the condition block contains an operator "and"
+     * Whether the condition block contains an operator "and".
      *
      * @param array $conditions Array of conditions to determine the result
      *
@@ -123,7 +123,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Go through an array recursively to determine if the condition functions are matched
+     * Go through an array recursively to determine if the condition functions are matched.
      *
      * @param array $conditions Array of conditions to determine the result
      *
@@ -150,7 +150,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Go through an array recursively to determine if the condition functions are matched
+     * Go through an array recursively to determine if the condition functions are matched.
      *
      * @param array $condition Array of conditions to determine the result
      *
@@ -171,7 +171,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Add template and template parameters to property
+     * Add template and template parameters to property.
      *
      * @param string $templateName   Template name
      * @param array  $templateConfig Template config
@@ -187,7 +187,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Add parameters to the template
+     * Add parameters to the template.
      *
      * @param string $templateName Template name
      * @param mixed  $value        Parameter to add
@@ -200,7 +200,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Add a parameters to the template
+     * Add a parameters to the template.
      *
      * @param string $templateName Template name
      * @param string $key          Key value of the parameter
@@ -214,7 +214,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the templates to display according to the config file
+     * Get the templates to display according to the config file.
      *
      * @return array
      * @throws Exception
@@ -246,7 +246,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Sort the sub templates to match the order in the config
+     * Sort the sub templates to match the order in the config.
      *
      * @return void
      */
@@ -263,7 +263,7 @@ class GetThisLoader implements LoggerAwareInterface
 
     /**
      * Return the template parameters in the config for the given template or all of them if none
-     * passed
+     * passed.
      *
      * @param ?string $templateName Template name you want the params for
      *
@@ -278,7 +278,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the status for a holding item
+     * Get the status for a holding item.
      *
      * @param ?string $itemId The holding item UUID. If null (default) will return status for first
      *                        item
@@ -296,7 +296,7 @@ class GetThisLoader implements LoggerAwareInterface
 
     /**
      * Matches given haystack against the regex in config;
-     * Return true if any of the given string matches any of the regex
+     * Return true if any of the given string matches any of the regex.
      *
      * @param string       $regexName Regex name matching the config file
      * @param string|array $haystack  Subject to match the regex against
@@ -319,7 +319,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the location for a holding item
+     * Get the location for a holding item.
      *
      * @param ?string $itemId The holding item UUID. If null (default) will return status for first
      *                        item
@@ -332,7 +332,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the location code for a holding item
+     * Get the location code for a holding item.
      *
      * @param ?string $itemId The holding item UUID. If null (default) will return status for first
      *                        item
@@ -345,7 +345,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the link data for requesting the item
+     * Get the link data for requesting the item.
      *
      * @param ?string $itemId The holding item UUID. If null (default) will return status for first
      *                        item
@@ -385,7 +385,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the call number for the record
+     * Get the call number for the record.
      *
      * @param ?string $itemId Item to filter the result for
      *
@@ -424,7 +424,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the copy number for the record
+     * Get the copy number for the record.
      *
      * @param ?string $itemId Item to filter the result for
      *
@@ -443,7 +443,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the description for the record
+     * Get the description for the record.
      *
      * @return string The description string
      */
@@ -453,7 +453,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the given item is an online resource
+     * Determine if the given item is an online resource.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -466,7 +466,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the given item is a serial or not
+     * Determine if the given item is a serial or not.
      *
      * @return bool  If the item is a serial or not
      */
@@ -481,7 +481,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the given item is checked or not
+     * Determine if the given item is checked or not.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -506,7 +506,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the given item is media of audio/video form
+     * Determine if the given item is media of audio/video form.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -521,7 +521,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the given item is for library use only or not
+     * Determine if the given item is for library use only or not.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -546,7 +546,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the given item is unavailable (false if uncertain)
+     * Determine if the given item is unavailable (false if uncertain).
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -565,7 +565,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Whether to display the copy number (next to the call number), default false
+     * Whether to display the copy number (next to the call number), default false.
      *
      * @return bool
      */
@@ -575,7 +575,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if to show holdings
+     * Determine if to show holdings.
      *
      * @return bool
      */
@@ -585,7 +585,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the faculty delivery template should display
+     * Determine if the faculty delivery template should display.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -609,7 +609,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the remote parton template should display
+     * Determine if the remote parton template should display.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -632,7 +632,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the other library links template should display
+     * Determine if the other library links template should display.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -657,7 +657,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Determine if the microform template should display
+     * Determine if the microform template should display.
      *
      * @param ?string $itemId Item ID to filter for
      *
@@ -670,7 +670,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Setter for record
+     * Setter for record.
      *
      * @param RecordDriver $record Record driver object
      *
@@ -683,7 +683,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Getter for items
+     * Getter for items.
      *
      * @return array
      */
@@ -693,7 +693,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Setter for items
+     * Setter for items.
      *
      * @param array $items Array of holding items
      *
@@ -706,7 +706,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Logic used to determine which item id to use
+     * Logic used to determine which item id to use.
      *
      * @param ?string $itemId The holding item UUID.
      *
@@ -748,7 +748,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Setter for itemId
+     * Setter for itemId.
      *
      * @param ?string $itemId Item id of the holding for the record
      *
@@ -760,7 +760,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Given holdings, return whether the holdings are compatible with the get this feature
+     * Given holdings, return whether the holdings are compatible with the get this feature.
      *
      * @param array $items Holdings
      *
@@ -783,7 +783,7 @@ class GetThisLoader implements LoggerAwareInterface
 
     /**
      * Whether to comment in the HTML code the displayed template name for
-     * troubleshooting/debugging, default false
+     * troubleshooting/debugging, default false.
      *
      * @return bool
      */

@@ -55,7 +55,7 @@ class HoldingsILS extends AbstractBase
     protected $template;
 
     /**
-     * GetThis if enabled in the config
+     * GetThis if enabled in the config.
      *
      * @var ?GetThisLoader
      */
@@ -218,7 +218,7 @@ class HoldingsILS extends AbstractBase
     }
 
     /**
-     * Getter for GetThisLoader
+     * Getter for GetThisLoader.
      *
      * @return ?GetThisLoader
      */
