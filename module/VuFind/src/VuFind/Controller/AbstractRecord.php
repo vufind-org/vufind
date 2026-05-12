@@ -128,7 +128,7 @@ class AbstractRecord extends AbstractBase
             throw new ForbiddenException('Comments disabled');
         }
 
-        $captchaActive = $this->captcha()->active('userComments');
+        $captchaActive = $this->getCaptcha()->active('userComments');
 
         // Force login:
         if (!($user = $this->getUser())) {
@@ -546,7 +546,7 @@ class AbstractRecord extends AbstractBase
         $mailer->setMaxRecipients($view->maxRecipients);
 
         // Set up Captcha
-        $view->useCaptcha = $this->captcha()->active('email');
+        $view->useCaptcha = $this->getCaptcha()->active('email');
         // Process form submission:
         if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
@@ -606,7 +606,7 @@ class AbstractRecord extends AbstractBase
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
         // Set up Captcha
-        $view->useCaptcha = $this->captcha()->active('sms');
+        $view->useCaptcha = $this->getCaptcha()->active('sms');
         // Send parameters back to view so form can be re-populated:
         $view->to = $this->params()->fromPost('to');
         $view->provider = $this->params()->fromPost('provider');

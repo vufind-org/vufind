@@ -30,8 +30,8 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\AccountCapabilities;
-use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -59,7 +59,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      *
      * @param ResourcePopulator        $resourcePopulator   Resource populator service
      * @param CommentsServiceInterface $commentsService     Comments database service
-     * @param Captcha                  $captcha             Captcha controller plugin
+     * @param CaptchaService           $captcha             Captcha service
      * @param ?UserEntityInterface     $user                Logged in user (or null)
      * @param bool                     $enabled             Are comments enabled?
      * @param RecordLoader             $recordLoader        Record loader
@@ -69,7 +69,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     public function __construct(
         protected ResourcePopulator $resourcePopulator,
         protected CommentsServiceInterface $commentsService,
-        protected Captcha $captcha,
+        protected CaptchaService $captcha,
         protected ?UserEntityInterface $user,
         protected bool $enabled,
         protected RecordLoader $recordLoader,
@@ -81,16 +81,18 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Is CAPTCHA valid? (Also returns true if CAPTCHA is disabled).
      *
+     * @param Params $params Parameter helper from controller
+     *
      * @return bool
      */
-    protected function checkCaptcha()
+    protected function checkCaptcha(Params $params)
     {
         // Not enabled? Report success!
         if (!$this->captcha->active('userComments')) {
             return true;
         }
         $this->captcha->setErrorMode('none');
-        return $this->captcha->verify();
+        return $this->captcha->verify($params->fromPost(), $params->fromQuery());
     }
 
     /**
@@ -128,7 +130,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         }
         $driver = $this->recordLoader->load($id, $source, false);
 
-        if (!$this->checkCaptcha()) {
+        if (!$this->checkCaptcha($params)) {
             return $this->formatResponse(
                 $this->translate('captcha_not_passed'),
                 self::STATUS_HTTP_FORBIDDEN

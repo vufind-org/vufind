@@ -283,7 +283,7 @@ class CartController extends AbstractBase
         );
         $view->records = $this->getRecordLoader()->loadBatch($ids);
         // Set up Captcha
-        $view->useCaptcha = $this->captcha()->active('email');
+        $view->useCaptcha = $this->getCaptcha()->active('email');
 
         // Process form submission:
         if (!($submitDisabled ?? false) && $this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {

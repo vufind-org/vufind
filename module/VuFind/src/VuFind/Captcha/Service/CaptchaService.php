@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,34 +22,38 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Captcha
  * @author   Chris Hallberg <crhallberg@gmail.com>
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Captcha\Service;
 
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\View\FlashMessenger\FlashMessenger;
 
-use function count;
 use function in_array;
 
 /**
  * Action helper to manage Captcha fields.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Captcha
  * @author   Chris Hallberg <crhallberg@gmail.com>
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Captcha extends AbstractPlugin implements TranslatorAwareInterface
+class CaptchaService implements TranslatorAwareInterface
 {
-    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use ExplodeSettingTrait;
+    use TranslatorAwareTrait;
 
     /**
      * Captcha services.
@@ -81,22 +86,23 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config   Config file
-     * @param array                 $captchas CAPTCHA objects
+     * @param array          $config         Top-level configuration
+     * @param array          $captchas       CAPTCHA objects
+     * @param FlashMessenger $flashMessenger Flash messenger
      *
      * @return void
      */
-    public function __construct($config, array $captchas = [])
-    {
+    public function __construct(
+        array $config,
+        array $captchas,
+        protected FlashMessenger $flashMessenger,
+    ) {
         $this->captchas = $captchas;
-        if (count($captchas) > 0 && isset($config->Captcha->forms)) {
+        if ($captchas && null !== ($forms = $config['Captcha']['forms'] ?? null)) {
             $this->active = true;
-            $this->domains = '*' == trim($config->Captcha->forms)
+            $this->domains = '*' == trim($forms)
                 ? true
-                : array_map(
-                    'trim',
-                    explode(',', $config->Captcha->forms)
-                );
+                : $this->explodeListSetting($forms);
         }
     }
 
@@ -117,11 +123,14 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy.
+     * Pull the captcha fields from request params and check them for accuracy.
+     *
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
      */
-    public function verify(): bool
+    public function verify(array $postParams, array $queryParams): bool
     {
         if (!$this->active()) {
             return true;
@@ -131,9 +140,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
 
         foreach ($this->captchas as $captcha) {
             try {
-                $captchaPassed = $captcha->verify(
-                    $this->getController()->params()
-                );
+                $captchaPassed = $captcha->verify($postParams, $queryParams);
                 if (!$captchaPassed) {
                     $errorMessage = $captcha->getErrorMessage();
                 }
@@ -149,8 +156,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
 
         if (!empty($errorMessage)) {
             if ($this->errorMode == 'flash') {
-                $this->getController()->getFlashMessenger()
-                    ->addErrorMessage($errorMessage);
+                $this->flashMessenger->addErrorMessage($errorMessage);
             }
             if ($this->errorMode == 'throw') {
                 throw new \Exception($errorMessage);
@@ -169,7 +175,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     public function active($domain = false): bool
     {
         return $this->active
-        && ($domain == false || $this->domains === true
-        || in_array($domain, $this->domains));
+            && ($domain == false || $this->domains === true
+            || in_array($domain, $this->domains));
     }
 }
