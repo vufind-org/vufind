@@ -17,6 +17,7 @@
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
+#   formActionRoute (string) Sets the route to which form data should be posted. (default = feedback-form)
 #   emailSubject (string) Email subject (translation key). (default = email_subject
 #                         value from config.ini [Feedback] section, or 'VuFind Feedback')
 #                         The subject may contain placeholders (for example %%receiver%%)
@@ -163,6 +164,7 @@ forms:
     useCaptcha: true
     reportReferrer: false
     reportUserAgent: true
+    #formActionRoute: controller-route
     #emailFrom:
     #  name: Your Library - Site Feedback
     #recipient:

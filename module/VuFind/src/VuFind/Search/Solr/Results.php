@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr aspect of the Search Multi-class (Results)
+ * Solr aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -29,7 +29,6 @@
 
 namespace VuFind\Search\Solr;
 
-use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
@@ -37,7 +36,7 @@ use VuFindSearch\Query\QueryGroup;
 use function count;
 
 /**
- * Solr Search Parameters
+ * Solr Search Parameters.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -105,7 +104,7 @@ class Results extends \VuFind\Search\Base\Results
     protected $cursorMark = null;
 
     /**
-     * Highest relevance of all the results
+     * Highest relevance of all the results.
      *
      * @var null|float
      */
@@ -159,7 +158,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get the scores of the results
+     * Get an array of the record ID mapped to its score, or to null if it has no score.
      *
      * @return array
      */
@@ -168,15 +167,13 @@ class Results extends \VuFind\Search\Base\Results
         $scoreMap = [];
         foreach ($this->results as $record) {
             $data = $record->getRawData();
-            if ($data['score'] ?? false) {
-                $scoreMap[$record->getUniqueId()] = $data['score'];
-            }
+            $scoreMap[$record->getUniqueId()] = $data['score'] ?? null;
         }
         return $scoreMap;
     }
 
     /**
-     * Getting the highest relevance of all the results
+     * Getting the highest relevance of all the results.
      *
      * @return null|float
      */
@@ -343,7 +340,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
@@ -373,7 +370,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get complete facet counts for several index fields
+     * Get complete facet counts for several index fields.
      *
      * @param array  $facetfields  name of the Solr fields to return facets for
      * @param bool   $removeFilter Clear existing filters from selected fields (true)
@@ -456,7 +453,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns data on pivot facets for the last search
+     * Returns data on pivot facets for the last search.
      *
      * @return ArrayObject        Flare-formatted object
      */

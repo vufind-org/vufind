@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Configuration loader for Multiple IdPs
+ * Configuration loader for Multiple IdPs.
  *
  * PHP version 8
  *
@@ -17,7 +17,7 @@ namespace VuFind\Auth\Shibboleth;
 use VuFind\Exception\Auth as AuthException;
 
 /**
- * Configuration loader for Multiple IdPs
+ * Configuration loader for Multiple IdPs.
  *
  * @category VuFind
  * @package  Authentication
@@ -27,36 +27,36 @@ use VuFind\Exception\Auth as AuthException;
  */
 class MultiIdPConfigurationLoader implements
     ConfigurationLoaderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Configured IdPs with entityId and overridden attribute mapping
+     * Configured IdPs with entityId and overridden attribute mapping.
      *
-     * @var \Laminas\Config\Config
+     * @var array
      */
     protected $config;
 
     /**
-     * Configured IdPs with entityId and overridden attribute mapping
+     * Configured IdPs with entityId and overridden attribute mapping.
      *
-     * @var \Laminas\Config\Config
+     * @var array
      */
     protected $shibConfig;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config     Configuration
-     * @param \Laminas\Config\Config $shibConfig Shibboleth configuration for IdPs
+     * @param \VuFind\Config\Config $config     Configuration
+     * @param \VuFind\Config\Config $shibConfig Shibboleth configuration for IdPs
      */
     public function __construct(
-        \Laminas\Config\Config $config,
-        \Laminas\Config\Config $shibConfig
+        \VuFind\Config\Config $config,
+        \VuFind\Config\Config $shibConfig
     ) {
-        $this->config = $config;
-        $this->shibConfig = $shibConfig;
+        $this->config = $config->toArray();
+        $this->shibConfig = $shibConfig->toArray();
     }
 
     /**
@@ -69,12 +69,12 @@ class MultiIdPConfigurationLoader implements
      */
     public function getConfiguration($entityId)
     {
-        $config = $this->config->Shibboleth->toArray();
+        $config = $this->config['Shibboleth'] ?? [];
         $idpConfig = null;
         $prefix = null;
         foreach ($this->shibConfig as $name => $configuration) {
             if ($entityId == trim($configuration['entityId'])) {
-                $idpConfig = $configuration->toArray();
+                $idpConfig = $configuration;
                 $prefix = $name;
                 break;
             }

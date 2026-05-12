@@ -1,0 +1,13 @@
+<?php
+  $searchBackendId = $this->driver->getSearchBackendIdentifier();
+  $options = $this->searchOptions($searchBackendId);
+  $query = [
+    'type' => $this->type,
+    'lookfor' => ($this->quoteQuery ?? true) ? '"' . $this->lookfor . '"' : $this->lookfor,
+  ];
+  if (($limit = $this->searchMemory()->getLastLimit($searchBackendId))
+    && $limit !== $options->getDefaultLimit()
+  ) {
+    $query['limit'] = $limit;
+  }
+  echo $this->url($this->searchRoute ?? $options->getSearchAction(), [], compact('query'));

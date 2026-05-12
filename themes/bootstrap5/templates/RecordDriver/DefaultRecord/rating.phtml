@@ -17,7 +17,7 @@
         <?=$this->transEsc('rating_heading', $translationParams)?>
       </a>
     <?php endif; ?>
-    <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData, 'labelAttrs' => ['data-click-callback="addRecordRating"']]);?>
+    <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => $ratingData, 'labelAttrs' => ['data-click-callback="addRecordRating"']]);?>
     <span class="rating-summary">
       <a href="<?=$addUrlEsc?>" data-lightbox title="<?=$this->transEscAttr('rating_add_or_update')?>">
         <?=$this->transEsc($countKeys[$ratingData['count']] ?? 'rating_summary', $translationParams)?>

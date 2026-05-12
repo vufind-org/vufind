@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -52,21 +52,21 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     use CacheTrait;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var RecordLoader
      */
     protected $recordLoader;
 
     /**
-     * Cover router
+     * Cover router.
      *
      * @var CoverRouter
      */
     protected $coverRouter;
 
     /**
-     * PHP renderer
+     * PHP renderer.
      *
      * @var PhpRenderer
      */
@@ -74,7 +74,7 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
 
     /**
      * If true we will render a fallback html template in case no image could be
-     * loaded
+     * loaded.
      *
      * @var bool
      */
@@ -106,7 +106,7 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
     }
 
     /**
-     * Handle request
+     * Handle request.
      *
      * @param Params $params Request parameters
      *

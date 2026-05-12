@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IpAddressUtils Test Class
+ * IpAddressUtils Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\Net;
 use VuFind\Net\IpAddressUtils;
 
 /**
- * IpAddressUtils Test Class
+ * IpAddressUtils Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Net\IpAddressUtils;
 class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test normalizeIp()
+     * Test normalizeIp().
      *
      * @return void
      */
@@ -58,15 +58,27 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
             hex2bin('0000000000000000000000007f000001'),
             $utils->normalizeIp('127.0.0.1')
         );
+        $this->assertEquals(
+            hex2bin('0000000000000000000000007f0000ff'),
+            $utils->normalizeIp('127.0.0', true)
+        );
         // Example from http://www.gestioip.net/docu/ipv6_address_examples.html
         $this->assertEquals(
             hex2bin('20010db80a0b12f00000000000000001'),
             $utils->normalizeIp('2001:db8:a0b:12f0::1')
         );
+        $this->assertEquals(
+            hex2bin('20010db80a0b12f00000000000000000'),
+            $utils->normalizeIp('2001:db8:a0b:12f0::')
+        );
+        $this->assertEquals(
+            hex2bin('20010db80a0b12f00000000000000000'),
+            $utils->normalizeIp('2001:db8:a0b:12f0::', true)
+        );
     }
 
     /**
-     * Test isInRange()
+     * Test isInRange().
      *
      * @return void
      */
@@ -109,11 +121,57 @@ class IpAddressUtilsTest extends \PHPUnit\Framework\TestCase
                 ['2001:0db8']
             )
         );
+        $this->assertTrue(
+            $utils->isInRange(
+                '2001:db8:ef90:1:0:0:0:0',
+                ['2001:db8:ef90:1::']
+            )
+        );
         $this->assertFalse(
             $utils->isInRange(
                 '2001:db8::ef90:1',
                 ['2001:0db9']
             )
+        );
+    }
+
+    /**
+     * Test truncate().
+     *
+     * @return void
+     */
+    public function testTruncate()
+    {
+        $utils = new IpAddressUtils();
+
+        // IPv4 address
+        $address = '123.234.432.321';
+        $this->assertEquals(
+            '123.234',
+            $utils->truncate($address, 2, 1)
+        );
+        $this->assertEquals(
+            '123.234.432',
+            $utils->truncate($address, 3, 1)
+        );
+        $this->assertEquals(
+            '123.234.432.321',
+            $utils->truncate($address)
+        );
+
+        // IPv6 address
+        $address = '2001:0db8:0000:0000:0000:ff00:0042:8329';
+        $this->assertEquals(
+            '2001:0db8',
+            $utils->truncate($address, 1, 2)
+        );
+        $this->assertEquals(
+            '2001:0db8:0000',
+            $utils->truncate($address, 1, 3)
+        );
+        $this->assertEquals(
+            '2001:0db8:0000:0000:0000:ff00:0042:8329',
+            $utils->truncate($address)
         );
     }
 }

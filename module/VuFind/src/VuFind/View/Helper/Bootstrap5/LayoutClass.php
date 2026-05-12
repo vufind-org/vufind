@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,8 +52,12 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
      *
      * @return string       CSS classes to apply
      */
-    public function __invoke($class, $hasSidebar = true)
+    public function __invoke(string $class, bool $hasSidebar = true)
     {
+        $overwrittenSidebarOnLeft = $this->getView()->layout()->sidebarOnLeft;
+        if ($overwrittenSidebarOnLeft !== null) {
+            $this->sidebarOnLeft = $overwrittenSidebarOnLeft;
+        }
         switch ($class) {
             case 'mainbody':
                 if (!$hasSidebar) {

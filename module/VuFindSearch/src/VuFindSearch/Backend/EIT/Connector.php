@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -44,47 +44,47 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base url for searches
+     * Base url for searches.
      *
      * @var string
      */
     protected $base;
 
     /**
-     * The HTTP_Request object used for REST transactions
+     * The HTTP_Request object used for REST transactions.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * EBSCO EIT Profile used for authentication
+     * EBSCO EIT Profile used for authentication.
      *
      * @var string
      */
     protected $prof;
 
     /**
-     * Password associated with the EBSCO EIT Profile
+     * Password associated with the EBSCO EIT Profile.
      *
      * @var string
      */
     protected $pwd;
 
     /**
-     * Array of 3-character EBSCO database abbreviations to include in search
+     * Array of 3-character EBSCO database abbreviations to include in search.
      *
      * @var array
      */
     protected $dbs = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $base   Base URL
      * @param Client $client HTTP client
@@ -146,10 +146,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Make an API call
+     * Make an API call.
      *
      * @param string $method GET or POST
-     * @param array  $params Parameters to send
+     * @param ?array $params Parameters to send
      *
      * @return \SimpleXMLElement
      */
@@ -194,13 +194,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Retrieve a specific record.
      *
-     * @param string   $id     Record ID to retrieve
-     * @param ParamBag $params Parameters
+     * @param string    $id     Record ID to retrieve
+     * @param ?ParamBag $params Parameters
      *
      * @throws \Exception
      * @return array
      */
-    public function getRecord($id, ParamBag $params = null)
+    public function getRecord($id, ?ParamBag $params = null)
     {
         $query = 'AN ' . $id;
         $params = $params ?: new ParamBag();

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -29,19 +29,19 @@
 
 namespace VuFind\Search\Factory;
 
-use Laminas\Config\Config;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
+use VuFind\Search\Solr\ErrorListener;
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\HierarchicalFacetListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
-use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
-use VuFind\Search\Solr\V4\ErrorListener;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
@@ -71,9 +71,16 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     use SharedListenersTrait;
 
     /**
+     * Configuration key for HTTP settings in the index configuration array.
+     *
+     * @var string
+     */
+    public const HTTP_CONFIG_KEY = '_http_';
+
+    /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
@@ -106,11 +113,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $searchYaml;
 
     /**
-     * VuFind configuration reader
+     * VuFind configuration reader.
      *
-     * @var \VuFind\Config\PluginManager
+     * @var ConfigManagerInterface
      */
-    protected $config;
+    protected ConfigManagerInterface $configManager;
 
     /**
      * Name of index configuration setting to use to retrieve Solr index name
@@ -138,49 +145,49 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $allowFallbackForIndexName = false;
 
     /**
-     * Solr field used to store unique identifiers
+     * Solr field used to store unique identifiers.
      *
      * @var string
      */
     protected $uniqueKey = 'id';
 
     /**
-     * Solr connector class
+     * Solr connector class.
      *
      * @var string
      */
     protected $connectorClass = Connector::class;
 
     /**
-     * Solr backend class
+     * Solr backend class.
      *
      * @var string
      */
     protected $backendClass = Backend::class;
 
     /**
-     * Record collection class for RecordCollectionFactory
+     * Record collection class for RecordCollectionFactory.
      *
      * @var string
      */
     protected $recordCollectionClass = RecordCollection::class;
 
     /**
-     * Record collection factory class
+     * Record collection factory class.
      *
      * @var string
      */
     protected $recordCollectionFactoryClass = RecordCollectionFactory::class;
 
     /**
-     * Merged index configuration
+     * Merged index configuration.
      *
      * @var ?array
      */
     protected $mergedIndexConfig = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -188,7 +195,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name
@@ -198,10 +205,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->config = $this->getService(\VuFind\Config\PluginManager::class);
+        $this->configManager = $this->getService(ConfigManagerInterface::class);
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -231,11 +238,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getMergedIndexConfig(): array
     {
         if (null === $this->mergedIndexConfig) {
-            $this->mergedIndexConfig = [];
+            $this->mergedIndexConfig = [
+                static::HTTP_CONFIG_KEY => [],
+            ];
             foreach ($this->getPrioritizedConfigsForIndexSettings() as $configName) {
-                $config = $this->config->get($configName);
-                $this->mergedIndexConfig += isset($config->Index)
-                    ? $config->Index->toArray() : [];
+                $config = $this->configManager->getConfigArray($configName);
+                $this->mergedIndexConfig += $config['Index'] ?? [];
+                // Include settings from IndexHttp section in _http:
+                $this->mergedIndexConfig[static::HTTP_CONFIG_KEY] += $config['IndexHttp'] ?? [];
             }
         }
         return $this->mergedIndexConfig;
@@ -250,9 +260,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getFlatIndexConfig(): array
     {
         $configList = $this->getPrioritizedConfigsForIndexSettings();
-        $configObj = $this->config->get($configList[0]);
-        return isset($configObj->Index)
-            ? $configObj->Index->toArray() : [];
+        $configArray = $this->configManager->getConfigArray($configList[0]);
+        // Include settings from IndexHttp section:
+        $configArray['Index'][static::HTTP_CONFIG_KEY] = $configArray['IndexHttp'] ?? [];
+        return $configArray['Index'] ?? [];
     }
 
     /**
@@ -311,9 +322,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $events = $this->getService('SharedEventManager');
 
         // Load configurations:
-        $config = $this->config->get($this->mainConfig);
-        $search = $this->config->get($this->searchConfig);
-        $facet = $this->config->get($this->facetConfig);
+        $config = $this->configManager->getConfigArray($this->mainConfig);
+        $search = $this->configManager->getConfigObject($this->searchConfig);
+        $facet = $this->configManager->getConfigObject($this->facetConfig);
 
         // Attach default parameters listener first so that any other listeners can
         // override the parameters as necessary:
@@ -336,11 +347,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         }
 
         // Spellcheck
-        if ($config->Spelling->enabled ?? true) {
-            $dictionaries = $config->Spelling->dictionaries?->toArray() ?? [];
+        if ($config['Spelling']['enabled'] ?? true) {
+            $dictionaries = $config['Spelling']['dictionaries'] ?? [];
             if (empty($dictionaries)) {
                 // Respect the deprecated 'simple' configuration setting.
-                $dictionaries = ($config->Spelling->simple ?? false)
+                $dictionaries = ($config['Spelling']['simple'] ?? false)
                     ? ['basicSpell'] : ['default', 'basicSpell'];
             }
             $spellingListener = new InjectSpellingListener(
@@ -378,16 +389,15 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $this->getHierarchicalFacetListener($backend)->attach($events);
 
         // Apply legacy filter conversion if necessary:
-        $facets = $this->config->get($this->facetConfig);
-        if (!empty($facets->LegacyFields)) {
+        if (!empty($facet->LegacyFields)) {
             $filterFieldConversionListener = new FilterFieldConversionListener(
-                $facets->LegacyFields->toArray()
+                $facet->LegacyFields->toArray()
             );
             $filterFieldConversionListener->attach($events);
         }
 
         // Attach custom filter listener if needed:
-        if ($cfListener = $this->getCustomFilterListener($backend, $facets)) {
+        if ($cfListener = $this->getCustomFilterListener($backend, $facet)) {
             $cfListener->attach($events);
         }
 
@@ -396,10 +406,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $hfvListener->attach($events);
         }
 
-        // Attach error listeners for Solr 3.x and Solr 4.x (for backward
-        // compatibility with VuFind 1.x instances).
-        $legacyErrorListener = new LegacyErrorListener($backend->getIdentifier());
-        $legacyErrorListener->attach($events);
+        // Attach error listener:
         $errorListener = new ErrorListener($backend->getIdentifier());
         $errorListener->attach($events);
     }
@@ -419,7 +426,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get the Solr base URL(s) (without the path to the specific index)
+     * Get the Solr base URL(s) (without the path to the specific index).
      *
      * @return string[]
      */
@@ -453,21 +460,17 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getHiddenFilters()
     {
-        $search = $this->config->get($this->searchConfig);
+        $search = $this->configManager->getConfigArray($this->searchConfig);
         $hf = [];
 
         // Hidden filters
-        if (isset($search->HiddenFilters)) {
-            foreach ($search->HiddenFilters as $field => $value) {
-                $hf[] = sprintf('%s:"%s"', $field, $value);
-            }
+        foreach ($search['HiddenFilters'] ?? [] as $field => $value) {
+            $hf[] = sprintf('%s:"%s"', $field, $value);
         }
 
         // Raw hidden filters
-        if (isset($search->RawHiddenFilters)) {
-            foreach ($search->RawHiddenFilters as $filter) {
-                $hf[] = $filter;
-            }
+        foreach ($search['RawHiddenFilters'] ?? [] as $filter) {
+            $hf[] = $filter;
         }
 
         return $hf;
@@ -481,7 +484,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createConnector()
     {
         $timeout = $this->getIndexConfig('timeout', 30);
-        $searchConfig = $this->config->get($this->searchConfig);
+        $searchConfig = $this->configManager->getConfigObject($this->searchConfig);
         $defaultFields = $searchConfig->General->default_record_fields ?? '*';
 
         if (($searchConfig->Explain->enabled ?? false) && !str_contains($defaultFields, 'score')) {
@@ -496,6 +499,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             ],
             'terms' => [
                 'functions' => ['terms'],
+            ],
+            'morelikethis' => [
+                'functions' => ['similar'],
             ],
         ];
 
@@ -528,7 +534,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get HTTP options for the client
+     * Get HTTP options for the client.
      *
      * @param string $url URL being requested
      *
@@ -538,7 +544,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getHttpOptions(string $url): array
     {
-        return [];
+        return $this->getIndexConfig(static::HTTP_CONFIG_KEY, []);
     }
 
     /**
@@ -565,9 +571,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function createLuceneSyntaxHelper()
     {
-        $search = $this->config->get($this->searchConfig);
-        $caseSensitiveBooleans = $search->General->case_sensitive_bools ?? true;
-        $caseSensitiveRanges = $search->General->case_sensitive_ranges ?? true;
+        $search = $this->configManager->getConfigArray($this->searchConfig);
+        $caseSensitiveBooleans = $search['General']['case_sensitive_bools'] ?? true;
+        $caseSensitiveRanges = $search['General']['case_sensitive_ranges'] ?? true;
         return new LuceneSyntaxHelper($caseSensitiveBooleans, $caseSensitiveRanges);
     }
 
@@ -579,7 +585,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createSimilarBuilder()
     {
         return new SimilarBuilder(
-            $this->config->get($this->searchConfig),
+            $this->configManager->getConfigObject($this->searchConfig),
             $this->uniqueKey
         );
     }
@@ -620,7 +626,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a deduplication listener for the backend
+     * Get a deduplication listener for the backend.
      *
      * @param Backend $backend Search backend
      * @param bool    $enabled Whether deduplication is enabled
@@ -665,7 +671,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a hierarchical facet listener for the backend
+     * Get a hierarchical facet listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      *
@@ -681,7 +687,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a highlighting listener for the backend
+     * Get a highlighting listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
@@ -698,7 +704,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a Conditional Filter Listener
+     * Get a Conditional Filter Listener.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
@@ -712,13 +718,13 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             $search->ConditionalHiddenFilters->toArray()
         );
         $listener->setAuthorizationService(
-            $this->getService(\LmcRbacMvc\Service\AuthorizationService::class)
+            $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
         );
         return $listener;
     }
 
     /**
-     * Get a default parameters listener for the backend
+     * Get a default parameters listener for the backend.
      *
      * @param Backend $backend Search backend
      * @param array   $params  Default parameters

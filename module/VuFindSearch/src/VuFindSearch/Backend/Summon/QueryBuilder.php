@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -53,7 +53,7 @@ use function count;
 class QueryBuilder
 {
     /**
-     * Lucene syntax helper
+     * Lucene syntax helper.
      *
      * @var LuceneSyntaxHelper
      */
@@ -171,7 +171,7 @@ class QueryBuilder
     }
 
     /**
-     * Get Lucene syntax helper
+     * Get Lucene syntax helper.
      *
      * @return LuceneSyntaxHelper
      */
@@ -184,7 +184,7 @@ class QueryBuilder
     }
 
     /**
-     * Set Lucene syntax helper
+     * Set Lucene syntax helper.
      *
      * @param LuceneSyntaxHelper $helper Lucene syntax helper
      *

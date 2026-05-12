@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,7 +32,6 @@ namespace VuFindSearch\Response;
 
 use VuFindSearch\Exception\InvalidArgumentException;
 
-use function call_user_func;
 use function gettype;
 use function is_array;
 use function is_callable;
@@ -104,7 +103,7 @@ abstract class AbstractJsonRecordCollectionFactory implements RecordCollectionFa
         }
         $collection = new $this->collectionClass($response);
         foreach ($this->getDocumentListFromResponse($response) as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
+            $collection->add(($this->recordFactory)($doc), false);
         }
         return $collection;
     }

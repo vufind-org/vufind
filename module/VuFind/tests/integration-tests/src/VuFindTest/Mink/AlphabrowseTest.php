@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -41,19 +41,17 @@ namespace VuFindTest\Mink;
 class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testTitleSearchNormalization
+     * Data provider for testTitleSearchNormalization.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleSearchNormalizationProvider(): array
+    public static function titleSearchNormalizationProvider(): \Iterator
     {
-        return [
-            'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'],
-            'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'],
-            'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'],
-            'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'],
-            'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'],
-        ];
+        yield 'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'];
+        yield 'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'];
+        yield 'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'];
+        yield 'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'];
+        yield 'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'];
     }
 
     /**
@@ -63,9 +61,8 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedFirstTitle Expected first title in result list
      *
      * @return void
-     *
-     * @dataProvider titleSearchNormalizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSearchNormalizationProvider')]
     public function testTitleSearchNormalization($query, $expectedFirstTitle): void
     {
         $session = $this->getMinkSession();
@@ -82,7 +79,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that we can jump to a record with an ID containing slashes
+     * Test that we can jump to a record with an ID containing slashes.
      *
      * @return void
      */
@@ -112,5 +109,19 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $text = $this->findCssAndGetText($page, 'table.alphabrowse td.lcc ~ td');
         $this->assertStringContainsString('<HTML> The Basics', $text);
+    }
+
+    /**
+     * Test that topic separators are applied correctly.
+     *
+     * @return void
+     */
+    public function testTopicSeparators(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=topic&from=peat+bogs');
+        $page = $session->getPage();
+        $text = $this->findCssAndGetText($page, 'table.alphabrowse td.topic b');
+        $this->assertStringContainsString('Peat bogs > Ireland', $text);
     }
 }

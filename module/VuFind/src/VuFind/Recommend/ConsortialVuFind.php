@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ConsortialVuFind Recommendations Module
+ * ConsortialVuFind Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -29,14 +29,14 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Connection\ExternalVuFind as Connection;
 
 use function intval;
 use function is_callable;
 
 /**
- * ConsortialVuFind Recommendations Module
+ * ConsortialVuFind Recommendations Module.
  *
  * This class searches a separate instance of VuFind via its public API and links to
  * the record and results pages hosted within that instance. This is intended to
@@ -49,75 +49,75 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
+class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Request parameter for the search query
+     * Request parameter for the search query.
      *
      * @var string
      */
     protected $requestParam = 'lookfor';
 
     /**
-     * Number of results to show
+     * Number of results to show.
      *
      * @var int
      */
     protected $limit = 5;
 
     /**
-     * Connection to consortial VuFind API
+     * Connection to consortial VuFind API.
      *
      * @var Connection
      */
     protected $connection;
 
     /**
-     * ConsortialVuFind.ini configuration
+     * ConsortialVuFind.ini configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Base URL of a search results page
+     * Base URL of a search results page.
      *
      * @var string
      */
     protected $resultsBaseUrl = null;
 
     /**
-     * Base URL of a record page
+     * Base URL of a record page.
      *
      * @var string
      */
     protected $recordBaseUrl = null;
 
     /**
-     * Any filters used in the search
+     * Any filters used in the search.
      *
      * @var array
      */
     protected $searchFilters = [];
 
     /**
-     * Boolean indicating if at least the minimal required configuration is present
+     * Boolean indicating if at least the minimal required configuration is present.
      *
      * @var bool
      */
     protected $hasMinimumConfig = false;
 
     /**
-     * Query string from the original search results
+     * Query string from the original search results.
      *
      * @var ?string
      */
     protected $queryString = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config     $config     ConsortialVuFind.ini configuration
      * @param Connection $connection Connection to consortial VuFind API

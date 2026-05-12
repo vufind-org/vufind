@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: optimize Solr index
+ * Console command: optimize Solr index.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -34,7 +34,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Console command: optimize Solr index
+ * Console command: optimize Solr index.
  *
  * @category VuFind
  * @package  Console
@@ -63,7 +63,7 @@ class OptimizeCommand extends CommitCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Optimize is the same as commit (parent class) but with an extra step:
         $result = parent::execute($input, $output);

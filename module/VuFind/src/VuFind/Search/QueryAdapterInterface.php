@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search query adapter interface
+ * Search query adapter interface.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -38,7 +38,7 @@ use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\WorkKeysQuery;
 
 /**
- * Search query adapter interface
+ * Search query adapter interface.
  *
  * @category VuFind
  * @package  Search_Solr

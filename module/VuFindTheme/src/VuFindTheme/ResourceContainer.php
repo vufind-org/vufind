@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
+ * VuFind Theme Public Resource Handler (for CSS, JS, etc.).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -33,7 +33,7 @@ use function count;
 use function is_array;
 
 /**
- * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
+ * VuFind Theme Public Resource Handler (for CSS, JS, etc.).
  *
  * @category VuFind
  * @package  Theme
@@ -46,35 +46,35 @@ class ResourceContainer
     use \VuFind\Log\VarDumperTrait;
 
     /**
-     * CSS files
+     * CSS files.
      *
      * @var array
      */
     protected $css = [];
 
     /**
-     * Javascript files
+     * Javascript files.
      *
      * @var array
      */
     protected $js = [];
 
     /**
-     * Favicon
+     * Favicon.
      *
      * @var string|array|null
      */
     protected $favicon = null;
 
     /**
-     * Encoding type
+     * Encoding type.
      *
      * @var string
      */
     protected $encoding = 'UTF-8';
 
     /**
-     * Generator value for <meta> tag
+     * Generator value for <meta> tag.
      *
      * @var string
      */
@@ -364,12 +364,12 @@ class ResourceContainer
     /**
      * Get Javascript files.
      *
-     * @param string $position Position where the files should be inserted
-     * (allowed values are 'header' or 'footer').
+     * @param ?string $position Position where the files should be inserted
+     * (allowed values are 'header', 'footer' or null for all).
      *
      * @return array
      */
-    public function getJs(string $position = null)
+    public function getJs(?string $position = null)
     {
         if (!isset($position)) {
             return $this->js;
@@ -474,7 +474,7 @@ class ResourceContainer
     }
 
     /**
-     * Remove a CSS file if it matches another file's name
+     * Remove a CSS file if it matches another file's name.
      *
      * @param string $file Filename to remove
      *

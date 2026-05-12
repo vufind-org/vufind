@@ -1,1 +1,1 @@
-<?php echo $this->url('worldcat-search', [], ['query' => ['type' => 'srw.pb', 'lookfor' => $this->lookfor]]);
+<?=$this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor') + ['type' => 'srw.pb', 'quoteQuery' => false]);

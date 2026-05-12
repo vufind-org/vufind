@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for shortlinks table
+ * Entity model interface for shortlinks table.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for shortlinks table
+ * Entity model interface for shortlinks table.
  *
  * @category VuFind
  * @package  Database
@@ -62,9 +62,9 @@ interface ShortlinksEntityInterface extends EntityInterface
      *
      * @param string $path Path
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setPath(string $path): ShortlinksEntityInterface;
+    public function setPath(string $path): static;
 
     /**
      * Get shortlinks hash.
@@ -78,9 +78,9 @@ interface ShortlinksEntityInterface extends EntityInterface
      *
      * @param ?string $hash Shortlinks hash
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setHash(?string $hash): ShortlinksEntityInterface;
+    public function setHash(?string $hash): static;
 
     /**
      * Get creation timestamp.
@@ -94,7 +94,7 @@ interface ShortlinksEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Creation timestamp
      *
-     * @return ShortlinksEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): ShortlinksEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 }

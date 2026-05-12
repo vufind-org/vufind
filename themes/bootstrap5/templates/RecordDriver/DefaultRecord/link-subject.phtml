@@ -1,3 +1,1 @@
-<?php
-$searchRoute = $this->searchOptions($this->driver->getSearchBackendIdentifier())->getSearchAction();
-echo $this->url($searchRoute) . '?lookfor=%22' . urlencode($this->lookfor) . '%22&amp;type=Subject';
+<?=$this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor') + ['type' => 'Subject']);

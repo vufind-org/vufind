@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTTP Request class
+ * HTTP Request class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HTTP
@@ -33,7 +33,7 @@ use function is_array;
 use function is_string;
 
 /**
- * HTTP Request class
+ * HTTP Request class.
  *
  * @category VuFind
  * @package  HTTP
@@ -45,7 +45,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
 {
     /**
      * Return the parameter container responsible for query parameters or a single
-     * query parameter
+     * query parameter.
      *
      * @param string|null $name    Parameter name to retrieve, or null to get the
      * whole container.
@@ -93,7 +93,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     }
 
     /**
-     * Clean up a parameter
+     * Clean up a parameter.
      *
      * @param \Laminas\Stdlib\ParametersInterface|mixed $param Parameter
      *
@@ -123,7 +123,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     }
 
     /**
-     * Check if a parameter is valid
+     * Check if a parameter is valid.
      *
      * @param mixed $param Parameter to check
      *
@@ -139,9 +139,6 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
             return false;
         }
         // Check for null in string:
-        if (str_contains($param, "\x00")) {
-            return false;
-        }
-        return true;
+        return !str_contains($param, "\x00");
     }
 }

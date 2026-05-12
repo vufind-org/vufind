@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facet formatter for API responses
+ * Facet formatter for API responses.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -34,7 +34,7 @@ use VuFind\Search\Base\Results;
 use function in_array;
 
 /**
- * Facet formatter for API responses
+ * Facet formatter for API responses.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -45,7 +45,7 @@ use function in_array;
 class FacetFormatter extends BaseFormatter
 {
     /**
-     * Build an array of facet filters from the request params
+     * Build an array of facet filters from the request params.
      *
      * @param array $request Request params
      *
@@ -76,14 +76,14 @@ class FacetFormatter extends BaseFormatter
      * @param array $facet   Facet
      * @param array $filters Facet filters
      *
-     * @return boolean
+     * @return bool
      */
     protected function matchFacetItem($facet, $filters)
     {
         $discard = true;
         array_walk_recursive(
             $facet,
-            function ($item, $key) use (&$discard, $filters) {
+            function ($item, $key) use (&$discard, $filters): void {
                 if ($discard && $key == 'value') {
                     foreach ($filters as $filter) {
                         $pattern = '/' . addcslashes($filter, '/') . '/';
@@ -99,7 +99,7 @@ class FacetFormatter extends BaseFormatter
     }
 
     /**
-     * Recursive function to create a facet value list for a single facet
+     * Recursive function to create a facet value list for a single facet.
      *
      * @param array $list    Facet items
      * @param array $filters Facet filters
@@ -144,7 +144,7 @@ class FacetFormatter extends BaseFormatter
     }
 
     /**
-     * Create the result facet list
+     * Create the result facet list.
      *
      * @param array   $request               Request parameters
      * @param Results $results               Search results

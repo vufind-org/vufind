@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class AuthTokenTest
+ * Class AuthTokenTest.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -31,11 +31,11 @@ declare(strict_types=1);
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Session\SaveHandler\SaveHandlerInterface;
 use Laminas\Session\SessionManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\LoginTokenManager;
+use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\LoginTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -44,7 +44,7 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
- * Class LoginTokenManagerTest
+ * Class LoginTokenManagerTest.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -55,7 +55,7 @@ use VuFind\Exception\LoginToken as LoginTokenException;
 class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test login exception
+     * Test login exception.
      *
      * @return void
      */
@@ -80,7 +80,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test logging in with invalid token
+     * Test logging in with invalid token.
      *
      * @return void
      */
@@ -94,19 +94,19 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $mockToken = $this->getMockLoginToken();
         $userService = $this->createMock(UserServiceInterface::class);
         $userService->expects($this->once())->method('getUserById')
-            ->with($this->equalTo(0))
+            ->with(0)
             ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenService();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->throwException(new LoginTokenException('Token does not match', 0)));
+            ->willThrowException(new LoginTokenException('Token does not match', 0));
         $tokenTable->expects($this->once())->method('getByUser')
             ->willReturn([$mockToken]);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);
-        $this->assertNull($loginToken->tokenLogin('123'));
+        $this->assertNotInstanceOf(\VuFind\Db\Entity\UserEntityInterface::class, $loginToken->tokenLogin('123'));
     }
 
     /**
-     * Test failed login
+     * Test failed login.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $tokenTable->expects($this->once())->method('matchToken')
             ->willReturn(null);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);
-        $this->assertNull($loginToken->tokenLogin('123'));
+        $this->assertNotInstanceOf(\VuFind\Db\Entity\UserEntityInterface::class, $loginToken->tokenLogin('123'));
     }
 
     /**
@@ -164,7 +164,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get cookie manager
+     * Get cookie manager.
      *
      * @param array $cookies Cookies
      *
@@ -182,7 +182,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get login token
+     * Get login token.
      *
      * @param CookieManager $cookieManager cookie manager
      * @param LoginToken    $tokenTable    Login token table
@@ -196,9 +196,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $config = new Config([]);
         $saveHandler = $this->createMock(SaveHandlerInterface::class);
         $sessionManager = $this->createMock(SessionManager::class);
-        $sessionManager->expects($this->any())
-            ->method('getSaveHandler')
-            ->willReturn($saveHandler);
+        $sessionManager->method('getSaveHandler')->willReturn($saveHandler);
         $mailer = $this->createMock(\VuFind\Mailer\Mailer::class);
         $viewRenderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
         $browscap = $this->createMock(\BrowscapPHP\BrowscapInterface::class);
@@ -206,12 +204,9 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             $browser = new \stdClass();
             $browser->browser = 'Test Browser';
             $browser->platform = 'PHPUnit';
-            $browscap->expects($this->any())
-                ->method('getBrowser')
-                ->willReturn($browser);
+            $browscap->method('getBrowser')->willReturn($browser);
         } else {
-            $browscap->expects($this->any())
-                ->method('getBrowser')
+            $browscap->method('getBrowser')
                 ->willThrowException(new \BrowscapPHP\Exception('Simulated exception'));
         }
 

@@ -1,10 +1,5 @@
 [
   {
-    "comment": "Initial token check",
-    "expectedPath": "/users",
-    "status": 200
-  },
-  {
     "comment": "We're checking that the token was correctly cached from get-tokens.json.",
     "expectedPath": "/circulation/loans",
     "expectedHeaders": { "X-Okapi-Token": "x-okapi-token-config-tenant" },

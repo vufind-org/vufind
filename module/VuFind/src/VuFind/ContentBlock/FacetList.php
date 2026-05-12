@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -29,9 +29,12 @@
 
 namespace VuFind\ContentBlock;
 
-use Laminas\Config\Config;
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
+
+use function is_array;
 
 /**
  * FacetList content block.
@@ -44,6 +47,8 @@ use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
  */
 class FacetList implements ContentBlockInterface
 {
+    use ExplodeSettingTrait;
+
     /**
      * Number of values to put in each column of results.
      *
@@ -59,33 +64,19 @@ class FacetList implements ContentBlockInterface
     protected $searchClassId = 'Solr';
 
     /**
-     * Configuration manager
+     * Constructor.
      *
-     * @var ConfigManager
+     * @param FacetCacheManager      $facetCacheManager Facet cache plugin manager
+     * @param ConfigManagerInterface $configManager     Configuration manager
      */
-    protected $configManager;
-
-    /**
-     * Facet cache plugin manager
-     *
-     * @var FacetCacheManager
-     */
-    protected $facetCacheManager;
-
-    /**
-     * Constructor
-     *
-     * @param FacetCacheManager $fcm Facet cache plugin manager
-     * @param ConfigManager     $cm  Configuration manager
-     */
-    public function __construct(FacetCacheManager $fcm, ConfigManager $cm)
-    {
-        $this->facetCacheManager = $fcm;
-        $this->configManager = $cm;
+    public function __construct(
+        protected FacetCacheManager $facetCacheManager,
+        protected ConfigManagerInterface $configManager
+    ) {
     }
 
     /**
-     * Get an array of hierarchical facets
+     * Get an array of hierarchical facets.
      *
      * @param Config $facetConfig Facet configuration object.
      *
@@ -99,7 +90,7 @@ class FacetList implements ContentBlockInterface
     }
 
     /**
-     * Get hierarchical facet sort settings
+     * Get hierarchical facet sort settings.
      *
      * @param Config $facetConfig Facet configuration object.
      *
@@ -135,6 +126,23 @@ class FacetList implements ContentBlockInterface
     }
 
     /**
+     * Get list of facet fields that should be displayed in two columns on the homepage
+     * (configured via facets.ini -> [HomePage_Settings] -> two_column_facets).
+     *
+     * @param array $facetConfig Facet configuration settings.
+     *
+     * @return string[]
+     */
+    protected function getTwoColumnFacets(array $facetConfig): array
+    {
+        $raw = $facetConfig['HomePage_Settings']['two_column_facets'] ?? [];
+        if (!is_array($raw)) {
+            $raw = $this->explodeListSetting((string)$raw);
+        }
+        return array_values(array_unique(array_filter($raw)));
+    }
+
+    /**
      * Return context variables used for rendering the block's template.
      *
      * @return array
@@ -144,7 +152,7 @@ class FacetList implements ContentBlockInterface
         $facetCache = $this->facetCacheManager->get($this->searchClassId);
         $results = $facetCache->getResults();
         $facetConfig = $this->configManager
-            ->get($results->getOptions()->getFacetsIni());
+            ->getConfigObject($results->getOptions()->getFacetsIni());
         return [
             'searchClassId' => $this->searchClassId,
             'columnSize' => $this->columnSize,
@@ -152,6 +160,7 @@ class FacetList implements ContentBlockInterface
             'hierarchicalFacets' => $this->getHierarchicalFacets($facetConfig),
             'hierarchicalFacetSortOptions' =>
                 $this->getHierarchicalFacetSortSettings($facetConfig),
+            'twoColumnFacets' => $this->getTwoColumnFacets($facetConfig->toArray()),
             'results' => $results,
         ];
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Autocomplete Suggestions" AJAX handler
+ * "Get Autocomplete Suggestions" AJAX handler.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -35,7 +35,7 @@ use VuFind\Autocomplete\Suggester;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Autocomplete Suggestions" AJAX handler
+ * "Get Autocomplete Suggestions" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -46,22 +46,14 @@ use VuFind\Session\Settings as SessionSettings;
 class GetACSuggestions extends AbstractBase
 {
     /**
-     * Autocomplete suggester
-     *
-     * @var Suggester
-     */
-    protected $suggester;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings $ss        Session settings
      * @param Suggester       $suggester Autocomplete suggester
      */
-    public function __construct(SessionSettings $ss, Suggester $suggester)
+    public function __construct(SessionSettings $ss, protected Suggester $suggester)
     {
         $this->sessionSettings = $ss;
-        $this->suggester = $suggester;
     }
 
     /**

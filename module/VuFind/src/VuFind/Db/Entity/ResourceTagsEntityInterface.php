@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for resource_tags table
+ * Entity model interface for resource_tags table.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for resource_tags table
+ * Entity model interface for resource_tags table.
  *
  * @category VuFind
  * @package  Database
@@ -61,9 +61,9 @@ interface ResourceTagsEntityInterface extends EntityInterface
      *
      * @param ?ResourceEntityInterface $resource Resource
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setResource(?ResourceEntityInterface $resource): ResourceTagsEntityInterface;
+    public function setResource(?ResourceEntityInterface $resource): static;
 
     /**
      * Get tag.
@@ -77,9 +77,9 @@ interface ResourceTagsEntityInterface extends EntityInterface
      *
      * @param TagsEntityInterface $tag Tag
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setTag(TagsEntityInterface $tag): ResourceTagsEntityInterface;
+    public function setTag(TagsEntityInterface $tag): static;
 
     /**
      * Get user list.
@@ -93,9 +93,9 @@ interface ResourceTagsEntityInterface extends EntityInterface
      *
      * @param ?UserListEntityInterface $list User list
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setUserList(?UserListEntityInterface $list): ResourceTagsEntityInterface;
+    public function setUserList(?UserListEntityInterface $list): static;
 
     /**
      * Get user.
@@ -109,9 +109,9 @@ interface ResourceTagsEntityInterface extends EntityInterface
      *
      * @param ?UserEntityInterface $user User
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): ResourceTagsEntityInterface;
+    public function setUser(?UserEntityInterface $user): static;
 
     /**
      * Get created date.
@@ -125,7 +125,7 @@ interface ResourceTagsEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return ResourceTagsEntityInterface
+     * @return static
      */
-    public function setPosted(DateTime $dateTime): ResourceTagsEntityInterface;
+    public function setPosted(DateTime $dateTime): static;
 }

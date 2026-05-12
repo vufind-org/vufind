@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Holds Support Methods
+ * VuFind Action Helper - Holds Support Methods.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -36,7 +36,7 @@ use VuFind\Date\DateException;
 use function in_array;
 
 /**
- * Action helper to perform holds-related actions
+ * Action helper to perform holds-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -122,7 +122,7 @@ class Holds extends AbstractRequestBase
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
         } elseif (!empty($selected)) {
-            // Include cancelSelectedIDS for backwards-compatibility:
+            // Include cancelSelectedIDS for backwards-compatibility with legacy code:
             $details = $params->fromPost('selectedIDS')
                 ?? $params->fromPost('cancelSelectedIDS');
         } else {
@@ -162,7 +162,7 @@ class Holds extends AbstractRequestBase
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
-                if (!in_array($info, $this->getSession()->validIds)) {
+                if (!in_array($info, $this->getValidIds())) {
                     $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
@@ -173,7 +173,7 @@ class Holds extends AbstractRequestBase
                 ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
-                $flashMsg->addMessage('hold_cancel_fail', 'error');
+                $flashMsg->addErrorMessage('hold_cancel_fail');
             } else {
                 $failed = 0;
                 foreach ($cancelResults['items'] ?? [] as $item) {
@@ -194,7 +194,7 @@ class Holds extends AbstractRequestBase
                 return $cancelResults;
             }
         } else {
-            $flashMsg->addMessage('hold_empty_selection', 'error');
+            $flashMsg->addErrorMessage('hold_empty_selection');
         }
         return [];
     }

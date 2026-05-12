@@ -1,0 +1,7 @@
+<?=$this->component('page-title', ['title' => $this->translate('Payment::Details'), 'level' => 1]);?>
+
+<?=$this->paymentEntity ? $this->render('admin/payment/details-payment.phtml') : $this->transEsc('An error has occurred')?>
+
+<?=$this->render('admin/payment/details-fees.phtml')?>
+
+<?=$this->render('admin/payment/details-events.phtml')?>

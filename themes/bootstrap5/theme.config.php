@@ -17,13 +17,12 @@ return [
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - media: e.g. 'print'
-         * - conditional: e.g. '!IE'
          * - extras: array of additional attributes
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for legacy backwards compatibility reasons. examples:
          * - 'example.css' => same as ['file' => 'example.css']
-         * - 'example.css:print:!IE' => same as
-         *   ['file' => 'example.css', 'media' => 'print', 'conditional' => '!IE']
+         * - 'example.css:print' => same as
+         *   ['file' => 'example.css', 'media' => 'print']
          */
         ['file' => 'compiled.css'],
         ['file' => 'print.css', 'media' => 'print'],
@@ -43,34 +42,35 @@ return [
          *          - 2xx => VuFind library (general-purpose code)
          *          - 3xx => VuFind scripts (highly VuFind-specific code)
          * - position: 'header' (default) or 'footer'
-         * - conditional: e.g. 'lt IE 10'
          * - disabled: if set to true in a child theme, the matching file will be
          *   removed if it was included by a parent theme.
          *
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for legacy backwards compatibility reasons. example:
          * - 'example.js' => same as ['file' => 'example.js']
-         * - 'example.js:lt IE 10' => same as
-         *   ['file' => 'example.js', 'conditional' => 'lt IE 10']
          */
+        ['file' => 'polyfills.js', 'priority' => 100],
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
-        ['file' => 'vendor/popper.min.js', 'priority' => 120],
-        ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
-        ['file' => 'vendor/validator.min.js', 'priority' => 140],
+        ['file' => 'vendor/js.cookie.min.js', 'priority' => 120],
+        ['file' => 'vendor/popper.min.js', 'priority' => 130],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'config.js', 'priority' => 320],
         ['file' => 'lightbox.js', 'priority' => 330],
-        ['file' => 'searchbox_controls.js', 'priority' => 340],
-        ['file' => 'truncate.js', 'priority' => 350],
-        ['file' => 'trigger_print.js', 'priority' => 360],
-        ['file' => 'observer_manager.js', 'priority' => 370],
-        ['file' => 'openurl.js', 'priority' => 380],
-        ['file' => 'list_item_selection.js', 'priority' => 390],
-        ['file' => 'bs3-compat.js', 'priority' => 1000],
+        ['file' => 'cookie.js', 'priority' => 340],
+        ['file' => 'searchbox_controls.js', 'priority' => 350],
+        ['file' => 'truncate.js', 'priority' => 360],
+        ['file' => 'trigger_print.js', 'priority' => 370],
+        ['file' => 'observer_manager.js', 'priority' => 380],
+        ['file' => 'openurl.js', 'priority' => 390],
+        ['file' => 'list_item_selection.js', 'priority' => 400],
+        ['file' => 'covers.js', 'priority' => 410],
+        ['file' => 'validation.js', 'priority' => 420],
+        ['file' => 'copy_to_clipboard.js', 'priority' => 430],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -112,6 +112,7 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap5\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap5\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClass',
+            'notices' => VuFind\View\Helper\Bootstrap5\Notices::class,
             'search' => 'VuFind\View\Helper\Bootstrap5\Search',
         ],
     ],
@@ -144,7 +145,15 @@ return [
             'Unicode' => [
                 'template' => 'unicode',
             ],
-            /* For an example of an images set, see Bootprint's theme.config.php. */
+            // Example of an image set:
+            /*
+            'Img' => [
+                'template' => 'images',
+                'src' => 'icons', // Points to a subdirectory under images; processed via imageLink.
+            ],
+            // With the above, you can point to e.g. images/icons/add.png by adding an alias below:
+            // 'cart-add' => 'Img:add.png'
+            */
         ],
         'aliases' => [
             /**
@@ -157,11 +166,15 @@ return [
              * All of the items below have been specified with FontAwesome to allow
              * for a strong inheritance safety net but this is not required.
              */
-            'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
+            'browzine-best' => 'FontAwesome:file-lines',
+            'browzine-concern' => 'FontAwesome:exclamation',
+            'browzine-delivery' => 'FontAwesome:paper-plane',
             'browzine-issue' => 'Alias:format-serial',
-            'browzine-pdf' => 'FontAwesome:file-pdf-o',
+            'browzine-link-resolver' => 'FontAwesome:file',
+            'browzine-pdf' => 'FontAwesome:file-pdf fa-regular',
             'browzine-retraction' => 'FontAwesome:exclamation',
+            'browzine-view' => 'FontAwesome:file',
             'cart' => 'FontAwesome:suitcase',
             'cart-add' => 'FontAwesome:plus',
             'cart-empty' => 'FontAwesome:times',
@@ -169,67 +182,71 @@ return [
             'cite' => 'FontAwesome:asterisk',
             'cites' => 'Unicode:275D',
             'cited-by' => 'Unicode:275E',
+            'clone' => 'FontAwesome:clone',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'user-content' => 'FontAwesome:comment',
             'cover-replacement' => 'FontAwesome:question',
-            'currency-eur' => 'FontAwesome:eur',
-            'currency-gbp' => 'FontAwesome:gbp',
-            'currency-inr' => 'FontAwesome:inr',
-            'currency-jpy' => 'FontAwesome:jpy',
-            'currency-krw' => 'FontAwesome:krw',
-            'currency-rmb' => 'FontAwesome:rmb',
-            'currency-rub' => 'FontAwesome:rub',
-            'currency-try' => 'FontAwesome:try',
-            'currency-usd' => 'FontAwesome:usd',
-            'currency-won' => 'FontAwesome:won',
-            'currency-yen' => 'FontAwesome:yen',
+            'currency-eur' => 'FontAwesome:euro-sign',
+            'currency-gbp' => 'FontAwesome:sterling-sign',
+            'currency-inr' => 'FontAwesome:indian-rupee-sign',
+            'currency-jpy' => 'FontAwesome:yen-sign',
+            'currency-krw' => 'FontAwesome:won-sign',
+            'currency-rmb' => 'FontAwesome:yen-sign',
+            'currency-rub' => 'FontAwesome:ruble-sign',
+            'currency-try' => 'FontAwesome:turkish-lira-sign',
+            'currency-usd' => 'FontAwesome:dollar-sign',
+            'currency-won' => 'FontAwesome:won-sign',
+            'currency-yen' => 'FontAwesome:yen-sign',
             'dropdown-caret' => 'FontAwesome:caret-down',
-            'export' => 'FontAwesome:external-link',
+            'explain' => 'FontAwesome:question-circle',
+            'export' => 'FontAwesome:up-right-from-square',
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
-            'facet-checked' => 'FontAwesome:check-square-o',
+            'facet-checked' => 'FontAwesome:check-square fa-regular',
             'facet-collapse' => 'FontAwesome:caret-down',
             'facet-exclude' => 'FontAwesome:times',
             'facet-expand' => 'FontAwesome:caret-right',
             'facet-noncollapsible' => 'FontAwesome:none',
-            'facet-unchecked' => 'FontAwesome:square-o',
+            'facet-unchecked' => 'FontAwesome:square fa-regular',
             'feedback' => 'FontAwesome:envelope',
             'format-atlas' => 'FontAwesome:compass',
             'format-book' => 'FontAwesome:book',
-            'format-braille' => 'FontAwesome:hand-o-up',
+            'format-braille' => 'FontAwesome:hand-point-up fa-regular',
             'format-cdrom' => 'FontAwesome:laptop',
             'format-chart' => 'FontAwesome:signal',
             'format-chipcartridge' => 'FontAwesome:laptop',
-            'format-collage' => 'FontAwesome:picture-o',
+            'format-collage' => 'FontAwesome:image',
             'format-default' => 'FontAwesome:book',
             'format-disccartridge' => 'FontAwesome:laptop',
-            'format-drawing' => 'FontAwesome:picture-o',
-            'format-ebook' => 'FontAwesome:file-text-o',
-            'format-electronic' => 'FontAwesome:file-archive-o',
-            'format-file' => 'FontAwesome:file-o',
+            'format-drawing' => 'FontAwesome:image',
+            'format-ebook' => 'FontAwesome:file-lines fa-regular',
+            'format-electronic' => 'FontAwesome:file-zipper fa-regular',
+            'format-file' => 'FontAwesome:file fa-regular',
             'format-filmstrip' => 'FontAwesome:film',
             'format-flashcard' => 'FontAwesome:bolt',
-            'format-floppydisk' => 'FontAwesome:save',
+            'format-floppydisk' => 'FontAwesome:floppy-disk fa-regular',
             'format-folder' => 'FontAwesome:folder',
-            'format-globe' => 'FontAwesome:globe',
-            'format-journal' => 'FontAwesome:file-text-o',
+            'format-globe' => 'FontAwesome:earth-americas',
+            'format-journal' => 'FontAwesome:file-lines fa-regular',
             'format-kit' => 'FontAwesome:briefcase',
-            'format-manuscript' => 'FontAwesome:file-text-o',
+            'format-manuscript' => 'FontAwesome:file-lines fa-regular',
             'format-map' => 'FontAwesome:compass',
             'format-microfilm' => 'FontAwesome:film',
-            'format-motionpicture' => 'FontAwesome:video-camera',
+            'format-motionpicture' => 'FontAwesome:video',
             'format-musicalscore' => 'FontAwesome:music',
             'format-musicrecording' => 'FontAwesome:music',
-            'format-newspaper' => 'FontAwesome:file-text-o',
+            'format-newspaper' => 'FontAwesome:file-lines fa-regular',
             'format-online' => 'FontAwesome:laptop',
-            'format-painting' => 'FontAwesome:picture-o',
-            'format-photo' => 'FontAwesome:picture-o',
-            'format-photonegative' => 'FontAwesome:picture-o',
+            'format-painting' => 'FontAwesome:image',
+            'format-pdf' => 'FontAwesome:file-pdf',
+            'format-photo' => 'FontAwesome:image',
+            'format-photonegative' => 'FontAwesome:image',
             'format-physicalobject' => 'FontAwesome:archive',
-            'format-print' => 'FontAwesome:picture-o',
-            'format-sensorimage' => 'FontAwesome:picture-o',
-            'format-serial' => 'FontAwesome:file-text-o',
+            'format-print' => 'FontAwesome:image',
+            'format-sensorimage' => 'FontAwesome:image',
+            'format-serial' => 'FontAwesome:file-lines fa-regular',
             'format-slide' => 'FontAwesome:film',
             'format-software' => 'FontAwesome:laptop',
             'format-soundcassette' => 'FontAwesome:headphones',
@@ -240,21 +257,23 @@ return [
             'format-tapereel' => 'FontAwesome:film',
             'format-transparency' => 'FontAwesome:film',
             'format-unknown' => 'FontAwesome:question',
-            'format-video' => 'FontAwesome:video-camera',
-            'format-videocartridge' => 'FontAwesome:video-camera',
-            'format-videocassette' => 'FontAwesome:video-camera',
+            'format-video' => 'FontAwesome:video',
+            'format-videocartridge' => 'FontAwesome:video',
+            'format-videocassette' => 'FontAwesome:video',
             'format-videodisc' => 'FontAwesome:laptop',
-            'format-videoreel' => 'FontAwesome:video-camera',
+            'format-videoreel' => 'FontAwesome:video',
             'hierarchy-collapse' => 'Alias:facet-collapse',
-            'hierarchy-collection' => 'FontAwesome:folder-open-o',
+            'hierarchy-collection' => 'FontAwesome:folder-open fa-regular',
             'hierarchy-expand' => 'Alias:facet-expand',
             'hierarchy-noncollapsible' => 'Alias:facet-noncollapsible',
-            'hierarchy-record' => 'FontAwesome:file-o',
+            'hierarchy-record' => 'FontAwesome:file fa-regular',
             'hierarchy-tree' => 'FontAwesome:sitemap',
+            'keyboard' => 'FontAwesome:keyboard fa-regular',
             'lightbox-close' => 'FontAwesome:times',
+            'link' => 'FontAwesome:link',
             'more' => 'FontAwesome:chevron-circle-right',
             'more-rtl' => 'FontAwesome:chevron-circle-left',
-            'my-account' => 'FontAwesome:user-circle-o',
+            'my-account' => 'FontAwesome:circle-user fa-regular',
             'my-account-notification' => 'Alias:notification',
             'my-account-warning' => 'Alias:warning',
             'notification' => 'FontAwesome:bell',
@@ -269,12 +288,11 @@ return [
             'overdrive-checkout-rtl' => 'FontAwesome:arrow-right',
             'overdrive-download' => 'FontAwesome:download',
             'overdrive-edit-hold' => 'Alias:ui-edit',
-            'overdrive-edit-hold-suspension' => 'FontAwesome:calendar',
+            'overdrive-edit-hold-suspension' => 'FontAwesome:calendar-days',
             'overdrive-help' => 'FontAwesome:question-circle',
             'overdrive-place-hold' => 'Alias:place-hold',
             'overdrive-return' => 'FontAwesome:undo',
-            'overdrive-return-rtl' => 'FontAwesome:undo',
-            'overdrive-sign-in' => 'FontAwesome:sign-in',
+            'overdrive-sign-in' => 'FontAwesome:right-to-bracket',
             'overdrive-success' => 'FontAwesome:check',
             'overdrive-suspend-hold' => 'Alias:place-hold',
             'overdrive-warning' => 'Alias:warning',
@@ -287,7 +305,7 @@ return [
             'page-prev' => 'FontAwesome:angle-left',
             'page-prev-rtl' => 'FontAwesome:angle-right',
             'place-hold' => 'FontAwesome:flag',
-            'place-ill-request' => 'FontAwesome:exchange',
+            'place-ill-request' => 'FontAwesome:right-left',
             'place-recall' => 'FontAwesome:flag',
             'place-storage-retrieval' => 'FontAwesome:truck',
             'print' => 'FontAwesome:print',
@@ -298,7 +316,7 @@ return [
             'profile-delete' => 'Alias:ui-delete',
             'profile-edit' => 'Alias:ui-edit',
             'profile-email' => 'FontAwesome:envelope',
-            'profile-sms' => 'FontAwesome:phone',
+            'profile-sms' => 'FontAwesome:mobile-screen-button',
             'qrcode' => 'FontAwesome:qrcode',
             'rating-half' => 'FontAwesome:star-half',
             'rating-full' => 'FontAwesome:star',
@@ -309,14 +327,15 @@ return [
             'search-save' => 'Alias:ui-save',
             'search-schedule-alert' => 'FontAwesome:exclamation-circle',
             'send-email' => 'FontAwesome:envelope',
-            'send-sms' => 'FontAwesome:phone',
-            'sign-in' => 'FontAwesome:sign-in',
-            'sign-out' => 'FontAwesome:sign-out',
+            'send-sms' => 'FontAwesome:mobile-screen-button',
+            'sign-in' => 'FontAwesome:right-to-bracket',
+            'sign-out' => 'FontAwesome:right-from-bracket',
             'spinner' => 'FontAwesome:spinner:icon--spin',
             'status-available' => 'FontAwesome:check',
-            'status-pending' => 'FontAwesome:clock-o',
+            'status-pending' => 'FontAwesome:clock fa-regular',
             'status-ready' => 'FontAwesome:bell',
             'status-unavailable' => 'FontAwesome:times',
+            'status-uncertain' => 'FontAwesome:circle',
             'status-unknown' => 'FontAwesome:circle',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',
@@ -326,27 +345,27 @@ return [
             'ui-add' => 'FontAwesome:plus-circle',
             'ui-cancel' => 'FontAwesome:ban',
             'ui-close' => 'FontAwesome:times',
-            'ui-delete' => 'FontAwesome:trash-o',
+            'ui-delete' => 'FontAwesome:trash-can fa-regular',
             'ui-dots-menu' => 'FontAwesome:ellipsis-h',
-            'ui-edit' => 'FontAwesome:edit',
+            'ui-edit' => 'FontAwesome:pen-to-square fa-regular',
             'ui-failure' => 'FontAwesome:times',
             'ui-menu' => 'FontAwesome:bars',
             'ui-remove' => 'FontAwesome:times',
             'ui-reset-search' => 'Alias:ui-remove',
-            'ui-save' => 'FontAwesome:floppy-o',
+            'ui-save' => 'FontAwesome:floppy-disk fa-regular',
             'ui-success' => 'FontAwesome:check',
             'user-checked-out' => 'FontAwesome:book',
             'user-favorites' => 'FontAwesome:star',
             'user-holds' => 'FontAwesome:flag',
-            'user-ill-requests' => 'FontAwesome:exchange',
+            'user-ill-requests' => 'FontAwesome:right-left',
             'user-list' => 'FontAwesome:list',
-            'user-list-add' => 'FontAwesome:bookmark-o',
+            'user-list-add' => 'FontAwesome:bookmark fa-regular',
             'user-list-delete' => 'Alias:ui-delete',
             'user-list-edit' => 'Alias:ui-edit',
             'user-list-entry-edit' => 'Alias:ui-edit',
             'user-list-remove' => 'Alias:ui-remove',
             'user-loan-history' => 'FontAwesome:history',
-            'user-public-list-indicator' => 'FontAwesome:globe',
+            'user-public-list-indicator' => 'FontAwesome:earth-americas',
             'user-storage-retrievals' => 'FontAwesome:archive',
             'view-grid' => 'FontAwesome:th',
             'view-list' => 'FontAwesome:list',
@@ -358,8 +377,8 @@ return [
      * Html elements can be made sticky which means that they don't leave the screen on scrolling.
      * You can make an element sticky by adding an array with the css selector to stickyElements.
      * Warning! The order of the entries in the config will be used to order the elements while they are sticky.
-     * If you want to hide some child elements of sticky elements you can add array with their css selectors
-     * to hiddenStickyElements.
+     * If you want to add extra classes to some child elements of sticky elements you can add an array with their
+     * css selectors and the classes to stickyChildrenClasses. The default class is "hidden".
      * You can also add "min-width" and "max-width" to the configs so that the effect only applies on specific
      * screen sizes.
      * Examples:
@@ -374,9 +393,9 @@ return [
         // Breadcrumbs on non-mobile screens
         //["selector" => ".breadcrumbs", "min-width" => 768]
     ],
-    'hiddenStickyElements' => [
+    'stickyChildrenClasses' => [
         // Hide search tab selection on mobile screens
-        //["selector" => ".searchForm > .nav.nav-tabs", "max-width" => 767]
+        //["selector" => ".searchForm > .nav.nav-tabs", "class" => "hidden", "max-width" => 767]
     ],
     'doctype' => 'HTML5',
 ];

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class MarkdownFactory
+ * Class MarkdownFactory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFind\Service
@@ -36,7 +36,6 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
-use League\CommonMark\MarkdownConverter;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -56,7 +55,7 @@ use function sprintf;
 class MarkdownFactory implements FactoryInterface
 {
     /**
-     * Array of config keys for extensions classes
+     * Array of config keys for extensions classes.
      *
      * @var string[]
      */
@@ -74,7 +73,7 @@ class MarkdownFactory implements FactoryInterface
     ];
 
     /**
-     * Default set of extensions
+     * Default set of extensions.
      *
      * @var string[]
      */
@@ -83,28 +82,28 @@ class MarkdownFactory implements FactoryInterface
     ];
 
     /**
-     * Markdown processor configuration
+     * Markdown processor configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Enabled extensions
+     * Enabled extensions.
      *
      * @var array
      */
     protected $extensions;
 
     /**
-     * Dependency injection container
+     * Dependency injection container.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -120,10 +119,12 @@ class MarkdownFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $this->config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('markdown')->toArray();
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('markdown');
         $this->extensions = isset($this->config['Markdown']['extensions'])
             ? array_map(
                 'trim',
@@ -133,7 +134,7 @@ class MarkdownFactory implements FactoryInterface
         $this->extensions = array_filter($this->extensions);
         $this->container = $container;
 
-        return new MarkdownConverter($this->getEnvironment());
+        return new $requestedName($this->getEnvironment());
     }
 
     /**
@@ -182,7 +183,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Get full class name for given extension
+     * Get full class name for given extension.
      *
      * @param string $extension Extension name
      *
@@ -209,7 +210,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Get config for given extension
+     * Get config for given extension.
      *
      * @param string $extension Extension name
      *
@@ -230,7 +231,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Get config for core extension
+     * Get config for core extension.
      *
      * @return array
      */
@@ -260,7 +261,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Sanitize some config options
+     * Sanitize some config options.
      *
      * @param array $config Full config
      *
@@ -323,7 +324,7 @@ class MarkdownFactory implements FactoryInterface
     }
 
     /**
-     * Create full config for markdown converter
+     * Create full config for markdown converter.
      *
      * @return array
      */

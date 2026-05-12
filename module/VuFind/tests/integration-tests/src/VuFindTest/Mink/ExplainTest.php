@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -146,7 +146,7 @@ class ExplainTest extends \VuFindTest\Integration\MinkTestCase
         // test pie chart
         $pieChart = $explainOutput->find('css', '#js-explain-pie-chart');
         $chartData = $pieChart->getAttribute('data-chart-data');
-        $this->assertEquals(count($tableRows), count(explode(';', $chartData)));
+        $this->assertCount(count($tableRows), explode(';', $chartData));
 
         // test column chart
         $columnChart = $explainOutput->find('css', '#js-explain-column-chart');

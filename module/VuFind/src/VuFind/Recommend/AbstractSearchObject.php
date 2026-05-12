@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -48,71 +48,57 @@ use function is_object;
 abstract class AbstractSearchObject implements RecommendInterface
 {
     /**
-     * Results object
+     * Results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Number of results to show
+     * Number of results to show.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Sort order for results (null = default)
+     * Sort order for results (null = default).
      *
      * @var ?string
      */
     protected $sort;
 
     /**
-     * Heading for this recommendation module
+     * Heading for this recommendation module.
      *
      * @var string
      */
     protected $heading;
 
     /**
-     * Config section with filters for this search
+     * Config section with filters for this search.
      *
      * @var string
      */
     protected $filterIniSection;
 
     /**
-     * Name of request parameter to use for search query
+     * Name of request parameter to use for search query.
      *
      * @var string
      */
     protected $requestParam;
 
     /**
-     * Search runner
+     * Constructor.
      *
-     * @var SearchRunner
+     * @param SearchRunner                          $runner        Search runner
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */
-    protected $runner;
-
-    /**
-     * Config PluginManager
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configManager;
-
-    /**
-     * Constructor
-     *
-     * @param SearchRunner                 $runner        Search runner
-     * @param \VuFind\Config\PluginManager $configManager Config manager
-     */
-    public function __construct(SearchRunner $runner, \VuFind\Config\PluginManager $configManager)
-    {
-        $this->runner = $runner;
-        $this->configManager = $configManager;
+    public function __construct(
+        protected SearchRunner $runner,
+        protected \VuFind\Config\ConfigManagerInterface $configManager
+    ) {
     }
 
     /**
@@ -166,7 +152,7 @@ abstract class AbstractSearchObject implements RecommendInterface
         }
 
         // Set up the callback to initialize the parameters:
-        $callback = function ($runner, $params) use ($lookfor, $typeLabel) {
+        $callback = function ($runner, $params) use ($lookfor, $typeLabel): void {
             $params->setLimit($this->limit);
             if ($this->sort) {
                 $params->setSort($this->sort, true);
@@ -179,14 +165,13 @@ abstract class AbstractSearchObject implements RecommendInterface
             // Set any filters configured for this search
             if (!empty($this->filterIniSection)) {
                 $ini = $params->getOptions()->getSearchIni();
-                $config = $this->configManager->get($ini);
-                try {
-                    $filters = $config->{$this->filterIniSection}->toArray() ?? [];
-                } catch (\Error $e) {
+                $config = $this->configManager->getConfigArray($ini);
+                if (!isset($config[$this->filterIniSection])) {
                     throw new \Exception(
                         "No section found matching '$this->filterIniSection' in $ini.ini."
                     );
                 }
+                $filters = $config[$this->filterIniSection] ?? [];
                 foreach ($filters as $filter) {
                     $params->addFilter($filter);
                 }

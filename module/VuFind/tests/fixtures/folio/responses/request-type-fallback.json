@@ -1,12 +1,11 @@
 [
     {
-        "comment": "Initial token check"
-    },
-    {
         "expectedMethod": "GET",
         "expectedPath": "\/instance-storage\/instances",
         "expectedParams": {
-            "query": "(id==\"record1\")"
+            "query": "id == (\"record1\")",
+            "offset": 0,
+            "limit": 1000
         },
         "body": {
             "instances": [
@@ -67,14 +66,42 @@
         "status": 200
     },
     {
+        "comment": "Version check",
         "expectedMethod": "GET",
-        "expectedPath": "\/_\/proxy\/tenants\/config_tenant\/modules?filter=mod-circulation&latest=1",
+        "expectedPath": "\/modules\/discovery?query=(name==mod-circulation)",
         "expectedParams": [],
-        "body": [
-            {
-                "id": "mod-circulation-23.5.7"
-            }
-        ],
+        "body": {
+            "discovery": [
+                {
+                    "location": "http://mod-circulation-b:8051/mod-circulation",
+                    "id": "mod-circulation-23.4.11",
+                    "name": "mod-circulation",
+                    "version": "23.4.11"
+                }
+            ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/requests\/allowed-service-points?instanceId=record1&requesterId=user1&operation=create",
+        "expectedParams": [],
+        "body": {
+            "Page": [
+                {
+                    "id": "servicepoint1",
+                    "name": "Main Service Desk"
+                }
+            ],
+            "Recall": [
+                {
+                    "id": "servicepoint1",
+                    "name": "Main Service Desk"
+                }
+            ]
+        },
         "bodyType": "json",
         "status": 200
     },

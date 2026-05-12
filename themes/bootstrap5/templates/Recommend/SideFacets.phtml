@@ -1,5 +1,6 @@
 <?php
-  $this->headScript()->appendFile('facets.js');
+  $this->layout()->sideFacetsInstanceCounter = ($this->layout()->sideFacetsInstanceCounter ?? 0) + 1;
+  $this->assetManager()->appendScriptLink('facets.js');
 
   // Save results/options to $this so they are available to sub-templates:
   $this->results = $results = $this->recommend->getResults();
@@ -34,10 +35,13 @@
 ?>
 <?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
-  <span class="sr-only"><?=$this->transEscAttr('page_reload_on_select_hint') ?></span>
+  <?php if (($this->multiFacetsSelection ?? 'false') !== 'false' && $this->layout()->sideFacetsInstanceCounter === 1): ?>
+    <?= $this->render('Recommend/SideFacets/multiFacetsSelection.phtml'); ?>
+  <?php endif; ?>
+  <span class="visually-hidden"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
 <?php endif; ?>
 <?php if ($hasVisibleCheckboxes): ?>
-  <div class="checkboxFilter">
+  <div class="checkbox-filters">
     <?=$this->context($this)->renderInContext('Recommend/SideFacets/checkbox-filters.phtml', ['checkboxFilters' => $checkboxFilters, 'results' => $results]); ?>
   </div>
 <?php endif; ?>
@@ -54,7 +58,7 @@
           <?=$this->icon('collapse', 'facet-title-icon') ?>
         </button>
       </h3>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" class="collapse<?php if (!$collapsed): ?> show<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-uncollapsed="1"<?php endif ?>>
         <?=
           $this->context($this)->renderInContext(
               'Recommend/SideFacets/facet.phtml',
@@ -69,4 +73,4 @@
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'registerSideFacetTruncation();', 'SET');?>
+<?=$this->assetManager()->outputInlineScriptString('registerSideFacetTruncation();');?>

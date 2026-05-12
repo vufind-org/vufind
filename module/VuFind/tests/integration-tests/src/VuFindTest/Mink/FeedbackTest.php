@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
+ * Copyright (C) The National Library of Finland 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,12 +18,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -37,11 +39,14 @@ use Behat\Mink\Element\Element;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
+
     /**
      * Get config.ini override settings for testing feedback.
      *
@@ -52,10 +57,20 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         return [
             'Mail' => [
                 'testOnly' => '1',
+                'message_log' => $this->getEmailLogPath(),
+                'message_log_format' => $this->getEmailLogFormat(),
             ],
             'Feedback' => [
                 'tab_enabled' => '1',
                 'recipient_email' => 'fake@fake.com',
+                'blocked_senders' => [
+                    '@blockeddomain.com',
+                    '/^bar@bad/',
+                ],
+                'ignored_senders' => [
+                    '@ignoreddomain.com',
+                    '/^bar@spam/',
+                ],
             ],
         ];
     }
@@ -103,18 +118,55 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testFeedbackForm.
+     *
+     * @return \Iterator
+     */
+    public static function feedbackFormProvider(): \Iterator
+    {
+        yield ['test@test.com', true, true];
+        yield ['foobar@spam.com', true, true];
+        yield ['test@blockeddomain.com', false, false];
+        yield ['bar@bad.com', false, false];
+        yield ['test@ignoreddomain.com', true, false];
+        yield ['bar@spam.com', true, false];
+    }
+
+    /**
      * Test that feedback form can be successfully populated and submitted.
+     *
+     * @param string $sender        Sender email address
+     * @param bool   $expectSuccess Expect successful send?
+     * @param bool   $expectEmail   Expect email to be received?
      *
      * @return void
      */
-    public function testFeedbackForm(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('feedbackFormProvider')]
+    public function testFeedbackForm(string $sender, bool $expectSuccess, bool $expectEmail): void
     {
+        $this->resetEmailLog();
         $page = $this->setupPage();
-        $this->fillInAndSubmitFeedbackForm($page);
-        $this->assertEquals(
-            'Thank you for your feedback.',
-            $this->findCssAndGetText($page, '#modal .alert-success')
-        );
+        $this->fillInAndSubmitFeedbackForm($page, $sender);
+        if ($expectSuccess) {
+            $this->assertSame(
+                'Thank you for your feedback.',
+                $this->findCssAndGetText($page, '#modal .alert-success')
+            );
+        } else {
+            $this->assertSame(
+                'Could not process your feedback. Please try again later.',
+                $this->findCssAndGetText($page, '#modal .alert-danger')
+            );
+        }
+        if ($expectEmail) {
+            $this->assertStringContainsString(
+                'Comments',
+                (string)$this->getLoggedEmail()->getBody()->getBody()
+            );
+        } else {
+            $this->expectExceptionMessage('No serialized email message data found');
+            $this->getLoggedEmail();
+        }
     }
 
     /**
@@ -143,7 +195,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         ];
         foreach ($feedbackEntries as $feedbackParams) {
             $this->fillInAndSubmitFeedbackForm($page, ...$feedbackParams);
-            $this->assertEquals(
+            $this->assertSame(
                 'Thank you for your feedback.',
                 $this->findCssAndGetText($page, '#modal .alert-success')
             );
@@ -155,9 +207,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the feedback admin module works.
      *
      * @return void
-     *
-     * @depends testFeedbackFormDatabaseStorage
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testFeedbackFormDatabaseStorage')]
     public function testFeedbackAdmin(): void
     {
         // Go to admin page:
@@ -174,7 +225,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals("All {$this->getVuFindUrl()}/", $this->findCss($page, '#site_url')->getText());
 
         // Set the first message to "in progress" status:
-        $this->findCss($page, '.form-control.status_update')->setValue('in progress');
+        $this->findCss($page, '.form-feedback-list .status_update')->setValue('in progress');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Feedback status updated successfully',
@@ -238,7 +289,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->fillInAndSubmitFeedbackForm($page);
         // CAPTCHA should have failed...
-        $this->assertEquals(
+        $this->assertSame(
             'CAPTCHA not passed',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
@@ -246,7 +297,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, 'form [name="demo_captcha"]')
             ->setValue('demo');
         $this->clickCss($page, '#modal input[type="submit"]');
-        $this->assertEquals(
+        $this->assertSame(
             'Thank you for your feedback.',
             $this->findCssAndGetText($page, '#modal .alert-success')
         );
@@ -286,7 +337,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Thank you for your feedback.',
             $this->findCssAndGetText($page, '#modal .alert-success')
         );

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Checklist class (used for checking off a list of values)
+ * Checklist class (used for checking off a list of values).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -32,7 +32,7 @@ namespace VuFind\Record;
 use function count;
 
 /**
- * Checklist class (used for checking off a list of values)
+ * Checklist class (used for checking off a list of values).
  *
  * @category VuFind
  * @package  Record
@@ -43,21 +43,21 @@ use function count;
 class Checklist
 {
     /**
-     * Unchecked values
+     * Unchecked values.
      *
      * @var array
      */
     protected $unchecked;
 
     /**
-     * Checked values
+     * Checked values.
      *
      * @var array
      */
     protected $checked = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $values Values for list (all begin unchecked)
      */

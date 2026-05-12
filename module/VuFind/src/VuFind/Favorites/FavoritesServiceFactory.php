@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites service factory
+ * Favorites service factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Favorites
@@ -41,7 +41,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\Tags\TagsService;
 
 /**
- * Favorites service
+ * Favorites service.
  *
  * @category VuFind
  * @package  Favorites
@@ -54,7 +54,7 @@ use VuFind\Tags\TagsService;
 class FavoritesServiceFactory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service container
      * @param string             $name      Requested service name (unused)
@@ -64,7 +64,7 @@ class FavoritesServiceFactory implements FactoryInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $container, $name, array $options = null)
+    public function __invoke(ContainerInterface $container, $name, ?array $options = null)
     {
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);

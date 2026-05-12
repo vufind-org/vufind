@@ -7,7 +7,7 @@
     <?php foreach ($this->facetList as $field => $list): ?>
       <div class="facet-fieldset">
         <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-        <select class="form-control" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+        <select class="form-select" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
           <?php
             // Sort the current facet list alphabetically; we'll use this data
             // along with the foreach below to display facet options in the

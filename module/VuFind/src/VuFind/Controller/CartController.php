@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Book Bag / Bulk Action Controller
+ * Book Bag / Bulk Action Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -42,7 +42,7 @@ use function is_array;
 use function strlen;
 
 /**
- * Book Bag / Bulk Action Controller
+ * Book Bag / Bulk Action Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -56,44 +56,20 @@ class CartController extends AbstractBase
     use ListItemSelectionTrait;
 
     /**
-     * Session container
+     * Constructor.
      *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
-     * Constructor
-     *
-     * @param ServiceLocatorInterface      $sm           Service manager
-     * @param Container                    $container    Session container
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \VuFind\Export               $export       Export support class
+     * @param ServiceLocatorInterface               $sm            Service manager
+     * @param Container                             $session       Session container
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Export                        $export        Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Container $container,
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Export $export
+        protected Container $session,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Export $export
     ) {
         parent::__construct($sm);
-        $this->session = $container;
-        $this->configLoader = $configLoader;
-        $this->export = $export;
     }
 
     /**
@@ -142,7 +118,7 @@ class CartController extends AbstractBase
         // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
+        if (!empty($referer) && $this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -203,7 +179,7 @@ class CartController extends AbstractBase
                     $msg = $this->translate('bookbag_full_msg') . '. '
                         . $addItems['notAdded'] . ' '
                         . $this->translate('items_already_in_bookbag') . '.';
-                    $this->flashMessenger()->addMessage($msg, 'info');
+                    $this->flashMessenger()->addInfoMessage($msg);
                 }
             }
         }
@@ -334,7 +310,7 @@ class CartController extends AbstractBase
                 );
                 return $this->redirectToSource('success', 'bulk_email_success', true);
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -401,7 +377,7 @@ class CartController extends AbstractBase
                 return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
-            $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
+            $url = $export->getBulkUrl($format, $ids);
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
             }
@@ -446,7 +422,7 @@ class CartController extends AbstractBase
         // No legal export options?  Display a warning:
         if (empty($view->exportOptions)) {
             $this->flashMessenger()
-                ->addMessage('bulk_export_not_supported', 'error');
+                ->addErrorMessage('bulk_export_not_supported');
         }
         return $view;
     }
@@ -533,9 +509,22 @@ class CartController extends AbstractBase
                 ['cartIds' => $ids, 'cartAction' => 'Save']
             );
         }
-
+        $viewModel = $this->createViewModel(
+            [
+                'records' => $this->getRecordLoader()->loadBatch($ids),
+                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
+            ]
+        );
+        if ($submitDisabled ?? false) {
+            return $viewModel;
+        }
+        if ($this->formWasSubmitted('newList')) {
+            // Remove submit now from parameters
+            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
+            return $this->forwardTo('MyResearch', 'editlist', ['id' => 'NEW']);
+        }
         // Process submission if necessary:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
+        if ($this->formWasSubmitted()) {
             $results = $this->getService(FavoritesService::class)
                 ->saveRecordsToFavorites($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
@@ -548,16 +537,11 @@ class CartController extends AbstractBase
                 . '<a href="' . $listUrl . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
             ];
-            $this->flashMessenger()->addMessage($message, 'success');
+            $this->flashMessenger()->addSuccessMessage($message);
             return $this->redirect()->toUrl($listUrl);
         }
 
         // Pass record and list information to view:
-        return $this->createViewModel(
-            [
-                'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
-            ]
-        );
+        return $viewModel;
     }
 }

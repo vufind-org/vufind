@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Record Controller
+ * VuFind Record Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -46,7 +46,7 @@ use function is_array;
 use function is_object;
 
 /**
- * VuFind Record Controller
+ * VuFind Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -57,49 +57,49 @@ use function is_object;
 class AbstractRecord extends AbstractBase
 {
     /**
-     * Array of available tab options
+     * Array of available tab options.
      *
      * @var array
      */
     protected $allTabs = null;
 
     /**
-     * Default tab to display (configured at record driver level)
+     * Default tab to display (configured at record driver level).
      *
      * @var string
      */
     protected $defaultTab = null;
 
     /**
-     * Default tab to display (fallback used if no record driver configuration)
+     * Default tab to display (fallback used if no record driver configuration).
      *
      * @var string
      */
     protected $fallbackDefaultTab = 'Holdings';
 
     /**
-     * Array of background tabs
+     * Array of background tabs.
      *
      * @var array
      */
     protected $backgroundTabs = null;
 
     /**
-     * Array of extra scripts for tabs
+     * Array of extra scripts for tabs.
      *
      * @var array
      */
     protected $tabsExtraScripts = null;
 
     /**
-     * Type of record to display
+     * Type of record to display.
      *
      * @var string
      */
     protected $sourceId = 'Solr';
 
     /**
-     * Record driver
+     * Record driver.
      *
      * @var AbstractRecordDriver
      */
@@ -122,7 +122,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Add a comment
+     * Add a comment.
      *
      * @return mixed
      */
@@ -183,16 +183,16 @@ class AbstractRecord extends AbstractBase
                 $ratingsService->saveRating($driver, $user->getId(), intval($rating));
             }
 
-            $this->flashMessenger()->addMessage('add_comment_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('add_comment_success');
         } else {
-            $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
+            $this->flashMessenger()->addErrorMessage('add_comment_fail_blank');
         }
 
         return $this->redirectToRecord('', 'UserComments');
     }
 
     /**
-     * Delete a comment
+     * Delete a comment.
      *
      * @return mixed
      */
@@ -212,15 +212,15 @@ class AbstractRecord extends AbstractBase
             \VuFind\Db\Service\CommentsServiceInterface::class
         );
         if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user)) {
-            $this->flashMessenger()->addMessage('delete_comment_success', 'success');
+            $this->flashMessenger()->addSuccessMessage('delete_comment_success');
         } else {
-            $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
+            $this->flashMessenger()->addErrorMessage('delete_comment_failure');
         }
         return $this->redirectToRecord('', 'UserComments');
     }
 
     /**
-     * Add a tag
+     * Add a tag.
      *
      * @return mixed
      */
@@ -242,7 +242,7 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tags = $this->params()->fromPost('tag')) {
             $this->getService(TagsService::class)->linkTagsToRecord($driver, $user, $tags);
-            $this->flashMessenger()->addMessage(['msg' => 'add_tag_success'], 'success');
+            $this->flashMessenger()->addSuccessMessage(['msg' => 'add_tag_success']);
             return $this->redirectToRecord();
         }
 
@@ -253,7 +253,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Delete a tag
+     * Delete a tag.
      *
      * @return mixed
      */
@@ -279,12 +279,11 @@ class AbstractRecord extends AbstractBase
                 $user,
                 [$tag]
             );
-            $this->flashMessenger()->addMessage(
+            $this->flashMessenger()->addSuccessMessage(
                 [
                     'msg' => 'tags_deleted',
                     'tokens' => ['%count%' => 1],
                 ],
-                'success'
             );
         }
 
@@ -292,7 +291,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Display and add ratings
+     * Display and add ratings.
      *
      * @return mixed
      */
@@ -311,7 +310,7 @@ class AbstractRecord extends AbstractBase
         if ($user && null !== ($rating = $this->params()->fromPost('rating'))) {
             if (
                 '' === $rating
-                && !($this->getConfig()->Social->remove_rating ?? true)
+                && !($this->getConfigArray()['Social']['remove_rating'] ?? true)
             ) {
                 throw new BadRequestException('error_inconsistent_parameters');
             }
@@ -347,10 +346,9 @@ class AbstractRecord extends AbstractBase
         $checkRoute = $this->params()->fromPost('checkRoute')
             ?? $this->params()->fromQuery('checkRoute')
             ?? false;
-        $config = $this->getConfig();
-        if ($checkRoute && $config->Collections->collections ?? false) {
-            $routeConfig = isset($config->Collections->route)
-                ? $config->Collections->route->toArray() : [];
+        $config = $this->getConfigArray();
+        if ($checkRoute && ($config['Collections']['collections'] ?? false)) {
+            $routeConfig = $config['Collections']['route'] ?? [];
             $collectionRoutes
                 = array_merge(['record' => 'collection'], $routeConfig);
             $routeName = $this->event->getRouteMatch()->getMatchedRouteName() ?? '';
@@ -425,7 +423,7 @@ class AbstractRecord extends AbstractBase
                 . '<a href="' . $listUrl . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
         ];
-        $this->flashMessenger()->addMessage($message, 'success');
+        $this->flashMessenger()->addSuccessMessage($message);
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getAndClearFollowupUrl()) {
@@ -438,7 +436,7 @@ class AbstractRecord extends AbstractBase
 
     /**
      * Save action - Allows the save template to appear,
-     *   passes containingLists & nonContainingLists
+     *   passes containingLists & nonContainingLists.
      *
      * @return mixed
      */
@@ -473,7 +471,8 @@ class AbstractRecord extends AbstractBase
         // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (
-            !str_ends_with($referer, '/Save')
+            !empty($referer)
+            && !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
             && $this->isLocalUrl($referer)
         ) {
@@ -568,10 +567,10 @@ class AbstractRecord extends AbstractBase
                     $view->subject,
                     $cc
                 );
-                $this->flashMessenger()->addMessage('email_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('email_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -633,10 +632,10 @@ class AbstractRecord extends AbstractBase
                     ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
-                $this->flashMessenger()->addMessage('sms_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('sms_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
 
@@ -670,7 +669,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Export the record
+     * Export the record.
      *
      * @return mixed
      */
@@ -685,7 +684,7 @@ class AbstractRecord extends AbstractBase
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
                 $this->flashMessenger()
-                    ->addMessage('export_invalid_format', 'error');
+                    ->addErrorMessage('export_invalid_format');
             }
             $view->setTemplate('record/export-menu');
             return $view;
@@ -744,7 +743,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Special action for RDF export
+     * Special action for RDF export.
      *
      * @return mixed
      */
@@ -755,7 +754,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Show explanation for why a record was found and how its relevancy is computed
+     * Show explanation for why a record was found and how its relevancy is computed.
      *
      * @return mixed
      */
@@ -786,13 +785,13 @@ class AbstractRecord extends AbstractBase
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
-     * @param ParamBag $params Search backend parameters
-     * @param bool     $force  Set to true to force a reload of the record, even if
+     * @param ?ParamBag $params Search backend parameters
+     * @param bool      $force  Set to true to force a reload of the record, even if
      * already loaded (useful if loading a record using different parameters)
      *
      * @return AbstractRecordDriver
      */
-    protected function loadRecord(ParamBag $params = null, bool $force = false)
+    protected function loadRecord(?ParamBag $params = null, bool $force = false)
     {
         // Only load the record if it has not already been loaded. Note that
         // when determining record ID, we check both the route match (the most
@@ -850,7 +849,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Get default tab for a given driver
+     * Get default tab for a given driver.
      *
      * @return string
      */
@@ -912,17 +911,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        // Disabled by default:
-        return false;
-    }
-
-    /**
      * Display a particular tab.
      *
      * @param string $tab  Name of tab to display
@@ -947,7 +935,7 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
 
         $view = $this->createViewModel();
         $view->tabs = $this->getAllTabs();
@@ -955,17 +943,15 @@ class AbstractRecord extends AbstractBase
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
-        $view->loadInitialTabWithAjax
-            = isset($config->Site->loadInitialTabWithAjax)
-            ? (bool)$config->Site->loadInitialTabWithAjax : false;
+        $view->loadInitialTabWithAjax = (bool)($config['Site']['loadInitialTabWithAjax'] ?? false);
 
         // Set up next/previous record links (if appropriate)
-        if ($this->resultScrollerActive()) {
+        if ($this->getSearchMemory()->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
+        $view->callnumberHandler = $config['Item_Status']['callnumber_handler'] ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;

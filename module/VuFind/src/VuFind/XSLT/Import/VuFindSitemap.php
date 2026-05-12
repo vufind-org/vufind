@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -219,10 +219,9 @@ class VuFindSitemap extends VuFind
     }
 
     /**
-     * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
-     * This method will only work if Aperture is properly configured in the
-     * web/conf/fulltext.ini file. Without proper configuration, this will
-     * simply return an empty string.
+     * Harvest the contents of a document file (PDF, Word, etc.). This method will
+     * only work if a full text extractor is properly configured in the fulltext.ini
+     * file. Without proper configuration, this will simply return an empty string.
      *
      * @param string $url URL of file to retrieve.
      *

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,18 +49,16 @@ use VuFindConsole\Command\Util\PurgeCachedRecordCommand;
 class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Data provider for testBasicOperation
+     * Data provider for testBasicOperation.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function basicOperationProvider(): array
+    public static function basicOperationProvider(): \Iterator
     {
-        return [
-            ['Solr', '123', false, true, null],
-            ['Solr', '123', false, false, null],
-            ['Solr', '123', true, true, true],
-            ['Solr', '123', true, true, false],
-        ];
+        yield ['Solr', '123', false, true, null];
+        yield ['Solr', '123', false, false, null];
+        yield ['Solr', '123', true, true, true];
+        yield ['Solr', '123', true, true, false];
     }
 
     /**
@@ -73,9 +71,8 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
      * @param ?bool  $resourceRetVal What, if anything the resource delete method is expected to return
      *
      * @return void
-     *
-     * @dataProvider basicOperationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('basicOperationProvider')]
     public function testBasicOperation(
         string $source,
         string $id,
@@ -104,6 +101,6 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             $expected .= $resourceRetVal ? "Resource deleted\n" : "No resource found\n";
         }
         $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 }

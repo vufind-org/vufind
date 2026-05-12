@@ -40,6 +40,13 @@ Storage:
     #redis_version            : 6
     #redis_standalone         : true
 
+  turnstileOptions:
+    # Namespace for Turnstile result cache (default is Turnstile)
+    #namespace: Turnstile
+
+    # Time-to-live (seconds) for Turnstile result cache (default is 86400, i.e. 1 day)
+    #ttl: 86400
+
 # Policies define the actual rate limiting settings. The request is checked against
 # the list of policies, and the first matching policy is used.
 # Keys under "Policies" are used as rate limiter IDs.
@@ -53,6 +60,10 @@ Storage:
 #                       separator. Also partial addresses can be used (e.g. 192.168
 #                       denotes 192.168.0.0-192.168.255.255), and IPv6 addresses are
 #                       also supported (unless PHP is compiled with IPv6 disabled).
+#
+# ipRangesExcept        The opposite of ipRanges: limit the policy to IP ranges that
+#                       are *not* in this list. For example, list local IP ranges to
+#                       exclude them from the policy.
 #
 # loggedIn              Whether to limit the policy to logged-in users (true) or
 #                       anonymous users (false). Default is null for no limit.
@@ -71,9 +82,23 @@ Storage:
 #                         query        Query string parameters
 #                         post         POST request parameters
 #
+# groupByIpv4Octets     Share a single quota of tokens between a group of related IP
+#                       addresses, defined by truncating the client IP. Useful for
+#                       botnets that control a range of IPs. This config defines the
+#                       group by truncating the IP address, if it is IPv4, to the
+#                       given number of octets. Valid values are 1-3. For example,
+#                       setting this to 3 would truncate 1.2.3.4 to 1.2.3 for the
+#                       purpose of grouping.
+#
+# groupByIpv6Hextets    Same as groupByIpv6Hextets, but this truncates IPv6 addresses.
+#                       Valid values are 1-7. For example, setting this to 3 would
+#                       truncate 2001:0db8:0000:0000:0000:ff00:0042:8329 to
+#                       2001:0db8:0000 for the purpose of grouping.
+#
 # rateLimiterSettings   Rate Limiter settings.
 #                       See https://symfony.com/doc/current/rate_limiter.html#rate-limiting-policies
-#                       for more information and policy settings.
+#                       for more information and policy settings.  In addition to those
+#                       policies, a "reject_all" policy is available to block all requests.
 #                       For a limiter using the token bucket algorithm, the following
 #                       settings could be used to e.g. allow 500 requests initially,
 #                       and add 100 more to the bucket every 10 minutes:
@@ -81,6 +106,24 @@ Storage:
 #                         policy: token_bucket
 #                         limit: 500
 #                         rate: { interval: '10 minutes', amount: 100 }
+#
+# turnstileRateLimiterSettings Defined like rateLimiterSettings, but when the limit is
+#                              reached, a Turnstile challenge is used instead of simply
+#                              returning a 429. The challenge result is cached. 
+#                              To show the challenge immediately, use policy reject_all.
+#                              Failing the challenge results in standard 429 behavior.
+#                              Passing the challenge bypasses this Turnstile check, but
+#                              note the rateLimiterSettings quota is still separately applied.
+#                              Default (not defined) means don't use Turnstile.
+#
+# turnstileIgnoredRateLimiterSettings 
+#                              Bots may ignore all Javascript, and thus never actually
+#                              submit a generated Turnstile challenge, so that it is
+#                              issued again on every request. This limits the number
+#                              of times the challenge will be presented and not
+#                              completed, before it will be recorded as failed.
+#                              Defined like rateLimiterSettings, but it decrements each
+#                              time the challenge is presented.
 #
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
 #
@@ -130,3 +173,28 @@ Policies:
       policy: token_bucket
       limit: 2000
       rate: { interval: '10 minutes', amount: 400 }
+
+# Cloudflare Turnstile is a cloud-based "CAPTCHA alternative" to detect bots.
+# https://developers.cloudflare.com/turnstile/
+# See also [Captcha] settings in config.ini for actual CAPTCHAs.
+# These are the global settings for Turnstile. See also the turnstile config above:
+# - within each policy, to enable turnstile for that policy
+# - storage settings for the result cache
+# And see the required config in contentsecuritypolicy.ini if CSP is used.
+#Turnstile:
+  #enabled: false
+
+  # These two keys are required. See also values they can be set to for testing purposes:
+  # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+  #siteKey: 0x1234567890
+  #secretKey: 0x1234567890
+
+  # Skip Turnstile and allow the request if the controller matches a regex.
+  # In these cases a challenge can't practically be displayed. Default is below.
+  #skipOnControllerPattern: "/AJAX|Cover|Api/"
+
+  # Verify API URL. Default is below.
+  #verifyUrl: https://challenges.cloudflare.com/turnstile/v0/siteverify
+
+  # API Javascript file. Default is below.
+  #jsLibraryUrl: https://challenges.cloudflare.com/turnstile/v0/api.js

@@ -11,11 +11,13 @@
   } else {
     $class = $class_ib = '';
   }
+  // Use More Options URL in the link, if available:
+  $linkUrl = $this->moreOptionsUrl ? $this->moreOptionsUrl : $this->resolverUrl;
 ?>
 
 <span class="openUrlControls<?php if ($this->openUrlEmbed): ?> openUrlEmbed<?php if ($this->openUrlEmbedAutoLoad): ?> openUrlEmbedAutoLoad<?php endif; ?><?php endif; ?>">
   <?php if (!$this->openUrlImageBasedSrc || $this->openUrlImageBasedMode == 'both'): ?>
-  <a href="<?=$this->escapeHtmlAttr($this->resolverUrl)?>"<?=$class?> data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>">
+  <a href="<?=$this->escapeHtmlAttr($linkUrl)?>"<?=$class?> data-search-class-id="<?=$this->escapeHtmlAttr($this->searchClassId) ?>">
     <?php /* put the openUrl here in a span (COinS almost) so we can retrieve it later */ ?>
     <span title="<?=$this->escapeHtmlAttr($this->openUrl)?>" class="openUrl"></span>
     <?php if ($this->openUrlGraphic): ?>

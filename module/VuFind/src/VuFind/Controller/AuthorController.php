@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author Search Controller
+ * Author Search Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -30,7 +30,7 @@
 namespace VuFind\Controller;
 
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Controller
@@ -41,7 +41,7 @@ namespace VuFind\Controller;
 class AuthorController extends AbstractSearch
 {
     /**
-     * Returns a list of all items associated with one facet for the lightbox
+     * Returns a list of all items associated with one facet for the lightbox.
      *
      * Parameters:
      * facet        The facet to retrieve
@@ -56,7 +56,7 @@ class AuthorController extends AbstractSearch
     }
 
     /**
-     * Sets the configuration for displaying author results
+     * Sets the configuration for displaying author results.
      *
      * @return mixed
      */
@@ -69,13 +69,13 @@ class AuthorController extends AbstractSearch
         // next/prev links only appear for records which were included in the
         // results for the previous keyword search, and the next/prev links will
         // iterate you through that search).
-        $this->saveToHistory = $this->resultScrollerActive();
+        $this->saveToHistory = $this->getOptionsForClass()->resultScrollerActive();
 
         return parent::resultsAction();
     }
 
     /**
-     * Sets the configuration for performing an author search
+     * Sets the configuration for performing an author search.
      *
      * @return mixed
      */
@@ -88,7 +88,7 @@ class AuthorController extends AbstractSearch
     }
 
     /**
-     * Displays the proper page for a search action
+     * Displays the proper page for a search action.
      *
      * @return mixed
      */
@@ -99,16 +99,5 @@ class AuthorController extends AbstractSearch
         $author = $this->params()->fromQuery('author');
         return !empty($author)
             ? $this->forwardTo('Author', 'Results') : parent::homeAction();
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        return $config->Record->next_prev_navigation ?? false;
     }
 }

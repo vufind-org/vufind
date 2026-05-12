@@ -38,12 +38,5 @@
   );
 
   // Override breadcrumbs:
-  $titleLink = $this->translate(
-      $this->pageTitleLink,
-      [
-          '%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)),
-          '%%title%%' => $this->escapeHtml($this->driver->getBreadcrumb()),
-      ]
-  );
-
-  $this->layout()->breadcrumbs = '<li class="active">' . $titleLink . '</li>';
+  $this->breadcrumbs()->set($this->driver->getBreadcrumb(), $this->recordLinker()->getUrl($this->driver))
+    ->add($title, active: true);

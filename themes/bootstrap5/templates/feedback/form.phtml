@@ -3,10 +3,9 @@
   $form->prepare();
 
   $title = $form->getTitle();
-  $title = !empty($title)
-    ? $this->translate($title) : null;
+  $title = !empty($title) ? $this->translate($title) : null;
 
-  $formUrl = $this->url('feedback-form', ['id' => $this->formId]);
+  $formUrl = $this->url($form->getFormActionRoute(), ['id' => $this->formId]);
   $form->setAttribute('action', $formUrl);
   $form->setAttribute('class', 'dynamic-form');
   $form->setAttribute('method', 'post');
@@ -18,9 +17,7 @@
 ?>
 <?php if (!$this->inLightbox): ?><div class="feedback-content"><?php endif; ?>
   <?php if ($title): ?>
-    <?php $this->headTitle($title); ?>
-    <?php $headTag = $this->inLightbox ? 'h2' : 'h1'; ?>
-    <<?=$headTag?>><?=$this->escapeHtml($title)?></<?=$headTag?>>
+    <?=$this->component('page-title', ['title' => $title, 'level' => 1])?>
   <?php endif; ?>
   <?=$this->flashmessages()?>
 
@@ -88,9 +85,18 @@
           $requireOne = $el['requireOne'] ?? false;
         ?>
         <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-          <p id="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label radio-label<?=$required && !$requireOne ? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
+          <p id="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="form-label radio-label<?=$required && !$requireOne ? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:
+            <?php if ($required): ?>
+              <span class="required-notice"><?=$this->transEsc('form_required_notice') ?></span>
+            <?php endif; ?>
+          </p>
         <?php elseif ('hidden' !== $el['type']): ?>
-          <label for="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
+          <label for="<?= $this->escapeHtmlAttr($formElement->getAttribute('id')) ?>" class="form-label<?= $required ? ' required' : '' ?>">
+            <?= $this->transEsc($el['label']) ?>:
+            <?php if ($required): ?>
+              <span class="required-notice"><?=$this->transEsc('form_required_notice') ?></span>
+            <?php endif; ?>
+          </label>
         <?php endif ?>
       <?php endif ?>
     <?php else: ?>

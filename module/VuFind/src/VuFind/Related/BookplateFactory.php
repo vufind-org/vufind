@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related record plugin factory
+ * Related record plugin factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Related record plugin factory
+ * Related record plugin factory.
  *
  * @category VuFind
  * @package  Related_Records
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
 class BookplateFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -55,9 +55,12 @@ class BookplateFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName($configManager);
     }
 }

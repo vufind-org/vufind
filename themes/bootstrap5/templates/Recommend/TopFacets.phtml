@@ -14,22 +14,27 @@
     <div class="top-facets">
       <!--Toggle for mobile collapse -->
       <?php $topLabel = $this->transEsc('top_facet_label', ['%%label%%' => $this->translate($cluster['label'])]); ?>
-      <a class="top-title js-toggle visible-xs" data-bs-toggle="collapse" data-bs-target="#top_<?=$this->escapeHtml($title) ?>"><?=$this->icon('collapse') ?> <?=$topLabel ?></a>
+      <a class="top-title top-title__toggle js-toggle icon-link" data-bs-toggle="collapse" data-bs-target="#top_<?=$this->escapeHtml($title) ?>">
+        <?=$this->icon('collapse', 'icon-link__icon') ?> <span class="icon-link__label"><?=$topLabel ?></span>
+      </a>
       <!--Regular title for non-mobile -->
-      <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
-      <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
+      <strong class="top-title top-title__heading"><?=$topLabel ?></strong>
+      <div class="collapse show" id="top_<?=$this->escapeHtml($title) ?>">
         <ul class="top-facets-contents" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
           <?php foreach ($cluster['list'] as $index => $thisFacet): ?>
             <li class="facet top-facet">
               <span class="top-facet-inner">
-                <?php if ($thisFacet['isApplied']):
+                <?php if ($thisFacet['isApplied'] || $thisFacet['isExcluded']):
                   if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
                     $removeLink = $this->currentPath() . $results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
                   } else {
                     $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
                   } ?>
-                  <a href="<?=$removeLink ?>" class="applied">
-                    <?=$this->escapeHtml($thisFacet['displayText'])?> <?=$this->icon('facet-applied') ?><!--
+                  <a href="<?=$removeLink ?>" class="<?=$thisFacet['isApplied'] ? 'applied' : 'excluded'?>">
+                    <?php if ($thisFacet['isExcluded']): ?>
+                      <span class="visually-hidden"><?=$this->transEsc('excluded') ?></span>
+                    <?php endif; ?>
+                    <?=$this->escapeHtml($thisFacet['displayText'])?> <?=$thisFacet['isApplied'] ? $this->icon('facet-applied') : '' ?><!--
                --></a>
                 <?php else: ?>
                   <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
@@ -37,9 +42,9 @@
                --></a>
                   <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
                   <?php if ($allowExclude): ?>
-                    <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
+                    <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEscAttr('exclude_facet') ?>">
                       <?=$this->icon('facet-exclude') ?>
-                      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+                      <span class="visually-hidden"><?=$this->transEsc('exclude_facet') ?></span>
                     </a>
                   <?php endif; ?>
                 <?php endif; ?>
@@ -54,8 +59,6 @@
 <?php
   $script = <<<JS
       VuFind.truncate.initTruncate('.top-facets-contents');
-      // Close with JS (ensures content is shown to non-JS users)
-      $(this).find('.collapse').removeClass('in');
       JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
+<?=$this->assetManager()->outputInlineScriptString($script);?>

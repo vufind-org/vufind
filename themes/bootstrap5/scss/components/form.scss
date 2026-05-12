@@ -1,10 +1,7 @@
 form {
-    .form-control {
-        border-color: #888;
-        &:focus {
-            border-color: #3F9AE4;
-        }
-      }
+    input.form-control, .form-select:not([multiple]) {
+        height: $input-height;
+    }
     textarea:invalid,
     input:invalid {
         box-shadow: 0 0 2px 1px rgba(255, 0, 0, 0.9);
@@ -16,27 +13,26 @@ form {
     .info {
         margin: 10px 0;
     }
-    .form-group ul {
-        padding: 0;
-        margin-left: 15px;
-        margin-top: 5px;
-    }
-    .form-group label.required::before,
-    .form-group .radio-label.required::before,
-    .form-group .radio-label.require-one::before
-    {
-        content: '* ';
+    .form-group {
+        margin-bottom: 1rem;
+
+        ul {
+            padding: 0;
+            margin-left: 15px;
+            margin-top: 5px;
+        }
     }
 
     input[type=checkbox],
     input[type=radio] {
-        height: 1em;
+        width: 1rem;
+        height: 1rem;
     }
 
     .form-group.checkbox,
     .form-group.radio {
         margin-bottom: 15px;
-        label.control-label {
+        label.form-label {
             padding-left: 0;
             font-weight: 700;
             margin-bottom: 5px;
@@ -45,14 +41,14 @@ form {
             display: table;
             margin: 7px 0;
             input {
-                width: auto;
                 margin-right: 10px;
                 margin-top: 3px;
             }
         }
-        .radio-label {
-            font-weight: 700;
-        }
+    }
+
+    .input-group {
+        width: initial;
     }
 
     &.dynamic-form {
@@ -60,4 +56,142 @@ form {
             padding-top: 0;
         }
     }
+    .required-notice {
+        font-size: $small-font-size;
+        color: $text-muted;
+    }
+}
+
+.form-inline {
+    .form-control, .form-group, .form-select {
+        vertical-align: middle;
+    }
+}
+
+@include media-breakpoint-up(sm) {
+  .form-inline {
+    .form-label {
+      margin-bottom: 0;
+    }
+    .form-control, .form-group, .form-select {
+      display: inline-block;
+      width: auto;
+    }
+  }
+}
+
+.form-group .checkbox, .facet-group .checkbox {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.radio, .checkbox {
+  label {
+    min-height: 20px;
+    margin-bottom: 0;
+    cursor: pointer;
+  }
+}
+
+.account-action-toolbar, .table-checkbox-toolbar {
+  .btn-group {
+    margin-block-end: 0.5em;
+  }
+}
+
+.table-checkbox-toolbar {
+  margin-left: 0.5em;
+}
+
+.bulk-action-toolbar {
+  display: flex;
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  @include media-breakpoint-up(sm) {
+    align-items: center;
+    gap: 1rem;
+  }
+}
+.select-all-container {
+  margin-top: 0;
+}
+.select-all-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: fit-content;
+  padding: 0.6em;
+  line-height: normal;
+
+  @include media-breakpoint-down(sm) {
+    border: 1px solid $btn-default-border;
+    border-radius: $border-radius;
+  }
+
+  @include media-breakpoint-up(sm) {
+    margin-inline-start: -0.6em;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: $gray-lighter;
+  }
+
+  [type="checkbox"] {
+    margin: 0;
+  }
+}
+.checkbox-select {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding-inline-start: 1.5rem;
+  font-size: 1rem;
+  line-height: normal;
+  cursor: default;
+
+  &:has(.checkbox-select-item) {
+    padding-inline-start: 0;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      .checkbox-select-number {
+        color: black;
+      }
+    }
+  }
+}
+.checkbox-select-item {
+  width: 1em;
+  height: 1em;
+}
+.checkbox-select-number {
+  min-width: 2ch;
+  text-align: end;
+  color: $gray-dark;
+  line-height: 1.5;
+}
+
+/* hide result/list checkboxes (but NOT cart checkboxes) on mobile search/favorites */
+
+@media (max-width: 767px) {
+  .template-dir-search.template-name-results,
+  .template-dir-myresearch.template-name-mylist {
+    padding-inline-start: 0;
+
+    .checkbox-select .checkbox-select-item {
+      display: none;
+    }
+
+    .cart-list .checkbox-select .checkbox-select-item {
+      display: inherit;
+    }
+  }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -41,7 +41,7 @@ namespace VuFind\Search\Factory;
 class SolrWebBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -63,8 +63,14 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         return function ($data) use ($manager) {
+            // Extract highlighting details injected earlier by
+            // \VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory
+            $hl = $data['__highlight_details'] ?? [];
+            unset($data['__highlight_details']);
+
             $driver = $manager->get('SolrWeb');
             $driver->setRawData($data);
+            $driver->setHighlightDetails($hl);
             return $driver;
         };
     }

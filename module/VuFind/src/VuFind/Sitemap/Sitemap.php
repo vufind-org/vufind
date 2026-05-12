@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for representing sitemap files
+ * Class for representing sitemap files.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -32,7 +32,7 @@ namespace VuFind\Sitemap;
 use function is_array;
 
 /**
- * Class for representing sitemap files
+ * Class for representing sitemap files.
  *
  * @category VuFind
  * @package  Sitemap
@@ -45,28 +45,28 @@ class Sitemap extends AbstractFile
     public const XHTML_NAMESPACE = 'xmlns:xhtml="http://www.w3.org/1999/xhtml"';
 
     /**
-     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
+     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never).
      *
      * @var string
      */
     protected $frequency;
 
     /**
-     * Alternative languages
+     * Alternative languages.
      *
      * @var array
      */
     protected $alternativeLanguages = [];
 
     /**
-     * Whether the XHTML namespace is needed
+     * Whether the XHTML namespace is needed.
      *
      * @var bool
      */
     protected $xhtmlNamespaceNeeded = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $frequency Frequency of URL updates
      */
@@ -111,8 +111,6 @@ class Sitemap extends AbstractFile
 
             $alternativeLinks = '  ' . implode("\n  ", $links) . "\n";
             $this->xhtmlNamespaceNeeded = true;
-        } else {
-            $locs[] = '<loc>' . htmlspecialchars($link) . '</loc>';
         }
         $link = htmlspecialchars($link);
         $freq = htmlspecialchars($frequency ?: $this->frequency);
@@ -126,7 +124,7 @@ class Sitemap extends AbstractFile
     }
 
     /**
-     * Get any extra namespace declarations needed for the sitemap
+     * Get any extra namespace declarations needed for the sitemap.
      *
      * @return array
      */

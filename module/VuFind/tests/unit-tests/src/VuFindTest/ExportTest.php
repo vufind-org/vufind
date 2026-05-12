@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Export Support Test Class
+ * Export Support Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,11 +29,12 @@
 
 namespace VuFindTest;
 
-use Laminas\Config\Config;
+use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Config\Config;
 use VuFind\Export;
 
 /**
- * Export Support Test Class
+ * Export Support Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -92,7 +93,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test "needs redirect"
+     * Test "needs redirect".
      *
      * @return void
      */
@@ -108,7 +109,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test non-XML case of process group
+     * Test non-XML case of process group.
      *
      * @return void
      */
@@ -121,7 +122,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test XML case of process group
+     * Test XML case of process group.
      *
      * @return void
      */
@@ -133,7 +134,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                 'combineXpath' => '/marc21:collection/marc21:record',
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             "<?xml version=\"1.0\"?>\n"
             . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
             . '<record><id>a</id></record><record><id>b</id></record></collection>',
@@ -147,7 +148,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test recordSupportsFormat
+     * Test recordSupportsFormat.
      *
      * @return void
      */
@@ -176,7 +177,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getFormatsForRecord
+     * Test getFormatsForRecord.
      *
      * @return void
      */
@@ -195,7 +196,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getFormatsForRecords
+     * Test getFormatsForRecords.
      *
      * @return void
      */
@@ -222,7 +223,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHeaders
+     * Test getHeaders.
      *
      * @return void
      */
@@ -230,11 +231,11 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     {
         $config = ['foo' => ['headers' => ['bar']]];
         $export = $this->getExport([], $config);
-        $this->assertEquals(['bar'], $export->getHeaders('foo')->toArray());
+        $this->assertEquals(['bar'], $export->getHeaders('foo'));
     }
 
     /**
-     * Test getRedirectUrl
+     * Test getRedirectUrl.
      *
      * @return void
      */
@@ -252,7 +253,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getLabelForFormat
+     * Test getLabelForFormat.
      *
      * @return void
      */
@@ -270,7 +271,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBulkExportType()
+     * Test getBulkExportType().
      *
      * @return void
      */
@@ -292,36 +293,30 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBulkUrl() method
+     * Test getBulkUrl() method.
      *
      * @return void
      */
     public function testGetBulkUrl(): void
     {
-        $url = $this->getMockBuilder(\Laminas\View\Helper\Url::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $url = $this->createMock(\Laminas\View\Helper\Url::class);
         $url->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('cart-doexport'))
-            ->will($this->returnValue('/cart/doExport'));
-        $serverUrl = $this->getMockBuilder(\Laminas\View\Helper\ServerUrl::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+            ->with('cart-doexport')
+            ->willReturn('/cart/doExport');
+        $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('/cart/doExport'))
-            ->will($this->returnValue('http://localhost/cart/doExport'));
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->expectConsecutiveCalls($view, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
+            ->with('/cart/doExport')
+            ->willReturn('http://localhost/cart/doExport');
+        $renderer = $this->createMock(PhpRenderer::class);
+        $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);
         $this->assertEquals(
             'http://localhost/cart/doExport?f=foo&i%5B%5D=1&i%5B%5D=2&i%5B%5D=3',
-            $this->getExport()->getBulkUrl($view, 'foo', [1, 2, 3])
+            $this->getExport(renderer: $renderer)->getBulkUrl('foo', [1, 2, 3])
         );
     }
 
     /**
-     * Test getPostField()
+     * Test getPostField().
      *
      * @return void
      */
@@ -336,7 +331,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getTargetWindow()
+     * Test getTargetWindow().
      *
      * @return void
      */
@@ -351,7 +346,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake MARCXML record
+     * Get a fake MARCXML record.
      *
      * @param string $id ID to put in record.
      *
@@ -366,13 +361,14 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a configured Export object.
      *
-     * @param array $main   Main config
-     * @param array $export Export config
+     * @param array        $main     Main config
+     * @param array        $export   Export config
+     * @param ?PhpRenderer $renderer Preconfigured view renderer
      *
      * @return Export
      */
-    protected function getExport($main = [], $export = [])
+    protected function getExport($main = [], $export = [], $renderer = null)
     {
-        return new Export(new Config($main), new Config($export));
+        return new Export($main, $export, $renderer ?? $this->createMock(PhpRenderer::class));
     }
 }

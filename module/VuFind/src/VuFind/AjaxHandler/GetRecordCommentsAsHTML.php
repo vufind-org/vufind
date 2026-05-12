@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -45,21 +45,21 @@ use VuFind\Record\Loader;
 class GetRecordCommentsAsHTML extends AbstractBase
 {
     /**
-     * Record loader
+     * Record loader.
      *
      * @var Loader
      */
     protected $loader;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $renderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader            $loader   Record loader
      * @param RendererInterface $renderer View renderer

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Multiple ILS authentication module that works with MultiBackend driver
+ * Multiple ILS authentication module that works with MultiBackend driver.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -32,14 +32,16 @@
 
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\ILS\Connection;
 use VuFind\ILS\Driver\MultiBackend;
 
 use function in_array;
 
 /**
- * Multiple ILS authentication module that works with MultiBackend driver
+ * Multiple ILS authentication module that works with MultiBackend driver.
  *
  * @category VuFind
  * @package  Authentication
@@ -51,6 +53,45 @@ use function in_array;
  */
 class MultiILS extends ILS
 {
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        if ($this->preAuthenticationData) {
+            // Set target from pre-authentication data:
+            // TODO: This is not a very nice way of carrying this information over to the authentication manager:
+            $request->getPost()->set('target', $this->preAuthenticationData['target']);
+            return null;
+        }
+
+        $username = trim($request->getPost()->get('username', ''));
+        $target = trim($request->getPost()->get('target', ''));
+        $loginMethod = $this->getILSLoginMethod($target);
+        $rememberMe = (bool)$request->getPost()->get('remember_me', false);
+
+        // We should have target either separately or already embedded into username
+        if (!$target) {
+            $parts = explode('.', $username);
+            if (isset($parts[1])) {
+                $target = $parts[0];
+                $username = $parts[1];
+            }
+        }
+
+        // Check that the target is valid:
+        if (!in_array($target, $this->getLoginTargets())) {
+            throw new AuthException('authentication_error_admin');
+        }
+
+        return $this->handlePreAuthentication($target, $username, $loginMethod);
+    }
+
     /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
@@ -84,7 +125,7 @@ class MultiILS extends ILS
     }
 
     /**
-     * Get login targets (ILS drivers/source ID's)
+     * Get login targets (ILS drivers/source ID's).
      *
      * @return array
      */
@@ -94,9 +135,9 @@ class MultiILS extends ILS
     }
 
     /**
-     * Get default login target (ILS driver/source ID)
+     * Get default login target (ILS driver/source ID).
      *
-     * @return array
+     * @return string
      */
     public function getDefaultLoginTarget()
     {
@@ -122,5 +163,53 @@ class MultiILS extends ILS
             );
         }
         parent::setCatalog($connection);
+    }
+
+    /**
+     * Does this authentication method support password recovery.
+     *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    public function supportsPasswordRecovery(?string $target = null)
+    {
+        if (!$target) {
+            throw new \Exception(__METHOD__ . ' requires the target parameter!');
+        }
+        // If a target is specified, use an arbitrary cat_username with the correct target prefix:
+        $recoveryConfig = $this->getCatalog()->checkFunction(
+            'resetPassword',
+            ['cat_username' => "$target.123"]
+        );
+        return (bool)$recoveryConfig;
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email    User's email address
+     *   string username Username (optional, for display)
+     *   array  details  Array of user details required for resetPassword request
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        if (!($target = $params['target'] ?? null)) {
+            throw new \Exception(__METHOD__ . ' requires the target parameter!');
+        }
+        $params['cat_username'] = $target . '.' . $params['cat_username'];
+
+        $result = $this->getCatalog()->getPasswordRecoveryData($params);
+        if (!$result['success']) {
+            throw new AuthException($result['error']);
+        }
+        $recoveryData = $result['data'];
+        $recoveryData['target'] = $target;
+        return $recoveryData;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Browse Module Controller
+ * Browse Module Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Tags\TagsService;
 
@@ -38,7 +38,7 @@ use function array_slice;
 use function in_array;
 
 /**
- * BrowseController Class
+ * BrowseController Class.
  *
  * Controls the alphabetical browsing feature
  *
@@ -54,28 +54,28 @@ class BrowseController extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var Config
      */
     protected $config;
 
     /**
-     * Current browse mode
+     * Current browse mode.
      *
      * @var string
      */
     protected $currentAction = null;
 
     /**
-     * Browse options disabled in configuration
+     * Browse options disabled in configuration.
      *
      * @var array
      */
     protected $disabledFacets;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param Config                  $config VuFind configuration
@@ -236,7 +236,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Gathers data for the view of the AlphaBrowser and does some initialization
+     * Gathers data for the view of the AlphaBrowser and does some initialization.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -247,7 +247,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Perform the search
+     * Perform the search.
      *
      * @param \Laminas\View\Model\ViewModel $view View model to modify
      *
@@ -282,24 +282,25 @@ class BrowseController extends AbstractBase implements
                 ];
             }
             // Don't make a second filter if it would be the same facet
+            $filterField = urlencode('filter[]');
             $view->paramTitle
                 = ($this->params()->fromQuery('query_field') != $this->getCategory())
-                ? 'filter[]=' . $this->params()->fromQuery('query_field') . ':'
+                ? $filterField . '=' . $this->params()->fromQuery('query_field') . ':'
                     . urlencode($this->params()->fromQuery('query')) . '&'
                 : '';
             switch ($this->getCurrentAction()) {
                 case 'LCC':
-                    $view->paramTitle .= 'filter[]=callnumber-subject:';
+                    $view->paramTitle .= $filterField . '=callnumber-subject:';
                     break;
                 case 'Dewey':
-                    $view->paramTitle .= 'filter[]=dewey-ones:';
+                    $view->paramTitle .= $filterField . '=dewey-ones:';
                     break;
                 default:
-                    $view->paramTitle .= 'filter[]=' . $this->getCategory() . ':';
+                    $view->paramTitle .= $filterField . '=' . $this->getCategory() . ':';
             }
             $view->paramTitle = str_replace(
                 '+AND+',
-                '&filter[]=',
+                '&' . $filterField . '=',
                 $view->paramTitle
             );
             $view->resultList = $resultList;
@@ -310,7 +311,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse tags
+     * Browse tags.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -382,7 +383,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse LCC
+     * Browse LCC.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -400,7 +401,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse Dewey
+     * Browse Dewey.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -443,7 +444,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Generic action function that handles all the common parts of the below actions
+     * Generic action function that handles all the common parts of the below actions.
      *
      * @param string $currentAction name of the current action. profound stuff.
      * @param array  $categoryList  category options
@@ -473,7 +474,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse Author
+     * Browse Author.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -492,7 +493,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse Topic
+     * Browse Topic.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -509,7 +510,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse Genre
+     * Browse Genre.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -526,7 +527,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse Region
+     * Browse Region.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -543,7 +544,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Browse Era
+     * Browse Era.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -560,7 +561,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Get array with two values: a filter name and a secondary list based on facets
+     * Get array with two values: a filter name and a secondary list based on facets.
      *
      * @param string $facet the facet we need the contents of
      *
@@ -636,11 +637,7 @@ class BrowseController extends AbstractBase implements
         $results = $this->getService(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
-        if ($category != null) {
-            $query = $category . ':' . $query;
-        } else {
-            $query = $facet . ':' . $query;
-        }
+        $query = ($category ?? $facet) . ':' . $query;
         $params->setOverrideQuery($query);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
@@ -674,7 +671,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Helper class that adds quotes around the values of an array
+     * Helper class that adds quotes around the values of an array.
      *
      * @param array $array Two-dimensional array where each entry has a value param
      *
@@ -690,7 +687,7 @@ class BrowseController extends AbstractBase implements
     }
 
     /**
-     * Get the facet search term for an action
+     * Get the facet search term for an action.
      *
      * @param string $action action to be translated
      *

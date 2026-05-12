@@ -6,6 +6,6 @@
   </div>
   <?php if ($this->recommend->isFullMatch() && $this->recommend->redirectFullMatch()): ?>
     <?php $redirect = 'document.location.href = "' . $this->escapeJs($url) . '";'; ?>
-    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $redirect, 'SET')?>
+    <?=$this->assetManager()->outputInlineScriptString($redirect)?>
   <?php endif; ?>
 <?php endif; ?>

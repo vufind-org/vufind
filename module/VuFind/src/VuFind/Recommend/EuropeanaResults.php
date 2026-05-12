@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EuropeanaResults Recommendations Module
+ * EuropeanaResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -37,7 +37,7 @@ use function intval;
 use function is_object;
 
 /**
- * EuropeanaResults Recommendations Module
+ * EuropeanaResults Recommendations Module.
  *
  * This class provides recommendations by using the Europeana API.
  *
@@ -51,83 +51,83 @@ use function is_object;
 class EuropeanaResults implements
     RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * Request parameter for searching
+     * Request parameter for searching.
      *
      * @var string
      */
     protected $requestParam;
 
     /**
-     * Result limit
+     * Result limit.
      *
      * @var int
      */
     protected $limit;
 
     /**
-     * Europeana base URL
+     * Europeana base URL.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Fully constructed API URL
+     * Fully constructed API URL.
      *
      * @var string
      */
     protected $targetUrl;
 
     /**
-     * Providers to exclude
+     * Providers to exclude.
      *
      * @var array
      */
     protected $excludeProviders;
 
     /**
-     * Site to search
+     * Site to search.
      *
      * @var string
      */
     protected $searchSite;
 
     /**
-     * Link for more results
+     * Link for more results.
      *
      * @var string
      */
     protected $sitePath;
 
     /**
-     * API key
+     * API key.
      *
      * @var string
      */
     protected $key;
 
     /**
-     * Search string
+     * Search string.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Search results
+     * Search results.
      *
      * @var array
      */
     protected $results;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $key API key
      */
@@ -163,7 +163,7 @@ class EuropeanaResults implements
     }
 
     /**
-     * Build the url which will be send to retrieve the RSS results
+     * Build the url which will be send to retrieve the RSS results.
      *
      * @param string $targetUrl        Base URL
      * @param string $requestParam     Parameter name to add

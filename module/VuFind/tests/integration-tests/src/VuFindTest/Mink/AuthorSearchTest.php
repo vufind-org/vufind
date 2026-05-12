@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -28,6 +28,8 @@
  */
 
 namespace VuFindTest\Mink;
+
+use VuFindTest\Feature\SearchFacetFilterTrait;
 
 /**
  * Mink author search test class.
@@ -40,29 +42,31 @@ namespace VuFindTest\Mink;
  */
 class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use SearchFacetFilterTrait;
+
     /**
-     * Test searching for a known corporate author
+     * Test searching for a known corporate author.
      *
      * @return void
      */
     public function testCorporateAuthorSearch(): void
     {
         $page = $this->performSearch('corporate', 'Author');
-        $facets = $this->findCssAndGetText($page, '#side-collapse-building a');
+        $facets = $this->getFacetTextByLinkSelector($page, '#side-collapse-building a');
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
         $this->assertStringContainsString('author_relators.mrc 10', $facets);
     }
 
     /**
-     * Test searching for a known primary author
+     * Test searching for a known primary author.
      *
      * @return void
      */
     public function testPrimaryAuthorSearch(): void
     {
         $page = $this->performSearch('primary', 'Author');
-        $facets = $this->findCssAndGetText($page, '#side-collapse-building a');
+        $facets = $this->getFacetTextByLinkSelector($page, '#side-collapse-building a');
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
         $this->assertStringContainsString('author_relators.mrc 11', $facets);

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -30,7 +30,6 @@
 
 namespace VuFind\Config;
 
-use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
 
 use function in_array;
@@ -48,14 +47,14 @@ use function in_array;
 class AccountCapabilities
 {
     /**
-     * Function to fetch auth manager
+     * Function to fetch auth manager.
      *
      * @var callable
      */
     protected $authCallback;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config   $config  Top-level configuration
      * @param callable $getAuth Function to fetch auth manager
@@ -66,7 +65,7 @@ class AccountCapabilities
     }
 
     /**
-     * Get authentication manager
+     * Get authentication manager.
      *
      * @return AuthManager
      */
@@ -88,6 +87,49 @@ class AccountCapabilities
         return isset($this->config->Social->comments)
             && $this->config->Social->comments === 'disabled'
             ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get rating setting.
+     *
+     * @return string
+     */
+    public function getRatingSetting(): string
+    {
+        return empty($this->config->Social->rating)
+            || $this->config->Social->rating === 'disabled'
+            ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get page size for comments, ratings and tags in user account.
+     *
+     * @return int
+     */
+    public function getUserContentPageSize(): int
+    {
+        return $this->config->Social->user_content_page_size ?? 50;
+    }
+
+    /**
+     * Get enabled tabs for user content as an array with controller names
+     * as keys and tab titles as values.
+     *
+     * @return array
+     */
+    public function getUserContentTabs(): array
+    {
+        $tabs = [];
+        if ('enabled' === $this->getCommentSetting()) {
+            $tabs['comments'] = 'Comments';
+        }
+        if ('enabled' === $this->getRatingSetting()) {
+            $tabs['ratings'] = 'Ratings';
+        }
+        if ('enabled' === $this->getTagSetting()) {
+            $tabs['tag'] = 'Tags';
+        }
+        return $tabs;
     }
 
     /**
@@ -213,7 +255,7 @@ class AccountCapabilities
     }
 
     /**
-     * Check if record ratings can be removed
+     * Check if record ratings can be removed.
      *
      * @return bool
      */

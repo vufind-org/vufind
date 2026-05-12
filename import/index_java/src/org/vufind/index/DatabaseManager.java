@@ -14,13 +14,17 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import org.apache.log4j.Logger;
 import org.solrmarc.tools.SolrMarcIndexerException;
 import java.sql.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 /**
  * Database manager.
@@ -35,6 +39,8 @@ public class DatabaseManager
 
     // Shutdown flag:
     private boolean shuttingDown = false;
+
+    private UpdateDateTracker udt;
 
     private static ThreadLocal<DatabaseManager> managerCache =
         new ThreadLocal<DatabaseManager>()
@@ -70,51 +76,154 @@ public class DatabaseManager
         if (vufindDatabase != null) {
             return;
         }
-
-        String dsn = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database");
-
         try {
-            // Parse key settings from the PHP-style DSN:
-            String username = "";
-            String password = "";
-            String classname = "invalid";
-            String prefix = "invalid";
-            String extraParams = "";
-            if (dsn.substring(0, 8).equals("mysql://")) {
-                classname = "com.mysql.jdbc.Driver";
-                prefix = "mysql";
-                String useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false) ? "true" : "false";
-                extraParams = "?useSSL=" + useSsl;
-                if (useSsl != "false") {
-                    String verifyCert = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "verify_server_certificate", false) ? "true" : "false";
-                    extraParams += "&verifyServerCertificate=" + verifyCert;
-                }
-            } else if (dsn.substring(0, 8).equals("pgsql://")) {
-                classname = "org.postgresql.Driver";
-                prefix = "postgresql";
-            }
-
-            Class.forName(classname).getDeclaredConstructor().newInstance();
-            String[] parts = dsn.split("://");
-            if (parts.length > 1) {
-                parts = parts[1].split("@");
-                if (parts.length > 1) {
-                    dsn = prefix + "://" + parts[1];
-                    parts = parts[0].split(":");
-                    username = parts[0];
-                    if (parts.length > 1) {
-                        password = parts[1];
-                    }
-                }
-            }
-
-            // Connect to the database:
-            vufindDatabase = DriverManager.getConnection("jdbc:" + dsn + extraParams, username, password);
+            connectToDatabaseUsingSplitConfig();
+        } catch (Throwable e) {
+            logger.warn("Unable to connect to database using split config (" + e.getMessage() + ")");
+        }
+        // If the split config allowed to setup the DB, do nothing further
+        if (vufindDatabase != null) {
+            return;
+        }
+        try {
+            connectToDatabaseUsingStringConfig();
         } catch (Throwable e) {
             dieWithError("Unable to connect to VuFind database; " + e.getMessage());
         }
+    }
+
+    /**
+     * Connect to the VuFind database using the legacy PHP-style connection string in config.ini.
+     */
+    private void connectToDatabaseUsingStringConfig() throws Throwable
+    {
+        String dsn = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database");
+        if (dsn == null || dsn.isEmpty()) {
+            throw new Exception("Cannot find working database settings in config.ini");
+        }
+
+        // Parse key settings from the PHP-style DSN:
+        String platform = "invalid";
+        if (dsn.startsWith("mysql://")) {
+            platform = "mysql";
+        } else if (dsn.startsWith("mariadb://")) {
+            platform = "mariadb";
+        } else if (dsn.startsWith("pgsql://")) {
+            platform = "postgresql";
+        }
+
+        String host = "";
+        String port = "";
+        String name = "";
+        String username = "";
+        String password = "";
+        String[] parts = dsn.split("://");
+        if (parts.length > 1) {
+            parts = parts[1].split("@");
+            if (parts.length > 1) {
+                String[] pathParts = parts[1].split("/");
+                name = pathParts[pathParts.length - 1];
+                String[] hostParts = pathParts[0].split(":");
+                host = hostParts[0];
+                if (hostParts.length > 1) {
+                    port = hostParts[1];
+                }
+                parts = parts[0].split(":");
+                username = parts[0];
+                if (parts.length > 1) {
+                    password = parts[1];
+                }
+            }
+        }
+        connectToDatabaseUsingParams(platform, host, port, name, username, password);
+    }
+
+    /**
+     * Connect to the VuFind database using the preferred granular config.ini settings.
+     */
+    private void connectToDatabaseUsingSplitConfig() throws Throwable
+    {
+        String username = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_username");
+        String password = "";
+        String passwordFile = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_password_file");
+        if (passwordFile != null && !passwordFile.isEmpty()) {
+            Path passwordFilePath = Paths.get(passwordFile);
+            password = Files.readString(passwordFilePath, Charset.defaultCharset()).trim();
+        }
+        if (password.isEmpty()) {
+            password = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_password");
+        }
+        String host = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_host");
+        String port = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_port");
+        String name = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_name");
+        String platform = ConfigManager.instance().getConfigSetting("config.ini", "Database", "database_driver");
+        // If no platform is set, don't bother trying to connect:
+        if (platform != null && !platform.isEmpty()) {
+            connectToDatabaseUsingParams(platform, host, port, name, username, password);
+        }
+    }
+
+    /**
+     * Connect to the VuFind database using provided values
+     */
+    private void connectToDatabaseUsingParams(String platform, String host, String port, String name, String username, String password) throws Throwable
+    {
+        String classname = "invalid";
+        String extraParams = "";
+        String prefix = "invalid";
+        if (platform.equals("mysql")) {
+            classname = "com.mysql.cj.jdbc.Driver";
+            prefix = "mysql";
+            String useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false) ? "true" : "false";
+            extraParams = "?useSSL=" + useSsl;
+            // NOTE: useSSL is deprecated for both mysql and mariadb
+            // sslMode is supported since mysql Connector/J 8.0.13 and mariadb Connector/J 3.0.0
+            if (useSsl != "false") {
+                String verifyCert = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "verify_server_certificate", false) ? "true" : "false";
+                extraParams += "&verifyServerCertificate=" + verifyCert;
+            }
+            extraParams += "&rewriteBatchedStatements=true";
+        } else if (platform.equals("mariadb")) {
+            classname = "org.mariadb.jdbc.Driver";
+            prefix = "mariadb";
+            boolean useSsl = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "use_ssl", false);
+            String sslMode;
+            if (useSsl) {
+                boolean verifyCert = ConfigManager.instance().getBooleanConfigSetting("config.ini", "Database", "verify_server_certificate", false);
+                if (verifyCert) {
+                    sslMode = "verify-full";
+                    // NOTE: we could also use "verify-ca" here, it would be better to have an sslMode VuFind config
+                    // (but note that mysql values are different)
+                } else {
+                    sslMode = "trust";
+                }
+            } else {
+                sslMode = "disable";
+            }
+            extraParams = "?sslMode=" + sslMode;
+            // NOTE: rewriteBatchedStatements was removed from mariadb Connector/J in version 3.0.0.
+            // It was replaced by useBulkStmts, which defaults to true.
+        } else if (platform.equals("pgsql") || platform.equals("postgresql")) {
+            classname = "org.postgresql.Driver";
+            prefix = "postgresql";
+            extraParams = "?reWriteBatchedInserts=true";
+        }
+
+        Class.forName(classname).getDeclaredConstructor().newInstance();
+        String dsn = prefix + "://" + host;
+        if (!port.isEmpty()) {
+            dsn = dsn + ":" + port;
+        }
+        dsn = dsn + "/" + name;
+
+        // Connect to the database:
+        vufindDatabase = DriverManager.getConnection("jdbc:" + dsn + extraParams, username, password);
 
         Runtime.getRuntime().addShutdownHook(new DatabaseManagerShutdownThread(this));
+    }
+
+    void setUpdateDateTracker(UpdateDateTracker udt) {
+        this.udt = udt;
     }
 
     private void disconnectFromDatabase()
@@ -131,6 +240,10 @@ public class DatabaseManager
 
     public void shutdown()
     {
+        if (udt != null) {
+            // We can't use UpdateDateTracker.instance() in shutdown, so we have to use a previously-saved reference
+            udt.shutdown();
+        }
         disconnectFromDatabase();
         shuttingDown = true;
     }

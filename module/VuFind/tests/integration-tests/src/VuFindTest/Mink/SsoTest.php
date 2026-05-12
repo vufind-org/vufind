@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -68,14 +68,38 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test SSO login
+     * Data provider for testLogin().
+     *
+     * @return \Iterator
+     */
+    public static function loginConfigProvider(): \Iterator
+    {
+        yield 'with cat_username mapping' => [ // test for regression of #3992
+            [
+                'General' => [
+                    'attributes' => [
+                        'cat_username' => 'foo',
+                    ],
+                ],
+            ],
+        ];
+        yield 'defaults' => [];
+    }
+
+    /**
+     * Test SSO login.
+     *
+     * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
      *
      * @return void
      */
-    public function testLogin(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginConfigProvider')]
+    public function testLogin(array $extraSsoConfigs = []): void
     {
         // Set up configs
-        $this->changeConfigs($this->getConfigIniOverrides());
+        $configs = $this->getConfigIniOverrides();
+        $configs['SimulatedSSO'] = array_merge_recursive($configs['SimulatedSSO'], $extraSsoConfigs);
+        $this->changeConfigs($configs);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
@@ -88,7 +112,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * SSO login in lightbox
+     * SSO login in lightbox.
      *
      * @return void
      */
@@ -104,7 +128,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-nav .save-record');
 
         // Login in lightbox
-        $this->assertEquals('Institutional Login', $this->findCssAndGetText($page, '.modal-body .btn.btn-link'));
+        $this->assertSame('Institutional Login', $this->findCssAndGetText($page, '.modal-body .btn.btn-link'));
         $this->clickCss($page, '.modal-body .btn.btn-link');
 
         // Check if save form is in lightbox
@@ -115,7 +139,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
 
         // Check that we are still on the record page
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, '.record .media-body h1')
         );
@@ -125,7 +149,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test SSO external logout
+     * Test SSO external logout.
      *
      * @return void
      */
@@ -163,16 +187,15 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
             $this->getFixture('shibboleth/logout_notification.xml'),
             'application/xml'
         );
-        $this->assertTrue($result->isSuccess());
-        $this->assertEquals(200, $result->getStatusCode());
+        $this->assertSame(200, $result->getStatusCode());
 
         // Check that login link is back:
         $session->reload();
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
     }
 
     /**
-     * Logs out on the current page and checks if logout was successful
+     * Logs out on the current page and checks if logout was successful.
      *
      * @return void
      */
@@ -185,7 +208,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Check that login link is back
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->findCss($page, '#loginOptions a');
     }
 
     /**

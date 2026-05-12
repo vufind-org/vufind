@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock container
+     * Mock container.
      *
      * @var \VuFindTest\Container\MockContainer
      */
@@ -87,33 +87,32 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
             \VuFind\Auth\Manager::class,
             ['getUserObject', 'loginEnabled']
         );
-        $authManager->expects($this->any())->method('getUserObject')
-            ->willReturn($user);
-        $authManager->expects($this->any())->method('loginEnabled')
-            ->willReturn(true);
+        $authManager->method('getUserObject')->willReturn($user);
+        $authManager->method('loginEnabled')->willReturn(true);
         return $authManager;
     }
 
     /**
      * Build a Params helper for testing.
      *
-     * @param array $get  GET parameters
-     * @param array $post POST parameters
+     * @param array  $get     GET parameters
+     * @param array  $post    POST parameters
+     * @param string $content Body content
      *
      * @return Params
      */
-    protected function getParamsHelper(array $get = [], array $post = []): Params
+    protected function getParamsHelper(array $get = [], array $post = [], string $content = ''): Params
     {
         $params = new Params();
         $request = new Request();
         $request->setQuery(new Parameters($get));
         $request->setPost(new Parameters($post));
+        $request->setContent($content);
         $controller = $this->container->createMock(
-            'Laminas\Mvc\Controller\AbstractActionController',
+            \Laminas\Mvc\Controller\AbstractActionController::class,
             ['getRequest']
         );
-        $controller->expects($this->any())->method('getRequest')
-            ->will($this->returnValue($request));
+        $controller->method('getRequest')->willReturn($request);
         $params->setController($controller);
         return $params;
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -44,21 +44,21 @@ use Symfony\Component\Console\Application;
 class ConsoleRunner
 {
     /**
-     * List of commands
+     * List of commands.
      *
      * @var array
      */
     protected $commands;
 
     /**
-     * Plugin manager (to retrieve commands)
+     * Plugin manager (to retrieve commands).
      *
      * @var ContainerInterface
      */
     protected $pluginManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ContainerInterface $pm Plugin manager (to retrieve commands)
      */
@@ -94,7 +94,7 @@ class ConsoleRunner
     }
 
     /**
-     * Run the console action
+     * Run the console action.
      *
      * @return mixed
      */

@@ -1,22 +1,14 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('System Unavailable'));
-
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;
 
-  $this->layout()->breadcrumbs = '<li class="active">Error</li>';
+  $this->breadcrumbs()->set($this->translate('An error has occurred'), active: true);
 ?>
 <div class="alert alert-warning">
-  <h2><?=$this->transEsc('System Unavailable')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('System Unavailable')]);?>
   <p>
     <?=$this->transEsc('The system is currently unavailable due to system maintenance')?>.
     <?=$this->transEsc('Please check back soon')?>.
   </p>
-  <p>
-    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
-    <br>
-    <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
-  </p>
+  <?=$this->render('error/contact.phtml')?>
 </div>

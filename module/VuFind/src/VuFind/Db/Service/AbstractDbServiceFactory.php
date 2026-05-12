@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service factory
+ * Database service factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -34,9 +34,10 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\PersistenceManager;
 
 /**
- * Database service factory
+ * Database service factory.
  *
  * @category VuFind
  * @package  Database
@@ -47,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class AbstractDbServiceFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -63,8 +64,13 @@ class AbstractDbServiceFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        return new $requestedName(...($options ?? []));
+        return new $requestedName(
+            $container->get('doctrine.entitymanager.orm_vufind'),
+            $container->get(\VuFind\Db\Entity\PluginManager::class),
+            $container->get(PersistenceManager::class),
+            ...($options ?? [])
+        );
     }
 }

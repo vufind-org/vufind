@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -28,6 +28,12 @@
  */
 
 namespace VuFindSearch\Backend\Primo\Response;
+
+use VuFindSearch\Exception\InvalidArgumentException;
+
+use function gettype;
+use function is_array;
+use function sprintf;
 
 /**
  * Simple factory for record collection.
@@ -48,6 +54,32 @@ class RecordCollectionFactory extends \VuFindSearch\Response\AbstractJsonRecordC
     protected function getDefaultRecordCollectionClass(): string
     {
         return RecordCollection::class;
+    }
+
+    /**
+     * Return record collection.
+     *
+     * @param array $response Deserialized JSON response
+     *
+     * @return RecordCollection
+     */
+    public function factory($response)
+    {
+        if (!is_array($response)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Unexpected type of value: Expected array, got %s',
+                    gettype($response)
+                )
+            );
+        }
+        $collection = new $this->collectionClass($response);
+        foreach ($response['documents'] ?? [] as $doc) {
+            $record = ($this->recordFactory)($doc);
+
+            $collection->add($record, false);
+        }
+        return $collection;
     }
 
     /**

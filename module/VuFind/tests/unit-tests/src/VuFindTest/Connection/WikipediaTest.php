@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -58,11 +58,11 @@ class WikipediaTest extends \PHPUnit\Framework\TestCase
         $response = $wiki->get('Jane Austen');
         $this->assertEquals('en', $response['wiki_lang']);
         $this->assertEquals('Jane Austen', $response['name']);
-        $this->assertTrue(false !== strstr($response['description'], '16 December 1775'));
+        $this->assertNotFalse(strstr($response['description'], '16 December 1775'));
     }
 
     /**
-     * Load HTTP client w/ fixture
+     * Load HTTP client w/ fixture.
      *
      * @param string $fixture Fixture name
      *

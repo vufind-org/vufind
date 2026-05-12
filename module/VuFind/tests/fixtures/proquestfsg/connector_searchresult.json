@@ -1,0 +1,138 @@
+{
+    "docs": [
+        "<record xmlns=\"http:\/\/www.loc.gov\/MARC21\/slim\">\n<leader>00000nab a2200000uu 4500<\/leader>\n<controlfield tag=\"001\">2615626038<\/controlfield>\n<controlfield tag=\"003\">UK-CbPIL<\/controlfield>\n<datafield tag=\"022\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">0164-0178<\/subfield>\n<\/datafield>\n<datafield tag=\"022\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">1086-3141<\/subfield>\n<\/datafield>\n<datafield tag=\"022\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">0146-5511<\/subfield>\n<\/datafield>\n<datafield tag=\"022\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">0002-9068<\/subfield>\n<\/datafield>\n<datafield tag=\"035\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">2615626038<\/subfield>\n<\/datafield>\n<datafield tag=\"045\" ind1=\"2\" ind2=\" \">\n<subfield code=\"b\">d20210701<\/subfield>\n<subfield code=\"b\">d20210731<\/subfield>\n<\/datafield>\n<datafield tag=\"084\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">12342<\/subfield>\n<subfield code=\"2\">nlm<\/subfield>\n<\/datafield>\n<datafield tag=\"100\" ind1=\"1\" ind2=\" \">\n<subfield code=\"a\">Jenna Weissman Joselit<\/subfield>\n<\/datafield>\n<datafield tag=\"245\" ind1=\"1\" ind2=\" \">\n<subfield code=\"a\">&lt;i&gt;Painted Pomegranates and Needlepoint Rabbis: How Jews Craft Resilience and Craft Community&lt;\/i&gt; by Jodi Eichler-Levine (review)<\/subfield>\n<\/datafield>\n<datafield tag=\"260\" ind1=\" \" ind2=\" \">\n<subfield code=\"b\">Johns Hopkins University Press<\/subfield>\n<subfield code=\"c\">Jul 2021<\/subfield>\n<\/datafield>\n<datafield tag=\"513\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Book Review<\/subfield>\n<\/datafield>\n<datafield tag=\"520\" ind1=\"3\" ind2=\" \">\n<subfield code=\"a\">The Pomegranate Guild of Judaic Needlework, established in 1977 to foster \"synagogue decoration, Judaic symbolism, Jewish art and Judaic embroidery,\" and Jewish Hearts for Pittsburgh, a digital group some one thousand members strong that arose more recently, in the wake of the deadly 2018 Tree of Life shootings, are among them (103).\n\nPaying close attention to what they created, Eichler-Levine, herself a member of the Jewish craft community, explores a wide array of handmade goods, from the Pussyhat, the hot pink knitted cap with pointed cat ears worn by millions of women in 2017 in protest against then-President Trump, to the traditional wimple whose impetus has recently expanded to include all sorts of lifecycle moments, not just the birth of a son.\n\nIn its compelling analysis and, yes, in its embrace of Jewish women's craft culture, the book repeatedly rings the bell in favor of material culture, sounding now and again much more like a brief, an exercise in special pleading, than a confident narrative.<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Judaic studies<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Clergy<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Jewish people<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Symbolism<\/subfield>\n<\/datafield>\n<datafield tag=\"773\" ind1=\"0\" ind2=\" \">\n<subfield code=\"t\">American Jewish History<\/subfield>\n<subfield code=\"g\">vol. 105, no. 3 (Jul 2021), p. 433<\/subfield>\n<\/datafield>\n<datafield tag=\"786\" ind1=\"0\" ind2=\" \">\n<subfield code=\"d\">ProQuest<\/subfield>\n<subfield code=\"t\">Religion Database<\/subfield>\n<\/datafield>\n<datafield tag=\"856\" ind1=\"4\" ind2=\"1\">\n<subfield code=\"3\">Citation\/Abstract<\/subfield>\n<subfield code=\"u\">https:\/\/www.proquest.com\/docview\/2615626038\/abstract\/embedded\/UHA0DUZFOHJEPDBM?source=fedsrch<\/subfield>\n<\/datafield>\n<datafield tag=\"856\" ind1=\"4\" ind2=\"0\">\n<subfield code=\"3\">Full Text<\/subfield>\n<subfield code=\"u\">https:\/\/www.proquest.com\/docview\/2615626038\/fulltext\/embedded\/UHA0DUZFOHJEPDBM?source=fedsrch<\/subfield>\n<\/datafield>\n<datafield tag=\"856\" ind1=\"4\" ind2=\"0\">\n<subfield code=\"3\">Full Text - PDF<\/subfield>\n<subfield code=\"u\">https:\/\/www.proquest.com\/docview\/2615626038\/fulltextPDF\/embedded\/UHA0DUZFOHJEPDBM?source=fedsrch<\/subfield>\n<\/datafield>\n<\/record>",
+        "<record xmlns=\"http:\/\/www.loc.gov\/MARC21\/slim\">\n<leader>00000nab a2200000uu 4500<\/leader>\n<controlfield tag=\"001\">2432781939<\/controlfield>\n<controlfield tag=\"003\">UK-CbPIL<\/controlfield>\n<datafield tag=\"022\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">1948-7428<\/subfield>\n<\/datafield>\n<datafield tag=\"022\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">1948-741X<\/subfield>\n<\/datafield>\n<datafield tag=\"022\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">0042-6598<\/subfield>\n<\/datafield>\n<datafield tag=\"035\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">2432781939<\/subfield>\n<\/datafield>\n<datafield tag=\"045\" ind1=\"0\" ind2=\" \">\n<subfield code=\"b\">d20200815<\/subfield>\n<\/datafield>\n<datafield tag=\"084\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">157528<\/subfield>\n<subfield code=\"2\">nlm<\/subfield>\n<\/datafield>\n<datafield tag=\"245\" ind1=\"1\" ind2=\" \">\n<subfield code=\"a\">PAINTED POMEGRANATES AND NEEDLEPOINT RABBIS<\/subfield>\n<\/datafield>\n<datafield tag=\"260\" ind1=\" \" ind2=\" \">\n<subfield code=\"b\">Kirkus Media LLC<\/subfield>\n<subfield code=\"c\">Aug 15, 2020<\/subfield>\n<\/datafield>\n<datafield tag=\"513\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Book Review<\/subfield>\n<\/datafield>\n<datafield tag=\"520\" ind1=\"3\" ind2=\" \">\n<subfield code=\"a\">An academic look at Jewish crafts.<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Nonfiction<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Handicrafts<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Jewish people<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Jews<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Ethnology<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Ethnic Groups<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Coping<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Resilience (Psychology)<\/subfield>\n<\/datafield>\n<datafield tag=\"653\" ind1=\" \" ind2=\" \">\n<subfield code=\"a\">Resistance (Psychology)<\/subfield>\n<\/datafield>\n<datafield tag=\"773\" ind1=\"0\" ind2=\" \">\n<subfield code=\"t\">Kirkus Reviews<\/subfield>\n<subfield code=\"g\">vol. LXXXVIII, no. 16 (Aug 15, 2020)<\/subfield>\n<\/datafield>\n<datafield tag=\"786\" ind1=\"0\" ind2=\" \">\n<subfield code=\"d\">ProQuest<\/subfield>\n<subfield code=\"t\">Library Science Database<\/subfield>\n<\/datafield>\n<datafield tag=\"856\" ind1=\"4\" ind2=\"1\">\n<subfield code=\"3\">Citation\/Abstract<\/subfield>\n<subfield code=\"u\">https:\/\/www.proquest.com\/docview\/2432781939\/abstract\/embedded\/UHA0DUZFOHJEPDBM?source=fedsrch<\/subfield>\n<\/datafield>\n<datafield tag=\"856\" ind1=\"4\" ind2=\"0\">\n<subfield code=\"3\">Full Text<\/subfield>\n<subfield code=\"u\">https:\/\/www.proquest.com\/docview\/2432781939\/fulltext\/embedded\/UHA0DUZFOHJEPDBM?source=fedsrch<\/subfield>\n<\/datafield>\n<\/record>"
+    ],
+    "offset": 1,
+    "total": 31,
+    "facets": {
+        "Databases": [
+            {
+                "id": "1009388",
+                "code": "ebookcentral1",
+                "name": "Ebook Central",
+                "count": 11
+            },
+            {
+                "id": "1009240",
+                "code": "publiccontent",
+                "name": "Publicly Available Content Database",
+                "count": 1
+            },
+            {
+                "id": "1007107",
+                "code": "nahs",
+                "name": "Nursing & Allied Health Database",
+                "count": 1
+            },
+            {
+                "id": "10000155",
+                "code": "healthcompleteshell",
+                "name": "Health & Medical Collection",
+                "count": 1
+            },
+            {
+                "id": "10000025",
+                "code": "pqrl",
+                "name": "Research Library",
+                "count": 20
+            },
+            {
+                "id": "1000001",
+                "code": "abiglobal",
+                "name": "ABI\/INFORM Global",
+                "count": 1
+            },
+            {
+                "id": "1007133",
+                "code": "abitrade",
+                "name": "ABI\/INFORM Trade & Industry",
+                "count": 1
+            },
+            {
+                "id": "1007139",
+                "code": "abidateline",
+                "name": "ABI\/INFORM Dateline",
+                "count": 1
+            },
+            {
+                "id": "1005641",
+                "code": "religion",
+                "name": "Religion Database",
+                "count": 10
+            },
+            {
+                "id": "1005922",
+                "code": "washingtonpost",
+                "name": "The Washington Post",
+                "count": 1
+            },
+            {
+                "id": "1009068",
+                "code": "northeastnews1",
+                "name": "U.S. Northeast Newsstream",
+                "count": 1
+            },
+            {
+                "id": "1007200",
+                "code": "socscijournals",
+                "name": "Social Science Database",
+                "count": 5
+            },
+            {
+                "id": "1005684",
+                "code": "politicalscience",
+                "name": "Political Science Database",
+                "count": 2
+            },
+            {
+                "id": "1007566",
+                "code": "wpsa",
+                "name": "Worldwide Political Science Abstracts",
+                "count": 1
+            },
+            {
+                "id": "1007519",
+                "code": "lisa",
+                "name": "Library & Information Science Abstracts (LISA)",
+                "count": 1
+            },
+            {
+                "id": "1006545",
+                "code": "libraryscience",
+                "name": "Library Science Database",
+                "count": 2
+            },
+            {
+                "id": "1007161",
+                "code": "education",
+                "name": "Education Database",
+                "count": 2
+            },
+            {
+                "id": "1007480",
+                "code": "socabs",
+                "name": "Sociological Abstracts",
+                "count": 3
+            },
+            {
+                "id": "1005683",
+                "code": "sociology",
+                "name": "Sociology Database",
+                "count": 2
+            },
+            {
+                "id": "1007409",
+                "code": "ibss",
+                "name": "International Bibliography of the Social Sciences (IBSS)",
+                "count": 4
+            },
+            {
+                "id": "1010268",
+                "code": "pqdtglobal1",
+                "name": "ProQuest Dissertations & Theses Global",
+                "count": 4
+            }
+        ]
+    }
+}

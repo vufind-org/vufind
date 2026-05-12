@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -49,14 +49,14 @@ class ThemeInfo
     use \VuFind\Feature\MergeRecursiveTrait;
 
     /**
-     * Base directory for theme files
+     * Base directory for theme files.
      *
      * @var string
      */
     protected $baseDir;
 
     /**
-     * Current selected theme
+     * Current selected theme.
      *
      * @var string
      */
@@ -64,21 +64,21 @@ class ThemeInfo
 
     /**
      * A safe theme (guaranteed to exist) that can be loaded if an invalid
-     * configuration is passed in
+     * configuration is passed in.
      *
      * @var string
      */
     protected $safeTheme;
 
     /**
-     * Theme configuration cache
+     * Theme configuration cache.
      *
      * @var array
      */
     protected $allThemeInfo = null;
 
     /**
-     * Cache for merged configs
+     * Cache for merged configs.
      *
      * @var StorageInterface
      */
@@ -88,7 +88,7 @@ class ThemeInfo
     public const RETURN_ALL_DETAILS = 'all';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $baseDir   Base directory for theme files.
      * @param string $safeTheme Theme that should be guaranteed to exist.
@@ -100,7 +100,7 @@ class ThemeInfo
     }
 
     /**
-     * Provide cache and activate info caching
+     * Provide cache and activate info caching.
      *
      * @param StorageInterface $cache cache object
      *
@@ -189,6 +189,7 @@ class ThemeInfo
     {
         // Load theme configuration...
         $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        $this->allThemeInfo[$theme]['themeName'] = $theme;
         // ..and if there are mixins, load those too!
         if (isset($this->allThemeInfo[$theme]['mixins'])) {
             foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {

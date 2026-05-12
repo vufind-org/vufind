@@ -3,13 +3,23 @@
                     {
                         "name": "field[]",
                         "in": "query",
-                        "description": "Fields to return.<?php if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><?php endif; ?>",
+                        "description": "Fields to return.<?php if ($this->defaultFields): ?> If not specified, a set of default fields is returned.\n\nThe default fields are:\n- <?=implode('\n- ', array_map('addslashes', $this->defaultFields)) ?><?php endif; ?><?php if ($this->optionalFields): ?><?php if ($this->defaultFields): ?>\n\n<?php endif; ?>These fields are optional and not returned by default:\n- <?=implode('\n- ', array_map('addslashes', $this->optionalFields)) ?><?php endif; ?>",
                         "style": "form",
                         "explode": true,
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "type": "string",
+                                "enum": [<?php
+                                    $allFields = array_merge(
+                                        $this->defaultFields ?? [],
+                                        $this->optionalFields ?? []
+                                    );
+                                    echo implode(', ', array_map(
+                                        fn ($f) => '"' . addslashes($f) . '"',
+                                        $allFields
+                                    ));
+                                ?>]
                             }
                         }
                     }
@@ -31,8 +41,8 @@
                         "description": "Language for returned translated strings.",
                         "schema": {
                             "type": "string",
-                            "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->config->Languages->toArray()))) ?>],
-                            "default": "<?=addslashes($this->config->Site->language) ?>"
+                            "enum": [<?=implode(', ', array_map(fn ($v) => '"' . addslashes($v) . '"', array_keys($this->config['Languages']))) ?>],
+                            "default": "<?=addslashes($this->config['Site']['language']) ?>"
                         }
                     },
                     {
@@ -45,12 +55,39 @@
                     }
 <?php $commonFields = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
+
+<?php ob_start(); ?>
+    <?php if ($this->apiKeysEnabled): ?>
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+    <?php endif; ?>
+<?php $securityBlock = ob_get_clean(); ?>
+
+<?php ob_start(); ?>
+    <?php if ($this->apiKeysEnabled): ?>
+                    "401": {
+                        "description": <?=json_encode($this->apiKeyMode->getUnauthorizedMessage())?>,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+    <?php endif; ?>
+<?php $unauthorizedResponse = ob_get_clean();?>
+
 {
     "paths": {
         "/<?=$recordRoute?>": {
             "get": {
                 "summary": "Fetch records from <?=$this->indexLabel?> index",
                 "description": "Return a single record or multiple records from <?=$this->indexLabel?> index. POST method may also be used if sending a long request.",
+<?=$securityBlock?>
                 "parameters": [
                     {
                         "name": "id",
@@ -92,6 +129,7 @@
                             }
                         }
                     },
+<?=$unauthorizedResponse?>
                     "default": {
                         "description": "Error",
                         "content": {
@@ -108,7 +146,8 @@
         "/<?=$searchRoute?>": {
             "get": {
                 "summary": "Search <?=$this->indexLabel?> index",
-                "description": "Search <?=$this->indexLabel?> index with given terms and filters. POST method may also be used if sending a long request.\n\nThe URL syntax here is the as the one used in VuFind user interface. It is possible to make a search in VuFind and copy the query parameters here to make the same search via the API.",
+                "description": "Search <?=$this->indexLabel?> index with given terms and filters. POST method may also be used if sending a long request.\n\nThe URL syntax here is the same as the one used in VuFind® user interface. It is possible to make a search in VuFind® and copy the query parameters here to make the same search via the API. While this formal specification only describes basic searching, advanced searches like join=AND&lookfor0[]=apples&type0[]=Title&lookfor0[]=oranges&type0[]=Subject&bool0[]=AND are also supported by the endpoint.",
+<?=$securityBlock?>
                 "parameters": [
                     {
                         "name": "lookfor",
@@ -175,7 +214,7 @@
                         "description": "Sort method.",
                         "schema": {
                             "type": "string",
-                            "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->sortOptions))) ?>],
+                            "enum": [<?=implode(', ', array_map(fn ($v) => '"' . addslashes($v) . '"', array_keys($this->sortOptions))) ?>],
                             "default": "<?=addslashes($this->defaultSort) ?>"
                         }
                     },
@@ -200,6 +239,14 @@
                             "default": 20
                         }
                     },
+                    {
+                        "name": "resumptionToken",
+                        "in": "query",
+                        "description": "A large result set can only be downloaded in batches. You can initiate a batch download by setting resumptionToken to a single asterisk `*`. Each batch will then return a resumptionToken value to use for the next batch until no more results are available (note that the last result set can be empty). Other parameters are ignored when resumptionToken is set to any other value than `*`. The following parameters are not available with resumptionToken: limit, page, facet[].",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
 <?=$commonFields ?>
                 ],
                 "tags": [
@@ -216,6 +263,7 @@
                             }
                         }
                     },
+<?=$unauthorizedResponse?>
                     "default": {
                         "description": "Error",
                         "content": {
@@ -343,6 +391,20 @@
                     }
                 }
             },
+            "ResumptionToken": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "description": "Token to use for the next request",
+                        "type": "string"
+                    },
+                    "expires": {
+                        "description": "Time when the token expires",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
             "<?=$this->modelPrefix?>SearchResponse": {
                 "type": "object",
                 "properties": {
@@ -363,6 +425,9 @@
                         "items": {
                             "$ref": "#/components/schemas/Facet"
                         }
+                    },
+                    "resumptionToken": {
+                        "$ref": "#/components/schemas/ResumptionToken"
                     },
                     "status": {
                         "description": "Status code",

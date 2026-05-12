@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -102,7 +102,7 @@ class SolrDefault extends DefaultRecord implements
     protected $snippet = false;
 
     /**
-     * Highlighting details
+     * Highlighting details.
      *
      * @var array
      */
@@ -116,27 +116,27 @@ class SolrDefault extends DefaultRecord implements
     protected $containerLinking = false;
 
     /**
-     * Search results plugin manager
+     * Search results plugin manager.
      *
      * @var \VuFindSearch\Service
      */
     protected $searchService = null;
 
     /**
-     * If the explain feature is enabled
+     * If the explain feature is enabled.
      *
      * @var bool
      */
     protected $explainEnabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
      * file
      */
     public function __construct(
@@ -284,7 +284,7 @@ class SolrDefault extends DefaultRecord implements
 
     /**
      * Attach a Search Results Plugin Manager connection and related logic to
-     * the driver
+     * the driver.
      *
      * @param \VuFindSearch\Service $service Search Service Manager
      *
@@ -296,7 +296,7 @@ class SolrDefault extends DefaultRecord implements
     }
 
     /**
-     * Get the number of child records belonging to this record
+     * Get the number of child records belonging to this record.
      *
      * @return int Number of records
      */
@@ -336,7 +336,7 @@ class SolrDefault extends DefaultRecord implements
     }
 
     /**
-     * Get work identification keys
+     * Get work identification keys.
      *
      * @return array
      */

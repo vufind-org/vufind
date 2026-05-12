@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -50,14 +50,14 @@ use function strlen;
 class VuFind
 {
     /**
-     * ISO8601 date format string
+     * ISO8601 date format string.
      *
      * @var string
      */
     protected const ISO8601_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * Service locator
+     * Service locator.
      *
      * @var ServiceLocatorInterface
      */
@@ -91,12 +91,11 @@ class VuFind
      *
      * @param string $config Configuration name
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public static function getConfig($config = 'config')
     {
-        return static::$serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get($config);
+        return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($config);
     }
 
     /**
@@ -153,7 +152,7 @@ class VuFind
     }
 
     /**
-     * Read parser method from fulltext.ini
+     * Read parser method from fulltext.ini.
      *
      * @return string Name of parser to use (i.e. Aperture or Tika)
      */
@@ -181,7 +180,7 @@ class VuFind
     }
 
     /**
-     * Call parsing method based on parser setting in fulltext.ini
+     * Call parsing method based on parser setting in fulltext.ini.
      *
      * @param string $url URL to harvest
      *
@@ -202,7 +201,7 @@ class VuFind
     }
 
     /**
-     * Generic method for building Aperture Command
+     * Generic method for building Aperture Command.
      *
      * @param string $input  name of input file | url
      * @param string $output name of output file
@@ -286,7 +285,7 @@ class VuFind
     }
 
     /**
-     * Generic method for building Tika command
+     * Generic method for building Tika command.
      *
      * @param string $input  url | fileresource
      * @param string $output name of output file
@@ -690,7 +689,7 @@ class VuFind
     }
 
     /**
-     * Invert "Firstname Lastname" authors into "Lastname, Firstname."
+     * Invert "Firstname Lastname" authors into "Lastname, Firstname.".
      *
      * @param string $rawName Raw name
      *

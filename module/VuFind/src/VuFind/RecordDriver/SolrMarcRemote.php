@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -32,7 +32,7 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function sprintf;
@@ -58,20 +58,20 @@ class SolrMarcRemote extends SolrMarc implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Holds the URI-Pattern of the service that returns the marc binary blob by id
+     * Holds the URI-Pattern of the service that returns the marc binary blob by id.
      *
      * @var string
      */
     protected $uriPattern = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
      * file
      *
      * @throws \Exception
@@ -102,7 +102,7 @@ class SolrMarcRemote extends SolrMarc implements
     }
 
     /**
-     * Load the fullrecord field if not already loaded
+     * Load the fullrecord field if not already loaded.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class SolrMarcRemote extends SolrMarc implements
     }
 
     /**
-     * Retrieves the full Marcrecord from a remote service defined by uriPattern
+     * Retrieves the full Marcrecord from a remote service defined by uriPattern.
      *
      * @param String $id - this record's unique identifier
      *

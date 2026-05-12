@@ -1,0 +1,5 @@
+Template: vufind/solr-user
+Type: string
+Default: vufind-solr
+Description: User name for Solr:
+ Please provide an account name for a user to run VuFind®'s Solr.

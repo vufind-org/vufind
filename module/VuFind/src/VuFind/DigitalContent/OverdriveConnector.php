@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP version 8
+ * PHP version 8.
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -15,9 +15,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
- * USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  DigitalContent
@@ -32,20 +31,24 @@ namespace VuFind\DigitalContent;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
 use Laminas\Http\Client;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
-use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
+use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFindHttp\HttpServiceAwareInterface;
+use VuFindHttp\HttpServiceAwareTrait;
 
 use function count;
 
 /**
- * OverdriveConnector
+ * OverdriveConnector.
  *
  * Class responsible for connecting to the OverDrive API
  *
@@ -66,45 +69,47 @@ use function count;
 class OverdriveConnector implements
     LoggerAwareInterface,
     AuthorizationServiceAwareInterface,
-    \VuFindHttp\HttpServiceAwareInterface
+    HttpServiceAwareInterface,
+    TranslatorAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
     }
     use AuthorizationServiceAwareTrait;
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use HttpServiceAwareTrait;
+    use TranslatorAwareTrait;
     use KeyGeneratorTrait;
 
     /**
-     * Session Container
+     * Session Container.
      *
-     * @var Container
+     * @var ?Container
      */
     protected $sessionContainer;
 
     /**
-     * OverDrive-specific configuration
+     * OverDrive-specific configuration.
      *
      * @var Config
      */
     protected $recordConfig;
 
     /**
-     * Main VuFind configuration
+     * Main VuFind configuration.
      *
      * @var Config
      */
     protected $mainConfig;
 
     /**
-     * ILS Authorization
+     * ILS Authorization.
      *
      * @var ILSAuthenticator
      */
     protected $ilsAuth;
 
     /**
-     * HTTP Client
+     * HTTP Client.
      *
      * Client for making calls to the API
      *
@@ -113,25 +118,25 @@ class OverdriveConnector implements
     protected $client;
 
     /**
-     * Cache for storing ILS data temporarily (e.g. patron blocks)
+     * Cache for storing ILS data temporarily (e.g. patron blocks).
      *
      * @var StorageInterface
      */
     protected $cache = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config           $mainConfig       VuFind main conf
      * @param Config           $recordConfig     Record-specific conf file
      * @param ILSAuthenticator $ilsAuth          ILS Authenticator
-     * @param Container        $sessionContainer container
+     * @param ?Container       $sessionContainer container
      */
     public function __construct(
         Config $mainConfig,
         Config $recordConfig,
         ILSAuthenticator $ilsAuth,
-        Container $sessionContainer = null
+        ?Container $sessionContainer = null
     ) {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
@@ -140,7 +145,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Loads the session container
+     * Loads the session container.
      *
      * @return \Laminas\Session\Container
      */
@@ -153,12 +158,11 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get (Logged-in) User
+     * Get (Logged-in) User.
      *
      * Returns the currently logged in user or false if the user is not
      *
-     * @return array|boolean  an array of user info from the ILSAuthenticator
-     *                        or false if user is not logged in.
+     * @return array|bool an array of user info from the ILSAuthenticator or false if user is not logged in.
      */
     public function getUser()
     {
@@ -171,7 +175,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get OverDrive Access
+     * Get OverDrive Access.
      *
      * Whether the patron has access to overdrive actions (hold,
      * checkout etc.).
@@ -228,7 +232,26 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get Availability
+     * Is Overdrive content active?
+     *
+     * @return bool
+     */
+    public function isContentActive()
+    {
+        $config = $this->getConfig();
+        if ($config->showMyContent == 'always') {
+            return true;
+        } elseif ($config->showMyContent == 'never') {
+            return false;
+        } else {
+            // assume that it is accessOnly
+            $result = $this->getAccess();
+            return !(!$result->status && $result->code == 'od_account_noaccess');
+        }
+    }
+
+    /**
+     * Get Availability.
      *
      * Retrieves the availability for a single resource from OverDrive API
      * with information like copiesOwned, copiesAvailable, numberOfHolds et.
@@ -276,10 +299,12 @@ class OverdriveConnector implements
                 }
             } else {
                 $result->status = true;
-                $res->copiesAvailable ??= 0;
-                $res->copiesOwned ??= 0;
-                $res->numberOfHolds ??= 0;
-                $res->code = 'od_none';
+                if ($res) {
+                    $res->copiesAvailable ??= 0;
+                    $res->copiesOwned ??= 0;
+                    $res->numberOfHolds ??= 0;
+                    $res->code = 'od_none';
+                }
                 $result->data = $res;
             }
         }
@@ -288,7 +313,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get Availability (in) Bulk
+     * Get Availability (in) Bulk.
      *
      * Gets availability for up to 25 titles at once. This is used by the
      * the ajax availability system
@@ -354,19 +379,11 @@ class OverdriveConnector implements
                     // Now look for items not returned
                     foreach ($overDriveIds as $id) {
                         if (!isset($result->data[$id])) {
-                            if ($loginRequired) {
-                                $result->data[$id] = $this->getResultObject(
-                                    $status = false,
-                                    $msg = '',
-                                    $code = 'od_code_login_for_avail'
-                                );
-                            } else {
-                                $result->data[$id] = $this->getResultObject(
-                                    $status = false,
-                                    $msg = '',
-                                    $code = 'od_code_resource_not_found'
-                                );
-                            }
+                            $result->data[$id] = $this->getResultObject(
+                                false,
+                                '',
+                                $loginRequired ? 'od_code_login_for_avail' : 'od_code_resource_not_found'
+                            );
                         }
                     }
                 }
@@ -376,7 +393,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get Collection Token
+     * Get Collection Token.
      *
      * Gets the collection token for the OverDrive collection. The collection
      * token doesn't change much but according to
@@ -433,7 +450,7 @@ class OverdriveConnector implements
 
     /**
      * OverDrive Checkout
-     * Processes a request to checkout a title from OverDrive
+     * Processes a request to checkout a title from OverDrive.
      *
      * @param string $overDriveId The overdrive id for the title
      *
@@ -491,7 +508,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Places a hold on an item within OverDrive
+     * Places a hold on an item within OverDrive.
      *
      * @param string $overDriveId The overdrive id for the title
      * @param string $email       The email overdrive should use for notification
@@ -548,7 +565,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Updates the email address for a hold on an item within OverDrive
+     * Updates the email address for a hold on an item within OverDrive.
      *
      * @param string $overDriveId The overdrive id for the title
      * @param string $email       The email overdrive should use for notif
@@ -571,8 +588,6 @@ class OverdriveConnector implements
                 $this->error('Update hold - OverDrive patron APIs are disabled.');
                 return $holdResult;
             }
-            $autoCheckout = true;
-            $ignoreHoldEmail = false;
             $url = $config->circURL . '/v1/patrons/me/holds/' . $overDriveId;
             $action = 'PUT';
             $params = [
@@ -592,7 +607,7 @@ class OverdriveConnector implements
             if ($response) {
                 $holdResult->status = true;
             } else {
-                $holdResult->msg = $response->message;
+                $holdResult->msg = $this->translate('od_code_connection_failed');
             }
         }
         return $holdResult;
@@ -600,7 +615,7 @@ class OverdriveConnector implements
 
     /**
      * Suspend Hold
-     * Suspend an existing OverDrive Hold
+     * Suspend an existing OverDrive Hold.
      *
      * @param string $overDriveId    The overdrive id for the title
      * @param string $email          The email overdrive should use for notif
@@ -657,7 +672,7 @@ class OverdriveConnector implements
 
     /**
      * Edit Suspended Hold
-     * Change the redelivery date on an already suspended hold
+     * Change the redelivery date on an already suspended hold.
      *
      * @param string $overDriveId    The overdrive id for the title
      * @param string $email          The email overdrive should use for notif
@@ -701,7 +716,7 @@ class OverdriveConnector implements
             if ($response) {
                 $holdResult->status = true;
             } else {
-                $holdResult->msg = $response->message;
+                $holdResult->msg = $this->translate('od_code_connection_failed');
             }
         }
         return $holdResult;
@@ -709,7 +724,7 @@ class OverdriveConnector implements
 
     /**
      * Delete Suspended Hold
-     * Removes the suspension from a hold
+     * Removes the suspension from a hold.
      *
      * @param string $overDriveId The overdrive id for the title
      *
@@ -742,7 +757,7 @@ class OverdriveConnector implements
             if ($response) {
                 $holdResult->status = true;
             } else {
-                $holdResult->msg = $response->message;
+                $holdResult->msg = $this->translate('od_code_connection_failed');
             }
         }
         return $holdResult;
@@ -750,7 +765,7 @@ class OverdriveConnector implements
 
     /**
      * Cancel Hold
-     * Cancel and existing OverDrive Hold
+     * Cancel and existing OverDrive Hold.
      *
      * @param string $overDriveId The overdrive id for the title
      *
@@ -783,7 +798,7 @@ class OverdriveConnector implements
             if ($response) {
                 $holdResult->status = true;
             } else {
-                $holdResult->msg = $response->message;
+                $holdResult->msg = $this->translate('od_code_connection_failed');
             }
         }
         return $holdResult;
@@ -823,14 +838,14 @@ class OverdriveConnector implements
             if ($response) {
                 $result->status = true;
             } else {
-                $result->msg = $response->message;
+                $result->msg = $this->translate('od_code_connection_failed');
             }
         }
         return $result;
     }
 
     /**
-     * Get Download Redirect for an OverDrive Resource
+     * Get Download Redirect for an OverDrive Resource.
      *
      * @param string $overDriveId OverDrive ID
      *
@@ -840,9 +855,8 @@ class OverdriveConnector implements
     public function getDownloadRedirect($overDriveId)
     {
         $result = $this->getResultObject();
-        $downloadLink = false;
         if (!$user = $this->getUser()) {
-            $this->error('user is not logged in', false, true);
+            $this->error('user is not logged in');
             return $result;
         }
         if (($config = $this->getConfig()) && !$config->usePatronAPI) {
@@ -881,7 +895,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Find the authentication header
+     * Find the authentication header.
      *
      * @return object
      */
@@ -893,13 +907,8 @@ class OverdriveConnector implements
             return $result;
         }
         // todo: check result
-        $patronTokenData = $this->connectToPatronAPI(
-            $user['cat_username'],
-            $user['cat_password'],
-            $forceNewConnection = false
-        );
-        $authorizationData = $patronTokenData->token_type .
-            ' ' . $patronTokenData->access_token;
+        $patronTokenData = $this->connectToPatronAPI($user['cat_username'], $user['cat_password'], false);
+        $authorizationData = $patronTokenData->token_type . ' ' . $patronTokenData->access_token;
         $header = "Authorization: $authorizationData";
         $result->data->authheader = $header;
         $result->status = true;
@@ -908,7 +917,7 @@ class OverdriveConnector implements
 
     /**
      * Get Configuration
-     * Sets up a local copy of configurations for convenience
+     * Sets up a local copy of configurations for convenience.
      *
      * @return bool|\stdClass
      */
@@ -961,7 +970,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns an array of OverDrive Formats and translation tokens
+     * Returns an array of OverDrive Formats and translation tokens.
      *
      * @return array
      */
@@ -983,9 +992,9 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns permanant links for Ovedrive resources
+     * Returns permanent links for OverDrive resources.
      *
-     * @param array $overDriveIds An array of overdrive IDs we need links for
+     * @param array $overDriveIds An array of OverDrive IDs we need links for
      *
      * @return array<string>
      */
@@ -1008,7 +1017,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns all the issues for an overdrive magazine title
+     * Returns all the issues for an overdrive magazine title.
      *
      * @param string $overDriveId OverDrive Identifier for magazine title
      * @param bool   $checkouts   Whether to add checkout information to each issue
@@ -1026,7 +1035,6 @@ class OverdriveConnector implements
             return $result;
         }
         if ($conf = $this->getConfig()) {
-            $libraryURL = $conf->libraryURL;
             $productsKey = $this->getCollectionToken();
             $baseUrl = $conf->discURL;
             $issuesURL = "$baseUrl/v1/collections/$productsKey/products/$overDriveId/issues";
@@ -1041,7 +1049,7 @@ class OverdriveConnector implements
             if ($checkouts) {
                 $checkoutResult = $this->getCheckouts();
                 $checkoutData = $checkoutResult->data;
-                foreach ($result->data->products as $key => $issue) {
+                foreach ($result->data->products as $issue) {
                     $issue->checkedout = isset($checkoutData[strtolower($issue->id)]);
                 }
             }
@@ -1050,7 +1058,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns a hash of metadata keyed on overdrive reserveID
+     * Returns a hash of metadata keyed on overdrive reserveID.
      *
      * @param array $overDriveIds Set of OverDrive IDs
      *
@@ -1086,7 +1094,7 @@ class OverdriveConnector implements
 
     /**
      * For  array of titles passed in this will return the same array
-     * with metadata attached to the records with the property name of 'metadata'
+     * with metadata attached to the records with the property name of 'metadata'.
      *
      * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what
      *                               you get from getCheckouts and getHolds)
@@ -1112,7 +1120,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get OverDrive Checkout
+     * Get OverDrive Checkout.
      *
      * Get the overdrive checkout object for an overdrive title
      * for the current user
@@ -1145,7 +1153,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get OverDrive Hold
+     * Get OverDrive Hold.
      *
      * Get the overdrive hold object for an overdrive title
      * for the current user
@@ -1174,7 +1182,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get OverDrive Checkouts (for a user)
+     * Get OverDrive Checkouts (for a user).
      *
      * @param bool $refresh Whether or not to ignore cache and get latest
      *
@@ -1249,7 +1257,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get OverDrive Holds (for a user)
+     * Get OverDrive Holds (for a user).
      *
      * @param bool $refresh Whether or not to ignore cache and get latest
      *
@@ -1293,7 +1301,7 @@ class OverdriveConnector implements
                             // check for hold suspension
                             $result->data[$key]->holdSuspension = $hold->holdSuspension ?? false;
                             // check if ready for checkout
-                            foreach ($hold->actions as $action => $value) {
+                            foreach (array_keys($hold->actions) as $action) {
                                 if ($action == 'checkout') {
                                     $result->data[$key]->holdReadyForCheckout = true;
                                     // format the expires date.
@@ -1332,7 +1340,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Call a URL on the API
+     * Call a URL on the API.
      *
      * @param string $url         The url to call
      * @param array  $headers     Headers to set for the request.
@@ -1418,7 +1426,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Connect to API
+     * Connect to API.
      *
      * @param bool $forceNewConnection Force a new connection (get a new token)
      *
@@ -1490,7 +1498,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Call a Patron URL on the API
+     * Call a Patron URL on the API.
      *
      * The patron URL is used for the circulation API's and requires a patron
      * specific token.
@@ -1616,7 +1624,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Connect to Patron API
+     * Connect to Patron API.
      *
      * @param string $patronBarcode      Patrons barcode
      * @param string $patronPin          Patrons password
@@ -1711,7 +1719,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
      * @param string $url            URL for client to use
      * @param bool   $allowRedirects Whether to allow the client to follow redirects
@@ -1742,11 +1750,11 @@ class OverdriveConnector implements
     /**
      * Set a cache storage object.
      *
-     * @param StorageInterface $cache Cache storage interface
+     * @param ?StorageInterface $cache Cache storage interface
      *
      * @return void
      */
-    public function setCacheStorage(StorageInterface $cache = null)
+    public function setCacheStorage(?StorageInterface $cache = null)
     {
         $this->cache = $cache;
     }
@@ -1825,7 +1833,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get Result Object
+     * Get Result Object.
      *
      * @param bool   $status Whether it succeeded
      * @param string $msg    More information

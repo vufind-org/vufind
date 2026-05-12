@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -40,7 +40,7 @@ use function is_callable;
 use function strlen;
 
 /**
- * ChoiceAuth Authentication plugin
+ * ChoiceAuth Authentication plugin.
  *
  * This module enables a user to choose between two authentication methods.
  * choices are presented side-by-side and one is manually selected.
@@ -56,35 +56,35 @@ use function strlen;
 class ChoiceAuth extends AbstractBase
 {
     /**
-     * Authentication strategies to present
+     * Authentication strategies to present.
      *
      * @var array
      */
     protected $strategies = [];
 
     /**
-     * Auth strategy selected by user
+     * Auth strategy selected by user.
      *
      * @var string
      */
     protected $strategy;
 
     /**
-     * Plugin manager for obtaining other authentication objects
+     * Plugin manager for obtaining other authentication objects.
      *
      * @var PluginManager
      */
     protected $manager;
 
     /**
-     * Session container
+     * Session container.
      *
      * @var \Laminas\Session\Container
      */
     protected $session;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\Container $container Session container for retaining
      * user choices.
@@ -120,7 +120,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @throws AuthException
      * @return void
@@ -155,9 +155,47 @@ class ChoiceAuth extends AbstractBase
      *
      * @return void
      */
-    public function resetState()
+    public function clearLoginState()
     {
+        // clear user's login choice, if necessary:
+        if (isset($this->session->auth_method)) {
+            unset($this->session->auth_method);
+        }
         $this->strategy = false;
+    }
+
+    /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->proxyAuthMethod('setPreAuthenticationData', func_get_args());
+    }
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        try {
+            return $this->proxyAuthMethod('preAuthenticate', func_get_args()) ?: null;
+        } catch (\Exception $e) {
+            // If an exception was thrown during login, we need to clear the
+            // stored strategy to ensure that we display the full ChoiceAuth
+            // form rather than the form for only the method that the user
+            // attempted to use.
+            $this->strategy = false;
+            throw $e;
+        }
     }
 
     /**
@@ -243,32 +281,27 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @throws InvalidArgumentException
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
-        // clear user's login choice, if necessary:
-        if (isset($this->session->auth_method)) {
-            unset($this->session->auth_method);
-        }
-
         // If we have a selected strategy, proxy the appropriate class; otherwise,
         // perform default behavior of returning unmodified URL:
-        try {
-            return $this->strategy
-                ? $this->proxyAuthMethod('logout', func_get_args()) : $url;
-        } catch (InvalidArgumentException $e) {
-            // If we're in an invalid state (due to an illegal login method),
-            // we should just clear everything out so the user can try again.
-            $this->strategy = false;
-            return false;
-        }
+        return $this->strategy ? $this->proxyAuthMethod('getLogoutRedirectUrl', func_get_args()) : $url;
+    }
+
+    /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->proxyAuthMethod('hasSessionInitiator', func_get_args());
     }
 
     /**
@@ -278,15 +311,15 @@ class ChoiceAuth extends AbstractBase
      * @param string $target Full URL where external authentication strategy should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
-        return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
+        return $this->proxyAuthMethod('getSessionInitiator', func_get_args()) ?: null;
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -296,33 +329,37 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
+     *
+     * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
      */
-    public function supportsPasswordRecovery()
+    public function supportsPasswordRecovery(?string $target = null)
     {
         return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
     public function getUsernamePolicy()
     {
-        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args());
+        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args()) ?: [];
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
+     *
+     * @param ?string $target Authentication target for methods that support target selection
      *
      * @return array
      */
-    public function getPasswordPolicy()
+    public function getPasswordPolicy(?string $target = null): array
     {
-        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
+        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args()) ?: [];
     }
 
     /**
@@ -445,7 +482,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Set the active strategy
+     * Set the active strategy.
      *
      * @param string $strategy New strategy
      *

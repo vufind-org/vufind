@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -73,7 +73,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
             protected $messages = [];
 
             /**
-             * Capture a log message
+             * Capture a log message.
              *
              * @param string $msg Log message
              *
@@ -85,7 +85,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Get the top message from the message stack
+             * Get the top message from the message stack.
              *
              * @return string
              */

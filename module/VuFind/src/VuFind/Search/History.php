@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search History Helper
+ * VuFind Search History Helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -31,11 +31,11 @@
 namespace VuFind\Search;
 
 use Exception;
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Db\Service\SearchServiceInterface;
 
 /**
- * VuFind Search History Helper
+ * VuFind Search History Helper.
  *
  * @category VuFind
  * @package  Search
@@ -47,18 +47,18 @@ use VuFind\Db\Service\SearchServiceInterface;
 class History
 {
     /**
-     * History constructor
+     * History constructor.
      *
      * @param SearchServiceInterface               $searchService  Search table
      * @param string                               $sessionId      Session ID
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
-     * @param ?\Laminas\Config\Config              $config         Configuration
+     * @param ?Config                              $config         Configuration
      */
     public function __construct(
         protected SearchServiceInterface $searchService,
         protected string $sessionId,
         protected \VuFind\Search\Results\PluginManager $resultsManager,
-        protected ?\Laminas\Config\Config $config = null
+        protected ?Config $config = null
     ) {
     }
 

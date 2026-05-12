@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testHomePage(): void
     {
         $page = $this->getSearchHomePage();
-        $this->assertTrue(false !== strstr($page->getContent(), 'VuFind'));
+        $this->assertStringContainsString('VuFind', (string)$page->getContent());
     }
 
     /**
@@ -69,18 +69,18 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         // only appear after AJAX returns):
         $this->unFindCss($page, '.callnumber.ajax-availability');
         $this->unFindCss($page, '.location.ajax-availability');
-        $this->assertEquals(
+        $this->assertSame(
             'A1234.567',
             $this->findCssAndGetText($page, '.callnumber')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.location')
         );
     }
 
     /**
-     * Test language switching by checking a link in the footer
+     * Test language switching by checking a link in the footer.
      *
      * @return void
      */
@@ -88,35 +88,35 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getSearchHomePage();
         // Check footer help-link
-        $this->assertEquals(
+        $this->assertSame(
             'Search Tips',
             $this->findCssAndGetHtml($page, 'footer .help-link')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Check footer help-link
-        $this->assertNotEquals(
+        $this->assertNotSame(
             'Search Tips',
             $this->findCssAndGetHtml($page, 'footer .help-link')
         );
     }
 
     /**
-     * Test theme switching by checking for a phrase from the example theme
+     * Test theme switching by checking for a phrase from the example theme.
      *
      * @return void
      */
     public function testThemeSwitcher(): void
     {
         // Turn on theme switcher
-        $themeList = 'sandal:sandal,example:local_theme_example';
+        $themeList = 'sandal:sandal5,example:local_theme_example';
         $this->changeConfigs(
             [
                 'config' => [
                     'Site' => [
-                        'theme' => 'sandal',
+                        'theme' => 'sandal5',
                         'alternate_themes' => $themeList,
                         'selectable_themes' => $themeList,
                     ],
@@ -132,18 +132,115 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the theme:
         $this->clickCss($page, '.theme-selector.dropdown');
-        $this->clickCss($page, '.theme-selector.dropdown li:not(.active) a');
+        $this->clickCss($page, '.theme-selector.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
 
         // Check h1 again -- it should exist now
-        $this->assertEquals(
+        $this->assertSame(
             'Welcome to your custom theme!',
             $this->findCssAndGetHtml($page, 'h1')
         );
     }
 
     /**
-     * Test lightbox jump links
+     * Test graceful handling of an invalid theme.
+     *
+     * Note that HTML validation is disabled on this test because an improperly initialized
+     * theme will not generate a fully-formed page; but we still want to confirm that it
+     * at least outputs a human-readable error message.
+     *
+     * @return void
+     */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    public function testBadThemeConfig(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'theme' => 'not-a-valid-theme',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertStringContainsString('An error has occurred', (string)$page->getContent());
+    }
+
+    /**
+     * Test graceful handling of failed search handler in the search tabs.
+     *
+     * @return void
+     */
+    public function testBadSearchTabConfig(): void
+    {
+        // Add a bad search tab config and disable logging of that exception
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'INVALID' => 'Other Search',
+                    ],
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertStringNotContainsString('Other Search', (string)$page->getContent());
+        $this->assertStringNotContainsString('ServiceNotFoundException', (string)$page->getContent());
+        $this->assertSame(
+            'Catalog',
+            $this->findCssAndGetHtml($page, '#searchForm .nav-link')
+        );
+    }
+
+    /**
+     * Test graceful handling of failed search handler in the combined search box.
+     *
+     * @return void
+     */
+    public function testBadSearchBoxConfig(): void
+    {
+        // Add a bad search handler config to the combined handlers
+        // and disable logging of that exception
+        $this->changeConfigs(
+            [
+                'searchbox' => [
+                    'General' => [
+                        'combinedHandlers' => true,
+                    ],
+                    'CombinedHandlers' => [
+                        'type' => ['VuFind', 'VuFind'],
+                        'target' => ['Solr', 'INVALID'],
+                        'label' => ['Catalog', 'Other Search'],
+                        'group' => [false, false],
+                    ],
+                ],
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertStringContainsString(
+            'Catalog',
+            $this->findCssAndGetHtml($page, '#searchForm_type')
+        );
+        $this->assertStringNotContainsString(
+            'Other Search',
+            $this->findCssAndGetHtml($page, '#searchForm_type')
+        );
+    }
+
+    /**
+     * Test lightbox jump links.
      *
      * @return void
      */

@@ -21,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -169,7 +169,7 @@ class DeduplicationListener
     }
 
     /**
-     * Check search parameters for child records filter
+     * Check search parameters for child records filter.
      *
      * @param \VuFindSearch\ParamBag $params Search parameters
      *
@@ -182,7 +182,7 @@ class DeduplicationListener
     }
 
     /**
-     * Fetch appropriate dedup child
+     * Fetch appropriate dedup child.
      *
      * @param EventInterface $event Event
      *
@@ -205,7 +205,7 @@ class DeduplicationListener
     }
 
     /**
-     * Fetch local records for all the found dedup records
+     * Fetch local records for all the found dedup records.
      *
      * @param EventInterface $event Event
      *
@@ -213,8 +213,8 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords($event)
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class);
-        $dataSourceConfig = $config->get($this->dataSourceConfig);
+        $dataSourceConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->dataSourceConfig);
         $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $command = $event->getParam('command');
@@ -254,11 +254,7 @@ class DeduplicationListener
                     }
                 }
                 if (!isset($localPriority)) {
-                    if (isset($sourcePriority[$source])) {
-                        $localPriority = $sourcePriority[$source];
-                    } else {
-                        $localPriority = ++$undefPriority;
-                    }
+                    $localPriority = $sourcePriority[$source] ?? ++$undefPriority;
                 }
                 if ($localPriority < $priority) {
                     $dedupId = $localId;
@@ -339,8 +335,8 @@ class DeduplicationListener
      */
     protected function getActiveRecordSources($event): array
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class);
-        $searchConfig = $config->get($this->searchConfig);
+        $searchConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject($this->searchConfig);
         return !empty($searchConfig->Records->sources)
             ? explode(',', $searchConfig->Records->sources)
             : [];
@@ -371,7 +367,7 @@ class DeduplicationListener
     }
 
     /**
-     * Function that determines the priority for sources
+     * Function that determines the priority for sources.
      *
      * @param array $recordSources Record sources defined in searches.ini
      *
@@ -386,7 +382,7 @@ class DeduplicationListener
     }
 
     /**
-     * Function that determines the priority for buildings
+     * Function that determines the priority for buildings.
      *
      * @param \VuFindSearch\ParamBag $params Query parameters
      *

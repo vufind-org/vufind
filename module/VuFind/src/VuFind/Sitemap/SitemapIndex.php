@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for representing sitemap index files
+ * Class for representing sitemap index files.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -30,7 +30,7 @@
 namespace VuFind\Sitemap;
 
 /**
- * Class for representing sitemap index files
+ * Class for representing sitemap index files.
  *
  * @category VuFind
  * @package  Sitemap
@@ -48,7 +48,7 @@ class SitemapIndex extends AbstractFile
     protected $lastmod;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $lastmod Last modification date of sitemaps.
      */

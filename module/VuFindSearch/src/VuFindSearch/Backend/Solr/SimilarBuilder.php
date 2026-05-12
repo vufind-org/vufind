@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -52,7 +52,7 @@ use function sprintf;
 class SimilarBuilder implements SimilarBuilderInterface
 {
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
@@ -67,14 +67,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     protected $useHandler = false;
 
     /**
-     * MoreLikeThis Handler parameters
+     * MoreLikeThis Handler parameters.
      *
      * @var string
      */
     protected $handlerParams = '';
 
     /**
-     * Number of similar records to retrieve
+     * Number of similar records to retrieve.
      *
      * @var int
      */
@@ -83,14 +83,13 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param \Laminas\Config\Config $searchConfig Search config
-     * @param string                 $uniqueKey    Solr field used to store unique
-     * identifier
+     * @param ?\VuFind\Config\Config $searchConfig Search config
+     * @param string                 $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
     public function __construct(
-        \Laminas\Config\Config $searchConfig = null,
+        ?\VuFind\Config\Config $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;
@@ -132,7 +131,6 @@ class SimilarBuilder implements SimilarBuilderInterface
                 'q',
                 sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
             );
-            $params->set('qt', 'morelikethis');
         }
         if (null === $params->get('rows')) {
             $params->set('rows', $this->count);

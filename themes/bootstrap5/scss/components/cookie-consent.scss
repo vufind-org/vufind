@@ -1,0 +1,89 @@
+.cookie-consent-wrapper {
+  position: relative;
+}
+
+.cookie-consent {
+  $cc-box-shadow: 0 0.625em 1.875em rgba(0, 0, 2, .3) !default;
+  --vufind-cc-border-color: #{$modal-content-border-color};
+  --vufind-cc-border-width: #{$modal-content-border-width};
+  --vufind-cc-category-bg-color: #{$gray-lighter};
+  --vufind-cc-category-divider-color: #{$gray-light};
+  --vufind-cc-box-shadow: #{$cc-box-shadow};
+
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: $zindex-cookie-consent;
+  background-color: $modal-content-bg;
+  border-top: var(--vufind-cc-border-width) solid var(--vufind-cc-border-color);
+  box-shadow: var(--vufind-cc-box-shadow);
+
+  .cookie-consent__overlay {
+    max-width: 55rem;
+    min-height: 3em;
+    max-height: 80vh;
+    overflow: auto;
+    margin: 0 auto;
+    padding: 1rem;
+
+    p {
+      margin: 0;
+    }
+
+    .cookie-consent__title {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .cookie-consent__revision-message {
+      margin: 0.5rem 0;
+    }
+
+    .cookie-consent__settings {
+      #cookie_consent_settings_collapse {
+        padding: 0.5rem;
+        background-color: var(--vufind-cc-category-bg-color);
+      }
+
+      .cookie-consent__description {
+        margin: 0.5rem 0;
+      }
+
+      .cookie-consent__category {
+        margin: 0.5rem 0;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--vufind-cc-category-divider-color);
+
+        &:last-of-type {
+          border-bottom: none;
+        }
+
+
+        .cookie-consent__category-description {
+          margin: 0.5rem 0;
+        }
+
+        .cookie-consent__category-checkbox {
+          font-size: 1.1rem;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .cookie-consent__settings-toggle, .cookie-consent__category-details-toggle {
+      &.collapsed .collapse-icon-close {
+        display: none;
+      }
+      &:not(.collapsed) .collapse-icon-open {
+        display: none;
+      }
+    }
+
+    .cookie-consent__buttons {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+  }
+}

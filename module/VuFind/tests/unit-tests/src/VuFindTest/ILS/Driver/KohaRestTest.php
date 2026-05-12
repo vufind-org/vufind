@@ -1,7 +1,7 @@
 <?php
 
 /**
- * KohaRest ILS driver test
+ * KohaRest ILS driver test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\KohaRest;
 
 /**
- * KohaRest ILS driver test
+ * KohaRest ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -58,21 +58,21 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Test data for simulated HTTP responses (reset by each test)
+     * Test data for simulated HTTP responses (reset by each test).
      *
      * @var array
      */
     protected $fixtureSteps = [];
 
     /**
-     * Current fixture step
+     * Current fixture step.
      *
      * @var int
      */
     protected $currentFixtureStep = 0;
 
     /**
-     * Current fixture name
+     * Current fixture name.
      *
      * @var string
      */
@@ -87,14 +87,14 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $this->driver = new KohaRest(
             new \VuFind\Date\Converter(),
-            function () {
+            function (): void {
             },
             new \VuFind\Service\CurrencyFormatter()
         );
     }
 
     /**
-     * Replace makeRequest to inject test returns
+     * Replace makeRequest to inject test returns.
      *
      * @param array $request Either a path as string or non-keyed array of path
      *                       elements, or a keyed array of request parameters
@@ -122,17 +122,17 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Generate a new KohaRest driver to return responses set in a json fixture
+     * Generate a new KohaRest driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      * Uses session cache
      *
      * @param string $test   Name of test fixture to load
-     * @param array  $config Driver configuration (null to use default)
+     * @param ?array $config Driver configuration (null to use default)
      *
      * @return void
      */
-    protected function createConnector(string $test, array $config = null): void
+    protected function createConnector(string $test, ?array $config = null): void
     {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("koharest/responses/$test.json");
@@ -158,9 +158,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         $cache = new \Laminas\Cache\Storage\Adapter\Memory();
         $cache->setOptions(['memory_limit' => -1]);
         $this->driver->setCacheStorage($cache);
-        $this->driver->expects($this->any())
-            ->method('makeRequest')
-            ->will($this->returnCallback([$this, 'mockMakeRequest']));
+        $this->driver->method('makeRequest')->willReturnCallback([$this, 'mockMakeRequest']);
         $this->driver->init();
     }
 
@@ -198,7 +196,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test purging of transaction history
+     * Test purging of transaction history.
      *
      * @return void
      */
@@ -209,7 +207,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test that selective deletion of entries from transaction history throws an exception
+     * Test that selective deletion of entries from transaction history throws an exception.
      *
      * @return void
      */

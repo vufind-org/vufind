@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +54,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $record->expects($this->once())->method('setPreviousUniqueId')
-            ->with($this->equalTo('oldId'));
+            ->with('oldId');
         $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Solr\Response\Json\RecordCollection(
             ['recordCount' => 1]
@@ -75,9 +75,9 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $updater = $this->createMock(RecordIdUpdater::class);
         $updater->expects($this->once())->method('updateRecordId')
             ->with(
-                $this->equalTo('oldId'),
-                $this->equalTo('newId'),
-                $this->equalTo('Solr')
+                'oldId',
+                'newId',
+                'Solr'
             );
         $loader = new Solr($this->createMock(ResourceServiceInterface::class), $updater, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));

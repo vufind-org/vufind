@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -50,45 +50,45 @@ use function is_callable;
 abstract class AbstractCommand extends Command
 {
     /**
-     * Normalizer for .ini files
+     * Normalizer for .ini files.
      *
      * @var ExtendedIniNormalizer
      */
     protected $normalizer;
 
     /**
-     * Reader for .ini files
+     * Reader for .ini files.
      *
      * @var ExtendedIniReader
      */
     protected $reader;
 
     /**
-     * Language directory
+     * Language directory.
      *
      * @var string
      */
     protected $languageDir;
 
     /**
-     * Files to ignore when processing directories
+     * Files to ignore when processing directories.
      *
      * @var string[]
      */
     protected $filesToIgnore = ['aliases.ini', 'native.ini'];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param string|null           $name        The name of the command; passing
+     * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
+     * @param ?ExtendedIniReader     $reader      Reader for .ini files
+     * @param string                 $languageDir Base language file directory
+     * @param string|null            $name        The name of the command; passing
      * null means it must be set in configure()
      */
     public function __construct(
-        ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null,
+        ?ExtendedIniNormalizer $normalizer = null,
+        ?ExtendedIniReader $reader = null,
         $languageDir = null,
         $name = null
     ) {
@@ -100,7 +100,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * Add a line to a language file
+     * Add a line to a language file.
      *
      * @param string $filename File to update
      * @param string $key      Name of language key

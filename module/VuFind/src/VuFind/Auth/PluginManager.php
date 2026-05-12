@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Auth handler plugin manager
+ * Auth handler plugin manager.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -29,10 +29,8 @@
 
 namespace VuFind\Auth;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Auth handler plugin manager
+ * Auth handler plugin manager.
  *
  * @category VuFind
  * @package  Authentication
@@ -58,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ldap' => LDAP::class,
         'multiauth' => MultiAuth::class,
         'multiils' => MultiILS::class,
+        'openidconnect' => OpenIDConnect::class,
         'shibboleth' => Shibboleth::class,
         'simulatedsso' => SimulatedSSO::class,
         'sip2' => SIP2::class,
@@ -72,23 +71,24 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AlmaDatabase::class => ILSFactory::class,
+        AlmaDatabase::class => AlmaDatabaseFactory::class,
         CAS::class => CASFactory::class,
         ChoiceAuth::class => ChoiceAuthFactory::class,
-        Database::class => InvokableFactory::class,
+        Database::class => DatabaseFactory::class,
         Email::class => EmailFactory::class,
         Facebook::class => FacebookFactory::class,
         ILS::class => ILSFactory::class,
         LDAP::class => LDAPFactory::class,
         MultiAuth::class => MultiAuthFactory::class,
         MultiILS::class => ILSFactory::class,
+        OpenIDConnect::class => OpenIDConnectFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
         SimulatedSSO::class => SimulatedSSOFactory::class,
         SIP2::class => SIP2Factory::class,
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -112,6 +112,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return AbstractBase::class;
+        return AuthInterface::class;
     }
 }

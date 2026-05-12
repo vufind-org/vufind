@@ -18,6 +18,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     "{lock}": "&#8681;",
   };
 
+  /**
+   * Show the virtual keyboard by applying a CSS class.
+   */
   function _showKeyboard() {
     if (_enabled) {
       _keyboard.setOptions({
@@ -26,17 +29,28 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     }
   }
 
+  /**
+   * Hide the virtual keyboard.
+   */
   function _hideKeyboard() {
     _keyboard.setOptions({
       theme: _defaultTheme
     });
   }
 
+  /**
+   * Handle changes from the virtual keyboard, updating the search input and dispatching an 'input' event.
+   * @param {string} input The new input value.
+   */
   function _onChange(input) {
     _textInput.value = input;
     _textInput.dispatchEvent(new Event("input"));
   }
 
+  /**
+   * Handle button presses on the virtual keyboard.
+   * @param {string} button The button pressed.
+   */
   function _onKeyPress(button) {
     if (button === "{shift}" || button === "{lock}") {
       let currentLayoutType = _keyboard.options.layoutName;
@@ -57,17 +71,22 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     });
   }
 
+  /**
+   * Update the virtual keyboard layout based on user selection.
+   * @param {string} layoutName The name of the layout to switch to.
+   */
   function _updateKeyboardLayout(layoutName) {
     $('.keyboard-selection-item').each(function deactivateItems() {
-      $(this).parent().removeClass("active");
+      $(this).removeClass("active");
     });
-    $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
-    window.Cookies.set("keyboard", layoutName);
+    $(".keyboard-selection-item[data-value='" + layoutName + "']").addClass("active");
     if (layoutName === "none") {
+      VuFind.cookie.remove("keyboard");
       $("#keyboard-selection-button").removeClass("activated");
       _enabled = false;
       _hideKeyboard();
     } else {
+      VuFind.cookie.set("keyboard", layoutName);
       $("#keyboard-selection-button").addClass("activated");
       _enabled = true;
       const keyboardLayout = new _KeyboardLayoutClass().get(layoutName);
@@ -76,6 +95,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     }
   }
 
+  /**
+   * Set up the virtual keyboard functionality.
+   */
   function setupKeyboard() {
     if (!_textInput) {
       return;
@@ -117,9 +139,21 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       if (!_keyboard.options.theme.includes('show-keyboard')) {
         return;
       }
+      /**
+       * Check if an element has a specific class
+       * @param {HTMLElement} el        The element to check.
+       * @param {string}      className The class name to search for.
+       * @returns {boolean} Return true of the element has the class name.
+       */
       function hasClass(el, className) {
         return el.className !== undefined && el.className.includes(className);
       }
+      /**
+       * Check if an element has a specific id
+       * @param {HTMLElement} el The element to check.
+       * @param {string}      id The id to search for
+       * @returns {boolean} Return true if the element has the specific id.
+       */
       function hasId(el, id) {
         return el.id === id;
       }
@@ -160,7 +194,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
     _keyboard.setInput(_textInput.value);
 
-    let layout = window.Cookies.get("keyboard");
+    let layout = VuFind.cookie.get("keyboard");
     if (layout == null) {
       layout = "none";
     }
@@ -168,6 +202,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     _hideKeyboard();
   }
 
+  /**
+   * Set up the searchbox autocomplete functionality.
+   */
   function setupAutocomplete() {
     // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
     var $searchboxes = $('input.autocomplete');
@@ -176,6 +213,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       const formattingRules = $searchbox.data('autocompleteFormattingRules');
       const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
       const typePrefix = $searchbox.data('autocompleteTypePrefix');
+      const applyActiveFilters = $searchbox.data('autocompleteApplyActiveFilters');
+      const displayLimit = $searchbox.data('autocompleteDisplayLimit');
       const getFormattingRule = function getAutocompleteFormattingRule(type) {
         if (typeof(formattingRules) !== "undefined") {
           if (typeof(formattingRules[type]) !== "undefined") {
@@ -207,7 +246,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       };
       const typeahead = new Autocomplete({
         rtl: $(document.body).hasClass("rtl"),
-        maxResults: 10,
+        limit: displayLimit ? displayLimit : 20,
         loadingString: VuFind.translate('loading_ellipsis'),
       });
 
@@ -232,11 +271,24 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
           return;
         }
 
-        var hiddenFilters = [];
+        var filters = [];
         $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-          hiddenFilters.push($(this).val());
+          filters.push($(this).val());
         });
 
+        if (applyActiveFilters) {
+          // There may be multiple copies of the active-filters area, so be sure to only pull from one:
+          const activeFilters = document.querySelector(".active-filters");
+          if (activeFilters) {
+            activeFilters.querySelectorAll(".filter-value").forEach(
+              (element) => {
+                if (element.dataset.filter) {
+                  filters.push(element.dataset.filter);
+                }
+              }
+            );
+          }
+        }
         $.ajax({
           url: VuFind.path + '/AJAX/JSON',
           data: {
@@ -244,16 +296,19 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
             method: 'getACSuggestions',
             searcher: searcher,
             type: type,
-            hiddenFilters,
+            filters,
           },
           dataType: 'json',
           success: function autocompleteJSON(json) {
+            // Make the query regular-expression safe so we can do case-insensitive matching.
+            // TODO: consider using RegExp.escape() here when it is more widely available.
+            const regex = new RegExp(query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), "ig");
             const highlighted = json.data.suggestions.map(
               (item) => ({
                 text: item.replaceAll("&", "&amp;")
                   .replaceAll("<", "&lt;")
                   .replaceAll(">", "&gt;")
-                  .replaceAll(query, `<b>${query}</b>`),
+                  .replaceAll(regex, `<b>$&</b>`),
                 value: formattingRule === 'phrase'
                   ? '"' + item.replaceAll('"', '\\"') + '"'
                   : item,
@@ -268,16 +323,18 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       // Bind autocomplete auto submit
       if ($searchbox.hasClass("ac-auto-submit")) {
         input.addEventListener("ac-select", (event) => {
-          const value = typeof event.detail === "string"
+          input.value = typeof event.detail === "string"
             ? event.detail
             : event.detail.value;
-          input.value = value;
           input.form.submit();
         });
       }
     });
   }
 
+  /**
+   * Set up the searchbox reset button.
+   */
   function setupSearchResetButton() {
     _resetButton = document.getElementById("searchForm-reset");
 
@@ -293,7 +350,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _resetButton.classList.toggle("hidden", _textInput.value === "");
     });
 
-    _resetButton.addEventListener("click", function resetOnClick() {
+    _resetButton.addEventListener("click", function resetOnClick(e) {
+      e.preventDefault();
       requestAnimationFrame(() => {
         _textInput.value = "";
         _textInput.dispatchEvent(new Event("input"));
@@ -302,6 +360,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     });
   }
 
+  /**
+   * Initialize the searchbox controls module.
+   */
   function init() {
     _textInput = document.getElementById("searchForm_lookfor");
 

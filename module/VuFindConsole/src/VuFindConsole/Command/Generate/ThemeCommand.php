@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,8 +29,8 @@
 
 namespace VuFindConsole\Command\Generate;
 
-use Laminas\Config\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
+use VuFind\Config\Config;
 use VuFindTheme\ThemeGenerator;
 
 /**
@@ -48,21 +48,21 @@ use VuFindTheme\ThemeGenerator;
 class ThemeCommand extends AbstractThemeCommand
 {
     /**
-     * Type of resource being generated (used in help messages)
+     * Type of resource being generated (used in help messages).
      *
      * @var string
      */
     protected $type = 'theme';
 
     /**
-     * Configuration from config.ini
+     * Configuration from config.ini.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeGenerator $generator Generator to call
      * @param Config         $config    Configuration from config.ini

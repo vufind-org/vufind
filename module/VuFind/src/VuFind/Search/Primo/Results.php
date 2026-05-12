@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Primo Central Search Results
+ * Primo Central Search Results.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Primo
@@ -32,7 +32,7 @@ namespace VuFind\Search\Primo;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * Primo Central Search Parameters
+ * Primo Central Search Parameters.
  *
  * @category VuFind
  * @package  Search_Primo
@@ -87,7 +87,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.

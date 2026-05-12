@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Search Memory
+ * VuFind Search Memory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -31,6 +31,7 @@ namespace VuFind\Search;
 
 use Laminas\Http\Request;
 use Laminas\Session\Container;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
@@ -39,7 +40,7 @@ use function intval;
 use function strlen;
 
 /**
- * Wrapper class to handle search memory
+ * Wrapper class to handle search memory.
  *
  * @category VuFind
  * @package  Search
@@ -50,21 +51,21 @@ use function strlen;
 class Memory
 {
     /**
-     * Is memory currently active? (i.e. will we save new URLs?)
+     * Is memory currently active? (i.e. will we save new URLs?).
      *
      * @var bool
      */
     protected $active = true;
 
     /**
-     * Cached searches
+     * Cached searches.
      *
      * @var array
      */
     protected $searchCache = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Container              $session        Session container for storing URLs
      * @param string                 $sessionId      Current session ID
@@ -203,7 +204,7 @@ class Memory
     }
 
     /**
-     * Get current search id
+     * Get current search id.
      *
      * @return ?int
      */
@@ -215,7 +216,7 @@ class Memory
     }
 
     /**
-     * Get current search
+     * Get current search.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -228,7 +229,7 @@ class Memory
     }
 
     /**
-     * Get latest search id from current request or session
+     * Get latest search id from current request or session.
      *
      * @return ?int
      */
@@ -239,7 +240,7 @@ class Memory
     }
 
     /**
-     * Get latest search from current request or session
+     * Get latest search from current request or session.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -252,18 +253,21 @@ class Memory
     }
 
     /**
-     * Get a search by id
+     * Get a search by id.
      *
-     * @param int $id Search ID
+     * @param int                  $id   Search ID
+     * @param ?UserEntityInterface $user Currently logged-in user to also check saved searches
      *
      * @return ?\VuFind\Search\Base\Results
      */
-    protected function getSearchById(int $id): ?\VuFind\Search\Base\Results
+    public function getSearchById(int $id, ?UserEntityInterface $user = null): ?\VuFind\Search\Base\Results
     {
-        if (!array_key_exists($id, $this->searchCache)) {
-            $search = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, null);
-            $this->searchCache[$id] = $search?->getSearchObject()?->deminify($this->resultsManager);
+        $userId = $user?->getId();
+        $cacheKey = $userId ? "{$id}_$userId" : $id;
+        if (!array_key_exists($cacheKey, $this->searchCache)) {
+            $search = $this->searchService->getSearchByIdAndOwner($id, $this->sessionId, $user);
+            $this->searchCache[$cacheKey] = $search?->getSearchObject()?->deminify($this->resultsManager);
         }
-        return $this->searchCache[$id];
+        return $this->searchCache[$cacheKey];
     }
 }

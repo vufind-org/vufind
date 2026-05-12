@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibraryCards view helper
+ * LibraryCards view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -34,7 +34,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 
 /**
- * LibraryCards view helper
+ * LibraryCards view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,7 +45,7 @@ use VuFind\Db\Service\UserCardServiceInterface;
 class LibraryCards extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UserCardServiceInterface $cardService User card database service
      */

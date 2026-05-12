@@ -32,6 +32,8 @@
         <?php endif; ?>
       </li>
     <?php endforeach; ?>
-    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More catalog results')?>...</a>
+    <li class="list-group-item">
+      <a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More catalog results')?>...</a>
+    </li>
   </ul>
 <?php endif ?>

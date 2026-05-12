@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -68,9 +68,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(array_diff($allMethods, ['getUrlQuery', 'getUrlQueryHelperFactory', 'minify', 'deminify']))
             ->getMock();
-        $results->expects($this->any())
-            ->method('getParams')
-            ->will($this->returnValue($this->getSolrParams()));
+        $results->method('getParams')->willReturn($this->getSolrParams());
         return $results;
     }
 
@@ -81,13 +79,11 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
      *
      * @return NormalizedSearch
      */
-    protected function getNormalizedSearch(Results $results = null): NormalizedSearch
+    protected function getNormalizedSearch(?Results $results = null): NormalizedSearch
     {
         $finalResults = $results ?? $this->getResults();
         $manager = $this->getResultsManager();
-        $manager->expects($this->any())
-            ->method('get')->with($this->equalTo('Solr'))
-            ->will($this->returnValue($finalResults));
+        $manager->method('get')->with('Solr')->willReturn($finalResults);
         return new NormalizedSearch($manager, $finalResults);
     }
 
@@ -139,7 +135,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetUrl(): void
     {
-        $this->assertEquals('?', $this->getNormalizedSearch()->getUrl());
+        $this->assertSame('?', $this->getNormalizedSearch()->getUrl());
     }
 
     /**
@@ -177,7 +173,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
         $otherSearch = $this->createMock(\VuFind\Search\EDS\Results::class);
         $mockMin->expects($this->once())
             ->method('deminify')
-            ->will($this->returnValue($otherSearch));
+            ->willReturn($otherSearch);
         $this->assertFalse($norm->isEquivalentToMinifiedSearch($mockMin));
     }
 }

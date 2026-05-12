@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrDefault Record Driver Test Class
+ * SolrDefault Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ namespace VuFindTest\RecordDriver;
 use VuFind\RecordDriver\SolrDefault;
 
 /**
- * SolrDefault Record Driver Test Class
+ * SolrDefault Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -113,7 +113,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an OpenURL for an unknown material type with no ISBN or ISSN
+     * Test an OpenURL for an unknown material type with no ISBN or ISSN.
      *
      * @return void
      */
@@ -131,7 +131,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an OpenURL for an unknown material type with only ISBNs
+     * Test an OpenURL for an unknown material type with only ISBNs.
      *
      * @return void
      */
@@ -148,7 +148,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an OpenURL for an unknown material type with both ISBN and ISSN
+     * Test an OpenURL for an unknown material type with both ISBN and ISSN.
      *
      * @return void
      */
@@ -333,7 +333,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($overrides = [], $searchConfig = [])
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
-        $record = new SolrDefault(null, null, new \Laminas\Config\Config($searchConfig));
+        $record = new SolrDefault(null, null, new \VuFind\Config\Config($searchConfig));
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

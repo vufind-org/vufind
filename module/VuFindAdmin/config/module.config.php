@@ -11,8 +11,8 @@ $config = [
             'VuFindAdmin\Controller\MaintenanceController' => 'VuFindAdmin\Controller\MaintenanceControllerFactory',
             'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFindAdmin\Controller\OverdriveController' =>
-                'VuFind\Controller\AbstractBaseFactory',
+            'VuFindAdmin\Controller\OnlinePaymentController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindAdmin\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
         ],
         'aliases' => [
             'Admin' => 'VuFindAdmin\Controller\AdminController',
@@ -21,6 +21,7 @@ $config = [
             'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
             'AdminSocial' => 'VuFindAdmin\Controller\SocialstatsController',
             'AdminTags' => 'VuFindAdmin\Controller\TagsController',
+            'AdminPayment' => 'VuFindAdmin\Controller\OnlinePaymentController',
             'AdminOverdrive' => 'VuFindAdmin\Controller\OverdriveController',
         ],
     ],
@@ -55,6 +56,16 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminConfig',
                                 'action'     => 'Home',
+                            ],
+                        ],
+                    ],
+                    'feedback-details' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Feedback/Details/:id',
+                            'defaults' => [
+                                'controller' => 'AdminFeedback',
+                                'action'     => 'Details',
                             ],
                         ],
                     ],
@@ -115,6 +126,36 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminOverdrive',
                                 'action'     => 'Home',
+                            ],
+                        ],
+                    ],
+                    'payment' => [
+                        'type' => 'Laminas\Router\Http\Literal',
+                        'options' => [
+                            'route'    => '/Payment',
+                            'defaults' => [
+                                'controller' => 'AdminPayment',
+                                'action'     => 'Home',
+                            ],
+                        ],
+                    ],
+                    'payment-details' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Payment/:id/Details',
+                            'defaults' => [
+                                'controller' => 'AdminPayment',
+                                'action'     => 'Details',
+                            ],
+                        ],
+                    ],
+                    'payment-resolve' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Payment/:id/Resolve',
+                            'defaults' => [
+                                'controller' => 'AdminPayment',
+                                'action'     => 'Resolve',
                             ],
                         ],
                     ],

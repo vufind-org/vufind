@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -40,8 +40,6 @@ use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -58,10 +56,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Shibboleth extends AbstractBase implements DbTableAwareInterface
+class Shibboleth extends AbstractBase
 {
-    use DbTableAwareTrait;
-
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */
@@ -81,28 +77,28 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     ];
 
     /**
-     * Read attributes from headers instead of environment variables
+     * Read attributes from headers instead of environment variables.
      *
-     * @var boolean
+     * @var bool
      */
     protected $useHeaders = false;
 
     /**
-     * Name of attribute with shibboleth identity provider
+     * Name of attribute with shibboleth identity provider.
      *
      * @var string
      */
     protected $shibIdentityProvider = self::DEFAULT_IDPSERVERPARAM;
 
     /**
-     * Name of attribute with shibboleth session ID
+     * Name of attribute with shibboleth session ID.
      *
      * @var string
      */
     protected $shibSessionId = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
      * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
@@ -120,7 +116,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     /**
      * Set configuration.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @return void
      */
@@ -203,14 +199,14 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
         $user = $this->getOrCreateUserByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
-        // attributes since we need to use setUserCatalogCredentials method to store it):
+        // attributes since we need to pass it to saveUserAndCredentials method to store it):
         $catPassword = null;
 
         // Has the user configured attributes to use for populating the user table?
         foreach ($this->attribsToCheck as $attribute) {
             if (isset($shib[$attribute])) {
                 $value = $this->getAttribute($request, $shib[$attribute]);
-                if ($attribute == 'email') {
+                if ($attribute == 'email' && !empty($value)) {
                     $userService->updateUserEmail($user, $value);
                 } elseif (
                     $attribute == 'cat_username' && isset($shib['prefix'])
@@ -225,26 +221,9 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
             }
         }
 
-        // Save credentials if applicable. Note that we want to allow empty
-        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
-        // we also want to be careful not to replace a non-blank password with a
-        // blank one in case the auth mechanism fails to provide a password on
-        // an occasion after the user has manually stored one. (For discussion,
-        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
-        // (unlikely) scenario that a password can actually change from non-blank
-        // to blank, additional work may need to be done here.
-        if (!empty($catUsername = $user->getCatUsername())) {
-            $this->ilsAuthenticator->setUserCatalogCredentials(
-                $user,
-                $catUsername,
-                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
-            );
-        }
-
+        // Save and return user data:
+        $this->saveUserAndCredentials($user, $catPassword, $this->ilsAuthenticator);
         $this->storeShibbolethSession($request);
-
-        // Save and return the user object:
-        $userService->persistEntity($user);
         return $user;
     }
 
@@ -255,9 +234,9 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
         $shibTarget = $config->Shibboleth->target ?? $target;
@@ -295,25 +274,19 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (
-            isset($config->Shibboleth->logout)
-            && !empty($config->Shibboleth->logout)
-        ) {
-            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&'
-                : '?';
-            $url = $config->Shibboleth->logout . $append . 'return='
-                . urlencode($url);
+        if (!empty($config->Shibboleth->logout)) {
+            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&' : '?';
+            $url = $config->Shibboleth->logout . $append . 'return=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):
@@ -351,7 +324,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Return configuration loader
+     * Return configuration loader.
      *
      * @return ConfigurationLoaderInterface configuration loader
      */
@@ -392,7 +365,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Add session id mapping to external_session table for single logout support
+     * Add session id mapping to external_session table for single logout support.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -417,7 +390,7 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Fetch entityId used for authentication
+     * Fetch entityId used for authentication.
      *
      * @param Request $request Request object
      *

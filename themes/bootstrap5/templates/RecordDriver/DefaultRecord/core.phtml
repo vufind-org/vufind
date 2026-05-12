@@ -3,13 +3,14 @@
 ?>
 <div class="media"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'resource' => '#record', 'typeof' => $this->schemaOrg()->getRecordTypes($this->driver)])?>>
   <?php
-    $QRCode = $this->record($this->driver)->getQRCode('core');
-    $largeImage = $this->record($this->driver)->getThumbnail('large');
+    $recordHelper = $this->record($this->driver);
+    $QRCode = $recordHelper->getQRCode('core');
+    $largeImage = $recordHelper->getThumbnail('large');
     $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
-    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $linkAttributes);
+    $coverDetails = $recordHelper->getCoverDetails('core', 'medium', $linkAttributes);
     $cover = $coverDetails['html'];
     $preview = ($this->previewOverride ?? false)
-      ? $this->previewOverride : $this->record($this->driver)->getPreviews();
+      ? $this->previewOverride : $recordHelper->getPreviews();
     $rating = $this->driver->isRatingAllowed();
   ?>
   <?php if ($QRCode || $cover || $preview || $rating): ?>
@@ -21,14 +22,14 @@
 
       <?php /* Display qrcode if appropriate: */ ?>
       <?php if ($QRCode): ?>
-        <span class="hidden-xs">
+        <span class="record-qrcode">
           <br><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>">
         </span>
       <?php endif; ?>
 
       <?php /* Display rating if enabled: */ ?>
       <?php if ($rating): ?>
-        <?=$this->record($this->driver)->renderTemplate('rating.phtml')?>
+        <?=$recordHelper->renderTemplate('rating.phtml')?>
       <?php endif; ?>
 
       <?php // if you have a preview tab but want to move or remove the preview link
@@ -44,17 +45,18 @@
   <?php endif; ?>
   <div class="media-body">
 
-    <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+    <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->escapeOrCleanHtml($this->driver->getShortTitle(), 'title', renderingContext: 'heading') . ' ' . $this->escapeOrCleanHtml($this->driver->getSubtitle(), 'title', renderingContext: 'heading') . ' ' . $this->escapeOrCleanHtml($this->driver->getTitleSection(), 'title', renderingContext: 'heading')?></h1>
 
     <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>
       <div class="alert alert-warning">
         <?=$this->transEsc('cached_record_warning')?>
       </div>
     <?php endif; ?>
+    <?=$this->record($this->driver)->getLabelList() ?>
 
     <?php foreach ($this->driver->tryMethod('getFullTitlesAltScript', [], []) as $altTitle): ?>
       <div class="title-alt">
-        <?=$this->escapeHtml($altTitle)?>
+        <?=$this->escapeOrCleanHtml($altTitle, 'title-alt')?>
       </div>
     <?php endforeach; ?>
 
@@ -64,14 +66,15 @@
     <?php endif; ?>
 
     <?php if ($this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
-      <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+      <?=$recordHelper->renderTemplate('versions-link.phtml')?>
     <?php endif; ?>
 
     <?php $summary = $this->driver->getSummary(); ?>
-    <?php if ($summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false): ?>
-      <p><?=$this->truncate($summary, 300)?></p>
+    <?php if ($summary = $summary[0] ?? null): ?>
+      <?php $shortSummary = $this->truncate($summary, 300); ?>
+      <p><?=$this->escapeOrCleanHtml($shortSummary, 'summary', true)?></p>
 
-      <?php if (strlen($summary) > 300): ?>
+      <?php if ($shortSummary !== $summary): ?>
         <p><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Description'))?>#tabnav"><?=$this->transEsc('Full description')?></a></p>
       <?php endif; ?>
     <?php endif; ?>
@@ -85,7 +88,7 @@
 
     <?php /* Display Main Details */ ?>
     <?=
-      $this->record($this->driver)->renderTemplate(
+      $recordHelper->renderTemplate(
           'core-fields.phtml',
           [
             'driver' => $this->driver,

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holds controller plugin test class
+ * Holds controller plugin test class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 
 /**
- * Class HoldsTest
+ * Class HoldsTest.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use VuFind\Date\Converter as DateConverter;
 class HoldsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock container
+     * Mock container.
      *
      * @var \VuFindTest\Container\MockContainer
      */
@@ -65,7 +65,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test validateIds method
+     * Test validateIds method.
      *
      * @return void
      */

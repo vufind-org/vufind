@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record route generator
+ * Record route generator.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -33,7 +33,7 @@ use function count;
 use function is_object;
 
 /**
- * Record route generator
+ * Record route generator.
  *
  * @category VuFind
  * @package  Record
@@ -44,18 +44,18 @@ use function is_object;
 class Router
 {
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }

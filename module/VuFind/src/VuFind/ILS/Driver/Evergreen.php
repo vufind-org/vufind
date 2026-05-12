@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Evergreen ILS Driver
+ * Evergreen ILS Driver.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -38,7 +38,7 @@ use VuFind\Exception\ILS as ILSException;
 use function count;
 
 /**
- * VuFind Connector for Evergreen
+ * VuFind Connector for Evergreen.
  *
  * Written by Warren Layton at the NRCan (Natural Resources Canada)
  * Library.
@@ -49,33 +49,33 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Database connection
+     * Database connection.
      *
      * @var PDO
      */
     protected $db;
 
     /**
-     * Database name
+     * Database name.
      *
      * @var string
      */
     protected $dbName;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter
      */
@@ -85,7 +85,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Evergreen constants
+     * Evergreen constants.
      */
     public const EVG_ITEM_STATUS_IN_TRANSIT = '6';
 
@@ -122,12 +122,13 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 . $this->config['Catalog']['port']
             );
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             throw $e;
         }
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -161,6 +162,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 
@@ -195,7 +197,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -215,13 +217,13 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -232,7 +234,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
 
@@ -261,6 +263,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 
@@ -286,12 +289,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                     break;
             }
 
-            if ($row['due_year']) {
-                $due_date = $row['due_year'] . '-' . $row['due_month'] . '-' .
-                            $row['due_day'];
-            } else {
-                $due_date = '';
-            }
+            $due_date = $row['due_year'] ? $row['due_year'] . '-' . $row['due_month'] . '-' . $row['due_day'] : '';
             $holding[] = [
                 'id' => $id,
                 'availability' => $available,
@@ -309,7 +307,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -328,7 +326,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -364,27 +362,22 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $sqlStmt->bindParam(2, $barcode, PDO::PARAM_STR);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            if (isset($row['id']) && ($row['id'] != '')) {
-                $return = [];
-                $return['id'] = $row['id'];
-                $return['firstname'] = $row['firstname'];
-                $return['lastname'] = $row['lastname'];
-                $return['cat_username'] = $row['usrname'];
-                $return['cat_password'] = $passwd;
-                $return['email'] = $row['email'];
-                $return['major'] = null;    // Don't know which table this comes from
-                $return['college'] = null;  // Don't know which table this comes from
-                return $return;
-            } else {
-                return null;
-            }
+            return !empty($row['id']) ? $this->createPatronArray(
+                id: $row['id'],
+                firstname: $row['firstname'],
+                lastname: $row['lastname'],
+                cat_username: $row['usrname'],
+                cat_password: $passwd,
+                email: $row['email']
+            ) : null;
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -467,13 +460,14 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                                ];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return ['count' => count($transList), 'records' => $transList];
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -524,12 +518,13 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             }
             return $fineList;
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -580,13 +575,14 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 ];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return $holdList;
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -624,21 +620,21 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             }
 
             if ($row) {
-                $patron = [
-                    'firstname' => $row['first_given_name'],
-                    'lastname' => $row['family_name'],
-                    'address1' => $row['street1'],
-                    'address2' => $row['street2'],
-                    'city' => $row['city'],
-                    'zip' => $row['post_code'],
-                    'country' => $row['country'],
-                    'phone' => $phone,
-                    'group' => $row['usrgroup'],
-                    'expiration_date' => $this->formatDate($row['expire_date']),
-                ];
-                return $patron;
+                return $this->createProfileArray(
+                    firstname: $row['first_given_name'],
+                    lastname: $row['family_name'],
+                    address1: $row['street1'],
+                    address2: $row['street2'],
+                    city: $row['city'],
+                    zip: $row['post_code'],
+                    country: $row['country'],
+                    phone: $phone,
+                    group: $row['usrgroup'],
+                    expiration_date: $this->formatDate($row['expire_date'])
+                );
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return null;
@@ -652,7 +648,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
      */
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details or throws an exception on failure of support
@@ -680,13 +676,14 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
         $sqlStmt = $this->db->prepare($sql);
         $sqlStmt->execute();
     } catch (PDOException $e) {
+        $this->logError((string)$e);
         $this->throwAsIlsException($e);
     }
     */
     //}
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -702,14 +699,14 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     //}
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -720,6 +717,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
      * @return array       Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -740,6 +738,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['count'];
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 
@@ -762,18 +761,21 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 $items['results'][]['id'] = $row['record'];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return $items;
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @throws ILSException
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -789,6 +791,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 $list[] = $row['name'];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         */
@@ -817,6 +820,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 
@@ -826,7 +830,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     // *** The functions below are not (yet) applicable to Evergreen ***
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -840,7 +844,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -854,7 +858,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -868,7 +872,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -888,7 +892,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     }
 
     /**
-     * Format date
+     * Format date.
      *
      * This formats a date coming from Evergreen for display
      *

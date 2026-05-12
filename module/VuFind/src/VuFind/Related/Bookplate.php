@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
@@ -30,7 +30,7 @@
 namespace VuFind\Related;
 
 /**
- * Related Records: Bookplates
+ * Related Records: Bookplates.
  *
  * @category VuFind
  * @package  Related_Records
@@ -41,37 +41,37 @@ namespace VuFind\Related;
 class Bookplate implements RelatedInterface
 {
     /**
-     * Bookplate config
+     * Bookplate config.
      */
     protected $config;
 
     /**
-     * Data fields (usually Solr)
+     * Data fields (usually Solr).
      */
     protected $fields;
 
     /**
-     * Bookplate strings
+     * Bookplate strings.
      */
     protected $bookplateStrs;
 
     /**
-     * Bookplate image names or full URLs
+     * Bookplate image names or full URLs.
      */
     protected $bookplateImages;
 
     /**
-     * Bookplate thumbnail image names or thumbnail URLs
+     * Bookplate thumbnail image names or thumbnail URLs.
      */
     protected $bookplateThumbnails;
 
     /**
-     * URL template for full bookplate
+     * URL template for full bookplate.
      */
     protected $fullUrlTemplate;
 
     /**
-     * URL template for thumbnail
+     * URL template for thumbnail.
      */
     protected $thumbUrlTemplate;
 
@@ -81,20 +81,12 @@ class Bookplate implements RelatedInterface
     protected $displayTitles;
 
     /**
-     * Configuration loader
+     * Constructor.
      *
-     * @var \VuFind\Config\PluginManager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader PluginManager
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -110,7 +102,7 @@ class Bookplate implements RelatedInterface
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';
         $configSection = !empty($config[1]) ? $config[1] : 'Record';
-        $this->config = $this->configLoader->get($configFile)->$configSection;
+        $this->config = $this->configManager->getConfigObject($configFile)->$configSection;
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData(
             $this->getBookplateTitlesField()
@@ -164,7 +156,7 @@ class Bookplate implements RelatedInterface
     /**
      * Display titles under bookplates.
      *
-     * @return boolean
+     * @return bool
      */
     protected function displayBookplateTitles()
     {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: CSV importer
+ * Console command: CSV importer.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -40,7 +40,7 @@ use VuFind\CSV\Importer;
 use function is_callable;
 
 /**
- * Console command: CSV importer
+ * Console command: CSV importer.
  *
  * @category VuFind
  * @package  Console
@@ -55,14 +55,14 @@ use function is_callable;
 class ImportCsvCommand extends Command
 {
     /**
-     * CSV importer
+     * CSV importer.
      *
      * @var Importer
      */
     protected $importer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Importer    $importer CSV importer
      * @param string|null $name     The name of the command; passing null means it
@@ -118,9 +118,9 @@ class ImportCsvCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $testMode = $input->getOption('test-only') ? true : false;
+        $testMode = (bool)$input->getOption('test-only');
         $index = $input->getOption('index');
         $csv = $input->getArgument('CSV_file');
         $ini = $input->getArgument('ini_file');
@@ -138,11 +138,11 @@ class ImportCsvCommand extends Command
                     $e = $e->getPrevious();
                 }
             }
-            return 1;
+            return self::FAILURE;
         }
         if (!$testMode) {
             $output->writeln("Successfully imported $csv...");
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

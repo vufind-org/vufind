@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Call Number Autocomplete Module
+ * Solr Call Number Autocomplete Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Solr Call Number Autocomplete Module
+ * Solr Call Number Autocomplete Module.
  *
  * This class provides smart call number suggestions by using the local Solr index.
  *
@@ -60,11 +60,14 @@ class SolrCN extends Solr
     /**
      * Process the user query to make it suitable for a Solr query.
      *
-     * @param string $query Incoming user query
+     * @param string $query   Incoming user query
+     * @param array  $options Array of extra parameters
      *
-     * @return string       Processed query
+     * @return string        Processed query
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function mungeQuery($query)
+    protected function mungeQuery(string $query, array $options = []): string
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"'];

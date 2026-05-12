@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait OAuth2TokenTraitTest
+ * Trait OAuth2TokenTraitTest.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFind\ILS
@@ -36,7 +36,7 @@ use VuFind\Auth\AuthToken;
 use VuFind\Exception\AuthToken as AuthTokenException;
 
 /**
- * Trait OAuth2TokenTraitTest
+ * Trait OAuth2TokenTraitTest.
  *
  * @category VuFind
  * @package  VuFind\ILS
@@ -51,7 +51,7 @@ trait OAuth2TokenTrait
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Get new authorization token from API using given credentials
+     * Get new authorization token from API using given credentials.
      *
      * @param string $tokenEndpoint URL of token endpoint
      * @param string $clientId      Client id

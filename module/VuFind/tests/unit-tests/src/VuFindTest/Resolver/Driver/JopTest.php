@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Jop resolver driver test
+ * Jop resolver driver test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -36,7 +36,7 @@ use Laminas\Http\Response as HttpResponse;
 use VuFind\Resolver\Driver\Jop;
 
 /**
- * Jop resolver driver test
+ * Jop resolver driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * Test-Config
+     * Test-Config.
      *
      * @var array
      */
@@ -70,7 +70,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test link parsing
+     * Test link parsing.
      *
      * @return void
      */
@@ -139,7 +139,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test URL generation
+     * Test URL generation.
      *
      * @return void
      */
@@ -156,7 +156,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test implicit downgrade of open url
+     * Test implicit downgrade of open url.
      *
      * @return void
      */
@@ -190,7 +190,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test implicit call of downgradeOpenUrl
+     * Test implicit call of downgradeOpenUrl.
      *
      * @return void
      */
@@ -228,11 +228,9 @@ class JopTest extends \PHPUnit\Framework\TestCase
         $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
-        $ipReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $ipReader = $this->createMock(\VuFind\Net\UserIpReader::class);
         $ipReader->expects($this->once())->method('getUserIp')
-            ->will($this->returnValue($ipAddr));
+            ->willReturn($ipAddr);
         $conn = new Jop($this->openUrlConfig['OpenURL']['url'], $client, $ipReader);
         return $conn;
     }

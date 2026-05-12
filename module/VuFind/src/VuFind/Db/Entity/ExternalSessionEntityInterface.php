@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for external_session table
+ * Entity model interface for external_session table.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for external_session table
+ * Entity model interface for external_session table.
  *
  * @category VuFind
  * @package  Database
@@ -61,9 +61,9 @@ interface ExternalSessionEntityInterface extends EntityInterface
      *
      * @param string $sessionId PHP session id string
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setSessionId(string $sessionId): ExternalSessionEntityInterface;
+    public function setSessionId(string $sessionId): static;
 
     /**
      * Get external session id string.
@@ -77,9 +77,9 @@ interface ExternalSessionEntityInterface extends EntityInterface
      *
      * @param string $externalSessionId External session id string
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setExternalSessionId(string $externalSessionId): ExternalSessionEntityInterface;
+    public function setExternalSessionId(string $externalSessionId): static;
 
     /**
      * Get created date.
@@ -93,7 +93,7 @@ interface ExternalSessionEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return ExternalSessionEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): ExternalSessionEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 }

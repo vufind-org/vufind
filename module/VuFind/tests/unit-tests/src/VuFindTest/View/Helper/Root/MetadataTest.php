@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Metadata Test Class
+ * Metadata Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,15 +29,15 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
 use Laminas\View\Helper\HeadMeta;
+use VuFind\Config\Config;
 use VuFind\MetadataVocabulary\PluginManager;
 use VuFind\MetadataVocabulary\PRISM;
 use VuFind\View\Helper\Root\Metadata;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * Metadata Test Class
+ * Metadata Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use VuFindTest\RecordDriver\TestHarness;
 class MetadataTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param array $data Test data
      *
@@ -62,23 +62,29 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock HeadMeta helper
+     * Get a mock HeadMeta helper.
      *
      * @return HeadMeta
      */
     protected function getMetaHelper()
     {
-        $mock = $this->getMockBuilder(HeadMeta::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['appendName'])    // mocking __call
-            ->getMock();
-        $mock->expects($this->once())->method('appendName')
-            ->with($this->equalTo('prism.title'), $this->equalTo('Fake Title'));
+        $mock = $this->createMock(HeadMeta::class);
+        $mock->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) use ($mock) {
+                    if ($method === 'appendName') {
+                        $this->assertEquals('prism.title', $args[0]);
+                        $this->assertEquals('Fake Title', $args[1]);
+                        return $mock;
+                    }
+                    return null;
+                }
+            );
         return $mock;
     }
 
     /**
-     * Get a mock plugin manager
+     * Get a mock plugin manager.
      *
      * @return PluginManager
      */
@@ -89,8 +95,8 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['get'])
             ->getMock();
         $mock->expects($this->once())->method('get')
-            ->with($this->equalTo('PRISM'))
-            ->will($this->returnValue(new PRISM()));
+            ->with('PRISM')
+            ->willReturn(new PRISM());
         return $mock;
     }
 

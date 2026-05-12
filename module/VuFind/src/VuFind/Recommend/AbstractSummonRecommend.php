@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -41,35 +41,35 @@ namespace VuFind\Recommend;
 abstract class AbstractSummonRecommend implements RecommendInterface
 {
     /**
-     * Database details
+     * Database details.
      *
      * @var \VuFind\Search\Summon\Results
      */
     protected $results;
 
     /**
-     * Request parameter to pull query from
+     * Request parameter to pull query from.
      *
      * @var string
      */
     protected $requestParam = 'lookfor';
 
     /**
-     * User query
+     * User query.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */

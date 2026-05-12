@@ -1,0 +1,18 @@
+{
+    "names": [],
+    "addresses": [
+        {
+            "lines": [
+                "Teststreet 251",
+                "Testland"
+            ]
+        },
+        {
+            "lines": [
+                "",
+                "NOT A REAL RESULT HERE"
+            ]
+        }
+    ],
+    "expirationDate": "30.11.2201"
+}

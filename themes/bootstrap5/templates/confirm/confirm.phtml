@@ -5,7 +5,7 @@
   <?=$this->flashmessages();?>
 
   <div id="popupDetails" class="confirmDialog">
-    <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->confirm)?>" method="post" data-lightbox-onclose="VuFind.refreshPage">
+    <form class="float-start" action="<?=$this->escapeHtmlAttr($this->confirm)?>" method="post" data-lightbox-onclose="VuFind.refreshPage">
       <?php if (isset($this->extras)): ?>
         <?php foreach ($this->extras as $extra => $value): ?>
           <?php if (is_array($value)): ?>
@@ -19,7 +19,7 @@
       <?php endif;?>
       <input class="btn btn-primary" type="submit" name="confirm" value="<?=$this->transEscAttr('confirm_dialog_yes') ?>">
     </form>
-    <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->cancel) ?>" method="post">
+    <form class="float-start" action="<?=$this->escapeHtmlAttr($this->cancel) ?>" method="post">
       <input class="btn btn-default" data-lightbox-close type="submit" name="cancel" value="<?=$this->transEscAttr('confirm_dialog_no') ?>">
     </form>
     <div class="clearfix"></div>

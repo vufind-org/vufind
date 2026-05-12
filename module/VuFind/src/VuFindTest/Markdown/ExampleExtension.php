@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class ExampleExtension
+ * Class ExampleExtension.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use League\Config\ConfigurationBuilderInterface;
 use Nette\Schema\Expect;
 
 /**
- * Class ExampleExtension
+ * Class ExampleExtension.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use Nette\Schema\Expect;
 class ExampleExtension implements ConfigurableExtensionInterface
 {
     /**
-     * Set configuration schema
+     * Set configuration schema.
      *
      * @param ConfigurationBuilderInterface $builder Configuration builder
      *
@@ -65,11 +65,13 @@ class ExampleExtension implements ConfigurableExtensionInterface
     }
 
     /**
-     * Register extension to environment
+     * Register extension to environment.
      *
      * @param EnvironmentBuilderInterface $environment Environment builder
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function register(EnvironmentBuilderInterface $environment): void
     {

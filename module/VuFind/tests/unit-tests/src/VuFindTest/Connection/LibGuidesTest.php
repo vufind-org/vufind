@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -30,9 +30,9 @@
 
 namespace VuFindTest\Connection;
 
-use Laminas\Config\Config;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
+use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
 /**
@@ -67,6 +67,38 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * GetAZ test provider.
+     *
+     * @return \Iterator
+     */
+    public static function getAzProvider(): \Iterator
+    {
+        yield 'exclude hidden (explicitly)' => [ true, 4 ];
+        yield 'do not exclude hidden' => [ false, 5 ];
+        yield 'exclude hidden (by default)' => [ null, 4 ];
+    }
+
+    /**
+     * Test loading AZ.
+     *
+     * @param ?bool $excludeHidden Whether to exclude hidden databases
+     * @param int   $expectedCount Expected result count
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAzProvider')]
+    public function testGetAz(?bool $excludeHidden, int $expectedCount): void
+    {
+        $config = $this->getConfig();
+        $client = $this->getClient('az');
+        $libGuides = new LibGuides($config, $client);
+
+        $params = $excludeHidden === null ? [] : [$excludeHidden];
+        $response = $libGuides->getAz(...$params);
+        $this->assertCount($expectedCount, $response);
+    }
+
+    /**
      * Create a fake LibGuidesAPI.ini config.
      *
      * @return Config The fake config
@@ -85,7 +117,7 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Load HTTP client w/ fixture
+     * Load HTTP client w/ fixture.
      *
      * @param string $fixture Fixture name
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract authentication base class
+ * Abstract authentication base class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -33,15 +33,15 @@ namespace VuFind\Auth;
 use Exception;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 
-use function get_class;
 use function in_array;
 use function is_callable;
 
 /**
- * Abstract authentication base class
+ * Abstract authentication base class.
  *
  * @category VuFind
  * @package  Authentication
@@ -51,9 +51,10 @@ use function is_callable;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements
+    AuthInterface,
     \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -67,11 +68,18 @@ abstract class AbstractBase implements
     protected $configValidated = false;
 
     /**
-     * Configuration settings
+     * Configuration settings.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
+
+    /**
+     * Pre-authentication data, if any.
+     *
+     * @var ?array
+     */
+    protected ?array $preAuthenticationData = null;
 
     /**
      * Map of database column name to setter method for UserEntityInterface objects.
@@ -93,7 +101,7 @@ abstract class AbstractBase implements
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function getConfig()
     {
@@ -129,7 +137,7 @@ abstract class AbstractBase implements
      *
      * @return void
      */
-    public function resetState()
+    public function clearLoginState()
     {
         // By default, do no checking.
     }
@@ -137,7 +145,7 @@ abstract class AbstractBase implements
     /**
      * Set configuration.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @return void
      */
@@ -188,6 +196,32 @@ abstract class AbstractBase implements
     protected function validateConfig()
     {
         // By default, do no checking.
+    }
+
+    /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        // By default, do not perform pre-authentication.
+        return null;
+    }
+
+    /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void
+    {
+        $this->preAuthenticationData = $data;
     }
 
     /**
@@ -244,7 +278,7 @@ abstract class AbstractBase implements
     public function create($request)
     {
         throw new AuthException(
-            'Account creation not supported by ' . get_class($this)
+            'Account creation not supported by ' . static::class
         );
     }
 
@@ -261,8 +295,34 @@ abstract class AbstractBase implements
     public function updatePassword($request)
     {
         throw new AuthException(
-            'Account password updating not supported by ' . get_class($this)
+            'Account password updating not supported by ' . static::class
         );
+    }
+
+    /**
+     * Reset a user's password.
+     *
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
+     * @param array $params       User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function resetPassword(array $recoveryData, array $params)
+    {
+        throw new AuthException('Account password reset not supported by ' . static::class);
+    }
+
+    /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->getSessionInitiator('') !== null;
     }
 
     /**
@@ -272,26 +332,25 @@ abstract class AbstractBase implements
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
-        return false;
+        return null;
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
-        // No special cleanup or URL modification needed by default.
+        // No modification needed by default.
         return $url;
     }
 
@@ -307,7 +366,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -318,14 +377,34 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
+     *
+     * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
      */
-    public function supportsPasswordRecovery()
+    public function supportsPasswordRecovery(?string $target = null)
     {
         // By default, password recovery is not supported.
         return false;
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email    User's email address
+     *   string username Username (optional, for display)
+     *   array  details  Array of user details required for resetPassword request
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        // By default, don't return password recovery data
+        return null;
     }
 
     /**
@@ -340,7 +419,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Return a canned username or password policy hint when available
+     * Return a canned username or password policy hint when available.
      *
      * @param string  $type    Policy type (password or username)
      * @param ?string $pattern Current policy pattern
@@ -361,7 +440,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get a policy configuration
+     * Get a policy configuration.
      *
      * @param string $type Policy type (password or username)
      *
@@ -402,7 +481,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get username policy for a new account (e.g. minLength, maxLength)
+     * Get username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
@@ -412,11 +491,13 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Get password policy for a new password (e.g. minLength, maxLength)
+     * Get password policy for a new password (e.g. minLength, maxLength).
+     *
+     * @param ?string $target Authentication target for methods that support target selection
      *
      * @return array
      */
-    public function getPasswordPolicy()
+    public function getPasswordPolicy(?string $target = null): array
     {
         return $this->getPolicyConfig('password');
     }
@@ -453,16 +534,17 @@ abstract class AbstractBase implements
      * Verify that a password fulfills the password policy. Throws exception if
      * the password is invalid.
      *
-     * @param string $password Password to verify
+     * @param string  $password Password to verify
+     * @param ?string $target   Authentication target for methods that support target selection
      *
      * @return void
      * @throws AuthException
      */
-    protected function validatePasswordAgainstPolicy(string $password): void
+    protected function validatePasswordAgainstPolicy(string $password, ?string $target = null): void
     {
         $this->validateStringAgainstPolicy(
             'password',
-            $this->getPasswordPolicy(),
+            $this->getPasswordPolicy($target),
             $password
         );
     }
@@ -571,5 +653,44 @@ abstract class AbstractBase implements
             throw new Exception("Unsupported field: $field");
         }
         $user->$setter($value);
+    }
+
+    /**
+     * Save user and any ILS credentials.
+     *
+     * Also updates user card data if library cards are enabled.
+     *
+     * @param UserEntityInterface $user             User
+     * @param ?string             $catPassword      ILS catalog password
+     * @param ILSAuthenticator    $ilsAuthenticator ILS authenticator
+     *
+     * @return void
+     */
+    protected function saveUserAndCredentials(
+        UserEntityInterface $user,
+        ?string $catPassword,
+        ILSAuthenticator $ilsAuthenticator
+    ): void {
+        // Save credentials if applicable. Note that we want to allow empty
+        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
+        // we also want to be careful not to replace a non-blank password with a
+        // blank one in case the auth mechanism fails to provide a password on
+        // an occasion after the user has manually stored one. (For discussion,
+        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
+        // (unlikely) scenario that a password can actually change from non-blank
+        // to blank, additional work may need to be done here.
+        if (!empty($catUsername = $user->getCatUsername())) {
+            $ilsAuthenticator->setUserCatalogCredentials(
+                $user,
+                $catUsername,
+                empty($catPassword) ? $ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
+            );
+        }
+
+        // Save the user object:
+        $this->getUserService()->persistEntity($user);
+
+        // Update library card entry after saving the user so that we always have a user id:
+        $this->getDbService(UserCardServiceInterface::class)->synchronizeUserLibraryCardData($user);
     }
 }

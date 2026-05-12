@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -96,6 +96,16 @@ interface CommentsServiceInterface extends DbServiceInterface
     public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
+     * Deletes comments by given comment ids and user id.
+     *
+     * @param array $ids    Array of comment ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void;
+
+    /**
      * Get statistics on use of comments.
      *
      * @return array
@@ -110,6 +120,23 @@ interface CommentsServiceInterface extends DbServiceInterface
      * @return ?CommentsEntityInterface
      */
     public function getCommentById(int $id): ?CommentsEntityInterface;
+
+    /**
+     * Get a paginated result of all comments by user id.
+     *
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return \Laminas\Paginator\Paginator
+     */
+    public function getCommentsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort,
+    ): \Laminas\Paginator\Paginator;
 
     /**
      * Change all matching comments to use the new resource ID instead of the old one (called when an ID changes).

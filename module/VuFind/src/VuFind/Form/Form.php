@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -61,14 +61,14 @@ class Form extends \Laminas\Form\Form implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Input filter
+     * Input filter.
      *
      * @var InputFilter
      */
     protected $inputFilter;
 
     /**
-     * Default, untranslated validation messages
+     * Default, untranslated validation messages.
      *
      * @var array
      */
@@ -78,35 +78,35 @@ class Form extends \Laminas\Form\Form implements
     ];
 
     /**
-     * VuFind main configuration
+     * VuFind main configuration.
      *
      * @var array
      */
     protected $vufindConfig;
 
     /**
-     * Default form configuration (from config.ini > Feedback)
+     * Default form configuration (from config.ini > Feedback).
      *
      * @var array
      */
     protected $defaultFormConfig;
 
     /**
-     * Form element configuration
+     * Form element configuration.
      *
      * @var array
      */
     protected $formElementConfig = [];
 
     /**
-     * Form configuration
+     * Form configuration.
      *
      * @var array
      */
     protected $formConfig;
 
     /**
-     * YAML reader
+     * YAML reader.
      *
      * @var YamlReader
      */
@@ -120,19 +120,19 @@ class Form extends \Laminas\Form\Form implements
     protected $viewHelperManager;
 
     /**
-     * Handler plugin manager
+     * Handler plugin manager.
      *
      * @var HandlerManager
      */
     protected $handlerManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
      * @param HandlerManager      $handlerManager    Handler plugin manager
-     * @param array               $config            VuFind main configuration
+     * @param ?array              $config            VuFind main configuration
      * (optional)
      *
      * @throws \Exception
@@ -141,7 +141,7 @@ class Form extends \Laminas\Form\Form implements
         YamlReader $yamlReader,
         HelperPluginManager $viewHelperManager,
         HandlerManager $handlerManager,
-        array $config = null
+        ?array $config = null
     ) {
         parent::__construct();
 
@@ -153,7 +153,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Set form id
+     * Set form id.
      *
      * @param string $formId  Form id
      * @param array  $params  Additional form parameters.
@@ -203,7 +203,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Check if the form should use Captcha validation (if supported)
+     * Check if the form should use Captcha validation (if supported).
      *
      * @return bool
      */
@@ -213,7 +213,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Check if the form should report referrer url
+     * Check if the form should report referrer url.
      *
      * @return bool
      */
@@ -223,7 +223,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Check if the form should report browser's user agent
+     * Check if the form should report browser's user agent.
      *
      * @return bool
      */
@@ -250,6 +250,16 @@ class Form extends \Laminas\Form\Form implements
     public function getFormElementConfig(): array
     {
         return $this->formElementConfig;
+    }
+
+    /**
+     * Return form action route if set in config.
+     *
+     * @return string Form action route or feedback-form as default
+     */
+    public function getFormActionRoute(): string
+    {
+        return $this->formConfig['formActionRoute'] ?? 'feedback-form';
     }
 
     /**
@@ -357,7 +367,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return email from address
+     * Return email from address.
      *
      * @return string
      */
@@ -369,7 +379,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return email from name
+     * Return email from name.
      *
      * @return string
      */
@@ -398,7 +408,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Map request parameters to field values
+     * Map request parameters to field values.
      *
      * @param array $requestParams Request parameters
      *
@@ -460,9 +470,11 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Retrieve input filter used by this form
+     * Retrieve input filter used by this form.
      *
      * @return InputFilterInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getInputFilter(): InputFilterInterface
     {
@@ -556,7 +568,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get form configuration
+     * Get form configuration.
      *
      * @param string $formId Form id
      *
@@ -761,7 +773,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get options for an element
+     * Get options for an element.
      *
      * @param array $element Element configuration
      *
@@ -802,7 +814,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get option groups for an element
+     * Get option groups for an element.
      *
      * @param array $element Element configuration
      *
@@ -849,6 +861,7 @@ class Form extends \Laminas\Form\Form implements
             'emailFrom',
             'emailSubject',
             'enabled',
+            'formActionRoute',
             'help',
             'onlyForLoggedUsers',
             'recipient',
@@ -917,7 +930,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get configuration for a Laminas form element
+     * Get configuration for a Laminas form element.
      *
      * @param array $el Element configuration
      *
@@ -941,7 +954,7 @@ class Form extends \Laminas\Form\Form implements
             'class' => [$el['settings']['class'] ?? null],
         ];
 
-        if ($type !== 'submit') {
+        if (!in_array($type, ['submit', 'radio', 'checkbox', 'select'], true)) {
             $attributes['class'][] = 'form-control';
         }
 
@@ -972,6 +985,7 @@ class Form extends \Laminas\Form\Form implements
                         'value' => $key,
                         'attributes' => [
                             'id' => $this->getElementId($el['name'] . '_' . $key),
+                            'class' => 'form-check-input',
                         ],
                     ];
                 }
@@ -1000,6 +1014,7 @@ class Form extends \Laminas\Form\Form implements
                         'label_attributes' => ['for' => $elemId],
                         'attributes' => [
                             'id' => $elemId,
+                            'class' => 'form-check-input',
                         ],
                         'selected' => $first,
                     ];
@@ -1008,6 +1023,7 @@ class Form extends \Laminas\Form\Form implements
                 $conf['options'] = ['value_options' => $optionElements];
                 break;
             case 'select':
+                $attributes['class'][] = 'form-select';
                 if (isset($el['options'])) {
                     $options = $el['options'];
                     foreach ($options as $key => &$option) {
@@ -1083,7 +1099,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get form elements
+     * Get form elements.
      *
      * @param array $config Form configuration
      *
@@ -1102,7 +1118,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get a complete id for an element
+     * Get a complete id for an element.
      *
      * @param string $id Element ID
      *
@@ -1114,7 +1130,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get primary form handler
+     * Get primary form handler.
      *
      * @return HandlerInterface
      */
@@ -1125,7 +1141,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get secondary form handlers
+     * Get secondary form handlers.
      *
      * @return HandlerInterface[]
      */
@@ -1136,7 +1152,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Get current form id/name
+     * Get current form id/name.
      *
      * @return string
      */
@@ -1146,7 +1162,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Validates prefill data and returns only the prefill values for enabled fields
+     * Validates prefill data and returns only the prefill values for enabled fields.
      *
      * @param array $prefill Prefill data
      *

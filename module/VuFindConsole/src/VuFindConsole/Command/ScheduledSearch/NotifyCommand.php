@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -31,12 +31,13 @@ namespace VuFindConsole\Command\ScheduledSearch;
 
 use DateTime;
 use Exception;
-use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Config\Config;
+use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -65,39 +66,47 @@ use function sprintf;
 )]
 class NotifyCommand extends Command implements TranslatorAwareInterface
 {
+    use EmailSettingsTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
     /**
-     * Output interface
+     * Output interface.
      *
      * @var OutputInterface
      */
     protected $output = null;
 
     /**
-     * Useful date format value
+     * Useful date format value.
      *
      * @var string
      */
     protected $iso8601 = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * URL helper
+     * URL helper.
      *
      * @var \Laminas\View\Helper\Url
      */
     protected $urlHelper;
 
     /**
-     * Number of results to retrieve when performing searches
+     * Number of results to retrieve when performing searches.
      *
      * @var int
      */
     protected $limit = 50;
 
     /**
-     * Constructor
+     * Sort order to use when performing searches.
+     *
+     * @var string
+     */
+    protected $sort = 'first_indexed desc';
+
+    /**
+     * Constructor.
      *
      * @param SecretCalculator       $secretCalculator Secret calculator
      * @param PhpRenderer            $renderer         View renderer
@@ -183,14 +192,14 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $this->processViewAlerts();
         // Disconnect mailer to prevent exceptions from an attempt to gracefully
         // close the connection on teardown
         $this->mailer->resetConnection();
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -309,7 +318,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         // Prepare query
         $params = $searchObject->getParams();
         $params->setLimit($this->limit);
-        $params->setSort('first_indexed desc', true);
+        $params->setSort($this->sort, true);
         $searchId = $searchObject->getSearchId();
         try {
             $records = $searchObject->getResults();
@@ -410,7 +419,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $subject = $this->mainConfig->Site->title
             . ': ' . $this->translate('Scheduled Alert Results');
-        $from = $this->mainConfig->Site->email;
+        $from = $this->getEmailSenderAddress($this->mainConfig);
         $to = $user->getEmail();
         try {
             $this->mailer->send($to, $from, $subject, $message);

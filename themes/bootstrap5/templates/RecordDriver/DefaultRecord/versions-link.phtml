@@ -15,7 +15,7 @@
     $versions++;
   }
 ?>
-<div class="record-versions">
+<div class="record-versions hidden-print">
   <a class="icon-link" href="<?=$this->escapeHtmlAttr($url)?>">
     <?=$this->icon('more', 'icon-link__icon') ?>
     <span class="icon-link__label"><?=$this->transEsc($translationKey, ['%%count%%' => $versions])?></span>

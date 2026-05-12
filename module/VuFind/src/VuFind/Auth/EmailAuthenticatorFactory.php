@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -62,18 +62,18 @@ class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\Facto
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Validator\CsrfInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
-            $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Net\UserIpReader::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get(\VuFind\Db\Service\PluginManager::class)
                 ->get(\VuFind\Db\Service\AuthHashServiceInterface::class)
         );

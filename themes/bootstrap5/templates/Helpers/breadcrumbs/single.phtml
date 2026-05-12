@@ -1,0 +1,10 @@
+<?php
+  $attrs = ['class' => 'breadcrumb-item'];
+  if ($active) {
+    $attrs['class'] .= ' active';
+    $attrs['aria-current'] = 'page';
+  }
+  $aStart = $href ? '<a href="' . $this->escapeHtmlAttr($href) . '">' : '';
+  $aEnd = $href ? '</a>' : '';
+?>
+<li<?=$this->htmlAttributes($attrs)?>><?=$aStart . $this->escapeHtml($text) . $aEnd ?></li>

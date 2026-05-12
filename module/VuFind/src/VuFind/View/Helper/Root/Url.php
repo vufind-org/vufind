@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Url view helper (extending core Laminas helper with additional functionality)
+ * Url view helper (extending core Laminas helper with additional functionality).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -35,7 +35,7 @@ use function func_get_args;
 use function func_num_args;
 
 /**
- * Url view helper (extending core Laminas helper with additional functionality)
+ * Url view helper (extending core Laminas helper with additional functionality).
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,18 +46,18 @@ use function func_num_args;
 class Url extends \Laminas\View\Helper\Url
 {
     /**
-     * Request (or null if unavailable)
+     * Request (or null if unavailable).
      *
      * @var Request
      */
     protected $request = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Request $request Request object for GET parameters
+     * @param ?Request $request Request object for GET parameters
      */
-    public function __construct(Request $request = null)
+    public function __construct(?Request $request = null)
     {
         $this->request = $request;
     }
@@ -93,7 +93,7 @@ class Url extends \Laminas\View\Helper\Url
     }
 
     /**
-     * Get URL with current GET parameters and add one
+     * Get URL with current GET parameters and add one.
      *
      * @param array $params             Key-paired parameters
      * @param bool  $reuseMatchedParams Whether to reuse matched parameters

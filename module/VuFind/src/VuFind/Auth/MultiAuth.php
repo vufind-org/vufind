@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -36,7 +36,7 @@ use function call_user_func;
 use function strlen;
 
 /**
- * MultiAuth Authentication plugin
+ * MultiAuth Authentication plugin.
  *
  * This module enables chaining of multiple authentication plugins. Authentication
  * plugins are executed in order, and the first successful authentication is
@@ -71,35 +71,35 @@ use function strlen;
 class MultiAuth extends AbstractBase
 {
     /**
-     * Filter configuration for credentials
+     * Filter configuration for credentials.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Authentication methods to try
+     * Authentication methods to try.
      *
      * @var array
      */
     protected $methods = [];
 
     /**
-     * Username input
+     * Username input.
      *
      * @var string
      */
     protected $username;
 
     /**
-     * Password input
+     * Password input.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Plugin manager for obtaining other authentication objects
+     * Plugin manager for obtaining other authentication objects.
      *
      * @var PluginManager
      */
@@ -126,7 +126,7 @@ class MultiAuth extends AbstractBase
     /**
      * Set configuration; throw an exception if it is invalid.
      *
-     * @param \Laminas\Config\Config $config Configuration to set
+     * @param \VuFind\Config\Config $config Configuration to set
      *
      * @throws AuthException
      * @return void

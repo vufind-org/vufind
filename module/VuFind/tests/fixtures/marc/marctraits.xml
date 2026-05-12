@@ -135,11 +135,27 @@
             <subfield code="a">Summary.</subfield>
             <subfield code="b">Expanded.</subfield>
         </datafield>
+        <datafield tag="520" ind1="1" ind2=" ">
+            <subfield code="a">Review Note.</subfield>
+            <subfield code="b">Expanded.</subfield>
+            <subfield code="1">http://expanded.</subfield>
+        </datafield>
+        <datafield tag="520" ind1="3" ind2=" ">
+            <subfield code="a">Abstract.</subfield>
+            <subfield code="b">Expanded.</subfield>
+        </datafield>
+        <datafield tag="520" ind1="4" ind2=" ">
+            <subfield code="a">Content Advice.</subfield>
+            <subfield code="b">Expanded.</subfield>
+        </datafield>
         <datafield tag="521" ind1=" " ind2=" ">
             <subfield code="a">Developers</subfield>
         </datafield>
         <datafield tag="538" ind1=" " ind2=" ">
             <subfield code="a">Data in UTF-8</subfield>
+        </datafield>
+        <datafield tag="544" ind1=" " ind2=" ">
+            <subfield code="a">Location of archival materials</subfield>
         </datafield>
         <datafield tag="555" ind1="0" ind2=" ">
             <subfield code="a">Finding aid available</subfield>

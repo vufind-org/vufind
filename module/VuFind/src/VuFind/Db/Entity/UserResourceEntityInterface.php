@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for user_resource table
+ * Entity model interface for user_resource table.
  *
  * PHP version 8
  *
@@ -17,11 +17,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -32,10 +32,10 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for user_resource table
+ * Entity model interface for user_resource table.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -61,9 +61,9 @@ interface UserResourceEntityInterface extends EntityInterface
      *
      * @param UserEntityInterface $user User
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): UserResourceEntityInterface;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * Get resource.
@@ -77,9 +77,9 @@ interface UserResourceEntityInterface extends EntityInterface
      *
      * @param ResourceEntityInterface $resource Resource
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): UserResourceEntityInterface;
+    public function setResource(ResourceEntityInterface $resource): static;
 
     /**
      * Get user list.
@@ -93,9 +93,9 @@ interface UserResourceEntityInterface extends EntityInterface
      *
      * @param ?UserListEntityInterface $list User list
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setUserList(?UserListEntityInterface $list): UserResourceEntityInterface;
+    public function setUserList(?UserListEntityInterface $list): static;
 
     /**
      * Get notes.
@@ -109,9 +109,9 @@ interface UserResourceEntityInterface extends EntityInterface
      *
      * @param ?string $notes Notes associated with the resource
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setNotes(?string $notes): UserResourceEntityInterface;
+    public function setNotes(?string $notes): static;
 
     /**
      * Get saved date.
@@ -125,7 +125,7 @@ interface UserResourceEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return UserResourceEntityInterface
+     * @return static
      */
-    public function setSaved(DateTime $dateTime): UserResourceEntityInterface;
+    public function setSaved(DateTime $dateTime): static;
 }

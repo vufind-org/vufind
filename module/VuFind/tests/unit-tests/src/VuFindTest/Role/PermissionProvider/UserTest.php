@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PermissionProvider User Test Class
+ * PermissionProvider User Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,10 +29,12 @@
 
 namespace VuFindTest\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
- * PermissionProvider User Test Class
+ * PermissionProvider User Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +45,7 @@ use LmcRbacMvc\Service\AuthorizationService;
 class UserTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Current test user
+     * Current test user.
      *
      * @var string
      */
@@ -57,21 +59,21 @@ class UserTest extends \PHPUnit\Framework\TestCase
     protected $userValueMap = [
         'testuser1' =>
         [
-                ['username','mbeh'],
-                ['email','markus.beh@ub.uni-freiburg.de'],
-                ['college', 'Albert Ludwigs Universität Freiburg'],
+            ['username', 'mbeh'],
+            ['email', 'markus.beh@ub.uni-freiburg.de'],
+            ['college', 'Albert Ludwigs Universität Freiburg'],
         ],
         'testuser2' =>
         [
-                ['username','mbeh2'],
-                ['email','markus.beh@ub.uni-freiburg.de'],
-                ['college', 'Villanova University'],
-                ['major', 'alumni'],
+            ['username', 'mbeh2'],
+            ['email', 'markus.beh@ub.uni-freiburg.de'],
+            ['college', 'Villanova University'],
+            ['major', 'alumni'],
         ],
     ];
 
     /**
-     * Test single option with matching string
+     * Test single option with matching string.
      *
      * @return void
      */
@@ -91,7 +93,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an invalid configuration
+     * Test an invalid configuration.
      *
      * @return void
      */
@@ -105,7 +107,7 @@ class UserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Convenience method for executing similar tests
+     * Convenience method for executing similar tests.
      *
      * @param string $testuser Name of testuser
      * @param array  $options  Options like settings in permissions.ini
@@ -130,37 +132,34 @@ class UserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock authorization service object
+     * Get a mock authorization service object.
      *
      * @return AuthorizationService
      */
     protected function getMockAuthorizationService()
     {
-        $authorizationService
-            = $this->getMockBuilder(\LmcRbacMvc\Service\AuthorizationService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $authorizationService = $this->createMock(AuthorizationService::class);
         $authorizationService
             ->method('getIdentity')
-            ->will($this->returnValue($this->getMockUser()));
+            ->willReturn($this->getMockUser());
 
         return $authorizationService;
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
-     * @return \VuFind\Db\Row\User
+     * @return UserEntityInterface&MockObject
      */
-    protected function getMockUser(): \VuFind\Db\Row\User
+    protected function getMockUser(): UserEntityInterface&MockObject
     {
-        $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $user->method('__get')
-            ->will($this->returnValueMap($this->userValueMap[$this->testuser]));
-        $user->method('offsetGet')
-            ->will($this->returnValueMap($this->userValueMap[$this->testuser]));
+        $user = $this->createMock(UserEntityInterface::class);
+
+        // Dynamically mock getter methods
+        foreach ($this->userValueMap[$this->testuser] ?? [] as $entry) {
+            [$property, $value] = $entry;
+            $user->method('get' . ucfirst($property))->willReturn($value);
+        }
 
         return $user;
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites aspect of the Search Multi-class (Results)
+ * Favorites aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -29,8 +29,8 @@
 
 namespace VuFind\Search\Favorites;
 
-use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
@@ -46,7 +46,7 @@ use function array_slice;
 use function count;
 
 /**
- * Search Favorites Results
+ * Search Favorites Results.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -73,21 +73,21 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     protected $list = false;
 
     /**
-     * Facet list
+     * Facet list.
      *
      * @var array
      */
     protected $facets;
 
     /**
-     * All ids
+     * All ids.
      *
      * @var array
      */
     protected $allIds;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Params $params          Object representing user search parameters
      * @param SearchService              $searchService   Search service
@@ -108,7 +108,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,16 +29,18 @@
 
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Config\Config;
 use Laminas\Stdlib\Parameters;
+use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * @category VuFind
  * @package  Tests
@@ -48,8 +50,10 @@ use VuFindSearch\Query\Query;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
-     * Blender config
+     * Blender config.
      *
      * @var array
      */
@@ -72,7 +76,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mappings
+     * Mappings.
      *
      * @var array
      */
@@ -186,7 +190,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS API configuration
+     * EDS API configuration.
      *
      * @var array
      */
@@ -202,7 +206,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS configuration
+     * EDS configuration.
      *
      * @var array
      */
@@ -214,7 +218,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var array
      */
@@ -226,7 +230,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Blender configuration
+     * Blender configuration.
      *
      * @var array
      */
@@ -239,7 +243,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mock config manager
+     * Mock config manager.
      *
      * @var object
      */
@@ -880,6 +884,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'filters' => [
                     'building:OR:main',
                 ],
+                'searchMode' => [
+                    'all',
+                ],
             ],
             $edsParams->getArrayCopy()
         );
@@ -1032,14 +1039,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testInvalidBackend(): void
     {
-        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         $baseParams = new \VuFind\Search\EmptySet\Params(
-            new \VuFind\Search\EmptySet\Options($configMgr),
-            $configMgr
+            new \VuFind\Search\EmptySet\Options($mockConfigManager),
+            $mockConfigManager
         );
         $params = new Params(
-            new Options($configMgr),
-            $configMgr,
+            new Options($mockConfigManager),
+            $mockConfigManager,
             new HierarchicalFacetHelper(),
             [
                 'Base' => $baseParams,
@@ -1055,62 +1062,37 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock config manager
-     *
-     * @return object
-     */
-    protected function getConfigManager()
-    {
-        $configs = [
-            'EDS' => new Config($this->edsConfig),
-            'Primo' => new Config($this->primoConfig),
-            'Blender' => new Config($this->blenderConfig),
-        ];
-
-        $callback = function (string $configName) use ($configs) {
-            return $configs[$configName] ?? null;
-        };
-
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-        $configManager
-            ->expects($this->any())
-            ->method('get')
-            ->will($this->returnCallback($callback));
-
-        return $configManager;
-    }
-
-    /**
-     * Get params classes for an array of backends
+     * Get params classes for an array of backends.
      *
      * @return array
      */
     protected function getParamsClassesArray(): array
     {
-        $solrConfigMgr = $this->createMock(\VuFind\Config\PluginManager::class);
-        $configMgr = $this->getConfigManager();
+        $mockConfigManager = $this->getMockConfigManager([
+            'EDS' => $this->edsConfig,
+            'Primo' => $this->primoConfig,
+            'Blender' => $this->blenderConfig,
+        ]);
 
         $result = [];
         $result[] = new \VuFind\Search\Solr\Params(
-            new \VuFind\Search\Solr\Options($solrConfigMgr),
-            $solrConfigMgr
+            new \VuFind\Search\Solr\Options($mockConfigManager),
+            $mockConfigManager
         );
         $result[] = new \VuFind\Search\Primo\Params(
-            new \VuFind\Search\Primo\Options($configMgr),
-            $configMgr
+            new \VuFind\Search\Primo\Options($mockConfigManager),
+            $mockConfigManager
         );
         $result[] = new \VuFind\Search\EDS\Params(
-            new \VuFind\Search\EDS\Options($configMgr, $this->edsApiConfig),
-            $configMgr
+            new \VuFind\Search\EDS\Options($mockConfigManager, $this->edsApiConfig),
+            $mockConfigManager
         );
 
         return $result;
     }
 
     /**
-     * Get Params class
+     * Get Params class.
      *
      * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults
@@ -1119,10 +1101,10 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getParams($config = null, $mappings = null): Params
     {
-        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            new Options($configMgr),
-            $configMgr,
+            new Options($mockConfigManager),
+            $mockConfigManager,
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
             new Config($config ?? $this->config),

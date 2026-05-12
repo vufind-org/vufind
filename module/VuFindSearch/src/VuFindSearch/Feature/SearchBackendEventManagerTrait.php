@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -59,9 +59,8 @@ trait SearchBackendEventManagerTrait
      */
     public function setEventManager(EventManagerInterface $events)
     {
-        // Using the class name as the event namespace is recommended; the
-        // VuFind\Search and VuFindSearch values are only retained for backward
-        // compatibility.
+        // Using the class name as the event namespace is recommended; the VuFind\Search and VuFindSearch
+        // values are only retained for legacy backward compatibility.
         $events->setIdentifiers([\VuFindSearch\Service::class, 'VuFind\Search', 'VuFindSearch']);
         $this->events = $events;
     }

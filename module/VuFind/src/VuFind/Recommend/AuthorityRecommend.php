@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorityRecommend Recommendations Module
+ * AuthorityRecommend Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -37,7 +37,7 @@ use function count;
 use function intval;
 
 /**
- * AuthorityRecommend Module
+ * AuthorityRecommend Module.
  *
  * This class provides recommendations based on Authority records.
  * i.e. searches for a pseudonym will provide the user with a link
@@ -56,14 +56,14 @@ use function intval;
 class AuthorityRecommend implements RecommendInterface
 {
     /**
-     * User search query
+     * User search query.
      *
      * @var string
      */
     protected $lookfor;
 
     /**
-     * Configured filters for authority searches
+     * Configured filters for authority searches.
      *
      * @var array
      */
@@ -78,21 +78,21 @@ class AuthorityRecommend implements RecommendInterface
     protected $resultLimit = 0;
 
     /**
-     * Current user search
+     * Current user search.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Generated recommendations
+     * Generated recommendations.
      *
      * @var array
      */
     protected $recommendations = [];
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
@@ -113,7 +113,7 @@ class AuthorityRecommend implements RecommendInterface
     protected $header = 'See also';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */

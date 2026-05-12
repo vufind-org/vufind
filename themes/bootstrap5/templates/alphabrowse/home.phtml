@@ -1,6 +1,6 @@
 <?php
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a></li>';
+  $this->breadcrumbs()->set($this->translate('Browse Alphabetically'), $this->url('alphabrowse-home'));
   $baseQuery = ['source' => $this->source, 'from' => $this->from];
 
   // Set up upper search box if necessary:
@@ -48,7 +48,7 @@
 <?php if (!$this->searchbox()->alphaBrowseOptionsEnabled() || empty($this->source)): ?>
   <form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
     <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
-    <select id="alphaBrowseForm_source" name="source" class="form-control">
+    <select id="alphaBrowseForm_source" name="source" class="form-select">
       <?php foreach ($this->alphaBrowseTypes as $key => $item): ?>
         <option value="<?=$this->escapeHtmlAttr($key) ?>"<?php if ($this->source == $key): ?> selected="selected"<?php endif; ?>><?=$this->transEsc($item) ?></option>
       <?php endforeach; ?>
@@ -116,7 +116,7 @@
               <div>
                 <?=$this->transEsc('Use instead') ?>:
                 <ul>
-                  <?php foreach ($item['useInstead'] as $heading): ?>
+                  <?php foreach (array_unique($item['useInstead']) as $heading): ?>
                   <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
                   <?php endforeach; ?>
                 </ul>
@@ -127,7 +127,7 @@
               <div>
                 <?=$this->transEsc('See also') ?>:
                 <ul>
-                  <?php foreach ($item['seeAlso'] as $heading): ?>
+                  <?php foreach (array_unique($item['seeAlso']) as $heading): ?>
                   <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
                   <?php endforeach; ?>
                 </ul>

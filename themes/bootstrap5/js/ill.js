@@ -1,5 +1,10 @@
 /*global VuFind */
 /*exported setUpILLRequestForm */
+
+/**
+ * Sets up the ILL request form by dynamically populating the "pickup location" dropdown based on the selected "pickup library."
+ * @param {string} recordId The ID of the record for the ILL request.
+ */
 function setUpILLRequestForm(recordId) {
   $("#ILLRequestForm #pickupLibrary").on("change", function illPickupChange() {
     $("#ILLRequestForm #pickupLibraryLocation option").remove();

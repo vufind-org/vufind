@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeniePlus API driver
+ * GeniePlus API driver.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -35,7 +35,7 @@ use function count;
 use function in_array;
 
 /**
- * GeniePlus API driver
+ * GeniePlus API driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -46,14 +46,14 @@ use function in_array;
 class GeniePlus extends AbstractAPI
 {
     /**
-     * Status messages indicating available items
+     * Status messages indicating available items.
      *
      * @var string[]
      */
     protected $availableStatuses;
 
     /**
-     * Access token
+     * Access token.
      *
      * @var string
      */
@@ -67,14 +67,14 @@ class GeniePlus extends AbstractAPI
     protected $sessionFactory;
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable $sessionFactory Factory function returning SessionContainer
      * object
@@ -347,7 +347,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -375,7 +375,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -390,13 +390,13 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return mixed     On success, an associative array with the following keys:
@@ -405,13 +405,13 @@ class GeniePlus extends AbstractAPI
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -451,7 +451,7 @@ class GeniePlus extends AbstractAPI
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -501,20 +501,18 @@ class GeniePlus extends AbstractAPI
             )
         );
         [$last, $first] = explode(',', $name, 2);
-        return [
-            'id'           => $id,
-            'firstname'    => trim($first),
-            'lastname'     => trim($last),
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => $email,
-            'major'        => null,
-            'college'      => null,
-        ];
+        return $this->createPatronArray(
+            id: $id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: $first,
+            lastname: $last,
+            email: $email
+        );
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -591,21 +589,21 @@ class GeniePlus extends AbstractAPI
             )
         );
         $cityAndState = trim($city . (!empty($city) ? ', ' : '') . $state);
-        return [
-            'firstname'       => $patron['firstname'],
-            'lastname'        => $patron['lastname'],
-            'address1'        => empty($addr1) ? null : $addr1,
-            'address2'        => empty($addr2) ? null : $addr2,
-            'zip'             => empty($zip) ? null : $zip,
-            'city'            => empty($city) ? null : $cityAndState,
-            'country'         => empty($country) ? null : $country,
-            'phone'           => empty($phone) ? null : $phone,
-            'expiration_date' => empty($expirationDate) ? null : $expirationDate,
-        ];
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $addr1 ?: null,
+            address2: $addr2 ?: null,
+            zip: $zip ?: null,
+            city: $city ? $cityAndState : null,
+            country: $country ?: null,
+            phone: $phone ?: null,
+            expiration_date: $expirationDate ?: null
+        );
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.

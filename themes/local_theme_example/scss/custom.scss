@@ -1,0 +1,64 @@
+/* Change variables to change colors and values through-out the theme */
+$image-path: "../../local_theme_example/images";
+$dark-green: #137752;
+/* Bootstrap variables as well */
+$primary: #0045a1;
+$navbar-dark-color: white;
+$grid-gutter-width: 20px;
+
+@import "bootstrap"; /* Include bootstrap theme's scss base */
+
+/* You can organize these styles in separate files and @import them */
+@import "home-page";
+
+/* Change specific styles below */
+body {
+  padding-inline: 1rem;
+  font-size: 14px;
+  color: #333;
+  background-color: #5ab48a;
+}
+header {
+  font-size: 16px;
+  color: $dark-green;
+
+  .banner {
+    padding: 0;
+  }
+}
+#content {
+  padding-block: 1px; /* fix margin gap */
+}
+.container {
+  padding-inline: 2rem;
+  border-inline: 2px solid $dark-green;
+  background-color: #fff;
+  border-radius: 0;
+}
+footer .container {
+  border-bottom: 2px solid #137752;
+}
+
+.alert {
+  padding: 8px;
+}
+
+/* Fix breadcrumbs margins */
+.breadcrumbs {
+  .container {
+    background-color: $breadcrumb-bg;
+  }
+
+  .breadcrumb {
+    margin: 0;
+    padding-inline: 0;
+  }
+}
+
+.searchForm .searchForm-query #searchForm-reset {
+  aspect-ratio: 1;
+  width: 1.7rem;
+  margin-inline-end: 0.125rem;
+  line-height: 1;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2);
+}

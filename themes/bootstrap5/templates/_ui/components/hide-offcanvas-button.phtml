@@ -1,7 +1,15 @@
 <?php
+    /**
+     * Component to display the button that hides expanded sidebars displayed in off-canvas mode (generally used at
+     * mobile sizes). This component is configuration-driven and takes no parameters.
+     */
     $side = $this->config()->offcanvasSide();
+    $buttonAttrs = [
+        'class' => 'close-offcanvas btn btn-link ' . $this->_componentClass,
+        'data-toggle' => 'vufind-offcanvas',
+    ];
 ?>
-<button class="close-offcanvas btn btn-link" data-toggle="vufind-offcanvas">
+<button<?=$this->htmlAttributes($buttonAttrs)?>>
     <?='right' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-hide-left' : 'offcanvas-hide-right') : ''?>
     <span class="btn-link__label"><?=$this->transEsc('navigate_back') ?></span>
     <?='left' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-hide-right' : 'offcanvas-hide-left') : ''?>

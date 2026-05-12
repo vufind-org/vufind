@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model interface for user_card table
+ * Entity model interface for user_card table.
  *
  * PHP version 8
  *
@@ -17,11 +17,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -32,10 +32,10 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for user_card table
+ * Entity model interface for user_card table.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -43,20 +43,20 @@ use DateTime;
 interface UserCardEntityInterface extends EntityInterface
 {
     /**
-     * ID getter (returns null if the entity has not been saved/populated yet)
+     * ID getter (returns null if the entity has not been saved/populated yet).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Card name setter
+     * Card name setter.
      *
      * @param string $cardName User card name.
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCardName(string $cardName): UserCardEntityInterface;
+    public function setCardName(string $cardName): static;
 
     /**
      * Get user card name.
@@ -66,13 +66,13 @@ interface UserCardEntityInterface extends EntityInterface
     public function getCardName(): string;
 
     /**
-     * Catalog username setter
+     * Catalog username setter.
      *
      * @param string $catUsername Catalog username
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCatUsername(string $catUsername): UserCardEntityInterface;
+    public function setCatUsername(string $catUsername): static;
 
     /**
      * Get catalog username.
@@ -82,13 +82,13 @@ interface UserCardEntityInterface extends EntityInterface
     public function getCatUsername(): string;
 
     /**
-     * Raw catalog password setter
+     * Raw catalog password setter.
      *
      * @param ?string $catPassword Cat password
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setRawCatPassword(?string $catPassword): UserCardEntityInterface;
+    public function setRawCatPassword(?string $catPassword): static;
 
     /**
      * Get raw catalog password.
@@ -98,13 +98,13 @@ interface UserCardEntityInterface extends EntityInterface
     public function getRawCatPassword(): ?string;
 
     /**
-     * Encrypted catalog password setter
+     * Encrypted catalog password setter.
      *
      * @param ?string $passEnc Encrypted password
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCatPassEnc(?string $passEnc): UserCardEntityInterface;
+    public function setCatPassEnc(?string $passEnc): static;
 
     /**
      * Get encrypted catalog password.
@@ -114,13 +114,13 @@ interface UserCardEntityInterface extends EntityInterface
     public function getCatPassEnc(): ?string;
 
     /**
-     * Home library setter
+     * Home library setter.
      *
      * @param ?string $homeLibrary Home library
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setHomeLibrary(?string $homeLibrary): UserCardEntityInterface;
+    public function setHomeLibrary(?string $homeLibrary): static;
 
     /**
      * Get home library.
@@ -134,9 +134,9 @@ interface UserCardEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Created date
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): UserCardEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Get created date.
@@ -150,9 +150,9 @@ interface UserCardEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Saved date and time
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setSaved(DateTime $dateTime): UserCardEntityInterface;
+    public function setSaved(DateTime $dateTime): static;
 
     /**
      * Get saved time.
@@ -166,12 +166,12 @@ interface UserCardEntityInterface extends EntityInterface
      *
      * @param UserEntityInterface $user User that owns card
      *
-     * @return UserCardEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): UserCardEntityInterface;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
-     * User getter
+     * User getter.
      *
      * @return UserEntityInterface
      */

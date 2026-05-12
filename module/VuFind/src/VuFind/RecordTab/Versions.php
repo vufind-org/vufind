@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Versions tab
+ * Versions tab.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -33,7 +33,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 /**
- * Versions tab
+ * Versions tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -46,28 +46,28 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     use TranslatorAwareTrait;
 
     /**
-     * Main configuration
+     * Main configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Search options plugin manager
+     * Search options plugin manager.
      *
      * @var \VuFind\Search\Options\PluginManager
      */
     protected $searchOptionsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config               $config Configuration
+     * @param \VuFind\Config\Config                $config Configuration
      * @param \VuFind\Search\Options\PluginManager $som    Search options plugin
      * manager
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \VuFind\Search\Options\PluginManager $som
     ) {
         $this->config = $config;
@@ -96,5 +96,16 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     {
         $count = $this->getRecordDriver()->tryMethod('getOtherVersionCount');
         return $this->translate('other_versions_title', ['%%count%%' => $count]);
+    }
+
+    /**
+     * Can this tab be embedded in search results (via tab/accordion)?
+     *
+     * @return bool
+     */
+    public function supportsSearchResultEmbedding(): bool
+    {
+        // This tab causes problems when embedded in search results due to nested results in results.
+        return false;
     }
 }

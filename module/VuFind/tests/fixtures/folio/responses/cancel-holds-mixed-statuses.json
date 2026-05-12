@@ -1,8 +1,5 @@
 [
     {
-        "comment": "Initial token check"
-    },
-    {
         "expectedPath": "/circulation/requests/request1",
         "body": "{ \"requesterId\": \"foo\", \"itemId\": \"item1\" }"
     },

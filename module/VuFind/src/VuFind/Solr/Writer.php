@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Writer service
+ * Solr Writer service.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Solr
@@ -41,7 +41,7 @@ use VuFindSearch\Service;
 use function func_get_args;
 
 /**
- * Solr Writer service
+ * Solr Writer service.
  *
  * @category VuFind
  * @package  Solr
@@ -52,7 +52,7 @@ use function func_get_args;
 class Writer
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Service                       $searchService Search service
      * @param ChangeTrackerServiceInterface $changeTracker Change tracker database service
@@ -108,7 +108,7 @@ class Writer
     }
 
     /**
-     * Delete an array of IDs from the specified search backend
+     * Delete an array of IDs from the specified search backend.
      *
      * @param string $backend Backend ID
      * @param array  $idList  Record IDs to delete
@@ -147,7 +147,7 @@ class Writer
      * @param string            $backend Backend ID
      * @param DocumentInterface $doc     Document(s) to save
      * @param string            $handler Update handler
-     * @param ParamBag          $params  Update handler parameters
+     * @param ?ParamBag         $params  Update handler parameters
      *
      * @return void
      */
@@ -155,7 +155,7 @@ class Writer
         $backend,
         DocumentInterface $doc,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $this->write($backend, $doc, null, $handler, $params);
     }

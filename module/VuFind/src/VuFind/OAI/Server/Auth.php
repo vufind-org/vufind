@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OAI Server class for Authority core
+ * OAI Server class for Authority core.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAI_Server
@@ -32,7 +32,7 @@ namespace VuFind\OAI\Server;
 use VuFind\OAI\Server as Base;
 
 /**
- * OAI Server class for Authority core
+ * OAI Server class for Authority core.
  *
  * This class provides OAI server functionality.
  *
@@ -45,7 +45,7 @@ use VuFind\OAI\Server as Base;
 class Auth extends Base
 {
     /**
-     * Search object class to use
+     * Search object class to use.
      *
      * @var string
      */
@@ -63,11 +63,11 @@ class Auth extends Base
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\Laminas\Config\Config $config)
+    protected function initializeSettings(\VuFind\Config\Config $config)
     {
         // Use some of the same settings as the regular OAI server, but override
         // others:

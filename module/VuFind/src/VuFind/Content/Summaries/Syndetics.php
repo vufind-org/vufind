@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -107,20 +107,14 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     throw new \Exception('Invalid XML');
                 }
 
-                // If we have syndetics plus, we don't actually want the content
-                // we'll just stick in the relevant div
-                if ($this->usePlus) {
-                    $summaries[] = $sourceInfo['div'];
-                } else {
-                    // Get the marc field for summaries. (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
-                    foreach ($nodes as $node) {
-                        $summaries[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/',
-                            '',
-                            html_entity_decode($node->nodeValue)
-                        );
-                    }
+                // Get the marc field for summaries. (520)
+                $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
+                foreach ($nodes as $node) {
+                    $summaries[] = preg_replace(
+                        '/<a>|<a [^>]*>|<\/a>/',
+                        '',
+                        html_entity_decode($node->nodeValue)
+                    );
                 }
             }
         }

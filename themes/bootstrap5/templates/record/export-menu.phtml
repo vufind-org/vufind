@@ -3,9 +3,12 @@
   $this->headTitle($this->translate('Export Record'));
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '<li>', '</li> ')
-    . '<li>' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li> '
-    . '<li class="active">' . $this->transEsc('Export Record') . '</li>';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
+    ->add($this->translate('Export Record'), active: true);
 ?>
 <?=$this->flashmessages()?>
 <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
@@ -14,7 +17,7 @@
   <ul>
   <?php foreach ($exportFormats as $exportFormat): ?>
     <li>
-      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export'))?>?style=<?=$this->escapeHtml($exportFormat)?>" rel="nofollow">
+      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', ['style' => $exportFormat], '', ['excludeSearchId' => true]))?>" rel="nofollow">
         <?=$this->transEsc('export_to', ['%%target%%' => $this->translate($this->export()->getLabelForFormat($exportFormat))])?>
       </a>
     </li>

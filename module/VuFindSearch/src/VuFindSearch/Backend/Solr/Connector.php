@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -60,7 +60,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
@@ -77,7 +77,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * HTTP client factory
+     * HTTP client factory.
      *
      * @var callable
      */
@@ -98,21 +98,21 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected $map;
 
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
     protected $uniqueKey;
 
     /**
-     * Url of the last request
+     * Url of the last request.
      *
      * @var ?Http
      */
     protected $lastUrl = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|array        $url       SOLR core URL or an array of alternative
      * URLs
@@ -130,13 +130,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        if ($cf instanceof HttpClient) {
-            $this->clientFactory = function () use ($cf) {
-                return clone $cf;
-            };
-        } else {
-            $this->clientFactory = $cf;
-        }
+        $this->clientFactory = $cf instanceof HttpClient
+            ? fn () => clone $cf
+            : $cf;
     }
 
     /// Public API
@@ -182,7 +178,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Clears the last url
+     * Clears the last url.
      *
      * @return void
      */
@@ -194,12 +190,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Return document specified by id.
      *
-     * @param string   $id     The document to retrieve from Solr
-     * @param ParamBag $params Parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return string
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params
@@ -217,7 +213,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
      * @param string   $id     ID of given record (not currently used, but
-     * retained for backward compatibility / extensibility).
+     * retained for legacy backward compatibility / extensibility).
      * @param ParamBag $params Parameters
      *
      * @return string
@@ -228,7 +224,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
-        return $this->query($handler, $params, true);
+
+        try {
+            return $this->query($handler, $params, true);
+        } catch (RequestErrorException $e) {
+            // If Solr was unable to fetch the record, just act like we have no similar records:
+            if (str_contains($e->getMessage(), 'Could not fetch document with id')) {
+                return '{}';
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -265,21 +270,21 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param DocumentInterface $document Document to write
      * @param string            $handler  Update handler
-     * @param ParamBag          $params   Update handler parameters
+     * @param ?ParamBag         $params   Update handler parameters
      *
      * @return string Response body
      */
     public function write(
         DocumentInterface $document,
         $handler = 'update',
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
         if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $callback = function ($client) use ($document) {
+        $callback = function ($client) use ($document): void {
             $client->setEncType($document->getContentType());
             $body = $document->getContent();
             $client->setRawBody($body);
@@ -306,7 +311,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
-            $callback = function ($client) use ($paramString) {
+            $callback = function ($client) use ($paramString): void {
                 $client->setRawBody($paramString);
                 $client->setEncType(HttpClient::ENC_URLENCODED);
                 $client->setHeaders(['Content-Length' => strlen($paramString)]);
@@ -322,7 +327,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Call a method with provided options for the HTTP client
+     * Call a method with provided options for the HTTP client.
      *
      * @param array  $options HTTP client options
      * @param string $method  Method to call
@@ -359,7 +364,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Check if an exception from a Solr request should be thrown rather than retried
+     * Check if an exception from a Solr request should be thrown rather than retried.
      *
      * @param \Exception $ex Exception
      *
@@ -397,10 +402,10 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Try all Solr URLs until we find one that works (or throw an exception).
      *
-     * @param string   $method    HTTP method to use
-     * @param string   $urlSuffix Suffix to append to all URLs tried
-     * @param callable $callback  Callback to configure client (null for none)
-     * @param bool     $cacheable Whether the request is cacheable
+     * @param string    $method    HTTP method to use
+     * @param string    $urlSuffix Suffix to append to all URLs tried
+     * @param ?callable $callback  Callback to configure client (null for none)
+     * @param bool      $cacheable Whether the request is cacheable
      *
      * @return string Response body
      *
@@ -496,6 +501,19 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         );
 
         if (!$response->isSuccess()) {
+            // Return a more detailed error message for a 400 error:
+            if ($response->getStatusCode() === 400) {
+                $json = json_decode($response->getBody(), true);
+                $msgParts = ['400', $response->getReasonPhrase()];
+                if ($msg = $json['error']['msg'] ?? '') {
+                    $msgParts[] = $msg;
+                }
+                throw new RequestErrorException(
+                    implode(' ', $msgParts),
+                    400,
+                    $response
+                );
+            }
             throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();

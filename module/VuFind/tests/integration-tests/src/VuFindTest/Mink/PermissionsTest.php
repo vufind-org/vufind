@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -80,12 +80,12 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'test-error-message',
             $this->findCssAndGetText($page, '.alert-danger')
         );
-        $this->assertEquals(
-            'Error',
+        $this->assertSame(
+            'An error has occurred',
             $this->findCssAndGetText($page, '.breadcrumb .active')
         );
 
@@ -99,7 +99,7 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         // Now that we're logged in, we should see search results:
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Search Results',
             $this->findCssAndGetText($page, '.breadcrumb .active')
         );

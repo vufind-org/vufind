@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class FeedbackController
+ * Class FeedbackController.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindAdmin\Controller
@@ -38,7 +38,7 @@ use function intval;
 use function is_array;
 
 /**
- * Class FeedbackController
+ * Class FeedbackController.
  *
  * @category VuFind
  * @package  VuFindAdmin\Controller
@@ -49,24 +49,7 @@ use function is_array;
 class FeedbackController extends AbstractAdmin
 {
     /**
-     * Get the url parameters
-     *
-     * @param string $param          A key to check the url params for
-     * @param bool   $prioritizePost If true, check the POST params first
-     * @param mixed  $default        Default value if no value found
-     *
-     * @return string|string[]
-     */
-    protected function getParam($param, $prioritizePost = false, $default = null)
-    {
-        $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
-        $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
-        return $this->params()->$primary($param)
-            ?? $this->params()->$secondary($param, $default);
-    }
-
-    /**
-     * Home action
+     * Home action.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -94,7 +77,21 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Delete action
+     * Feedback details action.
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function detailsAction()
+    {
+        $feedbackService = $this->getDbService(FeedbackServiceInterface::class);
+        $feedbackEntity = $feedbackService->getFeedbackById((int)$this->params()->fromRoute('id'));
+        $view = $this->createViewModel(compact('feedbackEntity'));
+        $view->setTemplate('admin/feedback/details');
+        return $view;
+    }
+
+    /**
+     * Delete action.
      *
      * @return \Laminas\Http\Response
      */
@@ -119,7 +116,7 @@ class FeedbackController extends AbstractAdmin
             : $this->getParam('idsAll', true);
 
         if (!is_array($ids) || empty($ids)) {
-            $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
+            $this->flashMessenger()->addErrorMessage('bulk_noitems_advice');
             return $this->redirect()->toUrl($originUrl);
         }
         if (!$confirm) {
@@ -127,21 +124,20 @@ class FeedbackController extends AbstractAdmin
         }
         $delete = $this->getDbService(FeedbackServiceInterface::class)->deleteByIdArray($ids);
         if (0 == $delete) {
-            $this->flashMessenger()->addMessage('feedback_delete_failure', 'error');
+            $this->flashMessenger()->addErrorMessage('feedback_delete_failure');
             return $this->redirect()->toUrl($originUrl);
         }
-        $this->flashMessenger()->addMessage(
+        $this->flashMessenger()->addSuccessMessage(
             [
                 'msg' => 'feedback_delete_success',
                 'tokens' => ['%%count%%' => $delete],
-            ],
-            'success'
+            ]
         );
         return $this->redirect()->toUrl($originUrl);
     }
 
     /**
-     * Confirm delete feedback messages
+     * Confirm delete feedback messages.
      *
      * @param array  $ids       IDs of feedback messages to delete
      * @param string $originUrl URL to redirect to after cancel
@@ -170,7 +166,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Get messages for confirm delete
+     * Get messages for confirm delete.
      *
      * @param int $count Count of feedback messages to delete
      *
@@ -211,7 +207,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Update status field of feedback message
+     * Update status field of feedback message.
      *
      * @return \Laminas\Http\Response
      */
@@ -224,22 +220,19 @@ class FeedbackController extends AbstractAdmin
         try {
             $feedback = $feedbackService->getFeedbackById($id);
             if ($feedback) {
-                $feedback->setStatus($newStatus);
+                $feedback
+                    ->setStatus($newStatus)
+                    ->setUpdatedBy($this->getUser());
                 $feedbackService->persistEntity($feedback);
                 $success = true;
             }
         } catch (\Exception $e) {
+            // Fall through to display an error message
         }
         if ($success) {
-            $this->flashMessenger()->addMessage(
-                'feedback_status_update_success',
-                'success'
-            );
+            $this->flashMessenger()->addSuccessMessage('feedback_status_update_success');
         } else {
-            $this->flashMessenger()->addMessage(
-                'feedback_status_update_failure',
-                'error'
-            );
+            $this->flashMessenger()->addErrorMessage('feedback_status_update_failure');
         }
         return $this->redirect()->toRoute(
             'admin/feedback',
@@ -257,7 +250,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Converts null and "ALL" params to null
+     * Converts null and "ALL" params to null.
      *
      * @param string|null $value A parameter to check
      *
@@ -270,7 +263,7 @@ class FeedbackController extends AbstractAdmin
     }
 
     /**
-     * Get available feedback statuses
+     * Get available feedback statuses.
      *
      * @return array
      */

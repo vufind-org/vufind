@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -84,7 +84,7 @@ class PluginCommand extends AbstractContainerAwareCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $class = $input->getArgument('class_name');
         $factory = $input->getArgument('factory');
@@ -94,8 +94,8 @@ class PluginCommand extends AbstractContainerAwareCommand
                 ->createPlugin($this->container, $class, $factory, $topLevel);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

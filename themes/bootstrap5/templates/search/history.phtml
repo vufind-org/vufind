@@ -2,15 +2,13 @@
   // Set page title.
   $this->headTitle($this->translate('Search History'));
 
-  // Hide the account breadcrumb when login is disabled:
+  // Set up breadcrumbs; hide the account breadcrumb when login is disabled:
   $account = $this->auth()->getManager();
-  $parentBreadcrumb = is_object($account) && $account->loginEnabled()
-    ? '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    : '';
-
-  // Set up breadcrumbs:
-  $this->layout()->breadcrumbs
-    = $parentBreadcrumb . '<li class="active">' . $this->transEsc('Search History') . '</li>';
+  $this->breadcrumbs()->reset();
+  if (is_object($account) && $account->loginEnabled()) {
+    $this->breadcrumbs()->add($this->translate('Your Account'), $this->url('myresearch-home'));
+  }
+  $this->breadcrumbs()->add($this->translate('Search History'), active: true);
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
   $loggedInUser = $this->auth()->getUserObject();
@@ -52,7 +50,7 @@
     <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
     <a class="icon-link" href="?purge=true">
       <?=$this->icon('search-delete', 'icon-link__icon') ?>
-      <span class="icon-link__label"><?=$this->transEsc('history_purge')?></span>
+      <span class="icon-link__label"><?=$this->transEsc($saveSupported ? 'history_purge' : 'history_purge_all')?></span>
     </a>
   <?php else: ?>
     <?=$this->transEsc('history_no_searches')?>
@@ -61,7 +59,7 @@
 
 <?php if ($saveSupported): ?>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-    <?=$this->accountMenu()->render('history')?>
+    <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'history'])?>
   </div>
 <?php endif; ?>
 
@@ -76,4 +74,4 @@
         })
         JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

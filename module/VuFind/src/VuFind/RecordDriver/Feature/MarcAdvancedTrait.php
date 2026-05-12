@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -53,7 +53,7 @@ use function is_array;
 trait MarcAdvancedTrait
 {
     /**
-     * Fields that may contain subject headings, and their descriptions
+     * Fields that may contain subject headings, and their descriptions.
      *
      * @var array
      */
@@ -559,16 +559,6 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get an array of summary strings for the record.
-     *
-     * @return array
-     */
-    public function getSummary()
-    {
-        return $this->getFieldArray('520');
-    }
-
-    /**
      * Get an array of technical details on the item represented by the record.
      *
      * @return array
@@ -642,7 +632,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get hierarchical place names (MARC field 752)
+     * Get hierarchical place names (MARC field 752).
      *
      * Returns an array of formatted hierarchical place names, consisting of all
      * alpha-subfields, concatenated for display
@@ -723,7 +713,7 @@ trait MarcAdvancedTrait
      *               'link'  => link_URI
      *        ),
      *        ...
-     * )
+     * ).
      *
      * @return null|array
      */
@@ -803,7 +793,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Returns the array element for the 'getAllRecordLinks' method
+     * Returns the array element for the 'getAllRecordLinks' method.
      *
      * @param array $field Field to examine
      *
@@ -885,7 +875,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Returns an id extracted from the identifier subfield passed in
+     * Returns an id extracted from the identifier subfield passed in.
      *
      * @param string $idField MARC subfield containing id information
      * @param string $prefix  Prefix to search for in id field
@@ -911,7 +901,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Support method for getFormattedMarcDetails() -- extract a single result
+     * Support method for getFormattedMarcDetails() -- extract a single result.
      *
      * @param array $currentField Result from MarcReader::getFields
      * @param array $details      Parsed instructions from getFormattedMarcDetails()
@@ -924,7 +914,7 @@ trait MarcAdvancedTrait
         if ($details['mode'] === 'msg') {
             // Map 'true' and 'false' to boolean equivalents:
             $msgMap = ['true' => true, 'false' => false];
-            return $msgMap[$details['params']] ?? $details['params'];
+            return $msgMap[$details['params'] ?? ''] ?? $details['params'];
         }
 
         // Standard case -- "marc" mode (extract subfield data):
@@ -1071,7 +1061,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first ISMN found for this record, or false if no one found
+     * Return first ISMN found for this record, or false if no one found.
      *
      * @return mixed
      */
@@ -1090,7 +1080,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Return first national bibliography number found, or false if not found
+     * Return first national bibliography number found, or false if not found.
      *
      * @return mixed
      */
@@ -1169,5 +1159,151 @@ trait MarcAdvancedTrait
     public function getTextualHoldings()
     {
         return $this->getFieldArray('866');
+    }
+
+    /**
+     * Check if an array of indicator filters match the provided marc data.
+     *
+     * @param array $marc_data MARC data for a specific field
+     * @param array $indFilter Array with up to 2 keys ('1', and '2') with an array as their value
+     * containing what to match on in the marc indicator.
+     * ex: ['1' => ['0','1']] would filter ind1 with 0 or 1
+     *
+     * @return bool
+     */
+    protected function checkIndicatorFilter($marc_data, $indFilter): bool
+    {
+        foreach (range(1, 2) as $indNum) {
+            if (isset($indFilter[$indNum])) {
+                if (!in_array(trim(($marc_data['i' . $indNum] ?? '')), (array)$indFilter[$indNum])) {
+                    return false;
+                }
+            }
+        }
+        // If we got this far, no non-matching filters were encountered.
+        return true;
+    }
+
+    /**
+     * Check if the indicator filters match the provided marc data.
+     *
+     * @param array $marc_data MARC data for a specific field
+     * @param array $indData   Indicator filters as described in getMarcFieldWithInd()
+     *
+     * @return bool
+     */
+    protected function checkIndicatorFilters($marc_data, $indData): bool
+    {
+        foreach ($indData as $indFilter) {
+            if ($this->checkIndicatorFilter($marc_data, $indFilter)) {
+                return true;
+            }
+        }
+        // If we got this far, either $indData is empty (no filters defined -- return true)
+        // or it is non-empty (no filters matched -- return false)
+        return empty($indData);
+    }
+
+    /**
+     * Takes a Marc field that notes are stored in (ex: 950) and a list of
+     * sub fields (ex: ['a','b']) optionally as well as what indicator
+     * numbers and values to filter for and concatenates the subfields
+     * together and returns the fields back as an array
+     * (ex: ['subA subB subC', 'field2SubA field2SubB']).
+     *
+     * @param string $field    Marc field to search within
+     * @param ?array $subfield Sub-fields to return or empty for all
+     * @param array  $indData  Array of filter arrays, each in the format indicator number =>
+     * array of allowed indicator values. If any one of the filter arrays fully matches the indicator
+     * values in the field, data will be returned. If no filter arrays are defined, data will always
+     * be returned regardless of indicators.
+     * ex: [['1' => ['1', '2']], ['2' => ['']]] would filter fields ind1 = 1 or 2 or ind2 = blank
+     * ex: [['1' => ['1'], '2' => ['7']]] would filter fields with ind1 = 1 and ind2 = 7
+     * ex: [] would apply no filtering based on indicators
+     *
+     * @return array The values within the subfields under the field
+     */
+    public function getMarcFieldWithInd(
+        string $field,
+        ?array $subfield = null,
+        array $indData = []
+    ) {
+        $vals = [];
+        $marc = $this->getMarcReader();
+        $marc_fields = $marc->getFields($field, $subfield);
+        foreach ($marc_fields as $marc_data) {
+            $field_vals = [];
+            if ($this->checkIndicatorFilters($marc_data, $indData)) {
+                $subfields = $marc_data['subfields'];
+                foreach ($subfields as $subfield) {
+                    $field_vals[] = $subfield['data'];
+                }
+            }
+            $newVal = implode(' ', $field_vals);
+            if (!empty($field_vals) && !in_array($newVal, $vals)) {
+                $vals[] = $newVal;
+            }
+        }
+        return $vals;
+    }
+
+    /**
+     * Get the location of other archival materials notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getLocationOfArchivalMaterialsNotes()
+    {
+        return $this->getMarcFieldWithInd('544', range('a', 'z'), [[1 => ['', '0']]]);
+    }
+
+    /**
+     * Get an array of summary strings for the record with only the 'a' subfield.
+     *
+     * @return array
+     */
+    public function getSummary()
+    {
+        return $this->getMarcFieldWithInd('520', ['a'], [[1 => ['', '0', '2', '8']]]);
+    }
+
+    /**
+     * Get the summary note.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getSummaryNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['', '0', '2', '8']]]);
+    }
+
+    /**
+     * Get the abstract notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getAbstractNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['3']]]);
+    }
+
+    /**
+     * Get the review notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getReviewNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['1']]]);
+    }
+
+    /**
+     * Get the content advice notes.
+     *
+     * @return array Note fields from the MARC record
+     */
+    public function getContentAdviceNotes()
+    {
+        return $this->getMarcFieldWithInd('520', range('a', 'z'), [[1 => ['4']]]);
     }
 }

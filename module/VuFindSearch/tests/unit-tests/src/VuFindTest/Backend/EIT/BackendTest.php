@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -57,7 +57,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
-            ->will($this->returnValue($this->loadResponse('retrieve')));
+            ->willReturn($this->loadResponse('retrieve'));
 
         $back = new Backend($conn, $this->getRCFactory());
         $back->setIdentifier('test');
@@ -66,6 +66,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('90238824', $rec->getUniqueID());
     }
@@ -80,7 +81,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
-            ->will($this->returnValue($this->loadResponse('search')));
+            ->willReturn($this->loadResponse('search'));
 
         $back = new Backend($conn, $this->getRCFactory());
         $back->setIdentifier('test');
@@ -89,6 +90,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('90238824', $rec->getUniqueID());
         $recs = $coll->getRecords();
@@ -121,7 +123,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnectorMock(), $this->getRCFactory());
-        $this->assertTrue($back->getQueryBuilder() instanceof QueryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**
@@ -171,7 +173,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a real record collection factory
+     * Build a real record collection factory.
      *
      * @return \VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory
      */

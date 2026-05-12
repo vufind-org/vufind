@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleTagManager view helper Test Class
+ * GoogleTagManager view helper Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\GoogleTagManager;
 
 /**
- * GoogleTagManager view helper Test Class
+ * GoogleTagManager view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,42 +45,42 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test getHeadCode()
+     * Test getHeadCode().
      *
      * @return void
      */
     public function testHeadCode(): void
     {
         $output = $this->renderGTMHeadCode('fakeContainerId');
-        $this->assertTrue(false !== strstr($output, 'gtm.js'));
-        $this->assertTrue(false !== strstr($output, 'fakeContainerId'));
+        $this->assertStringContainsString('gtm.js', $output);
+        $this->assertStringContainsString('fakeContainerId', $output);
     }
 
     /**
-     * Test getBodyCode()
+     * Test getBodyCode().
      *
      * @return void
      */
     public function testBodyCode(): void
     {
         $output = $this->renderGTMBodyCode('fakeContainerId');
-        $this->assertTrue(false !== strstr($output, 'ns.html'));
-        $this->assertTrue(false !== strstr($output, 'fakeContainerId'));
+        $this->assertStringContainsString('ns.html', $output);
+        $this->assertStringContainsString('fakeContainerId', $output);
     }
 
     /**
-     * Test the helper (disabled mode)
+     * Test the helper (disabled mode).
      *
      * @return void
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGTMHeadCode(false));
-        $this->assertEquals('', $this->renderGTMBodyCode(false));
+        $this->assertSame('', $this->renderGTMHeadCode(false));
+        $this->assertSame('', $this->renderGTMBodyCode(false));
     }
 
     /**
-     * Render the GTM Head element code
+     * Render the GTM Head element code.
      *
      * @param string $gtmContainerId GTM Container ID (false for disabled)
      *
@@ -94,7 +94,7 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Render the GTM Body element code
+     * Render the GTM Body element code.
      *
      * @param string $gtmContainerId GTM Container ID (false for disabled)
      *

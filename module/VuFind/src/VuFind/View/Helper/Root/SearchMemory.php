@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,14 +46,14 @@ use VuFind\Search\Memory;
 class SearchMemory extends AbstractHelper
 {
     /**
-     * Search memory
+     * Search memory.
      *
      * @var Memory
      */
     protected $memory;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Memory $memory Search memory
      */
@@ -82,7 +82,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * If a previous search is recorded in the session, return its URL
+     * If a previous search is recorded in the session, return its URL.
      *
      * @return string|null
      */
@@ -111,8 +111,14 @@ class SearchMemory extends AbstractHelper
             if (!empty($searchContext['page'])) {
                 $queryHelper = $queryHelper->setPage($searchContext['page']);
             }
+            $queryHelper = $queryHelper->setJumpto(false);
 
             $url .= $queryHelper->getParams(false);
+
+            // Make sure the URL stored in search memory stays in sync; if the stored URL has been manipulated
+            // through the EditMemory action and the user goes back to a page with a sid parameter, things can
+            // get into a bad state. Refreshing the value here ensures consistent behavior.
+            $this->memory->rememberSearch($url);
 
             return $url;
         }
@@ -172,7 +178,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Retrieve the parameters of the last search by the search class
+     * Retrieve the parameters of the last search by the search class.
      *
      * @param string $searchClassId Search class
      *
@@ -200,7 +206,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get current search id
+     * Get current search id.
      *
      * @return ?int
      */
@@ -210,7 +216,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get current search
+     * Get current search.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -220,7 +226,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get last search id
+     * Get last search id.
      *
      * @return ?int
      */
@@ -230,7 +236,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get last search
+     * Get last search.
      *
      * @return ?\VuFind\Search\Base\Results
      */

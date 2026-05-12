@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record driver plugin manager
+ * Record driver plugin manager.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 use function is_callable;
 
 /**
- * Record driver plugin manager
+ * Record driver plugin manager.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -59,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'missing' => Missing::class,
         'pazpar2' => Pazpar2::class,
         'primo' => Primo::class,
+        'proquestfsg' => ProQuestFSG::class,
         'search2default' => Search2Default::class,
         'solrarchivesspace' => SolrArchivesSpace::class,
         'solrauth' => SolrAuthMarc::class, // legacy name
@@ -71,7 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrreserves' => SolrReserves::class,
         'solrweb' => SolrWeb::class,
         'summon' => Summon::class,
-        'worldcat' => WorldCat::class,
+        'worldcat2' => WorldCat2::class,
     ];
 
     /**
@@ -82,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $delegators = [
         SolrMarc::class => [IlsAwareDelegatorFactory::class],
         SolrMarcRemote::class => [IlsAwareDelegatorFactory::class],
+        EDS::class => [IlsAwareDelegatorFactory::class],
     ];
 
     /**
@@ -110,11 +112,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         SolrReserves::class => SolrDefaultWithoutSearchServiceFactory::class,
         SolrWeb::class => SolrWebFactory::class,
         Summon::class => SummonFactory::class,
-        WorldCat::class => NameBasedConfigFactory::class,
+        WorldCat2::class => NameBasedConfigFactory::class,
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -135,7 +137,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         parent::__construct($configOrContainerInstance, $v3config);
 
         // Add an initializer for setting up hierarchies
-        $initializer = function ($sm, $instance) {
+        $initializer = function ($sm, $instance): void {
             $hasHierarchyType = is_callable([$instance, 'getHierarchyType']);
             if (
                 $hasHierarchyType

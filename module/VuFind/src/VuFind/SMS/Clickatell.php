@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for text messaging via Clickatell's HTTP API
+ * Class for text messaging via Clickatell's HTTP API.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  SMS
@@ -34,7 +34,7 @@ use VuFind\Exception\SMS as SMSException;
 use function function_exists;
 
 /**
- * Class for text messaging via Clickatell's HTTP API
+ * Class for text messaging via Clickatell's HTTP API.
  *
  * @category VuFind
  * @package  SMS
@@ -45,20 +45,20 @@ use function function_exists;
 class Clickatell extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config  SMS configuration
-     * @param array                  $options Additional options (client may be an
-     * HTTP client object)
+     * @param \VuFind\Config\Config $config  SMS configuration
+     * @param array                 $options Additional options (client may be an
+     *                                       HTTP client object)
      */
-    public function __construct(\Laminas\Config\Config $config, $options = [])
+    public function __construct(\VuFind\Config\Config $config, $options = [])
     {
         parent::__construct($config);
         $this->client = $options['client'] ?? new \Laminas\Http\Client();

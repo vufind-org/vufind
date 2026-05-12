@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -50,14 +50,14 @@ class ReCaptcha extends AbstractBase
     protected $recaptcha;
 
     /**
-     * Language
+     * Language.
      *
      * @var string
      */
     protected $language;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Service\ReCaptcha $recaptcha ReCaptcha Service
      * @param string                    $language  Translator locale
@@ -92,7 +92,7 @@ class ReCaptcha extends AbstractBase
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy
+     * Pull the captcha field from controller params and check them for accuracy.
      *
      * @param Params $params Controller params
      *

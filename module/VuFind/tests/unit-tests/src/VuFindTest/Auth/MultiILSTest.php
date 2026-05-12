@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,14 +48,14 @@ use VuFindTest\Container\MockDbServicePluginManager;
  */
 class MultiILSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Container for building mocks.
      *
      * @var \VuFindTest\Container\MockContainer
      */
-    protected $container;
+    protected \VuFindTest\Container\MockContainer $container;
 
     /**
      * Standard setup method.
@@ -64,7 +64,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $this->container = new \VuFindTest\Container\MockContainer($this);
+        $this->container = $this->getContainerWithConfigRelatedServices();
     }
 
     /**
@@ -72,7 +72,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateIsDisallowed()
+    public function testCreateIsDisallowed(): void
     {
         $this->assertFalse($this->getMultiILS()->supportsCreation());
     }
@@ -82,7 +82,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithEmptyTarget()
+    public function testLoginWithEmptyTarget(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -95,7 +95,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithInvalidTarget()
+    public function testLoginWithInvalidTarget(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -108,7 +108,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -121,7 +121,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -134,7 +134,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBadLoginResponse()
+    public function testBadLoginResponse(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -143,7 +143,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $response = [];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $this->getMultiILS($driver)->authenticate($this->getLoginRequest());
     }
@@ -153,7 +153,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLogin()
+    public function testLogin(): void
     {
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
@@ -161,7 +161,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $mockUser = $this->getMockUser();
         $mockUser->expects($this->once())->method('setCatUsername')->with('testuser');
@@ -177,7 +177,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithMissingCatId()
+    public function testLoginWithMissingCatId(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
@@ -188,13 +188,13 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $auth = $this->getMultiILS($driver);
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];
-        $auth->setConfig(new \Laminas\Config\Config($config));
+        $auth->setConfig(new \VuFind\Config\Config($config));
         $auth->authenticate($this->getLoginRequest());
     }
 
@@ -204,33 +204,32 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $overrides Associative array of parameters to override.
      *
-     * @return \Laminas\Http\Request
+     * @return \Laminas\Http\PhpEnvironment\Request
      */
-    protected function getLoginRequest($overrides = [])
+    protected function getLoginRequest(array $overrides = []): \Laminas\Http\PhpEnvironment\Request
     {
         $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass', 'target' => 'ils1',
         ];
-        $request = new \Laminas\Http\Request();
+        $request = new \Laminas\Http\PhpEnvironment\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
         return $request;
     }
 
     /**
-     * Get mock ILS authenticator
+     * Get mock ILS authenticator.
      *
-     * @param array $patron Logged in patron to simulate (null for none).
+     * @param ?array $patron Logged in patron to simulate (null for none).
      *
      * @return MockObject&ILSAuthenticator
      */
-    protected function getMockILSAuthenticator($patron = null): MockObject&ILSAuthenticator
+    protected function getMockILSAuthenticator(?array $patron = null): MockObject&ILSAuthenticator
     {
         $mock = $this->getMockBuilder(ILSAuthenticator::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')
-            ->willReturn($patron);
+        $mock->method('storedCatalogLogin')->willReturn($patron);
         $mock->setDbServiceManager(new MockDbServicePluginManager($this));
         return $mock;
     }
@@ -238,44 +237,29 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock MultiBackend driver to test.
      *
-     * @param array $onlyMethods Existing methods to mock (in addition to
-     * supportsMethod)
-     * @param array $addMethods  New methods to mock (in addition to
-     * getLoginDrivers)
+     * @param array $onlyMethods Existing methods to mock (in addition to supportsMethod)
      *
      * @return MockObject&MultiBackend
      */
-    protected function getMockMultiBackend(
-        $onlyMethods = [],
-        $addMethods = ['patronLogin']
-    ): MockObject&MultiBackend {
+    protected function getMockMultiBackend(array $onlyMethods = []): MockObject&MultiBackend
+    {
         $onlyMethods[] = 'supportsMethod';
         $onlyMethods[] = 'getLoginDrivers';
         $onlyMethods[] = 'getConfig';
-        $configLoader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->setConstructorArgs([$this->container])
-            ->getMock();
-        $ilsAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $onlyMethods[] = 'patronLogin';
+        $configManager = $this->container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $ilsAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         $driverManager
             = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->setConstructorArgs([$this->container])
             ->getMock();
         $driver = $this->getMockBuilder(\VuFind\ILS\Driver\MultiBackend::class)
-            ->setConstructorArgs([$configLoader, $ilsAuth, $driverManager])
+            ->setConstructorArgs([$configManager, $ilsAuth, $driverManager])
             ->onlyMethods($onlyMethods)
-            ->addMethods($addMethods)
             ->getMock();
-        $driver->expects($this->any())
-            ->method('getLoginDrivers')
-            ->willReturn(['ils1']);
-        $driver->expects($this->any())
-            ->method('supportsMethod')
-            ->willReturn(true);
-        $driver->expects($this->any())
-            ->method('getConfig')
-            ->willReturn(new \Laminas\Config\Config([]));
+        $driver->method('getLoginDrivers')->willReturn(['ils1']);
+        $driver->method('supportsMethod')->willReturn(true);
+        $driver->method('getConfig')->willReturn(new \VuFind\Config\Config([]));
 
         return $driver;
     }
@@ -311,13 +295,10 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockAuthenticator = $this->getMockILSAuthenticator($patron);
         $mockUser ??= $this->getMockUser();
         $mockUserService = $this->createMock(UserServiceInterface::class);
-        $mockUserService->expects($this->any())
-            ->method('getUserByUsername')
-            ->willReturn($mockUser);
-        $mockUserService->expects($this->any())
-            ->method('updateUserEmail')
+        $mockUserService->method('getUserByUsername')->willReturn($mockUser);
+        $mockUserService->method('updateUserEmail')
             ->willReturnCallback(
-                function ($mockUser, $email) {
+                function ($mockUser, string $email): void {
                     $mockUser->setEmail($email);
                 }
             );
@@ -328,7 +309,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driverManager = new \VuFind\ILS\Driver\PluginManager($this->container);
         $parts = explode('\\', $driver::class);
         $driverClass = end($parts);
-        $mockConfigReader = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             [
                 $driverClass => [
                     'Drivers' => [
@@ -341,9 +322,9 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ],
         );
         $connection = new \VuFind\ILS\Connection(
-            new \Laminas\Config\Config(['driver' => 'MultiBackend']),
+            new \VuFind\Config\Config(['driver' => 'MultiBackend']),
             $driverManager,
-            $mockConfigReader
+            $mockConfigManager
         );
         $connection->setDriver($driver);
 

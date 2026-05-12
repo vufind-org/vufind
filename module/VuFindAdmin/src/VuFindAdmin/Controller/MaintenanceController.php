@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Maintenance Controller
+ * Admin Maintenance Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -31,8 +31,8 @@ namespace VuFindAdmin\Controller;
 
 use DateTime;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Log\LoggerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 use VuFind\Db\Service\SearchServiceInterface;
@@ -43,7 +43,7 @@ use function ini_get;
 use function intval;
 
 /**
- * Class helps maintain database
+ * Class helps maintain database.
  *
  * @category VuFind
  * @package  Controller
@@ -54,28 +54,28 @@ use function intval;
 class MaintenanceController extends AbstractAdmin
 {
     /**
-     * Cache manager
+     * Cache manager.
      *
      * @var CacheManager
      */
     protected $cacheManager;
 
     /**
-     * Guzzle service
+     * Guzzle service.
      *
      * @var GuzzleService
      */
     protected $guzzleService;
 
     /**
-     * Logger
+     * Logger.
      *
      * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm            Service locator
      * @param CacheManager            $cacheManager  Cache manager
@@ -95,7 +95,7 @@ class MaintenanceController extends AbstractAdmin
     }
 
     /**
-     * System Maintenance
+     * System Maintenance.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -118,8 +118,7 @@ class MaintenanceController extends AbstractAdmin
     protected function getScripts(): array
     {
         // Load the AdminScripts.ini settings
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get('AdminScripts')->toArray();
+        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('AdminScripts');
         $globalConfig = $config['Global'] ?? [];
         unset($config['Global']);
 
@@ -256,11 +255,9 @@ class MaintenanceController extends AbstractAdmin
                 throw new \Exception("Unsupported service: $serviceName");
             }
             $count = $service->deleteExpired(new DateTime("now - $daysOld days"));
-            if ($count == 0) {
-                $msg = $failString;
-            } else {
-                $msg = str_replace('%%count%%', $count, $successString);
-            }
+            $msg = $count == 0
+                ? $failString
+                : str_replace('%%count%%', $count, $successString);
             $this->flashMessenger()->addSuccessMessage($msg);
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
@@ -295,7 +292,7 @@ class MaintenanceController extends AbstractAdmin
         $cache = new SimpleCacheDecorator($this->cacheManager->getCache('browscap'));
         $client = $this->guzzleService->createClient();
 
-        $bc = new \BrowscapPHP\BrowscapUpdater($cache, new \Laminas\Log\PsrLoggerAdapter($this->logger), $client);
+        $bc = new \BrowscapPHP\BrowscapUpdater($cache, $this->logger, $client);
         try {
             $bc->checkUpdate();
         } catch (\BrowscapPHP\Exception\NoNewVersionException $e) {

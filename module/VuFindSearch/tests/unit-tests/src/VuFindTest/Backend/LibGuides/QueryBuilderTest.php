@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for LibGuides query builder
+ * Unit tests for LibGuides query builder.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -35,7 +35,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 /**
- * Unit tests for LibGuides query builder
+ * Unit tests for LibGuides query builder.
  *
  * @category VuFind
  * @package  Search
@@ -46,7 +46,7 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilderTest extends TestCase
 {
     /**
-     * Test basic query parsing
+     * Test basic query parsing.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class QueryBuilderTest extends TestCase
     }
 
     /**
-     * Test advanced query parsing (not currently supported)
+     * Test advanced query parsing (not currently supported).
      *
      * @return void
      */

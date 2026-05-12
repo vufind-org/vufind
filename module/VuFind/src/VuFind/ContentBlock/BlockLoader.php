@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Content block loader
+ * Content block loader.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -29,14 +29,14 @@
 
 namespace VuFind\ContentBlock;
 
-use Laminas\Config\Config;
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\ContentBlock\PluginManager as BlockManager;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
 /**
- * Content block plugin manager
+ * Content block plugin manager.
  *
  * @category VuFind
  * @package  ContentBlock
@@ -47,41 +47,17 @@ use VuFind\Search\Options\PluginManager as OptionsManager;
 class BlockLoader
 {
     /**
-     * Options manager.
+     * Constructor.
      *
-     * @var OptionsManager
-     */
-    protected $optionsManager;
-
-    /**
-     * Config manager.
-     *
-     * @var ConfigManager
-     */
-    protected $configManager;
-
-    /**
-     * Block manager.
-     *
-     * @var BlockManager
-     */
-    protected $blockManager;
-
-    /**
-     * Constructor
-     *
-     * @param OptionsManager $om Options manager
-     * @param ConfigManager  $cm Config manager
-     * @param BlockManager   $bm Block manager
+     * @param OptionsManager         $optionsManager Options manager
+     * @param ConfigManagerInterface $configManager  Config manager
+     * @param BlockManager           $blockManager   Block manager
      */
     public function __construct(
-        OptionsManager $om,
-        ConfigManager $cm,
-        BlockManager $bm
+        protected OptionsManager $optionsManager,
+        protected ConfigManagerInterface $configManager,
+        protected BlockManager $blockManager
     ) {
-        $this->optionsManager = $om;
-        $this->configManager = $cm;
-        $this->blockManager = $bm;
     }
 
     /**
@@ -110,7 +86,7 @@ class BlockLoader
     }
 
     /**
-     * Fetch blocks using a configuration name
+     * Fetch blocks using a configuration name.
      *
      * @param string $name    Configuration name
      * @param string $section Section to load from object
@@ -123,7 +99,7 @@ class BlockLoader
         $section = 'HomePage',
         $setting = 'content'
     ) {
-        $config = $this->configManager->get($name);
+        $config = $this->configManager->getConfigObject($name);
         return $this->getFromConfigObject($config, $section, $setting);
     }
 

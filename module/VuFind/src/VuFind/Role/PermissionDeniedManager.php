@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * PHP version 8
  *
@@ -17,15 +17,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
 
 namespace VuFind\Role;
@@ -33,19 +33,19 @@ namespace VuFind\Role;
 use function count;
 
 /**
- * Permission Manager
+ * Permission Manager.
  *
  * @category VuFind
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Oliver Goldschmidt <o.goldschmidt@tuhh.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
 class PermissionDeniedManager
 {
     /**
-     * List config
+     * List config.
      *
      * @var array
      */
@@ -67,7 +67,7 @@ class PermissionDeniedManager
     protected $defaultDeniedTemplateBehavior = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $config configuration
      */
@@ -87,7 +87,7 @@ class PermissionDeniedManager
     }
 
     /**
-     * Set the default behavior for a denied controller permission
+     * Set the default behavior for a denied controller permission.
      *
      * @param string|bool $value Default behavior for a denied controller permission
      *
@@ -99,7 +99,7 @@ class PermissionDeniedManager
     }
 
     /**
-     * Set the default behavior for a denied template permission
+     * Set the default behavior for a denied template permission.
      *
      * @param string|bool $value Default behavior for a denied template permission
      *
@@ -155,7 +155,7 @@ class PermissionDeniedManager
     }
 
     /**
-     * Get permission denied logic
+     * Get permission denied logic.
      *
      * @param string $permission      Permission that has been denied
      * @param string $mode            Mode of the operation. Should be either

@@ -2,8 +2,14 @@
 /*exported loadMapTab */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
+/**
+ * Initialize and display an interactive map on the '#map-canvas' element.
+ * @param {Array<Array<string|number>>} mapData      An array of arrays, where each inner array represents a geographic feature
+ * @param {boolean}                     mapGraticule A boolean indicating whether to display a graticule on the map.
+ * @param {Array<string>}               basemap      An array containing the basemap URL template and its attribution text.
+ */
 function loadMapTab(mapData, mapGraticule, basemap) {
-  var basemapLayer = new L.TileLayer(basemap[0], {attribution: basemap[1]});	
+  var basemapLayer = new L.TileLayer(basemap[0], {attribution: basemap[1]});
   var geoFeatureGroup = L.featureGroup();
   // Define styles for icons
   var displayIcon = L.Icon.extend({
@@ -15,8 +21,8 @@ function loadMapTab(mapData, mapGraticule, basemap) {
     }
   });
   var redIcon = new displayIcon({
-    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
-    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-icon-2x-red.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-shadow.png'
   });
 
   $('#map-canvas').show();
@@ -79,7 +85,7 @@ function loadMapTab(mapData, mapGraticule, basemap) {
     //Get center of geoFeatures group
     var geoBounds = geoFeatureGroup.getBounds();
     var geoCenter = geoBounds.getCenter();
- 
+
     // Draw map and add layers
     var mapTab = new L.Map("map-canvas", {
       layers: [basemapLayer, geoFeatureGroup],

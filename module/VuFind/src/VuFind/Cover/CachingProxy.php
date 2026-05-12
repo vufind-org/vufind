@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Caching Proxy for Cover Images
+ * Caching Proxy for Cover Images.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -35,7 +35,7 @@ use Laminas\Http\Response;
 use function dirname;
 
 /**
- * Caching Proxy for Cover Images
+ * Caching Proxy for Cover Images.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -46,28 +46,28 @@ use function dirname;
 class CachingProxy
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * Base directory for cache
+     * Base directory for cache.
      *
      * @var string
      */
     protected $cache;
 
     /**
-     * Array of regular expressions for hosts to cache
+     * Array of regular expressions for hosts to cache.
      *
      * @var array
      */
     protected $allowedHosts;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Client  $client       HTTP client
      * @param ?string $cache        Base directory for cache (null to disable caching)

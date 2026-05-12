@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -95,19 +95,19 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     /**
      * Generic support function for successful request tests.
      *
-     * @param string  $ilsMethod   ILS method to mock
-     * @param ?string $requestType Request type for params helper
+     * @param string $ilsMethod   ILS method to mock
+     * @param string $requestType Request type for params helper
      *
      * @return array
      */
-    protected function runSuccessfulTest($ilsMethod, $requestType = null): array
+    protected function runSuccessfulTest($ilsMethod, $requestType = ''): array
     {
         $ilsAuth = $this->container
             ->createMock(ILSAuthenticator::class, ['storedCatalogLogin']);
         $ilsAuth->expects($this->once())->method('storedCatalogLogin')->willReturn([3]);
         $ils = $this->container->createMock(Connection::class, [$ilsMethod]);
         $ils->expects($this->once())->method($ilsMethod)
-            ->with($this->equalTo(1), $this->equalTo(2), $this->equalTo([3]))
+            ->with(1, 2, [3])
             ->willReturn(true);
         $this->container->set(Connection::class, $ils);
         $this->container->set(ILSAuthenticator::class, $ilsAuth);

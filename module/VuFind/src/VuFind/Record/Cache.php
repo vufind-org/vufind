@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Cache
+ * Record Cache.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -31,13 +31,13 @@
 
 namespace VuFind\Record;
 
-use Laminas\Config\Config as Config;
+use VuFind\Config\Config as Config;
 use VuFind\Db\Entity\RecordEntityInterface;
 use VuFind\Db\Service\RecordServiceInterface;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 
 /**
- * Record Cache
+ * Record Cache.
  *
  * @category VuFind
  * @package  Record
@@ -46,7 +46,7 @@ use VuFind\RecordDriver\PluginManager as RecordFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Cache implements \Laminas\Log\LoggerAwareInterface
+class Cache implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -62,7 +62,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     protected $cachableSources = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RecordFactory          $recordFactoryManager Record driver plugin manager
      * @param Config                 $cacheConfig          RecordCache.ini contents
@@ -77,7 +77,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Create a new or update an existing cache entry
+     * Create a new or update an existing cache entry.
      *
      * @param string $recordId Record id
      * @param string $source   Source name
@@ -163,7 +163,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the context for controlling cache behaviour
+     * Set the context for controlling cache behaviour.
      *
      * @param string $context Cache context
      *
@@ -201,7 +201,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Convenience method for checking if cache is used as primary data data source
+     * Convenience method for checking if cache is used as primary data data source.
      *
      * @param string $source Record source
      *
@@ -215,7 +215,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Convenience method for checking if cache is used as fallback data source
+     * Convenience method for checking if cache is used as fallback data source.
      *
      * @param string $source Record source
      *
@@ -229,7 +229,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Check whether a record source is cachable
+     * Check whether a record source is cacheable.
      *
      * @param string $source Record source
      *
@@ -243,7 +243,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Helper function to get records from cached source-specific record data
+     * Helper function to get records from cached source-specific record data.
      *
      * @param RecordEntityInterface $cachedRecord Record data
      *

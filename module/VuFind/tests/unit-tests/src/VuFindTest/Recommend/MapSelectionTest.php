@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MapSelection recommendation module Test Class
+ * MapSelection recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ use VuFind\Recommend\MapSelection;
 use VuFindSearch\Service;
 
 /**
- * MapSelection recommendation module Test Class
+ * MapSelection recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,18 +50,17 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSearchService(): Service
     {
-        return $this->getMockBuilder(Service::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(Service::class);
     }
 
     /**
      * Get the class to test.
      *
-     * @param Service $ss Search service
+     * @param ?Service $ss Search service
      *
      * @return MapSelection
      */
-    protected function getMapSelection(Service $ss = null): MapSelection
+    protected function getMapSelection(?Service $ss = null): MapSelection
     {
         $defaultBasemapOptions = [
             'basemap_url' => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
@@ -81,7 +80,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getter for geofield
+     * Test getter for geofield.
      *
      * @return void
      */
@@ -91,7 +90,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getter for height
+     * Test getter for height.
      *
      * @return void
      */
@@ -114,7 +113,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getter for basemap
+     * Test getter for basemap.
      *
      * @return void
      */

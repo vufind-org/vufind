@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Code module for VuFind's console functionality
+ * Code module for VuFind's console functionality.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Module
@@ -30,7 +30,7 @@
 namespace VuFindConsole;
 
 /**
- * Code module for VuFind's console functionality
+ * Code module for VuFind's console functionality.
  *
  * @category VuFind
  * @package  Module
@@ -41,28 +41,12 @@ namespace VuFindConsole;
 class Module
 {
     /**
-     * Get module configuration
+     * Get module configuration.
      *
      * @return array
      */
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
-    }
-
-    /**
-     * Get autoloader configuration
-     *
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
     }
 }

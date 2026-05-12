@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -41,25 +41,25 @@ namespace VuFind\Content\Covers;
 class ContentCafe extends \VuFind\Content\AbstractCover
 {
     /**
-     * API password
+     * API password.
      *
      * @var string
      */
     protected $password;
 
     /**
-     * Base URL
+     * Base URL.
      *
      * @var string
      */
     protected $baseURL;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config Configuration
+     * @param \VuFind\Config\Config $config Configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->password = $config->pw;
         $this->baseURL = $config->url ?? 'http://contentcafe2.btol.com';

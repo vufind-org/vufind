@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Database
+ * Class Database.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -32,13 +32,14 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
- * Class Database
+ * Class Database.
  *
  * @category VuFind
  * @package  Form
@@ -51,13 +52,15 @@ class Database implements HandlerInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FeedbackServiceInterface $feedbackService Feedback database service
+     * @param UserService              $userService     User database service
      * @param string                   $baseUrl         Site base url
      */
     public function __construct(
         protected FeedbackServiceInterface $feedbackService,
+        protected UserService $userService,
         protected string $baseUrl
     ) {
     }

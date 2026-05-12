@@ -17,14 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 
 namespace VuFindSearch\Backend\Blender\Response\Json;
@@ -45,43 +45,43 @@ use function is_string;
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
-     * Blender configuration
+     * Blender configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Mappings configuration
+     * Mappings configuration.
      *
      * @var array
      */
     protected $mappings;
 
     /**
-     * Backends to be used for initial results
+     * Backends to be used for initial results.
      *
      * @var array
      */
     protected $initialResultsBackends;
 
     /**
-     * Any errors encountered
+     * Any errors encountered.
      *
      * @var array
      */
     protected $errors = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config   Configuration
-     * @param array                  $mappings Mappings configuration
+     * @param \VuFind\Config\Config $config   Configuration
+     * @param array                 $mappings Mappings configuration
      */
     public function __construct($config = null, $mappings = [])
     {
@@ -95,7 +95,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Initialize blended results
+     * Initialize blended results.
      *
      * Creates a record list from 0 to $limit
      *
@@ -149,7 +149,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Add an error message
+     * Add an error message.
      *
      * @param mixed $error Error
      *
@@ -191,7 +191,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get delimiter for the given facet field
+     * Get delimiter for the given facet field.
      *
      * @param string $field Facet field
      *
@@ -211,7 +211,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Collect records from all backends to an associative array
+     * Collect records from all backends to an associative array.
      *
      * @param array $collections Array of record collections
      *
@@ -254,7 +254,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Store errors from all backends
+     * Store errors from all backends.
      *
      * @param array $collections Array of record collections
      *
@@ -282,7 +282,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Calculate the backend to be used for a record at the given position
+     * Calculate the backend to be used for a record at the given position.
      *
      * Note: This does not take into account whether there are enough records in the
      * source.
@@ -312,7 +312,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Merge facets
+     * Merge facets.
      *
      * @param array $collections Result collections
      *
@@ -355,7 +355,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Map facet values from the backends into a merged list
+     * Map facet values from the backends into a merged list.
      *
      * @param array $collections Result collections
      * @param array $settings    Settings for a single facet field
@@ -412,7 +412,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get parent hierarchy keys for a facet value
+     * Get parent hierarchy keys for a facet value.
      *
      * For example with '2/Main/Sub/Shelf/' the result is:
      * [
@@ -437,7 +437,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Get facet counts for Blender backend facet
+     * Get facet counts for Blender backend facet.
      *
      * @param array $collections Collections
      *
@@ -464,7 +464,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     }
 
     /**
-     * Convert a facet value from a backend
+     * Convert a facet value from a backend.
      *
      * @param string $value        Facet value
      * @param string $type         Facet type

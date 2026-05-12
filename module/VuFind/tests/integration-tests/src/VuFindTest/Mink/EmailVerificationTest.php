@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -73,6 +73,8 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
                     'Mail' => [
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                        'default_from' => 'noreply@vufind.org',
                     ],
                 ],
             ]
@@ -88,19 +90,26 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Email address verification instructions have been sent to the email address registered with this account.',
             $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract the link from the provided message:
-        $email = file_get_contents($this->getEmailLogPath());
-        preg_match('/You can verify your email address with this link: <(http.*)>/', $email, $matches);
-        $verifyLink = $matches[1];
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#verification_code', '123');
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
+        );
 
-        // Follow the verification link:
-        $session->visit($verifyLink);
-        $this->assertEquals(
+        // Enter the one-time code:
+        $code = $this->extractVerificationCodeFromEmail('username1@ignore.com');
+        $this->findCssAndSetValue($page, '#verification_code', $code);
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+
+        // Check result:
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );
@@ -120,9 +129,8 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
      * Test changing email address.
      *
      * @return void
-     *
-     * @depends testEmailVerification
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailVerification')]
     public function testEmailAddressChange(): void
     {
         // Set up configs, session and message logging:
@@ -136,6 +144,8 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
                     'Mail' => [
                         'testOnly' => true,
                         'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                        'default_from' => 'noreply@vufind.org',
                     ],
                 ],
             ]
@@ -154,9 +164,9 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Request the email change:
         $this->clickCss($page, '.fa-envelope');
-        $this->assertEquals(
+        $this->assertSame(
             'Submitting this form will send an email to the new address; '
-            . 'you will have to click on a link in the email before the change will take effect.',
+            . 'you will have to enter a verification code from the email before the change will take effect.',
             $this->findCssAndGetText($page, '.alert-info')
         );
         $this->findCssAndSetValue($page, 'input[name="email"]', 'changed@example.com');
@@ -169,20 +179,33 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, 'table.table-striped')
         );
 
-        // Confirm that messages went to both new and old email addresses, and extract the verify link:
-        $email = file_get_contents($this->getEmailLogPath());
-        $this->assertStringContainsString('To: changed@example.com', $email);
-        $this->assertStringContainsString('To: username1@ignore.com', $email);
+        // Go back to verification page:
+        $session->back();
+
+        // Confirm that messages went to both new and old email addresses, and extract the verification code:
+        $code = $this->extractVerificationCodeFromEmail('changed@example.com');
+
+        $notifyEmail = $this->getLoggedEmail(1);
+        $this->assertSame('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
         $this->assertStringContainsString(
             'A request was just made to change your email address at Library Catalog.',
-            $email
+            (string)$notifyEmail->getBody()->getBody()
         );
-        preg_match('/You can verify your email address with this link: <(http.*)>/', $email, $matches);
-        $verifyLink = $matches[1];
 
-        // Follow the verification link:
-        $session->visit($verifyLink);
-        $this->assertEquals(
+        // Try wrong code first:
+        $this->findCssAndSetValue($page, '#verification_code', '123');
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.alert-danger')
+        );
+
+        // Enter the one-time code:
+        $this->findCssAndSetValue($page, '#verification_code', $code);
+        $this->clickCss($page, '.form-email-verification .btn-primary');
+
+        // Check result:
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );

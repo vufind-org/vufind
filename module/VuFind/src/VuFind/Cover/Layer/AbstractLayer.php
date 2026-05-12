@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract cover layer
+ * Abstract cover layer.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -32,7 +32,7 @@ namespace VuFind\Cover\Layer;
 use function strlen;
 
 /**
- * Abstract cover layer
+ * Abstract cover layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -67,7 +67,7 @@ abstract class AbstractLayer implements LayerInterface
     ];
 
     /**
-     * Check and allocates color
+     * Check and allocates color.
      *
      * @param resource $im    Image resource being updated
      * @param string   $color Legal color name from HTML4
@@ -93,7 +93,7 @@ abstract class AbstractLayer implements LayerInterface
     }
 
     /**
-     * Using HSB allows us to control the contrast while allowing randomness
+     * Using HSB allows us to control the contrast while allowing randomness.
      *
      * @param resource $im Active image resource
      * @param int      $h  Hue (0-255)

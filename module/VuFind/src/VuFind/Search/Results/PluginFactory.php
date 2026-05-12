@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,7 +32,7 @@ namespace VuFind\Search\Results;
 use Psr\Container\ContainerInterface;
 
 /**
- * Search results plugin factory
+ * Search results plugin factory.
  *
  * @category VuFind
  * @package  Search
@@ -43,7 +43,7 @@ use Psr\Container\ContainerInterface;
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -56,7 +56,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      *
      * @param ContainerInterface $container     Service container
      * @param string             $requestedName Name of service
-     * @param array              $extras        Extra options
+     * @param ?array             $extras        Extra options
      *
      * @return object
      *
@@ -65,7 +65,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $extras = null
+        ?array $extras = null
     ) {
         $paramsService = preg_replace('/Results$/', 'Params', $requestedName);
         $params = $container->get(\VuFind\Search\Params\PluginManager::class)

@@ -32,12 +32,21 @@ await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
 // jQuery
 await copyFile('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js');
 
+// js-cookie
+await copyFile('node_modules/js-cookie/dist/js.cookie.min.js', 'js/vendor/js.cookie.min.js');
+
+// libphonenumber-js
+await copyFile('node_modules/libphonenumber-js/bundle/libphonenumber-js.min.js', 'js/vendor/libphonenumber.js');
+await copyFile('node_modules/libphonenumber-js/LICENSE', 'js/vendor/libphonenumber-js_LICENSE');
+
+// nouislider
+await copyFile('node_modules/nouislider/LICENSE.md', 'js/vendor/nouislider_LICENSE.md');
+await copyFile('node_modules/nouislider/dist/nouislider.min.js', 'js/vendor/nouislider.min.js');
+await copyFile('node_modules/nouislider/dist/nouislider.min.css', 'css/vendor/nouislider.min.css');
+
 // simple-keyboard
 await copyFile('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js');
 await copyFile('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css');
 await copyFile('node_modules/simple-keyboard-layouts/build/index.js', 'js/vendor/simple-keyboard-layouts/index.js');
-
-// vanilla-cookieconsent
-await copyFile('node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js', 'js/vendor/cookieconsent.umd.js');
 
 console.log('Done copying dependencies.');

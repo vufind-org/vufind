@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Email Authenticator Test Class
+ * Email Authenticator Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,23 +30,23 @@
 namespace VuFindTest\Auth;
 
 use DateTime;
-use Laminas\Config\Config;
-use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\Request;
-use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use VuFind\Auth\EmailAuthenticator;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\AuthHashEntityInterface;
 use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Mailer\Mailer;
+use VuFind\Net\UserIpReader;
 use VuFind\Validator\CsrfInterface;
+use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * Email Authenticator Manager Test Class
+ * Email Authenticator Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -56,6 +56,8 @@ use VuFind\Validator\CsrfInterface;
  */
 class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
 {
+    use TranslatorTrait;
+
     /**
      * Get an EmailAuthenticator to test.
      *
@@ -63,7 +65,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @param ?CsrfInterface            $csrf            CSRF validator
      * @param ?Mailer                   $mailer          Mailer service
      * @param ?PhpRenderer              $renderer        View renderer
-     * @param ?RemoteAddress            $remoteAddress   Remote address details
+     * @param ?userIpReader             $userIpReader    User IP reader
      * @param array                     $config          Configuration settings
      * @param ?AuthHashServiceInterface $authHashService AuthHash database service
      *
@@ -73,30 +75,24 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
      * @throws NoPreviousThrowableException
      */
     protected function getEmailAuthenticator(
-        SessionManager $sessionManager = null,
-        CsrfInterface $csrf = null,
-        Mailer $mailer = null,
-        PhpRenderer $renderer = null,
-        RemoteAddress $remoteAddress = null,
+        ?SessionManager $sessionManager = null,
+        ?CsrfInterface $csrf = null,
+        ?Mailer $mailer = null,
+        ?PhpRenderer $renderer = null,
+        ?UserIpReader $userIpReader = null,
         array $config = [],
-        AuthHashServiceInterface $authHashService = null
+        ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
             $sessionManager ?? $this->createMock(SessionManager::class),
             $csrf ?? $this->createMock(CsrfInterface::class),
             $mailer ?? $this->createMock(Mailer::class),
             $renderer ?? $this->createMock(PhpRenderer::class),
-            $remoteAddress ?? $this->createMock(RemoteAddress::class),
+            $userIpReader ?? $this->createMock(UserIpReader::class),
             new Config($config),
             $authHashService ?? $this->createMock(AuthHashServiceInterface::class)
         );
-        $mockTranslator = $this->createMock(TranslatorInterface::class);
-        $mockTranslator->method('translate')->willReturnCallback(
-            function ($str) {
-                return $str;
-            }
-        );
-        $authenticator->setTranslator($mockTranslator);
+        $authenticator->setTranslator($this->getMockTranslator([]));
         return $authenticator;
     }
 
@@ -134,7 +130,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
         $row->expects($this->once())->method('setSessionId')->with('foo-session')->willReturn($row);
-        $assertData = function ($data) {
+        $assertData = function ($data): void {
             $this->assertIsInt($data['timestamp']);
             $this->assertEquals(['foo-data'], $data['data']);
             $this->assertEquals('me@example.com', $data['email']);
@@ -186,14 +182,14 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $renderer->expects($this->once())->method('render')
             ->with('Email/login-link.phtml', $this->callback($checkViewParams))
             ->willReturn('foo-message');
-        $remoteAddress = $this->createMock(RemoteAddress::class);
-        $remoteAddress->expects($this->once())->method('getIpAddress')->willReturn('foo-ip');
+        $userIpReader = $this->createMock(userIpReader::class);
+        $userIpReader->expects($this->once())->method('getUserIp')->willReturn('foo-ip');
         $authenticator = $this->getEmailAuthenticator(
             sessionManager: $sessionManager,
             csrf: $csrf,
             mailer: $mailer,
             renderer: $renderer,
-            remoteAddress: $remoteAddress,
+            userIpReader: $userIpReader,
             config: ['Site' => ['title' => 'foo-site-title', 'email' => 'from@example.com']],
             authHashService: $authHashService
         );

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ThemeCompiler Test Class
+ * ThemeCompiler Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ use VuFindTheme\ThemeCompiler;
 use VuFindTheme\ThemeInfo;
 
 /**
- * ThemeCompiler Test Class
+ * ThemeCompiler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,14 +46,14 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * ThemeInfo object for tests
+     * ThemeInfo object for tests.
      *
      * @var ThemeInfo
      */
     protected $info;
 
     /**
-     * Path where new theme will be created
+     * Path where new theme will be created.
      *
      * @var string
      */
@@ -112,6 +112,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
 
         // Did the configuration merge correctly?
         $expectedConfig = [
+            'themeName' => 'child',
             'extends' => false,
             'css' => ['child.css'],
             'js' => ['hello.js', 'extra.js'],
@@ -171,6 +172,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
 
         // Did the configuration merge correctly?
         $expectedConfig = [
+            'themeName' => 'mixin_user',
             'extends' => false,
             'css' => ['child.css'],
             'js' => ['hello.js', 'extra.js', 'mixin.js'],
@@ -231,7 +233,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a test ThemeCompiler object
+     * Get a test ThemeCompiler object.
      *
      * @return ThemeCompiler
      */

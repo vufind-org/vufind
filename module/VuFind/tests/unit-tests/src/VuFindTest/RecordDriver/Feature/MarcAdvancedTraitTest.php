@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record Driver Marc Advanced Trait Test Class
+ * Record Driver Marc Advanced Trait Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordDriver\Feature;
 use VuFind\RecordDriver\SolrMarc;
 
 /**
- * Record Driver Marc Advanced Trait Test Class
+ * Record Driver Marc Advanced Trait Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -56,12 +56,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $record = new \VuFind\Marc\MarcReader($this->getFixture($fixture));
         $obj = $this->getMockBuilder(SolrMarc::class)
             ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
-        $obj->expects($this->any())
-            ->method('getUniqueId')
-            ->will($this->returnValue('123'));
+        $obj->method('getMarcReader')->willReturn($record);
+        $obj->method('getUniqueId')->willReturn('123');
         return $obj;
     }
 
@@ -150,16 +146,16 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString(
             '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
             . ' xmlns="http://www.loc.gov/mods/v3">',
-            $rdfXml
+            (string)$rdfXml
         );
-        $this->assertStringContainsString('<nonSort>The </nonSort>', $rdfXml);
+        $this->assertStringContainsString('<nonSort>The </nonSort>', (string)$rdfXml);
         $this->assertStringContainsString(
             '<namePart>Author, Test</namePart>',
-            $rdfXml
+            (string)$rdfXml
         );
         $this->assertStringContainsString(
             '<identifier type="isbn">978-3-16-148410-0</identifier>',
-            $rdfXml
+            (string)$rdfXml
         );
     }
 
@@ -183,25 +179,197 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMockDriverFromFixture('marc/altscript.xml');
 
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия /'],
             $obj->getTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия / 1'],
             $obj->getFullTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия :'],
             $obj->getShortTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['лирическая поэзия /'],
             $obj->getSubTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['1'],
             $obj->getTitleSectionsAltScript()
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when a single indicator value is sent.
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndOneValue(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when a single ind value is passed
+        $this->assertEquals(
+            ['upc'],
+            $obj->getMarcFieldWithInd('024', null, [['1' => ['1']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple values for the indicator are sent.
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndTwoValues(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when multiple values for the same ind are passed
+        $this->assertEquals(
+            ['upc', 'ismn'],
+            $obj->getMarcFieldWithInd('024', null, [['1' => ['1', '2']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple indicators are requested
+     * as AND conditions.
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndMultAndInds(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when different ind values are passed for each ind
+        $this->assertEquals(
+            ['spa'],
+            $obj->getMarcFieldWithInd('041', null, [['1' => ['1'], '2' => ['7']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when multiple indicators are requested
+     * as OR conditions.
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndMultOrInds(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when different ind values are passed for each ind
+        $this->assertEquals(
+            ['ger', 'spa'],
+            $obj->getMarcFieldWithInd('041', null, [['1' => ['0']], ['2' => ['7']]])
+        );
+    }
+
+    /**
+     * Test getMarcFieldWithInd when no indicator filters are sent.
+     *
+     * @return void
+     */
+    public function testGetMarcFieldWithIndNoValues(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        // Test when no indicator is passed
+        $this->assertEquals(
+            ['upc', 'ismn', 'ian'],
+            $obj->getMarcFieldWithInd('024', null, [])
+        );
+    }
+
+    /**
+     * Test calling getSummary to get expected marc data.
+     *
+     * @return void
+     */
+    public function testGetSummary(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Summary.'],
+            $obj->getSummary()
+        );
+    }
+
+    /**
+     * Test calling getSummaryNotes to get expected marc data.
+     *
+     * @return void
+     */
+    public function testGetSummaryNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Summary. Expanded.'],
+            $obj->getSummaryNotes()
+        );
+    }
+
+    /**
+     * Test calling getAbstractNotes to get expected marc data.
+     *
+     * @return void
+     */
+    public function testGetAbstractNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Abstract. Expanded.'],
+            $obj->getAbstractNotes()
+        );
+    }
+
+    /**
+     * Test calling getReviewtNotes to get expected marc data.
+     *
+     * @return void
+     */
+    public function testGetReviewNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Review Note. Expanded.'],
+            $obj->getReviewNotes()
+        );
+    }
+
+    /**
+     * Test calling getContentAdviceNotes to get expected marc data.
+     *
+     * @return void
+     */
+    public function testGetContentAdviceNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Content Advice. Expanded.'],
+            $obj->getContentAdviceNotes()
+        );
+    }
+
+    /**
+     * Test calling getLocationOfArchivalMaterialsNotes to get expected marc data.
+     *
+     * @return void
+     */
+    public function testGetLocationOfArchivalMaterialsNotes(): void
+    {
+        $obj = $this->getMockDriverFromFixture('marc/marctraits.xml');
+
+        $this->assertEquals(
+            ['Location of archival materials'],
+            $obj->getLocationOfArchivalMaterialsNotes()
         );
     }
 }

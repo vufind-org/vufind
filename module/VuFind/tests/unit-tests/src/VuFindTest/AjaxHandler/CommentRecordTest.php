@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -72,7 +72,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $this->container->set(\VuFind\Auth\Manager::class, $authManager);
 
         // Set up capability configuration:
-        $cfg = new \Laminas\Config\Config(
+        $cfg = new \VuFind\Config\Config(
             ['Social' => ['comments' => $enabled ? 'enabled' : 'disabled']]
         );
         $capabilities = new AccountCapabilities(
@@ -150,7 +150,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ->willReturn(1);
         $this->container->set(CommentsServiceInterface::class, $mockCommentsService);
 
-        $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();
+        $driver = $this->createMock(DefaultRecord::class);
         $driver->expects($this->once())
             ->method('isRatingAllowed')
             ->willReturn(true);

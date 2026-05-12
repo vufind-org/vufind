@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Proxy URL view helper
+ * Proxy URL view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -35,7 +35,7 @@ use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use function intval;
 
 /**
- * Proxy URL view helper
+ * Proxy URL view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,7 +44,7 @@ use function intval;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Cache\CacheTrait;
@@ -52,19 +52,19 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
-     * @param CacheAdapter           $cache  Cache for web service responses
+     * @param \VuFind\Config\Config $config VuFind configuration
+     * @param ?CacheAdapter         $cache  Cache for web service responses
      */
-    public function __construct($config = null, CacheAdapter $cache = null)
+    public function __construct($config = null, ?CacheAdapter $cache = null)
     {
         $this->config = $config;
         $this->setCacheStorage($cache);
@@ -81,11 +81,9 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     public function __invoke($url)
     {
         $useWebService = $this->config->EZproxy->prefixLinksWebServiceUrl ?? false;
-        if ($useWebService) {
-            $usePrefix = $this->checkUrl($url) ?? $this->checkConfig();
-        } else {
-            $usePrefix = $this->checkConfig();
-        }
+        $usePrefix = $useWebService
+            ? $this->checkUrl($url) ?? $this->checkConfig()
+            : $this->checkConfig();
 
         return ($usePrefix && isset($this->config->EZproxy->host))
             ? $this->config->EZproxy->host . '/login?qurl=' . urlencode($url)

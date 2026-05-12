@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,11 +48,11 @@ class MockContainer implements ServiceLocatorInterface
      * Alias for createMock(), needed to conform to ServiceLocatorInterface.
      *
      * @param string $name    Name of service to build
-     * @param array  $options Options
+     * @param ?array $options Options
      *
      * @return mixed
      */
-    public function build($name, array $options = null)
+    public function build($name, ?array $options = null)
     {
         return $this->createMock($name, $options ?? []);
     }

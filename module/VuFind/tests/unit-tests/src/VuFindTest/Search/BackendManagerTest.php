@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -55,10 +55,10 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('Expected backend registry to return object');
 
-        $registry = $this->getMockForAbstractClass(\Laminas\ServiceManager\ServiceLocatorInterface::class);
+        $registry = $this->createMock(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $registry->expects($this->once())
             ->method('get')
-            ->will($this->returnValue('not-an-object'));
+            ->willReturn('not-an-object');
         $manager = new BackendManager($registry);
         $manager->get('not-an-object');
     }
@@ -73,10 +73,10 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('does not implement the expected interface');
 
-        $registry = $this->getMockForAbstractClass(\Laminas\ServiceManager\ServiceLocatorInterface::class);
+        $registry = $this->createMock(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $registry->expects($this->once())
             ->method('get')
-            ->will($this->returnValue($this));
+            ->willReturn($this);
         $manager = new BackendManager($registry);
         $manager->get('not-a-backend');
     }
@@ -88,7 +88,7 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAttachDetachShared()
     {
-        $registry = $this->getMockForAbstractClass(\Laminas\ServiceManager\ServiceLocatorInterface::class);
+        $registry = $this->createMock(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $events   = new SharedEventManager();
         $manager  = new BackendManager($registry);
         $manager->attachShared($events);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sitemap generator plugin manager
+ * Sitemap generator plugin manager.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -32,7 +32,7 @@ namespace VuFind\Sitemap;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Sitemap generator plugin manager
+ * Sitemap generator plugin manager.
  *
  * @category VuFind
  * @package  Sitemap
@@ -65,7 +65,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

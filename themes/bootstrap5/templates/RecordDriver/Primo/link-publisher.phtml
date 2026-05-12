@@ -1,1 +1,1 @@
-<?php echo $this->url('primo-search', [], ['query' => ['type' => 'AllFields', 'lookfor' => $this->lookfor]]);
+<?=$this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor') + ['type' => 'AllFields', 'quoteQuery' => false]);

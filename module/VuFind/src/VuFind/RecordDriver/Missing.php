@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -45,11 +45,11 @@ use VuFind\Db\Service\ResourceServiceInterface;
 class Missing extends DefaultRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Laminas\Config\Config $mainConfig   VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig   VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig Record-specific configuration file
+     * @param \VuFind\Config\Config $recordConfig Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      */
     public function __construct($mainConfig = null, $recordConfig = null)
@@ -75,7 +75,7 @@ class Missing extends DefaultRecord
         if ($id = $this->getUniqueID()) {
             $resourceService = $this->getDbService(ResourceServiceInterface::class);
             $resource = $resourceService->getResourceByRecordId($id, $this->getSourceIdentifier());
-            if ($title = $resource?->getTitle()) {
+            if ($title = $resource?->getDisplayTitle() ?? $resource?->getTitle()) {
                 return $title;
             }
         }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILSdrivers
@@ -60,27 +60,20 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * ID fields in holds
+     * ID fields in holds.
      */
     public const HOLD_ID_FIELDS = ['id', 'item_id', 'cat_username'];
 
     /**
-     * The default driver to use
+     * The default driver to use.
      *
      * @var string
      */
     protected $defaultDriver;
 
     /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
      * An array of methods that should determine source from a specific parameter
-     * field
+     * field.
      *
      * @var array
      */
@@ -117,19 +110,18 @@ class MultiBackend extends AbstractMultiDriver
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
-     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
-     * @param PluginManager                 $dm           ILS driver manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Auth\ILSAuthenticator         $ilsAuth       ILS authenticator
+     * @param PluginManager                         $driverManager ILS driver manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        PluginManager $dm
+        \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        PluginManager $driverManager
     ) {
-        parent::__construct($configLoader, $dm);
-        $this->ilsAuth = $ilsAuth;
+        parent::__construct($configManager, $driverManager);
     }
 
     /**
@@ -148,7 +140,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -172,7 +164,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -234,13 +226,13 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
@@ -249,7 +241,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
         if ($driver = $this->getDriver($source)) {
@@ -275,7 +267,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -297,7 +289,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get available login targets (drivers enabled for login)
+     * Get available login targets (drivers enabled for login).
      *
      * @return string[] Source ID's
      */
@@ -307,7 +299,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get default login driver
+     * Get default login driver.
      *
      * @return string Default login driver or empty string
      */
@@ -324,14 +316,14 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -339,6 +331,8 @@ class MultiBackend extends AbstractMultiDriver
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     *
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -354,7 +348,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -369,7 +363,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -384,7 +378,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -399,7 +393,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -422,7 +416,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -445,7 +439,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -467,7 +461,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron Call Slips
+     * Get Patron Call Slips.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -493,7 +487,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Check whether a hold or recall request is valid
+     * Check whether a hold or recall request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -525,7 +519,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Check whether a storage retrieval request is valid
+     * Check whether a storage retrieval request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -557,7 +551,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -602,7 +596,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location
      *
@@ -635,7 +629,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $id          BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -673,7 +667,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group
      *
@@ -711,7 +705,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details
@@ -738,7 +732,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Cancel Hold Details
+     * Get Cancel Hold Details.
      *
      * In order to cancel a hold, the ILS requires some information on the hold.
      * This function returns the required information, which is then submitted
@@ -767,7 +761,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Place Storage Retrieval Request
+     * Place Storage Retrieval Request.
      *
      * Attempts to place a storage retrieval request on a particular item and returns
      * an array with result details
@@ -799,7 +793,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Check whether an ILL request is valid
+     * Check whether an ILL request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -830,7 +824,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get ILL Pickup Libraries
+     * Get ILL Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -858,7 +852,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get ILL Pickup Locations
+     * Get ILL Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -889,7 +883,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Place ILL Request
+     * Place ILL Request.
      *
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details (or throws an exception on failure of support
@@ -915,7 +909,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL Requests by a specific patron.
      *
@@ -1030,6 +1024,29 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
+     * Patron Login.
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return mixed           Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function patronLogin($username, $password)
+    {
+        $source = $this->getSource($username);
+        $result = $this->callMethodIfSupported($source, __FUNCTION__, func_get_args());
+        if (is_array($result)) {
+            $result['__source'] = $source;
+        }
+        return $result;
+    }
+
+    /**
      * Helper method to determine whether or not a certain method can be
      * called on this driver. Required method for any smart drivers.
      *
@@ -1076,7 +1093,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Extract local ID from the given prefixed ID
+     * Extract local ID from the given prefixed ID.
      *
      * @param string $id The id to be split
      *
@@ -1093,7 +1110,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Extract source from the given ID
+     * Extract source from the given ID.
      *
      * @param string $id The id to be split
      *
@@ -1110,7 +1127,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Get source for a method and parameters
+     * Get source for a method and parameters.
      *
      * @param string $method Method
      * @param array  $params Parameters
@@ -1119,18 +1136,17 @@ class MultiBackend extends AbstractMultiDriver
      */
     protected function getSourceForMethod(string $method, array $params): string
     {
-        $source = '';
-        $checkFields = $this->sourceCheckFields[$method] ?? null;
-        if ($checkFields) {
-            $source = $this->getSourceFromParams($params, (array)$checkFields);
-        } else {
-            $source = $this->getSourceFromParams($params);
+        if ($source = $params['__source'] ?? null) {
+            return $source;
         }
-        return $source;
+        if ($checkFields = $this->sourceCheckFields[$method] ?? null) {
+            return $this->getSourceFromParams($params, (array)$checkFields);
+        }
+        return $this->getSourceFromParams($params);
     }
 
     /**
-     * Get source from method parameters
+     * Get source from method parameters.
      *
      * @param array $params      Parameters of a driver method call
      * @param array $allowedKeys Keys to use for source identification
@@ -1176,16 +1192,17 @@ class MultiBackend extends AbstractMultiDriver
     {
         if (!$source) {
             // Check for default driver
-            if ($this->defaultDriver) {
-                $this->debug('Using default driver ' . $this->defaultDriver);
-                $source = $this->defaultDriver;
+            if (!$this->defaultDriver) {
+                return null;
             }
+            $this->debug('Using default driver ' . $this->defaultDriver);
+            $source = $this->defaultDriver;
         }
         return parent::getDriver($source);
     }
 
     /**
-     * Change local ID's to global ID's in the given array
+     * Change local ID's to global ID's in the given array.
      *
      * @param mixed  $data         The data to be modified, normally
      * array or array of arrays
@@ -1228,7 +1245,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Change global ID's to local ID's in the given array
+     * Change global ID's to local ID's in the given array.
      *
      * @param mixed  $data         The data to be modified, normally
      * array or array of arrays
@@ -1278,7 +1295,7 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
-     * Check if the given ILS driver supports the source of a record
+     * Check if the given ILS driver supports the source of a record.
      *
      * @param string $driverSource Driver's source identifier
      * @param string $id           Prefixed identifier to compare with

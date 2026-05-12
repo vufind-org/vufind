@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -48,7 +48,7 @@ use function floatval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractExpireCommand extends Command
+abstract class AbstractExpireCommand extends Command
 {
     /**
      * Help description for the command.
@@ -65,9 +65,9 @@ class AbstractExpireCommand extends Command
     protected $rowLabel = 'rows';
 
     /**
-     * Minimum legal age (in days) of rows to delete.
+     * Minimum legal age (in days) of rows to delete or null if age isn't applicable.
      *
-     * @var int
+     * @var int|float|null
      */
     protected $minAge = 2;
 
@@ -75,19 +75,19 @@ class AbstractExpireCommand extends Command
      * Default age of rows (in days) to delete. $minAge is used if $defaultAge is
      * null.
      *
-     * @var int|null
+     * @var int|float|null
      */
     protected $defaultAge = null;
 
     /**
-     * Table on which to expire rows
+     * Table on which to expire rows.
      *
      * @var DeleteExpiredInterface
      */
     protected $table;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param DeleteExpiredInterface $service Service on which to expire rows
      * @param ?string                $name    The name of the command; passing null means it
@@ -120,7 +120,9 @@ class AbstractExpireCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Milliseconds to sleep between batches',
                 100
-            )->addArgument(
+            );
+        if (null !== $this->minAge) {
+            $this->addArgument(
                 'age',
                 InputArgument::OPTIONAL,
                 'Minimum age (in days, starting from '
@@ -128,10 +130,11 @@ class AbstractExpireCommand extends Command
                     . ") of {$this->rowLabel} to expire",
                 $this->defaultAge ?? $this->minAge
             );
+        }
     }
 
     /**
-     * Add a time stamp to a message
+     * Add a time stamp to a message.
      *
      * @param string $msg Message
      *
@@ -150,15 +153,15 @@ class AbstractExpireCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Collect arguments/options:
-        $daysOld = floatval($input->getArgument('age'));
+        $daysOld = $input->hasArgument('age') ? floatval($input->getArgument('age')) : 0;
         $batchSize = $input->getOption('batch');
         $sleepTime = $input->getOption('sleep');
 
         // Abort if we have an invalid expiration age.
-        if ($daysOld < $this->minAge) {
+        if (null !== $this->minAge && $daysOld < $this->minAge) {
             $output->writeln(
                 str_replace(
                     '%%age%%',
@@ -166,7 +169,7 @@ class AbstractExpireCommand extends Command
                     'Expiration age must be at least %%age%% days.'
                 )
             );
-            return 1;
+            return self::FAILURE;
         }
 
         // Calculate date threshold once to avoid creeping a few seconds in each loop iteration.
@@ -192,11 +195,11 @@ class AbstractExpireCommand extends Command
         $output->writeln(
             $this->getTimestampedMessage("Total $total {$this->rowLabel} deleted.")
         );
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
-     * Convert days to a date threshold
+     * Convert days to a date threshold.
      *
      * @param float $daysOld Days before now
      *
@@ -204,6 +207,12 @@ class AbstractExpireCommand extends Command
      */
     protected function getDateThreshold(float $daysOld): DateTime
     {
-        return new DateTime("now - $daysOld days");
+        // DateTime doesn't support floating point relative values, so convert days to hours as needed:
+        if ($daysOld == (int)$daysOld) {
+            return new DateTime("now - $daysOld days");
+        } else {
+            $hoursOld = round($daysOld * 24);
+            return new DateTime("now - $hoursOld hours");
+        }
     }
 }

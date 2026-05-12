@@ -3,6 +3,6 @@
     $this->headTitle($this->translate('Channels'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Channels') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Channels'), active: true);
 ?>
 <?=$this->render('channels/channelList.phtml')?>

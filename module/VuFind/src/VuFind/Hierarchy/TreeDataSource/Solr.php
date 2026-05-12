@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree Data Source (Solr)
+ * Hierarchy Tree Data Source (Solr).
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataSource
@@ -39,7 +39,7 @@ use function count;
 use function sprintf;
 
 /**
- * Hierarchy Tree Data Source (Solr)
+ * Hierarchy Tree Data Source (Solr).
  *
  * This is a base helper class for producing hierarchy Trees.
  *
@@ -52,7 +52,7 @@ use function sprintf;
 class Solr extends AbstractBase
 {
     /**
-     * Search service
+     * Search service.
      *
      * @var Service
      */
@@ -66,28 +66,28 @@ class Solr extends AbstractBase
     protected $backendId;
 
     /**
-     * Formatter manager
+     * Formatter manager.
      *
      * @var FormatterManager
      */
     protected $formatterManager;
 
     /**
-     * Cache directory
+     * Cache directory.
      *
      * @var string
      */
     protected $cacheDir = null;
 
     /**
-     * Filter queries
+     * Filter queries.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Record batch size
+     * Record batch size.
      *
      * @var int
      */

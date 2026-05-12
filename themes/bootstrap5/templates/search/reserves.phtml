@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Reserves Search'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Reserves') . '</li>';
+    $this->breadcrumbs()->set($this->translate('Reserves'), active: true);
 
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
@@ -13,43 +13,51 @@
 <?php else: ?>
   <h2><?=$this->transEsc('Search For Items on Reserve')?></h2>
   <form method="get" name="searchForm" class="form-search-reserves">
-    <?php if (is_array($this->courseList)): ?>
+    <?php $displayedSomething = false; ?>
+    <?php if (is_array($this->courseList) && $this->courseList): ?>
+      <?php $displayedSomething = true; ?>
       <div class="form-group">
-        <label for="reserves_by_course" class="control-label"><?=$this->transEsc('By Course')?>:</label>
-        <select name="course" id="reserves_by_course" class="form-control">
+        <label for="reserves_by_course" class="form-label"><?=$this->transEsc('By Course')?>:</label>
+        <select name="course" id="reserves_by_course" class="form-select">
           <option></option>
           <?php foreach ($this->courseList as $courseId => $courseName): ?>
-            <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
+            <option value="<?=$this->escapeHtmlAttr($courseId)?>"><?=$this->transEsc('Reserves::' . $courseName)?></option>
           <?php endforeach; ?>
         </select>
         <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
       </div>
     <?php endif; ?>
 
-    <?php if (is_array($this->instList)): ?>
+    <?php if (is_array($this->instList) && $this->instList): ?>
+      <?php $displayedSomething = true; ?>
       <div class="form-group">
-        <label for="reserves_by_inst" class="control-label"><?=$this->transEsc('By Instructor')?>:</label>
-        <select name="inst" id="reserves_by_inst" class="form-control">
+        <label for="reserves_by_inst" class="form-label"><?=$this->transEsc('By Instructor')?>:</label>
+        <select name="inst" id="reserves_by_inst" class="form-select">
           <option></option>
           <?php foreach ($this->instList as $instId => $instName): ?>
-            <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->escapeHtml($instName)?></option>
+            <option value="<?=$this->escapeHtmlAttr($instId)?>"><?=$this->transEsc('Reserves::' . $instName)?></option>
           <?php endforeach; ?>
         </select>
         <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
       </div>
     <?php endif; ?>
 
-    <?php if (is_array($this->deptList)): ?>
+    <?php if (is_array($this->deptList) && $this->deptList): ?>
+      <?php $displayedSomething = true; ?>
       <div class="form-group">
-        <label for="reserves_by_dept" class="control-label"><?=$this->transEsc('By Department')?>:</label>
-        <select name="dept" id="reserves_by_dept" class="form-control">
+        <label for="reserves_by_dept" class="form-label"><?=$this->transEsc('By Department')?>:</label>
+        <select name="dept" id="reserves_by_dept" class="form-select">
           <option></option>
           <?php foreach ($this->deptList as $deptId => $deptName): ?>
-            <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
+            <option value="<?=$this->escapeHtmlAttr($deptId)?>"><?=$this->transEsc('Reserves::' . $deptName)?></option>
           <?php endforeach; ?>
         </select>
         <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Find')?>">
       </div>
+    <?php endif; ?>
+
+    <?php if (!$displayedSomething): ?>
+      <div class="alert alert-info"><?=$this->transEsc('course_reserves_empty_list')?></div>
     <?php endif; ?>
   </form>
 <?php endif; ?>

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,6 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
@@ -46,22 +47,24 @@ use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
  */
 class BrowZineBackendFactory extends AbstractBackendFactory
 {
+    use SecretTrait;
+
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
     /**
-     * BrowZine configuration
+     * BrowZine configuration.
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $browzineConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -71,11 +74,11 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function __invoke(ContainerInterface $sm, $name, array $options = null)
+    public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
-        $this->browzineConfig = $configReader->get('BrowZine');
+        $this->browzineConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('BrowZine');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -108,8 +111,9 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
+        $token = $this->getSecretFromConfig($this->browzineConfig?->General, 'access_token');
         // Validate configuration:
-        if (empty($this->browzineConfig->General->access_token)) {
+        if ($token === null) {
             throw new \Exception('Missing access token in BrowZine.ini');
         }
         if (empty($this->browzineConfig->General->library_id)) {
@@ -119,7 +123,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
         // Create connector:
         $connector = new Connector(
             $this->createHttpClient($this->browzineConfig->General->timeout ?? 30),
-            $this->browzineConfig->General->access_token,
+            $token,
             $this->browzineConfig->General->library_id
         );
         $connector->setLogger($this->logger);
@@ -138,7 +142,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

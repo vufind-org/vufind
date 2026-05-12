@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Translate Adapter ExtendedIni
+ * VuFind Translate Adapter ExtendedIni.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -39,7 +39,7 @@ use function dirname;
 use function in_array;
 
 /**
- * Handles the language loading and language file parsing
+ * Handles the language loading and language file parsing.
  *
  * @category VuFind
  * @package  Translator
@@ -107,19 +107,19 @@ class ExtendedIni implements FileLoaderInterface
     protected $aliasDomains = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array             $pathStack       List of directories to search for
+     * @param array              $pathStack       List of directories to search for
      * language files.
-     * @param string|string[]   $fallbackLocales Fallback locale(s) to use for
+     * @param string|string[]    $fallbackLocales Fallback locale(s) to use for
      * language strings missing from selected file.
-     * @param ExtendedIniReader $reader          Helper for reading .ini files from
+     * @param ?ExtendedIniReader $reader          Helper for reading .ini files from
      * disk.
      */
     public function __construct(
         $pathStack = [],
         $fallbackLocales = null,
-        ExtendedIniReader $reader = null
+        ?ExtendedIniReader $reader = null
     ) {
         $this->pathStack = $pathStack;
         $this->fallbackLocales = $fallbackLocales ? (array)$fallbackLocales : [];
@@ -185,7 +185,7 @@ class ExtendedIni implements FileLoaderInterface
     }
 
     /**
-     * Get the language file name for a language and domain
+     * Get the language file name for a language and domain.
      *
      * @param string $locale Locale name
      * @param string $domain Text domain (if any)
@@ -194,7 +194,7 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function getLanguageFilename($locale, $domain)
     {
-        return empty($domain)
+        return (empty($domain) || $domain === 'default')
             ? $locale . '.ini'
             : $domain . '/' . $locale . '.ini';
     }
@@ -249,7 +249,7 @@ class ExtendedIni implements FileLoaderInterface
     }
 
     /**
-     * Resolve a single alias (or return null if it cannot be resolved)
+     * Resolve a single alias (or return null if it cannot be resolved).
      *
      * @param array  $alias         The [domain, key] or [key] alias array
      * @param string $defaultDomain The domain to use if $alias does not specify one

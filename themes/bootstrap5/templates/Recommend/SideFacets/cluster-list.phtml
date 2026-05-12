@@ -15,10 +15,17 @@
     'wrapper-class' => false,
     'wrapper-tagname' => 'li',
   ];
+  $facetop = 'AND';
+  foreach ($this->cluster['list'] as $f) {
+    if ($f['operator'] != 'NOT') {
+      $facetop = $f['operator'];
+      break;
+    }
+  }
   $facetLightboxParams = http_build_query(
       [
           'facet' => $this->title,
-          'facetop' => $this->cluster['list'][0]['operator'] ?? 'AND',
+          'facetop' => $facetop,
           'facetexclude' => $this->allowExclude ? 1 : 0,
       ],
       '',

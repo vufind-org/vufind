@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -56,7 +56,6 @@ trait ReflectionTrait
     protected function callMethod($object, $method, array $arguments = [])
     {
         $reflectionMethod = new \ReflectionMethod($object, $method);
-        $reflectionMethod->setAccessible(true);
         return $reflectionMethod->invokeArgs($object, $arguments);
     }
 
@@ -75,7 +74,6 @@ trait ReflectionTrait
     protected function getProperty($object, $property)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($object);
     }
 
@@ -95,7 +93,6 @@ trait ReflectionTrait
     protected function setProperty($object, $property, $value)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->setValue($object, $value);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default Controller
+ * Default Controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
@@ -111,7 +112,9 @@ class SearchController extends AbstractSolrSearch
                 ->rememberSearch($base . $query->getParams(false));
         }
 
-        // Send the user back where they came from:
+        // Send the user back where they came from (but strip off the SID
+        // so we don't override the modified search with an older version):
+        $from = rtrim(preg_replace('/([?&])sid=\d+/', '$1', $from), '&?');
         return $this->redirect()->toUrl($from);
     }
 
@@ -132,8 +135,8 @@ class SearchController extends AbstractSolrSearch
         $view->url = $this->params()->fromPost('url')
             ?? $this->params()->fromQuery('url')
             ?? $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (!$this->isLocalUrl($view->url)) {
-            throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
+        if (!$view->url || !$this->isLocalUrl($view->url)) {
+            throw new \Exception('Unexpected value passed to emailAction: ' . ($view->url ?? '<null>'));
         }
 
         $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
@@ -176,17 +179,17 @@ class SearchController extends AbstractSolrSearch
                     $view->subject,
                     $cc
                 );
-                $this->flashMessenger()->addMessage('email_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('email_success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
+                $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
             }
         }
         return $view;
     }
 
     /**
-     * Handle search history display && purge
+     * Handle search history display && purge.
      *
      * @return mixed
      */
@@ -226,12 +229,16 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
-     * New item search form
+     * New item search form.
      *
      * @return mixed
      */
     public function newitemAction()
     {
+        if ($this->newItems()->getMethod() === 'disabled') {
+            return $this->createHttpNotFoundModel($this->getResponse());
+        }
+
         // Search parameters set?  Process results.
         if ($this->params()->fromQuery('range') !== null) {
             return $this->forwardTo('Search', 'NewItemResults');
@@ -253,11 +260,11 @@ class SearchController extends AbstractSolrSearch
     }
 
     /**
-     * New item result list
+     * Get new item parameters from the query and configuration.
      *
-     * @return mixed
+     * @return array
      */
-    public function newitemresultsAction()
+    protected function getNewItemParameters(): array
     {
         // Retrieve new item list:
         $range = $this->params()->fromQuery('range');
@@ -275,6 +282,18 @@ class SearchController extends AbstractSolrSearch
         // later after the whole list is collected.
         $hiddenFilters = $this->newItems()->getHiddenFilters();
 
+        return compact('range', 'dept', 'hiddenFilters');
+    }
+
+    /**
+     * Modify the current query parameters to reflect a new item search.
+     *
+     * @param array $newItemParams Parameters retrieved from getNewItemParameters()
+     *
+     * @return void
+     */
+    protected function setUpNewItemRequestParams(array $newItemParams): void
+    {
         // Depending on whether we're in ILS or Solr mode, we need to do some
         // different processing here to retrieve the correct items:
         if ($this->newItems()->getMethod() == 'ils') {
@@ -282,46 +301,90 @@ class SearchController extends AbstractSolrSearch
             $bibIDs = $this->newItems()->getBibIDsFromCatalog(
                 $this->getILS(),
                 $this->getResultsManager()->get('Solr')->getParams(),
-                $range,
-                $dept,
+                $newItemParams['range'],
+                $newItemParams['dept'],
                 $this->flashMessenger()
             );
             $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
         } else {
             // Use a Solr filter to show results:
-            $hiddenFilters[] = $this->newItems()->getSolrFilter($range);
+            $newItemParams['hiddenFilters'][] = $this->newItems()->getSolrFilter($newItemParams['range']);
         }
-
         // If we found hidden filters above, apply them now:
-        if (!empty($hiddenFilters)) {
-            $this->getRequest()->getQuery()->set('hiddenFilters', $hiddenFilters);
+        if (!empty($newItemParams['hiddenFilters'])) {
+            $this->getRequest()->getQuery()->set('hiddenFilters', $newItemParams['hiddenFilters']);
         }
 
-        // Don't save to history -- history page doesn't handle correctly:
-        $this->saveToHistory = false;
+        // Flag this as a specialized search to avoid bleeding defaults into the
+        // standard search box:
+        $this->getRequest()->getQuery()->set('specializedSearch', true);
+    }
 
-        // Call rather than forward, so we can use custom template
-        $view = $this->resultsAction();
-
+    /**
+     * Modify the provided view model to reflect a new item search, then return it.
+     *
+     * @param ViewModel $view          View model to modify
+     * @param array     $newItemParams Parameters retrieved from getNewItemParameters()
+     *
+     * @return ViewModel
+     */
+    protected function setUpNewItemView(ViewModel $view, array $newItemParams): ViewModel
+    {
         // Customize the URL helper to make sure it builds proper new item URLs
         // (check it's set first -- RSS feed will return a response model rather
         // than a view model):
         if (isset($view->results)) {
+            $view->results->getOptions()->setFacetListAction('search-newitemfacetlist');
             $view->results->getUrlQuery()
-                ->setDefaultParameter('range', $range)
-                ->setDefaultParameter('department', $dept)
+                ->setDefaultParameter('range', $newItemParams['range'])
+                ->setDefaultParameter('department', $newItemParams['dept'])
+                ->disableHiddenFilters()
                 ->setSuppressQuery(true);
         }
 
         // We don't want new items hidden filters to propagate to other searches:
-        $view->ignoreHiddenFilterMemory = true;
+        $this->serviceLocator->get('ViewHelperManager')->get('searchTabs')->disableCurrentHiddenFilterParams();
         $view->ignoreHiddenFiltersInRequest = true;
-
         return $view;
     }
 
     /**
-     * Course reserves
+     * New item facet list.
+     *
+     * @return mixed
+     */
+    public function newitemfacetlistAction()
+    {
+        $newItemParams = $this->getNewItemParameters();
+        $this->setUpNewItemRequestParams($newItemParams);
+        // The facet list needs one extra parameter to generate appropriate links:
+        $this->getRequest()->getQuery()->set('searchAction', $this->url()->fromRoute('search-newitem'));
+        $view = $this->facetListAction();
+        return $this->setUpNewItemView($view, $newItemParams);
+    }
+
+    /**
+     * New item result list.
+     *
+     * @return mixed
+     */
+    public function newitemresultsAction()
+    {
+        $newItemParams = $this->getNewItemParameters();
+        $this->setUpNewItemRequestParams($newItemParams);
+
+        // Don't save to history or memory -- history page doesn't handle correctly
+        // and we don't want hidden filters bleeding to weird places:
+        $this->saveToHistory = false;
+        $this->getSearchMemory()->disable();
+
+        // Call rather than forward, so we can use custom template
+        $view = $this->resultsAction();
+        return $this->setUpNewItemView($view, $newItemParams);
+    }
+
+    /**
+     * Course reserves.
      *
      * @return mixed
      */
@@ -343,15 +406,25 @@ class SearchController extends AbstractSolrSearch
         }
 
         // If we got this far, we're using driver-based searching and need to
-        // send options to the view:
+        // send options to the view (but we should tolerate drivers that do not
+        // define all of the department/instructor/courses getters):
         $catalog = $this->getILS();
-        return $this->createViewModel(
-            [
-                'deptList' => $catalog->getDepartments(),
-                'instList' => $catalog->getInstructors(),
-                'courseList' =>  $catalog->getCourses(),
-            ]
-        );
+        try {
+            $deptList = $catalog->getDepartments();
+        } catch (\VuFind\Exception\ILS $e) {
+            $deptList = [];
+        }
+        try {
+            $instList = $catalog->getInstructors();
+        } catch (\VuFind\Exception\ILS $e) {
+            $instList = [];
+        }
+        try {
+            $courseList =  $catalog->getCourses();
+        } catch (\VuFind\Exception\ILS $e) {
+            $courseList = [];
+        }
+        return $this->createViewModel(compact('deptList', 'instList', 'courseList'));
     }
 
     /**
@@ -411,7 +484,7 @@ class SearchController extends AbstractSolrSearch
             ->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $this->flashMessenger()->addMessage('too_many_reserves', 'info');
+            $this->flashMessenger()->addInfoMessage('too_many_reserves');
         }
 
         // Use standard search action with override parameter to show results:
@@ -483,10 +556,10 @@ class SearchController extends AbstractSolrSearch
     {
         switch ($this->params()->fromQuery('method')) {
             case 'describe':
-                $config = $this->getConfig();
+                $config = $this->getConfigArray();
                 $xml = $this->getViewRenderer()->render(
                     'search/opensearch-describe.phtml',
-                    ['site' => $config->Site]
+                    ['site' => $config['Site']]
                 );
                 break;
             default:
@@ -504,7 +577,7 @@ class SearchController extends AbstractSolrSearch
 
     /**
      * Provide OpenSearch suggestions as specified at
-     * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
+     * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0.
      *
      * @return \Laminas\Http\Response
      */
@@ -527,16 +600,5 @@ class SearchController extends AbstractSolrSearch
             json_encode([$query->get('lookfor', ''), $suggestions])
         );
         return $response;
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        return $config->Record->next_prev_navigation ?? false;
     }
 }

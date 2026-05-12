@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Search Object Results Test
+ * Solr Search Object Results Test.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Sorter;
 use VuFind\Record\Loader;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -45,7 +45,7 @@ use VuFindSearch\Service as SearchService;
 use function get_class;
 
 /**
- * Solr Search Object Results Test
+ * Solr Search Object Results Test.
  *
  * @category VuFind
  * @package  Tests
@@ -56,11 +56,11 @@ use function get_class;
  */
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Default faceted search configuration
+     * Default faceted search configuration.
      *
      * @var array
      */
@@ -78,7 +78,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Default faceted search response
+     * Default faceted search response.
      *
      * @var array
      */
@@ -130,7 +130,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 ],
             ]
         );
-        $mockConfig = $this->createMock(PluginManager::class);
+        $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
         $options->setTranslatedFacets(
@@ -220,15 +220,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         array $expectedParams
     ): SearchService {
         $collection = new RecordCollection($response);
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) use ($expectedParams) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
@@ -240,7 +236,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $searchService;
     }
 
@@ -276,6 +272,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 16,
                             'operator' => 'AND',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                         [
                             'value' => 'Psychotherapy',
@@ -283,6 +280,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 8,
                             'operator' => 'AND',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                     ],
                 ],
@@ -304,6 +302,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 16,
                             'operator' => 'OR',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                         [
                             'value' => 'Psychotherapy',
@@ -311,6 +310,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 8,
                             'operator' => 'OR',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                     ],
                 ],
@@ -332,6 +332,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 16,
                             'operator' => 'OR',
                             'isApplied' => true,
+                            'isExcluded' => false,
                         ],
                         [
                             'value' => 'Psychotherapy',
@@ -339,6 +340,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 8,
                             'operator' => 'OR',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                     ],
                 ],
@@ -375,8 +377,10 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                                 'href' => '',
                                 'exclude' => '',
                                 'children' => [],
+                                'isExcluded' => false,
                             ],
                         ],
+                        'isExcluded' => false,
                     ],
                     [
                         'value' => '0/Sub/',
@@ -390,6 +394,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                         'href' => '',
                         'exclude' => '',
                         'children' => [],
+                        'isExcluded' => false,
                     ],
                 ],
             ],
@@ -419,7 +424,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test exception from missing hierarchical facet helper
+     * Test exception from missing hierarchical facet helper.
      *
      * @return void
      */
@@ -431,7 +436,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test exception from missing sorter
+     * Test exception from missing sorter.
      *
      * @return void
      */
@@ -445,18 +450,18 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Results object
+     * Get Results object.
      *
-     * @param Params        $params        Params object
-     * @param SearchService $searchService Search service
-     * @param Loader        $loader        Record loader
+     * @param ?Params        $params        Params object
+     * @param ?SearchService $searchService Search service
+     * @param ?Loader        $loader        Record loader
      *
      * @return Results
      */
     protected function getResults(
-        Params $params = null,
-        SearchService $searchService = null,
-        Loader $loader = null
+        ?Params $params = null,
+        ?SearchService $searchService = null,
+        ?Loader $loader = null
     ): Results {
         return new Results(
             $params ?? $this->getParams(),
@@ -483,42 +488,38 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $response ??= $this->searchResponse;
         $params ??= $this->getParams(
             null,
-            $this->getMockConfigPluginManager($this->searchConfig)
+            $this->getMockConfigManager($this->searchConfig)
         );
 
         $collection = new RecordCollection($response);
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         // No need to validate the parameters, just return the requested results:
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $this->getResults($params, $searchService);
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options    Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfig Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
-        Options $options = null,
-        PluginManager $mockConfig = null
+        ?Options $options = null,
+        ?ConfigManagerInterface $mockConfig = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

@@ -19,7 +19,7 @@
 <div class="media">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
-  <?php endif ?>
+  <?php endif; ?>
   <div class="media-body">
     <div class="result-body">
       <h2>
@@ -28,7 +28,7 @@
         </a>
         <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
           <div class="title-alt">
-            <?=$this->escapeHtml($altTitle)?>
+            <?=$this->escapeOrCleanHtml($altTitle, 'title')?>
           </div>
         <?php endforeach; ?>
 
@@ -51,7 +51,7 @@
         <?php else: ?>
           <?php
             $journalTitle = $this->driver->getContainerTitle();
-            $summDate = $this->driver->getPublicationDates();
+            $summDate = $this->driver->getHumanReadablePublicationDates();
           ?>
           <?php if (!empty($journalTitle)): ?>
             <?=$this->transEsc('Published in')?>
@@ -113,7 +113,7 @@
       <?php endif; ?>
 
       <?php if ($this->driver->tryMethod('getWorkKeys') && $this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
-        <div class="record-versions ajax"></div>
+        <div class="record-versions ajax hidden-print"></div>
       <?php endif; ?>
 
       <div class="callnumAndLocation ajax-availability hidden">
@@ -139,19 +139,18 @@
         // Display an OpenURL link if configured to do so:
         $openUrl = $this->openUrl($this->driver, 'results');
         $openUrlActive = $openUrl->isActive();
-        $doi = $this->doi($this->driver, 'results');
-        $doiActive = $doi->isActive();
+        $identifierLinksHtml = $this->identifierLinker($this->driver, 'results');
         // Account for replace_other_urls setting
         $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
       ?>
-      <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
+      <?php if ($openUrlActive || $identifierLinksHtml || !empty($urls)): ?>
         <?php if ($openUrlActive): ?>
           <br>
           <?=$openUrl->renderTemplate()?>
         <?php endif; ?>
-        <?php if ($doiActive): ?>
+        <?php if ($identifierLinksHtml): ?>
           <br>
-          <?=$doi->renderTemplate()?>
+          <?=$identifierLinksHtml?>
         <?php endif; ?>
         <?php $urls = is_array($urls) ? $urls : []; ?>
         <?php if (!$this->driver->isCollection()): ?>
@@ -199,7 +198,7 @@
       <a class="hidden full-record-link icon-link" href="<?=$recordLinker->getUrl($this->driver)?>">
         <?=$this->icon('link', 'icon-link__icon') ?>
         <span class="icon-link__label"><?=$this->transEsc('standalone_record_link')?></span>
-      </a><br>
+      </a>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
@@ -207,7 +206,7 @@
           <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record result-link icon-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
             <?=$this->icon('user-favorites', 'icon-link__icon') ?>
             <span class="result-link-label icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
-          </a><br>
+          </a>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block?>
         <?php endif; ?>

@@ -5,29 +5,15 @@ VuFind.register('cart', function Cart() {
   var _COOKIE = 'vufind_cart';
   var _COOKIE_SOURCES = 'vufind_cart_src';
   var _COOKIE_DELIM = "\t";
-  var _COOKIE_DOMAIN = false;
-  var _COOKIE_PATH = '/';
-  var _COOKIE_SAMESITE = 'Lax';
 
   var _popover = null;
   var _popoverTimeout = false;
 
-  function setDomain(domain) {
-    _COOKIE_DOMAIN = domain;
-  }
-
-  function setCookiePath(path) {
-    _COOKIE_PATH = path;
-  }
-
-  function setCookieSameSite(sameSite) {
-    _COOKIE_SAMESITE = sameSite;
-  }
-
-  function _getCookieParams() {
-    return { path: _COOKIE_PATH, domain: _COOKIE_DOMAIN, SameSite: _COOKIE_SAMESITE };
-  }
-
+  /**
+   * Return an array with unique values from the input array.
+   * @param {Array} op The input array.
+   * @returns {Array} The array with unique values.
+   */
   function _uniqueArray(op) {
     var ret = [];
     for (var i = 0; i < op.length; i++) {
@@ -38,20 +24,34 @@ VuFind.register('cart', function Cart() {
     return ret;
   }
 
+  /**
+   * Retrieve the raw item IDs from the cookie.
+   * @returns {Array} An array of raw item IDs.
+   */
   function _getItems() {
-    var items = window.Cookies.get(_COOKIE);
+    var items = VuFind.cookie.get(_COOKIE);
     if (items) {
       return items.split(_COOKIE_DELIM);
     }
     return [];
   }
+
+  /**
+   * Retrieve the sources from the cookie.
+   * @returns {Array} An array of sources.
+   */
   function _getSources() {
-    var items = window.Cookies.get(_COOKIE_SOURCES);
+    var items = VuFind.cookie.get(_COOKIE_SOURCES);
     if (items) {
       return items.split(_COOKIE_DELIM);
     }
     return [];
   }
+
+  /**
+   * Retrieve the full list of items.
+   * @returns {Array} An array of full item strings.
+   */
   function getFullItems() {
     var items = _getItems();
     var sources = _getSources();
@@ -65,11 +65,20 @@ VuFind.register('cart', function Cart() {
     return full;
   }
 
+  /**
+   * Check if an item is already in the cart.
+   * @param {string} id        The record ID.
+   * @param {string} [_source] The source of the record (omit to use default source).
+   * @returns {boolean} True if the item is in the cart, false otherwise.
+   */
   function hasItem(id, _source) {
     var source = _source || VuFind.defaultSearchBackend;
     return _getItems().indexOf(String.fromCharCode(65 + _getSources().indexOf(source)) + id) > -1;
   }
 
+  /**
+   * Refresh the state of the cart toggle buttons
+   */
   function _refreshToggles() {
     var $toggleBtns = $('.btn-bookbag-toggle');
     if ($toggleBtns.length > 0) {
@@ -85,6 +94,9 @@ VuFind.register('cart', function Cart() {
     }
   }
 
+  /**
+   * Update the item count displayed.
+   */
   function updateCount() {
     var items = VuFind.cart.getFullItems();
     $('#cartItems strong').html(items.length);
@@ -96,6 +108,12 @@ VuFind.register('cart', function Cart() {
     _refreshToggles();
   }
 
+  /**
+   * Add an item to the cart.
+   * @param {string} id        The record ID.
+   * @param {string} [_source] The source of the record (omit to use default source).
+   * @returns {boolean} Return true if the item was added to the cart.
+   */
   function addItem(id, _source) {
     var source = _source || VuFind.defaultSearchBackend;
     var cartItems = _getItems();
@@ -108,14 +126,21 @@ VuFind.register('cart', function Cart() {
       // Add source to source cookie
       cartItems[cartItems.length] = String.fromCharCode(65 + cartSources.length) + id;
       cartSources[cartSources.length] = source;
-      window.Cookies.set(_COOKIE_SOURCES, cartSources.join(_COOKIE_DELIM), _getCookieParams());
+      VuFind.cookie.set(_COOKIE_SOURCES, cartSources.join(_COOKIE_DELIM));
     } else {
       cartItems[cartItems.length] = String.fromCharCode(65 + sIndex) + id;
     }
-    window.Cookies.set(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), _getCookieParams());
+    VuFind.cookie.set(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM));
     updateCount();
     return true;
   }
+
+  /**
+   * Remove an item from the cart.
+   * @param {string} id     The record ID.
+   * @param {string} source The source of the record (omit to use default source).
+   * @returns {boolean} Return true if the item was removed from the cart.
+   */
   function removeItem(id, source) {
     var cartItems = _getItems();
     var cartSources = _getSources();
@@ -147,11 +172,11 @@ VuFind.register('cart', function Cart() {
         }
       }
       if (cartItems.length > 0) {
-        window.Cookies.set(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM), _getCookieParams());
-        window.Cookies.set(_COOKIE_SOURCES, _uniqueArray(cartSources).join(_COOKIE_DELIM), _getCookieParams());
+        VuFind.cookie.set(_COOKIE, _uniqueArray(cartItems).join(_COOKIE_DELIM));
+        VuFind.cookie.set(_COOKIE_SOURCES, _uniqueArray(cartSources).join(_COOKIE_DELIM));
       } else {
-        window.Cookies.remove(_COOKIE, _getCookieParams());
-        window.Cookies.remove(_COOKIE_SOURCES, _getCookieParams());
+        VuFind.cookie.remove(_COOKIE);
+        VuFind.cookie.remove(_COOKIE_SOURCES);
       }
       updateCount();
       return true;
@@ -159,6 +184,11 @@ VuFind.register('cart', function Cart() {
     return false;
   }
 
+  /**
+   * Display a Bootstrap popover with a message.
+   * @param {HTMLElement} el  The element to attach the popover to.
+   * @param {string}      msg The message to display.
+   */
   function _showPopover(el, msg) {
     if (_popoverTimeout !== false) {
       clearTimeout(_popoverTimeout);
@@ -181,6 +211,10 @@ VuFind.register('cart', function Cart() {
     }, 5000);
   }
 
+  /**
+   * Register the click handler for the "update cart" button.
+   * @param {HTMLElement|jQuery} [_form] The form element to process (default = form named bulkActionForm).
+   */
   function _registerUpdate(_form) {
     var $form = typeof _form === 'undefined'
       ? $('form[name="bulkActionForm"]')
@@ -205,12 +239,12 @@ VuFind.register('cart', function Cart() {
         if (inCart > 0 && orig.length > 0) {
           msgs.push(VuFind.translate('itemsInBag', {'%%count%%': inCart}));
         }
-        var msg = '';
+        var msg;
         if (msgs.length > 1) {
           var ul = document.createElement('ul');
           msgs.forEach((current) => {
             var li = document.createElement('li');
-            li.innerHTML = current;
+            li.textContent = current;
             ul.appendChild(li);
           });
           msg = ul.outerHTML;
@@ -227,6 +261,10 @@ VuFind.register('cart', function Cart() {
     });
   }
 
+  /**
+   * Register the click handlers for cart toggle buttons within a container.
+   * @param {HTMLElement|jQuery} [_container] The container to search for toggle buttons (default = document).
+   */
   function registerToggles(_container) {
     var container = typeof _container !== 'undefined' ? $(_container) : $(document);
     var $toggleBtns = container.find('.btn-bookbag-toggle');
@@ -255,10 +293,17 @@ VuFind.register('cart', function Cart() {
     }
   }
 
+  /**
+   * Update the container by registering cart toggle handlers.
+   * @param {object} params An object containing the container element.
+   */
   function updateContainer(params) {
     registerToggles(params.container);
   }
 
+  /**
+   * Initialize the cart module.
+   */
   function init() {
     // Record buttons
     registerToggles();
@@ -275,9 +320,6 @@ VuFind.register('cart', function Cart() {
     getFullItems: getFullItems,
     hasItem: hasItem,
     removeItem: removeItem,
-    setCookiePath: setCookiePath,
-    setCookieSameSite: setCookieSameSite,
-    setDomain: setDomain,
     updateCount: updateCount,
     // Init
     init: init,
@@ -285,8 +327,12 @@ VuFind.register('cart', function Cart() {
   };
 });
 
-// Building an array and checking indexes prevents a race situation
-// We want to prioritize empty over printing
+/**
+ * Handle form submissions related to the cart.
+ * @param {Event} event The form submission event.
+ * @param {Array} data  An array of form data objects.
+ * @returns {boolean|null|void} Return true for print actions, null for invalid actions.
+ */
 function cartFormHandler(event, data) {
   let numberOfItems = 0;
   let isPrint = false;

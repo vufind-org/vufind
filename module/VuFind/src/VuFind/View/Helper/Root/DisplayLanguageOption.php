@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DisplayLanguageOption view helper
+ * DisplayLanguageOption view helper.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,10 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Translator\TranslatorInterface;
 
 /**
- * DisplayLanguageOption view helper
+ * DisplayLanguageOption view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -43,24 +43,16 @@ use Laminas\I18n\Translator\TranslatorInterface;
 class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Translator (or null if unavailable)
+     * Constructor.
      *
-     * @var TranslatorInterface
+     * @param TranslatorInterface $translator Translator
      */
-    protected $translator = null;
-
-    /**
-     * Constructor
-     *
-     * @param TranslatorInterface $translator Main VuFind translator
-     */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(protected TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     /**
-     * Translate a string
+     * Translate a string.
      *
      * @param string $str String to escape and translate
      *

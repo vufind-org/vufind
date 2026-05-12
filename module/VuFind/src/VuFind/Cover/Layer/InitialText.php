@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Initial cover text layer
+ * Initial cover text layer.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -30,7 +30,7 @@
 namespace VuFind\Cover\Layer;
 
 /**
- * Initial cover text layer
+ * Initial cover text layer.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -41,7 +41,7 @@ namespace VuFind\Cover\Layer;
 class InitialText extends AbstractTextLayer
 {
     /**
-     * Render the layer
+     * Render the layer.
      *
      * @param resource $im       Image resource to draw on
      * @param array    $details  Cover details array (with title/author/call_number)

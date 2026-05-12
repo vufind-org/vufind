@@ -1,6 +1,6 @@
 <h2><?=$this->transEsc('Similar Items')?></h2>
 <?php $similarRecords = $this->related->getResults(); ?>
-<?php if (!empty($similarRecords)): ?>
+<?php if (count($similarRecords)): ?>
   <ul class="list-group">
     <?php foreach ($similarRecords as $data): ?>
       <li class="list-group-item"><?=$this->render('Related/Similar/item.phtml', compact('data'))?></li>

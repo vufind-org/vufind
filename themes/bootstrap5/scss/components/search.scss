@@ -1,14 +1,29 @@
 // Thumbnail sizes for media items: search results, list entries, record views
-/* #LESS>
-$thumbnail-width-small:   60px;
-$thumbnail-width-medium: 100px;
-$thumbnail-width-large:  160px;
-<#LESS */
-/* #SCSS> */
 $thumbnail-width-small:   60px !default;
 $thumbnail-width-medium: 100px !default;
 $thumbnail-width-large:  160px !default;
-/* <#SCSS */
+
+// Hide browser's own X button in the search field (Safari, Chrome)
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+// Search forms
+.navbar-form {
+  .form-control, .form-select {
+    display: block;
+    width: 100%;
+
+    @include media-breakpoint-up(sm) {
+      display: inline-block;
+      width: auto;
+    }
+  }
+  .btn {
+    vertical-align: baseline;
+  }
+}
 
 // record result list ol, ul that contains li.result
 .record-list {
@@ -28,44 +43,140 @@ $thumbnail-width-large:  160px !default;
 
   // Loading spinner
   .loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 2rem;
-    display: flex;
-    font-size: 150%;
+    @include loading-overlay();
     align-items: flex-start;
-    justify-content: center;
-    background-color: rgba(0,0,0,0.2);
+  }
+}
 
-    .loading-spinner {
-      padding: 2rem;
-      background-color: rgba(0,0,0,0.6);
-      border-radius: $border-radius-large;
-      color: $gray-lighter;
+.datevis-form {
+  padding: 0 10px;
+
+  .datevis-label {
+    margin-bottom: .3rem;
+    font-weight: bold;
+    text-align: inherit;
+  }
+
+  .datevis-chart {
+    height: 70px;
+  }
+
+  .slider-container {
+    padding-top: 0;
+    padding-bottom: .8rem;
+  }
+
+  .datevis-controls-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: .8rem;
+
+    label {
+      margin-right: .5rem;
+    }
+
+    input {
+      margin-right: 1rem;
+    }
+
+    .datevis-controls-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .datevis-input {
+      width: 100%;
     }
   }
 }
 
 // Hide these on mobile
-@media (max-width: 767px) {
-  #datevispublishDatexWrapper,
+@include media-breakpoint-down(sm) {
   // Bulk action checkboxes:
   #search-cart-form .result .checkbox,
-  // Search result bulk action buttons:
-  #search-cart-form .bulkActionButtons,
-  // Favorites bulk action buttons:
-  form[name="bulkActionForm"] .bulkActionButtons { display: none; }
+  // Search result and favorites bulk action buttons:
+  .bulkActionButtons { display: none; }
+}
+@include media-breakpoint-down(sm) {
+  .view-buttons {
+    display: none;
+  }
 }
 
 .searchHomeContent { @include clearfix(); }
-.home-facet-list {
-  padding-left: 0;
-  padding-right: 1rem;
-  list-style: none;
+
+.home-facet {
+  @media (min-width: 768px) {
+    flex: 0 1 100%;
+  }
 }
+
+.search-home-facets,
+.home-facet-container {
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.home-facet-container {
+  padding-right: $home-facet-container-right-padding; // Defines padding for better visual division
+  padding-left: $home-facet-container-left-padding; // Defines padding for better visual division
+
+  @media (min-width: 768px) {
+    height: $home-facet-container-height; // determines the height of the visual division line (see variables.scss for more info)
+    margin-bottom: $home-facet-container-bottom-margin; // determines the bottom margin
+  }
+}
+
+// Defines the layout of all uls with class 'home-facet-list'; variables can be overwritten in 'variables.scss':
+.home-facet-list {
+  list-style: $home-facet-list-list-style; // Defines the list style (default = 'none')
+  overflow: $home-facet-list-column-overflow; // Defines what's to be done if there are more entries than fit the columns
+  padding-left: $home-facet-list-left-padding; // Overwrites default left-padding for <ul>s
+  padding-right: $home-facet-list-right-padding; // Defines right padding for better visual division
+
+  @media (min-width: 768px) {
+    border-right: $home-facet-list-border-right-style; // Defines visual division between 'home-facet-list ' containers for devices >=768px (containers are stacked on smaller devices)
+    height: $home-facet-list-column-height; // Defines the height of each list column, see variables.scss; The number of entries per <ul> is currently defined in module/VuFind/src/VuFind/ContentBlock/FacetList.php (e.g.: '$columnSize = 10')
+  }
+
+  // Defines the number of columns of default/normal 'ul.home-facet-list' elements; variables can be overwritten in 'variables.scss':
+  .home-facet:not(.two-columns) & {
+    column-count: $home-facet-list-column-count-default; // This is the default
+    width: $home-facet-list-column-width-default; // Makes sure single column has same width as double column (required for border)
+  }
+
+  // When 'two-columns' is used, the affected 'home-facet-list' gets a default column-count of 2 on devices >=992px; these values can be overwritten in 'variables.scss':
+  .home-facet.two-columns & {
+    column-count: $home-facet-list-non-default-column-count; // Defines maximum number of cols to be used on devices >=1200px; see variables.scss
+    column-fill: $home-facet-list-column-fill; // Defines, how the columns will be filled: 'auto' fills up to max height and the breaks into new column, 'balance' attempts to distribute available entries evenly across the max. number of columns; value is set in variables.scss
+    column-gap: $home-facet-list-column-gap; // Defines the gap between the columns, if more than one
+    column-rule: $home-facet-list-non-default-column-rule; // Defines column rule between the <li> columns for non-default facet lists, such as '.callnumber-first' on devices >=992px
+
+    @media (max-width: 767px) {
+      column-count: $home-facet-list-column-count-xs; // Defaults to '1'; can be defined in 'variables.scss'
+    }
+
+    @media (min-width: 768px) {
+      flex: 0 1 100%;
+    }
+
+    @media (min-width: 768px) and (max-width: 991px) {
+      column-count: $home-facet-list-column-count-sm; // Defaults to '1'; can be defined in 'variables.scss'
+    }
+
+    @media (min-width: 992px) and (max-width: 1199px) {
+      column-count: $home-facet-list-column-count-md; // Defaults to '2'; can be defined in 'variables.scss'
+      column-rule: $home-facet-list-column-rule-md; // Defaults to '1 px solid grey'; can be defined in 'variables.scss'
+    }
+  }
+}
+
+.search-home-facets .home-facet:last-of-type {
+  border-right: $home-facet-list-last-of-type-border-right-style; // removes visual division between containers for last container
+}
+
+
 // Reset styling of hierarchical facets on the home page:
 .home-facet.facet-tree li {
   line-height: inherit;
@@ -87,7 +198,7 @@ $thumbnail-width-large:  160px !default;
   }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .search-home-facets,
   .home-facet-container { display: flex; }
   .home-facet {
@@ -96,23 +207,48 @@ $thumbnail-width-large:  160px !default;
   .home-facet-list { flex: 0 1 100%; }
 }
 
-header .container.navbar { margin-bottom: 0; }
-
-.search-sort, .search-result-limit { display: flex; }
-.search-sort label, .search-result-limit label {
-  line-height: $input-height-base;
-  padding-right: .5rem;
+header .container.navbar {
+  margin-bottom: 0;
+  // Use same padding as front page that doesn't have a navbar:
+  --bs-navbar-padding-x: calc(var(--bs-gutter-x)*.5);
 }
+
+.search-sort,
+.search-result-limit {
+  display: flex;
+  gap: 0.5rem;
+
+  label {
+    flex: none;
+    white-space: nowrap;
+    line-height: $input-height;
+  }
+
+  select.form-select {
+    flex: 1 1 0%;
+  }
+}
+
 .search-stats {
   display: block;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
 
-@media (min-width: 768px) {
+.search-controls form:not(:last-child) {
+  margin-bottom: 0.25rem;
+}
+
+@include media-breakpoint-up(sm) {
   .search-header { display: flex; }
   .search-stats { flex-grow: 1; }
   .search-controls { text-align: right; }
+}
+
+// Hide record versions in embedded accordions/tabs:
+.record-list .panel-group .record-versions,
+.record-list .tab-content .record-versions {
+  display: none;
 }
 
 .versions-tab {
@@ -136,6 +272,7 @@ header .container.navbar { margin-bottom: 0; }
 .selection-controls-bar {
   gap: 0.25rem;
   align-items: center;
+  cursor: default;
 }
 .bulkActionButtons {
   margin-block: 1rem;
@@ -144,8 +281,18 @@ header .container.navbar { margin-bottom: 0; }
   padding-inline-end: 1rem;
   margin-top: .25rem;
 }
-.bulkActionButtons label { display: inline-block; }
-.bulkActionButtons label input { margin-top: 2px; }
+.bulkActionButtons label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding-inline: 0;
+  padding-block: 0.5em;
+  line-height: normal;
+
+  [type="checkbox"] {
+    margin: 0;
+  }
+}
 
 .action-toolbar,
 .selection-controls-bar {
@@ -158,8 +305,8 @@ header .container.navbar { margin-bottom: 0; }
     padding-left: 1em;
   }
 }
-.action-toolbar li,
-.selection-controls-bar li {
+.action-toolbar > li,
+.selection-controls-bar > li {
   display: inline-block;
 
   .popover li {
@@ -168,17 +315,28 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-@media (max-width: 767px) {
+@include media-breakpoint-down(sm) {
   .grid { min-height: 250px; }
 }
 .result {
   display: flex;
+  align-items: start;
   padding-top: 1rem;
 
   .record-checkbox,
-  .record-number { display: none; }
+  .record-number {
+    display: none;
+  }
 
-  .title,
+  .record-checkbox {
+    padding: .4rem;
+    height: fit-content;
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+  }
+
   .result-author,
   .fulltext {
     display: inline-block;
@@ -201,22 +359,30 @@ header .container.navbar { margin-bottom: 0; }
     min-width: inherit;
   }
 
-  @media (max-width: 767px) {
-    a {
-      max-width: 100%;
-      text-decoration: underline;
+  @include media-breakpoint-down(sm) {
+    .result-qrcode {
+      display: none;
     }
   }
-  @media (min-width: 768px) {
+
+  @include media-breakpoint-up(sm) {
     .record-checkbox {
-      display: block;
-      flex: 0;
+      display: flex;
+      flex: none;
+      align-items: center;
+      gap: 0.2em;
+      height: fit-content;
       cursor: pointer;
+
+      input[type="checkbox"] {
+        margin: 0;
+      }
     }
     .record-number {
       display: block;
-      flex: 0 2rem;
-      text-align: center;
+      flex: none;
+      min-width: 2ch;
+      text-align: end;
     }
   }
 }
@@ -255,7 +421,7 @@ header .container.navbar { margin-bottom: 0; }
       object-fit: contain;
     }
 
-    @media (min-width: 768px) {
+    @include media-breakpoint-up(sm) {
       &.small  { width: $thumbnail-width-small; }
       &.medium { width: $thumbnail-width-medium; }
       &.large  { width: $thumbnail-width-large; }
@@ -276,12 +442,16 @@ header .container.navbar { margin-bottom: 0; }
 }
 .recordcover {
   white-space: normal;
-  line-height: 1.15;
+  line-height: normal;
 }
 
 .result-body {
   padding: 0;
   padding-bottom: .25rem;
+
+  .author sup {
+    display: none;
+  }
 }
 
 .result-body,
@@ -297,15 +467,16 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.btn-bookbag-toggle,
 .result-links a {
   line-height: 1.5;
+
+  &.icon-link {
+    display: flex;
+  }
 }
 
 .result-links .alert { margin: 0; }
 .result-formats { margin-bottom: .5rem; }
-
-.btn-bookbag-toggle form { display: inline; }
 
 .savedLists {
   @extend .alert;
@@ -322,7 +493,7 @@ header .container.navbar { margin-bottom: 0; }
   margin: 0.5rem 0;
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .result-body {
     float: left;
     width: 75%;
@@ -333,14 +504,15 @@ header .container.navbar { margin-bottom: 0; }
     padding: 0;
   }
   .savedLists.loaded { display: block; }
-}
-body.rtl {
-  @media (min-width: 768px) {
+
+  body.rtl {
     .result-body,
     .result-links { float: right; }
   }
 }
+
 /* ------ EMBEDDED RESULTS STYLE ------ */
+
 .result.embedded {
   .getFull {
     display: block;
@@ -350,10 +522,12 @@ body.rtl {
   }
   .getFull.expanded {
     @extend .list-group-item;
+
     margin-top: -11px;
-    padding-left: .5rem;
-    border-top-left-radius: $border-radius-base;
-    border-top-right-radius: $border-radius-base;
+    margin-bottom: -1px;
+    padding: 10px 15px 10px 0.5rem;
+    border: 1px solid #ddd;
+
     &::before {
       content: '\25BC';
       position: absolute;
@@ -370,10 +544,10 @@ body.rtl {
   .long-view {
     margin-left: -.5rem;
     padding: .5rem;
-    border: 1px solid $list-group-border;
+    border: 1px solid $list-group-border-color;
     background-color: #fff;
-    border-bottom-left-radius: $border-radius-base;
-    border-bottom-right-radius: $border-radius-base;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
   }
   .long-view .tab-content { padding: 0; }
   .list-tabs { margin-bottom: 0; }
@@ -417,12 +591,14 @@ body.rtl {
 }
 .grid-large-break,
 .grid-small-break { clear: both; }
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .grid-result{ width: 25%; }
   .grid-small-break { display: none; }
 }
 
 .searchtools {
+  margin-bottom: 0.5rem;
+
   h2 {
     display: inline-block;
     margin: 0;
@@ -493,7 +669,7 @@ body.rtl {
   padding: 0;
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .combined-search-container {
     display: flex;
     padding-left: 1rem;
@@ -537,14 +713,30 @@ body.rtl {
   padding-left: .5rem;
   font-weight: bold;
   color: #000;
+
+  .icon {
+    width: 1rem;
+    text-align: center;
+  }
+
+  @include media-breakpoint-down(sm) {
+    &.top-title__heading {
+      display: none;
+    }
+  }
+  @include media-breakpoint-up(sm) {
+    &.top-title__toggle {
+      display: none;
+    }
+  }
 }
-.top-title .fa {
-  width: 1rem;
-  text-align: center;
-}
-@media (min-width: 768px) {
-  .top-title { padding-top: 0; }
-  .top-title .fa { display: none; }
+@include media-breakpoint-up(sm) {
+  .top-title {
+    padding-top: 0;
+  }
+  .top-title .icon {
+    display: none;
+  }
   .top-facets .collapse {
     display: block;
     height: auto !important;
@@ -577,7 +769,7 @@ body.rtl {
     &.collapsed::after {
       content: '\25BC';
     }
-    @media (min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       float: left;
     }
   }
@@ -587,7 +779,7 @@ body.rtl {
 
     .collapse {
       display: none;
-      .in {
+      .show {
         display: inline-block;
       }
     }
@@ -595,13 +787,19 @@ body.rtl {
     .checkbox label {
       display: inline-block;
       padding: 10px 0px;
-      @media (max-width: $screen-sm-min) {
+      @include media-breakpoint-down(sm) {
         float: right;
         padding: 0px;
       }
     }
+    .operator-and-term {
+      white-space:nowrap;
+    }
     .filters-term {
       font-size: 0.8em
+    }
+    .filters-not, .filters-or, .filters-and {
+      font-weight: bold;
     }
     .filter-value {
       display: inline-block;
@@ -621,7 +819,7 @@ body.rtl {
       display: inline;
       padding-left: 0;
       padding-right: 0;
-      @media (min-width: $screen-sm-min) {
+      @include media-breakpoint-up(sm) {
         padding-right: 20px;
       }
     }
@@ -631,14 +829,20 @@ body.rtl {
     }
   }
 }
+@include media-breakpoint-down(sm) {
+  .active-filters--uncollapsible {
+    display: none;
+  }
+}
+@include media-breakpoint-up(sm) {
+  .active-filters--collapsible {
+    display: none;
+  }
+}
 
-.toolbar-btn,
-.record-nav .cart-add,
-.record-nav .cart-remove,
-.reset-filters-btn,
 .clear-selection {
   border: 0;
-  color: #555;
+  color: $gray-dark;
   text-decoration: none;
   background-color: rgba(0,0,0,.05);
   border-radius: 4px;
@@ -648,28 +852,15 @@ body.rtl {
   }
 }
 
-.toolbar-btn,
-.record-nav .cart-add,
-.record-nav .cart-remove,
 .reset-filters-btn {
-  @extend .icon-link;
+  @extend .toolbar-btn;
   gap: 0.25rem;
   margin-bottom: 4px;
   margin-top: 4px;
-  padding: .5rem 1rem;
-}
-.reset-filters-btn {
-  flex: none;
 }
 
-.toolbar-btn {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.clear-selection{
+.clear-selection {
   font-weight: 700;
-  padding: .25rem .4rem .15rem .4rem;
   flex-basis: 100%;
 }
 
@@ -686,10 +877,6 @@ body.rtl {
     background: $list-group-active-bg;
     font-weight: 600;
     vertical-align: baseline;
-  }
-  .btn::after {
-    content: "\f107";
-    font-family: "FontAwesome";
   }
 
   .dropdown-menu {
@@ -730,10 +917,12 @@ body.rtl {
 table.search-history-table {
   table-layout: auto;
 
-  @media screen and (min-width: 768px) {
-    tbody > tr > td { vertical-align: middle; }
-    .history_time {
-      width: 20%;
+  @include media-breakpoint-up(sm) {
+    @media screen {
+      tbody > tr > td { vertical-align: middle; }
+      .history_time {
+        width: 20%;
+      }
     }
   }
 }
@@ -750,7 +939,7 @@ table.search-history-table {
   .searchForm-query {
     position: relative;
 
-    @media (min-width: 768px) {
+    @include media-breakpoint-up(sm) {
       display: inline-block;
     }
 
@@ -773,11 +962,12 @@ table.search-history-table {
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 0.2rem;
+      gap: 1ch;
     }
 
     #searchForm-reset {
       width: 2em;
+      height: 2em;
       border: none;
       border-radius: 50%;
       background-color: $gray-lighter;
@@ -801,7 +991,7 @@ table.search-history-table {
 }
 
 /* Break early to prevent table overflow */
-@media (max-width: 991px) {
+@include media-breakpoint-down(md) {
   .template-dir-search.template-name-history {
     .mainbody,
     .sidebar {
@@ -836,9 +1026,9 @@ table.search-history-table {
     span {
       border: 0;
       padding: 0;
-      color: $text-color;
+      color: $body-color;
       &:hover {
-        color: $text-color;
+        color: $body-color;
         background-color: transparent;
       }
     }
@@ -863,4 +1053,21 @@ table.search-history-table {
       content: ', ';
     }
   }
+}
+
+.callnumAndLocation .statusItemsHoldingsTextFields {
+  border: none;
+  padding: 0;
+  padding-left: 15px;
+}
+
+.callnumAndLocation .itemWithAdditionalHoldingFields td {
+  border-bottom-width: 0;
+}
+
+/* OpenLibrarySubjects recommendation module */
+.olSubjectCover {
+ display: inline-block;
+ min-width: 48px;
+ padding: 2px;
 }

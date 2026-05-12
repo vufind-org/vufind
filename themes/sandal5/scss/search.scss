@@ -1,7 +1,3 @@
-.search {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
 .list-group-item.title { color: $dark-gray; }
 .bulkActionButtons {
   margin-bottom: 0;
@@ -19,8 +15,6 @@
 .author-facets { font-size: $reduced-font-size; }
 
 .result {
-  margin-left: -1rem;
-  margin-right: -1rem;
   padding: 1rem;
   padding-right: 0;
   border-bottom: 1px solid $moon-gray;
@@ -28,11 +22,7 @@
   .media-left { padding-left: 0; }
   .media-right { padding-right: 0; }
   .record-cover img { border: 1px solid $gray-lighter; }
-  .record-number {
-    font-size: $reduced-font-size;
-    font-weight: bold;
-    color: $gray;
-  }
+  .record-number { color: $gray-dark; }
 
   .title { font-size: 1rem; }
   .callnumAndLocation {
@@ -46,7 +36,7 @@
     padding: 4px .75rem;
   }
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .result {
     margin-left: 0;
     margin-right: 0;
@@ -73,7 +63,7 @@
   }
   .format,
   .label {
-    color: $brand-primary;
+    color: $primary;
     background-color: #fff;
   }
   .record-number { color: $search-row-selected-color; }
@@ -104,7 +94,7 @@
   color: #fff;
   font-weight: 500;
   background-color: $header-bg;
-  background-image: url('../../sandal/images/forest.jpg');
+  background-image: url('../../sandal5/images/forest.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center top;
@@ -114,8 +104,8 @@
     color: $white;
     text-shadow: 0 1px 0 $black;
   }
-  @media (min-width: 768px) {
-    height: 300px;
+  @include media-breakpoint-up(sm) {
+    min-height: 300px;
     padding: 7rem calc(50vw - 50%); // Align searchbox with container
   }
 }
@@ -131,7 +121,7 @@
   color: #fff;
   background-color: rgba(0,0,0,.3);
   content: "Photo by Paul Gilmore on Unsplash";
-  @media (min-width: 768px) {
+  @include media-breakpoint-up(sm) {
     left: auto;
     right: calc(50% - 50vw + .5rem);
     width: auto;
@@ -190,7 +180,6 @@
 
   .nav-tabs {
     white-space: nowrap;
-    margin-bottom: 1rem;
     border-bottom: none;
   }
   .nav-tabs a,
@@ -209,12 +198,12 @@
     border-color: $white-50;
     background-color: transparent;
   }
-  .nav-tabs .active a {
+  .nav-tabs a.active {
     color: #fff;
     border-color: $white;
   }
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   #searchForm_lookfor,
   #searchForm_type { margin-bottom: 0; }
   .nav.searchbox .nav-tabs a,
@@ -261,11 +250,20 @@
   }
 }
 
+.main .active-filters .reset-filters-btn {
+  border: 1px solid $header-bg;
+  background-color: $header-bg;
+  &:hover {
+    color: $header-bg;
+  }
+}
+
 .active-filters .reset-filters-btn {
   font-weight: bold;
   color: #fff;
   background-color: rgba(255,255,255,0.2);
   border-radius: 4px;
+  border-color: $silver;
 
   &:hover {
     background-color: rgba(255,255,255,0.3);

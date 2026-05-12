@@ -2,6 +2,16 @@
 /*exported loadMapSelection */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
+/**
+ * Initialize a Leaflet map.
+ * @param {string}       geoField      The name of the geospatial field.
+ * @param {Array}        boundingBox   An array of four numbers representing the initial search box coordinates.
+ * @param {string}       baseURL       The base URL for the search results page.
+ * @param {string}       homeURL       The URL for VuFind's home page (root of application).
+ * @param {string}       searchParams  Existing search parameters to be appended to new search URLs.
+ * @param {Array<Array>} resultsCoords An array of search results; each result is [id, title, west, east, north, south].
+ * @param {Array}        basemap       An array containing the URL template and attribution for the map's basemap.
+ */
 function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, resultsCoords, basemap) {
   // Initialize variables
   var searchboxLayer = L.featureGroup();
@@ -21,26 +31,26 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
       shadowSize: [41, 41]
     }
   });
-  
+
   // Red will be used for search results display
   var redIcon = new searchIcon({
-    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-red.png',
-    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-icon-2x-red.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-shadow.png'
   });
-  
+
   var redRectIcon = new searchIcon({
-    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/rectangle-icon-2x-red.png',
-    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/rectangle-icon-2x-red.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-shadow.png'
   });
 
   // Blue will be used when a user selects a geofeature
   var blueIcon = new searchIcon({
-    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-icon-2x-blue.png',
-    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-icon-2x-blue.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-shadow.png'
   });
   var blueRectIcon = new searchIcon({
-    iconUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/rectangle-icon-2x-blue.png',
-    shadowUrl: VuFind.path + '/themes/bootstrap3/css/vendor/leaflet/images/marker-shadow.png'
+    iconUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/rectangle-icon-2x-blue.png',
+    shadowUrl: VuFind.path + '/themes/bootstrap5/css/vendor/leaflet/images/marker-shadow.png'
   });
 
   // Initialize marker clusters with icon colors
@@ -54,7 +64,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         i = i + markers[i].options.total;
       }
       var c = ' marker-cluster-';
-      if (cstatus === 'active') {   
+      if (cstatus === 'active') {
         c += 'active';
       } else {
         c += 'inactive';
@@ -63,8 +73,9 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     }
   });
 
-  // Handle user interaction with markers and rectangles
-  //----------------------------------------------------//
+  /**
+   * Handle user interaction with markers and rectangles
+   */
   function onClick() {
     mapSearch.eachLayer(function msl(layer) {
       if (layer.options.id === "mRect") {
@@ -82,13 +93,13 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
             layer.setIcon(redRectIcon);
           } else {
             layer.setIcon(redIcon);
-          } 
-        } 
+          }
+        }
       });
-      clickedIDs = []; 
+      clickedIDs = [];
       clickedBounds = [];
     }
-    
+
     //Handle current feature selection
     //Change color of all features with thisID to BLUE
     var thisID = this.options.recID;
@@ -146,7 +157,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
 
   // Searchbox
   //-------------------------------------//
-  // Retrieve searchbox coordinates 
+  // Retrieve searchbox coordinates
   var sb_west = boundingBox[0];
   var sb_south = boundingBox[1];
   var sb_east = boundingBox[2];
@@ -193,7 +204,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     setLatLng: function e() {}
   });
 
-  // Process result coordinates 
+  // Process result coordinates
   for (var i = 0; i < resultsCoords.length; ++i )
   {
     var rcType;
@@ -208,7 +219,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     var rc_north = resultsCoords[i][4];
     var rc_south = resultsCoords[i][5];
     sb_west = searchboxFeature.getBounds().getWest();
-    sb_east = searchboxFeature.getBounds().getEast(); 
+    sb_east = searchboxFeature.getBounds().getEast();
 
     if (sb_west >= -180 && sb_east <= 180) {
       // do nothing
@@ -219,15 +230,15 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
         rc_east = rc_east + 360;
       }
       if (rc_east > sb_east) {
-        rc_west = rc_west - 360; 
+        rc_west = rc_west - 360;
         rc_east = rc_east - 360;
-      } 
+      }
     }
 
     if (rc_west === rc_east && rc_north === rc_south) {
       rcType = "point";
       rcFeature = L.marker([rc_south, rc_west], {
-        recID: recID, 
+        recID: recID,
         recType: rcType,
         recStatus: rcStatus,
         recPopup: popupContent,
@@ -242,7 +253,7 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     }
     rcFeature.bindPopup(popup);
     rcFeature.on('click', onClick);
-       
+
     // Only add feature to markerClusters if it is within or intersects searchbox
     if (rcType === "rectangle") {
       if (searchboxFeature.getBounds().intersects(rcFeature.getBounds())) {
@@ -277,21 +288,21 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
 
   // Turn on map selection pane
   $('#geo_search').show();
- 
+
   // Create map
   mapSearch = new L.Map ("geo_search_map", {
     layers: [basemapLayer, searchboxLayer, markerClusters, drawnItemsLayer],
     center: sb_center
   });
-  mapSearch.fitBounds(sb_bounds);  
+  mapSearch.fitBounds(sb_bounds);
 
   // Add search functionality
   drawnItems = new L.Draw.Rectangle(mapSearch);
-  
+
   mapSearch.on('draw:created', function ms(e) {
     var layer = e.layer;
     drawnItemsLayer.addLayer(layer);
-    
+
     // Get search box coordinates SW, NW, NE, SE
     // note the wrap() function creates 180 to -180 compliant longitude values.
     var di_ne = layer.getBounds().getNorthEast().wrap();
@@ -300,17 +311,17 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     var di_east = di_ne.lng;
     var di_south = di_sw.lat;
     var di_west = di_sw.lng;
-    
-    //Create search query
+
+    // Create search query
     var rawFilter = geoField + ':Intersects(ENVELOPE(' + di_west + ', ' + di_east + ', ' + di_north + ', ' + di_south + '))';
-    location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
+    location.href = baseURL + searchParams + "&filter%5B%5D=" + rawFilter;
   }, this);
-  
+
   document.getElementById("draw_box").onclick = function drawSearchBox() {
     drawnItemsLayer.clearLayers();
     new L.Draw.Rectangle(mapSearch, drawnItems.options.rectangle).enable();
   };
-  
+
   // If user clicks on map anywhere turn all features to inactive color - RED
   // and reset clicked arrays
   mapSearch.on('click', function ms() {

@@ -1,11 +1,13 @@
 <?=$this->doctype()?>
-
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
-    <?php $this->setupThemeResources(); ?>
+    <?php
+      $this->setupThemeResources();
+      $this->assetManager()->clearScriptList()->clearStyleList()->appendStyleLink('help.css');
+    ?>
     <?=$this->headMeta()?>
-    <?=$this->headTitle() ?>
-    <?=$this->headLink()->setStylesheet('help.css')  ?>
+    <?=$this->headTitle()?>
+    <?=$this->assetManager()->outputHeaderAssets()?>
   </head>
   <body>
     <?=$this->layout()->content?>

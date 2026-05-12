@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -51,14 +51,14 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
     use QueryOffsetLimitTrait;
 
     /**
-     * If json should be returned as an array instead an object
+     * If json should be returned as an array instead an object.
      *
      * @var ?bool
      */
     protected $asArray = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string        $backendId Search backend identifier
      * @param AbstractQuery $query     Search query string
@@ -72,7 +72,7 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
         AbstractQuery $query,
         int $offset = 0,
         int $limit = 100,
-        ParamBag $params = null,
+        ?ParamBag $params = null,
         ?bool $asArray = null
     ) {
         $this->query = $query;

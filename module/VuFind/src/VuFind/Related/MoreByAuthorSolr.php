@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related Records: Solr-based "more by author"
+ * Related Records: Solr-based "more by author".
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
@@ -35,7 +35,7 @@ use VuFindSearch\Query\Query;
 use function count;
 
 /**
- * Related Records: Solr-based "more by author"
+ * Related Records: Solr-based "more by author".
  *
  * @category VuFind
  * @package  Related_Records
@@ -46,28 +46,28 @@ use function count;
 class MoreByAuthorSolr implements RelatedInterface
 {
     /**
-     * Similar records
+     * Similar records.
      *
      * @var array
      */
     protected array $results = [];
 
     /**
-     * Author being searched
+     * Author being searched.
      *
      * @var string
      */
     protected string $author = '';
 
     /**
-     * Maximum number of titles to suggest
+     * Maximum number of titles to suggest.
      *
      * @var int
      */
     protected int $maxRecommendations = 5;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindSearch\Service $searchService Search service
      */

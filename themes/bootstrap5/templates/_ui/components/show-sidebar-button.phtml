@@ -1,11 +1,38 @@
-<?php if (null === ($side = $this->config()->offcanvasSide())): ?>
-    <a class="search-filter-toggle" href="#<?=$this->escapeHtmlAttr($this->targetId)?>" title="<?=$this->transEscAttr($this->title ?? 'sidebar_expand') ?>">
-        <?=$this->transEsc($this->linkText) ?>
-    </a>
-<?php else: ?>
-    <a class="search-filter-toggle icon-link" href="#<?=$this->escapeHtmlAttr($this->targetId)?>" data-toggle="vufind-offcanvas" title="<?=$this->transEscAttr($this->title ?? 'sidebar_expand')?>">
-        <?='left' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-show-right' : 'offcanvas-show-left', 'icon-link__icon') : ''?>
-        <span class="icon-link__label"><?=$this->transEsc($this->linkText) ?></span>
-        <?='right' === $side ? $this->icon($this->layout()->rtl ? 'offcanvas-show-left' : 'offcanvas-show-right', 'icon-link__icon') : ''?>
-    </a>
-<?php endif; ?>
+<?php
+    /**
+     * Component to display a link to navigate to a sidebar (used in responsive mobile modes)
+     *
+     * @param ?string $title    Title for link (will be translated; defaults to sidebar_expand)
+     * @param string  $targetId HTML element ID to link to
+     * @param string  $linkText Text to display within link
+     */
+    $side = $this->config()->offcanvasSide();
+    $aAttrs = [
+        'class' => 'search-filter-toggle ' . $this->_componentClass,
+        'title' => $this->translate($this->title ?? 'sidebar_expand'),
+        'href' => '#' . $this->targetId,
+    ];
+    $iconBefore = '';
+    $iconAfter = '';
+    $spanAttrs = [];
+    if ($side) {
+        $aAttrs['class'] .= ' icon-link';
+        $aAttrs['data-toggle'] = 'vufind-offcanvas';
+        if ($side === 'left') {
+            $iconBefore = $this->icon($this->layout()->rtl ? 'offcanvas-show-right' : 'offcanvas-show-left', 'icon-link__icon');
+        } else {
+            $iconAfter = $this->icon($this->layout()->rtl ? 'offcanvas-show-left' : 'offcanvas-show-right', 'icon-link__icon');
+        }
+        $spanAttrs = [
+            'class' => 'icon-link__label',
+        ];
+    }
+?>
+
+<a<?=$this->htmlAttributes($aAttrs)?>>
+    <?php if ($spanAttrs): ?>
+        <?=$iconBefore?><span<?=$this->htmlAttributes($spanAttrs)?>><?=$this->transEsc($this->linkText);?></span><?=$iconAfter?>
+    <?php else: ?>
+        <?=$this->transEsc($this->linkText);?>
+    <?php endif; ?>
+</a>

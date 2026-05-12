@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -75,7 +75,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
-     * Global extra Solr query parameters
+     * Global extra Solr query parameters.
      *
      * @var array
      */
@@ -98,7 +98,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected $createSpellingQuery = false;
 
     /**
-     * Lucene syntax helper
+     * Lucene syntax helper.
      *
      * @var LuceneSyntaxHelper
      */
@@ -149,7 +149,11 @@ class QueryBuilder implements QueryBuilderInterface
         } else {
             // Clone the query to avoid modifying the original user-visible query
             $finalQuery = clone $query;
-            $finalQuery->setString($this->getNormalizedQueryString($query));
+            $queryString = $query->getString();
+            if ($handler = $this->getSearchHandler($query->getHandler(), $queryString)) {
+                $queryString = $handler->preprocessQueryString($queryString);
+            }
+            $finalQuery->setString($this->getNormalizedQueryString($queryString));
         }
         $string = $finalQuery->getString() ?: '*:*';
 
@@ -157,7 +161,6 @@ class QueryBuilder implements QueryBuilderInterface
         $highlight = !empty($this->fieldsToHighlight);
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
-            $string = $handler->preprocessQueryString($string);
             if (
                 !$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
@@ -175,7 +178,7 @@ class QueryBuilder implements QueryBuilderInterface
                 }
             } elseif ($handler->hasDismax()) {
                 $newParams->set('qf', implode(' ', $handler->getDismaxFields()));
-                $newParams->set('qt', $handler->getDismaxHandler());
+                $newParams->set('defType', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
                     $newParams->add(reset($param), next($param));
                 }
@@ -212,7 +215,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Check if the conditions match for an extra parameter
+     * Check if the conditions match for an extra parameter.
      *
      * @param AbstractQuery $query      Search query
      * @param ?ParamBag     $params     Search backend parameters
@@ -278,7 +281,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Check if any of the given search types has the field in DismaxParams
+     * Check if any of the given search types has the field in DismaxParams.
      *
      * @param array  $searchTypes Search types to check
      * @param string $field       Field to check for
@@ -300,7 +303,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Get an array of search types used in the given search
+     * Get an array of search types used in the given search.
      *
      * @param AbstractQuery $query Query
      *
@@ -392,7 +395,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Get Lucene syntax helper
+     * Get Lucene syntax helper.
      *
      * @return LuceneSyntaxHelper
      */
@@ -405,7 +408,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Set Lucene syntax helper
+     * Set Lucene syntax helper.
      *
      * @param LuceneSyntaxHelper $helper Lucene syntax helper
      *
@@ -495,7 +498,7 @@ class QueryBuilder implements QueryBuilderInterface
                 $searchString = '(*:* NOT ' . $searchString . ')';
             }
         } else {
-            $searchString = $this->getNormalizedQueryString($component);
+            $searchString = $this->getNormalizedQueryString($component->getString());
             $searchHandler = $this->getSearchHandler(
                 $component->getHandler(),
                 $searchString
@@ -511,12 +514,12 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Return search string based on input and handler.
      *
-     * @param string        $string  Input search string
-     * @param SearchHandler $handler Search handler
+     * @param string         $string  Input search string
+     * @param ?SearchHandler $handler Search handler
      *
      * @return string
      */
-    protected function createSearchString($string, SearchHandler $handler = null)
+    protected function createSearchString($string, ?SearchHandler $handler = null)
     {
         $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 
@@ -569,17 +572,17 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Given a Query object, return a fully normalized version of the query string.
+     * Given a Query string, return a fully normalized version.
      *
-     * @param Query $query Query object
+     * @param string $queryString Query string
      *
      * @return string
      */
-    protected function getNormalizedQueryString($query)
+    protected function getNormalizedQueryString($queryString)
     {
         return $this->fixTrailingQuestionMarks(
             $this->getLuceneHelper()->normalizeSearchString(
-                $query->getString()
+                $queryString
             )
         );
     }

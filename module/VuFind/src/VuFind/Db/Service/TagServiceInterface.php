@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -55,7 +55,7 @@ interface TagServiceInterface extends DbServiceInterface
     public function getStatistics(bool $extended = false, bool $caseSensitiveTags = false): array;
 
     /**
-     * Get the tags that match a string
+     * Get the tags that match a string.
      *
      * @param string $text          Tag to look up.
      * @param string $sort          Sort type
@@ -89,27 +89,27 @@ interface TagServiceInterface extends DbServiceInterface
      * @param string $text          Tag text to match
      * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
      *
-     * @return TagsEntityInterface[]
+     * @return ?TagsEntityInterface
      */
     public function getTagByText(string $text, bool $caseSensitive = false): ?TagsEntityInterface;
 
     /**
      * Get all resources associated with the provided tag query.
      *
-     * @param string $q             Search query
-     * @param string $source        Record source (optional limiter)
-     * @param string $sort          Resource field to sort on (optional)
-     * @param int    $offset        Offset for results
-     * @param ?int   $limit         Limit for results (null for none)
-     * @param bool   $fuzzy         Are we doing an exact (false) or fuzzy (true) search?
-     * @param ?bool  $caseSensitive Should search be case sensitive? (Ignored when fuzzy = true)
+     * @param string  $q             Search query
+     * @param ?string $source        Record source (optional limiter)
+     * @param ?string $sort          Resource field to sort on (optional)
+     * @param int     $offset        Offset for results
+     * @param ?int    $limit         Limit for results (null for none)
+     * @param bool    $fuzzy         Are we doing an exact (false) or fuzzy (true) search?
+     * @param ?bool   $caseSensitive Should search be case sensitive? (Ignored when fuzzy = true)
      *
      * @return array
      */
     public function getResourcesMatchingTagQuery(
         string $q,
-        string $source = null,
-        string $sort = null,
+        ?string $source = null,
+        ?string $sort = null,
         int $offset = 0,
         ?int $limit = null,
         bool $fuzzy = true,
@@ -202,6 +202,16 @@ interface TagServiceInterface extends DbServiceInterface
         UserEntityInterface|int|null $ownerOrId = null,
         bool $caseSensitive = false
     ): array;
+
+    /**
+     * Merge source tag into target tag.
+     *
+     * @param TagsEntityInterface $target Target tag
+     * @param TagsEntityInterface $source Source tag
+     *
+     * @return void
+     */
+    public function mergeTags(TagsEntityInterface $target, TagsEntityInterface $source): void;
 
     /**
      * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive

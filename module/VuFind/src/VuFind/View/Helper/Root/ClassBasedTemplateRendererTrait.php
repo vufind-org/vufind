@@ -21,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -52,7 +52,7 @@ use function sprintf;
 trait ClassBasedTemplateRendererTrait
 {
     /**
-     * Cache for found templates
+     * Cache for found templates.
      *
      * @var array
      */
@@ -163,7 +163,7 @@ trait ClassBasedTemplateRendererTrait
     }
 
     /**
-     * Helper to grab the end of the class name
+     * Helper to grab the end of the class name.
      *
      * @param string $className Class name to abbreviate
      *
@@ -172,11 +172,15 @@ trait ClassBasedTemplateRendererTrait
     protected function getBriefClass($className)
     {
         $classParts = explode('\\', $className);
-        return array_pop($classParts);
+        $className = array_pop($classParts);
+        // In case this is an anonymous class, we may need to strip off a suffix
+        // (needed, for example, for RecordDataFormatterTest):
+        $classNameParts = explode('@', $className);
+        return $classNameParts[0];
     }
 
     /**
-     * Helper to put the template path and class name together
+     * Helper to put the template path and class name together.
      *
      * @param string $template  Template path (with %s as class name placeholder)
      * @param string $className Class name to abbreviate

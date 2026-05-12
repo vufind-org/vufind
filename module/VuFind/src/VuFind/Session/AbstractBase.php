@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class for session handling
+ * Base class for session handling.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -31,13 +31,13 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 
 /**
- * Base class for session handling
+ * Base class for session handling.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -48,16 +48,13 @@ use VuFind\Db\Service\SearchServiceInterface;
  */
 abstract class AbstractBase implements HandlerInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait {
-        getDbTable as getTable;
-    }
     // Note that we intentionally omit the DbServiceAwareInterface above; the service
     // manager is injected by AbstractBaseFactory explicitly for compatibility with
     // the secure delegator factory, so we don't need to auto-inject it.
     use DbServiceAwareTrait;
 
     /**
-     * Session lifetime in seconds
+     * Session lifetime in seconds.
      *
      * @var int
      */
@@ -65,19 +62,19 @@ abstract class AbstractBase implements HandlerInterface
 
     /**
      * Whether writes are disabled, i.e. any changes to the session are not written
-     * to the storage
+     * to the storage.
      *
      * @var bool
      */
     protected $writesDisabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param ?Config $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(?Config $config = null)
     {
         if (isset($config->lifetime)) {
             $this->lifetime = $config->lifetime;
@@ -85,7 +82,7 @@ abstract class AbstractBase implements HandlerInterface
     }
 
     /**
-     * Enable session writing (default)
+     * Enable session writing (default).
      *
      * @return void
      */
@@ -95,7 +92,7 @@ abstract class AbstractBase implements HandlerInterface
     }
 
     /**
-     * Disable session writing, i.e. make it read-only
+     * Disable session writing, i.e. make it read-only.
      *
      * @return void
      */

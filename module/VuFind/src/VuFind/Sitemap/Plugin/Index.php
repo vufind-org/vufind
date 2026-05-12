@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Index-based generator plugin
+ * Index-based generator plugin.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -30,7 +30,7 @@
 namespace VuFind\Sitemap\Plugin;
 
 /**
- * Index-based generator plugin
+ * Index-based generator plugin.
  *
  * @category VuFind
  * @package  Sitemap
@@ -41,7 +41,7 @@ namespace VuFind\Sitemap\Plugin;
 class Index extends AbstractGeneratorPlugin
 {
     /**
-     * Base URL for site
+     * Base URL for site.
      *
      * @var string
      */
@@ -62,21 +62,21 @@ class Index extends AbstractGeneratorPlugin
     protected $idFetcher;
 
     /**
-     * Page size for data retrieval
+     * Page size for data retrieval.
      *
      * @var int
      */
     protected $countPerPage;
 
     /**
-     * Search filters
+     * Search filters.
      *
      * @var string[]
      */
     protected $filters;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                   $backendSettings Settings specifying which
      * backends to index

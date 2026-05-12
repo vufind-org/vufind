@@ -5,8 +5,8 @@
 ?>
 <?php if (!empty($this->request) && $score && $maxScore !== null && $maxScore > 0):?>
   <?php
-  $this->headScript()->appendFile('vendor/chart.js');
-  $this->headScript()->appendFile('explain.js');
+  $this->assetManager()->appendScriptLink('vendor/chart.js');
+  $this->assetManager()->appendScriptLink('explain.js');
   $link = $this->recordLinker()->getActionUrl($this->driver, 'Explain', $this->request);
   ?>
   <a class="result-list-explain" target="_blank" href="<?=$this->escapeHtmlAttr($link)?>">
@@ -21,7 +21,7 @@
       ></canvas>
     </span>
     <span title="<?=$this->transEscAttr('explain_result_list_hint')?>">
-      <?= $this->icon('question-circle') ?>
+      <?= $this->icon('explain') ?>
     </span>
   </a>
 <?php endif; ?>

@@ -1,0 +1,6 @@
+<?php
+  // setting overrideId and then use default template to avoid duplication of code
+  $this->assetManager()->appendStyleLink('EDS.css');
+  $supportsRtac = $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled();
+  $this->overrideId = $supportsRtac ? $this->driver->getUniqueIDOverrideForRequest() : '';
+  echo $this->render('RecordDriver/DefaultRecord/list-entry.phtml');

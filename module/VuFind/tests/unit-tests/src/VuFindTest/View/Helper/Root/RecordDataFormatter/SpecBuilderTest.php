@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordDataFormatter spec builder Test Class
+ * RecordDataFormatter spec builder Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,7 @@ namespace VuFindTest\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatter\SpecBuilder;
 
 /**
- * RecordDataFormatter spec builder Test Class
+ * RecordDataFormatter spec builder Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test the spec builder
+     * Test the spec builder.
      *
      * @return void
      */
@@ -53,9 +53,9 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
     {
         // Test building a spec:
         $builder = new SpecBuilder();
-        $builder->setLine('foo', 'getFoo');
-        $builder->setLine('bar', 'getBar');
-        $builder->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
+        $builder->setLine('foo', 'getFoo')
+            ->setLine('bar', 'getBar')
+            ->setTemplateLine('xyzzy', 'getXyzzy', 'xyzzy.phtml');
         $expected = [
             'foo' => [
                 'dataMethod' => 'getFoo',
@@ -92,6 +92,6 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         // Test that we can remove lines from the spec:
         $builder->removeLine('bar');
         $builder->removeLine('foo');
-        $this->assertEquals(['xyzzy' => $expected['xyzzy']], $builder->getArray());
+        $this->assertSame(['xyzzy' => $expected['xyzzy']], $builder->getArray());
     }
 }

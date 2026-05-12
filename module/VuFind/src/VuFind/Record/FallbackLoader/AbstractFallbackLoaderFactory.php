@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract record fallback loader factory
+ * Abstract record fallback loader factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -38,7 +38,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\RecordIdUpdater;
 
 /**
- * Abstract record fallback loader factory
+ * Abstract record fallback loader factory.
  *
  * @category VuFind
  * @package  Record
@@ -49,7 +49,7 @@ use VuFind\Record\RecordIdUpdater;
 class AbstractFallbackLoaderFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -65,7 +65,7 @@ class AbstractFallbackLoaderFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         return new $requestedName(
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),

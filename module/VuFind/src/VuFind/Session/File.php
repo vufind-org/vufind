@@ -1,7 +1,7 @@
 <?php
 
 /**
- * File-based session handler
+ * File-based session handler.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -29,13 +29,13 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function function_exists;
 use function strlen;
 
 /**
- * File-based session handler
+ * File-based session handler.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -46,19 +46,19 @@ use function strlen;
 class File extends AbstractBase
 {
     /**
-     * Path to session file
+     * Path to session file.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config $config Session configuration ([Session] section of
+     * @param ?Config $config Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(Config $config = null)
+    public function __construct(?Config $config = null)
     {
         parent::__construct($config);
 

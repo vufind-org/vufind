@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: generate sitemaps
+ * Console command: generate sitemaps.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -37,7 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Sitemap\Generator;
 
 /**
- * Console command: generate sitemaps
+ * Console command: generate sitemaps.
  *
  * @category VuFind
  * @package  Console
@@ -52,14 +52,14 @@ use VuFind\Sitemap\Generator;
 class SitemapCommand extends Command
 {
     /**
-     * Sitemap generator
+     * Sitemap generator.
      *
      * @var Generator
      */
     protected $generator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Generator   $generator Sitemap generator
      * @param string|null $name      The name of the command; passing null means it
@@ -107,7 +107,7 @@ class SitemapCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($input->hasOption('verbose') && $input->getOption('verbose')) {
             $this->generator->setVerbose([$output, 'writeln']);
@@ -125,6 +125,6 @@ class SitemapCommand extends Command
         foreach ($this->generator->getWarnings() as $warning) {
             $output->writeln("$warning");
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

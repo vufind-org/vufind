@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Reviews tab
+ * Reviews tab.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -32,7 +32,7 @@ namespace VuFind\RecordTab;
 use VuFind\Content\Loader;
 
 /**
- * Reviews tab
+ * Reviews tab.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -43,7 +43,7 @@ use VuFind\Content\Loader;
 abstract class AbstractContent extends AbstractBase
 {
     /**
-     * Content loader
+     * Content loader.
      *
      * @var Loader
      */
@@ -64,13 +64,13 @@ abstract class AbstractContent extends AbstractBase
     protected $results = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Loader $loader      Content loader (null to disable)
-     * @param bool   $hideIfEmpty Should we hide the tab if no content is found?
+     * @param ?Loader $loader      Content loader (null to disable)
+     * @param bool    $hideIfEmpty Should we hide the tab if no content is found?
      * (Note that turning this on has performance implications).
      */
-    public function __construct(Loader $loader = null, $hideIfEmpty = false)
+    public function __construct(?Loader $loader = null, $hideIfEmpty = false)
     {
         $this->loader = $loader;
         $this->hideIfEmpty = $hideIfEmpty;
@@ -90,7 +90,7 @@ abstract class AbstractContent extends AbstractBase
         $check = $this->hideIfEmpty
             ? $this->getContent()
             : $this->getRecordDriver()->tryMethod('getCleanISBN');
-        return !(null === $this->loader || empty($check));
+        return null !== $this->loader && !empty($check);
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Record;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -177,8 +177,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver();
         $driver->expects($this->once())
             ->method('tryMethod')
-            ->with($this->equalTo('isCollection'))
-            ->will($this->returnValue(true));
+            ->with('isCollection')
+            ->willReturn(true);
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
             [
@@ -234,7 +234,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get test record driver object
+     * Get test record driver object.
      *
      * @param string $id     Record ID
      * @param string $source Record source
@@ -244,15 +244,13 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($id = 'test', $source = 'Solr')
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->any())->method('getUniqueId')
-            ->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue($source));
+        $driver->method('getUniqueId')->willReturn($id);
+        $driver->method('getSourceIdentifier')->willReturn($source);
         return $driver;
     }
 
     /**
-     * Get test router object
+     * Get test router object.
      *
      * @param array $config Configuration.
      *

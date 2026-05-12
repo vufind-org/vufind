@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO EDS API Search Model
+ * EBSCO EDS API Search Model.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -29,13 +29,16 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
+
 use function array_key_exists;
 use function count;
 use function intval;
 use function strlen;
 
 /**
- * EBSCO EDS API Search Model
+ * EBSCO EDS API Search Model.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -43,10 +46,12 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchRequestModel
+class SearchRequestModel implements LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
-     * What to search for, formatted as [{boolean operator},][{field code}:]{term}
+     * What to search for, formatted as [{boolean operator},][{field code}:]{term}.
      *
      * @var array
      */
@@ -54,42 +59,42 @@ class SearchRequestModel
 
     /**
      * Whether or not to return facets with the search results. valid values are
-     * 'y' or 'n'
+     * 'y' or 'n'.
      *
      * @var string
      */
     protected $includeFacets;
 
     /**
-     * Array of filters to apply to the search
+     * Array of filters to apply to the search.
      *
      * @var array
      */
     protected $facetFilters = [];
 
     /**
-     * Array mapping a facet field to the AND/OR operator to use with it
+     * Array mapping a facet field to the AND/OR operator to use with it.
      *
      * @var array
      */
     protected $facetOperators = [];
 
     /**
-     * Sort option to apply
+     * Sort option to apply.
      *
      * @var string
      */
     protected $sort;
 
     /**
-     * Options to limit the results by
+     * Options to limit the results by.
      *
      * @var array
      */
     protected $limiters = [];
 
     /**
-     * Mode to be effective in the search
+     * Mode to be effective in the search.
      *
      * @var string
      */
@@ -103,14 +108,14 @@ class SearchRequestModel
     protected $expanders = [];
 
     /**
-     * Requested level of detail to return the results with
+     * Requested level of detail to return the results with.
      *
      * @var string
      */
     protected $view;
 
     /**
-     * Number of records to return
+     * Number of records to return.
      *
      * @var int
      */
@@ -132,26 +137,35 @@ class SearchRequestModel
     protected $highlight;
 
     /**
-     * Collection of user actions to apply to current request
+     * Collection of user actions to apply to current request.
      *
      * @var array
      */
     protected $actions = [];
 
     /**
-     * Constructor
+     * Validation config.
+     *
+     * @var array
+     */
+    protected $validationConfig;
+
+    /**
+     * Constructor.
      *
      * Sets up the EDS API Search Request model
      *
-     * @param array $parameters parameters to populate request
+     * @param array $parameters       parameters to populate request
+     * @param array $validationConfig Validation config
      */
-    public function __construct($parameters = [])
+    public function __construct(array $parameters = [], array $validationConfig = [])
     {
         $this->setParameters($parameters);
+        $this->setValidationConfig($validationConfig);
     }
 
     /**
-     * Format a date limiter
+     * Format a date limiter.
      *
      * @param string $filter Filter value
      *
@@ -178,7 +192,7 @@ class SearchRequestModel
     }
 
     /**
-     * Set properties from parameters
+     * Set properties from parameters.
      *
      * @param array $parameters Parameters to set
      *
@@ -212,7 +226,47 @@ class SearchRequestModel
     }
 
     /**
-     * Converts properties to a querystring to send to the EdsAPI
+     * Set validation config.
+     *
+     * @param array $validationConfig Validation config
+     *
+     * @return void
+     */
+    public function setValidationConfig(array $validationConfig)
+    {
+        $this->validationConfig = $validationConfig;
+    }
+
+    /**
+     * Checks whether the search model is valid for the EDS API.
+     *
+     * @return bool Returns false if any model parameters are invalid.
+     */
+    public function isValid()
+    {
+        if (!($this->validationConfig['ContentProvider'] ?? false)) {
+            return true;
+        }
+        $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
+
+        // There are no EBSCO subscription databases that contain a pipe character.
+        // Note that individual customer-specific databases may do so; those should
+        // not enable ContentProvider validation.
+        $invalidContentProviderCharacters = '|';
+
+        foreach ($contentProviderValues as $value) {
+            foreach (str_split($invalidContentProviderCharacters) as $invalidCharacter) {
+                if (str_contains($value, $invalidCharacter)) {
+                    $this->debug("Invalid database code '$value'; should skip EDS query.");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Converts properties to a querystring to send to the EdsAPI.
      *
      * @return string
      */
@@ -222,7 +276,7 @@ class SearchRequestModel
     }
 
     /**
-     * Converts properties to a querystring to send to the EdsAPI
+     * Converts properties to a querystring to send to the EdsAPI.
      *
      * @return string
      */
@@ -305,7 +359,7 @@ class SearchRequestModel
     }
 
     /**
-     * Converts properties to a search request JSON document to send to the EdsAPI
+     * Converts properties to a search request JSON document to send to the EdsAPI.
      *
      * @return string
      */
@@ -409,7 +463,7 @@ class SearchRequestModel
     }
 
     /**
-     * Determines whether or not a querystring parameter is indexed
+     * Determines whether or not a querystring parameter is indexed.
      *
      * @param string $value parameter key to check
      *
@@ -423,7 +477,7 @@ class SearchRequestModel
 
     /**
      * Get the querystring parameter name of an indexed parameter to send to the Eds
-     * Api
+     * Api.
      *
      * @param string $value Indexed parameter name
      *
@@ -436,7 +490,7 @@ class SearchRequestModel
     }
 
     /**
-     * Add a new action
+     * Add a new action.
      *
      * @param string $action Action to add to the existing collection of actions
      *
@@ -448,7 +502,7 @@ class SearchRequestModel
     }
 
     /**
-     * Add a new query expression
+     * Add a new query expression.
      *
      * @param string $query Query expression to add
      *
@@ -460,7 +514,7 @@ class SearchRequestModel
     }
 
     /**
-     * Add a new limiter
+     * Add a new limiter.
      *
      * @param string $limiter Limiter to add
      *
@@ -476,7 +530,7 @@ class SearchRequestModel
     }
 
     /**
-     * Add a new expander
+     * Add a new expander.
      *
      * @param string $expander Expander to add
      *
@@ -488,7 +542,7 @@ class SearchRequestModel
     }
 
     /**
-     * Add a new facet filter
+     * Add a new facet filter.
      *
      * @param string $facetFilter Facet Filter to add
      *
@@ -516,7 +570,7 @@ class SearchRequestModel
     }
 
     /**
-     * Escape characters that may be present in the parameter syntax
+     * Escape characters that may be present in the parameter syntax.
      *
      * @param string $value The value to escape
      *
@@ -528,7 +582,7 @@ class SearchRequestModel
     }
 
     /**
-     * Escape characters that may be present in the action parameter syntax
+     * Escape characters that may be present in the action parameter syntax.
      *
      * @param string $value The value to escape
      *
@@ -540,7 +594,7 @@ class SearchRequestModel
     }
 
     /**
-     * Magic getter
+     * Magic getter.
      *
      * @param string $property Property to retrieve
      *
@@ -554,7 +608,7 @@ class SearchRequestModel
     }
 
     /**
-     * Magic setter
+     * Magic setter.
      *
      * @param string $property Property to set
      * @param mixed  $value    Value to set

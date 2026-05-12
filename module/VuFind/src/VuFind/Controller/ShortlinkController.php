@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Short link controller
+ * Short link controller.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -29,15 +29,15 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 use function is_callable;
 use function strlen;
 
 /**
- * Short link controller
+ * Short link controller.
  *
  * @category VuFind
  * @package  Controller
@@ -55,14 +55,14 @@ class ShortlinkController extends AbstractBase
     protected $redirectDelayHtml = 3;
 
     /**
-     * Which redirect mechanism to use (html, http, threshold:<urlLength>)
+     * Which redirect mechanism to use (html, http, threshold:<urlLength>).
      *
      * @var string
      */
     protected $redirectMethod = 'threshold:1000';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param Config                  $config VuFind configuration

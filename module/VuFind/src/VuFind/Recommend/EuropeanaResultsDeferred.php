@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EuropeanaResultsDeferred Recommendations Module
+ * EuropeanaResultsDeferred Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -33,7 +33,7 @@ namespace VuFind\Recommend;
 use function is_object;
 
 /**
- * EuropeanaResultsDeferred Recommendations Module
+ * EuropeanaResultsDeferred Recommendations Module.
  *
  * This class sets up an AJAX call to trigger a call to the EuropeanaResults
  * module.
@@ -47,7 +47,7 @@ use function is_object;
 class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Number of expected module parameters (from .ini config)
+     * Number of expected module parameters (from .ini config).
      *
      * @var int
      */

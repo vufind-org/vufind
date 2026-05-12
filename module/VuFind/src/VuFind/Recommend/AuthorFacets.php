@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorFacets Recommendations Module
+ * AuthorFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -35,7 +35,7 @@ use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\Query;
 
 /**
- * AuthorFacets Recommendations Module
+ * AuthorFacets Recommendations Module.
  *
  * This class provides recommendations displaying authors on top of the page. Default
  * on author searches.
@@ -50,28 +50,28 @@ use VuFindSearch\Query\Query;
 class AuthorFacets implements RecommendInterface
 {
     /**
-     * Configuration settings
+     * Configuration settings.
      *
      * @var string
      */
     protected $settings;
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * Results plugin manager
+     * Results plugin manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
@@ -147,7 +147,7 @@ class AuthorFacets implements RecommendInterface
     }
 
     /**
-     * Process similar authors from an author search
+     * Process similar authors from an author search.
      *
      * @return array Facets data arrays
      */

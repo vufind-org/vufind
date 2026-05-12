@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Solr Search Object Parameters Test
+ * Solr Search Object Parameters Test.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,12 +29,13 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use PHPUnit\Framework\Attributes\DataProvider;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 
 /**
- * Solr Search Object Parameters Test
+ * Solr Search Object Parameters Test.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +45,7 @@ use VuFind\Search\Solr\Params;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -119,7 +120,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckboxVisibility()
+    public function testCheckboxVisibility(): void
     {
         $config = [
             'facets' => [
@@ -134,8 +135,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $configManager = $this->getMockConfigPluginManager($config);
-        $params = $this->getParams(null, $configManager);
+        $configManager = $this->getMockConfigManager($config);
+        $params = $this->getParams(mockConfigManager: $configManager);
         // We expect "normal" filters to NOT be always visible, and inverted
         // filters to be always visible.
         $this->assertEquals(
@@ -162,17 +163,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSortTieBreakerParameter.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sortValueProvider(): array
+    public static function sortValueProvider(): \Iterator
     {
-        return ['Test1' => ['year', 'id', 'publishDateSort desc,id asc'],
-                'Test2' => ['year', 'id desc', 'publishDateSort desc,id desc'],
-                'Test3' => ['year', '', 'publishDateSort desc'],
-                'Test4' => ['year', 'title desc,id asc', 'publishDateSort desc,title_sort desc,id asc'],
-                'Test5' => ['year', 'title desc,id', 'publishDateSort desc,title_sort desc,id asc'],
-                'Test6' => ['year,id', 'id desc', 'publishDateSort desc,id asc'],
-            ];
+        yield 'Test1' => ['year', 'id', 'publishDateSort desc,id asc'];
+        yield 'Test2' => ['year', 'id desc', 'publishDateSort desc,id desc'];
+        yield 'Test3' => ['year', '', 'publishDateSort desc'];
+        yield 'Test4' => ['year', 'title desc,id asc', 'publishDateSort desc,title_sort desc,id asc'];
+        yield 'Test5' => ['year', 'title desc,id', 'publishDateSort desc,title_sort desc,id asc'];
+        yield 'Test6' => ['year,id', 'id desc', 'publishDateSort desc,id asc'];
     }
 
     /**
@@ -183,19 +183,17 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedResult Expected return value from normalizeSort
      *
      * @return void
-     *
-     * @dataProvider sortValueProvider
      */
+    #[DataProvider('sortValueProvider')]
     public function testSortTieBreakerParameter(
         string $sort,
         string $tieBreaker,
         string $expectedResult
     ): void {
-        $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+        $options = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $options->method('getSearchIni')->willReturn('searches');
         $options->expects($this->once())->method('getSortTieBreaker')
-                ->will($this->returnValue($tieBreaker));
+                ->willReturn($tieBreaker);
         $params = $this->getParams($options);
         $this->assertEquals(
             $expectedResult,
@@ -204,21 +202,321 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params object
+     * Data provider for testSortList.
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @return \Iterator
+     */
+    public static function sortListDataProvider(): \Iterator
+    {
+        $searchConfig = [
+            'Sorting' => [
+                'relevance' => 'Relevance',
+                'title' => 'Title',
+            ],
+            'HiddenSorting' => [
+                'pattern' => [
+                    '[Ff]irst',
+                    '[Ss]econd',
+                ],
+            ],
+        ];
+
+        $searchConfigKeyLabel = [
+            'Sorting' => [
+                'relevance' => 'Relevance',
+            ],
+            'HiddenSorting' => [
+                'pattern' => [
+                    'FIRST' => '[Ff]irst',
+                    'SECOND' => '[Ss]econd',
+                ],
+            ],
+        ];
+
+        $searchConfigLabel = [
+            'Sorting' => [
+                'relevance' => 'Relevance',
+            ],
+            'HiddenSorting' => [
+                'pattern' => [
+                    '[Ff]irst',
+                    '[Ss]econd',
+                ],
+                'label' => [
+                    'FIRST',
+                    'SECOND',
+                ],
+            ],
+        ];
+        yield 'relevance' => [
+            $searchConfig,
+            'relevance',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => true,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'title' => [
+            $searchConfig,
+            'title',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'invalid' => [
+            $searchConfig,
+            'foobar',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => true,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'first hidden' => [
+            $searchConfig,
+            'testfirst',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
+                ],
+                'testfirst' => [
+                    'desc' => 'unrecognized_sort_option',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'second hidden' => [
+            $searchConfig,
+            'testsecond',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
+                ],
+                'testsecond' => [
+                    'desc' => 'unrecognized_sort_option',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'first hidden with label in key' => [
+            $searchConfigKeyLabel,
+            'testfirst',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'testfirst' => [
+                    'desc' => 'FIRST',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'second hidden with label in key' => [
+            $searchConfigKeyLabel,
+            'testsecond',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'testsecond' => [
+                    'desc' => 'SECOND',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'first hidden with label in separate array' => [
+            $searchConfigLabel,
+            'firsttest',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'firsttest' => [
+                    'desc' => 'FIRST',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ],
+        ];
+        yield 'second hidden with label in separate array' => [
+            $searchConfigLabel,
+            'secondtest',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'secondtest' => [
+                    'desc' => 'SECOND',
+                    'selected' => true,
+                    'default' => false,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test sort option list handling.
+     *
+     * @param array  $searchConfig     Search configuration
+     * @param string $sort             Selected sort option
+     * @param string $expectedSortList Expected sort list
+     *
+     * @return void
+     */
+    #[DataProvider('sortListDataProvider')]
+    public function testSortList(array $searchConfig, string $sort, array $expectedSortList): void
+    {
+        $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['searches' => $searchConfig]));
+        $params->setSort($sort);
+        $this->assertEquals($expectedSortList, $params->getSortList());
+    }
+
+    /**
+     * Data provider for testGetFacetSettings.
+     *
+     * @return \Iterator
+     */
+    public static function getFacetSettingsProvider(): \Iterator
+    {
+        $endYear = ((int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET);
+        $expectedSettings = [
+            'limit' => 30,
+            'f.publishDateRange.facet.range.start' => '1400-01-01T00:00:00Z',
+            'f.publishDateRange.facet.range.end' => "$endYear-12-31T23:59:59Z",
+            'f.publishDateRange.facet.range.gap' => '+1YEAR',
+            'range' => [
+                'publishDateRange',
+            ],
+            'sort' => 'count',
+        ];
+
+        yield 'default limits' => [
+            [],
+            $expectedSettings,
+        ];
+
+        $expectedSettings['f.publishDateRange.facet.range.start'] = '1000-01-01T00:00:00Z';
+        $expectedSettings['f.publishDateRange.facet.range.end'] = '2000-12-31T23:59:59Z';
+        yield 'custom limits' => [
+            [
+                'Facet_publishDateRange' => [
+                    'slider_min_value' => '1000',
+                    'slider_max_value' => '2000',
+                ],
+            ],
+            $expectedSettings,
+        ];
+
+        $expectedSettings['f.publishDateRange.facet.range.start'] = '-2000-01-01T00:00:00Z';
+        $expectedSettings['f.publishDateRange.facet.range.end'] = '-1000-12-31T23:59:59Z';
+        yield 'custom limits with negative years' => [
+            [
+                'Facet_publishDateRange' => [
+                    'slider_min_value' => '-2000',
+                    'slider_max_value' => '-1000',
+                ],
+            ],
+            $expectedSettings,
+        ];
+    }
+
+    /**
+     * Test getFacetSettings.
+     *
+     * @param array $additionalConfig Additional facet configuration
+     * @param array $expectedSettings Expected results
+     *
+     * @return void
+     */
+    #[DataProvider('getFacetSettingsProvider')]
+    public function testGetFacetSettings(array $additionalConfig, array $expectedSettings): void
+    {
+        $facetConfig = $additionalConfig + [
+            'Advanced' => [
+                'publishDateRange' => 'Publish Date',
+            ],
+            'SpecialFacets' => [
+                'dateRange' => ['publishDateRange'],
+                'dateRangeFieldType' => [
+                    'publishDateRange' => 'DateRangeField',
+                ],
+            ],
+        ];
+        $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['facets' => $facetConfig]));
+        $params->addFacet('publishDateRange');
+
+        $this->assertSame(
+            $expectedSettings,
+            $params->getFacetSettings()
+        );
+    }
+
+    /**
+     * Get Params object.
+     *
+     * @param ?Options                $options           Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
-        Options $options = null,
-        PluginManager $mockConfig = null
+        ?Options $options = null,
+        ?ConfigManagerInterface $mockConfigManager = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfigManager ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            $options ?? new Options($mockConfig),
-            $mockConfig
+            $options ?? new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 }

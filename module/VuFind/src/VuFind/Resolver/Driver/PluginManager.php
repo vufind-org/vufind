@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Resolver driver plugin manager
+ * Resolver driver plugin manager.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -32,7 +32,7 @@ namespace VuFind\Resolver\Driver;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Resolver driver plugin manager
+ * Resolver driver plugin manager.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -53,6 +53,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'demo' => Demo::class,
         'ezb' => Jop::class,
         'jop' => Jop::class,
+        'linkiq' => LinkIq::class,
         'sfx' => Sfx::class,
         'redi' => Redi::class,
         'threesixtylink' => Threesixtylink::class,
@@ -70,13 +71,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Threesixtylink::class => DriverWithHttpClientFactory::class,
         Demo::class => InvokableFactory::class,
         Jop::class => JopFactory::class,
+        LinkIq::class => LinkIqFactory::class,
         Sfx::class => DriverWithHttpClientFactory::class,
         Redi::class => DriverWithHttpClientFactory::class,
         Generic::class => AbstractBaseFactory::class,
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

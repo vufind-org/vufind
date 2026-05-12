@@ -20,7 +20,7 @@
 
   <?php if ($e = $this->exception->getPrevious()): ?>
     <h3>Previous exceptions:</h3>
-    <?php while($e): ?>
+    <?php while ($e): ?>
         <h4><?=$e::class?></h4>
         <p><?=$e->getMessage()?></p>
         <pre><?=$e->getTraceAsString()?></pre>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Code module for the core of the VuFind application
+ * Code module for the core of the VuFind application.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Module
@@ -32,7 +32,7 @@ namespace VuFind;
 use Laminas\Mvc\MvcEvent;
 
 /**
- * Code module for the core of the VuFind application
+ * Code module for the core of the VuFind application.
  *
  * @category VuFind
  * @package  Module
@@ -43,7 +43,7 @@ use Laminas\Mvc\MvcEvent;
 class Module
 {
     /**
-     * Get module configuration
+     * Get module configuration.
      *
      * @return array
      */
@@ -53,28 +53,7 @@ class Module
     }
 
     /**
-     * Get autoloader configuration
-     *
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\ClassMapAutoloader' => [
-                'classes' => [
-                    'minSO' => __DIR__ . '/src/VuFind/Search/minSO.php',
-                ],
-            ],
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * Bootstrap the module
+     * Bootstrap the module.
      *
      * @param MvcEvent $e Event
      *

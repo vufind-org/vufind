@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category Search
  * @package  Service
@@ -41,21 +41,31 @@ namespace VuFindSearch\Response;
 trait RecordTrait
 {
     /**
-     * Used for identifying record source backend
+     * Used for identifying record source backend.
      *
      * @var string
      */
     protected $sourceIdentifier = '';
 
     /**
-     * Used for identifying the search backend used to find the record
+     * The unique identifier for the result set.
+     *
+     * This property stores a UUID or similar identifier that uniquely identifies
+     * the result set. It is typically set by calling the `setResultSetIdentifier` method.
+     *
+     * @var string|null
+     */
+    protected $resultSetIdentifier = null;
+
+    /**
+     * Used for identifying the search backend used to find the record.
      *
      * @var string
      */
     protected $searchBackendIdentifier = '';
 
     /**
-     * Labels for the record
+     * Labels for the record.
      *
      * @var array
      */
@@ -111,7 +121,34 @@ trait RecordTrait
     }
 
     /**
-     * Add a label for the record
+     * Sets the unique result set identifier.
+     *
+     * This method assigns a UUID or similar identifier to the result set.
+     *
+     * @param string $uuid A valid UUID or identifier to assign to the result set.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid)
+    {
+        $this->resultSetIdentifier = $uuid;
+    }
+
+    /**
+     * Retrieves the unique result set identifier.
+     *
+     * This method returns the UUID or similar identifier associated with the result set.
+     * If no identifier has been set, it will return null.
+     *
+     * @return string|null The UUID of the result set, or null if not set.
+     */
+    public function getResultSetIdentifier(): ?string
+    {
+        return $this->resultSetIdentifier;
+    }
+
+    /**
+     * Add a label for the record.
      *
      * @param string $label Label, may be a translation key
      * @param string $class Label class
@@ -124,7 +161,7 @@ trait RecordTrait
     }
 
     /**
-     * Set the labels for the record
+     * Set the labels for the record.
      *
      * @param array $labels An array of associative arrays with keys 'label' and
      * 'class'
@@ -137,7 +174,7 @@ trait RecordTrait
     }
 
     /**
-     * Return all labels for the record
+     * Return all labels for the record.
      *
      * @return array An array of associative arrays with keys 'label' and 'class'
      */

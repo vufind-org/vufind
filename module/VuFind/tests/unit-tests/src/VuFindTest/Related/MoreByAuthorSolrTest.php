@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MoreByAuthorSolr Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ use VuFind\Related\MoreByAuthorSolr;
 use VuFindSearch\Query\Query;
 
 /**
- * MoreByAuthorSolr Related Items Test Class
+ * MoreByAuthorSolr Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -73,14 +73,13 @@ class MoreByAuthorSolrTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($expectedQuery, $command->getArguments()[0]);
             return true;
         };
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
             ->willReturn($commandObj);
         $related = new MoreByAuthorSolr($service);
         $related->init('', $driver);
-        $this->assertEquals('Smith, John', $related->getName());
+        $this->assertSame('Smith, John', $related->getName());
         $this->assertEquals([$driver2], $related->getResults());
     }
 }

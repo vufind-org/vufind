@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree HTML Renderer
+ * Hierarchy Tree HTML Renderer.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_Renderer
@@ -37,7 +37,7 @@ use Laminas\View\Renderer\RendererInterface;
 use function in_array;
 
 /**
- * Hierarchy Tree HTML Renderer
+ * Hierarchy Tree HTML Renderer.
  *
  * This is a helper class for producing hierarchy trees.
  *
@@ -53,28 +53,28 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Router plugin
+     * Router plugin.
      *
      * @var UrlPlugin
      */
     protected $router = null;
 
     /**
-     * Whether the collections functionality is enabled
+     * Whether the collections functionality is enabled.
      *
      * @var bool
      */
     protected $collectionsEnabled;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var RendererInterface
      */
     protected $viewRenderer;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param UrlPlugin         $router             Router plugin for urls
      * @param bool              $collectionsEnabled Whether the collections functionality is enabled
@@ -134,7 +134,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     }
 
     /**
-     * Render the Hierarchy Tree
+     * Render the Hierarchy Tree.
      *
      * @param string  $context     The context from which the call has been made
      * @param string  $mode        The mode in which the tree should be generated
@@ -143,6 +143,8 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      * @param array   $options     Additional options
      *
      * @return mixed The desired hierarchy tree output (or false on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function render(
         string $context,
@@ -191,12 +193,14 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     }
 
     /**
-     * Use the router to build the appropriate URL based on context
+     * Use the router to build the appropriate URL based on context.
      *
      * @param object $node    JSON object of a node/top node
      * @param string $context Record or Collection
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getContextualUrl($node, $context)
     {

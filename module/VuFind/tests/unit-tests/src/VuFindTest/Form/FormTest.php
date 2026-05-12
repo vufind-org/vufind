@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Form Test Class
+ * Form Test Class.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,11 +33,10 @@ namespace VuFindTest\Form;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
-
-use function get_class;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Form Test Class
+ * Form Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,6 +48,7 @@ use function get_class;
 class FormTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use ConfigRelatedServicesTrait;
 
     protected $mockTestFormYamlReader = null;
 
@@ -60,14 +60,14 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testDefaultsWithoutConfiguration()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
-        $this->assertEquals([], $form->getFormElementConfig());
+        $this->assertSame([], $form->getFormElementConfig());
         $this->assertEquals(
             [['email' => null, 'name' => null]],
             $form->getRecipient()
@@ -80,11 +80,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->getSubmitResponse()
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
-        $this->assertEquals([], $form->mapRequestParamsToFieldValues([]));
+        $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
-        $this->assertEquals(
-            'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+        $this->assertInstanceOf(
+            \Laminas\InputFilter\InputFilter::class,
+            $form->getInputFilter()
         );
         $this->assertCount(0, $form->getSecondaryHandlers());
     }
@@ -102,7 +102,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'email_subject' => 'subject',
         ];
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class),
             ['Feedback' => $defaults]
@@ -125,7 +125,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Form \'foo\' not found');
 
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -140,7 +140,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testDefaultsWithFormSet()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -235,9 +235,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $expectedFields,
             $form->mapRequestParamsToFieldValues($postParams)
         );
-        $this->assertEquals(
-            'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+        $this->assertInstanceOf(
+            \Laminas\InputFilter\InputFilter::class,
+            $form->getInputFilter()
         );
 
         // Validators: Required field problems
@@ -269,7 +269,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testSenderFieldMerging()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -411,9 +411,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ->disableOriginalConstructor()
                 ->onlyMethods(['get'])
                 ->getMock();
-            $mock->expects($this->any())->method('get')
-                ->with($this->equalTo('FeedbackForms.yaml'))
-                ->will($this->returnValue($config));
+            $mock->method('get')
+                ->with('FeedbackForms.yaml')
+                ->willReturn($config);
             $this->mockTestFormYamlReader = $mock;
         }
         return $this->mockTestFormYamlReader;
@@ -799,19 +799,17 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Function to get testEmailSubjects data.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getEmailSubjectsData(): array
+    public static function getEmailSubjectsData(): \Iterator
     {
-        return [
-            'with placeholders' => [
-                'TestSubjectEmailWithPlaceholders',
-                'Subject One Two option-1',
-            ],
-            'without placeholders' => [
-                'TestSubjectEmailWithoutPlaceholders',
-                'Subject without placeholders',
-            ],
+        yield 'with placeholders' => [
+            'TestSubjectEmailWithPlaceholders',
+            'Subject One Two option-1',
+        ];
+        yield 'without placeholders' => [
+            'TestSubjectEmailWithoutPlaceholders',
+            'Subject without placeholders',
         ];
     }
 
@@ -822,9 +820,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSubject String to be expected.
      *
      * @return void
-     *
-     * @dataProvider getEmailSubjectsData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getEmailSubjectsData')]
     public function testEmailSubjects(
         string $formToTest,
         string $expectedSubject
@@ -845,7 +842,39 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test prefilling values for inputs from form configuration
+     * Function to get form action route test data.
+     *
+     * @return \Iterator
+     */
+    public static function getFormActionRouteData(): \Iterator
+    {
+        yield 'with no route set' => [
+            'TestWithNoFormActionRouteSet',
+            'feedback-form',
+        ];
+        yield 'with route set' => [
+            'TestWithFormActionRouteSet',
+            'test-action',
+        ];
+    }
+
+    /**
+     * Test formActionRoute setting.
+     *
+     * @param string $id       Form id
+     * @param string $expected Expected value
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFormActionRouteData')]
+    public function testFormActionRoute(string $id, string $expected): void
+    {
+        $form = $this->getMockTestForm($id);
+        $this->assertEquals($expected, $form->getFormActionRoute());
+    }
+
+    /**
+     * Test prefilling values for inputs from form configuration.
      *
      * @return void
      */
@@ -910,7 +939,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test protecting fields from being prefilled
+     * Test protecting fields from being prefilled.
      *
      * @return void
      */
