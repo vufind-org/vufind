@@ -7,7 +7,7 @@ $check = $item['check'] ?? false;
 $link = $this->getThis->getLink();
 $dataLightbox = !empty($item['linkLightbox']) ? 'data-lightbox' : '';
 ?>
-<?php if (isset($item['is_holdable']) && !empty($link)) : ?>
+<?php if (($item['is_holdable'] ?? false) && !empty($link)) : ?>
   <div>
     <p>
       <strong><?= $this->transEsc('campus_pickup') ?>:</strong>

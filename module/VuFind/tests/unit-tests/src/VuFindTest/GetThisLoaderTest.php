@@ -183,7 +183,7 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider for testConfigConditionsFunctions().
      *
-     * @return Iterator<(int | string), array<mixed>>
+     * @return Iterator<(int | string), array>
      */
     public static function provideConfigConditionsFunctionsData(): Iterator
     {
@@ -317,7 +317,7 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider.
      *
-     * @return Iterator<(int | string), array<mixed>>
+     * @return Iterator<(int | string), array>
      */
     public static function provideAdvancedConfigConditionsFunctionsData(): Iterator
     {

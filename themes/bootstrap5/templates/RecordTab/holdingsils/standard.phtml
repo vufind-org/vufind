@@ -5,7 +5,7 @@
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
     $getThisLoader = $tab->getGetThisLoader();
-    if ($getThisEnabled = $getThisLoader?->areItemsSupported([$holding])) {
+    if ($getThisLoader?->areItemsSupported([$holding])) {
         $getThisLoader->setItems([$holding]);
         $getThisLoader->setRecord($this->driver);
         $isOnlineResource = $getThisLoader->isOnlineResource($holding['item_id'] ?? null);
@@ -62,7 +62,7 @@
             <span class="icon-link__label"><?=$this->transEsc($checkILLRequest ? 'ill_request_check_text' : 'ill_request_place_text')?></span>
           </a>
         <?php endif; ?>
-        <?php if ($getThisEnabled && !$isOnlineResource): ?>
+        <?php if (isset($getThisURI, $isOnlineResource) && !$isOnlineResource): ?>
           <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURI) ?>" rel="nofollow">
             <?=$this->transEsc('Get This')?>
           </a>

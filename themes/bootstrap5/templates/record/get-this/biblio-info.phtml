@@ -1,9 +1,9 @@
 <?php
 if ($callNumberData = $this->getThis->getCallNumber()) {
     $rawCallNumber = $callNumberData['text'] ?? '';
-    $callNumber = ($callNumberData['translate'] ?? false) ? $this->translate($rawCallNumber) : $this->escapeHtml($rawCallNumber);
+    $callNumber = ($callNumberData['translate'] ?? false) ? $this->transEsc($rawCallNumber) : $this->escapeHtml($rawCallNumber);
 } else {
-    $callNumber = $this->translate('data_unavailable');
+    $callNumber = $this->transEsc('data_unavailable');
 }
 ?>
 <div>

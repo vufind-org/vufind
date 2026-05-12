@@ -2,8 +2,7 @@
 $selectedItem = $this->getThis->getItem();
 $items = $this->getThis->getItems();
 
-function getDisplay($view, $item)
-{
+$getDisplay = function ($view, $item) {
     $item['item_id'] ??= null;
     $location = $view->getThis->getLocation($item['item_id']);
     if (!empty($location)) {
@@ -25,10 +24,9 @@ function getDisplay($view, $item)
         $callNumber = '';
     }
     return $location . $copyNumber . $callNumber;
-}
+};
 
-function getLink($view, $item)
-{
+$getLink = function ($view, $item) {
     return $view->url(
         'record-getthis',
         [
@@ -41,7 +39,7 @@ function getLink($view, $item)
             ],
         ]
     );
-}
+};
 
 ?>
 
@@ -49,7 +47,7 @@ function getLink($view, $item)
 <nav role="navigation" class="get-this-dropdown" data-js-dropdown>
   <div data-js-dropdown-header>
     <a href="#" aria-expanded="false">
-      <span><?= getDisplay($this, $selectedItem) ?></span>
+      <span><?= $getDisplay($this, $selectedItem) ?></span>
       <?=$this->icon('open-dropdown', 'fa-square-caret-down') ?>
       <?=$this->icon('close-dropdown', 'fa-square-caret-up') ?>
     </a>
@@ -60,15 +58,15 @@ function getLink($view, $item)
       $selectedItem['item_id'] ??= -1;
       foreach ($items as $item) {
         $item['item_id'] ??= null;
-        $itemClass = $selectedItem['item_id'] == $item['item_id'] ? 'current' : '';
+        $itemClass = ($selectedItem['item_id'] == $item['item_id']) ? 'current' : '';
         ?>
         <li>
           <a
-              href="<?= getLink($this, $item) ?>"
-              class="<?= $this->escapeUrl($itemClass) ?>"
+              href="<?= $getLink($this, $item) ?>"
+              class="<?= $itemClass ?>"
               rel="nofollow"
           >
-            <?= getDisplay($this, $item) ?>
+            <?= $getDisplay($this, $item) ?>
           </a>
         </li>
       <?php } ?>
