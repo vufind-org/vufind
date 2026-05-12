@@ -406,7 +406,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
-        $webhookConnection->expects($this->exactly($useWebhook ? 1 : 0))->method('post');
+        if ($useWebhook) {
+            $webhookConnection->expects($this->once())->method('post')->with('http://foo.bar');
+        } else {
+            $webhookConnection->expects($this->never())->method('post');
+        }
         $result = $this->driver->placeHold($details);
         $expected = [
             'success' => true,
