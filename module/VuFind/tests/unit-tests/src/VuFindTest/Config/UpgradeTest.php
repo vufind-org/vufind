@@ -203,7 +203,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('search-cache-enabled');
         $results = $upgrader->getNewConfigs();
         $this->assertNull($results['searches']['Cache'] ?? null);
-        $this->assertFalse((bool)$results['config']['CacheConfigName_searchspecs']['disabled']);
+        $this->assertNull($results['config']['CacheConfigName_searchspecs']['disabled'] ?? null);
     }
 
     /**
