@@ -46,8 +46,8 @@ function getLink($view, $item)
 ?>
 
 <strong><?= $this->transEsc('Items') ?> :</strong>
-<nav role="navigation" class="get-this-dropdown">
-  <div class="call-number-display">
+<nav role="navigation" class="get-this-dropdown" data-js-dropdown>
+  <div data-js-dropdown-header>
     <a href="#" aria-expanded="false">
       <span><?= getDisplay($this, $selectedItem) ?></span>
       <?=$this->icon('open-dropdown', 'fa-square-caret-down') ?>

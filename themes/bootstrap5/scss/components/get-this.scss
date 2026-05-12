@@ -1,5 +1,5 @@
 // Turn ul into a dropdown
-.get-this-dropdown {
+.get-this-dropdown[data-js-dropdown] {
   font-size: 1.1rem;
   letter-spacing: 0;
   background: $gray-lighter;
@@ -12,7 +12,7 @@
     padding: 0.3rem;
   }
 
-  .call-number-display a {
+  *[data-js-dropdown-header] a {
     display: inline-flex;
     justify-content: space-between;
     color: $gray-darker;
