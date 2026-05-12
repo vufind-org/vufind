@@ -156,6 +156,7 @@ try {
 
   const red = (str) => `\x1b[31m${str}\x1b[0m`;
   const blue = (str) => `\x1b[34m${str}\x1b[0m`;
+  const green = (str) => `\x1b[32m${str}\x1b[0m`;
 
   // sort for easier finding
   templateList.sort((a, b) => a.path.localeCompare(b.path));
@@ -171,6 +172,7 @@ try {
     }
 
     retVal = 1;
+
     console.log(`\n${template.path}`);
     console.log(`- ${blue("JS files:")} ${setJoin(template.jsFiles)}.`);
     console.log(`- ${blue("JS uses:")} ${setJoin(neededJsStrings)}.`);
@@ -182,8 +184,13 @@ try {
       console.log(`- ${red("Extra PHP strings:")} ${setJoin(extraPhpStrings)}.`);
     }
   }
+
+  if (retVal === 0) {
+    console.log(green("No issues found."));
+  }
 } catch (err) {
   console.error("Error globbing synchronously:", err);
   retVal = 1;
 }
+
 process.exit(retVal);
