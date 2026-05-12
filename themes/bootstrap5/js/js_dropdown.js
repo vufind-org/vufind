@@ -1,3 +1,5 @@
+/* global VuFind */
+
 const KEY_CODE = {
   DOWN_ARROW: 40,
   UP_ARROW: 38,
@@ -129,26 +131,28 @@ VuFind.register('jsDropdown', function jsDropdown() {
 
   /**
    * Initialize the js dropdown feature.
-   * @param {HTMLElement} [context] The container element to initialize. Defaults to all element having a data-js-dropdown attribute.
+   * @param {HTMLElement} [_context] The container element to initialize. Defaults to all element having a data-js-dropdown attribute.
    */
-  function init(context) {
-    if (typeof context === "undefined") {
+  function init(_context) {
+    if (typeof _context === "undefined") {
       document.querySelectorAll('*[data-js-dropdown]').forEach(dropdown => {
         VuFind.jsDropdown.init(dropdown);
       });
     } else {
+      let context = _context;
       if (!(context instanceof Element)) {
         if ('container' in context) {
-            context = context.container;
+          context = context.container;
         } else {
-            console.warn('No HTML element found to apply the js dropdown');
-            return;
+          console.warn('No HTML element found to apply the js dropdown');
+          return;
         }
       }
       if (!context.hasAttribute("data-js-dropdown")) {
-          return context.querySelectorAll('*[data-js-dropdown]').forEach(dropdown => {
-              VuFind.jsDropdown.init(dropdown);
-          });
+        context.querySelectorAll('*[data-js-dropdown]').forEach(dropdown => {
+          VuFind.jsDropdown.init(dropdown);
+        });
+        return;
       }
       context.addEventListener("click", openDropdownListener);
       context.addEventListener("focusout", closeDropdownListener);
