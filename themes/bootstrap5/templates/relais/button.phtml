@@ -7,21 +7,7 @@
         throw new \Exception('Record driver missing!');
     }
     $this->layout()->relaisActive = true;
-    $this->jsTranslations()->addStrings(
-        [
-          'confirm_dialog_no' => 'confirm_dialog_no',
-          'confirm_dialog_yes' => 'confirm_dialog_yes',
-          'relais_available' => 'relais_available',
-          'relais_checking' => 'relais_checking',
-          'relais_error_html' => 'relais_error_html',
-          'relais_request' => 'relais_request',
-          'relais_requesting' => 'relais_requesting',
-          'relais_search' => 'relais_search',
-          'relais_success_label' => 'relais_success_label',
-          'relais_success_message' => 'relais_success_message',
-        ]
-    );
-    $this->assetManager()->appendScriptLink('relais.js');
+    $this->render('relais/relais-setup.phtml'); // set up script and translations
     $addLink = $this->escapeJs($this->url('relais-request'));
     $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
     $failLink = $this->escapeJs($this->relais()->getSearchLink($driver));

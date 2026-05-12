@@ -185,6 +185,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
             // Enter an invalid code:
             $this->findCssAndSetValue($page, '#login_Email_password', '123');
             $this->clickCss($page, '.form-login .btn-primary');
+            $this->waitForPageLoad($page);
             $expectedError = $attempt === $limit + 1
                 ? 'The authentication request has expired.'
                 : 'Invalid login -- please try again.';
