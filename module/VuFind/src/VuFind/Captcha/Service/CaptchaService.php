@@ -86,7 +86,7 @@ class CaptchaService implements TranslatorAwareInterface
     /**
      * Constructor.
      *
-     * @param array          $config         Config file
+     * @param array          $config         Top-level configuration
      * @param array          $captchas       CAPTCHA objects
      * @param FlashMessenger $flashMessenger Flash messenger
      *
