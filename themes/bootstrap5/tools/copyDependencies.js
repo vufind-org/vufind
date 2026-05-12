@@ -6,9 +6,9 @@ const path = require('node:path');
 
 let buildDepsOnly = false;
 process.argv.forEach(arg => {
-    if (arg === '--only-build-deps') {
-        buildDepsOnly = true;
-    }
+  if (arg === '--only-build-deps') {
+    buildDepsOnly = true;
+  }
 });
 
 /**
@@ -39,8 +39,8 @@ console.log('Copying bootstrap5 dependencies...');
 copy('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/');
 
 if (buildDepsOnly) {
-    console.log('= Done copying build dependencies.');
-    process.exit();
+  console.log('= Done copying build dependencies.');
+  process.exit();
 }
 
 // Bootstrap 5 JS
