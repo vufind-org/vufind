@@ -200,6 +200,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function changeConfigs(array $configs, array $replace = []): void
     {
+        // Always disable caching when changing configs, because we can't rely on
+        // reloadOnFileChange in situations where configs change more than once
+        // per second (which IS possible):
+        $configs['config']['ConfigCache']['disabled'] = true;
         foreach ($configs as $file => $settings) {
             $this->changeConfigFile($file, $settings, in_array($file, $replace));
         }

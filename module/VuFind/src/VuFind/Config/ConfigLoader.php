@@ -169,6 +169,10 @@ class ConfigLoader
             $currentConfig = $this->configHandlerManager
                 ->getForLocation($currentConfigLocation)
                 ->parseConfig($currentConfigLocation, $handleParentConfig);
+            $currentConfig['data'] = $this->handleIncludeStatements(
+                $currentConfig['data'],
+                $currentConfigLocation->getBasePath()
+            );
             $configs[] = $currentConfig;
             $currentConfigLocation = null;
             if ($handleParentConfig) {
@@ -187,7 +191,8 @@ class ConfigLoader
                 $mergeFunction = $config['mergeCallback'] ?? [$this, 'mergeRecursive'];
                 $result = $mergeFunction($result, $data);
             } elseif (empty($result) && is_string($data)) {
-                return $data;
+                $result = $data;
+                break;
             }
         }
         foreach ($configLocation->getSubsection() as $subsectionPart) {
@@ -195,5 +200,37 @@ class ConfigLoader
         }
         $this->configCache[$cacheKey] = $result;
         return $result;
+    }
+
+    /**
+     * Handle include statements.
+     *
+     * @param mixed  $config   Config
+     * @param string $basePath Base path used for relative includes
+     *
+     * @return mixed
+     */
+    protected function handleIncludeStatements(
+        mixed $config,
+        string $basePath
+    ): mixed {
+        if (is_array($config)) {
+            return array_map(fn ($value) => $this->handleIncludeStatements($value, $basePath), $config);
+        }
+        if (!is_string($config) || !str_starts_with($config, 'include::')) {
+            return $config;
+        }
+        $includeStatementParts = explode('::', $config, 3);
+        $handlerName = $includeStatementParts[1] ?? null;
+        $includeSettings = $includeStatementParts[2] ?? null;
+        if (
+            $handlerName === null
+            || $includeSettings === null
+            || !$this->configHandlerManager->has($handlerName)
+        ) {
+            return $config;
+        }
+        $handler = $this->configHandlerManager->get($handlerName);
+        return $handler->handleInclude($includeSettings, $basePath);
     }
 }
