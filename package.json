@@ -21,6 +21,7 @@
     "build:scss": "npm run installBuildDeps && node tools/build-css.js --minify",
     "check:scss": "npm run installBuildDeps && node tools/build-css.js --check-only",
     "watch:scss": "npm run installBuildDeps && nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\"",
+    "check:jsTranslations": "npm run check:jsTranslations --workspaces --if-present --ignore-scripts",
 
     "postinstall": "npm run installBuildDeps",
     "installBuildDeps": "npm run installBuildDeps --workspaces --if-present --ignore-scripts",
