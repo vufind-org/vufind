@@ -10,8 +10,8 @@
     "url": "https://vufind.org/jira"
   },
   "scripts": {
-    "build": "npm run build:scss",
-    "watch": "npm run watch:scss",
+    "build": "npm run build:css",
+    "watch": "npm run watch:css",
 
     "build:css": "npm run build:scss",
     "watch:css": "npm run watch:scss",
