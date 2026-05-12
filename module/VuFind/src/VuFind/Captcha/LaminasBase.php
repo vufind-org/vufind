@@ -82,6 +82,8 @@ abstract class LaminasBase extends AbstractBase
      * @param array $queryParams Query params
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function verify(array $postParams, array $queryParams): bool
     {
