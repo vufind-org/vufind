@@ -27,11 +27,8 @@
     ?>
   </div>
 <?php endif; ?>
-<div role="radiogroup" class="star-rating<?=$this->readonly ? ' readonly' : ''?>" <?=$this->readonly ? 'aria-hidden="true"' : ''?>>
-  <?php if (!$this->readonly): ?>
-    <div class="visually-hidden"><?=$this->transEsc('rating_instructions_screenreader')?></div>
-  <?php endif; ?>
-  <label aria-hidden="true" class="rating__label hidden" for="rating_<?=$id?>_none" aria-label="<?=$this->transEsc('rating_none')?>"<?=$labelAttrs?>>
+<div role="radiogroup" class="star-rating<?=$this->readonly ? ' readonly' : ''?>" <?=$this->readonly ? 'aria-hidden="true"' : 'aria-label="' . $this->transEsc('rating_instructions_screenreader') . '"'?>>
+  <label inert class="rating__label hidden" for="rating_<?=$id?>_none" <?=$labelAttrs?>>
     &nbsp;
   </label>
   <input aria-hidden="true" class="rating__input" name="<?=$fieldName?>" id="rating_<?=$id?>_none" value="" type="radio"<?=null === $rating ? ' checked' : ''?><?=$inputAttrs?><?=$this->readonly ? ' disabled' : ''?>>
@@ -43,10 +40,10 @@
       $class = $level % 20 === 10 ? ' rating__label--half' : '';
       $icon = $this->icon($level % 20 === 10 ? 'rating-half' : 'rating-full', 'rating__icon rating__icon--star');
     ?>
-    <label aria-hidden="true" class="rating__label<?=$class?>" for="<?=$fieldId?>" <?=$labelAttrs?>>
+    <label class="rating__label<?=$class?>" for="<?=$fieldId?>" <?=$labelAttrs?>>
       <?=$icon?>
     </label>
-    <input class="rating__input" name="<?=$fieldName?>" aria-label="<?=$this->transEsc("rating_$level")?>" id="<?=$fieldId?>" value="<?=$level ?>" type="radio"<?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked aria-hidden="false" ' : ''?><?=$this->readonly ? ' disabled aria-hidden="true" ' : ''?><?=$inputAttrs?>>
+    <input class="rating__input" name="<?=$fieldName?>" aria-label="<?=$this->transEsc("rating_$level")?>" id="<?=$fieldId?>" value="<?=$level ?>" type="radio"<?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked ' : ''?><?=$this->readonly ? ' disabled ' : ''?><?=$inputAttrs?>>
   <?php endfor; ?>
 </div>
 <?php if (!empty($this->allowClear)): ?>
