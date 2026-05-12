@@ -104,11 +104,17 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
      */
     protected function getFormData(?array $notice = null): array
     {
+        $noticeConfig = $this->noticeManager->getNoticeConfig();
+        $noticeFormConfig = $noticeConfig['adminForm'] ?? [];
         $formData = [];
+        $formData['contentTypes'] = $noticeFormConfig['contentTypes'] ?? [];
+        if ($activeContentType = $notice['contentType'] ?? null) {
+            $formData['activeContentType'] = $activeContentType;
+        }
         foreach ($this->getFormLanguages() as $language) {
             $formData['translations'][$language] = $notice['translations'][$language] ?? null;
         }
-        $styles = $this->noticeManager->getNoticeConfig()['styles'] ?? [];
+        $styles = $noticeConfig['styles'] ?? [];
         $activeStyle = $notice['style'] ?? array_keys($styles)[0] ?? null;
         foreach ($styles as $style => $attributes) {
             if ($activeStyle === $style) {
@@ -127,6 +133,10 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
     protected function formDataToNotice(): array
     {
         $notice = $this->noticeManager->getDefaults();
+
+        if ($contentType = $this->getPostParam('content_type_fieldset')['content_type'] ?? null) {
+            $notice['contentType'] = $contentType;
+        }
 
         $notice['translations'] = $this->getPostParam('translations');
 

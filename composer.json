@@ -54,6 +54,7 @@
         "composer/semver": "3.4.4",
         "doctrine/doctrine-orm-module": "^6.3",
         "doctrine/orm": "^2.20.9",
+        "elgigi/commonmark-emoji": "2.0.0",
         "endroid/qr-code": "6.0.9",
         "ezyang/htmlpurifier": "4.19.0",
         "firebase/php-jwt": "^7.0.0",
