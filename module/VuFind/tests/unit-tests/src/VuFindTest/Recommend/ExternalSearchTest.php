@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Recommend;
 
+use Generator;
 use VuFind\Recommend\ExternalSearch;
 
 /**
@@ -43,21 +44,56 @@ use VuFind\Recommend\ExternalSearch;
 class ExternalSearchTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Data provider for.
+     *
+     * @return Generator
+     */
+    public static function dataProvider(): Generator
+    {
+        yield 'default concatenation' => [
+            'my label',
+            'http://foo?q=',
+            'beep',
+            'http://foo?q=beep',
+        ];
+        yield 'template behavior' => [
+            'my label',
+            'http://foo?q=%%lookfor%%&z=xyzzy',
+            'beep',
+            'http://foo?q=beep&z=xyzzy',
+        ];
+        yield 'non-default query parameter' => [
+            'my label',
+            'http://foo?q=%%lookfor%%&z=xyzzy',
+            'beep',
+            'http://foo?q=beep&z=xyzzy',
+            'foo',
+        ];
+    }
+
+    /**
      * Run a test scenario.
      *
-     * @param string $label       Link text
-     * @param string $template    Link template
-     * @param string $lookfor     Search query
-     * @param string $expectedUrl Expected URL
+     * @param string  $label        Link text
+     * @param string  $template     Link template
+     * @param string  $lookfor      Search query
+     * @param string  $expectedUrl  Expected URL
+     * @param ?string $lookforParam Name of query parameter holding $lookfor value (null for default)
      *
      * @return void
      */
-    protected function runProcedure($label, $template, $lookfor, $expectedUrl)
-    {
+    #[\PHPUnit\Framework\Attributes\DataProvider('dataProvider')]
+    public function testRecommend(
+        string $label,
+        string $template,
+        string $lookfor,
+        string $expectedUrl,
+        ?string $lookforParam = null
+    ): void {
         $rec = new ExternalSearch();
-        $rec->setConfig($label . ':' . $template);
+        $rec->setConfig($label . ':' . $template . ($lookforParam ? ":$lookforParam" : ''));
         $params = new \Laminas\Stdlib\Parameters();
-        $params->set('lookfor', $lookfor);
+        $params->set($lookforParam ?? 'lookfor', $lookfor);
         $rec->init(
             $this->createMock(\VuFind\Search\Solr\Params::class),
             $params
@@ -67,35 +103,5 @@ class ExternalSearchTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals($label, $rec->getLinkText());
         $this->assertEquals($expectedUrl, $rec->getUrl());
-    }
-
-    /**
-     * Test concatenation behavior.
-     *
-     * @return void
-     */
-    public function testDefaultConcatenation()
-    {
-        $this->runProcedure(
-            'my label',
-            'http://foo?q=',
-            'beep',
-            'http://foo?q=beep'
-        );
-    }
-
-    /**
-     * Test template insertion behavior.
-     *
-     * @return void
-     */
-    public function testTemplateBehavior()
-    {
-        $this->runProcedure(
-            'my label',
-            'http://foo?q=%%lookfor%%&z=xyzzy',
-            'beep',
-            'http://foo?q=beep&z=xyzzy'
-        );
     }
 }

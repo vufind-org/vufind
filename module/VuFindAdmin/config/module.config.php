@@ -177,7 +177,7 @@ $config = [
         'plugin_managers' => [
             'action' => [
                 'autodiscovery_namespaces' => [
-                    'VuFindAdmin\Action',
+                    'VuFindAdmin\Action' => true,
                 ],
                 'category_aliases' => [
                     'Adminnotices' => 'Notices',

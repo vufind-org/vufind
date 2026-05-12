@@ -70,7 +70,10 @@ VuFind.listen("ready", function triggerPrint() {
     // when the "test mode" cookie is set. This should never happen
     // under normal usage outside of the Phing startup process.
     if (document.cookie.indexOf('VuFindTestSuiteRunning=') > -1) {
-      console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
+      const message = document.createElement("p");
+      message.classList.add("print-test-disabled-message");
+      message.textContent = "Printing disabled due to test mode.";
+      document.body.insertBefore(message, document.body.firstChild);
       return;
     }
 
