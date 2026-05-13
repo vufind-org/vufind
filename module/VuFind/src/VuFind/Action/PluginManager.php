@@ -63,6 +63,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $categoryAliases = [
+        'AJAX' => 'Ajax',
     ];
 
     /**
