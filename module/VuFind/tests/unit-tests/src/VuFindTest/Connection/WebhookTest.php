@@ -64,4 +64,24 @@ class WebhookTest extends \PHPUnit\Framework\TestCase
         $connector->setLogger($logger);
         $connector->post('http://foo', 5);
     }
+
+    /**
+     * Test an unsuccessful webhook call.
+     *
+     * @return void
+     */
+    public function testUnsuccessfulCall(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(401);
+        $guzzle = $this->createMock(GuzzleService::class);
+        $guzzle->method('post')->with('http://foo', null, '', 5)->willReturn($response);
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())->method('log')
+            ->with('error', 'VuFind\Connection\Webhook: Failed to post to webhook. Code: 401, body: ');
+        $connector = new Webhook();
+        $connector->setGuzzleService($guzzle);
+        $connector->setLogger($logger);
+        $connector->post('http://foo', 5);
+    }
 }
