@@ -1,4 +1,4 @@
-<?php if (strlen($this->displayCallnumber ?? '') === 0): ?>
+<?php if ('' === trim($this->displayCallnumber ?? '')): ?>
   <?=$this->transEsc('No call number') ?>
 <?php elseif ($this->callnumberHandler): ?>
   <?php
