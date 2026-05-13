@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Connection;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use VuFind\Connection\Webhook;
@@ -74,11 +75,30 @@ class WebhookTest extends \PHPUnit\Framework\TestCase
     {
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(401);
+        $response->expects($this->once())->method('getBody');
         $guzzle = $this->createMock(GuzzleService::class);
         $guzzle->method('post')->with('http://foo', null, '', 5)->willReturn($response);
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())->method('log')
             ->with('error', 'VuFind\Connection\Webhook: Failed to post to webhook. Code: 401, body: ');
+        $connector = new Webhook();
+        $connector->setGuzzleService($guzzle);
+        $connector->setLogger($logger);
+        $connector->post('http://foo', 5);
+    }
+
+    /**
+     * Test an exception during a webhook call.
+     *
+     * @return void
+     */
+    public function testExceptionDuringCall(): void
+    {
+        $guzzle = $this->createMock(GuzzleService::class);
+        $guzzle->method('post')->with('http://foo', null, '', 5)->willThrowException(new Exception('fail!'));
+        $logger = $this->createMock(LoggerInterface::class);
+        $expected = 'VuFind\Connection\Webhook: Failed to post webhook. Unexpected Exception: Exception: fail!';
+        $logger->expects($this->once())->method('log')->with('error', $this->stringStartsWith($expected));
         $connector = new Webhook();
         $connector->setGuzzleService($guzzle);
         $connector->setLogger($logger);
