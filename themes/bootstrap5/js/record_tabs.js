@@ -60,19 +60,19 @@ VuFind.register('recordTabs', function RecordTabs() {
   /**
    * Handle initial hash for supporting outdated links.
    */
-  function _handleInitialHash() {
+  function _handleHash() {
     const hrefParts = window.location.href.split('#');
     if (hrefParts.length < 2) return;
+
+    if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(hrefParts[1])) return;
+    let tabElement = document.querySelector('.record-tabs #tab-button-' + hrefParts[1]);
+    if (!tabElement || tabElement.classList.contains('active')) return;
 
     if (window.history.replaceState) {
       window.history.replaceState({}, document.title, hrefParts[0]);
     } else {
       window.location.hash = '#';
     }
-
-    if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(hrefParts[1])) return;
-    let tabElement = document.querySelector('.record-tabs #tab-button-' + hrefParts[1]);
-    if (!tabElement || tabElement.classList.contains('active')) return;
 
     let tab = bootstrap.Tab.getOrCreateInstance(tabElement);
     tab.show();
@@ -85,7 +85,8 @@ VuFind.register('recordTabs', function RecordTabs() {
     updateContainer({container: document});
     VuFind.listen('embedded-record-init', updateContainer);
 
-    _handleInitialHash()
+    _handleHash()
+    window.addEventListener('hashchange', _handleHash);
   }
 
   return {
