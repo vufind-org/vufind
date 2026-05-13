@@ -331,6 +331,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
             $itemSchema = $this->getItemTypeSchema($fullSchema, $itemType);
             // Check fields:
             foreach (array_keys(get_object_vars($record)) as $field) {
+                // 'creators' is a valid field even though it is not included in the schema, so skip it here:
                 if ($field === 'creators') {
                     continue;
                 }
