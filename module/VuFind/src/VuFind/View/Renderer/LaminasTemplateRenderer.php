@@ -89,8 +89,8 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * @param ResponseInterface      $response       Response object
      * @param ?string                $template       Template name, or null to use default for the action
      * @param array                  $params         Template parameters
-     * @param array                  $childTemplates Any child templates; an associative array with keys 'template' and
-     * 'params'
+     * @param array[]                $childTemplates Any child templates; an array of associative array with keys
+     * 'template' and 'params'
      *
      * @return ResponseInterface
      */
@@ -156,8 +156,8 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * @param ServerRequestInterface $request        Request
      * @param ?string                $template       Template name, or null to use default for the action
      * @param array                  $params         Template parameters
-     * @param array                  $childTemplates Any child templates; an associative array with keys 'template' and
-     * 'params'
+     * @param array[]                $childTemplates Any child templates; an array of associative array with keys
+     * 'template' and 'params'
      * @param bool                   $useLayout      Render full page with the layout?
      *
      * @return string
