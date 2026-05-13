@@ -29,6 +29,7 @@
 
 namespace VuFind\Action;
 
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 use function count;
@@ -53,6 +54,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'ajax/json' => Ajax\JsonAction::class,
+        'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
+        'ajax/systemstatus' => Ajax\SystemStatusAction::class,
     ];
 
     /**
@@ -63,7 +67,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $categoryAliases = [
-        'AJAX' => 'Ajax',
     ];
 
     /**
@@ -100,6 +103,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
