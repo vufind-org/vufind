@@ -29,6 +29,7 @@
 
 namespace VuFind\Action;
 
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 use function count;
@@ -53,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'author/facetlist' => Author\FacetListAction::class,
     ];
 
     /**
@@ -99,6 +101,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }

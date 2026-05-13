@@ -37,6 +37,7 @@ use VuFind\Action\ActionInterface;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\Http\RouteHelper;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * ForwardHelper test class.
@@ -113,6 +114,18 @@ class ForwardHelperTest extends TestCase
              * @return static
              */
             public function setRouteHelper(RouteHelper $routeHelper): static
+            {
+                throw new \Exception('Unexpected call to ' . __METHOD__);
+            }
+
+            /**
+             * Set session settings.
+             *
+             * @param SessionSettings $sessionSettings Session settings
+             *
+             * @return static
+             */
+            public function setSessionSettings(SessionSettings $sessionSettings): static
             {
                 throw new \Exception('Unexpected call to ' . __METHOD__);
             }

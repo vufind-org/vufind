@@ -37,6 +37,7 @@ use VuFind\ActionHelper\HelperInterface;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * Abstract base class for actions.
@@ -78,21 +79,18 @@ abstract class AbstractAction implements ActionInterface
     protected ?HelperPluginManager $helperPluginManager = null;
 
     /**
+     * Session settings.
+     *
+     * @var ?SessionSettings
+     */
+    protected ?SessionSettings $sessionSettings = null;
+
+    /**
      * Constructor.
      */
     public function __construct()
     {
         $this->init();
-    }
-
-    /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // This function is called after constructor for any initialization required.
     }
 
     /**
@@ -122,6 +120,19 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Set session settings.
+     *
+     * @param SessionSettings $sessionSettings Session settings
+     *
+     * @return static
+     */
+    public function setSessionSettings(SessionSettings $sessionSettings): static
+    {
+        $this->sessionSettings = $sessionSettings;
+        return $this;
+    }
+
+    /**
      * Invoke the action.
      *
      * @param ServerRequestInterface $request  Server request
@@ -143,6 +154,16 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Initialize the action.
+     *
+     * @return void
+     */
+    protected function init(): void
+    {
+        // This function is called after constructor for any initialization required.
+    }
+
+    /**
      * Perform the action.
      *
      * @param ServerRequestInterface $request  Server request
@@ -154,6 +175,19 @@ abstract class AbstractAction implements ActionInterface
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface;
+
+    /**
+     * Prevent session writes -- this is designed to be called prior to time-
+     * consuming AJAX operations to help reduce the odds of a timing-related bug
+     * that causes the wrong version of session data to be written to disk (see
+     * VUFIND-716 for more details).
+     *
+     * @return void
+     */
+    protected function disableSessionWrites()
+    {
+        $this->getSessionSettings()->disableWrite();
+    }
 
     /**
      * Handle an exception during action.
@@ -290,5 +324,18 @@ abstract class AbstractAction implements ActionInterface
             throw new Exception($this::class . ' action not properly initialized; route helper missing');
         }
         return $this->routeHelper;
+    }
+
+    /**
+     * Get session settings.
+     *
+     * @return SessionSettings
+     */
+    protected function getSessionSettings(): SessionSettings
+    {
+        if (null === $this->sessionSettings) {
+            throw new Exception($this::class . ' action not properly initialized; session settings missing');
+        }
+        return $this->sessionSettings;
     }
 }
