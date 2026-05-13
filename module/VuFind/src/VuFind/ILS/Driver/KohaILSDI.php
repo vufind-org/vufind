@@ -541,11 +541,11 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             return [
                 'max_results' => 100,
@@ -560,7 +560,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 'default_sort' => 'checkout desc',
             ];
         }
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**

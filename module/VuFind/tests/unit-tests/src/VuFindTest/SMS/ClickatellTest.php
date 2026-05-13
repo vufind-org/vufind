@@ -85,6 +85,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnknownException()
     {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
         $client = $this->getMockClient();
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $client->expects($this->once())

@@ -53,6 +53,7 @@ class Content
      * @param TemplateBased $templateBasedBlock TemplateBased instance to resolve translated pages.
      * @param Context       $contextHelper      Context View Helper instance to resolve translated pages.
      * @param EscapeHtml    $escapeHtmlHelper   Escape HTML view helper
+     * @param CleanHtml     $cleanHtmlHelper    Clean HTML view helper
      * @param Markdown      $markdownHelper     Markdown view helper
      */
     public function __construct(
@@ -62,6 +63,8 @@ class Content
         protected Context $contextHelper,
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtmlHelper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected CleanHtml $cleanHtmlHelper,
         #[Autowire(container: 'ViewHelperManager')]
         protected Markdown $markdownHelper
     ) {
@@ -126,6 +129,7 @@ class Content
         return match ($contentType) {
             'text' => ($this->escapeHtmlHelper)($content),
             'html' => $content,
+            'clean_html' => ($this->cleanHtmlHelper)($content),
             'markdown' => ($this->markdownHelper)(($this->escapeHtmlHelper)($content))->getContent(),
             default => throw new InvalidArgumentException('Invalid content type: ' . $contentType),
         };

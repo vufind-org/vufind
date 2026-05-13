@@ -69,7 +69,7 @@ class FooterMenuFactory extends AbstractMenuFactory
             $container,
             $requestedName,
             [
-                'FooterMenu.yaml',
+                'FooterMenu',
                 $config,
                 ...($options ?? []),
             ]

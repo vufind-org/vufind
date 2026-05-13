@@ -67,10 +67,24 @@ trait ViewTrait
     protected function getAssetManager(PhpRenderer $renderer): AssetManager
     {
         $container = new MockContainer($this);
+        $container->get(\VuFind\Security\NonceGenerator::class)->method('getNonce')->willReturn('');
+        $services = [
+            \Laminas\View\Helper\HeadLink::class => new \Laminas\View\Helper\HeadLink(),
+            \Laminas\View\Helper\HeadStyle::class => new \Laminas\View\Helper\HeadStyle(),
+            \Laminas\View\Helper\InlineScript::class => new \Laminas\View\Helper\InlineScript(),
+            \Laminas\View\Helper\Url::class => new \Laminas\View\Helper\Url(),
+        ];
+        $viewHelperManager = $renderer->getHelperPluginManager();
+        foreach ($services as $key => $value) {
+            if (!$viewHelperManager->has($key)) {
+                $viewHelperManager->setService($key, $value);
+            }
+        }
+        $container->set(\Laminas\View\HelperPluginManager::class, $viewHelperManager);
         $factory = new AssetManagerFactory();
-        $helper = $factory($container, AssetManager::class);
-        $helper->setView($renderer);
-        return $helper;
+        $assetManager = $factory($container, AssetManager::class);
+
+        return $assetManager;
     }
 
     /**

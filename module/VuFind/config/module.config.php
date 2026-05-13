@@ -389,7 +389,6 @@ $config = [
     ],
     'controller_plugins' => [
         'factories' => [
-            'VuFind\Controller\Plugin\Captcha' => 'VuFind\Controller\Plugin\CaptchaFactory',
             'VuFind\Controller\Plugin\Holds' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\ILLRequests' => 'VuFind\Controller\Plugin\AbstractRequestBaseFactory',
             'VuFind\Controller\Plugin\Permission' => 'VuFind\Controller\Plugin\PermissionFactory',
@@ -399,7 +398,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'captcha' => 'VuFind\Controller\Plugin\Captcha',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'ILLRequests' => 'VuFind\Controller\Plugin\ILLRequests',
             'permission' => 'VuFind\Controller\Plugin\Permission',
@@ -425,6 +423,7 @@ $config = [
             'VuFind\Autocomplete\Suggester' => 'VuFind\Autocomplete\SuggesterFactory',
             'VuFind\Cache\Manager' => 'VuFind\Cache\ManagerFactory',
             'VuFind\Captcha\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Captcha\Service\CaptchaService' => 'VuFind\Captcha\Service\CaptchaServiceFactory',
             'VuFind\Cart' => 'VuFind\CartFactory',
             'VuFind\ChannelProvider\ChannelLoader' => 'VuFind\ChannelProvider\ChannelLoaderFactory',
             'VuFind\ChannelProvider\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -955,6 +954,7 @@ $staticRoutes = [
     'LibraryCards/ConnectCard',
     'LibraryCards/ConnectCardLogin',
     'LibraryCards/DeleteCard',
+    'LibraryCards/VerifyOtp',
     'MyResearch/Account',
     'MyResearch/ChangeEmail',
     'MyResearch/ChangePassword',
@@ -987,6 +987,8 @@ $staticRoutes = [
     'MyResearch/UserContent',
     'MyResearch/Verify',
     'MyResearch/VerifyEmail',
+    'MyResearch/VerifyOtp',
+    'MyResearch/VerifyRecoveryOtp',
     'OAI/Server',
     'Overdrive/MyContent',
     'Overdrive/Hold',

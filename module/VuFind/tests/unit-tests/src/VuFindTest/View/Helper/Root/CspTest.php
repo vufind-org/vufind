@@ -52,6 +52,8 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
+                        'development' => true,
+                        'production' => true,
                         'testing' => true,
                     ],
                 ],
@@ -77,7 +79,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $added = $headers->get('Content-Security-Policy');
         $this->assertEquals(1, $added->count());
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());
+        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
         $csp->disablePolicy();
         $this->assertFalse($headers->get('Content-Security-Policy'));
     }
@@ -119,7 +121,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $added = $headers->get('Content-Security-Policy-Report-Only');
         $this->assertFalse(is_iterable($added));
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());
+        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
         $csp->disablePolicy();
         $this->assertFalse($headers->get('Content-Security-Policy-Report-Only'));
     }
@@ -136,6 +138,8 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
+                        'development' => false,
+                        'production' => false,
                         'testing' => false,
                     ],
                 ],
@@ -154,7 +158,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
         $header = $cspHeaderGenerator->getCspHeader();
         $this->assertNull($header);
 
-        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());
+        $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator);
         $csp->disablePolicy();
     }
 }

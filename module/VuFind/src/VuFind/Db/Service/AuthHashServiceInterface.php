@@ -50,6 +50,13 @@ interface AuthHashServiceInterface extends DbServiceInterface
     public const TYPE_EMAIL = 'email';
 
     /**
+     * Hash type for one-time password authentication.
+     *
+     * @var string
+     */
+    public const TYPE_OTP = 'otp';
+
+    /**
      * Hash type for ILS password recovery.
      *
      * @var string
@@ -71,6 +78,15 @@ interface AuthHashServiceInterface extends DbServiceInterface
      * @return void
      */
     public function deleteAuthHash(AuthHashEntityInterface|int $authHashOrId): void;
+
+    /**
+     * Retrieve an object from the database based on id.
+     *
+     * @param string $id Hash ID
+     *
+     * @return ?AuthHashEntityInterface
+     */
+    public function getById(string $id): ?AuthHashEntityInterface;
 
     /**
      * Retrieve an object from the database based on hash and type; possibly create a new

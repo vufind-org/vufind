@@ -376,14 +376,12 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $reflection = new \ReflectionObject($obj);
 
         $getFieldArray = $reflection->getMethod('getFieldArray');
-        $getFieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getFieldArray->invokeArgs($obj, [100, ['a', 'd']])
         );
 
         $getSubfieldArray = $reflection->getMethod('getSubfieldArray');
-        $getSubfieldArray->setAccessible(true);
         $this->assertEquals(
             ['Author, Test (1800-)'],
             $getSubfieldArray

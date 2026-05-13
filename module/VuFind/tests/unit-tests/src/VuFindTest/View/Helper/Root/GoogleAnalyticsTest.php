@@ -112,8 +112,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     protected function renderGA(?string $key, array $options = []): string
     {
-        $helper = new GoogleAnalytics($key, $options);
-        $helper->setView($this->getPhpRenderer());
+        $helper = new GoogleAnalytics($key, $this->getAssetManager($this->getPhpRenderer()), $options);
         return $helper();
     }
 }

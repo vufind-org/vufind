@@ -136,7 +136,7 @@ class SearchController extends AbstractSolrSearch
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         $mailer->setMaxRecipients($view->maxRecipients);
         // Set up Captcha
-        $view->useCaptcha = $this->captcha()->active('email');
+        $view->useCaptcha = $this->getCaptcha()->active('email');
         $view->url = $this->params()->fromPost('url')
             ?? $this->params()->fromQuery('url')
             ?? $this->getRequest()->getServer()->get('HTTP_REFERER');

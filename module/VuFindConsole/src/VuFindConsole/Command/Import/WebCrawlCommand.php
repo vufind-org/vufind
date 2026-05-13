@@ -364,7 +364,7 @@ class WebCrawlCommand extends Command
                     }
                 } catch (\Exception $e) {
                     if ($verbose) {
-                        $output->writeln($e::class . ': ' . $e->getMessage());
+                        $output->writeln((string)$e);
                     }
                     $retVal = false;
                 }

@@ -1569,11 +1569,11 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ($function == 'Holds') {
             $holdsConfig = $this->config['Holds'] ?? [];
-            $extraHoldFields = empty($this->getPickUpLocations(null))
+            $extraHoldFields = empty($this->getPickUpLocations([]))
                 ? 'comments:requiredByDate'
                 : 'comments:pickUpLocation:requiredByDate';
             $defaults =  [
@@ -1586,7 +1586,7 @@ class XCNCIP2 extends AbstractBase implements
         }
         if ($function == 'StorageRetrievalRequests') {
             $config = $this->config['StorageRetrievalRequests'] ?? [];
-            $extraFields = empty($this->getPickUpLocations(null))
+            $extraFields = empty($this->getPickUpLocations([]))
                 ? 'comments:requiredByDate:item-issue'
                 : 'comments:pickUpLocation:requiredByDate:item-issue';
             $defaults =  [

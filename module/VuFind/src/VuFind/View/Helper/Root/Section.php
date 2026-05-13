@@ -29,9 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function call_user_func_array;
 use function is_callable;
@@ -46,7 +48,7 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Section extends AbstractHelper
+class Section
 {
     use ClassBasedTemplateRendererTrait;
 
@@ -90,9 +92,19 @@ class Section extends AbstractHelper
      * Constructor.
      *
      * @param SectionServiceInterface $sectionService Section service
+     * @param Context                 $contextHelper  Context helper
+     * @param RendererInterface       $viewRenderer   View renderer
+     * @param ResolverInterface       $viewResolver   View resolver
      */
-    public function __construct(protected SectionServiceInterface $sectionService)
-    {
+    #[Autowire()]
+    public function __construct(
+        protected SectionServiceInterface $sectionService,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $contextHelper,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver
+    ) {
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
 
     /**
@@ -154,12 +166,12 @@ class Section extends AbstractHelper
         $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
         $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
-        if ($this->getView()->resolver()->resolve($this->template)) {
-            return $this->getView()->render($this->template, $mergedContext);
+        if ($this->viewResolver->resolve($this->template)) {
+            return $this->viewRenderer->render($this->template, $mergedContext);
         } else {
             // Default to class-based template.
             $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = strtolower($this->section::class);
+            $className = $this->section::class;
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
     }

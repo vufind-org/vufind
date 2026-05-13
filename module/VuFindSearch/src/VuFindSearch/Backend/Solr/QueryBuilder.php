@@ -149,7 +149,11 @@ class QueryBuilder implements QueryBuilderInterface
         } else {
             // Clone the query to avoid modifying the original user-visible query
             $finalQuery = clone $query;
-            $finalQuery->setString($this->getNormalizedQueryString($query));
+            $queryString = $query->getString();
+            if ($handler = $this->getSearchHandler($query->getHandler(), $queryString)) {
+                $queryString = $handler->preprocessQueryString($queryString);
+            }
+            $finalQuery->setString($this->getNormalizedQueryString($queryString));
         }
         $string = $finalQuery->getString() ?: '*:*';
 
@@ -174,7 +178,7 @@ class QueryBuilder implements QueryBuilderInterface
                 }
             } elseif ($handler->hasDismax()) {
                 $newParams->set('qf', implode(' ', $handler->getDismaxFields()));
-                $newParams->set('qt', $handler->getDismaxHandler());
+                $newParams->set('defType', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
                     $newParams->add(reset($param), next($param));
                 }
@@ -494,7 +498,7 @@ class QueryBuilder implements QueryBuilderInterface
                 $searchString = '(*:* NOT ' . $searchString . ')';
             }
         } else {
-            $searchString = $this->getNormalizedQueryString($component);
+            $searchString = $this->getNormalizedQueryString($component->getString());
             $searchHandler = $this->getSearchHandler(
                 $component->getHandler(),
                 $searchString
@@ -568,18 +572,14 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Given a Query object, return a fully normalized version of the query string.
+     * Given a Query string, return a fully normalized version.
      *
-     * @param Query $query Query object
+     * @param string $queryString Query string
      *
      * @return string
      */
-    protected function getNormalizedQueryString($query)
+    protected function getNormalizedQueryString($queryString)
     {
-        $queryString = $query->getString();
-        if ($handler = $this->getSearchHandler($query->getHandler(), $queryString)) {
-            $queryString = $handler->preprocessQueryString($queryString);
-        }
         return $this->fixTrailingQuestionMarks(
             $this->getLuceneHelper()->normalizeSearchString(
                 $queryString

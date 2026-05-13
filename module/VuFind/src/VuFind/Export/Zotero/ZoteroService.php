@@ -224,8 +224,9 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
 
         if ($vufindResponse->getStatusCode() !== 200) {
             $this->logError(
-                "GET request for '$callbackUrl' failed: "
-                . $vufindResponse->getStatusCode() . ': ' . $vufindResponse->getReasonPhrase()
+                "GET request for '$callbackUrl' failed (expected HTTP 200): " .
+                $vufindResponse->getStatusCode() . ': ' . $vufindResponse->getReasonPhrase() .
+                '; HTTP response headers: ' . json_encode($vufindResponse->getHeaders())
             );
             throw new ZoteroException('Export request failed');
         }
@@ -331,6 +332,10 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
             $itemSchema = $this->getItemTypeSchema($fullSchema, $itemType);
             // Check fields:
             foreach (array_keys(get_object_vars($record)) as $field) {
+                // 'creators' is a valid field even though it is not included in the schema, so skip it here:
+                if ($field === 'creators') {
+                    continue;
+                }
                 if (!isset($itemSchema['fields'][$field])) {
                     // Check for field mapping:
                     if ($target = $itemSchema['mappedFields'][$field] ?? null) {
@@ -343,7 +348,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
             // Check authors:
             if (isset($record->creators)) {
                 foreach ($record->creators as &$creator) {
-                    if (!isset($itemSchema['creatorTypes'][$creator['creatorType']])) {
+                    if (!isset($itemSchema['creatorTypes'][$creator->creatorType])) {
                         $creator->creatorType = $itemSchema['primaryCreatorType'];
                     }
                 }

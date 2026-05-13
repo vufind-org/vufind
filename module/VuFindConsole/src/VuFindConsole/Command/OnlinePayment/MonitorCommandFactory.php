@@ -70,7 +70,7 @@ class MonitorCommandFactory implements FactoryInterface
         ?array $options = null
     ) {
         // We need to initialize the theme so that the view renderer works:
-        $mainConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
         $theme->init();
 

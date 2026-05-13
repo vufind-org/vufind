@@ -121,7 +121,7 @@ class CheckoutsController extends AbstractBase
             'getMyTransactionHistory',
             $patron
         );
-        if (false === $functionConfig) {
+        if (!$functionConfig) {
             $this->getFlashMessenger()->addErrorMessage('ils_action_unavailable');
             return $this->createViewModel();
         }
