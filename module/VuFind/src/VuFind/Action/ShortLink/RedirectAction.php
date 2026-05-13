@@ -32,6 +32,7 @@ namespace VuFind\Action\ShortLink;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 use function is_callable;
@@ -65,6 +66,7 @@ class RedirectAction extends AbstractTemplateRenderingAction
      */
     public function __construct(
         protected UrlShortenerInterface $shortener,
+        #[Autowire(config: 'config', path: 'Mail/url_shortener_redirect_method', default: 'threshold:1000')]
         protected string $redirectMethod
     ) {
         parent::__construct();

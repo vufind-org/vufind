@@ -29,6 +29,9 @@
 
 namespace VuFind\Action;
 
+use Laminas\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Laminas\ServiceManager\Exception\InvalidServiceException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 use function count;
@@ -75,7 +78,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        ShortLink\RedirectAction::class => ShortLink\RedirectActionFactory::class,
     ];
 
     /**
@@ -141,9 +143,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return mixed
      *
-     * @throws Exception\ServiceNotFoundException If the manager does not have a service definition for the instance,
+     * @throws ServiceNotFoundException If the manager does not have a service definition for the instance,
      * and the service is not auto-invokable.
-     * @throws InvalidServiceException If the plugin created is invalid for the plugin context.
+     * @throws InvalidServiceException  If the plugin created is invalid for the plugin context.
      */
     public function get($name, ?array $options = null)
     {
