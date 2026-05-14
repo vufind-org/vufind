@@ -30,8 +30,8 @@ VuFind.register('jsDropdown', function jsDropdown() {
    * @param {boolean} open True to show the arrow pointing up, False pointing down
    */
   function toggleDropdownArrow(dropdown, open) {
-    dropdown.querySelector(".fa-close-dropdown").style.display = open ? 'block' : 'none';
-    dropdown.querySelector(".fa-open-dropdown").style.display = open ? 'none' : 'block';
+    dropdown.querySelector(".dropdown-close").style.display = open ? 'block' : 'none';
+    dropdown.querySelector(".dropdown-open").style.display = open ? 'none' : 'block';
   }
 
   /**

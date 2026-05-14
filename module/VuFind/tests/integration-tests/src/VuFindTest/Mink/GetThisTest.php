@@ -28,7 +28,7 @@
 
 namespace VuFindTest\Mink;
 
-use Behat\Mink\Element\Element;
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\NodeElement;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -76,6 +76,11 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     {
         parent::setUp();
         $this->restoreConfigs();
+        $this->changeConfigs([
+            'config' => [
+                'Record' => ['getThisEnabled' => true],
+            ],
+        ]);
     }
 
     /**
@@ -442,10 +447,10 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $search String to search for
      *
-     * @return Element
+     * @return DocumentElement
      * @throws Exception
      */
-    public function searchAndWaitForItemsStatus(string $search): Element
+    public function searchAndWaitForItemsStatus(string $search): DocumentElement
     {
         $page = $this->performSearch($search);
         $this->waitForPageLoad($page);
@@ -463,15 +468,12 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $search String to search for
      *
-     * @return Element
+     * @return DocumentElement
      * @throws Exception
      */
-    public function openGetThisLoaderForSearch(string $search): Element
+    public function openGetThisLoaderForSearch(string $search): DocumentElement
     {
         $page = $this->searchAndWaitForItemsStatus($search);
-        if (isset($this->exit) && $this->exit) {
-            exit();
-        }
         $getThisLink = $this->findAndAssertLink($page, 'Get This');
         $getThisLink->click();
 
@@ -486,10 +488,10 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $search     String to search for
      * @param string $callNumber Callnumber to get
      *
-     * @return Element
+     * @return DocumentElement
      * @throws Exception
      */
-    public function openGetThisLinkByCallNumber(string $search, string $callNumber): Element
+    public function openGetThisLinkByCallNumber(string $search, string $callNumber): DocumentElement
     {
         $page = $this->searchAndWaitForItemsStatus($search);
 
@@ -513,11 +515,11 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Getter for the lightbox.
      *
-     * @param Element $page Page element
+     * @param DocumentElement $page Page element
      *
      * @return ?NodeElement
      */
-    public function getLightbox(Element $page): ?NodeElement
+    public function getLightbox(DocumentElement $page): ?NodeElement
     {
         return $this->findCss($page, '.modal-content');
     }
@@ -525,13 +527,13 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert block presence (or absence) in the lightbox.
      *
-     * @param Element $page             Page element
-     * @param string  $blockName        Block to test the presence of
-     * @param bool    $expectedPresence Whether the block should be present
+     * @param DocumentElement $page             Page element
+     * @param string          $blockName        Block to test the presence of
+     * @param bool            $expectedPresence Whether the block should be present
      *
      * @return void
      */
-    public function assertBlockPresence(Element $page, string $blockName, bool $expectedPresence): void
+    public function assertBlockPresence(DocumentElement $page, string $blockName, bool $expectedPresence): void
     {
         $lightbox = $this->getLightbox($page);
         $presence = str_contains($lightbox->getHtml(), '<!-- Get-This: ' . $blockName . ' -->');
