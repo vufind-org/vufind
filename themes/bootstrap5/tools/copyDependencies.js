@@ -75,7 +75,4 @@ copy('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/i
 copy('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css');
 copy('node_modules/simple-keyboard-layouts/build/index.js', 'js/vendor/simple-keyboard-layouts/index.js');
 
-// vanilla-cookieconsent
-copy('node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js', 'js/vendor/cookieconsent.umd.js');
-
 console.log('= Done copying dependencies.');
