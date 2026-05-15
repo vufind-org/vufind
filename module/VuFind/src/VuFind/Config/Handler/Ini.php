@@ -199,15 +199,44 @@ class Ini extends AbstractBase
             throw new ConfigException('Ini handler can only write array config.');
         }
 
+        $this->checkIfConfigIsWritable($destinationLocation);
+
         // If target file already exists, back it up:
         $outfile = $destinationLocation->getPath();
         $this->backupFile($outfile);
 
-        $comments = [];
-        if ($baseLocation !== null) {
-            $comments = $this->extractComments($baseLocation->getPath());
+        if ($baseLocation !== null && file_exists($baseLocation->getPath())) {
+            // Copy from base to provide structure
+            !copy($baseLocation->getPath(), $outfile);
         }
-        $writer = $this->getConfigWriter($outfile, $config, $comments);
+
+        if (file_exists($outfile) && $currentConfig = parse_ini_file($outfile, true)) {
+            // If file already exits, only update changed lines
+            $writer = new ConfigWriter(
+                $outfile
+            );
+            // override current config with new config
+            foreach ($config as $section => $sectionConfig) {
+                foreach ($sectionConfig as $setting => $value) {
+                    if (!isset($currentConfig[$section][$setting]) || $currentConfig[$section][$setting] !== $value) {
+                        $writer->set($section, $setting, $value);
+                    }
+                    unset($currentConfig[$section][$setting]);
+                }
+            }
+            // remove current config not included in new config
+            foreach ($currentConfig as $section => $sectionConfig) {
+                foreach ($sectionConfig as $setting => $value) {
+                    $writer->clear($section, $setting);
+                }
+            }
+        } else {
+            // If no file exists yet, create it from scratch
+            $writer = new ConfigWriter(
+                $outfile,
+                $config,
+            );
+        }
         if (!$writer->save()) {
             throw new FileAccessException(
                 "Error: Problem writing to {$outfile}."
@@ -216,32 +245,35 @@ class Ini extends AbstractBase
     }
 
     /**
-     * Get writer object.
+     * Check if a config location is writable. Otherwise, throw an exception.
      *
-     * @param string $outfile  Path to output file
-     * @param array  $config   Configuration to write
-     * @param array  $comments Comments
+     * @param ConfigLocationInterface $configLocation Config location
      *
-     * @return ConfigWriter
+     * @return void
      */
-    protected function getConfigWriter(string $outfile, array $config, array $comments): ConfigWriter
+    protected function checkIfConfigIsWritable(ConfigLocationInterface $configLocation): void
     {
-        return new ConfigWriter(
-            $outfile,
-            $config,
-            $comments
-        );
-    }
+        if (!file_exists($configLocation->getPath())) {
+            return;
+        }
 
-    /**
-     * Extract comments of a file.
-     *
-     * @param string $filename Name of ini file to read.
-     *
-     * @return array
-     */
-    protected function extractComments($filename)
-    {
-        return ConfigWriter::extractComments($filename);
+        $config = parse_ini_file($configLocation->getPath(), true);
+
+        foreach ($config as $section => $sectionConfig) {
+            if ($section === '@inlcude') {
+                throw new ConfigException('Can not write INI configuration with @inlcude statement.');
+            }
+            foreach ($sectionConfig as $setting => $value) {
+                if ($section === 'Parent_Config') {
+                    throw new ConfigException('Can not write INI configuration with inheritance.');
+                }
+                if ($setting === '@inlcude') {
+                    throw new ConfigException('Can not write INI configuration with @inlcude statement.');
+                }
+                if (str_starts_with($setting, 'include::')) {
+                    throw new ConfigException('Can not write INI configuration with include:: statement.');
+                }
+            }
+        }
     }
 }
