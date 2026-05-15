@@ -121,7 +121,7 @@ try {
       continue;
     }
 
-    const entryPath = path.join(entry.path, entry.name);
+    const entryPath = path.join(entry.parentPath || entry.path, entry.name);
     const templateContents = fs.readFileSync(entryPath, "utf8");
 
     const phpStrings = getPhpTranslations(templateContents);
