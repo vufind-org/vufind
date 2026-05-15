@@ -81,7 +81,7 @@ VuFind.register('recordTabs', function RecordTabs() {
     }
 
     if (scrollToTabs) {
-      window.scrollTo({top: tabElement.offsetTop, behavior: 'smooth'})
+      tabElement.scrollIntoView({behavior: 'smooth'});
     }
   }
 
