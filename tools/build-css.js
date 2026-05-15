@@ -1,5 +1,5 @@
 if (!(process.env.VUFIND_HOME ?? false)) {
-  console.error("Set VUFIND_HOME before running.");
+  console.error(red("Set VUFIND_HOME before running."));
   process.exit(1);
 }
 
@@ -41,8 +41,8 @@ program
 program.parse(process.argv);
 const CLI_OPTIONS = program.opts();
 
-const DO_MINIFY = CLI_OPTIONS.minify ? true : CLI_OPTIONS.checkOnly !== true;
-const DO_SOURCEMAPS = CLI_OPTIONS.checkOnly ? false : CLI_OPTIONS.sourcemaps ?? CLI_OPTIONS.minify;
+const DO_MINIFY = Boolean(CLI_OPTIONS.minify);
+const DO_SOURCEMAPS = Boolean(CLI_OPTIONS.sourcemaps ?? CLI_OPTIONS.minify);
 
 console.log(`CHECK-ONLY: ${String(CLI_OPTIONS.checkOnly ?? false)}`);
 console.log(`MINIFY: ${String(DO_MINIFY)}`);
@@ -56,15 +56,15 @@ for (const theme of CLI_OPTIONS.themes) {
       compileTheme(theme);
     }
   } catch (e) {
-    console.error(e);
+    console.error(red(e));
   }
 }
 
 function compileTheme(themeName) {
   const start = performance.now();
-  console.log(`\n${underline(themeName)}`);
+  console.log(`\n${heading(themeName)}`);
 
-  console.log("- compiling SCSS to CSS...");
+  console.log("- compiling SCSS to CSS");
 
   // @link https://github.com/twbs/bootstrap/blob/main/package.json
   // sass --style expanded --source-map --embed-sources --no-error-css scss/:dist/css/
@@ -87,7 +87,7 @@ function compileTheme(themeName) {
   }
 
   if (DO_MINIFY) {
-    console.log("- minifying...");
+    console.log("- minifying");
 
     // @link https://github.com/twbs/bootstrap/blob/main/package.json
     // cleancss -O1 --format breakWith=lf --with-rebase --source-map --source-map-inline-sources
@@ -122,9 +122,28 @@ function compileTheme(themeName) {
     }
   }
 
-  if (!CLI_OPTIONS.checkOnly) {
+  const outCSSPath = themePath(themeName, `css/${CLI_OPTIONS.outname}`);
+  if (CLI_OPTIONS.checkOnly) {
+    // Check if compiled.css is up-to-date
+    if (fs.existsSync(outCSSPath)) {
+      console.log(`- writing /tmp/scss-check-${themeName}.css for comparison`);
+      const tmpCSSPath = `/tmp/scss-check-${themeName}.css`;
+      fs.writeFileSync(tmpCSSPath, cssContent, "utf8");
+
+      try {
+        if (filesAreIdentical(tmpCSSPath, outCSSPath)) {
+          console.log(`  - ${green("SCSS up-to-date")}`);
+        } else {
+          console.error(`  - ${red("SCSS needs to be recompiled")}`);
+          process.exitCode = 1; // CI failure without exiting
+        }
+      } catch(e) {
+        console.error(e);
+        process.exit(1);
+      }
+    }
+  } else {
     console.log(`- writing css to theme/${themeName}/css/${CLI_OPTIONS.outname}`);
-    const outCSSPath = themePath(themeName, `css/${CLI_OPTIONS.outname}`);
     fs.writeFileSync(outCSSPath, cssContent, "utf8");
   }
 
@@ -133,8 +152,20 @@ function compileTheme(themeName) {
 
 // Functions
 
+function red(str) {
+  return `\x1b[31m${str}\x1b[0m`;
+}
+function green(str) {
+  return `\x1b[32m${str}\x1b[0m`;
+}
+function yellow(str) {
+  return `\x1b[33m${str}\x1b[0m`;
+}
 function underline(str) {
   return `\x1b[4m${str}\x1b[0m`;
+}
+function heading(str) {
+  return yellow(underline(str));
 }
 
 function themePath(name, subdir = "") {
@@ -163,7 +194,8 @@ function getThemeList() {
       }
     }
   } catch (err) {
-    console.error("Error reading directory:", err);
+    console.error(red("Error reading directory:", err));
+    process.exit(1);
   }
 
   return themes;
@@ -221,4 +253,35 @@ function getLoadPaths(themeName) {
   }
 
   return paths.map((path) => `${path}/`);
+}
+
+function filesAreIdentical(aPath, bPath) {
+  // Check sizes first
+  const aStats = fs.statSync(aPath);
+  const bStats = fs.statSync(bPath);
+
+  console.log(`  - ${aPath} size: ${aStats.size}`);
+  console.log(`  - ${bPath} size: ${bStats.size}`);
+
+  if (aStats.size !== bStats.size) {
+    return Promise.reject();
+  }
+
+  // Chunked comparison
+  const aHandle = fs.openSync(aPath);
+  const bHandle = fs.openSync(bPath);
+
+  const chunkSize = 512;
+  const aBuffer = new Uint8Array(chunkSize);
+  const bBuffer = new Uint8Array(chunkSize);
+  for (let pos = 0; pos < aStats.size; pos += chunkSize) {
+    fs.readSync(aHandle, aBuffer, 0, chunkSize, pos);
+    fs.readSync(bHandle, bBuffer, 0, chunkSize, pos);
+
+    if (Buffer.compare(aBuffer, bBuffer) !== 0) {
+      return false;
+    }
+  }
+
+  return true;
 }
