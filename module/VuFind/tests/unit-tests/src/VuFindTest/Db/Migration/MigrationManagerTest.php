@@ -133,7 +133,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $connection = $this->createMock(Connection::class);
         $manager = $this->getMockMigrationManager(['applyMigration']);
         $manager->expects($this->exactly(3))->method('applyMigration')->willReturnCallback(
-            function (string $migration, ?Connection $incomingConnection) use ($connection) {
+            function (string $migration, ?Connection $incomingConnection) use ($connection): string {
                 $this->assertEquals($connection, $incomingConnection);
                 return $migration;
             }
@@ -157,7 +157,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(['execute chunk 1', 'execute chunk 2']);
         $manager = $this->getMockMigrationManager(['logMigrationEvent', 'cleanUpMigrationEvents'], loader: $loader);
         $manager->expects($this->exactly(4))->method('logMigrationEvent')->willReturnCallback(
-            function ($incomingConnection, $name, $msg) use ($connection) {
+            function (?\VuFind\Db\Connection $incomingConnection, string $name, string $msg) use ($connection): string {
                 $this->assertEquals($connection, $incomingConnection);
                 return "log $name : $msg\n";
             }

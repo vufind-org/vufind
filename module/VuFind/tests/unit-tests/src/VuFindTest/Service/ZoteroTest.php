@@ -181,7 +181,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $accessTokenService = $this->createMock(AccessTokenService::class);
         $accessTokenService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('getByIdAndType')
-            ->willReturnCallback(function ($id, $type, $create = true) {
+            ->willReturnCallback(function (string $id, string $type, bool $create = true) {
                 if (null === $this->storedAccessToken && $create) {
                     $this->storedAccessToken = new AccessToken();
                     $this->storedAccessToken->setId($id)
@@ -217,7 +217,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $guzzleService = $this->createMock(GuzzleService::class);
         $guzzleService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('createClient')
-            ->willReturnCallback(fn ($url) => match ($url) {
+            ->willReturnCallback(fn (?string $url) => match ($url) {
                 'https://localhost/callback' => $callbackClient,
                 $this->zoteroExportUrl => $exportClient,
             });
