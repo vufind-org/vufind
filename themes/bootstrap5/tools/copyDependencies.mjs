@@ -13,6 +13,10 @@ console.log('Copying dependencies...');
 // Bootstrap 5
 await cp('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/', { recursive: true });
 
+// Font Awesome
+await copyFile('node_modules/@fortawesome/fontawesome-free/css/all.min.css', 'css/vendor/font-awesome/css/all.min.css');
+await cp('node_modules/@fortawesome/fontawesome-free/webfonts/.', 'css/vendor/font-awesome/webfonts/', { recursive: true });
+
 if (buildDepsOnly) {
     console.log('Done copying build dependencies.');
     process.exit();
@@ -28,6 +32,9 @@ await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autoco
 
 // chart.js
 await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
+
+// Font Awesome SASS
+await cp('node_modules/@fortawesome/fontawesome-free/scss/.', 'scss/vendor/font-awesome/', { recursive: true });
 
 // jQuery
 await copyFile('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js');
