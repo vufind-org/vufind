@@ -11,54 +11,54 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "vendor/font-awesome/v4-shims";
 
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
-@import "vendor/bootstrap/scss/functions";
+@import "vendor/bootstrap/functions";
 
 // Include any variable overrides here
 @import "bootstrap-variable-overrides";
 
 // Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
-@import "vendor/bootstrap/scss/variables";
-// @import "vendor/bootstrap/scss/variables-dark";
+@import "vendor/bootstrap/variables";
+// @import "vendor/bootstrap/variables-dark";
 
 // Include any map overrides here
 @import "bootstrap-map-overrides";
 
 // Include remainder of required parts
-@import "vendor/bootstrap/scss/maps";
-@import "vendor/bootstrap/scss/mixins";
-@import "vendor/bootstrap/scss/root";
-@import "vendor/bootstrap/scss/reboot";
+@import "vendor/bootstrap/maps";
+@import "vendor/bootstrap/mixins";
+@import "vendor/bootstrap/root";
+@import "vendor/bootstrap/reboot";
 
 // Optionally include any other parts as needed
-@import "vendor/bootstrap/scss/accordion";
-@import "vendor/bootstrap/scss/alert";
-@import "vendor/bootstrap/scss/badge";
-@import "vendor/bootstrap/scss/breadcrumb";
-@import "vendor/bootstrap/scss/buttons";
-@import "vendor/bootstrap/scss/button-group";
-@import "vendor/bootstrap/scss/card";
-@import "vendor/bootstrap/scss/carousel";
-@import "vendor/bootstrap/scss/containers";
-@import "vendor/bootstrap/scss/dropdown";
-@import "vendor/bootstrap/scss/forms";
-@import "vendor/bootstrap/scss/grid";
-@import "vendor/bootstrap/scss/helpers";
-@import "vendor/bootstrap/scss/images";
-@import "vendor/bootstrap/scss/list-group";
-@import "vendor/bootstrap/scss/modal";
-@import "vendor/bootstrap/scss/nav";
-@import "vendor/bootstrap/scss/navbar";
-@import "vendor/bootstrap/scss/offcanvas";
-@import "vendor/bootstrap/scss/pagination";
-@import "vendor/bootstrap/scss/popover";
-@import "vendor/bootstrap/scss/tables";
-@import "vendor/bootstrap/scss/tooltip";
-@import "vendor/bootstrap/scss/transitions";
-@import "vendor/bootstrap/scss/type";
-@import "vendor/bootstrap/scss/utilities";
+@import "vendor/bootstrap/accordion";
+@import "vendor/bootstrap/alert";
+@import "vendor/bootstrap/badge";
+@import "vendor/bootstrap/breadcrumb";
+@import "vendor/bootstrap/buttons";
+@import "vendor/bootstrap/button-group";
+@import "vendor/bootstrap/card";
+@import "vendor/bootstrap/carousel";
+@import "vendor/bootstrap/containers";
+@import "vendor/bootstrap/dropdown";
+@import "vendor/bootstrap/forms";
+@import "vendor/bootstrap/grid";
+@import "vendor/bootstrap/helpers";
+@import "vendor/bootstrap/images";
+@import "vendor/bootstrap/list-group";
+@import "vendor/bootstrap/modal";
+@import "vendor/bootstrap/nav";
+@import "vendor/bootstrap/navbar";
+@import "vendor/bootstrap/offcanvas";
+@import "vendor/bootstrap/pagination";
+@import "vendor/bootstrap/popover";
+@import "vendor/bootstrap/tables";
+@import "vendor/bootstrap/tooltip";
+@import "vendor/bootstrap/transitions";
+@import "vendor/bootstrap/type";
+@import "vendor/bootstrap/utilities";
 
 // Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
-@import "vendor/bootstrap/scss/utilities/api";
+@import "vendor/bootstrap/utilities/api";
 
 // Include variables
 @import "variables";

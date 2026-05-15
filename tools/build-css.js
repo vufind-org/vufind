@@ -264,7 +264,7 @@ function filesAreIdentical(aPath, bPath) {
   console.log(`  - ${bPath} size: ${bStats.size}`);
 
   if (aStats.size !== bStats.size) {
-    return Promise.reject();
+    return false;
   }
 
   // Chunked comparison
