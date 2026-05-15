@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "efac7bc1e8521003adbb5e278002d58a",
+    "content-hash": "a9df0c6796af3327d9ae9ebe68f21aa2",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -350,16 +350,16 @@
         },
         {
             "name": "colinmollenhour/credis",
-            "version": "v1.17.0",
+            "version": "v1.17.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/colinmollenhour/credis.git",
-                "reference": "f4930b426f6b1238b687a1ffe6ee5af7f835b40a"
+                "reference": "418f7031f31d1481c3ac19c918348e131bf8d3bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/f4930b426f6b1238b687a1ffe6ee5af7f835b40a",
-                "reference": "f4930b426f6b1238b687a1ffe6ee5af7f835b40a",
+                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/418f7031f31d1481c3ac19c918348e131bf8d3bf",
+                "reference": "418f7031f31d1481c3ac19c918348e131bf8d3bf",
                 "shasum": ""
             },
             "require": {
@@ -391,9 +391,9 @@
             "homepage": "https://github.com/colinmollenhour/credis",
             "support": {
                 "issues": "https://github.com/colinmollenhour/credis/issues",
-                "source": "https://github.com/colinmollenhour/credis/tree/v1.17.0"
+                "source": "https://github.com/colinmollenhour/credis/tree/v1.17.1"
             },
-            "time": "2025-02-10T18:58:46+00:00"
+            "time": "2026-03-03T06:50:28+00:00"
         },
         {
             "name": "composer/package-versions-deprecated",
@@ -11530,16 +11530,16 @@
         },
         {
             "name": "vstelmakh/url-highlight",
-            "version": "v3.1.3",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vstelmakh/url-highlight.git",
-                "reference": "fb9dfccb28c2ea1413a731f8c4fbffc75f5dd751"
+                "reference": "5e9ba63a8753361583a079d3107c888fb66338f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vstelmakh/url-highlight/zipball/fb9dfccb28c2ea1413a731f8c4fbffc75f5dd751",
-                "reference": "fb9dfccb28c2ea1413a731f8c4fbffc75f5dd751",
+                "url": "https://api.github.com/repos/vstelmakh/url-highlight/zipball/5e9ba63a8753361583a079d3107c888fb66338f1",
+                "reference": "5e9ba63a8753361583a079d3107c888fb66338f1",
                 "shasum": ""
             },
             "require": {
@@ -11583,9 +11583,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vstelmakh/url-highlight/issues",
-                "source": "https://github.com/vstelmakh/url-highlight/tree/v3.1.3"
+                "source": "https://github.com/vstelmakh/url-highlight/tree/v3.2.0"
             },
-            "time": "2025-10-04T18:51:40+00:00"
+            "time": "2026-04-14T19:58:01+00:00"
         },
         {
             "name": "vufind-org/vufind-marc",
@@ -12112,16 +12112,16 @@
         },
         {
             "name": "yajra/laravel-pdo-via-oci8",
-            "version": "v3.7.2",
+            "version": "v3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yajra/pdo-via-oci8.git",
-                "reference": "ae0f521edb8e65862b0972a66ef4a4d50974e09a"
+                "reference": "a18f7195fb7cbe5924d501b5a1837da6c05b52eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yajra/pdo-via-oci8/zipball/ae0f521edb8e65862b0972a66ef4a4d50974e09a",
-                "reference": "ae0f521edb8e65862b0972a66ef4a4d50974e09a",
+                "url": "https://api.github.com/repos/yajra/pdo-via-oci8/zipball/a18f7195fb7cbe5924d501b5a1837da6c05b52eb",
+                "reference": "a18f7195fb7cbe5924d501b5a1837da6c05b52eb",
                 "shasum": ""
             },
             "require": {
@@ -12156,7 +12156,7 @@
             "description": "PDO userspace driver proxying calls to PHP OCI8 driver",
             "support": {
                 "issues": "https://github.com/yajra/pdo-via-oci8/issues",
-                "source": "https://github.com/yajra/pdo-via-oci8/tree/v3.7.2"
+                "source": "https://github.com/yajra/pdo-via-oci8/tree/v3.7.3"
             },
             "funding": [
                 {
@@ -12172,7 +12172,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2025-09-24T14:47:33+00:00"
+            "time": "2025-12-17T07:09:38+00:00"
         }
     ],
     "packages-dev": [
