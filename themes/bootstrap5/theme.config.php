@@ -24,6 +24,7 @@ return [
          * - 'example.css:print' => same as
          *   ['file' => 'example.css', 'media' => 'print']
          */
+        ['file' => 'vendor/font-awesome/css/all.min.css'],
         ['file' => 'compiled.css'],
         ['file' => 'print.css', 'media' => 'print'],
     ],
