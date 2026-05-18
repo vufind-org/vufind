@@ -2122,6 +2122,32 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get Default Request Group.
+     *
+     * In FOLIO, this is equivalent to the fulfillment preference.
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return string A location ID
+     */
+    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    {
+        // circulation-storage.request-preferences.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
+        );
+        $requestPreferencesResponse = json_decode($response->getBody());
+        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
+        return $requestPreferences->fulfillment ?? 'Hold Shelf';
+    }
+
+    /**
      * Get list of address types from FOLIO.  Cache as needed.
      *
      * @return array An array mapping an address type id to its name.
