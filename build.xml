@@ -172,6 +172,7 @@
   <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
     <phingcall target="checkSassBuild"/>
+    <phingcall target="jsTranslationsCheck" />
   </target>
 
   <!-- Quality Assurance PHP Tasks -->
@@ -309,6 +310,13 @@
   <target name="checkSassBuild">
     <exec executable="npm" checkreturn="true" passthru="true">
       <arg line="run check:scss" />
+    </exec>
+  </target>
+
+  <!-- Check for inconsistencies in the Javascript translation layer -->
+  <target name="jsTranslationsCheck">
+    <exec executable="npm" checkreturn="true" passthru="true">
+      <arg line="run check:jsTranslations" />
     </exec>
   </target>
 
