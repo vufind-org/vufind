@@ -327,7 +327,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EDSModule'];
         $this->assertEquals(
             $eitConfig,
-            $results['permissions']['default.EDSModule']
+            $results['permissions']['default.EDSModuleAccess']
         );
 
         // EIT assertions:
