@@ -18,7 +18,8 @@ function waitForAjaxContentToLoad(fn) {
       ? window.location.hash.toLowerCase() : '';
     if (newTab.length <= 1 || newTab === '#tabnav') {
       // No tab hash, check for loading of the initial tab:
-      tabDone = initiallyActiveTab.classList.contains("active");
+      const tabLink = initiallyActiveTab.querySelector("a");
+      tabDone = tabLink && tabLink.classList.contains("active");
     } else {
       // Tab hash, check that the specified tab is active (if valid):
       var hashTab = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
@@ -80,7 +81,10 @@ VuFind.listen("ready", function triggerPrint() {
     // when the "test mode" cookie is set. This should never happen
     // under normal usage outside of the Phing startup process.
     if (document.cookie.indexOf('VuFindTestSuiteRunning=') > -1) {
-      console.log("Printing disabled due to test mode."); // eslint-disable-line no-console
+      const message = document.createElement("p");
+      message.classList.add("print-test-disabled-message");
+      message.textContent = "Printing disabled due to test mode.";
+      document.body.insertBefore(message, document.body.firstChild);
       return;
     }
 

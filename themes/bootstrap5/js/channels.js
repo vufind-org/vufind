@@ -127,7 +127,7 @@ VuFind.register("channels", function Channels() {
     if (!loadMoreBtn.getAttribute("data-enabled-label")) {
       loadMoreBtn.setAttribute("data-enabled-label", loadMoreBtn.getAttribute("aria-label"));
     }
-    loadMoreBtn.setAttribute("aria-label", VuFind.translate("loading"));
+    loadMoreBtn.setAttribute("aria-label", VuFind.translate("loading_ellipsis"));
   }
 
   /**
