@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Short link controller.
+ * Short link redirect action.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2019-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,31 +21,33 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\ShortLink;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Config;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\UrlShortener\UrlShortenerInterface;
 
 use function is_callable;
 use function strlen;
 
 /**
- * Short link controller.
+ * Short link redirect action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ShortlinkController extends AbstractBase
+class RedirectAction extends AbstractTemplateRenderingAction
 {
     /**
      * Amount of seconds after which HTML redirect is performed.
@@ -55,29 +57,19 @@ class ShortlinkController extends AbstractBase
     protected $redirectDelayHtml = 3;
 
     /**
-     * Which redirect mechanism to use (html, http, threshold:<urlLength>).
-     *
-     * @var string
-     */
-    protected $redirectMethod = 'threshold:1000';
-
-    /**
      * Constructor.
      *
-     * @param ServiceLocatorInterface $sm     Service manager
-     * @param Config                  $config VuFind configuration
+     * @param UrLShortenerInterface $shortener      URL shortener
+     * @param string                $redirectMethod Redirect mechanism to use
+     *                                              (html, http,
+     *                                              threshold:<urlLength>)
      */
-    public function __construct(ServiceLocatorInterface $sm, Config $config)
-    {
-        // Call standard record controller initialization:
-        parent::__construct($sm);
-
-        // Set redirect method, if specified:
-        if (isset($config->Mail->url_shortener_redirect_method)) {
-            $this->redirectMethod = strtolower(
-                trim($config->Mail->url_shortener_redirect_method)
-            );
-        }
+    public function __construct(
+        protected UrlShortenerInterface $shortener,
+        #[Autowire(config: 'config', path: 'Mail/url_shortener_redirect_method', default: 'threshold:1000')]
+        protected string $redirectMethod
+    ) {
+        parent::__construct();
     }
 
     /**
@@ -85,14 +77,15 @@ class ShortlinkController extends AbstractBase
      *
      * @param string $url Redirect target
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function redirectViaHtml($url)
+    protected function redirectViaHtml(string $url): ResponseInterface
     {
-        $view = $this->createViewModel();
-        $view->redirectTarget = $url;
-        $view->redirectDelay = $this->redirectDelayHtml;
-        return $view;
+        return $this->renderTemplate(
+            $this->request,
+            $this->response,
+            ['redirectTarget' => $url, 'redirectDelay' => $this->redirectDelayHtml]
+        );
     }
 
     /**
@@ -100,23 +93,27 @@ class ShortlinkController extends AbstractBase
      *
      * @param string $url Redirect target
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function redirectViaHttp($url)
+    protected function redirectViaHttp($url): ResponseInterface
     {
-        return $this->redirect()->toUrl($url);
+        return $this->getRedirectResponse($this->response, $url);
     }
 
     /**
      * Resolve full version of shortlink & redirect to target.
      *
-     * @return mixed
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function redirectAction()
-    {
-        if ($id = $this->params('id')) {
-            $resolver = $this->getService(UrlShortenerInterface::class);
-            if ($url = $resolver->resolve($id)) {
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        if ($id = $this->getRouteParam('id')) {
+            if ($url = $this->shortener->resolve($id)) {
                 $threshRegEx = '"^threshold:(\d+)$"i';
                 if (preg_match($threshRegEx, $this->redirectMethod, $hits)) {
                     $threshold = $hits[1];
@@ -132,7 +129,6 @@ class ShortlinkController extends AbstractBase
                 return $this->{'redirectVia' . $method}($url);
             }
         }
-
-        $this->getResponse()->setStatusCode(404);
+        return $this->renderNotFoundPage($request, $response);
     }
 }

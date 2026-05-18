@@ -68,6 +68,22 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, $this->activeRecordTabSelector)
         );
 
+        // Confirm "other versions" link on top of page works:
+        $this->clickCss($page, '.record-tabs #tab-button-holdings');
+        // wait for scrolling to tab
+        sleep(1);
+        $this->assertSame(
+            'Holdings',
+            $this->findCssAndGetText($page, $this->activeRecordTabSelector)
+        );
+        $this->clickCss($page, '.media-body .record-versions a');
+        // wait for scrolling to tab
+        sleep(1);
+        $this->assertSame(
+            'Other Versions (3)',
+            $this->findCssAndGetText($page, $this->activeRecordTabSelector)
+        );
+
         // Click the "see all versions" link:
         $this->clickCss($page, 'div.search-controls a.more-link');
 
