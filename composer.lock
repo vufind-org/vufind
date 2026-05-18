@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45275883f27b50898e322b74e149ccef",
+    "content-hash": "3cd9dc83bccaea585e455dac67ae2302",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -3209,16 +3209,16 @@
         },
         {
             "name": "laminas/laminas-captcha",
-            "version": "2.19.0",
+            "version": "2.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-captcha.git",
-                "reference": "768d2152f9687c27b5dfdb2322bf6001d48cda89"
+                "reference": "78905e9f4147142ed875a8a265a9c8a4da924600"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-captcha/zipball/768d2152f9687c27b5dfdb2322bf6001d48cda89",
-                "reference": "768d2152f9687c27b5dfdb2322bf6001d48cda89",
+                "url": "https://api.github.com/repos/laminas/laminas-captcha/zipball/78905e9f4147142ed875a8a265a9c8a4da924600",
+                "reference": "78905e9f4147142ed875a8a265a9c8a4da924600",
                 "shasum": ""
             },
             "require": {
@@ -3272,7 +3272,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-10-29T17:20:39+00:00"
+            "time": "2026-03-31T17:11:06+00:00"
         },
         {
             "name": "laminas/laminas-code",
@@ -3629,16 +3629,16 @@
         },
         {
             "name": "laminas/laminas-feed",
-            "version": "2.25.0",
+            "version": "2.26.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-feed.git",
-                "reference": "6299e8e2502ddedd0f39722f64079f2b709b86fa"
+                "reference": "8b651d72f2a4ce0df53e1999de3fe16c78e37a2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-feed/zipball/6299e8e2502ddedd0f39722f64079f2b709b86fa",
-                "reference": "6299e8e2502ddedd0f39722f64079f2b709b86fa",
+                "url": "https://api.github.com/repos/laminas/laminas-feed/zipball/8b651d72f2a4ce0df53e1999de3fe16c78e37a2c",
+                "reference": "8b651d72f2a4ce0df53e1999de3fe16c78e37a2c",
                 "shasum": ""
             },
             "require": {
@@ -3647,7 +3647,7 @@
                 "ext-libxml": "*",
                 "laminas/laminas-escaper": "^2.9",
                 "laminas/laminas-stdlib": "^3.6",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
             },
             "conflict": {
                 "laminas/laminas-servicemanager": "<3.3",
@@ -3706,7 +3706,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-08-04T22:21:52+00:00"
+            "time": "2026-03-03T09:55:19+00:00"
         },
         {
             "name": "laminas/laminas-filter",
@@ -3789,16 +3789,16 @@
         },
         {
             "name": "laminas/laminas-form",
-            "version": "3.23.0",
+            "version": "3.24.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-form.git",
-                "reference": "d901cff436516c38c89bdc5eb03b8f4172100214"
+                "reference": "92d46a8333ca428244cf8b647167477aefbbe891"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/d901cff436516c38c89bdc5eb03b8f4172100214",
-                "reference": "d901cff436516c38c89bdc5eb03b8f4172100214",
+                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/92d46a8333ca428244cf8b647167477aefbbe891",
+                "reference": "92d46a8333ca428244cf8b647167477aefbbe891",
                 "shasum": ""
             },
             "require": {
@@ -3884,28 +3884,28 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-11-07T22:41:15+00:00"
+            "time": "2026-01-12T14:20:53+00:00"
         },
         {
             "name": "laminas/laminas-http",
-            "version": "2.22.0",
+            "version": "2.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-http.git",
-                "reference": "5052177fb8176e00b0d4b89108648f557be072b7"
+                "reference": "9462fc84330d25b23383823831380abb33907fdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-http/zipball/5052177fb8176e00b0d4b89108648f557be072b7",
-                "reference": "5052177fb8176e00b0d4b89108648f557be072b7",
+                "url": "https://api.github.com/repos/laminas/laminas-http/zipball/9462fc84330d25b23383823831380abb33907fdd",
+                "reference": "9462fc84330d25b23383823831380abb33907fdd",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-loader": "^2.10",
                 "laminas/laminas-stdlib": "^3.6",
-                "laminas/laminas-uri": "^2.11",
+                "laminas/laminas-uri": "^2.14",
                 "laminas/laminas-validator": "^2.15 || ^3.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
             },
             "conflict": {
                 "zendframework/zend-http": "*"
@@ -3949,7 +3949,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-05-06T08:24:40+00:00"
+            "time": "2025-12-05T11:02:08+00:00"
         },
         {
             "name": "laminas/laminas-hydrator",
