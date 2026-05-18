@@ -132,7 +132,8 @@ class RecordDataFormatterFactory implements FactoryInterface
             $specPluginManager,
             $viewHelperManager->get('record'),
             $viewHelperManager->get('transEsc'),
-            $viewHelperManager->get('escapeHtml')
+            $viewHelperManager->get('escapeHtml'),
+            $viewHelperManager->get('component')
         );
     }
 

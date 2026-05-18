@@ -65,16 +65,18 @@ class RecordDataFormatter
     /**
      * Constructor.
      *
-     * @param SpecsManager $specsManager Specs plugin manager
-     * @param Record       $recordHelper Record view helper
-     * @param TransEsc     $transEsc     TransEsc view helper
-     * @param EscapeHtml   $escapeHtml   EscapeHtml view helper
+     * @param SpecsManager $specsManager    Specs plugin manager
+     * @param Record       $recordHelper    Record view helper
+     * @param TransEsc     $transEsc        TransEsc view helper
+     * @param EscapeHtml   $escapeHtml      EscapeHtml view helper
+     * @param Component    $componentHelper Component view helper
      */
     public function __construct(
         protected SpecsManager $specsManager,
         protected Record $recordHelper,
         protected TransEsc $transEsc,
-        protected EscapeHtml $escapeHtml
+        protected EscapeHtml $escapeHtml,
+        protected Component $componentHelper
     ) {
     }
 
@@ -170,6 +172,16 @@ class RecordDataFormatter
         // return it as-is (it probably came from renderMulti()).
         if (is_array($value)) {
             return $value;
+        }
+
+        if ($options['expandable'] ?? false) {
+            $value = ($this->componentHelper)(
+                'expandable-text',
+                [
+                    'id' => 'expandable-field-' . str_replace(' ', '-', $field),
+                    'text' => $value,
+                ]
+            );
         }
 
         // Allow dynamic label override:

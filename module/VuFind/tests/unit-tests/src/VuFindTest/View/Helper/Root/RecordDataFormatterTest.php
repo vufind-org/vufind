@@ -99,6 +99,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $context = new \VuFind\View\Helper\Root\Context($renderer);
 
+        $componentHelper = new \VuFind\View\Helper\Root\Component($renderer);
+
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $configHelper = new \VuFind\View\Helper\Root\Config($configManager);
         $configEntity = $configManager->getConfigObject('config');
@@ -175,6 +177,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         return [
             'assetManager' => $this->getAssetManager($renderer),
             'auth' => $auth,
+            'component' => $componentHelper,
             'context' => $context,
             'config' => $configHelper,
             'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context, $renderer),
@@ -402,7 +405,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $specManager,
             $helpers['record'],
             $helpers['transEsc'],
-            $helpers['escapeHtml']
+            $helpers['escapeHtml'],
+            $helpers['component']
         );
 
         return $formatter;

@@ -1,0 +1,23 @@
+<?php
+/**
+ * Component to show some text with a maximum height and a button to expand it.
+ *
+ * @param string $id   ID for expandable text
+ * @param string $text Text that should be expandable
+ */
+$escId = $this->escapeHtmlAttr($this->id);
+?>
+<div class="expandable-text" id="<?=$escId?>">
+  <?=$this->text?>
+</div>
+<button
+  class="btn btn-link expandable-text-button collapsed hidden"
+  type="button"
+  data-bs-toggle="collapse"
+  data-bs-target="#<?=$escId?>"
+  aria-expanded="false"
+  aria-controls="<?=$escId?>"
+>
+  <span class="expandable-text-btn-collapsed"><?=$this->transEsc('show more')?></span>
+  <span class="expandable-text-btn-show"><?=$this->transEsc('show less')?></span>
+</button>

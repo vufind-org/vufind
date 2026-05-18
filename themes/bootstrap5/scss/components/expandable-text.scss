@@ -1,0 +1,24 @@
+.expandable-text {
+  &.collapse:not(.show) {
+    display: block;
+    overflow: hidden;
+    height: 60px;
+  }
+
+  &.collapsing {
+    height: 60px;
+  }
+}
+
+.expandable-text-button {
+  border: 0;
+  padding: 0;
+
+  &.collapsed .expandable-text-btn-show {
+    display: none;
+  }
+
+  &:not(.collapsed) .expandable-text-btn-collapsed {
+    display: none;
+  }
+}
