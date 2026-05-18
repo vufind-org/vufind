@@ -247,7 +247,6 @@ VuFind.register("channels", function Channels() {
           clampLines(record.querySelector(".channel-item-title"));
         }
 
-      }).then(() => {
         enableLoadMoreBtn(btn);
       });
 
