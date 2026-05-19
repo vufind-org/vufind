@@ -147,7 +147,7 @@ class Folio extends AbstractAPI implements
     /**
      * Cache for request preference data (null if not yet populated).
      *
-     * @var ?object
+     * @var ?array
      */
     protected $requestPreferenceCache = null;
 
@@ -2102,8 +2102,8 @@ class Folio extends AbstractAPI implements
         $holdDetails = null
     ) {
         $requestPreference = $this->getRequestPreference($patron['id']);
-        $allowHoldShelf = $requestPreference->holdShelf ?? true;
-        $allowDelivery = ($requestPreference->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
+        $allowHoldShelf = $requestPreference['holdShelf'] ?? true;
+        $allowDelivery = ($requestPreference['delivery'] ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
@@ -2138,7 +2138,7 @@ class Folio extends AbstractAPI implements
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         $requestPreference = $this->getRequestPreference($patron['id']);
-        return $requestPreference?->fulfillment ?? 'Hold Shelf';
+        return $requestPreference['fulfillment'] ?? 'Hold Shelf';
     }
 
     /**
@@ -2146,9 +2146,9 @@ class Folio extends AbstractAPI implements
      *
      * @param string $userId The user's UUID
      *
-     * @return string A request fulfillment preference
+     * @return array An array containing several aspects of request preference
      */
-    protected function getRequestPreference(string $userId)
+    protected function getRequestPreference(string $userId): array
     {
         if ($this->requestPreferenceCache) {
             return $this->requestPreferenceCache;
@@ -2159,8 +2159,8 @@ class Folio extends AbstractAPI implements
             'GET',
             '/request-preference-storage/request-preference?query=userId==' . $userId
         );
-        $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreference = $requestPreferencesResponse->requestPreferences[0] ?? null;
+        $requestPreferencesResponse = json_decode($response->getBody(), true);
+        $requestPreference = $requestPreferencesResponse['requestPreferences'][0] ?? null;
 
         $this->requestPreferenceCache = $requestPreference;
         return $requestPreference;
