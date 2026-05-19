@@ -220,13 +220,16 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @param array $item Item's holding data.
      *
-     * @return array      Associative array with the keys 'prefix' and 'callnumber'
+     * @return array{
+     *     prefix: string,
+     *     callnumber: string,
+     * } Associative array with the keys 'prefix' and 'callnumber'
      */
     protected function getCallNumberArray(array $item): array
     {
         return [
             'prefix' => $item['callnumber_prefix'] ?? '',
-            'callnumber' => $item['callnumber'] ?? null,
+            'callnumber' => $item['callnumber'] ?? '',
         ];
     }
 
@@ -275,7 +278,17 @@ class GetItemStatuses extends AbstractBase implements
      * @param string $callnumberSetting The callnumber mode setting used for
      *                                  pickValue()
      *
-     * @return array                    Summarized availability information
+     * @return array{
+     *     id: string,
+     *     availability: string,
+     *     availability_message: string,
+     *     location: string,
+     *     locationList: bool,
+     *     reserve: string,
+     *     reserve_message: string,
+     *     callnumberHtml: string,
+     *     getThisURI: string,
+     * } Summarized availability information
      */
     protected function getItemStatus(
         $record,
@@ -338,7 +351,7 @@ class GetItemStatuses extends AbstractBase implements
 
         // Send back the collected details:
         return [
-            'id' => $record[0]['id'] ?? null,
+            'id' => $record[0]['id'] ?? '',
             'availability' => $combinedAvailability->availabilityAsString(),
             'availability_message' => $availabilityMessage,
             'location' => implode(",\t", $location),

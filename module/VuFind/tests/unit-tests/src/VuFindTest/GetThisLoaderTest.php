@@ -175,7 +175,7 @@ class GetThisLoaderTest extends TestCase
         $this->getThis->setItems(self::getItems());
         $this->assertEquals(self::getItems(), $this->getThis->getItems());
         $this->assertEquals(1, $this->getThis->getItem()['item_id']);
-        $this->getThis->setItemId('2');
+        $this->getThis->setDefaultItemId('2');
         $this->assertEquals(2, $this->getThis->getItem()['item_id']);
         $this->assertEquals(1, $this->getThis->getItem('1')['item_id']);
     }
@@ -415,7 +415,8 @@ class GetThisLoaderTest extends TestCase
         // This function is not intended for use as a condition function
         // It requires parameter
         // It is used only for the sake of generating an Exception
-        $config['templates']['holdings']['condition_function'] = 'isConditionsAnd';
+        unset($config['templates']['holdings']['condition_function']);
+        $config['templates']['holdings']['condition_group'] = 'wrong';
         $this->setGetThisConfig($config);
 
         $this->expectException(Exception::class);
@@ -510,11 +511,11 @@ class GetThisLoaderTest extends TestCase
         $item = $this->getThis->getItem('2');
         $this->assertEquals($item, self::getItems()[1]);
 
-        $this->getThis->setItemId('5');
+        $this->getThis->setDefaultItemId('5');
         $item = $this->getThis->getItem();
         $this->assertEquals($item, self::getItems()[2]);
 
-        $this->getThis->setItemId(null);
+        $this->getThis->setDefaultItemId(null);
         $item = $this->getThis->getItem();
         $this->assertEquals($item, self::getItems()[0]);
     }

@@ -1,9 +1,9 @@
 <?php
-if ($callNumberData = $this->getThis->getCallNumber()) {
-    $rawCallNumber = $callNumberData['text'] ?? '';
+// If we have a non-empty call number, we translate it if needed
+if (($callNumberData = $this->getThis->getCallNumber()) && !empty($rawCallNumber = $callNumberData['text'] ?? '')) {
     $callNumber = ($callNumberData['translate'] ?? false) ? $this->transEsc($rawCallNumber) : $this->escapeHtml($rawCallNumber);
 } else {
-    $callNumber = $this->transEsc('data_unavailable');
+    $callNumber = $this->transEsc('No call number');
 }
 ?>
 <div>

@@ -5,11 +5,25 @@
  *
  * PHP version 8
  *
+ * Copyright (C) Michigan State University Board of Trustees 2025.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <https://www.gnu.org/licenses/>
+ *
  * @category VuFind
  * @package  GetThis
  * @author   MSUL Public Catalog Team <LIB.DL.pubcat@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/vufind/ Main page
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\GetThis;
@@ -48,11 +62,11 @@ class GetThisLoader implements LoggerAwareInterface
     protected $items;
 
     /**
-     * Id for holding item to default to when no id is passed.
+     * Holding item id to use when none is passed.
      *
      * @var ?string
      */
-    protected $itemId;
+    protected $defaultItemId;
 
     /**
      * Sub-templates to display.
@@ -99,9 +113,8 @@ class GetThisLoader implements LoggerAwareInterface
         if (str_starts_with($function, '!')) {
             $function = substr($function, 1);
             return method_exists($this, $function) && !call_user_func([$this, $function]);
-        } else {
-            return method_exists($this, $function) && call_user_func([$this, $function]);
         }
+        return method_exists($this, $function) && call_user_func([$this, $function]);
     }
 
     /**
@@ -112,7 +125,7 @@ class GetThisLoader implements LoggerAwareInterface
      * @return bool
      * @throws Exception
      */
-    protected function isConditionsAnd(array $conditions): bool
+    protected function doConditionsContainAnd(array $conditions): bool
     {
         foreach ($conditions as $condition) {
             if (isset($condition['operator']) && $condition['operator'] === 'and') {
@@ -132,21 +145,24 @@ class GetThisLoader implements LoggerAwareInterface
      */
     protected function loopThroughConditionBlock(array $conditions): bool
     {
-        $previousResult = null;
-        $result = null;
-        $and = $this->isConditionsAnd($conditions);
+        $result = false; // default to false if no conditions are found
+        $and = $this->doConditionsContainAnd($conditions);
         foreach ($conditions as $condition) {
             if (isset($condition['operator'])) {
                 continue;
-            } else {
-                $result = $this->areConditionsFilled($condition);
             }
-            if ($previousResult !== null && ($previousResult === true || $result === true) && $and === false) {
+            $result = $this->areConditionsFilled($condition);
+            // Any false result in AND mode means an overall false:
+            if ($and === true && $result === false) {
+                return false;
+            }
+            // Any true result in OR mode means an overall true:
+            if ($and === false && $result === true) {
                 return true;
             }
-            $previousResult = $result;
         }
-        return $result || $previousResult;
+        // If we got this far, the most recent result is the overall result:
+        return $result;
     }
 
     /**
@@ -262,8 +278,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Return the template parameters in the config for the given template or all of them if none
-     * passed.
+     * Return the template parameters in the config for the given template or all of them if none passed.
      *
      * @param ?string $templateName Template name you want the params for
      *
@@ -280,8 +295,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the status for a holding item.
      *
-     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
-     *                        item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first item.
      *
      * @return string The status string
      */
@@ -418,7 +432,7 @@ class GetThisLoader implements LoggerAwareInterface
         }
 
         return empty($callNumber) ? null : [
-            'text' => $callNumber,
+            'text' => trim($callNumber),
             'translate' => false,
         ];
     }
@@ -640,7 +654,7 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function showInterLibrary(?string $itemId = null): bool
     {
-        $itemId = $this->getItemId($itemId);
+        $itemId = $this->getDefaultItemId($itemId);
         $haystack = [];
         if ($location = $this->getLocation($itemId)) {
             $haystack[] = $location;
@@ -712,12 +726,12 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return ?string $itemId for the selected item
      */
-    protected function getItemId(?string $itemId = null): ?string
+    protected function getDefaultItemId(?string $itemId = null): ?string
     {
         if (isset($itemId)) {
             return $itemId; // Use the one passed as a parameter first
-        } elseif (isset($this->itemId)) {
-            return $this->itemId; // Get the one set by the loader
+        } elseif (isset($this->defaultItemId)) {
+            return $this->defaultItemId; // Get the one set by the loader
         } elseif (is_array($this->items) && isset(current($this->items)['item_id'])) {
             return current($this->items)['item_id']; // Grab the first holding record
         } else {
@@ -737,7 +751,7 @@ class GetThisLoader implements LoggerAwareInterface
     public function getItem(?string $itemId = null): ?array
     {
         $item = null;
-        $itemId = $this->getItemId($itemId);
+        $itemId = $this->getDefaultItemId($itemId);
         foreach ($this->getItems() as $hold_item) {
             if (isset($hold_item['item_id']) && $hold_item['item_id'] == $itemId) {
                 $item = $hold_item;
@@ -750,13 +764,13 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Setter for itemId.
      *
-     * @param ?string $itemId Item id of the holding for the record
+     * @param ?string $defaultItemId Item id of the holding for the record
      *
      * @return void
      */
-    public function setItemId(?string $itemId): void
+    public function setDefaultItemId(?string $defaultItemId): void
     {
-        $this->itemId = $itemId;
+        $this->defaultItemId = $defaultItemId;
     }
 
     /**
