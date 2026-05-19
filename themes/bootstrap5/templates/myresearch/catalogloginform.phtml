@@ -6,6 +6,8 @@
 
     // We should show the account menu unless it's been switched off or we're in the lightbox:
     $showMenu = ($this->showMenu ?? false) && !$this->inLightbox;
+
+    $loginSettings = $this->config()->getILSLoginSettings();
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
@@ -21,26 +23,26 @@
     </p>
     <p><?=$this->transEsc('cat_establish_account')?></p>
     <form method="post" action="<?=$this->serverUrl(true)?>" class="form-catalog-login">
-      <?php if ($this->targets !== null): ?>
+      <?php if ($loginSettings['targets'] !== null): ?>
         <div class="form-group">
           <label class="form-label" for="profile_cat_target"><?=$this->transEsc('login_target')?>:</label>
           <select id="profile_cat_target" name="target" class="form-select">
-            <?php foreach ($this->targets as $target): ?>
+            <?php foreach ($loginSettings['targets'] as $target): ?>
               <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target === $this->defaultTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
             <?php endforeach; ?>
           </select>
         </div>
       <?php endif; ?>
       <div class="form-group">
-        <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
+        <?php if (null === $loginSettings['loginMethod'] || 'password' === $loginSettings['loginMethod']): ?>
           <label class="form-label password-login" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
         <?php endif; ?>
-        <?php if (null === $this->loginMethod || 'email' === $this->loginMethod): ?>
-          <label class="form-label email-login<?php if (null === $this->loginMethod): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
+        <?php if (null === $loginSettings['loginMethod'] || 'email' === $loginSettings['loginMethod']): ?>
+          <label class="form-label email-login<?php if (null === $loginSettings['loginMethod']): ?> hidden<?php endif; ?>" for="profile_cat_username"><?=$this->transEsc('Email')?>:</label>
         <?php endif; ?>
-        <input id="profile_cat_username" type="<?='email' === $this->loginMethod ? 'email' : 'text'?>" name="cat_username" value="" class="form-control" autocomplete="<?='email' === $this->loginMethod ? 'email' : 'username'?>">
+        <input id="profile_cat_username" type="<?='email' === $loginSettings['loginMethod'] ? 'email' : 'text'?>" name="cat_username" value="" class="form-control" autocomplete="<?='email' === $loginSettings['loginMethod'] ? 'email' : 'username'?>">
       </div>
-      <?php if (null === $this->loginMethod || 'password' === $this->loginMethod): ?>
+      <?php if (null === $loginSettings['loginMethod'] || 'password' === $loginSettings['loginMethod']): ?>
         <div class="form-group">
           <label class="form-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
           <input id="profile_cat_password" type="password" name="cat_password" value="" class="form-control" autocomplete="current-password">
@@ -60,8 +62,8 @@
     </div>
   <?php endif; ?>
   <?php
-    if (null !== $this->targets) {
-      $methods = json_encode($this->loginMethods);
+    if (null !== $loginSettings['targets']) {
+      $methods = json_encode($loginSettings['loginMethods']);
       $script = "setupMultiILSLoginFields($methods, 'profile_cat_');";
 
       // Inline the script for lightbox compatibility

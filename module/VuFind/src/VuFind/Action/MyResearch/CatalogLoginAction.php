@@ -72,11 +72,9 @@ class CatalogLoginAction extends AbstractTemplateRenderingAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $loginHelper = $this->getHelper(LoginHelper::class);
         if (!$this->authManager->getUserObject()) {
-            return $loginHelper->forceLogin($request, $response);
+            return $this->getHelper(LoginHelper::class)->forceLogin($request, $response);
         }
-        $loginSettings = $loginHelper->getILSLoginSettings();
-        return $this->renderTemplate($request, $response, $loginSettings);
+        return $this->renderTemplate($request, $response);
     }
 }
