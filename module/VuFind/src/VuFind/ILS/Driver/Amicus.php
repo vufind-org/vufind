@@ -553,7 +553,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @param string $lname   The patron's password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array         Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($barcode, $lname)

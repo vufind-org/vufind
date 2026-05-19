@@ -63,7 +63,8 @@ abstract class AbstractMakeTagTestCase extends \PHPUnit\Framework\TestCase
             ->with(
                 $this->callback(
                     function ($helper) use ($helpers) {
-                        return isset($helpers[strtolower($helper)]);
+                        $this->assertArrayHasKey(strtolower($helper), $helpers);
+                        return true;
                     }
                 )
             )

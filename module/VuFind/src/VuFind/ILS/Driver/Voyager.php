@@ -1241,7 +1241,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @param string $login    The patron's last name or PIN (depending on config)
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $login)
