@@ -2133,7 +2133,7 @@ class Folio extends AbstractAPI implements
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
-     * @return string A location ID
+     * @return string A fulfillment preference
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
@@ -2144,7 +2144,7 @@ class Folio extends AbstractAPI implements
         );
         $requestPreferencesResponse = json_decode($response->getBody());
         $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
-        return $requestPreferences->fulfillment ?? 'Hold Shelf';
+        return $requestPreferences?->fulfillment ?? 'Hold Shelf';
     }
 
     /**
