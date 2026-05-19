@@ -203,7 +203,7 @@ class RenewalsHelperTest extends TestCase
             ->method('addSuccessMessage')
             ->with(
                 $this->callback(
-                    fn ($arg) => is_array($arg)
+                    fn (string|array $arg) => is_array($arg)
                         && ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 2)
                 )
             );
@@ -249,7 +249,7 @@ class RenewalsHelperTest extends TestCase
             ->method('addErrorMessage')
             ->with(
                 $this->callback(
-                    fn ($arg) => is_array($arg)
+                    fn (string|array $arg) => is_array($arg)
                         && ($arg['msg'] === 'renew_error_summary' && $arg['tokens']['count'] === 3)
                 )
             );
