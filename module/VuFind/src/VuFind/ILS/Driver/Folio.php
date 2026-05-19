@@ -2127,16 +2127,15 @@ class Folio extends AbstractAPI implements
      *
      * In FOLIO, this is equivalent to the fulfillment preference.
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
-     * @return string A fulfillment preference
+     * @return false|string       The default request group for the patron.
      */
-    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         $requestPreference = $this->getRequestPreference($patron['id']);
         return $requestPreference?->fulfillment ?? 'Hold Shelf';
