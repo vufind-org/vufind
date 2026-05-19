@@ -671,14 +671,13 @@ class MultiBackend extends AbstractMultiDriver
      *
      * Returns the default request group
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
-     * @return string A location ID
+     * @return false|string       The default request group for the patron.
      */
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
@@ -1031,7 +1030,7 @@ class MultiBackend extends AbstractMultiDriver
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

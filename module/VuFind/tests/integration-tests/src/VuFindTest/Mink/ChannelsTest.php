@@ -451,4 +451,26 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount(54, $allItems);
         $this->assertCount(54, $allIds);
     }
+
+    /**
+     * Test loading channels in the Similar Items tab.
+     *
+     * @return void
+     */
+    public function testSimilarItemsTab(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Record/geo20001');
+        $page = $session->getPage();
+        // No channel entries before opening tab:
+        $this->assertCount(0, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        // Switch to tab:
+        $this->clickCss($page, '.record-tab.channels a');
+        $this->waitForPageLoad($page);
+        // There should be one row of results:
+        $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        // Add more results and confirm they loaded:
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
 }
