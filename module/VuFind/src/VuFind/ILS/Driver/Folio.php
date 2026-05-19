@@ -1975,10 +1975,17 @@ class Folio extends AbstractAPI implements
         if ('Delivery' == ($holdInfo['requestGroupId'] ?? null)) {
             $addressTypes = $this->getAddressTypes();
             $limitDeliveryAddressTypes = $this->config['Holds']['limitDeliveryAddressTypes'] ?? [];
+            $requestPreference = $this->getRequestPreference($patron['id']);
+            $defaultDeliveryAddressTypeId = $requestPreference['defaultDeliveryAddressTypeId'] ?? null;
             $deliveryPickupLocations = [];
             foreach ($patron['addressTypeIds'] as $addressTypeId) {
                 $addressType = $addressTypes[$addressTypeId];
-                if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
+                if (
+                    empty($limitDeliveryAddressTypes)
+                    || in_array($addressType, $limitDeliveryAddressTypes)
+                    || ($defaultDeliveryAddressTypeId == $addressTypeId
+                        && in_array('DEFAULT', $limitDeliveryAddressTypes))
+                ) {
                     $deliveryPickupLocations[] = [
                         'locationID' => $addressTypeId,
                         'locationDisplay' => $addressType,
@@ -2043,6 +2050,26 @@ class Folio extends AbstractAPI implements
             ];
         }
         return $locations;
+    }
+
+    protected ?array $requestPreferenceCache = null;
+
+    protected function getRequestPreference(string $userId): array
+    {
+        if ($this->requestPreferenceCache) {
+            return $this->requestPreferenceCache;
+        }
+
+        // circulation-storage.request-preferences.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/request-preference-storage/request-preference?query=userId==' . $userId
+        );
+        $requestPreferencesResponse = json_decode($response->getBody(), true);
+        $requestPreference = $requestPreferencesResponse['requestPreferences'][0] ?? null;
+
+        $this->requestPreferenceCache = $requestPreference;
+        return $requestPreference;
     }
 
     /**
