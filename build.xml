@@ -317,16 +317,6 @@
     </exec>
   </target>
 
-  <!-- Run LessToSass, error if there are uncommitted changes (used by continuous integration) -->
-  <target name="checkLessToSass">
-    <exec executable="npm" checkreturn="true" passthru="true">
-      <arg line="run lessToSass" />
-    </exec>
-    <exec executable="git" checkreturn="true" passthru="true">
-      <arg line="diff --exit-code *.scss" />
-    </exec>
-  </target>
-
   <!-- PHP API Documentation -->
   <target name="phpdoc">
     <!-- Skip the whole phpdoc task when disabled -->
