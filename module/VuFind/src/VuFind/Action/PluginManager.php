@@ -56,6 +56,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'myresearch\cataloglogin' => MyResearch\CatalogLoginAction::class,
     ];
 
     /**
@@ -66,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $categoryAliases = [
+        'Myresearch' => 'MyResearch',
         'Shortlink' => 'ShortLink',
     ];
 

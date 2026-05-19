@@ -167,8 +167,8 @@
         </ul>
       <?php endforeach; ?>
     <?php endif; ?>
-  <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
-    <?=$this->partial($this->patronLoginView);?>
+  <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->showCatalogLoginForm): ?>
+    <?=$this->render('myresearch/catalogloginform.phtml')?>
   <?php endif; ?>
 
   <?php if ($this->developerSettings()->isEnabled()): ?>

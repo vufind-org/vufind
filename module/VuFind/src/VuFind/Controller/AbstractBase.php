@@ -30,11 +30,14 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Router\RouteMatch;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Action\ActionDispatchListener;
 use VuFind\Auth\UserSessionPersistenceInterface;
 use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\Feature\EmailSettingsTrait;
@@ -369,14 +372,14 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Does the user have catalog credentials available?  Returns associative array
-     * of patron data if so, otherwise forwards to appropriate login prompt and
-     * returns false. If there is an ILS exception, a flash message is added and
-     * a newly created ViewModel is returned.
+     * Does the user have catalog credentials available? Returns associative array of patron data if so, or a response
+     * if redirect is needed. Otherwise returns null. If there is an ILS exception, a flash message is added.
      *
-     * @return bool|array|ViewModel
+     * @param bool $forwardToCatalogLogin Forward to catalog login if not logged in?
+     *
+     * @return null|array|Response
      */
-    protected function catalogLogin()
+    protected function catalogLogin(bool $forwardToCatalogLogin = true): null|array|Response
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
@@ -453,17 +456,17 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                 $patron = $ilsAuth->storedCatalogLogin();
             } catch (ILSException $e) {
                 $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
-                return $this->createViewModel();
+                return null;
             }
         }
 
         // If catalog login failed, send the user to the right page:
-        if (!$patron) {
+        if (!$patron && $forwardToCatalogLogin) {
             return $this->forwardTo('MyResearch', 'CatalogLogin');
         }
 
-        // Send value (either false or patron array) back to caller:
-        return $patron;
+        // Send either null or patron array back to caller:
+        return $patron ?: null;
     }
 
     /**
@@ -574,6 +577,22 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function forwardTo($controller, $action, $params = [])
     {
+        // Check for action first before forwarding to a controller:
+        $event = clone $this->getEvent();
+        $routeMatch = new RouteMatch($params);
+        $routeMatch->setParam('controller', $controller);
+        $routeMatch->setParam('action', $action);
+        // Keep original matched route:
+        $routeMatch->setMatchedRouteName($event->getRouteMatch()->getMatchedRouteName());
+        $event->setRouteMatch($routeMatch);
+
+        $actionDispatchListener = $this->getService(ActionDispatchListener::class);
+        if ($result = $actionDispatchListener->onDispatch($event)) {
+            return $result;
+        }
+
+        // No action found, forward to controller:
+
         // Inject action into the RouteMatch parameters
         $params['action'] = $action;
 

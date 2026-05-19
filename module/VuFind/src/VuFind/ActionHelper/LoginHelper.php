@@ -142,18 +142,19 @@ class LoginHelper implements HelperInterface
     }
 
     /**
-     * Does the user have catalog credentials available? Returns associative array of patron data if so, otherwise
-     * forwards to appropriate login prompt and returns the response from it. If there is an ILS exception, a
-     * flash message is added and null is returned.
+     * Does the user have catalog credentials available? Returns associative array of patron data if so, or a response
+     * if redirect is needed. Otherwise returns null. If there is an ILS exception, a flash message is added.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param ResponseInterface      $response Response
+     * @param ServerRequestInterface $request               Request
+     * @param ResponseInterface      $response              Response
+     * @param bool                   $forwardToCatalogLogin Forward to catalog login if not logged in?
      *
      * @return array|ResponseInterface|null
      */
     public function catalogLogin(
         ServerRequestInterface $request,
         ResponseInterface $response,
+        bool $forwardToCatalogLogin = true
     ): array|ResponseInterface|null {
         // First make sure user is logged in to VuFind:
         if (!($user = $this->authManager->getUserObject())) {
@@ -163,7 +164,6 @@ class LoginHelper implements HelperInterface
         // Now check if the user has provided credentials with which to log in:
         $patron = null;
         $postParams = $request->getParsedBody();
-        $queryParams = $request->getQueryParams();
         if (
             ($username = $postParams['cat_username'] ?? null)
             && ($password = $postParams['cat_password'] ?? null)
@@ -225,12 +225,12 @@ class LoginHelper implements HelperInterface
         }
 
         // If catalog login failed, send the user to the right page:
-        if (!$patron) {
+        if (!$patron && $forwardToCatalogLogin) {
             return $this->forwardHelper->forwardTo($request, $response, 'myresearch/cataloglogin');
         }
 
-        // Send patron array back to caller:
-        return $patron;
+        // Send either null or patron array back to caller:
+        return $patron ?? null;
     }
 
     /**
@@ -247,6 +247,30 @@ class LoginHelper implements HelperInterface
             ['patron' => ['cat_username' => "$target.login"]]
         );
         return $config['loginMethod'] ?? 'password';
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form.
+     *
+     * @return array
+     */
+    public function getILSLoginSettings(): array
+    {
+        $targets = null;
+        $defaultTarget = null;
+        $loginMethod = null;
+        $loginMethods = [];
+        // Connect to the ILS and check if multiple target support is available:
+        if ($this->ils->checkCapability('getLoginDrivers')) {
+            $targets = $this->ils->getLoginDrivers();
+            $defaultTarget = $this->ils->getDefaultLoginDriver();
+            foreach ($targets as $t) {
+                $loginMethods[$t] = $this->getILSLoginMethod($t);
+            }
+        } else {
+            $loginMethod = $this->getILSLoginMethod();
+        }
+        return compact('targets', 'defaultTarget', 'loginMethod', 'loginMethods');
     }
 
     /**
