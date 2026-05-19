@@ -923,7 +923,7 @@ class GetThisLoaderTest extends TestCase
         $regex = $this->createMock(Regex::class);
 
         $container = $this->createMock(MockContainer::class);
-        $container->method('get')->willReturnMap([
+        $container->expects($this->exactly(2))->method('get')->willReturnMap([
             [Regex::class, $regex],
             [YamlReader::class, $yaml],
         ]);
