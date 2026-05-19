@@ -145,6 +145,13 @@ class Folio extends AbstractAPI implements
     protected $courseCache = null;
 
     /**
+     * Cache for request preference data (null if not yet populated).
+     *
+     * @var ?object
+     */
+    protected $requestPreferenceCache = null;
+
+    /**
      * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -2094,15 +2101,9 @@ class Folio extends AbstractAPI implements
         $patron = null,
         $holdDetails = null
     ) {
-        // circulation-storage.request-preferences.collection.get
-        $response = $this->makeRequest(
-            'GET',
-            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
-        );
-        $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
-        $allowHoldShelf = $requestPreferences->holdShelf ?? true;
-        $allowDelivery = ($requestPreferences->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        $allowHoldShelf = $requestPreference->holdShelf ?? true;
+        $allowDelivery = ($requestPreference->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
@@ -2137,14 +2138,33 @@ class Folio extends AbstractAPI implements
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
     {
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        return $requestPreference?->fulfillment ?? 'Hold Shelf';
+    }
+
+    /**
+     * Retrieve and cache the request preference.
+     *
+     * @param string $userId The user's UUID
+     *
+     * @return string A request fulfillment preference
+     */
+    protected function getRequestPreference(string $userId)
+    {
+        if ($this->requestPreferenceCache) {
+            return $this->requestPreferenceCache;
+        }
+
         // circulation-storage.request-preferences.collection.get
         $response = $this->makeRequest(
             'GET',
-            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
+            '/request-preference-storage/request-preference?query=userId==' . $userId
         );
         $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
-        return $requestPreferences?->fulfillment ?? 'Hold Shelf';
+        $requestPreference = $requestPreferencesResponse->requestPreferences[0] ?? null;
+
+        $this->requestPreferenceCache = $requestPreference;
+        return $requestPreference;
     }
 
     /**
