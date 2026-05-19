@@ -1507,4 +1507,17 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * Test getDefaultRequestGroup with a user UUID-based lookup.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    public function testGetDefaultRequestGroup(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $this->createConnector('get-request-preference', $driverConfig);
+        $this->assertEquals('Delivery', $this->driver->getDefaultRequestGroup(['id' => 'whatever']));
+    }
 }
