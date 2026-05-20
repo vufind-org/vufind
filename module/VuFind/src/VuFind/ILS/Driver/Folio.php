@@ -2171,12 +2171,12 @@ class Folio extends AbstractAPI implements
         foreach ($addresses as $address) {
             if ($addressTypeId == $address->addressTypeId) {
                 $tokens = [
-                    '%%type%%' => $addressType,
-                    '%%line1%%' => $address?->addressLine1 ?? '',
-                    '%%line2%%' => $address?->addressLine2 ?? '',
-                    '%%city%%' => $address?->city ?? '',
+                    'type' => $addressType,
+                    'line1' => $address?->addressLine1 ?: 'EMPTY',
+                    'line2' => $address?->addressLine2 ?: 'EMPTY',
+                    'city' => $address?->city ?: 'EMPTY',
                 ];
-                return $this->translate('pick_up_location_delivery_address_format', $tokens);
+                return $this->translate('pick_up_location_delivery_address_format', $tokens, null, true);
             }
         }
         return $addressType;
