@@ -1975,16 +1975,17 @@ class Folio extends AbstractAPI implements
         if ('Delivery' == ($holdInfo['requestGroupId'] ?? null)) {
             $addressTypes = $this->getAddressTypes();
             $limitDeliveryAddressTypes = $this->config['Holds']['limitDeliveryAddressTypes'] ?? [];
-            $requestPreference = $this->getRequestPreference($patron['id']);
-            $defaultDeliveryAddressTypeId = $requestPreference['defaultDeliveryAddressTypeId'] ?? null;
+            if (in_array('DEFAULT', $limitDeliveryAddressTypes)) {
+                $requestPreference = $this->getRequestPreference($patron['id']);
+                $defaultDeliveryAddressTypeId = $requestPreference['defaultDeliveryAddressTypeId'] ?? null;
+            }
             $deliveryPickupLocations = [];
             foreach ($patron['addressTypeIds'] as $addressTypeId) {
                 $addressType = $addressTypes[$addressTypeId];
                 if (
                     empty($limitDeliveryAddressTypes)
                     || in_array($addressType, $limitDeliveryAddressTypes)
-                    || ($defaultDeliveryAddressTypeId == $addressTypeId
-                        && in_array('DEFAULT', $limitDeliveryAddressTypes))
+                    || ($defaultDeliveryAddressTypeId ?? null) == $addressTypeId
                 ) {
                     $deliveryPickupLocations[] = [
                         'locationID' => $addressTypeId,
