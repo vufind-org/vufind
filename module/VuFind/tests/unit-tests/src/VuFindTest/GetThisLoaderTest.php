@@ -86,7 +86,7 @@ class GetThisLoaderTest extends TestCase
     /**
      * Getter for the loader.
      *
-     * @param ?array $config
+     * @param ?array $config Config to use instead of default
      *
      * @return GetThisLoader
      */
