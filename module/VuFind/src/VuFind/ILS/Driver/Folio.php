@@ -2150,7 +2150,7 @@ class Folio extends AbstractAPI implements
      */
     protected function getRequestPreference(string $userId): array
     {
-        if ($requestPreference = ($this->requestPreferenceCache[$userId] ?? false)) {
+        if ($requestPreference = ($this->requestPreferenceCache[$userId] ?? null)) {
             return $requestPreference;
         }
 
