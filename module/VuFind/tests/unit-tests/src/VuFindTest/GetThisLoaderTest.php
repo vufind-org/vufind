@@ -20,7 +20,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
-use ReflectionClass;
 use ReflectionException;
 use Throwable;
 use VuFind\Config\YamlReader;
