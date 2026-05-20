@@ -1982,7 +1982,7 @@ class Folio extends AbstractAPI implements
                 if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
                     $deliveryPickupLocations[] = [
                         'locationID' => $addressTypeId,
-                        'locationDisplay' => $this->getDeliveryAddressDisplay(
+                        'locationDisplay' => $this->formatDeliveryAddress(
                             $addressTypeId,
                             $addressType,
                             $patron['addresses'] ?? []
@@ -2162,7 +2162,7 @@ class Folio extends AbstractAPI implements
      *
      * @return string The display-formatted address
      */
-    protected function getDeliveryAddressDisplay(string $addressTypeId, string $addressType, array $addresses): string
+    protected function formatDeliveryAddress(string $addressTypeId, string $addressType, array $addresses): string
     {
         if (!($this->config['Holds']['formatDeliveryAddressTypes'] ?? false)) {
             return $addressType;
