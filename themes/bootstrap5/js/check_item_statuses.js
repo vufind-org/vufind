@@ -60,11 +60,11 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           callnumber.textContent = '';
         }
       });
-      el.querySelectorAll('.getThis').forEach((link) => {
+      el.querySelectorAll('.getThis').forEach((getThisContainer) => {
         if (result.getThisURI) {
-          link.getElementsByTagName('a')[0].href = result.getThisURI;
+          getThisContainer.getElementsByTagName('a')[0].href = result.getThisURI;
         } else {
-          link.textContent = '';
+          getThisContainer.remove();
         }
       });
       el.querySelectorAll('.location').forEach((location) => {

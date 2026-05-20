@@ -19,8 +19,10 @@ use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerExceptionInterface;
 use ReflectionClass;
 use ReflectionException;
+use Throwable;
 use VuFind\Config\YamlReader;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\GetThis\GetThisLoaderFactory;
@@ -55,51 +57,45 @@ class GetThisLoaderTest extends TestCase
     protected YamlReader $yamlReader;
 
     /**
-     * GetThis config.
+     * GetThis base config.
      *
      * @var array
      */
-    protected array $config;
+    protected array $baseConfig;
 
     /**
-     * Loader itself.
+     * GetThis regex config.
      *
-     * @var GetThisLoader
+     * @var array
      */
-    protected GetThisLoader $getThis;
+    protected array $regexConfig;
 
     /**
      * Test setUp function, before every test.
      *
      * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function setUp(): void
     {
-        $this->yamlReader = new YamlReader($this->getPathResolver());
-        $this->config = $this->yamlReader->get('GetThis.yaml');
-        $regexConfig = $this->yamlReader->get('Regex.yaml');
-        $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
-        $this->getThis = new GetThisLoader(
-            $this->config,
-            new Regex($regexConfig)
-        );
+        $yamlReader = new YamlReader($this->getPathResolver());
+        $this->baseConfig = $yamlReader->get('GetThis.yaml');
+        $this->regexConfig = $yamlReader->get('Regex.yaml');
+        $this->regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
     }
 
     /**
-     * Using reflection class replace current GetThis config.
+     * Getter for the loader.
      *
-     * @param array $config Config to set
+     * @param ?array $config
      *
-     * @return void
+     * @return GetThisLoader
      */
-    public function setGetThisConfig(array $config): void
+    public function getGetThis(?array $config = null): GetThisLoader
     {
-        try {
-            $this->setProperty($this->getThis, 'config', $config);
-        } catch (ReflectionException $e) {
-            die('Reflection exception when trying to set the config: ' . $e->getMessage());
-        }
+        return new GetThisLoader(
+            $config ?? $this->baseConfig,
+            new Regex($this->regexConfig)
+        );
     }
 
     /**
@@ -109,11 +105,7 @@ class GetThisLoaderTest extends TestCase
      */
     public function getMockRecordDriver(): SolrDefault|MockObject
     {
-        try {
-            return $this->createMock(SolrDefault::class);
-        } catch (\PHPUnit\Framework\MockObject\Exception $e) {
-            die('An exception has occurred while creating a mock for the record driver: ' . $e->getMessage());
-        }
+        return $this->createMock(SolrDefault::class);
     }
 
     /**
@@ -159,8 +151,9 @@ class GetThisLoaderTest extends TestCase
      */
     public function testItemsSupported(): void
     {
-        $this->assertTrue($this->getThis->areItemsSupported(self::getItems()));
-        $this->assertFalse($this->getThis->areItemsSupported([]));
+        $getThis = $this->getGetThis();
+        $this->assertTrue($getThis->areItemsSupported(static::getItems()));
+        $this->assertFalse($getThis->areItemsSupported([]));
     }
 
     /**
@@ -170,13 +163,14 @@ class GetThisLoaderTest extends TestCase
      */
     public function testItems(): void
     {
-        $this->assertEmpty($this->getThis->getItems());
-        $this->getThis->setItems(self::getItems());
-        $this->assertEquals(self::getItems(), $this->getThis->getItems());
-        $this->assertEquals(1, $this->getThis->getItem()['item_id']);
-        $this->getThis->setDefaultItemId('2');
-        $this->assertEquals(2, $this->getThis->getItem()['item_id']);
-        $this->assertEquals(1, $this->getThis->getItem('1')['item_id']);
+        $getThis = $this->getGetThis();
+        $this->assertEmpty($getThis->getItems());
+        $getThis->setItems(static::getItems());
+        $this->assertEquals(static::getItems(), $getThis->getItems());
+        $this->assertEquals(1, $getThis->getItem()['item_id']);
+        $getThis->setDefaultItemId('2');
+        $this->assertEquals(2, $getThis->getItem()['item_id']);
+        $this->assertEquals(1, $getThis->getItem('1')['item_id']);
     }
 
     /**
@@ -196,7 +190,7 @@ class GetThisLoaderTest extends TestCase
             ],
         ];
         yield [
-            self::getItems(),
+            static::getItems(),
             [
                 // Expected templates
                 'holdings',
@@ -306,10 +300,11 @@ class GetThisLoaderTest extends TestCase
     #[DataProvider('provideConfigConditionsFunctionsData')]
     public function testConfigConditionsFunctions(array $items, array $expected): void
     {
-        $this->getThis->setItems($items);
-        $templates = $this->getThis->getSubTemplates();
+        $getThis = $this->getGetThis();
+        $getThis->setItems($items);
+        $templates = $getThis->getSubTemplates();
         $this->assertEquals($expected, $templates);
-        $templatesCached = $this->getThis->getSubTemplates();
+        $templatesCached = $getThis->getSubTemplates();
         $this->assertEquals($expected, $templatesCached);
     }
 
@@ -376,11 +371,11 @@ class GetThisLoaderTest extends TestCase
     #[DataProvider('provideAdvancedConfigConditionsFunctionsData')]
     public function testAdvancedConfigConditionsFunctions(array $templateConfig, array $expected): void
     {
-        $config = $this->config;
+        $config = $this->baseConfig;
         $config['templates'] = $templateConfig;
-        $this->setGetThisConfig($config);
-        $this->getThis->setItems(self::getItems());
-        $templates = $this->getThis->getSubTemplates();
+        $getThis = $this->getGetThis($config);
+        $getThis->setItems(static::getItems());
+        $templates = $getThis->getSubTemplates();
         $this->assertEquals($expected, $templates);
     }
 
@@ -392,14 +387,14 @@ class GetThisLoaderTest extends TestCase
      */
     public function testConfigFormattingError(): void
     {
-        $config = $this->config;
+        $config = $this->baseConfig;
         $config['templates']['other_template']['condition_group'][] = ['wrong_key' => 'and'];
-        $this->setGetThisConfig($config);
-        $this->getThis->setItems(self::getItems());
+        $getThis = $this->getGetThis($config);
+        $getThis->setItems(static::getItems());
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('It seems like conditions are not properly formatted, unexpected value in array');
-        $this->getThis->getSubTemplates();
+        $getThis->getSubTemplates();
     }
 
     /**
@@ -410,17 +405,14 @@ class GetThisLoaderTest extends TestCase
      */
     public function testConfigErrorRandomErrorInConfig(): void
     {
-        $config = $this->config;
-        // This function is not intended for use as a condition function
-        // It requires parameter
-        // It is used only for the sake of generating an Exception
+        $config = $this->baseConfig;
         unset($config['templates']['holdings']['condition_function']);
         $config['templates']['holdings']['condition_group'] = 'wrong';
-        $this->setGetThisConfig($config);
+        $getThis = $this->getGetThis($config);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Error with the get this configuration');
-        $this->getThis->getSubTemplates();
+        $getThis->getSubTemplates();
     }
 
     /**
@@ -439,7 +431,6 @@ class GetThisLoaderTest extends TestCase
                         'param2' => 'value2',
                     ],
                 ],
-
             ],
             [
                 'my_template' => [
@@ -472,13 +463,13 @@ class GetThisLoaderTest extends TestCase
     #[DataProvider('provideSubTemplateParamsData')]
     public function testSubTemplateParams(array $templateConfig, array $expected): void
     {
-        $config = $this->config;
+        $config = $this->baseConfig;
         $config['templates'] = $templateConfig;
-        $this->setGetThisConfig($config);
-        $this->getThis->setItems(self::getItems());
-        $this->getThis->getSubTemplates();
-        $this->assertEquals($expected, $this->getThis->getSubTemplateParams());
-        $this->assertEquals($expected['my_template'] ?? [], $this->getThis->getSubTemplateParams('my_template'));
+        $getThis = $this->getGetThis($config);
+        $getThis->setItems(static::getItems());
+        $getThis->getSubTemplates();
+        $this->assertEquals($expected, $getThis->getSubTemplateParams());
+        $this->assertEquals($expected['my_template'] ?? [], $getThis->getSubTemplateParams('my_template'));
     }
 
     /**
@@ -489,10 +480,9 @@ class GetThisLoaderTest extends TestCase
      */
     public function testSetSubTemplateParam(): void
     {
-        $reflection = new ReflectionClass($this->getThis);
-        $method = $reflection->getMethod('setSubTemplateParam');
-        $method->invoke($this->getThis, 'my_template', 'param_key', 'param_value');
-        $this->assertSame(['param_key' => 'param_value'], $this->getThis->getSubTemplateParams('my_template'));
+        $getThis = $this->getGetThis();
+        $this->callMethod($getThis, 'setSubTemplateParam', ['my_template', 'param_key', 'param_value']);
+        $this->assertSame(['param_key' => 'param_value'], $getThis->getSubTemplateParams('my_template'));
     }
 
     /**
@@ -502,21 +492,22 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetItemAndGetItemId(): void
     {
-        $this->getThis->setItems([]);
-        $item = $this->getThis->getItem();
+        $getThis = $this->getGetThis();
+        $getThis->setItems([]);
+        $item = $getThis->getItem();
         $this->assertNull($item);
 
-        $this->getThis->setItems(self::getItems());
-        $item = $this->getThis->getItem('2');
-        $this->assertEquals($item, self::getItems()[1]);
+        $getThis->setItems(static::getItems());
+        $item = $getThis->getItem('2');
+        $this->assertEquals($item, static::getItems()[1]);
 
-        $this->getThis->setDefaultItemId('5');
-        $item = $this->getThis->getItem();
-        $this->assertEquals($item, self::getItems()[2]);
+        $getThis->setDefaultItemId('5');
+        $item = $getThis->getItem();
+        $this->assertEquals($item, static::getItems()[2]);
 
-        $this->getThis->setDefaultItemId(null);
-        $item = $this->getThis->getItem();
-        $this->assertEquals($item, self::getItems()[0]);
+        $getThis->setDefaultItemId(null);
+        $item = $getThis->getItem();
+        $this->assertEquals($item, static::getItems()[0]);
     }
 
     /**
@@ -526,18 +517,19 @@ class GetThisLoaderTest extends TestCase
      */
     public function testStatus(): void
     {
-        $this->getThis->setItems(self::getItems());
+        $getThis = $this->getGetThis();
+        $getThis->setItems(static::getItems());
 
-        $status = $this->getThis->getStatus('5');
+        $status = $getThis->getStatus('5');
         $this->assertSame('Unknown', $status);
 
-        $this->getThis->getItem('1');
-        $status = $this->getThis->getStatus('1');
-        $this->assertEquals($status, self::getItems()[0]['availability']->getStatusDescription());
+        $getThis->getItem('1');
+        $status = $getThis->getStatus('1');
+        $this->assertEquals($status, static::getItems()[0]['availability']->getStatusDescription());
 
-        $this->getThis->getItem('2');
-        $status = $this->getThis->getStatus('2');
-        $this->assertEquals($status, self::getItems()[1]['availability']->getStatusDescription());
+        $getThis->getItem('2');
+        $status = $getThis->getStatus('2');
+        $this->assertEquals($status, static::getItems()[1]['availability']->getStatusDescription());
     }
 
     /**
@@ -547,12 +539,13 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetLocationAndCode(): void
     {
-        $this->assertSame('', $this->getThis->getLocation());
+        $getThis = $this->getGetThis();
+        $this->assertSame('', $getThis->getLocation());
 
-        $this->getThis->setItems(self::getItems());
-        $this->assertSame('Main Library', $this->getThis->getLocation('1'));
+        $getThis->setItems(static::getItems());
+        $this->assertSame('Main Library', $getThis->getLocation('1'));
 
-        $this->assertSame('ML', $this->getThis->getLocationCode('1'));
+        $this->assertSame('ML', $getThis->getLocationCode('1'));
     }
 
     /**
@@ -563,20 +556,21 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetLink(): void
     {
-        $this->getThis->setItems([
+        $getThis = $this->getGetThis();
+        $getThis->setItems([
             ['item_id' => 2],
             ['item_id' => 3],
             ['item_id' => 1],
         ]);
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn([]);
-        $this->setProperty($this->getThis, 'record', $driver);
-        $this->assertSame('', $this->getThis->getLink());
+        $this->setProperty($getThis, 'record', $driver);
+        $this->assertSame('', $getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn(['holdings' => [123]]);
-        $this->setProperty($this->getThis, 'record', $driver);
-        $this->assertSame('', $this->getThis->getLink());
+        $this->setProperty($getThis, 'record', $driver);
+        $this->assertSame('', $getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn([
@@ -603,9 +597,9 @@ class GetThisLoaderTest extends TestCase
                 ],
             ],
         ]);
-        $this->setProperty($this->getThis, 'record', $driver);
-        $this->assertSame('https://what_a_great_link.com', $this->getThis->getLink());
-        $this->assertSame('https://what_another_great_link.com', $this->getThis->getLink('3'));
+        $this->setProperty($getThis, 'record', $driver);
+        $this->assertSame('https://what_a_great_link.com', $getThis->getLink());
+        $this->assertSame('https://what_another_great_link.com', $getThis->getLink('3'));
     }
 
     /**
@@ -615,7 +609,8 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetCallNumber(): void
     {
-        $this->getThis->setItems([
+        $getThis = $this->getGetThis();
+        $getThis->setItems([
             [
                 'item_id' => 9,
                 'location' => 'Internet',
@@ -651,10 +646,10 @@ class GetThisLoaderTest extends TestCase
                 'callnumber_prefix' => 'call',
             ],
         ]);
-        $this->assertSame('Online', $this->getThis->getCallNumber('9')['text']);
-        $this->assertNull($this->getThis->getCallNumber('16'));
-        $this->assertSame('call_me', $this->getThis->getCallNumber('18')['text']);
-        $this->assertSame('call on me', $this->getThis->getCallNumber('42')['text']);
+        $this->assertSame('Online', $getThis->getCallNumber('9')['text']);
+        $this->assertNull($getThis->getCallNumber('16'));
+        $this->assertSame('call_me', $getThis->getCallNumber('18')['text']);
+        $this->assertSame('call on me', $getThis->getCallNumber('42')['text']);
     }
 
     /**
@@ -665,11 +660,11 @@ class GetThisLoaderTest extends TestCase
     public static function provideShowCopyNumberData(): Iterator
     {
         yield 'showCopyNumber unset && no holdings' => [null, [], false];
-        yield 'showCopyNumber unset && with holdings' => [null, self::getItems(), false];
+        yield 'showCopyNumber unset && with holdings' => [null, static::getItems(), false];
         yield 'showCopyNumber true && no holdings' => [true, [], false];
-        yield 'showCopyNumber true && with holdings' => [true, self::getItems(), true];
+        yield 'showCopyNumber true && with holdings' => [true, static::getItems(), true];
         yield 'showCopyNumber false && no holdings' => [false, [], false];
-        yield 'showCopyNumber false && with holdings' => [false, self::getItems(), false];
+        yield 'showCopyNumber false && with holdings' => [false, static::getItems(), false];
     }
 
     /**
@@ -684,14 +679,14 @@ class GetThisLoaderTest extends TestCase
     #[DataProvider('provideShowCopyNumberData')]
     public function testShowCopyNumber(?bool $showCopyNumber, array $holdings, bool $result): void
     {
-        $config = $this->config;
+        $config = $this->baseConfig;
         $config['showCopyNumber'] = $showCopyNumber;
-        $this->setGetThisConfig($config);
-        $this->getThis->setItems($holdings);
+        $getThis = $this->getGetThis($config);
+        $getThis->setItems($holdings);
         if ($result) {
-            $this->assertNotNull($this->getThis->getCopyNumber('1'));
+            $this->assertNotNull($getThis->getCopyNumber('1'));
         } else {
-            $this->assertNull($this->getThis->getCopyNumber('1'));
+            $this->assertNull($getThis->getCopyNumber('1'));
         }
     }
 
@@ -702,13 +697,13 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetCopyNumber(): void
     {
-        $config = $this->config;
+        $config = $this->baseConfig;
         $config['showCopyNumber'] = true;
-        $this->setGetThisConfig($config);
-        $this->getThis->setItems(self::getItems());
-        $this->assertEquals(1, $this->getThis->getCopyNumber('1'));
-        $this->assertEquals(2, $this->getThis->getCopyNumber('2'));
-        $this->assertNull($this->getThis->getCopyNumber('3'));
+        $getThis = $this->getGetThis($config);
+        $getThis->setItems(static::getItems());
+        $this->assertEquals(1, $getThis->getCopyNumber('1'));
+        $this->assertEquals(2, $getThis->getCopyNumber('2'));
+        $this->assertNull($getThis->getCopyNumber('3'));
     }
 
     /**
@@ -719,13 +714,14 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetSummary(): void
     {
+        $getThis = $this->getGetThis();
         $driver = $this->getMockRecordDriver();
         $driver->method('getSummary')->willReturnOnConsecutiveCalls([], ['sum1'], ['sum1', 'sum2']);
-        $this->setProperty($this->getThis, 'record', $driver);
+        $this->setProperty($getThis, 'record', $driver);
 
-        $this->assertSame('', $this->getThis->getSummary());
-        $this->assertSame('sum1', $this->getThis->getSummary());
-        $this->assertSame('sum1, sum2', $this->getThis->getSummary());
+        $this->assertSame('', $getThis->getSummary());
+        $this->assertSame('sum1', $getThis->getSummary());
+        $this->assertSame('sum1, sum2', $getThis->getSummary());
     }
 
     /**
@@ -735,8 +731,9 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsOnlineResource(): void
     {
-        $this->assertFalse($this->getThis->isOnlineResource('456'));
-        $this->getThis->setItems([
+        $getThis = $this->getGetThis();
+        $this->assertFalse($getThis->isOnlineResource('456'));
+        $getThis->setItems([
             [
                 'item_id' => 9,
                 'location' => 'Internet',
@@ -754,8 +751,8 @@ class GetThisLoaderTest extends TestCase
                 'callnumber' => null,
             ],
         ]);
-        $this->assertTrue($this->getThis->isOnlineResource('9'));
-        $this->assertFalse($this->getThis->isOnlineResource('16'));
+        $this->assertTrue($getThis->isOnlineResource('9'));
+        $this->assertFalse($getThis->isOnlineResource('16'));
     }
 
     /**
@@ -766,6 +763,7 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsSerial(): void
     {
+        $getThis = $this->getGetThis();
         $driver = $this->getMockRecordDriver();
         $driver->method('getFormats')->willReturnOnConsecutiveCalls(
             [],
@@ -774,13 +772,13 @@ class GetThisLoaderTest extends TestCase
             ['still not'],
             ['neither', 'and finally not'],
         );
-        $this->setProperty($this->getThis, 'record', $driver);
+        $this->setProperty($getThis, 'record', $driver);
 
-        $this->assertFalse($this->getThis->isSerial());
-        $this->assertTrue($this->getThis->isSerial());
-        $this->assertTrue($this->getThis->isSerial());
-        $this->assertFalse($this->getThis->isSerial());
-        $this->assertFalse($this->getThis->isSerial());
+        $this->assertFalse($getThis->isSerial());
+        $this->assertTrue($getThis->isSerial());
+        $this->assertTrue($getThis->isSerial());
+        $this->assertFalse($getThis->isSerial());
+        $this->assertFalse($getThis->isSerial());
     }
 
     /**
@@ -790,9 +788,10 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsOut(): void
     {
-        $this->assertFalse($this->getThis->isOut('123'));
+        $getThis = $this->getGetThis();
+        $this->assertFalse($getThis->isOut('123'));
 
-        $this->getThis->setItems([
+        $getThis->setItems([
             [
                 'item_id' => 1,
                 'location' => 'Main Library',
@@ -800,14 +799,14 @@ class GetThisLoaderTest extends TestCase
                 'callnumber' => 'callnumber00',
             ],
         ]);
-        $this->assertFalse($this->getThis->isOut('1'));
+        $this->assertFalse($getThis->isOut('1'));
 
-        $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->isOut('1'));
-        $this->assertFalse($this->getThis->isOut('2'));
-        $this->assertFalse($this->getThis->isOut('5'));
+        $getThis->setItems(static::getItems());
+        $this->assertFalse($getThis->isOut('1'));
+        $this->assertFalse($getThis->isOut('2'));
+        $this->assertFalse($getThis->isOut('5'));
 
-        $this->getThis->setItems([
+        $getThis->setItems([
             [
                 'item_id' => 1,
                 'location' => 'Main Library',
@@ -824,8 +823,8 @@ class GetThisLoaderTest extends TestCase
                 'availability' => new AvailabilityStatus(false, 'Checked out'),
             ],
         ]);
-        $this->assertTrue($this->getThis->isOut('1'));
-        $this->assertTrue($this->getThis->isOut('2'));
+        $this->assertTrue($getThis->isOut('1'));
+        $this->assertTrue($getThis->isOut('2'));
     }
 
     /**
@@ -835,12 +834,13 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsAudioVideoMedia(): void
     {
-        $this->assertFalse($this->getThis->isAudioVideoMedia('123'));
+        $getThis = $this->getGetThis();
+        $this->assertFalse($getThis->isAudioVideoMedia('123'));
 
-        $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->isAudioVideoMedia('1'));
+        $getThis->setItems(static::getItems());
+        $this->assertFalse($getThis->isAudioVideoMedia('1'));
 
-        $this->getThis->setItems([
+        $getThis->setItems([
             [
                 'item_id' => 1,
                 'location' => 'Main Library',
@@ -857,8 +857,8 @@ class GetThisLoaderTest extends TestCase
                 'availability' => new AvailabilityStatus(false, 'Checked out'),
             ],
         ]);
-        $this->assertFalse($this->getThis->isAudioVideoMedia('1'));
-        $this->assertTrue($this->getThis->isAudioVideoMedia('2'));
+        $this->assertFalse($getThis->isAudioVideoMedia('1'));
+        $this->assertTrue($getThis->isAudioVideoMedia('2'));
     }
 
     /**
@@ -868,11 +868,12 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsLibUseOnly(): void
     {
-        $this->assertFalse($this->getThis->isLibUseOnly('123'));
+        $getThis = $this->getGetThis();
+        $this->assertFalse($getThis->isLibUseOnly('123'));
 
-        $this->getThis->setItems(self::getItems());
-        $this->assertTrue($this->getThis->isLibUseOnly('1'));
-        $this->assertFalse($this->getThis->isLibUseOnly('2'));
+        $getThis->setItems(static::getItems());
+        $this->assertTrue($getThis->isLibUseOnly('1'));
+        $this->assertFalse($getThis->isLibUseOnly('2'));
     }
 
     /**
@@ -882,12 +883,13 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsUnavailable(): void
     {
-        $this->assertFalse($this->getThis->isUnavailable('123'));
+        $getThis = $this->getGetThis();
+        $this->assertFalse($getThis->isUnavailable('123'));
 
-        $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->isUnavailable('1'));
-        $this->assertTrue($this->getThis->isUnavailable('2'));
-        $this->assertFalse($this->getThis->isUnavailable('5'));
+        $getThis->setItems(static::getItems());
+        $this->assertFalse($getThis->isUnavailable('1'));
+        $this->assertTrue($getThis->isUnavailable('2'));
+        $this->assertFalse($getThis->isUnavailable('5'));
     }
 
     /**
@@ -895,15 +897,17 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      * @throws ReflectionException
+     * @throws Exception
      */
     public function testSetRecord(): void
     {
-        $this->getThis->setItems(self::getItems());
-        $templates = $this->getThis->getSubTemplates();
+        $getThis = $this->getGetThis();
+        $getThis->setItems(static::getItems());
+        $templates = $getThis->getSubTemplates();
         $this->assertNotEmpty($templates);
         $driver = $this->getMockRecordDriver();
-        $this->getThis->setRecord($driver);
-        $templates = $this->getProperty($this->getThis, 'subTemplates');
+        $getThis->setRecord($driver);
+        $templates = $this->getProperty($getThis, 'subTemplates');
         $this->assertNull($templates);
     }
 
@@ -912,7 +916,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      * @throws \PHPUnit\Framework\MockObject\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface&\Throwable
+     * @throws ContainerExceptionInterface&Throwable
      */
     public function testFactory(): void
     {
