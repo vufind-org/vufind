@@ -145,11 +145,11 @@ class Folio extends AbstractAPI implements
     protected $courseCache = null;
 
     /**
-     * Cache for request preference data (null if not yet populated).
+     * Cache for request preference data.
      *
-     * @var ?array
+     * @var array
      */
-    protected $requestPreferenceCache = null;
+    protected array $requestPreferenceCache = [];
 
     /**
      * Constructor.
@@ -2150,8 +2150,8 @@ class Folio extends AbstractAPI implements
      */
     protected function getRequestPreference(string $userId): array
     {
-        if ($this->requestPreferenceCache) {
-            return $this->requestPreferenceCache;
+        if ($requestPreference = ($this->requestPreferenceCache[$userId] ?? false)) {
+            return $requestPreference;
         }
 
         // circulation-storage.request-preferences.collection.get
@@ -2162,7 +2162,7 @@ class Folio extends AbstractAPI implements
         $requestPreferencesResponse = json_decode($response->getBody(), true);
         $requestPreference = $requestPreferencesResponse['requestPreferences'][0] ?? null;
 
-        $this->requestPreferenceCache = $requestPreference;
+        $this->requestPreferenceCache[$userId] = $requestPreference;
         return $requestPreference;
     }
 
