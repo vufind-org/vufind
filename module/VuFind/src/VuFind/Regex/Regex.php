@@ -63,7 +63,7 @@ class Regex
     public function matches(string $regexName, string $string, ?bool $default = null): bool
     {
         if (!isset($this->config[$regexName])) {
-            // We don't throw an error if the regex key exist but is null (empty)
+            // We don't throw an error if the regex key exists but is null (empty)
             if (!array_key_exists($regexName, $this->config) && null === $default) {
                 throw new Exception('The regex named "' . $regexName . '" does not exist in the config.');
             }

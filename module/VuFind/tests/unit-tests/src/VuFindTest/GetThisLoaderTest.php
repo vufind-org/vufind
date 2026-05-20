@@ -157,10 +157,9 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testItemsSupported()
+    public function testItemsSupported(): void
     {
-        $supported = $this->getThis->areItemsSupported(self::getItems());
-        $this->assertTrue($supported);
+        $this->assertTrue($this->getThis->areItemsSupported(self::getItems()));
         $this->assertFalse($this->getThis->areItemsSupported([]));
     }
 
@@ -169,7 +168,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testItems()
+    public function testItems(): void
     {
         $this->assertEmpty($this->getThis->getItems());
         $this->getThis->setItems(self::getItems());
@@ -305,7 +304,7 @@ class GetThisLoaderTest extends TestCase
      * @throws Exception
      */
     #[DataProvider('provideConfigConditionsFunctionsData')]
-    public function testConfigConditionsFunctions(array $items, array $expected)
+    public function testConfigConditionsFunctions(array $items, array $expected): void
     {
         $this->getThis->setItems($items);
         $templates = $this->getThis->getSubTemplates();
@@ -375,7 +374,7 @@ class GetThisLoaderTest extends TestCase
      * @throws Exception
      */
     #[DataProvider('provideAdvancedConfigConditionsFunctionsData')]
-    public function testAdvancedConfigConditionsFunctions(array $templateConfig, array $expected)
+    public function testAdvancedConfigConditionsFunctions(array $templateConfig, array $expected): void
     {
         $config = $this->config;
         $config['templates'] = $templateConfig;
@@ -391,7 +390,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      * @throws Exception
      */
-    public function testConfigFormattingError()
+    public function testConfigFormattingError(): void
     {
         $config = $this->config;
         $config['templates']['other_template']['condition_group'][] = ['wrong_key' => 'and'];
@@ -409,7 +408,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      * @throws Exception
      */
-    public function testConfigErrorRandomErrorInConfig()
+    public function testConfigErrorRandomErrorInConfig(): void
     {
         $config = $this->config;
         // This function is not intended for use as a condition function
@@ -471,7 +470,7 @@ class GetThisLoaderTest extends TestCase
      * @throws Exception
      */
     #[DataProvider('provideSubTemplateParamsData')]
-    public function testSubTemplateParams(array $templateConfig, array $expected)
+    public function testSubTemplateParams(array $templateConfig, array $expected): void
     {
         $config = $this->config;
         $config['templates'] = $templateConfig;
@@ -488,7 +487,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      * @throws ReflectionException
      */
-    public function testSetSubTemplateParam()
+    public function testSetSubTemplateParam(): void
     {
         $reflection = new ReflectionClass($this->getThis);
         $method = $reflection->getMethod('setSubTemplateParam');
@@ -501,7 +500,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testGetItemAndGetItemId()
+    public function testGetItemAndGetItemId(): void
     {
         $this->getThis->setItems([]);
         $item = $this->getThis->getItem();
@@ -525,7 +524,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testStatus()
+    public function testStatus(): void
     {
         $this->getThis->setItems(self::getItems());
 
@@ -546,7 +545,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testGetLocationAndCode()
+    public function testGetLocationAndCode(): void
     {
         $this->assertSame('', $this->getThis->getLocation());
 
@@ -562,7 +561,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      * @throws ReflectionException
      */
-    public function testGetLink()
+    public function testGetLink(): void
     {
         $this->getThis->setItems([
             ['item_id' => 2],
@@ -614,7 +613,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testGetCallNumber()
+    public function testGetCallNumber(): void
     {
         $this->getThis->setItems([
             [
@@ -683,7 +682,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      */
     #[DataProvider('provideShowCopyNumberData')]
-    public function testShowCopyNumber(?bool $showCopyNumber, array $holdings, bool $result)
+    public function testShowCopyNumber(?bool $showCopyNumber, array $holdings, bool $result): void
     {
         $config = $this->config;
         $config['showCopyNumber'] = $showCopyNumber;
@@ -701,7 +700,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testGetCopyNumber()
+    public function testGetCopyNumber(): void
     {
         $config = $this->config;
         $config['showCopyNumber'] = true;
@@ -718,7 +717,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      * @throws ReflectionException
      */
-    public function testGetSummary()
+    public function testGetSummary(): void
     {
         $driver = $this->getMockRecordDriver();
         $driver->method('getSummary')->willReturnOnConsecutiveCalls([], ['sum1'], ['sum1', 'sum2']);
@@ -734,7 +733,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testIsOnlineResource()
+    public function testIsOnlineResource(): void
     {
         $this->assertFalse($this->getThis->isOnlineResource('456'));
         $this->getThis->setItems([
@@ -765,7 +764,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      * @throws ReflectionException
      */
-    public function testIsSerial()
+    public function testIsSerial(): void
     {
         $driver = $this->getMockRecordDriver();
         $driver->method('getFormats')->willReturnOnConsecutiveCalls(
@@ -789,7 +788,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testIsOut()
+    public function testIsOut(): void
     {
         $this->assertFalse($this->getThis->isOut('123'));
 
@@ -834,7 +833,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testIsAudioVideoMedia()
+    public function testIsAudioVideoMedia(): void
     {
         $this->assertFalse($this->getThis->isAudioVideoMedia('123'));
 
@@ -867,7 +866,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testIsLibUseOnly()
+    public function testIsLibUseOnly(): void
     {
         $this->assertFalse($this->getThis->isLibUseOnly('123'));
 
@@ -881,7 +880,7 @@ class GetThisLoaderTest extends TestCase
      *
      * @return void
      */
-    public function testIsUnavailable()
+    public function testIsUnavailable(): void
     {
         $this->assertFalse($this->getThis->isUnavailable('123'));
 
@@ -897,7 +896,7 @@ class GetThisLoaderTest extends TestCase
      * @return void
      * @throws ReflectionException
      */
-    public function testSetRecord()
+    public function testSetRecord(): void
     {
         $this->getThis->setItems(self::getItems());
         $templates = $this->getThis->getSubTemplates();
@@ -915,7 +914,7 @@ class GetThisLoaderTest extends TestCase
      * @throws \PHPUnit\Framework\MockObject\Exception
      * @throws \Psr\Container\ContainerExceptionInterface&\Throwable
      */
-    public function testFactory()
+    public function testFactory(): void
     {
         $yaml = $this->createMock(YamlReader::class);
         $yaml->expects($this->once())->method('get')->willReturn([]);

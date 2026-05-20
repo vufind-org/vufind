@@ -59,7 +59,7 @@ class RegexTest extends TestCase
      * @return void
      * @throws Exception
      */
-    public function testRegex()
+    public function testRegex(): void
     {
         $regex = new Regex(self::getConfig());
         $this->assertFalse($regex->matches('regex_name1', 'Not matching pattern'));
@@ -93,7 +93,7 @@ class RegexTest extends TestCase
      * @throws \PHPUnit\Framework\MockObject\Exception
      * @throws \Psr\Container\ContainerExceptionInterface&\Throwable
      */
-    public function testFactory()
+    public function testFactory(): void
     {
         $yaml = $this->createMock(YamlReader::class);
         $yaml->expects($this->once())->method('get')->willReturn(['regex' => ['/pattern/i']]);

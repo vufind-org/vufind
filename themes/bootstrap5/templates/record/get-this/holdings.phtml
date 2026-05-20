@@ -56,7 +56,7 @@ $getLink = function ($view, $item) {
     <ul>
       <?php
       $selectedItem['item_id'] ??= -1;
-      foreach ($items as $item) {
+      foreach ($items as $item):
         $item['item_id'] ??= null;
         $itemClass = ($selectedItem['item_id'] == $item['item_id']) ? 'current' : '';
         ?>
@@ -69,7 +69,7 @@ $getLink = function ($view, $item) {
             <?= $getDisplay($this, $item) ?>
           </a>
         </li>
-      <?php } ?>
+      <?php endforeach; ?>
     </ul>
   </div>
 </nav>

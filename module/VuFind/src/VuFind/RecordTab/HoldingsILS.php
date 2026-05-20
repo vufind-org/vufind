@@ -225,8 +225,8 @@ class HoldingsILS extends AbstractBase
     public function getGetThisLoader(): ?GetThisLoader
     {
         if (!isset($this->getThisLoader)) {
-            $this->getThisLoader = isset($this->getThisLoaderGetter) ?
-                call_user_func($this->getThisLoaderGetter) : null;
+            $this->getThisLoader = isset($this->getThisLoaderGetter)
+                ? call_user_func($this->getThisLoaderGetter) : null;
         }
         return $this->getThisLoader;
     }
