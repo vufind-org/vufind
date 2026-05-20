@@ -328,6 +328,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'addressTypeIds' => [],
             'major' => null,
             'college' => null,
+            'addresses' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -359,6 +360,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'addressTypeIds' => [],
             'major' => null,
             'college' => null,
+            'addresses' => [],
         ];
         $this->assertEquals($expected, $result);
     }
