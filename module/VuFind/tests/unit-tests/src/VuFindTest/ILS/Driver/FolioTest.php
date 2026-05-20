@@ -1524,14 +1524,14 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getPickupLocations for delivery.
      *
-     * @param bool  $formatAddresses Configuration of whether to format addresses
+     * @param ?bool $formatAddresses Configuration of whether to format addresses
      * @param array $expected        Expected list of delivery locations
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
     #[\PHPUnit\Framework\Attributes\DataProvider('getPickupLocationsProvider')]
-    public function testGetPickupLocationsForDelivery(bool $formatAddresses, array $expected): void
+    public function testGetPickupLocationsForDelivery(?bool $formatAddresses, array $expected): void
     {
         $config = $this->defaultDriverConfig;
         $config['Holds'] = [
