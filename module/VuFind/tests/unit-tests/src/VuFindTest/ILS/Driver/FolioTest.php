@@ -1523,7 +1523,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->driver->expects($this->exactly(2))->method('makeRequest');
         $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'whatever']);
         $this->assertEquals('Delivery', $requestGroup);
-        for ($i=0; $i<2; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'user2']);
         }
         $this->assertEquals('Hold Shelf', $requestGroup);
