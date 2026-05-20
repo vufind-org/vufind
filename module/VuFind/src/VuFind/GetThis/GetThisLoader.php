@@ -762,7 +762,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Setter for itemId.
+     * Setter for defaultItemId.
      *
      * @param ?string $defaultItemId Item id of the holding for the record
      *
