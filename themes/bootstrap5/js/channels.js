@@ -35,7 +35,7 @@ VuFind.register("channels", function Channels() {
 
     let currHeight = el.offsetHeight;
     const words = el.textContent.split(" ");
-    for (let len = words.length; len--;) {
+    for (let len = words.length; len--; ) {
       el.textContent = `${words.slice(0, len).join(" ")}${VuFind.translate("eol_ellipsis")}`;
       if (currHeight > el.offsetHeight) {
         currHeight = el.offsetHeight;
@@ -55,7 +55,9 @@ VuFind.register("channels", function Channels() {
     // Remove from dropdowns
     const group = link.closest(".channel-add-menu").dataset.group;
     const token = link.dataset.token;
-    const relatedMenus = Array.from(document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`));
+    const relatedMenus = Array.from(
+      document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`),
+    );
     for (const menu of relatedMenus) {
       // Remove add links for this channel
       const usedMenuItem = menu.querySelector(`[data-token="${token}"]`);
@@ -88,18 +90,20 @@ VuFind.register("channels", function Channels() {
                 <h2>${title.innerHTML}</h2>
               </div>
               <div class="channel-content">
-                ${VuFind.translate('nohit_heading')}
+                ${VuFind.translate("nohit_heading")}
               </div>
             </div>`,
-            "text/html"
-          );
+              "text/html",
+            );
 
             callerChannelEl.after(emptyWrapper.firstChild);
             continue;
           }
 
           // Add related channels menu
-          const relatedMenu = document.querySelector(`.channel-add-menu[data-group="${group}"]`);
+          const relatedMenu = document.querySelector(
+            `.channel-add-menu[data-group="${group}"]`,
+          );
           if (relatedMenu) {
             channelEl
               .querySelector(".channel-title")
@@ -116,8 +120,13 @@ VuFind.register("channels", function Channels() {
           }
 
           // Establish forward AJAX
-          if (getHiddenItems(channelEl).length < Number(channelEl.dataset.pageSize)) {
-            showMoreItems({ target: channelEl.querySelector(".channel-load-more-btn")});
+          if (
+            getHiddenItems(channelEl).length <
+            Number(channelEl.dataset.pageSize)
+          ) {
+            showMoreItems({
+              target: channelEl.querySelector(".channel-load-more-btn"),
+            });
           }
         }
       });
@@ -131,7 +140,7 @@ VuFind.register("channels", function Channels() {
    * @param {Event} event Click event from .channel-load-more-btn
    * @returns {void}
    */
-  async function showMoreItems(event) {
+  function showMoreItems(event) {
     const loadMoreBtn = event.target;
     if (loadMoreBtn.classList.contains("disabled")) {
       return false;
@@ -156,19 +165,29 @@ VuFind.register("channels", function Channels() {
     hiddenItems = getHiddenItems(targetChannel);
     if (hiddenItems.length < pageSize) {
       if (!targetChannel.dataset.noMoreAjaxItems) {
-        await requestMoreItems(loadMoreBtn, targetChannel);
+        requestMoreItems(loadMoreBtn, targetChannel).then(() => {
+          const hiddenItems = getHiddenItems(targetChannel);
 
-        if (revealCount < pageSize) {
-          const len = Math.min(hiddenItems.length, pageSize - revealCount);
-          for (let i = 0; i < len; i++) {
-            hiddenItems[i].classList.remove("hidden-batch-item");
-            clampLines(hiddenItems[i].querySelector(".channel-item-title"));
+          if (
+            targetChannel.dataset.noMoreAjaxItems &&
+            getHiddenItems(targetChannel).length === 0
+          ) {
+            hideLoadMoreBtn(loadMoreBtn);
+          } else {
+            enableLoadMoreBtn(loadMoreBtn);
           }
-        }
+
+          if (revealCount < pageSize) {
+            const len = Math.min(hiddenItems.length, pageSize - revealCount);
+            for (let i = 0; i < len; i++) {
+              hiddenItems[i].classList.remove("hidden-batch-item");
+              clampLines(hiddenItems[i].querySelector(".channel-item-title"));
+            }
+          }
+        });
       }
     }
 
-    // Have we shown all items?
     if (
       targetChannel.dataset.noMoreAjaxItems &&
       getHiddenItems(targetChannel).length === 0
@@ -181,44 +200,48 @@ VuFind.register("channels", function Channels() {
 
   // AJAX load more records
   // should fire when we have less than one page of hidden items
-  async function requestMoreItems(btn, targetChannel) {
+  function requestMoreItems(btn, targetChannel) {
     const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
-    const res = await fetch(url.toString() + "&layout=lightbox");
-    const resHTML = await res.text();
+    const promise = fetch(url.toString() + "&layout=lightbox");
+    promise
+      .then((res) => res.text())
+      .then((resHTML) => {
+        // Extract channel items
+        const parser = new DOMParser();
+        const resDom = parser.parseFromString(resHTML, "text/html");
 
-    // Extract channel items
-    const parser = new DOMParser();
-    const resDom = parser.parseFromString(resHTML, "text/html");
+        const firstChannel = resDom.querySelector(".channel");
+        const records = firstChannel
+          ? firstChannel.querySelectorAll(".channel-item")
+          : [];
 
-    const firstChannel = resDom.querySelector(".channel");
-    const records = firstChannel
-      ? firstChannel.querySelectorAll(".channel-item")
-      : [];
+        // mark that we've loaded all records
+        if (records.length < Number(targetChannel.dataset.pageSize)) {
+          targetChannel.dataset.noMoreAjaxItems = true;
+          return;
+        }
 
-    // mark that we've loaded all records
-    if (records.length < Number(targetChannel.dataset.pageSize)) {
-      targetChannel.dataset.noMoreAjaxItems = true;
-    }
+        // add new records (hidden)
+        const targetList = targetChannel.querySelector(".channel-list");
+        let index = Number(targetChannel.dataset.loaded);
+        targetChannel.dataset.loaded = index + records.length;
+        for (let i = 0; i < records.length; i++) {
+          const record = records[i];
+          record.dataset.index = index++;
 
+          record.classList.remove("hidden");
+          record.classList.add("hidden-batch-item");
+          targetList.append(record);
 
-    // add new records (hidden)
-    const targetList = targetChannel.querySelector(".channel-list");
-    let index = Number(targetChannel.dataset.loaded);
-    targetChannel.dataset.loaded = index + records.length;
-    for (let i = 0; i < records.length; i++) {
-      const record = records[i];
-      record.dataset.index = index++;
-
-      record.classList.remove("hidden");
-      record.classList.add("hidden-batch-item");
-      targetList.append(record);
-
-      clampLines(record.querySelector(".channel-item-title"));
-    }
+          clampLines(record.querySelector(".channel-item-title"));
+        }
+      });
 
     // Set button to next page
     url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
     btn.setAttribute("data-href", url.toString());
+
+    return promise;
   }
 
   /**
@@ -327,12 +350,8 @@ VuFind.register("channels", function Channels() {
   function init() {
     // Initial manipulations
     for (const channelEl of document.querySelectorAll(".channel")) {
-      // Disable the load more button is there are less items than the batchSize
-      const allItems = channelEl.querySelectorAll(".channel-item");
-      channelEl.dataset.loaded = allItems.length;
-      if (allItems.length < Number(channelEl.dataset.rowSize)) {
-        hideLoadMoreBtn(channelEl.querySelector(".channel-load-more-btn"));
-      }
+      const loadMoreBtn = channelEl.querySelector(".channel-load-more-btn");
+      const pageSize = Number(channelEl.dataset.pageSize);
 
       // Clamp titles to 3 lines
       for (const title of channelEl.querySelectorAll(".channel-item-title")) {
@@ -340,8 +359,17 @@ VuFind.register("channels", function Channels() {
       }
 
       // Establish forward AJAX
-      if (getHiddenItems(channelEl).length < Number(channelEl.dataset.pageSize)) {
-        showMoreItems({ target: channelEl.querySelector(".channel-load-more-btn")});
+      const allItems = channelEl.querySelectorAll(".channel-item");
+      channelEl.dataset.loaded = allItems.length;
+      if (allItems.length < pageSize) {
+        // Less items than batchSize
+        channelEl.dataset.noMoreAjaxItems = true;
+        hideLoadMoreBtn(loadMoreBtn);
+      } else {
+        // Less hidden items than needed for a second page
+        if (getHiddenItems(channelEl).length < pageSize) {
+          requestMoreItems(loadMoreBtn, channelEl);
+        }
       }
     }
 
@@ -359,7 +387,7 @@ VuFind.register("channels", function Channels() {
         const addLinks = Array.from(
           event.target
             .closest(".channel-add-menu")
-            .querySelectorAll(".channel-add-link")
+            .querySelectorAll(".channel-add-link"),
         );
         for (let i = 0; i < Math.min(2, addLinks.length); i++) {
           addChannel(addLinks[i]);
@@ -379,7 +407,7 @@ VuFind.register("channels", function Channels() {
       if (event.target.closest(".channel-quick-look-btn")) {
         quickLook(
           event.target.closest(".channel-item"),
-          event.target.closest(".channel-list").getAttribute("id")
+          event.target.closest(".channel-list").getAttribute("id"),
         );
         event.preventDefault();
         return false;
@@ -391,7 +419,7 @@ VuFind.register("channels", function Channels() {
         const record = findChannelItem(
           group.dataset.channelId,
           group.dataset.recordSource,
-          group.dataset.recordId
+          group.dataset.recordId,
         );
         if (Number(record.dataset.index) > 0) {
           quickLook(record.previousElementSibling, group.dataset.channelId);
@@ -406,7 +434,7 @@ VuFind.register("channels", function Channels() {
         const record = findChannelItem(
           group.dataset.channelId,
           group.dataset.recordSource,
-          group.dataset.recordId
+          group.dataset.recordId,
         );
         if (record.nextElementSibling) {
           quickLook(record.nextElementSibling, group.dataset.channelId);
