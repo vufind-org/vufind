@@ -46,6 +46,7 @@ use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Record\Router as RecordRouter;
+use VuFind\Search\Base\Results;
 use VuFind\Search\History as SearchHistory;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\Options\PluginManager as SearchOptionsPluginManager;
@@ -76,28 +77,28 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
+abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingAction
 {
     /**
      * Search class family to use.
      *
      * @var string
      */
-    protected $searchClassId = 'Solr';
+    protected string $searchClassId = DEFAULT_SEARCH_BACKEND;
 
     /**
      * Should we save searches to history?
      *
      * @var bool
      */
-    protected $saveToHistory = true;
+    protected bool $saveToHistory = true;
 
     /**
      * Should we remember the search for breadcrumb purposes?
      *
      * @var bool
      */
-    protected $rememberSearch = true;
+    protected bool $rememberSearch = true;
 
     /**
      * Constructor.
@@ -200,11 +201,11 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Perform a search and render the results.
      *
-     * @param callable $setupCallback Optional setup callback that overrides the default one
+     * @param ?callable $setupCallback Optional setup callback that overrides the default one
      *
      * @return ResponseInterface
      */
-    protected function renderSearchResults($setupCallback = null): ResponseInterface
+    protected function renderSearchResults(?callable $setupCallback = null): ResponseInterface
     {
         $templateParams = $this->createTemplateParams();
         $config = $this->configManager->getConfigArray($this->getOptionsForClass()->getFacetsIni());
@@ -408,9 +409,9 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
      *
      * @param int $id ID from search history
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function redirectToSavedSearch($id)
+    protected function redirectToSavedSearch(int $id): ResponseInterface
     {
         $search = $this->retrieveSearchSecurely($id);
         if (empty($search)) {
@@ -431,7 +432,7 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
         // object, and it also prevents the user from ever landing on a
         // "?saved=xxxx" URL, which may not persist beyond the current session.
         // (We want all searches to be persistent and bookmarkable).
-        $this->getHelper(RedirectHelper::class)->redirectToRoute(
+        return $this->getHelper(RedirectHelper::class)->redirectToRoute(
             $this->response,
             $savedSearch->getOptions()->getSearchAction(),
             queryParams: $savedSearch->getUrlQuery()->getParamArray()
@@ -441,11 +442,11 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Store the URL of the provided search (if appropriate).
      *
-     * @param \VuFind\Search\Base\Results $results Search results object
+     * @param Results $results Search results object
      *
      * @return void
      */
-    protected function rememberSearch($results)
+    protected function rememberSearch(Results $results): void
     {
         // Only save search URL if the property tells us to...
         if ($this->rememberSearch) {
@@ -597,33 +598,34 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Process the jumpto parameter -- either redirect to a specific record, or ignore the parameter and return false.
+     * Process the jumpto parameter -- either redirect to a specific record, or ignore the parameter and return null.
      *
-     * @param \VuFind\Search\Base\Results $results Search results object.
+     * @param Results $results Search results object.
      *
-     * @return false|ResponseInterface
+     * @return ?ResponseInterface
      */
-    protected function processJumpTo($results)
+    protected function processJumpTo(Results $results): ?ResponseInterface
     {
         // Missing/invalid parameter?  Ignore it:
         $jumpto = $this->getQueryParam('jumpto');
         if (empty($jumpto) || !is_numeric($jumpto)) {
-            return false;
+            return null;
         }
 
         $recordList = $results->getResults();
         return isset($recordList[$jumpto - 1])
-            ? $this->getRedirectForRecord($recordList[$jumpto - 1]) : false;
+            ? $this->getRedirectForRecord($recordList[$jumpto - 1])
+            : null;
     }
 
     /**
      * Process jump to record if there is only one result.
      *
-     * @param \VuFind\Search\Base\Results $results Search results object.
+     * @param Results $results Search results object.
      *
-     * @return false|ResponseInterface
+     * @return ?ResponseInterface
      */
-    protected function processJumpToOnlyResult($results)
+    protected function processJumpToOnlyResult(Results $results): ?ResponseInterface
     {
         // If jumpto is explicitly disabled (set to false, e.g. by combined search),
         // we should NEVER jump to a result regardless of other factors.
@@ -640,7 +642,7 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
             );
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -675,7 +677,7 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
      *
      * @return ?SearchEntityInterface
      */
-    protected function retrieveSearchSecurely($searchId)
+    protected function retrieveSearchSecurely(int $searchId): ?SearchEntityInterface
     {
         $sessId = $this->sessionManager->getId();
         return $this->searchService->getSearchByIdAndOwner($searchId, $sessId, $this->authManager->getUserObject());
@@ -684,11 +686,11 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Save a search to the history in the database.
      *
-     * @param \VuFind\Search\Base\Results $results Search results
+     * @param Results $results Search results
      *
      * @return void
      */
-    protected function saveSearchToHistory($results)
+    protected function saveSearchToHistory(Results $results): void
     {
         $sessId = $this->sessionManager->getId();
         $this->searchNormalizer->saveNormalizedSearch(
@@ -701,17 +703,17 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Get the requested search object or add a flash message indicating why the operation failed.
      *
-     * @param string $searchId ID value of a saved advanced search.
+     * @param int $searchId ID value of a saved advanced search.
      *
-     * @return bool|object     Restored search object if found, false otherwise.
+     * @return ?Results Restored search object if found, null otherwise.
      */
-    protected function restoreAdvancedSearch($searchId)
+    protected function restoreAdvancedSearch(int $searchId): ?Results
     {
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
             $this->flashMessenger->addErrorMessage('advSearchError_notFound');
-            return false;
+            return null;
         }
 
         // Restore the full search object:
@@ -726,7 +728,7 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
                 $this->flashMessenger->addErrorMessage('advSearchError_notAdvanced');
-                return false;
+                return null;
             }
         }
 
@@ -736,13 +738,13 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Get the current settings for the specified range facet, if it is set:
      *
-     * @param array  $fields      Fields to check
-     * @param string $type        Type of range to include in return value
-     * @param object $savedSearch Saved search object (false if none)
+     * @param array    $fields      Fields to check
+     * @param string   $type        Type of range to include in return value
+     * @param ?Results $savedSearch Saved search object (null if none)
      *
      * @return array
      */
-    protected function getRangeSettings($fields, $type, $savedSearch = false)
+    protected function getRangeSettings(array $fields, string $type, ?Results $savedSearch = null): array
     {
         $parts = [];
 
@@ -781,12 +783,11 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
      *
      * @param string $config  Name of config file
      * @param string $section Configuration section to check
-     * @param array  $filter  List of fields to include (if empty, all
-     * fields will be returned)
+     * @param array  $filter  List of fields to include (if empty, all fields will be returned)
      *
      * @return array
      */
-    protected function getRangeFieldList($config, $section, $filter)
+    protected function getRangeFieldList(string $config, string $section, array $filter): array
     {
         $config = $this->configManager->getConfigArray($config);
         $fields = $config['SpecialFacets'][$section] ?? [];
@@ -801,18 +802,17 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Get the current settings for the date range facets, if set:
      *
-     * @param object $savedSearch Saved search object (false if none)
-     * @param string $config      Name of config file
-     * @param array  $filter      List of fields to include (if empty, all
-     * fields will be returned)
+     * @param ?Results $savedSearch Saved search object (null if none)
+     * @param string   $config      Name of config file
+     * @param array    $filter      List of fields to include (if empty, all fields will be returned)
      *
      * @return array
      */
     protected function getDateRangeSettings(
-        $savedSearch = false,
-        $config = 'facets',
-        $filter = []
-    ) {
+        ?Results $savedSearch = null,
+        string $config = 'facets',
+        array $filter = []
+    ): array {
         $fields = $this->getRangeFieldList($config, 'dateRange', $filter);
         return $this->getRangeSettings($fields, 'date', $savedSearch);
     }
@@ -820,18 +820,17 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Get the current settings for the full date range facets, if set:
      *
-     * @param object $savedSearch Saved search object (false if none)
-     * @param string $config      Name of config file
-     * @param array  $filter      List of fields to include (if empty, all
-     * fields will be returned)
+     * @param ?Results $savedSearch Saved search object (null if none)
+     * @param string   $config      Name of config file
+     * @param array    $filter      List of fields to include (if empty, all fields will be returned)
      *
      * @return array
      */
     protected function getFullDateRangeSettings(
-        $savedSearch = false,
-        $config = 'facets',
-        $filter = []
-    ) {
+        ?Results $savedSearch = null,
+        string $config = 'facets',
+        array $filter = []
+    ): array {
         $fields = $this->getRangeFieldList($config, 'fullDateRange', $filter);
         return $this->getRangeSettings($fields, 'fulldate', $savedSearch);
     }
@@ -839,18 +838,17 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Get the current settings for the generic range facets, if set:
      *
-     * @param object $savedSearch Saved search object (false if none)
-     * @param string $config      Name of config file
-     * @param array  $filter      List of fields to include (if empty, all
-     * fields will be returned)
+     * @param ?Results $savedSearch Saved search object (null if none)
+     * @param string   $config      Name of config file
+     * @param array    $filter      List of fields to include (if empty, all fields will be returned)
      *
      * @return array
      */
     protected function getGenericRangeSettings(
-        $savedSearch = false,
-        $config = 'facets',
-        $filter = []
-    ) {
+        ?Results $savedSearch = null,
+        string $config = 'facets',
+        array $filter = []
+    ): array {
         $fields = $this->getRangeFieldList($config, 'genericRange', $filter);
         return $this->getRangeSettings($fields, 'generic', $savedSearch);
     }
@@ -858,18 +856,17 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Get the current settings for the numeric range facets, if set:
      *
-     * @param object $savedSearch Saved search object (false if none)
-     * @param string $config      Name of config file
-     * @param array  $filter      List of fields to include (if empty, all
-     * fields will be returned)
+     * @param ?Results $savedSearch Saved search object (false if none)
+     * @param string   $config      Name of config file
+     * @param array    $filter      List of fields to include (if empty, all fields will be returned)
      *
      * @return array
      */
     protected function getNumericRangeSettings(
-        $savedSearch = false,
-        $config = 'facets',
-        $filter = []
-    ) {
+        ?Results $savedSearch = null,
+        string $config = 'facets',
+        array $filter = []
+    ): array {
         $fields = $this->getRangeFieldList($config, 'numericRange', $filter);
         return $this->getRangeSettings($fields, 'numeric', $savedSearch);
     }
@@ -877,17 +874,17 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Get all active range facets:
      *
-     * @param array  $specialFacets Special facet setting (in parsed format)
-     * @param object $savedSearch   Saved search object (false if none)
-     * @param string $config        Name of config file
+     * @param array    $specialFacets Special facet setting (in parsed format)
+     * @param ?Results $savedSearch   Saved search object (null if none)
+     * @param string   $config        Name of config file
      *
      * @return array
      */
     protected function getAllRangeSettings(
-        $specialFacets,
-        $savedSearch = false,
-        $config = 'facets'
-    ) {
+        array $specialFacets,
+        ?Results $savedSearch = null,
+        string $config = 'facets'
+    ): array {
         $result = [];
         if (isset($specialFacets['daterange'])) {
             $dates = $this->getDateRangeSettings(
@@ -931,7 +928,7 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
      *
      * @return array
      */
-    protected function parseSpecialFacetsSetting($specialFacets)
+    protected function parseSpecialFacetsSetting(string $specialFacets): array
     {
         // Parse the special facets into a more useful format:
         $parsed = [];
@@ -946,12 +943,12 @@ abstract class AbstractSearchAction extends AbstractTemplateRenderingAction
     /**
      * Process the checkbox setting from special facets.
      *
-     * @param array  $params      Parameters to the checkbox setting
-     * @param object $savedSearch Saved search object (false if none)
+     * @param array    $params      Parameters to the checkbox setting
+     * @param ?Results $savedSearch Saved search object (null if none)
      *
      * @return array
      */
-    protected function processAdvancedCheckboxes($params, $savedSearch = false)
+    protected function processAdvancedCheckboxes(array $params, ?Results $savedSearch = null): array
     {
         // Set defaults for missing parameters:
         $config = $params[0] ?? 'facets';

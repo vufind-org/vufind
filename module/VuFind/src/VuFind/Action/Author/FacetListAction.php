@@ -31,7 +31,7 @@ namespace VuFind\Action\Author;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAction;
+use VuFind\Action\Search\AbstractSearchAndResultsAction;
 
 /**
  * Author search facet list action.
@@ -42,7 +42,7 @@ use VuFind\Action\Search\AbstractSearchAction;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class FacetListAction extends AbstractSearchAction
+class FacetListAction extends AbstractSearchAndResultsAction
 {
     /**
      * Display author facet list.
