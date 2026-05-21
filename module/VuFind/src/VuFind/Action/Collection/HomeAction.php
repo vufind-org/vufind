@@ -63,7 +63,6 @@ class HomeAction extends AbstractRecordAction
         $routeMatch = $request->getAttribute('route-match');
         // If collections are active, we may need to check if the driver is actually
         // a collection; if so, we should redirect to the collection controller.
-        $this->getUrlFromRoute('collection');
         $checkRoute = $this->getPostOrQueryParam('checkRoute');
         if ($checkRoute && ($this->config['Collections']['collections'] ?? false)) {
             $routeConfig = $this->config['Collections']['route'] ?? [];
