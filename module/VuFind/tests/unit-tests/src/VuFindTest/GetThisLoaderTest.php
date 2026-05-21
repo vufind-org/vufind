@@ -429,7 +429,9 @@ class GetThisLoaderTest extends TestCase
         $getThis = $this->getGetThis($config);
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Error with the get this configuration : The condition function "wrong" does not exist');
+        $this->expectExceptionMessage(
+            'Error with the get this configuration : The condition function "wrong" does not exist'
+        );
         $getThis->getSubTemplates();
     }
 
