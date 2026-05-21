@@ -54,6 +54,7 @@ class EdsrecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
+        $this->accessPermission = 'access.EDSModule';
         $this->sourceId = 'EDS';
         $this->fallbackDefaultTab = 'Description';
 
