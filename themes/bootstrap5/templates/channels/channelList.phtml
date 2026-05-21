@@ -21,10 +21,9 @@
         $groupId = $channel['groupId'] ?? $channel['providerId'];
         $channelID = 'channel-' . md5(serialize($channel));
         $providerData = $this->htmlAttributes([
-          'data-batch-size' => $channel['config']['batchSize'],
-          'data-page-size' => $channel['config']['pageSize'],
-          'data-row-size' => $channel['config']['rowSize'],
           'id' => $channelID,
+          'data-page-size' => $channel['config']['pageSize'],
+          'data-batch-size' => $channel['config']['batchSize'],
         ]);
       ?>
       <div class="channel" <?=$providerData ?>>

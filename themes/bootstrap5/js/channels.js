@@ -11,7 +11,10 @@ VuFind.register("channels", function Channels() {
     const channel = document.getElementById(channelID);
     // avoid bad selectors with sources or ids
     for (const item of channel.querySelectorAll(".channel-item")) {
-      if (item.dataset.recordId === id && item.dataset.recordSource === source) {
+      if (
+        item.dataset.recordId === id &&
+        item.dataset.recordSource === source
+      ) {
         return item;
       }
     }
@@ -76,26 +79,11 @@ VuFind.register("channels", function Channels() {
 
         // Add channels to DOM
         for (const channelEl of resDOM.querySelectorAll(".channel")) {
-          // Make sure the channel has content
-          if (channelEl.querySelectorAll(".channel-item").length > 0) {
-            // Add related channels menu
-            const relatedMenu = document.querySelector(`.channel-add-menu[data-group="${group}"]`);
-            if (relatedMenu) {
-              channelEl.querySelector(".channel-title").after(relatedMenu.cloneNode(true));
-            }
-            // Add channel
-            callerChannelEl.after(channelEl);
-            // Clamp new titles
-            for (const titleEl of channelEl.querySelectorAll(".channel-item-title")) {
-              clampLines(titleEl);
-            }
-            continue;
-          }
-
           // Empty result
-          const title = channelEl.querySelector("h2");
-          const emptyWrapper = parser.parseFromString(
-            `<div class="channel">
+          if (channelEl.querySelectorAll(".channel-item").length === 0) {
+            const title = channelEl.querySelector("h2");
+            const emptyWrapper = parser.parseFromString(
+              `<div class="channel">
               <div class="channel-title">
                 <h2>${title.innerHTML}</h2>
               </div>
@@ -106,149 +94,127 @@ VuFind.register("channels", function Channels() {
             "text/html"
           );
 
-          callerChannelEl.after(emptyWrapper.firstChild);
-          callerChannelEl = emptyWrapper.firstChild;
+            callerChannelEl.after(emptyWrapper.firstChild);
+            continue;
+          }
+
+          // Add related channels menu
+          const relatedMenu = document.querySelector(`.channel-add-menu[data-group="${group}"]`);
+          if (relatedMenu) {
+            channelEl
+              .querySelector(".channel-title")
+              .after(relatedMenu.cloneNode(true));
+          }
+
+          // Add channel
+          callerChannelEl.after(channelEl);
+
+          // Clamp new titles
+          const titles = channelEl.querySelectorAll(".channel-item-title");
+          for (const titleEl of titles) {
+            clampLines(titleEl);
+          }
+
+          // Establish forward AJAX
+          if (getHiddenItems(channelEl).length < Number(channelEl.dataset.pageSize)) {
+            showMoreItems({ target: channelEl.querySelector(".channel-load-more-btn")});
+          }
         }
       });
   }
 
-  /**
-   * Helper function to disable the Load more items button
-   * @param {HTMLButtonElement} loadMoreBtn The button
-   * @returns {void}
-   */
-  function disableLoadMoreBtn(loadMoreBtn) {
-    // disable
-    loadMoreBtn.classList.add("disabled");
-    loadMoreBtn.setAttribute("aria-disabled", "true");
-    // change content
-    loadMoreBtn.textContent = VuFind.translate("loading_ellipsis");
-    // store label for later
-    if (!loadMoreBtn.getAttribute("data-enabled-label")) {
-      loadMoreBtn.setAttribute("data-enabled-label", loadMoreBtn.getAttribute("aria-label"));
-    }
-    loadMoreBtn.setAttribute("aria-label", VuFind.translate("loading_ellipsis"));
-  }
-
-  /**
-   * Helper function to enable the Load more items button
-   * @param {HTMLButtonElement} loadMoreBtn The button
-   * @returns {void}
-   */
-  function enableLoadMoreBtn(loadMoreBtn) {
-    // disable
-    loadMoreBtn.classList.remove("disabled");
-    loadMoreBtn.removeAttribute("aria-disabled");
-    // change content
-    loadMoreBtn.textContent = VuFind.translate("channel_more_items");
-    // restore label
-    if (loadMoreBtn.getAttribute("data-enabled-label")) {
-      loadMoreBtn.setAttribute("aria-label", loadMoreBtn.getAttribute("data-enabled-label"));
-    } else {
-      // if not stored, use generic
-      loadMoreBtn.setAttribute("aria-label", VuFind.translate("channel_more_items"));
-    }
-    loadMoreBtn.removeAttribute("data-enabled-label");
-  }
-
-  /**
-   * Helper function to visually hide and disable the more items button
-   * @param {HTMLButtonElement} loadMoreBtn The button
-   * @returns {void}
-   */
-  function hideLoadMoreBtn(loadMoreBtn) {
-    // screen-reader disable
-    loadMoreBtn.classList.add("disabled");
-    loadMoreBtn.setAttribute("aria-disabled", "true");
-    // visually hide
-    loadMoreBtn.classList.add("visually-hidden");
+  function getHiddenItems(channel) {
+    return channel.querySelectorAll(".hidden-batch-item");
   }
 
   /**
    * @param {Event} event Click event from .channel-load-more-btn
    * @returns {void}
    */
-  function loadMoreItems(event) {
-    const btn = event.target;
-    if (btn.classList.contains("disabled")) {
+  async function showMoreItems(event) {
+    const loadMoreBtn = event.target;
+    if (loadMoreBtn.classList.contains("disabled")) {
       return false;
     }
 
     // disable more paging
-    disableLoadMoreBtn(btn);
+    disableLoadMoreBtn(loadMoreBtn);
 
     // Reveal hidden items
-    const targetChannel = btn.closest(".channel");
+    const targetChannel = loadMoreBtn.closest(".channel");
     const pageSize = Number(targetChannel.dataset.pageSize);
-    const hiddenItems = targetChannel.querySelectorAll(".hidden-batch-item");
-
-    // If we're waiting for more records
-    if (hiddenItems.length === 0) {
-      return;
-    }
+    let hiddenItems = getHiddenItems(targetChannel);
 
     // Reveal hidden items (limit to pageSize)
-    for (let i = 0; i < pageSize && i < hiddenItems.length; i++) {
+    const revealCount = Math.min(pageSize, hiddenItems.length);
+    for (let i = 0; i < revealCount; i++) {
       hiddenItems[i].classList.remove("hidden-batch-item");
       clampLines(hiddenItems[i].querySelector(".channel-item-title"));
     }
 
-    // enable more paging
-    enableLoadMoreBtn(btn);
+    // Do we need more items?
+    hiddenItems = getHiddenItems(targetChannel);
+    if (hiddenItems.length < pageSize) {
+      if (!targetChannel.dataset.noMoreAjaxItems) {
+        await requestMoreItems(loadMoreBtn, targetChannel);
 
-    // do we have enough hidden items to add another page?
-    const remainingHiddenItems = hiddenItems.length - pageSize;
-    if (remainingHiddenItems > pageSize) {
-      return;
+        if (revealCount < pageSize) {
+          const len = Math.min(hiddenItems.length, pageSize - revealCount);
+          for (let i = 0; i < len; i++) {
+            hiddenItems[i].classList.remove("hidden-batch-item");
+            clampLines(hiddenItems[i].querySelector(".channel-item-title"));
+          }
+        }
+      }
     }
 
-    // we don't have any more records to load
-    if (targetChannel.dataset.endReached) {
-      hideLoadMoreBtn(btn);
-      return;
+    // Have we shown all items?
+    if (
+      targetChannel.dataset.noMoreAjaxItems &&
+      getHiddenItems(targetChannel).length === 0
+    ) {
+      hideLoadMoreBtn(loadMoreBtn);
+    } else {
+      enableLoadMoreBtn(loadMoreBtn);
     }
+  }
 
-    // AJAX load more records
-    // should fire when we have only have one page of items left
+  // AJAX load more records
+  // should fire when we have less than one page of hidden items
+  async function requestMoreItems(btn, targetChannel) {
     const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
-    fetch(url.toString() + "&layout=lightbox")
-      .then((res) => res.text())
-      .then(function loadMoreItemsParseHTML(resHTML) {
-        const parser = new DOMParser();
-        const resDom = parser.parseFromString(resHTML, "text/html");
+    const res = await fetch(url.toString() + "&layout=lightbox");
+    const resHTML = await res.text();
 
-        const firstChannel = resDom.querySelector(".channel");
-        const records = firstChannel
-          ? firstChannel.querySelectorAll(".channel-item")
-          : [];
+    // Extract channel items
+    const parser = new DOMParser();
+    const resDom = parser.parseFromString(resHTML, "text/html");
 
-        // mark that we've loaded all records
-        if (records.length < pageSize) {
-          targetChannel.dataset.endReached = true;
-        }
+    const firstChannel = resDom.querySelector(".channel");
+    const records = firstChannel
+      ? firstChannel.querySelectorAll(".channel-item")
+      : [];
 
-        // no new records to add
-        if (records.length === 0) {
-          return;
-        }
+    // mark that we've loaded all records
+    if (records.length < Number(targetChannel.dataset.pageSize)) {
+      targetChannel.dataset.noMoreAjaxItems = true;
+    }
 
-        // add new records (hidden)
-        const targetList = targetChannel.querySelector(".channel-list");
-        let index = Number(targetChannel.dataset.loaded);
-        targetChannel.dataset.loaded = index + records.length;
-        for (let i = 0; i < records.length; i++) {
-          const record = records[i];
-          record.dataset.index = index++;
 
-          record.classList.remove("hidden");
-          record.classList.add("hidden-batch-item");
-          targetList.append(record);
+    // add new records (hidden)
+    const targetList = targetChannel.querySelector(".channel-list");
+    let index = Number(targetChannel.dataset.loaded);
+    targetChannel.dataset.loaded = index + records.length;
+    for (let i = 0; i < records.length; i++) {
+      const record = records[i];
+      record.dataset.index = index++;
 
-          clampLines(record.querySelector(".channel-item-title"));
-        }
+      record.classList.remove("hidden");
+      record.classList.add("hidden-batch-item");
+      targetList.append(record);
 
-        enableLoadMoreBtn(btn);
-      });
+      clampLines(record.querySelector(".channel-item-title"));
+    }
 
     // Set button to next page
     url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
@@ -325,13 +291,16 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function quickLook(record, _channelID = null) {
-    const channelID = _channelID === null
-      ? record.closest(".channel").getAttribute("id")
-      : _channelID;
+    const channelID =
+      _channelID === null
+        ? record.closest(".channel").getAttribute("id")
+        : _channelID;
 
     // Load more options if we're past the end of what's available (e.g. due to user hitting "Next")
     if (record.classList.contains("hidden-batch-item")) {
-      loadMoreItems({ target: document.querySelector(`#${channelID} .channel-load-more-btn`) });
+      showMoreItems({
+        target: document.querySelector(`#${channelID} .channel-load-more-btn`),
+      });
     }
 
     const titleLink = record.querySelector(".channel-item-title");
@@ -369,6 +338,11 @@ VuFind.register("channels", function Channels() {
       for (const title of channelEl.querySelectorAll(".channel-item-title")) {
         clampLines(title);
       }
+
+      // Establish forward AJAX
+      if (getHiddenItems(channelEl).length < Number(channelEl.dataset.pageSize)) {
+        showMoreItems({ target: channelEl.querySelector(".channel-load-more-btn")});
+      }
     }
 
     // Global button listener
@@ -396,7 +370,7 @@ VuFind.register("channels", function Channels() {
 
       // Show More buttons
       if (event.target.closest(".channel-load-more-btn")) {
-        loadMoreItems(event);
+        showMoreItems(event);
         event.preventDefault();
         return false;
       }
@@ -441,6 +415,70 @@ VuFind.register("channels", function Channels() {
         }
       }
     });
+  }
+
+  /**
+   * Helper function to disable the Load more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function disableLoadMoreBtn(loadMoreBtn) {
+    // disable
+    loadMoreBtn.classList.add("disabled");
+    loadMoreBtn.setAttribute("aria-disabled", "true");
+    // change content
+    loadMoreBtn.textContent = VuFind.translate("loading_ellipsis");
+    // store label for later
+    if (!loadMoreBtn.getAttribute("data-enabled-label")) {
+      loadMoreBtn.setAttribute(
+        "data-enabled-label",
+        loadMoreBtn.getAttribute("aria-label"),
+      );
+    }
+    loadMoreBtn.setAttribute(
+      "aria-label",
+      VuFind.translate("loading_ellipsis"),
+    );
+  }
+
+  /**
+   * Helper function to enable the Load more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function enableLoadMoreBtn(loadMoreBtn) {
+    // disable
+    loadMoreBtn.classList.remove("disabled");
+    loadMoreBtn.removeAttribute("aria-disabled");
+    // change content
+    loadMoreBtn.textContent = VuFind.translate("channel_more_items");
+    // restore label
+    if (loadMoreBtn.getAttribute("data-enabled-label")) {
+      loadMoreBtn.setAttribute(
+        "aria-label",
+        loadMoreBtn.getAttribute("data-enabled-label"),
+      );
+    } else {
+      // if not stored, use generic
+      loadMoreBtn.setAttribute(
+        "aria-label",
+        VuFind.translate("channel_more_items"),
+      );
+    }
+    loadMoreBtn.removeAttribute("data-enabled-label");
+  }
+
+  /**
+   * Helper function to visually hide and disable the more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function hideLoadMoreBtn(loadMoreBtn) {
+    // screen-reader disable
+    loadMoreBtn.classList.add("disabled");
+    loadMoreBtn.setAttribute("aria-disabled", "true");
+    // visually hide
+    loadMoreBtn.classList.add("visually-hidden");
   }
 
   return { init };
