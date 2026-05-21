@@ -243,7 +243,7 @@ class LoginHelperTest extends TestCase
         $ilsAuthenticator->expects($postParams ? $this->once() : $this->never())
             ->method('newCatalogLogin')
             ->willReturnCallback(
-                function ($username) use ($expectedUsername, $ilsFailure) {
+                function (string $username) use ($expectedUsername, $ilsFailure) {
                     if ($ilsFailure) {
                         throw new ILSException('boom');
                     }
