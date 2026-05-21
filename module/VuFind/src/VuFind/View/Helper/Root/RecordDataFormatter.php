@@ -178,7 +178,7 @@ class RecordDataFormatter
             $value = ($this->componentHelper)(
                 'expandable-text',
                 [
-                    'id' => 'expandable-field-' . str_replace(' ', '-', $field),
+                    'id' => 'expandable-field-' . preg_replace('/\W/', '-', $field),
                     'text' => $value,
                 ]
             );
