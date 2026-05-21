@@ -32,7 +32,7 @@ namespace VuFind\Action;
 use Laminas\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use VuFind\ServiceManager\Factory\AutowiringFactory;
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 
 use function count;
 
@@ -50,8 +50,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Default plugin aliases.
      *
-     * Action classes are auto-discovered in autoDiscoveryNamespaces (see below) when the names follow the convention
-     * Category\Classname. Other forms will need to be mapped from 'category/action' (all lowercase) here.
+     * Action classes are auto-discovered in autoDiscoveryNamespaces (see below). The names must follow the convention
+     * Category\Classname to be auto-discovered.
      *
      * @var array
      */
@@ -106,6 +106,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
@@ -214,8 +215,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected function resolveAlias(string $alias): string
     {
         if (null !== ($result = $this->aliases[$alias] ?? null)) {
-            // Explicitly set the factory so that discovered classes don't need the Autowire attribute:
-            $this->factories[$result] ??= AutowiringFactory::class;
             return $result;
         }
 
@@ -232,8 +231,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             $className = $ns . '\\' . $actionClass;
             if (class_exists($className)) {
                 $this->aliases[$alias] = $className;
-                // Explicitly set the factory so that discovered classes don't need the Autowire attribute:
-                $this->factories[$className] ??= AutowiringFactory::class;
                 return $className;
             }
         }
