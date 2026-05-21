@@ -260,7 +260,7 @@ class Ini extends AbstractBase
         $config = parse_ini_file($configLocation->getPath(), true);
 
         foreach ($config as $section => $sectionConfig) {
-            if ($section === '@inlcude') {
+            if ($section === '@include') {
                 throw new ConfigException('Can not write INI configuration with @inlcude statement.');
             }
             foreach ($sectionConfig as $setting => $value) {
