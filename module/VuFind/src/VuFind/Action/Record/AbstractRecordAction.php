@@ -252,8 +252,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
         $allScripts = [];
         foreach (array_keys($tabs) as $tab) {
             if (!empty($this->tabsExtraScripts[$tab])) {
-                $allScripts
-                    = array_merge($allScripts, $this->tabsExtraScripts[$tab]);
+                $allScripts = array_merge($allScripts, $this->tabsExtraScripts[$tab]);
             }
         }
         return array_unique($allScripts);
