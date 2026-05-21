@@ -31,12 +31,6 @@ namespace VuFind\Action\Ajax;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\AbstractAction;
-use VuFind\Action\AjaxResponseTrait;
-use VuFind\AjaxHandler\PluginManager as AjaxPluginManager;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\I18n\Translator\TranslatorAwareTrait;
-use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Check status and return a status message for e.g. a load balancer.
@@ -47,25 +41,8 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SystemStatusAction extends AbstractAction implements TranslatorAwareInterface
+class SystemStatusAction extends AbstractAjaxAction
 {
-    use AjaxResponseTrait;
-    // For AjaxResponseTrait:
-    use TranslatorAwareTrait;
-
-    /**
-     * Constructor.
-     *
-     * @param AjaxPluginManager $ajaxManager AJAX Handler Plugin Manager
-     */
-    #[Autowire()]
-    public function __construct(
-        AjaxPluginManager $ajaxManager
-    ) {
-        parent::__construct();
-        $this->ajaxManager = $ajaxManager;
-    }
-
     /**
      * Make an AJAX call with a JSON-formatted response.
      *

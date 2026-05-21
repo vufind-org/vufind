@@ -124,7 +124,7 @@ trait AjaxResponseTrait
     protected function getExceptionResponse(ResponseInterface $response, string $type, \Exception $e): ResponseInterface
     {
         $debugMsg = ('development' == APPLICATION_ENV)
-            ? ': ' . $e->getMessage() : '';
+            ? ': ' . (string)$e : '';
         return $this->getAjaxResponse(
             $response,
             $type,

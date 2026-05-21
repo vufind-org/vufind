@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Handle online payment notification callback.
+ * Abstract base class for Ajax actions.
  *
  * PHP version 8
  *
@@ -29,11 +29,15 @@
 
 namespace VuFind\Action\Ajax;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractAction;
+use VuFind\Action\AjaxResponseTrait;
+use VuFind\AjaxHandler\PluginManager as AjaxPluginManager;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Handle online payment notification callback.
+ * Abstract base class for Ajax actions.
  *
  * @category VuFind
  * @package  Action
@@ -41,20 +45,22 @@ use Psr\Http\Message\ServerRequestInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class OnlinePaymentNotifyAction extends AbstractAjaxAction
+abstract class AbstractAjaxAction extends AbstractAction implements TranslatorAwareInterface
 {
+    use AjaxResponseTrait;
+    // For AjaxResponseTrait:
+    use TranslatorAwareTrait;
+
     /**
-     * Make an AJAX call with a JSON-formatted response.
+     * Constructor.
      *
-     * @param ServerRequestInterface $request  Server request
-     * @param ResponseInterface      $response Response
-     *
-     * @return ResponseInterface
+     * @param AjaxPluginManager $ajaxManager AJAX Handler Plugin Manager
      */
-    public function action(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-    ): ResponseInterface {
-        return $this->callAjaxMethod($request, $response, 'onlinePaymentNotify', 'text/html');
+    #[Autowire()]
+    public function __construct(
+        AjaxPluginManager $ajaxManager
+    ) {
+        parent::__construct();
+        $this->ajaxManager = $ajaxManager;
     }
 }
