@@ -54,7 +54,7 @@ class ConfigWritingTest extends ConfigTestCase
         yield 'ini Parent_Config' => [
             'inheritance',
             'unit-test-child',
-            'Can not write INI configuration with inheritance.'
+            'Can not write INI configuration with inheritance.',
         ];
         yield 'ini include::' => [
             'include',
@@ -69,20 +69,20 @@ class ConfigWritingTest extends ConfigTestCase
         yield 'ini @include' => [
             'ini-file-with-include',
             'test',
-            'Can not write INI configuration with @inlcude statement.'
+            'Can not write INI configuration with @inlcude statement.',
         ];
         yield 'ini @include section' => [
             'ini-file-with-include',
             'test-section',
-            'Can not write INI configuration with @inlcude statement.'
+            'Can not write INI configuration with @inlcude statement.',
         ];
     }
 
     /**
      * Test writing with inheritance fails.
      *
-     * @param string $fixture    Fixture
-     * @param string $configName Config name
+     * @param string $fixture          Fixture
+     * @param string $configName       Config name
      * @param string $exceptionMessage Expected exception message
      *
      * @return void

@@ -38,6 +38,7 @@ use VuFind\Exception\FileAccess as FileAccessException;
 
 use function in_array;
 use function is_array;
+use function is_string;
 
 /**
  * Ini config handler.
