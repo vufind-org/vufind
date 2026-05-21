@@ -44,9 +44,10 @@ function getHTPreviews(keys) {
   for (var i = 0; i < bibkeys.length; i++) {
     batch.push(bibkeys[i]);
     if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
-      var script = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
-                + batch.join('|') + '&callback=processHTBookInfo';
-      $.getScript(script);
+      let url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
+        + batch.join('|');
+      $.getJSON(url)
+        .done(processHTBookInfo);
       batch = [];
     }
   }
