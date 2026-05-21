@@ -417,7 +417,7 @@ class GetThisLoaderTest extends TestCase
 
     /**
      * Test method getSubTemplates with error in config.
-     * Wrong function name
+     * Wrong function name.
      *
      * @return void
      * @throws Exception
