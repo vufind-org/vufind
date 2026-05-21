@@ -269,7 +269,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     protected function showTab(string $tab, bool $ajax = false): ResponseInterface
     {
         // Special case -- handle login request (currently needed for holdings tab when driver-based holds mode is
-		// enabled, but may also be useful in other circumstances):
+        // enabled, but may also be useful in other circumstances):
         if (
             $this->getQueryParam('login') == 'true'
             && !$this->getUser()
