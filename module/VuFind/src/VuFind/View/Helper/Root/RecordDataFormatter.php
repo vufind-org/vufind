@@ -35,6 +35,7 @@ use Laminas\View\Helper\EscapeHtml;
 use VuFind\RecordDataFormatter\Specs\PluginManager as SpecsManager;
 use VuFind\RecordDataFormatter\Specs\SpecInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\String\PropertyStringInterface;
 
 use function call_user_func;
@@ -73,9 +74,13 @@ class RecordDataFormatter
      */
     public function __construct(
         protected SpecsManager $specsManager,
+        #[Autowire(container: 'ViewHelperManager')]
         protected Record $recordHelper,
+        #[Autowire(container: 'ViewHelperManager')]
         protected TransEsc $transEsc,
+        #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtml,
+        #[Autowire(container: 'ViewHelperManager')]
         protected Component $componentHelper
     ) {
     }
