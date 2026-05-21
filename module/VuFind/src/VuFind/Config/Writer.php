@@ -29,7 +29,6 @@
 
 namespace VuFind\Config;
 
-use function count;
 use function dirname;
 use function is_array;
 use function is_int;
@@ -105,12 +104,9 @@ class Writer
         $settingSet = false;
         $currentSection = '';
         $this->content = '';
-        $currentLine = 0;
 
         // Process one line at a time...
         foreach ($lines as $line) {
-            $currentLine++;
-
             // Separate comments from content:
             $parts = explode(';', trim($line), 2);
             $content = trim($parts[0]);
@@ -153,8 +149,10 @@ class Writer
             }
 
             // Save the current line:
-            $this->content .= $line . (($currentLine < count($lines)) ? "\n" : '');
+            $this->content .= $line . "\n";
         }
+
+        $this->content = substr($this->content, 0, -1);
 
         // Did we loop through everything without finding a place to put the setting?
         if (!$settingSet && $value !== null) {
