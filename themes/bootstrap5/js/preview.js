@@ -31,28 +31,6 @@ function getOLOptions() {
 }
 
 /**
- * Fetch HathiTrust books in batches from the API.
- * @param {string} keys A space-separated string of bibkeys.
- */
-function getHTPreviews(keys) {
-  var skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
-  var bibkeys = skeys.split(/\s+/);
-  // fetch 20 books at time if there are more than 20
-  // since hathitrust only allows 20 at a time
-  // as per https://vufind.org/jira/browse/VUFIND-317
-  var batch = [];
-  for (var i = 0; i < bibkeys.length; i++) {
-    batch.push(bibkeys[i]);
-    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
-      let url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
-        + batch.join('|');
-      $.getJSON(url)
-        .done(processHTBookInfo);
-      batch = [];
-    }
-  }
-}
-/**
  * Update a preview link and its corresponding record thumbnail with a new URL.
  * @param {jQuery} $link The preview button element.
  * @param {string} url   The preview URL.
@@ -137,6 +115,29 @@ function processHTBookInfo(booksInfo) {
           applyPreviewUrl($link, items[i].itemURL);
         }
       }
+    }
+  }
+}
+
+/**
+ * Fetch HathiTrust books in batches from the API.
+ * @param {string} keys A space-separated string of bibkeys.
+ */
+function getHTPreviews(keys) {
+  var skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
+  var bibkeys = skeys.split(/\s+/);
+  // fetch 20 books at time if there are more than 20
+  // since hathitrust only allows 20 at a time
+  // as per https://vufind.org/jira/browse/VUFIND-317
+  var batch = [];
+  for (var i = 0; i < bibkeys.length; i++) {
+    batch.push(bibkeys[i]);
+    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
+      let url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
+        + batch.join('|');
+      $.getJSON(url)
+        .done(processHTBookInfo);
+      batch = [];
     }
   }
 }
