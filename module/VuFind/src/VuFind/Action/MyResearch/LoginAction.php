@@ -37,6 +37,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\ForwardHelper as ActionHelperForwardHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Login action.
@@ -55,6 +56,7 @@ class LoginAction extends AbstractTemplateRenderingAction
      *
      * @param AuthManager $authManager Authentication manager
      */
+    #[Autowire()]
     public function __construct(
         protected AuthManager $authManager,
     ) {
