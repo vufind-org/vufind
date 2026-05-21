@@ -96,7 +96,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
             'ini-file-with-include' => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test.ini')),
             'ini-file-with-include-section'
-            => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test-section.ini')),
+                => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test-section.ini')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
             'dir-config-with-inheritance'
                 => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
