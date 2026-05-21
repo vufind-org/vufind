@@ -166,7 +166,7 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
         foreach ($options['extraLineOptions'] ?? [] as $lineOptionSection) {
             $extraLineOption = $this->config[$lineOptionSection] ?? [];
             $lineIdentifierKey = $extraLineOption['lineIdentifierKey'] ?? 'label';
-            $lineIdentifierValues = (array) ($extraLineOption['lineIdentifierValue'] ?? []);
+            $lineIdentifierValues = (array)($extraLineOption['lineIdentifierValue'] ?? []);
             unset($extraLineOption['lineIdentifierKey']);
             unset($extraLineOption['lineIdentifierValue']);
             foreach ($lineIdentifierValues as $lineIdentifierValue) {
