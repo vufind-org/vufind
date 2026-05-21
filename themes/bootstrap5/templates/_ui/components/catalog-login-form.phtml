@@ -1,11 +1,17 @@
 <?php
-    // Convenience variable:
-    $offlineMode = $this->ils()->getOfflineMode();
+  /**
+   * Component to display the catalog login form.
+   *
+   * @param bool $showMenu Should we render the AccountMenu section in a sidebar?
+   */
+   
+  // Convenience variable:
+  $offlineMode = $this->ils()->getOfflineMode();
 
-    // We should show the account menu unless it's been switched off or we're in the lightbox:
-    $showMenu = ($this->showMenu ?? false) && !$this->inLightbox;
+  // We should show the account menu unless it's been switched off or we're in the lightbox:
+  $showMenu = ($this->showMenu ?? false) && !$this->inLightbox;
 
-    $loginSettings = $this->config()->getILSLoginSettings();
+  $loginSettings = $this->config()->getILSLoginSettings();
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
