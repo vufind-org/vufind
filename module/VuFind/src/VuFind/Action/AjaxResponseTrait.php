@@ -159,7 +159,7 @@ trait AjaxResponseTrait
                 return $this->getAjaxResponse(
                     $response,
                     $type,
-                    ...$handler->handleRequest($request, $response)
+                    ...$handler->handleRequest($request)
                 );
             } catch (\Exception $e) {
                 return $this->getExceptionResponse($response, $type, $e);
