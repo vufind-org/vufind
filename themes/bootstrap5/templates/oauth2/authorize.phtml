@@ -37,7 +37,7 @@
         <?php if (count($this->libraryCards()->getCardsForUser($this->user)) > 1): ?>
           <?=$this->partial('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
         <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->showCatalogLoginForm): ?>
-          <?=$this->render('myresearch/catalogloginform.phtml')?>
+          <?=$this->component('catalog-login-form')?>
         <?php endif; ?>
       </div>
     <?php endif; ?>

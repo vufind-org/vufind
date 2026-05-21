@@ -168,7 +168,7 @@
       <?php endforeach; ?>
     <?php endif; ?>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->showCatalogLoginForm): ?>
-    <?=$this->render('myresearch/catalogloginform.phtml')?>
+    <?=$this->component('catalog-login-form')?>
   <?php endif; ?>
 
   <?php if ($this->developerSettings()->isEnabled()): ?>
