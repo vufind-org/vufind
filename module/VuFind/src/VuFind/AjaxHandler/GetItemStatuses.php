@@ -273,12 +273,9 @@ class GetItemStatuses extends AbstractBase implements
      * for location settings other than "group".
      *
      * @param ServerRequestInterface $request           Request
-     * @param array                  $record            Information on items linked to a single bib
-     *                                                  record
-     * @param string                 $locationSetting   The location mode setting used for
-     *                                                  pickValue()
-     * @param string                 $callnumberSetting The callnumber mode setting used for
-     *                                                  pickValue()
+     * @param array                  $record            Information on items linked to a single bib record
+     * @param string                 $locationSetting   The location mode setting used for pickValue()
+     * @param string                 $callnumberSetting The callnumber mode setting used for pickValue()
      *
      * @return array                    Summarized availability information
      */
