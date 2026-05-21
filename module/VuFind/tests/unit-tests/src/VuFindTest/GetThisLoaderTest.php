@@ -398,6 +398,7 @@ class GetThisLoaderTest extends TestCase
 
     /**
      * Test method getSubTemplates with error in config.
+     * String instead of array for a condition block.
      *
      * @return void
      * @throws Exception
@@ -411,6 +412,24 @@ class GetThisLoaderTest extends TestCase
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Error with the get this configuration');
+        $getThis->getSubTemplates();
+    }
+
+    /**
+     * Test method getSubTemplates with error in config.
+     * Wrong function name
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testConfigErrorRandomErrorInConfig2(): void
+    {
+        $config = $this->baseConfig;
+        $config['templates']['holdings']['condition_function'] = 'wrong';
+        $getThis = $this->getGetThis($config);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Error with the get this configuration : The condition function "wrong" does not exist');
         $getThis->getSubTemplates();
     }
 
@@ -563,12 +582,12 @@ class GetThisLoaderTest extends TestCase
         ]);
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn([]);
-        $this->setProperty($getThis, 'record', $driver);
+        $getThis->setRecord($driver);
         $this->assertSame('', $getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn(['holdings' => [123]]);
-        $this->setProperty($getThis, 'record', $driver);
+        $getThis->setRecord($driver);
         $this->assertSame('', $getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
@@ -596,7 +615,7 @@ class GetThisLoaderTest extends TestCase
                 ],
             ],
         ]);
-        $this->setProperty($getThis, 'record', $driver);
+        $getThis->setRecord($driver);
         $this->assertSame('https://what_a_great_link.com', $getThis->getLink());
         $this->assertSame('https://what_another_great_link.com', $getThis->getLink('3'));
     }
@@ -716,7 +735,7 @@ class GetThisLoaderTest extends TestCase
         $getThis = $this->getGetThis();
         $driver = $this->getMockRecordDriver();
         $driver->method('getSummary')->willReturnOnConsecutiveCalls([], ['sum1'], ['sum1', 'sum2']);
-        $this->setProperty($getThis, 'record', $driver);
+        $getThis->setRecord($driver);
 
         $this->assertSame('', $getThis->getSummary());
         $this->assertSame('sum1', $getThis->getSummary());
@@ -771,7 +790,7 @@ class GetThisLoaderTest extends TestCase
             ['still not'],
             ['neither', 'and finally not'],
         );
-        $this->setProperty($getThis, 'record', $driver);
+        $getThis->setRecord($driver);
 
         $this->assertFalse($getThis->isSerial());
         $this->assertTrue($getThis->isSerial());

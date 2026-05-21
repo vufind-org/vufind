@@ -59,28 +59,28 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @var ?array
      */
-    protected $items;
+    protected ?array $items;
 
     /**
      * Holding item id to use when none is passed.
      *
      * @var ?string
      */
-    protected $defaultItemId;
+    protected ?string $defaultItemId;
 
     /**
      * Sub-templates to display.
      *
      * @var ?array
      */
-    protected $subTemplates;
+    protected ?array $subTemplates;
 
     /**
      * Sub-templates params from config.
      *
      * @var ?array
      */
-    protected $subTemplatesParams;
+    protected ?array $subTemplatesParams;
 
     /**
      * Record driver.
@@ -107,14 +107,20 @@ class GetThisLoader implements LoggerAwareInterface
      * @param string $function The function to test
      *
      * @return bool
+     * @throws Exception
      */
     protected function isConditionFunctionFilled(string $function): bool
     {
+        $negate = false;
         if (str_starts_with($function, '!')) {
             $function = substr($function, 1);
-            return method_exists($this, $function) && !call_user_func([$this, $function]);
+            $negate = true;
         }
-        return method_exists($this, $function) && call_user_func([$this, $function]);
+        if (!method_exists($this, $function)) {
+            throw new Exception('The condition function "' . $function . '" does not exist in ' . static::class);
+        }
+        $result = call_user_func([$this, $function]);
+        return $negate ? !$result : $result;
     }
 
     /**
@@ -216,7 +222,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Add a parameters to the template.
+     * Add a parameter to the template.
      *
      * @param string $templateName Template name
      * @param string $key          Key value of the parameter
@@ -328,15 +334,14 @@ class GetThisLoader implements LoggerAwareInterface
             }
             return $default;
         }
-        // The exception can not happen as we are passing a boolean
+        // No need to do a try catch for this function. The exception happens only when passing null which we don't
         return $this->regex->matches($regexName, $haystack, $default);
     }
 
     /**
      * Get the location for a holding item.
      *
-     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
-     *                        item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first item
      *
      * @return string The location string
      */
@@ -348,8 +353,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the location code for a holding item.
      *
-     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
-     *                        item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first item
      *
      * @return string The location code
      */
@@ -361,17 +365,14 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the link data for requesting the item.
      *
-     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
-     *                        item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first item
      *
      * @return array|string The data required to build a request URL for the item
      */
     public function getLink(?string $itemId = null): array|string
     {
         $isProvidedItemIdNull = null === $itemId;
-        // If $itemId is null, call getItem just in case $items returns the items in a different order
-        // than the real time holdings information
-        $itemId = $this->getItem($itemId)['item_id'] ?? null;
+        $itemId = $this->getItemId($itemId);
 
         $holdings = $this->record->getRealTimeHoldings();
         if (!isset($holdings['holdings'])) {
@@ -410,8 +411,6 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function getCallNumber(?string $itemId = null): ?array
     {
-        $item = $this->getItem($itemId);
-
         if ($this->isOnlineResource($itemId)) {
             return [
                 'text' => 'Online',
@@ -419,6 +418,7 @@ class GetThisLoader implements LoggerAwareInterface
             ];
         }
 
+        $item = $this->getItem($itemId);
         $callNumber = '';
         if (!empty($item['callnumber'])) {
             if (!empty($item['callnumber_prefix'])) {
@@ -450,10 +450,7 @@ class GetThisLoader implements LoggerAwareInterface
             return null;
         }
         $item = $this->getItem($itemId);
-        if (isset($item['number'])) {
-            return $item['number'];
-        }
-        return null;
+        return $item['number'] ?? null;
     }
 
     /**
@@ -654,7 +651,7 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function showInterLibrary(?string $itemId = null): bool
     {
-        $itemId = $this->getDefaultItemId($itemId);
+        $itemId = $this->getItemId($itemId);
         $haystack = [];
         if ($location = $this->getLocation($itemId)) {
             $haystack[] = $location;
@@ -716,6 +713,7 @@ class GetThisLoader implements LoggerAwareInterface
     public function setItems(array $items): void
     {
         $this->items = $items;
+        $this->defaultItemId = null;
         $this->subTemplates = null;
     }
 
@@ -726,13 +724,13 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return ?string $itemId for the selected item
      */
-    protected function getDefaultItemId(?string $itemId = null): ?string
+    protected function getItemId(?string $itemId = null): ?string
     {
         if (isset($itemId)) {
             return $itemId; // Use the one passed as a parameter first
         } elseif (isset($this->defaultItemId)) {
             return $this->defaultItemId; // Get the one set by the loader
-        } elseif (is_array($this->items) && isset(current($this->items)['item_id'])) {
+        } elseif (isset($this->items) && is_array($this->items) && isset(current($this->items)['item_id'])) {
             return current($this->items)['item_id']; // Grab the first holding record
         } else {
             return null; // This shouldn't happen, but we have no item id!
@@ -751,7 +749,7 @@ class GetThisLoader implements LoggerAwareInterface
     public function getItem(?string $itemId = null): ?array
     {
         $item = null;
-        $itemId = $this->getDefaultItemId($itemId);
+        $itemId = $this->getItemId($itemId);
         foreach ($this->getItems() as $hold_item) {
             if (isset($hold_item['item_id']) && $hold_item['item_id'] == $itemId) {
                 $item = $hold_item;
