@@ -32,6 +32,7 @@
 namespace VuFind\Action\Record;
 
 use Laminas\Psr7Bridge\Psr7ServerRequest;
+use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
@@ -63,51 +64,51 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     /**
      * Array of available tab options.
      *
-     * @var array
+     * @var ?array
      */
-    protected $allTabs = null;
+    protected ?array $allTabs = null;
 
     /**
      * Default tab to display (configured at record driver level).
      *
-     * @var string
+     * @var ?string
      */
-    protected $defaultTab = null;
+    protected ?string $defaultTab = null;
 
     /**
      * Default tab to display (fallback used if no record driver configuration).
      *
      * @var string
      */
-    protected $fallbackDefaultTab = 'Holdings';
+    protected string $fallbackDefaultTab = 'Holdings';
 
     /**
      * Array of background tabs.
      *
-     * @var array
+     * @var ?array
      */
-    protected $backgroundTabs = null;
+    protected ?array $backgroundTabs = null;
 
     /**
      * Array of extra scripts for tabs.
      *
-     * @var array
+     * @var ?array
      */
-    protected $tabsExtraScripts = null;
+    protected ?array $tabsExtraScripts = null;
 
     /**
      * Type of record to display.
      *
      * @var string
      */
-    protected $sourceId = 'Solr';
+    protected string $sourceId = 'Solr';
 
     /**
      * Record driver.
      *
-     * @var AbstractRecordDriver
+     * @var ?AbstractRecordDriver
      */
-    protected $driver = null;
+    protected ?AbstractRecordDriver $driver = null;
 
     /**
      * Constructor.
@@ -150,7 +151,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     /**
      * Load the record requested by the user; note that this is not done in the
      * init() method since we don't want to perform an expensive search twice
-     * when homeAction() forwards to another method.
+     * when an action forwards to another action.
      *
      * @param ?ParamBag $params Search backend parameters
      * @param bool      $force  Set to true to force a reload of the record, even if
@@ -158,7 +159,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      *
      * @return AbstractRecordDriver
      */
-    protected function loadRecord(?ParamBag $params = null, bool $force = false)
+    protected function loadRecord(?ParamBag $params = null, bool $force = false): AbstractRecordDriver
     {
         // Only load the record if it has not already been loaded. Note that
         // when determining record ID, we check both the route match (the most
@@ -184,7 +185,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      *
      * @return void
      */
-    protected function loadTabDetails()
+    protected function loadTabDetails(): void
     {
         $driver = $this->loadRecord();
         $manager = $this->getRecordTabManager();
@@ -201,7 +202,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      *
      * @return string
      */
-    protected function getDefaultTab()
+    protected function getDefaultTab(): string
     {
         // Load default tab if not already retrieved:
         if (null === $this->defaultTab) {
@@ -215,7 +216,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      *
      * @return array
      */
-    protected function getAllTabs()
+    protected function getAllTabs(): array
     {
         if (null === $this->allTabs) {
             $this->loadTabDetails();
@@ -228,7 +229,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      *
      * @return array
      */
-    protected function getBackgroundTabs()
+    protected function getBackgroundTabs(): array
     {
         if (null === $this->backgroundTabs) {
             $this->loadTabDetails();
@@ -243,7 +244,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      *
      * @return array
      */
-    protected function getTabsExtraScripts($tabs)
+    protected function getTabsExtraScripts(array $tabs): array
     {
         if (null === $this->tabsExtraScripts) {
             $this->loadTabDetails();
@@ -264,9 +265,9 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
      * @param string $tab  Name of tab to display
      * @param bool   $ajax Are we in AJAX mode?
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function showTab($tab, $ajax = false)
+    protected function showTab(string $tab, bool $ajax = false): ResponseInterface
     {
         // Special case -- handle login request (currently needed for holdings
         // tab when driver-based holds mode is enabled, but may also be useful
@@ -322,7 +323,9 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     }
 
     /**
-     * Get the tab configuration for this controller.
+     * Get tab manager.
+     *
+     * This may be overridden e.g. to set the context.
      *
      * @return TabManager
      */
@@ -344,12 +347,12 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     /**
      * Redirect the user to the main record view.
      *
-     * @param string $params Parameters to append to record URL.
-     * @param string $tab    Record tab to display (null for default).
+     * @param string  $params Parameters to append to record URL.
+     * @param ?string $tab    Record tab to display (null for default).
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function redirectToRecord($params = '', $tab = null)
+    protected function redirectToRecord(string $params = '', ?string $tab = null): ResponseInterface
     {
         $details = $this->recordRouter->getTabRouteDetails($this->loadRecord(), $tab);
         $target = $this->getUrlFromRoute($details['route'], $details['params']);

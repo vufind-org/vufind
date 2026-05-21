@@ -117,9 +117,9 @@ class HomeAction extends AbstractRecordAction
      * @param string $tab  Name of tab to display
      * @param bool   $ajax Are we in AJAX mode?
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function showTab($tab, $ajax = false)
+    protected function showTab(string $tab, bool $ajax = false): ResponseInterface
     {
         // Check that collections are enabled and redirect if necessary
         if (empty($this->config['Collections']['collections'])) {
