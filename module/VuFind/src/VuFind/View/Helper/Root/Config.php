@@ -65,8 +65,8 @@ class Config
      * @param ConfigManagerInterface $configManager Configuration manager
      * @param LoginHelper            $loginHelper   Login helper
      */
+    #[Autowire]
     public function __construct(
-        #[Autowire]
         protected ConfigManagerInterface $configManager,
         #[Autowire(container: ActionHelperPluginManager::class)]
         protected LoginHelper $loginHelper,
