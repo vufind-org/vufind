@@ -271,12 +271,10 @@ class HomeAction extends AbstractTemplateRenderingAction
      */
     protected function applyTopicDelimiters(&$result): void
     {
-        $config = $this->config;
-
         foreach ($result['Browse']['items'] as &$item) {
             $item['heading'] = str_replace(
                 "\u{2002}",
-                ($config['AlphaBrowse']['topic_browse_separator'] ?? ' > '),
+                ($this->config['AlphaBrowse']['topic_browse_separator'] ?? ' > '),
                 $item['heading']
             );
         }
