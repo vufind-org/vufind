@@ -42,7 +42,6 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
 use function call_user_func;
-use function floatval;
 use function in_array;
 use function intval;
 use function is_callable;
@@ -64,7 +63,28 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\RemoteCoverageTrait;
 
+    /**
+     * Default timeout in milliseconds.
+     *
+     * @var int
+     */
     public const DEFAULT_TIMEOUT = 5000;
+
+    /**
+     * Default retry delay in milliseconds.
+     *
+     * @var int
+     */
+    public const DEFAULT_RETRY_DELAY = 1000;
+
+    /**
+     * Default number of retries for retryable actions.
+     *
+     * Note: 5 means the initial try + 5 retries for a total of 6 tries.
+     *
+     * @var int
+     */
+    public const DEFAULT_RETRY_COUNT = 5;
 
     /**
      * Modified configurations.
@@ -355,32 +375,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Sleep if necessary.
-     *
-     * @param int|float $secs Seconds to sleep
-     *
-     * @return void
-     */
-    protected function snooze(int|float $secs = 1): void
-    {
-        $snoozeMultiplier = $this->getSnoozeMultiplier();
-        if ($snoozeMultiplier <= 0) {
-            $snoozeMultiplier = 1;
-        }
-        usleep(1000000 * $secs * $snoozeMultiplier);
-    }
-
-    /**
-     * Get the snooze multiplier.
-     *
-     * @return float
-     */
-    protected function getSnoozeMultiplier(): float
-    {
-        return floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
-    }
-
-    /**
      * Get the default timeout in milliseconds.
      *
      * @return int
@@ -389,6 +383,30 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         return intval(
             getenv('VUFIND_DEFAULT_TEST_TIMEOUT') ?: self::DEFAULT_TIMEOUT
+        );
+    }
+
+    /**
+     * Get the default retry delay in milliseconds.
+     *
+     * @return int
+     */
+    protected function getDefaultRetryDelay(): int
+    {
+        return intval(
+            getenv('VUFIND_DEFAULT_TEST_RETRY_DELAY') ?: self::DEFAULT_RETRY_DELAY
+        );
+    }
+
+    /**
+     * Get the default retry count.
+     *
+     * @return int
+     */
+    protected function getDefaultRetryCount(): int
+    {
+        return intval(
+            getenv('VUFIND_DEFAULT_TEST_RETRY_COUNT') ?: self::DEFAULT_RETRY_COUNT
         );
     }
 
@@ -590,7 +608,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param Element $page                 Page containing open lightbox selector
      * @param string  $openLightboxSelector CSS selector for element to click for lightbox access
      * @param string  $targetSelector       Element to select from open lightbox
-     * @param int     $maxAttempts          Maximum number of attempts to open lightbox (in case initial click fails)
+     * @param ?int    $maxRetries           Maximum number of retries to open lightbox (in case initial click fails),
+     * or null for default
      *
      * @return NodeElement
      */
@@ -598,15 +617,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         Element $page,
         string $openLightboxSelector,
         string $targetSelector,
-        int $maxAttempts = 5
+        ?int $maxRetries = null
     ): NodeElement {
-        for ($try = 0; $try < $maxAttempts; $try++) {
+        $maxRetries ??= $this->getDefaultRetryCount();
+        for ($try = 1; $try < $maxRetries + 1; $try++) {
             $this->clickCss($page, $openLightboxSelector);
             $this->waitForPageLoad($page);
             try {
                 return $this->findCss($page, $targetSelector);
             } catch (\Exception $e) {
-                $this->logWarning('Lightbox failed to open on attempt #' . ($try + 1));
+                $this->logWarning('Lightbox failed to open on attempt #' . $try);
             }
         }
         throw new \Exception("Ran out of retries looking for $targetSelector in lightbox using $openLightboxSelector");
@@ -697,7 +717,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         ?int $timeout = null,
         int $index = 0
     ): NodeElement {
-        $maxTries = 3;
+        $maxTries = $this->getDefaultRetryCount() + 1;
         for ($tries = 1; $tries <= $maxTries; $tries++) {
             try {
                 $result = $this->findCss($page, $selector, $timeout, $index);
@@ -709,7 +729,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 if ($tries === $maxTries) {
                     throw $e;
                 }
-                $this->snooze();
+                usleep(1000 * $this->getDefaultRetryDelay());
             }
         }
         throw new \Exception('Unexpected state reached.');
@@ -723,7 +743,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string  $selector    CSS selector
      * @param string  $value       Value to set
      * @param ?int    $timeout     Wait timeout for CSS selection (in ms)
-     * @param int     $retries     Retry count for set loop
+     * @param ?int    $maxRetries  Maximum number of retries for the set loop, or null for default
      * @param bool    $verifyValue Whether to verify that the value was written
      * @param bool    $reFocus     Whether to focus the element when done setting the value
      *
@@ -734,15 +754,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         string $selector,
         string $value,
         ?int $timeout = null,
-        int $retries = 6,
+        ?int $maxRetries = null,
         bool $verifyValue = true,
         bool $reFocus = false
     ): void {
         $timeout ??= $this->getDefaultTimeout();
+        $maxRetries ??= $this->getDefaultRetryCount();
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
-        for ($i = 1; $i <= $retries; $i++) {
+        for ($i = 1; $i <= $maxRetries + 1; $i++) {
             try {
                 $field = $this->findCss($page, $selector, $timeout, 0);
                 $field->setValue($value);
@@ -768,20 +789,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 );
             }
 
-            $this->snooze();
+            usleep(1000 * $this->getDefaultRetryDelay());
         }
 
-        throw new \Exception('Failed to set value using ' . $selector . ' after ' . $retries . ' attempts.');
+        throw new \Exception('Failed to set value using ' . $selector . ' after ' . ($maxRetries + 1) . ' attempts.');
     }
 
     /**
      * Get text of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param ?int    $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page       Page element
+     * @param string  $selector   CSS selector
+     * @param ?int    $timeout    Wait timeout for CSS selection (in ms)
+     * @param int     $index      Index of the element (0-based)
+     * @param ?int    $maxRetries Maximum number of retries, or null for default
      *
      * @return string
      */
@@ -790,19 +811,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         string $selector,
         ?int $timeout = null,
         int $index = 0,
-        int $retries = 6
+        ?int $maxRetries = null
     ): string {
-        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $retries);
+        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $maxRetries);
     }
 
     /**
      * Get value of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param ?int    $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page       Page element
+     * @param string  $selector   CSS selector
+     * @param ?int    $timeout    Wait timeout for CSS selection (in ms)
+     * @param int     $index      Index of the element (0-based)
+     * @param ?int    $maxRetries Maximum number of retries, or null for default
      *
      * @return string
      */
@@ -811,19 +832,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         string $selector,
         ?int $timeout = null,
         int $index = 0,
-        int $retries = 6
+        ?int $maxRetries = null
     ): string {
-        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $retries);
+        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $maxRetries);
     }
 
     /**
      * Get text of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param ?int    $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page       Page element
+     * @param string  $selector   CSS selector
+     * @param ?int    $timeout    Wait timeout for CSS selection (in ms)
+     * @param int     $index      Index of the element (0-based)
+     * @param ?int    $maxRetries Maximum number of retries, or null for default
      *
      * @return string
      */
@@ -832,20 +853,20 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         string $selector,
         ?int $timeout = null,
         int $index = 0,
-        int $retries = 6
+        ?int $maxRetries = null
     ): string {
-        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $retries);
+        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $maxRetries);
     }
 
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element         $page     Page element
-     * @param string          $selector CSS selector
-     * @param string|callable $method   Node's method to call (string) or callable that gets the node as parameter
-     * @param ?int            $timeout  Wait timeout for CSS selection (in ms)
-     * @param int             $index    Index of the element (0-based)
-     * @param int             $retries  Retry count for set loop
+     * @param Element         $page       Page element
+     * @param string          $selector   CSS selector
+     * @param string|callable $method     Node's method to call (string) or callable that gets the node as parameter
+     * @param ?int            $timeout    Wait timeout for CSS selection (in ms)
+     * @param int             $index      Index of the element (0-based)
+     * @param ?int            $maxRetries Maximum number of retries, or null for default
      *
      * @return mixed
      */
@@ -855,11 +876,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         string|callable $method,
         ?int $timeout = null,
         int $index = 0,
-        int $retries = 6,
+        ?int $maxRetries = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
+        $maxRetries ??= $this->getDefaultRetryCount();
 
-        for ($i = 1; $i <= $retries; $i++) {
+        for ($i = 1; $i <= $maxRetries + 1; $i++) {
             try {
                 $element = $this->findCss($page, $selector, $timeout, $index);
                 return is_string($method) ? call_user_func([$element, $method]) : $method($element);
@@ -870,10 +892,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 );
             }
 
-            $this->snooze();
+            usleep(1000 * $this->getDefaultRetryDelay());
         }
 
-        throw new \Exception("Failed to call $method on '$selector' after $retries attempts.");
+        throw new \Exception("Failed to call $method on '$selector' after " . ($maxRetries + 1) . ' attempts.');
     }
 
     /**
@@ -982,7 +1004,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 // Defer throwing the exception:
                 $exception = $e;
             }
-            usleep(100000);
+            usleep(50000);
         }
         if ($exception) {
             throw $exception;
@@ -1095,43 +1117,57 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         ?int $timeout = null
     ): void {
         $timeout ??= $this->getDefaultTimeout();
+        $maxRetries = $this->getDefaultRetryCount();
         $session = $this->getMinkSession();
-        // Wait for page load to complete:
-        $session->wait($timeout, "document.readyState === 'complete'");
-        // Wait for any AJAX requests to complete (and that jQuery is loaded):
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $.active === 0"
-        );
-        // Wait for modal load to complete:
-        $this->unFindCss($page, '.modal-loading-overlay', $timeout);
-        // Wait for page load to complete again in case it was triggered by
-        // lightbox refresh or similar:
-        $session->wait($timeout, "document.readyState === 'complete'");
-        // Make sure any loading spinners are not visible (and jQuery is still loaded):
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
-        );
-        // Make sure nothing is being animated (and jQuery is still loaded):
-        $jqueryOk = $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $(':animated').length === 0"
-        );
-        if ($jqueryOk) {
-            // Finally, make sure all jQuery ready handlers are done:
-            $session->evaluateScript(
-                <<<EOS
-                    if (window.__documentIsReady !== true) {
-                        $(document).ready(function() { window.__documentIsReady = true; });
-                    }
-                    EOS
-            );
-            $session->wait(
-                $timeout,
-                'window.__documentIsReady === true'
-            );
+        $exception = null;
+
+        for ($i = 1; $i <= $maxRetries + 1; $i++) {
+            try {
+                // Wait for page load to complete:
+                $session->wait($timeout, "document.readyState === 'complete'");
+                // Wait for any AJAX requests to complete (and that jQuery is loaded):
+                $session->wait(
+                    $timeout,
+                    "typeof $ !== 'undefined' && $.active === 0"
+                );
+                // Wait for modal load to complete:
+                $this->unFindCss($page, '.modal-loading-overlay', $timeout);
+                // Wait for page load to complete again in case it was triggered by
+                // lightbox refresh or similar:
+                $session->wait($timeout, "document.readyState === 'complete'");
+                // Make sure any loading spinners are not visible (and jQuery is still loaded):
+                $session->wait(
+                    $timeout,
+                    "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
+                );
+                // Make sure nothing is being animated (and jQuery is still loaded):
+                $jqueryOk = $session->wait(
+                    $timeout,
+                    "typeof $ !== 'undefined' && $(':animated').length === 0"
+                );
+                if ($jqueryOk) {
+                    // Finally, make sure all jQuery ready handlers are done:
+                    $session->evaluateScript(
+                        <<<EOS
+                            if (window.__documentIsReady !== true) {
+                                $(document).ready(function() { window.__documentIsReady = true; });
+                            }
+                            EOS
+                    );
+                    $session->wait(
+                        $timeout,
+                        'window.__documentIsReady === true'
+                    );
+                }
+                return;
+            } catch (\Exception $e) {
+                if (null === $exception) {
+                    $exception = $e;
+                }
+                usleep(1000 * $this->getDefaultRetryDelay());
+            }
         }
+        throw $exception;
     }
 
     /**
