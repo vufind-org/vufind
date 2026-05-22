@@ -41,10 +41,10 @@ args.forEach(lang => {
     const engTranslation = codes.getName(code, "en");
     const nativeTranslation = codes.getNativeName(code);
     if (translation !== null
-            // Filter out English translations unless we're generating the English file:
-            && (lang === "en" || translation !== engTranslation)
-            // Filter out native translations unless it's the native translation of the language we're working on:
-            && (translation === langNative || translation !== nativeTranslation)
+      // Filter out English translations unless we're generating the English file:
+      && (lang === "en" || translation !== engTranslation)
+      // Filter out native translations unless it's the native translation of the language we're working on:
+      && (translation === langNative || translation !== nativeTranslation)
     ) {
       lines += `${code} = "${translation.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"\n`;
     }
