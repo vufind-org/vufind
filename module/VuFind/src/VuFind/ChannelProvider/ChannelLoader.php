@@ -92,24 +92,12 @@ class ChannelLoader
                 [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
                 $config = $this->config[$configSection] ?? [];
 
-                /**
-                 * Calculate batch size
-                 * @TODO these calcs are redundant and should be provided by the channel providers
-                 */
-                $itemsPerRow = $config['itemsPerRow'] ?? 6;
-                $rowsPerPage = $config['rowsPerPage'] ?? 1;
-                $maxBatchSize = $config['maxBatchSize'] ?? 48;
-                $pageSize = $itemsPerRow * $rowsPerPage;
-                $batchSize = min(
-                    self::calcBatchSize($itemsPerRow, $rowsPerPage),
-                    $maxBatchSize,
-                );
-
-                // Pass to view
+                // Calculate batch size and pass to view
+                $batchOptions = $this->performBatchCalculations($config);
                 $current['config'] = [
-                    'batchSize' => $batchSize,
-                    'pageSize' => $pageSize,
-                    'rowSize' => $itemsPerRow,
+                    'batchSize' => $batchOptions['batchSize'],
+                    'pageSize' => $batchOptions['itemsPerRow'] * $batchOptions['rowsPerPage'],
+                    'rowSize' => $batchOptions['itemsPerRow'],
                 ];
 
                 $channels[] = $current;
