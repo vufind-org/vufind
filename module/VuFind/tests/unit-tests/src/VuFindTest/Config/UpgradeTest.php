@@ -323,11 +323,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $results['permissions']['access.SummonExtendedResults']
         );
 
+        // EDS assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EDSModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EDSModuleAccess']
+        );
+
         // EIT assertions:
         $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
         $this->assertEquals(
             $eitConfig,
             $results['permissions']['default.EITModule']
+        );
+
+        // EPF assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EPFModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EPFModule']
         );
 
         // Primo assertions:

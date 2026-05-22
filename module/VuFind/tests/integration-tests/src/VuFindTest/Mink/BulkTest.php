@@ -94,19 +94,20 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Assert that the "no items were selected" message is visible in the
-     * lightbox.
+     * Open a lightbox and assert that the "no items were selected" message is visible in the lightbox.
      *
-     * @param Element $page Page element
+     * @param Element $page           Page element
+     * @param string  $buttonSelector CSS selector for the element to click
      *
      * @return void
      */
-    protected function checkForNonSelectedMessage(Element $page): void
+    protected function openLightboxAndCheckForNonSelectedMessage(Element $page, string $buttonSelector): void
     {
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
         $this->assertSame(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
-            $this->findCssAndGetText($page, '.modal-body .alert-danger')
+            $alert->getText()
         );
     }
 
@@ -156,8 +157,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpGenericBulkTest();
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, '#ribbon-email');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, '#ribbon-email');
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
@@ -198,8 +198,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpGenericBulkTest();
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, '#ribbon-save');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, '#ribbon-save');
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
@@ -251,8 +250,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, 'button[name="delete"]');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, 'button[name="delete"]');
         $this->closeLightbox($page, true);
 
         // Now do it for real:
@@ -304,8 +302,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $buttonSelector = '#' . $idPrefix . 'ribbon-export';
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, $buttonSelector);
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, $buttonSelector);
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
@@ -347,8 +344,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $buttonSelector = '#' . $idPrefix . 'ribbon-print';
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, $buttonSelector);
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, $buttonSelector);
         $page->find('css', '.modal-body .btn')->click();
 
         // Now do it for real -- we should get redirected.

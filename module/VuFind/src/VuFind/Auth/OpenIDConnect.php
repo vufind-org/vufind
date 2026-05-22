@@ -605,7 +605,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             $jwks = json_decode($response->getBody(), true);
             foreach ($jwks['keys'] as $i => $jwk) {
                 // Filter for signature keys only.
-                if (($jwk['use'] ?? '') === 'sig') {
+                if (($jwk['use'] ?? 'sig') === 'sig') {
                     $this->jwks[$jwk['kid'] ?? $i] = $jwk;
                 }
             }
