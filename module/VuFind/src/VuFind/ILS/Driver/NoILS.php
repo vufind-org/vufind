@@ -362,7 +362,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @param string $password Patron password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

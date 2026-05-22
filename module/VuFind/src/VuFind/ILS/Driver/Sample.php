@@ -227,7 +227,7 @@ class Sample extends AbstractBase
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

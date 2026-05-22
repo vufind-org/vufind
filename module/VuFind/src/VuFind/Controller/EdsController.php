@@ -54,6 +54,7 @@ class EdsController extends AbstractSearch
     public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'EDS';
+        $this->accessPermission = 'access.EDSModule';
         parent::__construct($sm);
     }
 

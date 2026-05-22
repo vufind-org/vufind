@@ -354,7 +354,7 @@ class Innovative extends AbstractBase implements
      * @param string $password The patron's password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
