@@ -143,7 +143,8 @@ class LoginHelper implements HelperInterface
 
     /**
      * Does the user have catalog credentials available? Returns associative array of patron data if so, or a response
-     * if redirect is needed. Otherwise returns null. If there is an ILS exception, a flash message is added.
+     * if redirect is needed. Otherwise returns null (only when forwardToCatalogLogin is false).
+     * If there is an ILS exception, a flash message is added.
      *
      * @param ServerRequestInterface $request               Request
      * @param ResponseInterface      $response              Response
@@ -220,7 +221,6 @@ class LoginHelper implements HelperInterface
                 $patron = $this->ilsAuthenticator->storedCatalogLogin();
             } catch (ILSException $e) {
                 $this->flashMessenger->addErrorMessage('ils_connection_failed');
-                return null;
             }
         }
 

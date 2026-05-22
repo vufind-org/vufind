@@ -373,7 +373,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
 
     /**
      * Does the user have catalog credentials available? Returns associative array of patron data if so, or a response
-     * if redirect is needed. Otherwise returns null. If there is an ILS exception, a flash message is added.
+     * if redirect is needed. Otherwise returns null (only when forwardToCatalogLogin is false).
+     * If there is an ILS exception, a flash message is added.
      *
      * @param bool $forwardToCatalogLogin Forward to catalog login if not logged in?
      *
@@ -456,7 +457,6 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                 $patron = $ilsAuth->storedCatalogLogin();
             } catch (ILSException $e) {
                 $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
-                return null;
             }
         }
 
