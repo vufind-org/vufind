@@ -135,8 +135,13 @@ function getHTPreviews(keys) {
     if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
       let url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
         + batch.join('|');
-      $.getJSON(url)
-        .done(processHTBookInfo);
+      fetch(url, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then(response => response.json())
+        .then(response => processHTBookInfo(response));
+
       batch = [];
     }
   }
