@@ -56,7 +56,7 @@ VuFind.register("channels", function Channels() {
     const group = link.closest(".channel-add-menu").dataset.group;
     const token = link.dataset.token;
     const relatedMenus = Array.from(
-      document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`),
+      document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`)
     );
     for (const menu of relatedMenus) {
       // Remove add links for this channel
@@ -93,7 +93,7 @@ VuFind.register("channels", function Channels() {
                 ${VuFind.translate("nohit_heading")}
               </div>
             </div>`,
-              "text/html",
+              "text/html"
             );
 
             callerChannelEl.after(emptyWrapper.firstChild);
@@ -102,7 +102,7 @@ VuFind.register("channels", function Channels() {
 
           // Add related channels menu
           const relatedMenu = document.querySelector(
-            `.channel-add-menu[data-group="${group}"]`,
+            `.channel-add-menu[data-group="${group}"]`
           );
           if (relatedMenu) {
             channelEl
@@ -387,7 +387,7 @@ VuFind.register("channels", function Channels() {
         const addLinks = Array.from(
           event.target
             .closest(".channel-add-menu")
-            .querySelectorAll(".channel-add-link"),
+            .querySelectorAll(".channel-add-link")
         );
         for (let i = 0; i < Math.min(2, addLinks.length); i++) {
           addChannel(addLinks[i]);
@@ -407,7 +407,7 @@ VuFind.register("channels", function Channels() {
       if (event.target.closest(".channel-quick-look-btn")) {
         quickLook(
           event.target.closest(".channel-item"),
-          event.target.closest(".channel-list").getAttribute("id"),
+          event.target.closest(".channel-list").getAttribute("id")
         );
         event.preventDefault();
         return false;
@@ -419,7 +419,7 @@ VuFind.register("channels", function Channels() {
         const record = findChannelItem(
           group.dataset.channelId,
           group.dataset.recordSource,
-          group.dataset.recordId,
+          group.dataset.recordId
         );
         if (Number(record.dataset.index) > 0) {
           quickLook(record.previousElementSibling, group.dataset.channelId);
@@ -434,7 +434,7 @@ VuFind.register("channels", function Channels() {
         const record = findChannelItem(
           group.dataset.channelId,
           group.dataset.recordSource,
-          group.dataset.recordId,
+          group.dataset.recordId
         );
         if (record.nextElementSibling) {
           quickLook(record.nextElementSibling, group.dataset.channelId);
@@ -460,12 +460,12 @@ VuFind.register("channels", function Channels() {
     if (!loadMoreBtn.getAttribute("data-enabled-label")) {
       loadMoreBtn.setAttribute(
         "data-enabled-label",
-        loadMoreBtn.getAttribute("aria-label"),
+        loadMoreBtn.getAttribute("aria-label")
       );
     }
     loadMoreBtn.setAttribute(
       "aria-label",
-      VuFind.translate("loading_ellipsis"),
+      VuFind.translate("loading_ellipsis")
     );
   }
 
@@ -484,13 +484,13 @@ VuFind.register("channels", function Channels() {
     if (loadMoreBtn.getAttribute("data-enabled-label")) {
       loadMoreBtn.setAttribute(
         "aria-label",
-        loadMoreBtn.getAttribute("data-enabled-label"),
+        loadMoreBtn.getAttribute("data-enabled-label")
       );
     } else {
       // if not stored, use generic
       loadMoreBtn.setAttribute(
         "aria-label",
-        VuFind.translate("channel_more_items"),
+        VuFind.translate("channel_more_items")
       );
     }
     loadMoreBtn.removeAttribute("data-enabled-label");
