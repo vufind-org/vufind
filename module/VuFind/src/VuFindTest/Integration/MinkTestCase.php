@@ -879,7 +879,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         ?int $maxRetries = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
-        $maxRetries ??= $this->getDefaultRetryCount() + 1;
+        $maxRetries ??= $this->getDefaultRetryCount();
 
         for ($i = 1; $i <= $maxRetries + 1; $i++) {
             try {
@@ -1117,11 +1117,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         ?int $timeout = null
     ): void {
         $timeout ??= $this->getDefaultTimeout();
-        $maxRetries = $this->getDefaultRetryCount() + 1;
+        $maxRetries = $this->getDefaultRetryCount();
         $session = $this->getMinkSession();
         $exception = null;
 
-        for ($i = 1; $i <= $maxRetries; $i++) {
+        for ($i = 1; $i <= $maxRetries + 1; $i++) {
             try {
                 // Wait for page load to complete:
                 $session->wait($timeout, "document.readyState === 'complete'");
