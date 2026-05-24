@@ -124,12 +124,12 @@ function processHTBookInfo(booksInfo) {
  * @param {string} keys A space-separated string of bibkeys.
  */
 function getHTPreviews(keys) {
-  var skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
-  var bibkeys = skeys.split(/\s+/);
+  let skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
+  let bibkeys = skeys.split(/\s+/);
   // fetch 20 books at time if there are more than 20
   // since hathitrust only allows 20 at a time
   // as per https://vufind.org/jira/browse/VUFIND-317
-  var batch = [];
+  let batch = [];
   for (var i = 0; i < bibkeys.length; i++) {
     batch.push(bibkeys[i]);
     if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
