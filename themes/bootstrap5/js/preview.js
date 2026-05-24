@@ -130,10 +130,10 @@ function getHTPreviews(keys) {
   // since hathitrust only allows 20 at a time
   // as per https://vufind.org/jira/browse/VUFIND-317
   let batch = [];
-  for (var i = 0; i < bibkeys.length; i++) {
+  for (let i = 0; i < bibkeys.length; i++) {
     batch.push(bibkeys[i]);
     if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
-      let url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
+      const url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
         + batch.join('|');
       fetch(url, {
         headers: {
