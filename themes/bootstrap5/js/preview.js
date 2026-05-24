@@ -120,6 +120,25 @@ function processHTBookInfo(booksInfo) {
 }
 
 /**
+ * Fetch a single HathiTrust batch and pass the JSON response to the preview processor.
+ * Extracted from the loop in getHTPreviews() to avoid creating a callback inside the
+ * loop body, which triggers a JSHint warning.
+ *
+ * @param {Array} batch An array of HathiTrust bibkeys to request.
+ * @returns {Promise} A promise resolving when the batch has been processed.
+ */
+function fetchHTPreviewBatch(batch) {
+  const url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
+    + batch.join('|');
+  return fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  }).then(response => response.json())
+    .then(processHTBookInfo);
+}
+
+/**
  * Fetch HathiTrust books in batches from the API.
  * @param {string} keys A space-separated string of bibkeys.
  */
@@ -133,15 +152,7 @@ function getHTPreviews(keys) {
   for (let i = 0; i < bibkeys.length; i++) {
     batch.push(bibkeys[i]);
     if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
-      const url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
-        + batch.join('|');
-      fetch(url, {
-        headers: {
-          'Accept': 'application/json'
-        }
-      }).then(response => response.json())
-        .then(response => processHTBookInfo(response));
-
+      fetchHTPreviewBatch(batch);
       batch = [];
     }
   }
