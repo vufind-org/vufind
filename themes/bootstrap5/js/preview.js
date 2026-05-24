@@ -1,4 +1,5 @@
-/*exported processGBSBookInfo, processOLBookInfo, processHTBookInfo, VuFind */
+/*exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
+/*global VuFind */
 
 /**
  * Get the HathiTrust preview rights codes from a CSS class.
