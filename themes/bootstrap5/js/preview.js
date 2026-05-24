@@ -123,7 +123,6 @@ function processHTBookInfo(booksInfo) {
  * Fetch a single HathiTrust batch and pass the JSON response to the preview processor.
  * Extracted from the loop in getHTPreviews() to avoid creating a callback inside the
  * loop body, which triggers a JSHint warning.
- *
  * @param {Array} batch An array of HathiTrust bibkeys to request.
  * @returns {Promise} A promise resolving when the batch has been processed.
  */
