@@ -121,7 +121,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param SearchHistory              $searchHistory              Search history
      * @param SearchOptionsPluginManager $searchOptionsPluginManager Search options plugin manager
      */
-    #[Autowire()]
     public function __construct(
         protected SearchRunner $searchRunner,
         protected ResultsPluginManager $resultsPluginManager,
