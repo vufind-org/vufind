@@ -59,7 +59,6 @@ abstract class AbstractIlsUserAndRendererAction extends AbstractBase implements 
      * @param ?UserEntityInterface      $user             Logged in user (or null)
      * @param TemplateRendererInterface $renderer         Template renderer
      */
-    #[Autowire()]
     public function __construct(
         SessionSettings $ss,
         protected Connection $ils,
