@@ -29,7 +29,6 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\AjaxHandler\IdentifierLinksLookup;
 use VuFind\AjaxHandler\IdentifierLinksLookupFactory;

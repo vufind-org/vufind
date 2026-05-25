@@ -29,7 +29,6 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use GuzzleHttp\Psr7\Response;
 use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
 use VuFind\AjaxHandler\CheckRequestIsValid;
 use VuFind\Auth\ILSAuthenticator;

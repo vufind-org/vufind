@@ -29,7 +29,6 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use GuzzleHttp\Psr7\Response;
 use VuFind\AjaxHandler\Recommend;
 use VuFind\AjaxHandler\RecommendFactory;
 use VuFind\Recommend\PluginManager;

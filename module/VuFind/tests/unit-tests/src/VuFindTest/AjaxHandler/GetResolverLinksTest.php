@@ -29,7 +29,6 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use GuzzleHttp\Psr7\Response;
 use VuFind\AjaxHandler\GetResolverLinks;
 use VuFind\AjaxHandler\GetResolverLinksFactory;
 use VuFind\Resolver\Driver\DriverInterface;

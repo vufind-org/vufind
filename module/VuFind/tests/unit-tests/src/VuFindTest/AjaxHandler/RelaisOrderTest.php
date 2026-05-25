@@ -29,8 +29,6 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use GuzzleHttp\Psr7\Response;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\AjaxHandler\RelaisOrder;
 use VuFindTest\Unit\AjaxHandlerTestCase;
@@ -59,7 +57,6 @@ class RelaisOrderTest extends AjaxHandlerTestCase
             null
         );
         $request = $this->createMock(ServerRequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
         $this->assertSame(['Failed', 403], $handler->handleRequest($request));
     }
 

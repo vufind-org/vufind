@@ -30,8 +30,6 @@
 namespace VuFindTest\Unit;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use Laminas\Http\Request;
-use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;

@@ -71,8 +71,6 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
      * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function handleRequest(ServerRequestInterface $request): array
     {

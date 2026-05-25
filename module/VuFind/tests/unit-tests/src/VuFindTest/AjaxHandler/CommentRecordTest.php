@@ -29,7 +29,6 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use GuzzleHttp\Psr7\Response;
 use VuFind\AjaxHandler\CommentRecord;
 use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
