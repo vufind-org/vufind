@@ -56,22 +56,16 @@ class GetVisData extends AbstractBase
     use DateFacetTrait;
 
     /**
-     * Solr search results object.
-     *
-     * @var Results
-     */
-    protected $results;
-
-    /**
      * Constructor.
      *
-     * @param SessionSettings $ss      Session settings
-     * @param Results         $results Solr search results object
+     * @param SessionSettings $sessionSettings Session settings
+     * @param Results         $results         Solr search results object
      */
-    public function __construct(SessionSettings $ss, Results $results)
-    {
-        parent::__construct($ss);
-        $this->results = $results;
+    public function __construct(
+        SessionSettings $sessionSettings,
+        protected Results $results
+    ) {
+        parent::__construct($sessionSettings);
     }
 
     /**
