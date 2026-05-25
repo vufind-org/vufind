@@ -1,4 +1,5 @@
 /*exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
+/*global VuFind */
 
 /**
  * Get the HathiTrust preview rights codes from a CSS class.
@@ -30,27 +31,6 @@ function getOLOptions() {
   return $('[class*="olPreviewSpan"]').attr("class").split('__')[1].split(',');
 }
 
-/**
- * Fetch HathiTrust books in batches from the API.
- * @param {string} keys A space-separated string of bibkeys.
- */
-function getHTPreviews(keys) {
-  var skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
-  var bibkeys = skeys.split(/\s+/);
-  // fetch 20 books at time if there are more than 20
-  // since hathitrust only allows 20 at a time
-  // as per https://vufind.org/jira/browse/VUFIND-317
-  var batch = [];
-  for (var i = 0; i < bibkeys.length; i++) {
-    batch.push(bibkeys[i]);
-    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
-      var script = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
-                + batch.join('|') + '&callback=processHTBookInfo';
-      $.getScript(script);
-      batch = [];
-    }
-  }
-}
 /**
  * Update a preview link and its corresponding record thumbnail with a new URL.
  * @param {jQuery} $link The preview button element.
@@ -136,6 +116,44 @@ function processHTBookInfo(booksInfo) {
           applyPreviewUrl($link, items[i].itemURL);
         }
       }
+    }
+  }
+}
+
+/**
+ * Fetch a single HathiTrust batch and pass the JSON response to the preview processor.
+ * Extracted from the loop in getHTPreviews() to avoid creating a callback inside the
+ * loop body, which triggers a JSHint warning.
+ * @param {Array} batch An array of HathiTrust bibkeys to request.
+ * @returns {Promise} A promise resolving when the batch has been processed.
+ */
+function fetchHTPreviewBatch(batch) {
+  const url = 'https://catalog.hathitrust.org/api/volumes/brief/json/'
+    + batch.join('|');
+  return fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  }).then(response => response.json())
+    .then(processHTBookInfo);
+}
+
+/**
+ * Fetch HathiTrust books in batches from the API.
+ * @param {string} keys A space-separated string of bibkeys.
+ */
+function getHTPreviews(keys) {
+  let skeys = keys.replace(/(ISBN|LCCN|OCLC)/gi, '$1:').toLowerCase();
+  let bibkeys = skeys.split(/\s+/);
+  // fetch 20 books at time if there are more than 20
+  // since hathitrust only allows 20 at a time
+  // as per https://vufind.org/jira/browse/VUFIND-317
+  let batch = [];
+  for (let i = 0; i < bibkeys.length; i++) {
+    batch.push(bibkeys[i]);
+    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
+      fetchHTPreviewBatch(batch);
+      batch = [];
     }
   }
 }
@@ -245,4 +263,5 @@ $(function previewDocReady() {
     setIndexOf();
   }
   getBookPreviews();
+  VuFind.listen('results-init', getBookPreviews);
 });

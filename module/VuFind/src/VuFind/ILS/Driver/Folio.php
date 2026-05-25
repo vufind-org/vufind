@@ -145,6 +145,13 @@ class Folio extends AbstractAPI implements
     protected $courseCache = null;
 
     /**
+     * Cache for request preference data.
+     *
+     * @var array
+     */
+    protected array $requestPreferenceCache = [];
+
+    /**
      * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -2094,15 +2101,9 @@ class Folio extends AbstractAPI implements
         $patron = null,
         $holdDetails = null
     ) {
-        // circulation-storage.request-preferences.collection.get
-        $response = $this->makeRequest(
-            'GET',
-            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
-        );
-        $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
-        $allowHoldShelf = $requestPreferences->holdShelf ?? true;
-        $allowDelivery = ($requestPreferences->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        $allowHoldShelf = $requestPreference['holdShelf'] ?? true;
+        $allowDelivery = ($requestPreference['delivery'] ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
@@ -2119,6 +2120,51 @@ class Folio extends AbstractAPI implements
             ];
         }
         return false;
+    }
+
+    /**
+     * Get Default Request Group.
+     *
+     * In FOLIO, this is equivalent to the fulfillment preference.
+     *
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return false|string       The default request group for the patron.
+     */
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
+    {
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        return $requestPreference['fulfillment'] ?? 'Hold Shelf';
+    }
+
+    /**
+     * Retrieve and cache the request preference.
+     *
+     * @param string $userId The user's UUID
+     *
+     * @return array An array containing several aspects of request preference
+     */
+    protected function getRequestPreference(string $userId): array
+    {
+        $requestPreference = $this->requestPreferenceCache[$userId] ?? null;
+        if ($requestPreference !== null) {
+            return $requestPreference;
+        }
+
+        // circulation-storage.request-preferences.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/request-preference-storage/request-preference?query=userId==' . $userId
+        );
+        $requestPreferencesResponse = json_decode($response->getBody(), true);
+        $requestPreference = $requestPreferencesResponse['requestPreferences'][0] ?? [];
+
+        $this->requestPreferenceCache[$userId] = $requestPreference;
+        return $requestPreference;
     }
 
     /**
