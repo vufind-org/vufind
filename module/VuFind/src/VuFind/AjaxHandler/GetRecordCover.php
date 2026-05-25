@@ -58,12 +58,9 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
      * @param RecordLoader               $recordLoader            Record loader
      * @param CoverRouter                $coverRouter             Cover router
      * @param ?TemplateRendererInterface $renderer                Template renderer (required if
-     *                                                            $userCoverFallbacksOnFail is
-     *                                                            set to true)
+     * $userCoverFallbacksOnFail is set to true)
      * @param bool                       $useCoverFallbacksOnFail If true we will render a
-     *                                                            fallback html template
-     *                                                            in case no image could
-     *                                                            be loaded
+     * fallback html template in case no image could be loaded
      */
     public function __construct(
         SessionSettings $ss,
