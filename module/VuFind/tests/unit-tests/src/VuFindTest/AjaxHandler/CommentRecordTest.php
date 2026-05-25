@@ -94,9 +94,9 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     public function testDisabledResponse(): void
     {
         $handler = $this->getHandler(false);
-        $this->assertEquals(
+        $this->assertSame(
             ['Comments disabled', 400],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
@@ -108,9 +108,9 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     public function testLoggedOutUser(): void
     {
         $handler = $this->getHandler(true);
-        $this->assertEquals(
+        $this->assertSame(
             ['You must be logged in first', 401],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
@@ -122,9 +122,9 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     public function testEmptyQuery(): void
     {
         $handler = $this->getHandler(true, $this->getMockUser());
-        $this->assertEquals(
+        $this->assertSame(
             ['bulk_error_missing', 400],
-            $handler->handleRequest($this->getParamsHelper())
+            $handler->handleRequest($this->getRequest())
         );
     }
 
@@ -173,7 +173,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             [
                 ['commentId' => true],
             ],
-            $handler->handleRequest($this->getParamsHelper([], $post))
+            $handler->handleRequest($this->getRequest([], $post))
         );
     }
 }

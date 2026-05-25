@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Cookie Consent Overlay" AJAX handler.
+ * Load a recommendation module via AJAX.
  *
  * PHP version 8
  *
@@ -21,52 +21,40 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\Action\Ajax;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * "Get Cookie Consent Overlay" AJAX handler.
- *
- * Get contents for the cookie consent overlay.
+ * Load a recommendation module via AJAX.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class GetCookieConsent extends AbstractBase
+class RecommendAction extends AbstractAjaxAction
 {
     /**
-     * Constructor.
+     * Make an AJAX call with a JSON-formatted response.
      *
-     * @param TemplateRendererInterface $renderer Template renderer
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    #[Autowire()]
-    public function __construct(
-        protected TemplateRendererInterface $renderer
-    ) {
-    }
-
-    /**
-     * Handle a request.
-     *
-     * @param ServerRequestInterface $request Request
-     *
-     * @return array [response data, HTTP status code]
-     */
-    public function handleRequest(ServerRequestInterface $request): array
-    {
-        $html = $this->renderer->renderTemplateAsString($request, 'CookieConsent/cookie-consent-overlay.phtml');
-        return $this->formatResponse(compact('html'));
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        return $this->callAjaxMethod($request, $response, 'recommend', 'text/html');
     }
 }
