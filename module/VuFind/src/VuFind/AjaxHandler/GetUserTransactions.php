@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Account\AccountStatusLevelType;
 
 /**
@@ -55,11 +55,11 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
@@ -90,7 +90,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
         } while ($page <= $pageEnd);
 
         $result['level'] = $this->getAccountStatusLevel($result);
-        $result['html'] = $this->renderer->render('ajax/account/checkouts.phtml', $result);
+        $result['html'] = $this->renderer->renderTemplateAsString($request, 'ajax/account/checkouts.phtml', $result);
         return $this->formatResponse($result);
     }
 

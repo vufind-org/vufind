@@ -57,6 +57,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'ajax/json' => Ajax\JsonAction::class,
+        'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
+        'ajax/systemstatus' => Ajax\SystemStatusAction::class,
         'author/facetlist' => Author\FacetListAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
     ];

@@ -167,7 +167,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -184,7 +183,6 @@ $config = [
             'VuFind\Controller\CombinedController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CommentsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\ConfirmController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\ContentController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CoverController' => 'VuFind\Controller\CoverControllerFactory',
             'VuFind\Controller\EdsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\EdsrecordController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -239,8 +237,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'AJAX' => 'VuFind\Controller\AjaxController',
-            'ajax' => 'VuFind\Controller\AjaxController',
             'Alma' => 'VuFind\Controller\AlmaController',
             'alma' => 'VuFind\Controller\AlmaController',
             'Alphabrowse' => 'VuFind\Controller\AlphabrowseController',
@@ -273,8 +269,6 @@ $config = [
             'Comments' => 'VuFind\Controller\CommentsController',
             'Confirm' => 'VuFind\Controller\ConfirmController',
             'confirm' => 'VuFind\Controller\ConfirmController',
-            'Content' => 'VuFind\Controller\ContentController',
-            'content' => 'VuFind\Controller\ContentController',
             'Cover' => 'VuFind\Controller\CoverController',
             'cover' => 'VuFind\Controller\CoverController',
             'EDS' => 'VuFind\Controller\EdsController',

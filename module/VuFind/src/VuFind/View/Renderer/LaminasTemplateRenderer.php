@@ -34,7 +34,7 @@ use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ModelInterface;
 use Laminas\View\Model\ViewModel;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\PhpRenderer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\ServerUrlHelper;
@@ -58,7 +58,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * Constructor.
      *
      * @param ServerUrlHelper        $serverUrlHelper        Server URL helper
-     * @param RendererInterface      $viewRenderer           View renderer
+     * @param PhpRenderer            $viewRenderer           View renderer
      * @param ViewManager            $viewManager            View manager
      * @param InjectTemplateListener $injectTemplateListener Template injection listener (for prefixes)
      * @param bool                   $displayExceptions      Display exceptions?
@@ -69,7 +69,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(service: 'ViewRenderer')]
-        protected RendererInterface $viewRenderer,
+        protected PhpRenderer $viewRenderer,
         #[Autowire(service: 'ViewManager')]
         protected ViewManager $viewManager,
         protected InjectTemplateListener $injectTemplateListener,
@@ -85,20 +85,23 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     /**
      * Render a template and return the result in the response object.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param ResponseInterface      $response Response object
-     * @param array                  $params   Template parameters
-     * @param ?string                $template Template name, or null to use default for the action
+     * @param ServerRequestInterface $request        Request
+     * @param ResponseInterface      $response       Response object
+     * @param ?string                $template       Template name, or null to use default for the action
+     * @param array                  $params         Template parameters
+     * @param array[]                $childTemplates Any child templates; an array of associative array with keys
+     * 'template' and 'params'
      *
      * @return ResponseInterface
      */
     public function renderTemplate(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params = [],
         ?string $template = null,
+        array $params = [],
+        array $childTemplates = [],
     ): ResponseInterface {
-        $response->getBody()->write($this->renderTemplateAsString($request, $params, $template));
+        $response->getBody()->write($this->renderTemplateAsString($request, $template, $params, useLayout: true));
         return $response;
     }
 
@@ -120,8 +123,8 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         return $this->renderTemplate(
             $request,
             $response->withStatus(500),
-            $params,
-            $this->errorTemplate
+            $this->errorTemplate,
+            $params
         );
     }
 
@@ -142,36 +145,61 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         return $this->renderTemplate(
             $request,
             $response->withStatus(404),
-            $params + ['message' => 'Page not found.'],
-            $this->notFoundTemplate
+            $this->notFoundTemplate,
+            $params + ['message' => 'Page not found.']
         );
     }
 
     /**
      * Render a template and return the result as a string.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param array                  $params   Template parameters
-     * @param ?string                $template Template name, or null to use default for the action
+     * @param ServerRequestInterface $request        Request
+     * @param ?string                $template       Template name, or null to use default for the action
+     * @param array                  $params         Template parameters
+     * @param array[]                $childTemplates Any child templates; an array of associative array with keys
+     * 'template' and 'params'
+     * @param bool                   $useLayout      Render full page with the layout?
      *
      * @return string
      */
     public function renderTemplateAsString(
         ServerRequestInterface $request,
-        array $params = [],
         ?string $template = null,
+        array $params = [],
+        array $childTemplates = [],
+        bool $useLayout = false,
     ): string {
         $view = $this->viewManager->getView();
         $viewModel = $this->createViewModel($request, $params, $template);
-        $layout = $this->getLayout($request);
-        // Clear any previous children (e.g. when rendering an error):
-        if ($layout instanceof ViewModel) {
-            $layout->clearChildren();
+        foreach ($childTemplates as $current) {
+            $viewModel->addChild($this->createViewModel($request, $current['params'] ?? [], $current['template']));
         }
-        $layout->addChild($viewModel);
+        if ($useLayout) {
+            $layout = $this->getLayout($request);
+            // Clear any previous children (e.g. when rendering an error):
+            if ($layout instanceof ViewModel) {
+                $layout->clearChildren();
+            }
+            $layout->addChild($viewModel);
+            // Force renderer to return the result:
+            $layout->setOption('has_parent', true);
+            return $view->render($layout);
+        }
         // Force renderer to return the result:
-        $layout->setOption('has_parent', true);
-        return $view->render($layout);
+        $viewModel->setOption('has_parent', true);
+        return $view->render($viewModel);
+    }
+
+    /**
+     * Find the filename for a template.
+     *
+     * @param string $template Template
+     *
+     * @return ?string Filename, or null if not found
+     */
+    public function resolveTemplateFilename(string $template): ?string
+    {
+        return $this->viewRenderer->resolver($template);
     }
 
     /**

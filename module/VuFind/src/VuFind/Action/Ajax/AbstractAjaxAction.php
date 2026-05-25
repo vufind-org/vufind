@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Cookie Consent Overlay" AJAX handler.
+ * Abstract base class for Ajax actions.
  *
  * PHP version 8
  *
@@ -21,52 +21,46 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\Action\Ajax;
 
-use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractAction;
+use VuFind\Action\AjaxResponseTrait;
+use VuFind\AjaxHandler\PluginManager as AjaxPluginManager;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * "Get Cookie Consent Overlay" AJAX handler.
- *
- * Get contents for the cookie consent overlay.
+ * Abstract base class for Ajax actions.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Action
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class GetCookieConsent extends AbstractBase
+abstract class AbstractAjaxAction extends AbstractAction implements TranslatorAwareInterface
 {
+    use AjaxResponseTrait;
+    // For AjaxResponseTrait:
+    use TranslatorAwareTrait;
+
     /**
      * Constructor.
      *
-     * @param TemplateRendererInterface $renderer Template renderer
+     * @param AjaxPluginManager $ajaxManager AJAX Handler Plugin Manager
      */
     #[Autowire()]
     public function __construct(
-        protected TemplateRendererInterface $renderer
+        AjaxPluginManager $ajaxManager
     ) {
-    }
-
-    /**
-     * Handle a request.
-     *
-     * @param ServerRequestInterface $request Request
-     *
-     * @return array [response data, HTTP status code]
-     */
-    public function handleRequest(ServerRequestInterface $request): array
-    {
-        $html = $this->renderer->renderTemplateAsString($request, 'CookieConsent/cookie-consent-overlay.phtml');
-        return $this->formatResponse(compact('html'));
+        parent::__construct();
+        $this->ajaxManager = $ajaxManager;
     }
 }
