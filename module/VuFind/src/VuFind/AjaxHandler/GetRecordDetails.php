@@ -62,6 +62,7 @@ class GetRecordDetails extends AbstractBase
         protected TabManager $tabManager,
         protected TemplateRendererInterface $renderer,
     ) {
+        parent::__construct(null);
     }
 
     /**
