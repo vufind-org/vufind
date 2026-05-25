@@ -42,6 +42,7 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
 use function call_user_func;
+use function count;
 use function in_array;
 use function intval;
 use function is_callable;
@@ -1058,6 +1059,31 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return str_contains($result, $expected);
             },
             [$this, 'assertStringContainsString'],
+            $timeout
+        );
+    }
+
+    /**
+     * Wait for a callback to return the expected number of elements.
+     *
+     * @param int      $expected Expected count
+     * @param callable $callback Callback
+     * @param ?int     $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertCountWithTimeout(
+        int $expected,
+        callable $callback,
+        ?int $timeout = null
+    ): void {
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function ($expected, $result): bool {
+                return $expected === count($result);
+            },
+            [$this, 'assertCount'],
             $timeout
         );
     }
