@@ -187,7 +187,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $nonce = bin2hex(random_bytes(5));
         $accessTokenService->storeNonce(2, $nonce);
         $repo = new IdentityRepository(
-            $this->getMockUserService(),
+            $this->getMockUserService(1),
             $accessTokenService,
             $this->getMockFailingIlsConnection(),
             $this->oauth2Config,
@@ -235,13 +235,15 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Create a mock user service that returns a fake user object.
      *
+     * @param int $getCalls Number of expected calls to getUserByField.
+     *
      * @return MockObject&\VuFind\Db\Service\UserServiceInterface
      */
-    protected function getMockUserService(): MockObject&UserServiceInterface
+    protected function getMockUserService(int $getCalls = 2): MockObject&UserServiceInterface
     {
         $user = $this->getMockUser();
         $userService = $this->createMock(UserServiceInterface::class);
-        $userService->method('getUserByField')
+        $userService->expects($this->exactly($getCalls))->method('getUserByField')
             ->willReturnMap(
                 [
                     ['id', 1, null],

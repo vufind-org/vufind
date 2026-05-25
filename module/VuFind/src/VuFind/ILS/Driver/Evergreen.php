@@ -334,7 +334,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @param string $passwd  The patron password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array         Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($barcode, $passwd)
