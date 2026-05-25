@@ -279,6 +279,9 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
             $this->getQueryParam('catalogLogin') == 'true'
             && !is_array($patron = $this->getHelper(LoginHelper::class)->catalogLogin($this->request, $this->response))
         ) {
+            if (!($patron instanceof ResponseInterface)) {
+                throw new \Exception('Unexpected response from LoginHelper::catalogLogin');
+            }
             return $patron;
         }
 
