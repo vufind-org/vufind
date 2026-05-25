@@ -126,7 +126,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 
         // Set up view helper plugin manager:
         $plugins = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $this->container->set('Laminas\View\HelperPluginManager', $plugins);
+        $this->container->set(\Laminas\View\HelperPluginManager::class, $plugins);
 
         // Build and test the ajax handler:
         $factory = new RecommendFactory();
