@@ -1,4 +1,5 @@
 /*exported processGBSBookInfo, processOLBookInfo, processHTBookInfo */
+/*global VuFind */
 
 /**
  * Get the HathiTrust preview rights codes from a CSS class.
@@ -262,4 +263,5 @@ $(function previewDocReady() {
     setIndexOf();
   }
   getBookPreviews();
+  VuFind.listen('results-init', getBookPreviews);
 });
