@@ -143,7 +143,7 @@ class HomeAction extends AbstractTemplateRenderingAction
         ];
 
         // If required parameters are present, load results:
-        $this->addResultsToTemplateParams(
+        $templateParams = $this->addResultsToTemplateParams(
             $templateParams,
             $page,
             $limit,
@@ -190,16 +190,16 @@ class HomeAction extends AbstractTemplateRenderingAction
      * @param bool  $highlighting   Is row highlighting enabled?
      * @param array $extras         Extra fields to load in results
      *
-     * @return void
+     * @return array
      */
     protected function addResultsToTemplateParams(
-        array &$templateParams,
+        array $templateParams,
         int $page,
         int $limit,
         int $rowsBefore,
         bool $highlighting,
         array $extras
-    ): void {
+    ): array {
         $result = [];
         $source = $templateParams['source'] ?? null;
         $from = $templateParams['from'] ?? null;
@@ -251,15 +251,17 @@ class HomeAction extends AbstractTemplateRenderingAction
         }
 
         if ($source === 'topic') {
-            $this->applyTopicDelimiters($result);
+            $result = $this->applyTopicDelimiters($result);
         }
 
         $templateParams['result'] = $result;
 
         // set up highlighting: page 0 contains match location
         if ($highlighting && $page == 0 && isset($result['Browse'])) {
-            $this->applyHighlighting($templateParams, $rowsBefore);
+            $templateParams = $this->applyHighlighting($templateParams, $rowsBefore);
         }
+
+        return $templateParams;
     }
 
     /**
@@ -267,9 +269,9 @@ class HomeAction extends AbstractTemplateRenderingAction
      *
      * @param array $result The result array containing 'Browse' items to be modified.
      *
-     * @return void
+     * @return array
      */
-    protected function applyTopicDelimiters(&$result): void
+    protected function applyTopicDelimiters(array $result): array
     {
         foreach ($result['Browse']['items'] as &$item) {
             $item['heading'] = str_replace(
@@ -278,6 +280,9 @@ class HomeAction extends AbstractTemplateRenderingAction
                 $item['heading']
             );
         }
+        unset($item);
+
+        return $result;
     }
 
     /**
@@ -286,9 +291,9 @@ class HomeAction extends AbstractTemplateRenderingAction
      * @param array $templateParams Template params to be updated (must already contain results)
      * @param int   $rowsBefore     Number of rows to display before highlighted row
      *
-     * @return void
+     * @return array
      */
-    protected function applyHighlighting(array &$templateParams, int $rowsBefore): void
+    protected function applyHighlighting(array $templateParams, int $rowsBefore): array
     {
         $browseResult = $templateParams['result']['Browse'];
         $startRow = $browseResult['startRow'];
@@ -311,5 +316,7 @@ class HomeAction extends AbstractTemplateRenderingAction
         }
         $templateParams['highlight_row'] = $highlight_row;
         $templateParams['match_type'] = $browseResult['matchType'];
+
+        return $templateParams;
     }
 }
