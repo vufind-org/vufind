@@ -263,5 +263,5 @@ $(function previewDocReady() {
     setIndexOf();
   }
   getBookPreviews();
-  VuFind.listen('results-loaded', getBookPreviews);
+  VuFind.listen('results-init', getBookPreviews);
 });
