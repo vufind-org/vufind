@@ -36,6 +36,7 @@ use Laminas\View\Resolver\ResolverInterface;
 use Laminas\View\Resolver\TemplatePathStack;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
+use VuFind\ActionHelper\LoginHelper;
 use VuFind\Escaper\Escaper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\Response\PublicationDetails;
@@ -100,7 +101,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $context = new \VuFind\View\Helper\Root\Context($renderer);
 
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $configHelper = new \VuFind\View\Helper\Root\Config($configManager);
+        $configHelper = new \VuFind\View\Helper\Root\Config($configManager, $this->createMock(LoginHelper::class));
         $configEntity = $configManager->getConfigObject('config');
 
         $translate = new \VuFind\View\Helper\Root\Translate();
