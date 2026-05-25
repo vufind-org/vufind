@@ -151,7 +151,7 @@ function getHTPreviews(keys) {
   let batch = [];
   for (let i = 0; i < bibkeys.length; i++) {
     batch.push(bibkeys[i]);
-    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
+    if ((i + 1) % 20 === 0 || i === bibkeys.length - 1) {
       fetchHTPreviewBatch(batch);
       batch = [];
     }
@@ -228,11 +228,11 @@ function getBookPreviews() {
       // if so, break request into chunks of 100
       var keyString = '';
       // loop through array
-      for (var i = 0; i < bibkeys.length; i++){
+      for (let i = 0; i < bibkeys.length; i++){
         keyString += bibkeys[i] + ',';
         // send request when there are 100 requests ready or when there are no
         // more elements to be sent
-        if ((i > 0 && i % 100 === 0) || i === bibkeys.length - 1) {
+        if ((i + 1) % 100 === 0 || i === bibkeys.length - 1) {
           script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
             + keyString + '&callback=processGBSBookInfo';
           $.getScript(script);
