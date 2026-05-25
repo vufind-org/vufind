@@ -49,22 +49,16 @@ use VuFind\Session\Settings as SessionSettings;
 class GetResultCount extends AbstractBase
 {
     /**
-     * ResultsManager.
-     *
-     * @var resultsManager
-     */
-    protected $resultsManager;
-
-    /**
      * Constructor.
      *
-     * @param ResultsManager  $resultsManager Results Manager
-     * @param SessionSettings $ss             Session settings
+     * @param SessionSettings $sessionSettings Session settings
+     * @param ResultsManager  $resultsManager  Results Manager
      */
-    public function __construct(ResultsManager $resultsManager, SessionSettings $ss)
-    {
-        $this->resultsManager = $resultsManager;
-        parent::__construct($ss);
+    public function __construct(
+        SessionSettings $sessionSettings,
+        protected ResultsManager $resultsManager
+    ) {
+        parent::__construct($sessionSettings);
     }
 
     /**
