@@ -2060,26 +2060,6 @@ class Folio extends AbstractAPI implements
         return $locations;
     }
 
-    protected ?array $requestPreferenceCache = null;
-
-    protected function getRequestPreference(string $userId): array
-    {
-        if ($this->requestPreferenceCache) {
-            return $this->requestPreferenceCache;
-        }
-
-        // circulation-storage.request-preferences.collection.get
-        $response = $this->makeRequest(
-            'GET',
-            '/request-preference-storage/request-preference?query=userId==' . $userId
-        );
-        $requestPreferencesResponse = json_decode($response->getBody(), true);
-        $requestPreference = $requestPreferencesResponse['requestPreferences'][0] ?? null;
-
-        $this->requestPreferenceCache = $requestPreference;
-        return $requestPreference;
-    }
-
     /**
      * Get Default Pick Up Location.
      *
