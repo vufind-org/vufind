@@ -52,6 +52,7 @@ class EPFrecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         $this->sourceId = 'EPF';
+        $this->accessPermission = 'access.EPFModule';
         parent::__construct($sm);
     }
 }

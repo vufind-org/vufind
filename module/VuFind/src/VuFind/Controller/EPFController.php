@@ -52,6 +52,7 @@ class EPFController extends AbstractSearch
     public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'EPF';
+        $this->accessPermission = 'access.EPFModule';
         parent::__construct($sm);
     }
 

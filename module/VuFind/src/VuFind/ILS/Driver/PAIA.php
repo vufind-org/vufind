@@ -957,7 +957,7 @@ class PAIA extends DAIA
      * @param string $username The patron's username
      * @param string $password The patron's login password
      *
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @throws ILSException
