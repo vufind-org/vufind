@@ -32,7 +32,7 @@
   $tag = "h$level";
   $headTitle = $this->headTitle ?? $title;
   // Allow disabling head title by setting the option to false
-  if ($headTitle) {
+  if (false !== $headTitle) {
     $this->headTitle($headTitle);
   }
   $escape = $this->escape ?? true;
