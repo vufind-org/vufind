@@ -1507,4 +1507,25 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * Test getDefaultRequestGroup with a user UUID-based lookup.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    public function testGetDefaultRequestGroup(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $this->createConnector('get-request-preference', $driverConfig);
+
+        // Confirm the FOLIO call is made only once per user, due to caching
+        $this->driver->expects($this->exactly(2))->method('makeRequest');
+        $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'whatever']);
+        $this->assertEquals('Delivery', $requestGroup);
+        for ($i = 0; $i < 2; $i++) {
+            $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'user2']);
+        }
+        $this->assertEquals('Hold Shelf', $requestGroup);
+    }
 }

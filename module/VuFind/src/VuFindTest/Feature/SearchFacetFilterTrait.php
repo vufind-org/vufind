@@ -397,10 +397,10 @@ trait SearchFacetFilterTrait
             $this->unFindCss($page, $this->activeFilterSelector);
             return;
         }
-        // Ensure that enough page has loaded:
-        $this->findCss($page, $this->activeFilterSelector);
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount($expected, $items);
+        $this->assertCountWithTimeout(
+            $expected,
+            fn () => $page->findAll('css', $this->activeFilterSelector)
+        );
     }
 
     /**
@@ -419,10 +419,14 @@ trait SearchFacetFilterTrait
         int $expected,
         bool $exclusionActive
     ): void {
-        $items = $page->findAll('css', "#modal #facet-list-$list .js-facet-item");
-        $this->assertCount($expected, $items);
-        $excludes = $page->findAll('css', "#modal #facet-list-$list .exclude");
-        $this->assertCount($exclusionActive ? $expected : 0, $excludes);
+        $this->assertCountWithTimeout(
+            $expected,
+            fn () => $page->findAll('css', "#modal #facet-list-$list .js-facet-item")
+        );
+        $this->assertCountWithTimeout(
+            $exclusionActive ? $expected : 0,
+            fn () => $page->findAll('css', "#modal #facet-list-$list .exclude")
+        );
     }
 
     /**
