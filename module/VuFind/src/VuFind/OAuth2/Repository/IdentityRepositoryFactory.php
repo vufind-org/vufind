@@ -69,12 +69,12 @@ class IdentityRepositoryFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
             $dbPluginManager->get(\VuFind\Db\Service\UserServiceInterface::class),
             $dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
             $container->get(\VuFind\ILS\Connection::class),
-            $yamlReader->get('OAuth2Server.yaml'),
+            $configManager->getConfigArray('OAuth2Server'),
             $container->get(\VuFind\Auth\ILSAuthenticator::class)
         );
     }

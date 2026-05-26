@@ -57,8 +57,9 @@
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
   <property name="selenium_browser" value="firefox" />
-  <property name="snooze_multiplier" value="1" /><!-- can be used to slow down Mink tests; increase when tests fail on slow systems -->
   <property name="default_test_timeout" value="5000" /><!-- default timeout (in ms) for Mink tests; increase when tests fail on slow systems -->
+  <property name="default_test_retry_delay" value="1000" /><!-- default retry delay (in ms) for Mink tests; increase when tests fail on slow systems -->
+  <property name="default_test_retry_count" value="5" /><!-- default retry count for Mink tests; increase when tests fail on slow systems -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
   <property name="solr_version" value="9.8.1" />
@@ -77,7 +78,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="11.0.2" />
+  <property name="version" value="11.0.4" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport}" />
   <!-- Add user if not empty -->
@@ -172,6 +173,7 @@
   <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
     <phingcall target="checkSassBuild"/>
+    <phingcall target="jsTranslationsCheck" />
   </target>
 
   <!-- Quality Assurance PHP Tasks -->
@@ -312,13 +314,10 @@
     </exec>
   </target>
 
-  <!-- Run LessToSass, error if there are uncommitted changes (used by continuous integration) -->
-  <target name="checkLessToSass">
+  <!-- Check for inconsistencies in the Javascript translation layer -->
+  <target name="jsTranslationsCheck">
     <exec executable="npm" checkreturn="true" passthru="true">
-      <arg line="run lessToSass" />
-    </exec>
-    <exec executable="git" checkreturn="true" passthru="true">
-      <arg line="diff --exit-code *.scss" />
+      <arg line="run check:jsTranslations" />
     </exec>
   </target>
 
@@ -412,8 +411,9 @@
       <env key="VUFIND_HTML_VALIDATOR_LOG_FILE" value="${html_validator_log_file}" />
       <env key="VUFIND_HTML_VALIDATOR_QUIET" value="${html_validator_quiet}" />
       <env key="VUFIND_SELENIUM_BROWSER" value="${selenium_browser}" />
-      <env key="VUFIND_SNOOZE_MULTIPLIER" value="${snooze_multiplier}" />
       <env key="VUFIND_DEFAULT_TEST_TIMEOUT" value="${default_test_timeout}" />
+      <env key="VUFIND_DEFAULT_TEST_RETRY_DELAY" value="${default_test_retry_delay}" />
+      <env key="VUFIND_DEFAULT_TEST_RETRY_COUNT" value="${default_test_retry_count}" />
       <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
       <env key="VUFIND_URL" value="${vufindurl}" />
       <env key="VUFIND_TEST_THEME" value="${test_theme}" />
@@ -450,8 +450,9 @@
       <env key="VUFIND_HTML_VALIDATOR_LOG_FILE" value="${html_validator_log_file}" />
       <env key="VUFIND_HTML_VALIDATOR_QUIET" value="${html_validator_quiet}" />
       <env key="VUFIND_SELENIUM_BROWSER" value="${selenium_browser}" />
-      <env key="VUFIND_SNOOZE_MULTIPLIER" value="${snooze_multiplier}" />
       <env key="VUFIND_DEFAULT_TEST_TIMEOUT" value="${default_test_timeout}" />
+      <env key="VUFIND_DEFAULT_TEST_RETRY_DELAY" value="${default_test_retry_delay}" />
+      <env key="VUFIND_DEFAULT_TEST_RETRY_COUNT" value="${default_test_retry_count}" />
       <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
       <env key="VUFIND_URL" value="${vufindurl}" />
       <env key="VUFIND_TEST_THEME" value="${test_theme}" />
@@ -470,8 +471,9 @@
       <env key="VUFIND_HTML_VALIDATOR_LOG_FILE" value="${html_validator_log_file}" />
       <env key="VUFIND_HTML_VALIDATOR_QUIET" value="${html_validator_quiet}" />
       <env key="VUFIND_SELENIUM_BROWSER" value="${selenium_browser}" />
-      <env key="VUFIND_SNOOZE_MULTIPLIER" value="${snooze_multiplier}" />
       <env key="VUFIND_DEFAULT_TEST_TIMEOUT" value="${default_test_timeout}" />
+      <env key="VUFIND_DEFAULT_TEST_RETRY_DELAY" value="${default_test_retry_delay}" />
+      <env key="VUFIND_DEFAULT_TEST_RETRY_COUNT" value="${default_test_retry_count}" />
       <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
       <env key="VUFIND_URL" value="${vufindurl}" />
       <env key="VUFIND_TEST_THEME" value="${test_theme}" />
@@ -1197,6 +1199,9 @@ ${git_status}
 
     <phingcall target="configure_install" />
     <phingcall target="setup_database" />
+    <!-- We need to reload these two MARC files to repopulate the change_tracker database table -->
+    <phingcall target="importrec"><property name="filename" value="tests/data/author_relator_preload.mrc" /></phingcall>
+    <phingcall target="importrec"><property name="filename" value="tests/data/author_relators.mrc" /></phingcall>
     <phingcall target="delete_fake_records" />
   </target>
 

@@ -31,6 +31,8 @@
 namespace VuFind;
 
 use function array_key_exists;
+use function function_exists;
+use function is_int;
 
 /**
  * Base class for loading images (shared by Cover\Loader and QRCode\Loader).
@@ -198,6 +200,30 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
 
         // Load the image data:
         $this->image = file_get_contents($noCoverImage);
+    }
+
+    /**
+     * Given a file path, return the MIME type by analyzing the file. Returns null for
+     * unidentifiable or non-image files.
+     *
+     * @param string $filename File to analyze
+     *
+     * @return ?string
+     */
+    protected function getImageMimeTypeFromFile(string $filename): ?string
+    {
+        // First try mime_content_type... but this could falsely return text/plain if the
+        // PHP mime_magic.magicfile setting is not configured correctly.
+        $contentType = mime_content_type($filename);
+        if (str_starts_with($contentType, 'image/')) {
+            return $contentType;
+        }
+
+        // Next try exif_imagetype if it is available, or default to the slower getimagesize if it is not.
+        $type = function_exists('exif_imagetype')
+            ? exif_imagetype($filename)
+            : getimagesize($filename)[2] ?? null;
+        return is_int($type) ? image_type_to_mime_type($type) : null;
     }
 
     /**

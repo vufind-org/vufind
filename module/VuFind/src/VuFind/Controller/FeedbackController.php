@@ -89,8 +89,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         }
 
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->useCaptcha
-            = $this->captcha()->active('feedback') && $form->useCaptcha();
+        $view->useCaptcha = $form->useCaptcha() && $this->getCaptcha()->active('feedback');
 
         $params = $this->params();
         $form->setData($params->fromPost());

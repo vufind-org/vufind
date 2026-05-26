@@ -675,7 +675,7 @@ class SierraRest extends AbstractBase implements
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -1982,7 +1982,7 @@ class SierraRest extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         if ('getMyTransactions' === $function) {
             return [
@@ -1991,7 +1991,7 @@ class SierraRest extends AbstractBase implements
         }
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             return [
                 'max_results' => 100,
@@ -2006,7 +2006,7 @@ class SierraRest extends AbstractBase implements
         }
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
-            return ($config['enabled'] ?? false) ? $config : false;
+            return ($config['enabled'] ?? false) ? $config : [];
         }
         if ('OnlinePayment' === $function) {
             $result = $this->config['OnlinePayment'] ?? [];
@@ -2015,7 +2015,7 @@ class SierraRest extends AbstractBase implements
             return $result;
         }
 
-        return $this->config[$function] ?? false;
+        return $this->config[$function] ?? [];
     }
 
     /**

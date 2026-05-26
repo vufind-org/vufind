@@ -110,11 +110,11 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected string $facetConfig;
 
     /**
-     * YAML searchspecs filename.
+     * Search specs config name.
      *
      * @var string
      */
-    protected string $searchYaml;
+    protected string $searchSpecsConfig;
 
     /**
      * VuFind configuration reader.
@@ -504,6 +504,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             'terms' => [
                 'functions' => ['terms'],
             ],
+            'morelikethis' => [
+                'functions' => ['similar'],
+            ],
         ];
 
         foreach ($this->getHiddenFilters() as $filter) {
@@ -623,7 +626,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function loadSpecs(): array
     {
-        return $this->getService(\VuFind\Config\SearchSpecsReader::class)->get($this->searchYaml);
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->searchSpecsConfig);
     }
 
     /**

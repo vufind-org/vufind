@@ -1,0 +1,23 @@
+<?php
+  $consentGiven = (bool)$this->cookieConsent()->getConsentInformation();
+  $consentConfigJson = json_encode($this->cookieConsent()->getConsentConfig());
+  $cookieConsentDivAttrs = [
+    'class' => 'cookie-consent js-cookie-consent',
+    'role' => 'region',
+    'aria-label' => $this->translate('Cookie Settings'),
+    'tabindex' => '-1',
+  ];
+  if ($consentGiven) {
+    $cookieConsentDivAttrs['class'] .= ' hidden';
+  } else {
+    $cookieConsentDivAttrs['class'] .= ' js-loaded';
+    // Make sure we get focus even if not the first in DOM for discoverability with screen readers:
+    $cookieConsentDivAttrs['data-focus-on-load'] = 'important';
+  }
+?>
+<div class="cookie-consent-wrapper">
+  <div<?=$this->htmlAttributes($cookieConsentDivAttrs)?>>
+    <?=$this->render('CookieConsent/cookie-consent-overlay.phtml', ['deferLoad' => $consentGiven])?>
+  </div>
+</div>
+<?php echo $this->assetManager()->outputInlineScriptString("window.addEventListener('load', function() { VuFind.cookie.setupConsent($consentConfigJson); });");

@@ -68,7 +68,7 @@ class SiteMapFactory extends AbstractMenuFactory
             $container,
             $requestedName,
             [
-                'SiteMap.yaml',
+                'SiteMap',
                 $container->get('ViewRenderer'),
                 ...$options ?? [],
             ]

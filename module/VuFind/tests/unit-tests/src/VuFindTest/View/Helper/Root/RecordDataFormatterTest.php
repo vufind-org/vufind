@@ -36,6 +36,7 @@ use Laminas\View\Resolver\ResolverInterface;
 use Laminas\View\Resolver\TemplatePathStack;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
+use VuFind\ActionHelper\LoginHelper;
 use VuFind\Escaper\Escaper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\Response\PublicationDetails;
@@ -100,7 +101,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $context = new \VuFind\View\Helper\Root\Context($renderer);
 
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $configHelper = new \VuFind\View\Helper\Root\Config($configManager);
+        $configHelper = new \VuFind\View\Helper\Root\Config($configManager, $this->createMock(LoginHelper::class));
         $configEntity = $configManager->getConfigObject('config');
 
         $translate = new \VuFind\View\Helper\Root\Translate();
@@ -177,8 +178,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'auth' => $auth,
             'context' => $context,
             'config' => $configHelper,
-            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context),
-            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(),
+            'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context, $renderer),
+            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(
+                $renderer->getHelperPluginManager()
+            ),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),

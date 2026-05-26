@@ -22,11 +22,7 @@
   .media-left { padding-left: 0; }
   .media-right { padding-right: 0; }
   .record-cover img { border: 1px solid $gray-lighter; }
-  .record-number {
-    font-size: $reduced-font-size;
-    font-weight: bold;
-    color: $gray;
-  }
+  .record-number { color: $gray-dark; }
 
   .title { font-size: 1rem; }
   .callnumAndLocation {

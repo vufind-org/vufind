@@ -637,14 +637,13 @@ class MultiBackend extends AbstractMultiDriver
      *
      * Returns the default request group
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
-     * @return string A location ID
+     * @return false|string       The default request group for the patron.
      */
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
@@ -958,7 +957,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $source = null;
         if (!empty($params)) {
@@ -997,7 +996,7 @@ class MultiBackend extends AbstractMultiDriver
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -1158,10 +1157,11 @@ class MultiBackend extends AbstractMultiDriver
     {
         if (!$source) {
             // Check for default driver
-            if ($this->defaultDriver) {
-                $this->debug('Using default driver ' . $this->defaultDriver);
-                $source = $this->defaultDriver;
+            if (!$this->defaultDriver) {
+                return null;
             }
+            $this->debug('Using default driver ' . $this->defaultDriver);
+            $source = $this->defaultDriver;
         }
         return parent::getDriver($source);
     }

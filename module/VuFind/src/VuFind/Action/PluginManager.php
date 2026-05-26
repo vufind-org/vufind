@@ -29,6 +29,10 @@
 
 namespace VuFind\Action;
 
+use Laminas\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Laminas\ServiceManager\Exception\InvalidServiceException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use VuFind\ServiceManager\Factory\AbstractAutowiringFactory;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 use function count;
@@ -47,12 +51,17 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Default plugin aliases.
      *
-     * Action classes are auto-discovered in autoDiscoveryNamespaces (see below). The names must follow the convention
-     * Category\Classname to be auto-discovered.
+     * Action classes are auto-discovered in autoDiscoveryNamespaces (see below) when the names follow the convention
+     * Category\Classname. Other forms will need to be mapped from 'category/action' (all lowercase) here.
      *
      * @var array
      */
     protected $aliases = [
+        'ajax/json' => Ajax\JsonAction::class,
+        'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
+        'ajax/systemstatus' => Ajax\SystemStatusAction::class,
+        'author/facetlist' => Author\FacetListAction::class,
+        'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
     ];
 
     /**
@@ -63,6 +72,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $categoryAliases = [
+        'Myresearch' => 'MyResearch',
+        'Shortlink' => 'ShortLink',
     ];
 
     /**
@@ -83,7 +94,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $autoDiscoveryNamespaces = [
-        __NAMESPACE__,
+        __NAMESPACE__ => true,
     ];
 
     /**
@@ -99,6 +110,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->addAbstractFactory(AbstractAutowiringFactory::class);
         $this->addInitializer(ActionInitializer::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }
@@ -119,7 +131,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         parent::configure($config);
         $this->categoryAliases = ($config['category_aliases'] ?? []) + $this->categoryAliases;
         if ($namespaces = $config['autodiscovery_namespaces'] ?? null) {
-            $this->autoDiscoveryNamespaces = $namespaces;
+            foreach ($namespaces as $ns => $active) {
+                if ($active) {
+                    $this->autoDiscoveryNamespaces[$ns] = true;
+                } else {
+                    unset($this->autoDiscoveryNamespaces[$ns]);
+                }
+            }
         }
         return $this;
     }
@@ -132,9 +150,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * @return mixed
      *
-     * @throws Exception\ServiceNotFoundException If the manager does not have a service definition for the instance,
+     * @throws ServiceNotFoundException If the manager does not have a service definition for the instance,
      * and the service is not auto-invokable.
-     * @throws InvalidServiceException If the plugin created is invalid for the plugin context.
+     * @throws InvalidServiceException  If the plugin created is invalid for the plugin context.
      */
     public function get($name, ?array $options = null)
     {
@@ -213,10 +231,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         }
         $actionClass = implode('\\', $nameParts) . 'Action';
 
-        foreach ($this->autoDiscoveryNamespaces as $ns) {
+        foreach (array_keys($this->autoDiscoveryNamespaces) as $ns) {
             $className = $ns . '\\' . $actionClass;
             if (class_exists($className)) {
                 $this->aliases[$alias] = $className;
+                // Explicitly set the factory so that discovered classes don't need the Autowire attribute:
                 $this->factories[$className] ??= AutowiringFactory::class;
                 return $className;
             }

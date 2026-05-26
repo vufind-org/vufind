@@ -29,8 +29,18 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Router\Http\TreeRouteStack;
+use Laminas\View\Helper\EscapeJs;
+use Laminas\View\Helper\HeadTitle;
+use Laminas\View\Helper\ViewModel;
+use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\RendererInterface;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindTheme\View\Helper\AssetManager;
 
 use function intval;
 use function is_array;
@@ -44,7 +54,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Matomo extends \Laminas\View\Helper\AbstractHelper
+class Matomo
 {
     /**
      * Matomo URL (empty if disabled).
@@ -90,20 +100,6 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     protected $customDimensions;
 
     /**
-     * Request object.
-     *
-     * @var \Laminas\Http\PhpEnvironment\Request
-     */
-    protected $request;
-
-    /**
-     * Router object.
-     *
-     * @var \Laminas\Router\Http\RouteMatch
-     */
-    protected $router;
-
-    /**
      * A timestamp used to identify the init function to avoid name clashes when
      * opening lightboxes.
      *
@@ -128,14 +124,37 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config                $config  VuFind configuration
-     * @param \Laminas\Router\Http\TreeRouteStack  $router  Router
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request
+     * @param Config            $config        VuFind configuration
+     * @param TreeRouteStack    $router        Router
+     * @param Request           $request       Request
+     * @param RendererInterface $viewRenderer  View renderer
+     * @param AssetManager      $assetManager  AssetManager view helper
+     * @param ViewModel         $viewModel     ViewModel view helper
+     * @param EscapeJs          $escapejs      EscapeJs view helper
+     * @param CookieConsent     $cookieConsent CookieConsent view helper
+     * @param Translate         $translate     Translate view helper
+     * @param HeadTitle         $headTitle     HeadTitle view helper
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        \Laminas\Router\Http\TreeRouteStack $router,
-        \Laminas\Http\PhpEnvironment\Request $request
+        #[Autowire(config: 'config', configType: 'object')]
+        Config $config,
+        #[Autowire(service: 'Router')]
+        protected TreeRouteStack $router,
+        #[Autowire(service: 'Request')]
+        protected Request $request,
+        protected RendererInterface $viewRenderer,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AssetManager $assetManager,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected ViewModel $viewModel,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeJs $escapejs,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected CookieConsent $cookieConsent,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Translate $translate,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected HeadTitle $headTitle,
     ) {
         $this->url = $config->Matomo->url ?? '';
         if ($this->url && !str_ends_with($this->url, '/')) {
@@ -146,8 +165,6 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $this->disableCookies = $config->Matomo->disableCookies ?? false;
         $this->customVars = $config->Matomo->custom_variables ?? false;
         $this->customDimensions = $config->Matomo->custom_dimensions ?? [];
-        $this->router = $router;
-        $this->request = $request;
         $this->timestamp = round(microtime(true) * 1000);
     }
 
@@ -177,7 +194,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         } else {
             $code = $this->trackPageView();
         }
-        return $this->getView()->plugin('assetManager')->outputInlineScriptString($code);
+        return $this->assetManager->outputInlineScriptString($code);
     }
 
     /**
@@ -276,8 +293,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getSearchResults(): ?Results
     {
-        $viewModel = $this->getView()->plugin('view_model');
-        $current = $viewModel->getCurrent();
+        $current = $this->viewModel->getCurrent();
         if (null === $current || 'layout/lightbox' === $current->getTemplate()) {
             return null;
         }
@@ -302,8 +318,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCombinedSearchResults(): ?array
     {
-        $viewModel = $this->getView()->plugin('view_model');
-        $current = $viewModel->getCurrent();
+        $current = $this->viewModel->getCurrent();
         if (null === $current) {
             return null;
         }
@@ -324,13 +339,13 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getRecordDriver(): ?RecordDriverBase
     {
-        $view = $this->getView();
-        $viewModel = $view->plugin('view_model');
-        $current = $viewModel->getCurrent();
+        $current = $this->viewModel->getCurrent();
         if (null === $current) {
-            $driver = $view->vars('driver');
-            if ($driver instanceof RecordDriverBase) {
-                return $driver;
+            if ($this->viewRenderer instanceof PhpRenderer) {
+                $driver = $this->viewRenderer->vars('driver');
+                if ($driver instanceof RecordDriverBase) {
+                    return $driver;
+                }
             }
             return null;
         }
@@ -445,9 +460,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getOpeningTrackingCode(): string
     {
-        $escape = $this->getView()->plugin('escapejs');
-        $cookieConsent = $this->getView()->plugin('cookieConsent');
-        $pageUrl = $escape($this->getPageUrl());
+        $pageUrl = ($this->escapejs)($this->getPageUrl());
         $code = <<<EOT
             var _paq = window._paq = window._paq || [];
             _paq.push(['enableLinkTracking']);
@@ -456,10 +469,9 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             EOT;
         if ($this->disableCookies) {
             $code .= "_paq.push(['disableCookies']);\n";
-        } elseif ($cookieConsent->isEnabled()) {
+        } elseif ($this->cookieConsent->isEnabled() && !$this->cookieConsent->isServiceAllowed('matomo')) {
             $code .= "_paq.push(['requireCookieConsent']);\n";
         }
-
         return $code;
     }
 
@@ -470,9 +482,8 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getClosingTrackingCode(): string
     {
-        $escape = $this->getView()->plugin('escapejs');
-        $trackerUrl = $escape($this->getTrackerUrl());
-        $url = $escape($this->getTrackerJsUrl());
+        $trackerUrl = ($this->escapejs)($this->getTrackerUrl());
+        $url = ($this->escapejs)($this->getTrackerJsUrl());
         return <<<EOT
             (function() {
               var d=document;
@@ -523,8 +534,6 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         if (!$this->customVars) {
             return '';
         }
-
-        $escape = $this->getView()->plugin('escapejs');
         $code = <<<EOT
             _paq.push(['deleteCustomVariables','page']);
 
@@ -537,7 +546,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             if ($i > 10) {
                 break;
             }
-            $value = $escape($value);
+            $value = ($this->escapejs)($value);
             $code .= <<<EOT
                 _paq.push(['setCustomVariable',$i,'$key','$value','page']);
 
@@ -582,10 +591,9 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         Results $results,
         array $customData
     ): string {
-        $escape = $this->getView()->plugin('escapejs');
         $params = $results->getParams();
-        $searchTerms = $escape($params->getDisplayQuery());
-        $searchType = $escape($params->getSearchType());
+        $searchTerms = ($this->escapejs)($params->getDisplayQuery());
+        $searchType = ($this->escapejs)($params->getSearchType());
         $resultCount = $results->getResultTotal();
         $backendId = $results->getOptions()->getSearchClassId();
         $dimensions = $this->getCustomDimensionsCode($customData);
@@ -609,10 +617,9 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         array $combinedResults,
         array $customData
     ): string {
-        $escape = $this->getView()->plugin('escapejs');
         $params = $results->getParams();
-        $searchTerms = $escape($params->getDisplayQuery());
-        $searchType = $escape($params->getSearchType());
+        $searchTerms = ($this->escapejs)($params->getDisplayQuery());
+        $searchType = ($this->escapejs)($params->getSearchType());
         $resultCount = 0;
         foreach ($combinedResults as $currentSearch) {
             if (!empty($currentSearch['ajax'])) {
@@ -621,8 +628,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
                 $resultCount = 'false';
                 break;
             }
-            $resultCount += $currentSearch['view']->results
-                ->getResultTotal();
+            $resultCount += $currentSearch['view']->results->getResultTotal();
         }
         $dimensions = $this->getCustomDimensionsCode($customData);
 
@@ -644,22 +650,17 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $dimensions = $this->getCustomDimensionsCode($customData);
         switch ($this->context) {
             case 'accordion':
-                $translate = $this->getView()->plugin('translate');
-                $escape = $this->getView()->plugin('escapejs');
-                $title = $translate('ajaxview_label_information');
+                $title = ($this->translate)('ajaxview_label_information');
                 if ($driver = $this->getRecordDriver()) {
                     $title .= ': ' . $driver->getBreadcrumb();
                 }
-                $titleJs = "var title = '" . $escape($title) . "';";
+                $titleJs = "var title = '" . ($this->escapejs)($title) . "';";
                 break;
             case 'tabs':
-                $escape = $this->getView()->plugin('escapejs');
-                $headTitle = $this->getView()->plugin('headTitle');
-                if ($title = $headTitle->renderTitle()) {
-                    $title = $escape($title);
-                    $titleJs = "var title = '$title';";
+                if ($title = $this->headTitle->renderTitle()) {
+                    $titleJs = "var title = '" . ($this->escapejs)($title) . "';";
                 } elseif ($driver = $this->getRecordDriver()) {
-                    $title = $escape($driver->getBreadcrumb());
+                    $title = ($this->escapejs)($driver->getBreadcrumb());
                     $titleJs = "var title = '$title';";
                     $titleJs .= <<<EOT
                         var a = document.querySelector('.record-tabs ul.nav-tabs li.active a');

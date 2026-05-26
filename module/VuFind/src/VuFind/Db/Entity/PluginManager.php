@@ -57,6 +57,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ExternalSessionEntityInterface::class => ExternalSession::class,
         FeedbackEntityInterface::class => Feedback::class,
         LoginTokenEntityInterface::class => LoginToken::class,
+        NoticeEntityInterface::class => Notice::class,
+        NoticeTranslationEntityInterface::class => NoticeTranslation::class,
         OaiResumptionEntityInterface::class => OaiResumption::class,
         PaymentEntityInterface::class => Payment::class,
         PaymentFeeEntityInterface::class => PaymentFee::class,
@@ -73,12 +75,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         UserListEntityInterface::class => UserList::class,
         UserResourceEntityInterface::class => UserResource::class,
     ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
 
     /**
      * We do not want to create shared instances of database entities; build a new

@@ -41,10 +41,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper as ActionHelperLoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\User;
-use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
 use VuFind\Session\Helper\FollowupHelper;
@@ -163,9 +163,9 @@ class LoginHelperTest extends TestCase
      */
     public static function catalogLoginProvider(): Generator
     {
-        yield 'no user' => [false, [], null, 200, 'myresearch/login', false];
+        yield 'no user' => [false, [], null, 200, 'myresearch/login', false, true];
 
-        yield 'user, no credentials' => [true, [], null, 200, 'myresearch/cataloglogin', false];
+        yield 'user, no credentials' => [true, [], null, 200, 'myresearch/cataloglogin', false, true];
 
         yield 'user, correct credentials' => [
             true,
@@ -174,6 +174,7 @@ class LoginHelperTest extends TestCase
             null,
             null,
             false,
+            true,
         ];
 
         yield 'user, correct credentials with target' => [
@@ -183,6 +184,7 @@ class LoginHelperTest extends TestCase
             null,
             null,
             false,
+            true,
         ];
 
         yield 'user, incorrect credentials' => [
@@ -192,6 +194,7 @@ class LoginHelperTest extends TestCase
             200,
             'myresearch/cataloglogin',
             false,
+            true,
         ];
 
         yield 'user, credentials, ILS failure' => [
@@ -201,15 +204,37 @@ class LoginHelperTest extends TestCase
             200,
             'myresearch/cataloglogin',
             true,
+            true,
         ];
 
         yield 'user, no credentials, ILS failure' => [
             true,
             [],
             null,
+            200,
+            'myresearch/cataloglogin',
+            true,
+            true,
+        ];
+
+        yield 'user, credentials, ILS failure, no redirect' => [
+            true,
+            ['cat_username' => 'correct', 'cat_password' => 'password'],
+            'correct',
             null,
             null,
             true,
+            false,
+        ];
+
+        yield 'user, no credentials, ILS failure, no redirect' => [
+            true,
+            [],
+            null,
+            null,
+            null,
+            true,
+            false,
         ];
     }
 
@@ -222,6 +247,7 @@ class LoginHelperTest extends TestCase
      * @param ?int    $expectedStatus   Expected HTTP status code
      * @param ?string $expectedForward  Expected forward route
      * @param bool    $ilsFailure       Should ILSAuthenticator calls throw an ILS exception?
+     * @param bool    $forwardCatLogin  Should the catalogLogin call forward the request if needed?
      *
      * @return void
      */
@@ -233,6 +259,7 @@ class LoginHelperTest extends TestCase
         ?int $expectedStatus,
         ?string $expectedForward,
         bool $ilsFailure,
+        bool $forwardCatLogin,
     ): void {
         $request = (new ServerRequest())
             ->withParsedBody($postParams);
@@ -243,7 +270,7 @@ class LoginHelperTest extends TestCase
         $ilsAuthenticator->expects($postParams ? $this->once() : $this->never())
             ->method('newCatalogLogin')
             ->willReturnCallback(
-                function ($username) use ($expectedUsername, $ilsFailure) {
+                function (string $username) use ($expectedUsername, $ilsFailure) {
                     if ($ilsFailure) {
                         throw new ILSException('boom');
                     }
@@ -290,10 +317,10 @@ class LoginHelperTest extends TestCase
                 FlashMessengerInterface::class => $flashMessenger,
             ]
         );
-        $result = $helper->catalogLogin($request, $response);
+        $result = $helper->catalogLogin($request, $response, $forwardCatLogin);
         if ($expectedUsername && !$ilsFailure) {
             $this->assertSame(['id' => $expectedUsername], $result);
-        } elseif (!$postParams && $ilsFailure) {
+        } elseif ($ilsFailure && !$forwardCatLogin) {
             $this->assertNull($result);
         } else {
             $this->assertSame($expectedStatus, $result->getStatusCode());
@@ -345,7 +372,7 @@ class LoginHelperTest extends TestCase
     public function testEmailCatalogLogin(?string $route, array $routeParams): void
     {
         $request = (new ServerRequest())
-            ->withParsedBody(['cat_username' => 'user@localhost', 'cat_password' => '****', 'target' => 'ils1']);
+            ->withParsedBody(['cat_username' => 'USER@LOCALHOST', 'cat_password' => '****', 'target' => 'ils1']);
         if ($route) {
             $routeMatch = $this->createMock(RouteMatch::class);
             $routeMatch
@@ -357,97 +384,50 @@ class LoginHelperTest extends TestCase
             $request = $request->withAttribute('route-match', $routeMatch);
         }
 
+        $ils = $this->getIls(['loginMethod' => 'email'], 'ils1');
+        $ils->expects($this->once())
+            ->method('__call')
+            ->with('patronLogin', ['ils1.USER@LOCALHOST', ''])
+            ->willReturn(
+                [
+                    'cat_username' => 'ils1.USER@LOCALHOST',
+                    'email' => 'user@localhost',
+                ]
+            );
+
         $response = new Response();
         $user = $this->createMock(User::class);
 
-        $ilsAuthenticator = $this->createMock(ILSAuthenticator::class);
-        $ilsAuthenticator->expects($this->once())
-            ->method('sendEmailLoginLink')
+        $emailAuthenticator = $this->createMock(EmailAuthenticator::class);
+        $emailAuthenticator->expects($this->once())
+            ->method('sendAuthenticationCode')
             ->with(
-                'ils1.user@localhost',
-                $route ?? 'myresearch-profile',
-                $routeParams,
-                ['catalogLogin' => 'true'],
-                $user
+                'user@localhost',
+                [
+                    'username' => 'ils1.USER@LOCALHOST',
+                    'patron' => [
+                        'cat_username' => 'ils1.USER@LOCALHOST',
+                        'email' => 'user@localhost',
+                    ],
+                ],
             );
 
-        $flashMessenger = $this->createMock(FlashMessenger::class);
-        $flashMessenger->expects($this->once())
-            ->method('addSuccessMessage')
-            ->with('email_login_link_sent');
+        $redirectHelper = $this->createMock(RedirectHelper::class);
+        $redirectHelper->expects($this->once())
+            ->method('redirectToRoute')
+            ->with($response, 'myresearch-verifyotp');
 
         $helper = $this->getAutowiredObject(
             ActionHelperLoginHelper::class,
             [
                 AuthManager::class => $this->getAuthManager($user, true),
-                Connection::class => $this->getIls(['loginMethod' => 'email'], 'ils1'),
-                ILSAuthenticator::class => $ilsAuthenticator,
-                FlashMessengerInterface::class => $flashMessenger,
+                Connection::class => $ils,
+                EmailAuthenticator::class => $emailAuthenticator,
+                RedirectHelper::class => $redirectHelper,
             ]
         );
 
         $helper->catalogLogin($request, $response);
-    }
-
-    /**
-     * Data provider for testEmailCatalogLoginHash().
-     *
-     * @return Generator<string, array>
-     */
-    public static function emailCatalogLoginHashProvider(): Generator
-    {
-        yield 'valid hash' => [true];
-        yield 'invalid hash' => [false];
-    }
-
-    /**
-     * Test email catalog login hash handling.
-     *
-     * @param bool $validHash Is the hash valid?
-     *
-     * @return void
-     */
-    #[\PHPUnit\Framework\Attributes\DataProvider('emailCatalogLoginHashProvider')]
-    public function testEmailCatalogLoginHash(bool $validHash): void
-    {
-        $request = (new ServerRequest())
-            ->withQueryParams(['auth_method' => 'ILS', 'hash' => $validHash ? 'correct' : 'incorrect']);
-        $response = new Response();
-        $patron = ['id' => 'patron'];
-
-        $ilsAuthenticator = $this->createMock(ILSAuthenticator::class);
-        $ilsAuthenticator->expects($this->once())
-            ->method('processEmailLoginHash')
-            ->willReturnCallback(
-                function ($hash) use ($patron) {
-                    if ('correct' === $hash) {
-                        return $patron;
-                    }
-                    throw new AuthException('Invalid hash');
-                }
-            );
-
-        $flashMessenger = $this->createMock(FlashMessenger::class);
-        $flashMessenger->expects($validHash ? $this->never() : $this->once())
-            ->method('addErrorMessage')
-            ->with('Invalid hash');
-
-        $helper = $this->getAutowiredObject(
-            ActionHelperLoginHelper::class,
-            [
-                AuthManager::class => $this->getAuthManager($this->createMock(User::class), false),
-                ILSAuthenticator::class => $ilsAuthenticator,
-                FlashMessengerInterface::class => $flashMessenger,
-                ForwardHelper::class => $this->getForwardHelper($validHash ? null : 'myresearch/cataloglogin'),
-            ]
-        );
-
-        $result = $helper->catalogLogin($request, $response);
-        if ($validHash) {
-            $this->assertSame($patron, $result);
-        } else {
-            $this->assertSame(['forward'], $result->getHeader('X-Method'));
-        }
     }
 
     /**
@@ -492,7 +472,6 @@ class LoginHelperTest extends TestCase
      */
     public static function getILSLoginMethodProvider(): Generator
     {
-        yield 'defaults (null configuration)' => ['password', null, ''];
         yield 'defaults (empty array configuration)' => ['password', [], ''];
         yield 'non-default with empty target' => ['foo', ['loginMethod' => 'foo'], ''];
         yield 'non-default with non-empty target' => ['foo', ['loginMethod' => 'foo'], 'bar'];
@@ -502,13 +481,13 @@ class LoginHelperTest extends TestCase
      * Test getting the ILS login method.
      *
      * @param string $expectedMethod    Expected return value of getILSLoginMethod()
-     * @param ?array $patronLoginConfig Configuration for patronLogin method
+     * @param array  $patronLoginConfig Configuration for patronLogin method
      * @param string $target            Target to pass to getILSLoginMethod()
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getILSLoginMethodProvider')]
-    public function testGetILSLoginMethod(string $expectedMethod, ?array $patronLoginConfig, string $target): void
+    public function testGetILSLoginMethod(string $expectedMethod, array $patronLoginConfig, string $target): void
     {
         $ils = $this->getIls($patronLoginConfig, $target);
         $helper = $this->getAutowiredObject(ActionHelperLoginHelper::class, [Connection::class => $ils]);
@@ -518,12 +497,12 @@ class LoginHelperTest extends TestCase
     /**
      * Get mock ILS connection.
      *
-     * @param ?array $patronLoginConfig Configuration for patronLogin method
+     * @param array  $patronLoginConfig Configuration for patronLogin method
      * @param string $target            Target to pass to getILSLoginMethod()
      *
      * @return MockObject&Connection
      */
-    protected function getIls(?array $patronLoginConfig, string $target): Connection
+    protected function getIls(array $patronLoginConfig, string $target): Connection
     {
         $ils = $this->createMock(Connection::class);
         $ils->expects($this->once())

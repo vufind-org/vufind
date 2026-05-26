@@ -72,29 +72,33 @@ class Dir extends AbstractBase
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
         $path = $configLocation->getPath();
+        $subsectionPath = '';
 
         $subsection = $configLocation->getSubsection();
         $dirSubsection = [];
-        while (!empty($subsection) && is_dir($path . DIRECTORY_SEPARATOR . $subsection[0])) {
+        while (!empty($subsection) && is_dir($path . $subsectionPath . DIRECTORY_SEPARATOR . $subsection[0])) {
             $subsectionPart = array_shift($subsection);
             $dirSubsection[] = $subsectionPart;
-            $path = $path . DIRECTORY_SEPARATOR . $subsectionPart;
+            $subsectionPath = $subsectionPath . DIRECTORY_SEPARATOR . $subsectionPart;
         }
 
         $data = [];
         if (!empty($subsection)) {
             $configName = array_shift($subsection);
-            $location = $this->pathResolver->getMatchingConfigLocation($path, $configName);
-            if ($location !== null && $subsection !== null) {
-                $location->setSubsection($subsection);
+            $subsectionLocation = $this->pathResolver->getMatchingConfigLocation($path . $subsectionPath, $configName);
+            if ($subsectionLocation !== null) {
+                $subsectionLocation->setSubsection($subsection);
+                $this->setSubsectionLocationParent($subsectionLocation, $configLocation, $subsectionPath);
+                $data[$configName] = $this->configManager->loadConfigFromLocation(
+                    $subsectionLocation,
+                    $handleParentConfig
+                );
             }
-            $data[$configName] = ($location !== null)
-                ? $this->configManager->loadConfigFromLocation($location, $handleParentConfig)
-                : [];
         } else {
-            foreach ($this->pathResolver->getConfigLocationsInPath($path) as $location) {
-                $data[$location->getConfigName()] = $this->configManager
-                    ->loadConfigFromLocation($location, $handleParentConfig);
+            foreach ($this->pathResolver->getConfigLocationsInPath($path . $subsectionPath) as $subsectionLocation) {
+                $this->setSubsectionLocationParent($subsectionLocation, $configLocation, $subsectionPath);
+                $data[$subsectionLocation->getConfigName()] = $this->configManager
+                    ->loadConfigFromLocation($subsectionLocation, $handleParentConfig);
             }
         }
 
@@ -106,9 +110,51 @@ class Dir extends AbstractBase
 
         if ($handleParentConfig && $parentLocation = $this->getParentLocation($configLocation)) {
             $config['parentLocation'] = $parentLocation;
+            $config['mergeCallback'] = function ($parentConfig, $childConfig) use ($dirSubsection) {
+                foreach ($dirSubsection as $subsectionPart) {
+                    $parentConfig = $parentConfig[$subsectionPart] ?? [];
+                    $childConfig = $childConfig[$subsectionPart] ?? [];
+                }
+                $result = array_merge($parentConfig, $childConfig);
+                foreach (array_reverse($dirSubsection) as $subsectionPart) {
+                    $result = [$subsectionPart => $result];
+                }
+                return $result;
+            };
         }
 
         return $config;
+    }
+
+    /**
+     * Set parent location on a subsection location based on the parent of the
+     * base config location and the subsection's path.
+     *
+     * @param ConfigLocationInterface $subsectionLocation Subsection config location
+     * @param ConfigLocationInterface $baseConfigLocation Base config location
+     * @param string                  $subsectionPath     Path of the subsection
+     *
+     * @return void
+     */
+    protected function setSubsectionLocationParent(
+        ConfigLocationInterface $subsectionLocation,
+        ConfigLocationInterface $baseConfigLocation,
+        string $subsectionPath
+    ): void {
+        if ($parentLocation = $this->getParentLocation($baseConfigLocation)) {
+            $parentSubsectionPath = $parentLocation->getPath() . $subsectionPath;
+            $subsectionLocationParent = $this->pathResolver->getMatchingConfigLocation(
+                $parentSubsectionPath,
+                $subsectionLocation->getConfigName()
+            );
+            if ($subsectionLocationParent === null) {
+                $this->setSubsectionLocationParent($subsectionLocation, $parentLocation, $subsectionPath);
+            } else {
+                $subsectionLocationParent->setSubsection($subsectionLocation->getSubsection());
+                $this->setSubsectionLocationParent($subsectionLocationParent, $parentLocation, $subsectionPath);
+                $subsectionLocation->setDirLocationsParent($subsectionLocationParent);
+            }
+        }
     }
 
     /**
@@ -121,7 +167,7 @@ class Dir extends AbstractBase
     protected function getParentLocation(ConfigLocationInterface $configLocation): ?ConfigLocationInterface
     {
         if ($dirLocationsParent = $configLocation->getDirLocationsParent()) {
-            return (clone $dirLocationsParent)->setSubsection($configLocation->getSubsection());
+            return $dirLocationsParent;
         }
         $baseLocation = $this->pathResolver->getBaseConfigLocation($configLocation->getConfigName());
         if ($baseLocation !== null && realpath($baseLocation->getPath()) !== realpath($configLocation->getPath())) {

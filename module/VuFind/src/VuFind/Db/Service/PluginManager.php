@@ -58,6 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ExternalSessionServiceInterface::class => ExternalSessionService::class,
         FeedbackServiceInterface::class => FeedbackService::class,
         LoginTokenServiceInterface::class => LoginTokenService::class,
+        NoticeServiceInterface::class => NoticeService::class,
         OaiResumptionServiceInterface::class => OaiResumptionService::class,
         PaymentServiceInterface::class => PaymentService::class,
         PaymentFeeServiceInterface::class => PaymentFeeService::class,

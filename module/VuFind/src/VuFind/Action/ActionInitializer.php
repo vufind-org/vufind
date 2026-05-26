@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Initializer\InitializerInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\Http\RouteHelper;
+use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
@@ -58,7 +59,8 @@ class ActionInitializer implements InitializerInterface
     {
         if ($instance instanceof ActionInterface) {
             $instance->setRouteHelper($container->get(RouteHelper::class))
-                ->setHelperPluginManager($container->get(HelperPluginManager::class));
+                ->setHelperPluginManager($container->get(HelperPluginManager::class))
+                ->setSessionSettings($container->get(SessionSettings::class));
             if ($instance instanceof AbstractTemplateRenderingAction) {
                 $instance->setTemplateRenderer($container->get(TemplateRendererInterface::class));
             }

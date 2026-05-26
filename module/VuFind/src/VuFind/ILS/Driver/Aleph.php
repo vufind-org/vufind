@@ -1260,7 +1260,7 @@ class Aleph extends AbstractBase implements
      * @param string $password The patron's password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($user, $password)
@@ -1559,16 +1559,16 @@ class Aleph extends AbstractBase implements
      * Public Function which retrieves historic loan, renew, hold and cancel
      * settings from the driver ini file.
      *
-     * @param string $func   The name of the feature to be checked
-     * @param array  $params Optional feature-specific parameters (array)
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($func, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
-        if ($func == 'Holds') {
+        if ($function == 'Holds') {
             $holdsConfig = $this->config['Holds'] ?? [];
             $defaults = [
                 'HMACKeys' => 'id:item_id',
@@ -1576,9 +1576,9 @@ class Aleph extends AbstractBase implements
                 'defaultRequiredDate' => '0:1:0',
             ];
             return $holdsConfig + $defaults;
-        } elseif ('getMyTransactionHistory' === $func) {
+        } elseif ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             return [
                 'max_results' => 10000,

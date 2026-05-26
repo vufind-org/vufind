@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "sass:map";
 @use "sass:math";
 
@@ -7,7 +8,6 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "vendor/font-awesome/fontawesome";
 @import "vendor/font-awesome/regular";
 @import "vendor/font-awesome/solid";
-@import "vendor/font-awesome/v4-shims";
 
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
 @import "bootstrap/scss/functions";
@@ -73,7 +73,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/badges";
 @import "components/buttons";
 @import "components/channels";
-@import "components/cookie-consent/index";
+@import "components/cookie-consent";
 @import "components/copy-to-clipboard";
 @import "components/devtools";
 @import "components/explain";
@@ -161,7 +161,7 @@ h3.popover-header {
 // Normalize highlighting
 .highlight,
 mark {
-  background: lighten(#FF0, 20%);
+  background: color.adjust(#FF0, $lightness: 20%);
   padding: .1em .2em;
 }
 

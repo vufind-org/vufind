@@ -215,7 +215,7 @@ abstract class AbstractAPI extends AbstractBase implements
                     $attemptNumber + 1
                 );
             } else {
-                throw new ILSException('Unexpected error code.');
+                throw new ILSException("Unexpected error code '$code' returned from $path.");
             }
         }
         if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {

@@ -29,8 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Cart;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Search settings view helper.
@@ -41,15 +43,8 @@ use VuFind\Search\Base\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchSettings extends \Laminas\View\Helper\AbstractHelper
+class SearchSettings
 {
-    /**
-     * VuFind configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
     /**
      * Search params.
      *
@@ -61,10 +56,13 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
      * Constructor.
      *
      * @param array $config VuFind configuration
+     * @param Cart  $cart   Cart View Helper
      */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
+    public function __construct(
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $config,
+        protected Cart $cart,
+    ) {
     }
 
     /**
@@ -72,7 +70,7 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
      *
      * @param Params $params Search params
      *
-     * @return SearchResults
+     * @return static
      */
     public function __invoke(Params $params)
     {
@@ -100,11 +98,10 @@ class SearchSettings extends \Laminas\View\Helper\AbstractHelper
      */
     public function cartControlsEnabled()
     {
-        $cart = $this->view->plugin('cart');
         return
             $this->getOptions()->supportsCart()
-            && $cart()->isActive()
-            && ($this->bulkOptionsEnabled() || !$cart()->isActiveInSearch());
+            && $this->cart->isActive()
+            && ($this->bulkOptionsEnabled() || !$this->cart->isActiveInSearch());
     }
 
     /**

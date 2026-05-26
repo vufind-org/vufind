@@ -33,6 +33,8 @@ namespace VuFind\Search\Solr;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\HasSorterTrait;
+use VuFind\I18n\Sorter;
+use VuFind\I18n\SorterInterface;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\TranslatableStringInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -40,6 +42,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\Base\HierarchicalFacetHelperInterface;
 use VuFind\Search\Base\Options;
 use VuFind\Search\UrlQueryHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_slice;
 use function count;
@@ -104,6 +107,26 @@ class HierarchicalFacetHelper implements
      * @var ?RendererInterface
      */
     protected ?RendererInterface $viewRenderer = null;
+
+    /**
+     * Constructor.
+     *
+     * @param ?SorterInterface   $sorter   Sort helper (optional)
+     * @param ?RendererInterface $renderer Renderer (optional)
+     */
+    public function __construct(
+        #[Autowire(service: Sorter::class)]
+        ?SorterInterface $sorter = null,
+        #[Autowire(service: 'ViewRenderer')]
+        ?RendererInterface $renderer = null
+    ) {
+        if ($sorter) {
+            $this->setSorter($sorter);
+        }
+        if ($renderer) {
+            $this->setViewRenderer($renderer);
+        }
+    }
 
     /**
      * Set view renderer.

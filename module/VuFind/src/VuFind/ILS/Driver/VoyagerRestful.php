@@ -315,11 +315,9 @@ class VoyagerRestful extends Voyager implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
-        $functionConfig = $this->config[$function] ?? false;
-
-        return $functionConfig;
+        return $this->config[$function] ?? [];
     }
 
     /**
@@ -803,9 +801,8 @@ class VoyagerRestful extends Voyager implements
      *
      * Returns the default request group set in VoyagerRestful.ini
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
@@ -815,7 +812,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         return $this->defaultRequestGroup;
     }

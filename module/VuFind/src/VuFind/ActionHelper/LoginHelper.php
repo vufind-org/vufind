@@ -32,11 +32,17 @@ namespace VuFind\ActionHelper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
+use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager as AuthManager;
-use VuFind\Exception\Auth as AuthException;
+use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Service\AuditEventService;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
@@ -56,14 +62,19 @@ class LoginHelper implements HelperInterface
     /**
      * Constructor.
      *
-     * @param RouteHelper             $routeHelper      Route helper
-     * @param FollowupHelper          $followupHelper   Follow-up helper
-     * @param FlashMessengerInterface $flashMessenger   Flash messenger
-     * @param ForwardHelper           $forwardHelper    Forward helper
-     * @param RedirectHelper          $redirectHelper   Redirect helper
-     * @param AuthManager             $authManager      Authentication manager
-     * @param ILSAuthenticator        $ilsAuthenticator ILS authenticator
-     * @param Connection              $ils              ILS connection
+     * @param RouteHelper                     $routeHelper        Route helper
+     * @param FollowupHelper                  $followupHelper     Follow-up helper
+     * @param FlashMessengerInterface         $flashMessenger     Flash messenger
+     * @param ForwardHelper                   $forwardHelper      Forward helper
+     * @param RedirectHelper                  $redirectHelper     Redirect helper
+     * @param AuthManager                     $authManager        Authentication manager
+     * @param ILSAuthenticator                $ilsAuthenticator   ILS authenticator
+     * @param Connection                      $ils                ILS connection
+     * @param EmailAuthenticator              $emailAuthenticator Email authenticator
+     * @param AuditEventService               $auditEventService  Audit event service
+     * @param UserSessionPersistenceInterface $userSession        User session persistence service
+     * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
+     * @param UrlHelper                       $urlHelper          URL helper
      */
     #[Autowire()]
     public function __construct(
@@ -77,6 +88,14 @@ class LoginHelper implements HelperInterface
         protected AuthManager $authManager,
         protected ILSAuthenticator $ilsAuthenticator,
         protected Connection $ils,
+        protected EmailAuthenticator $emailAuthenticator,
+        #[Autowire(container: DbServicePluginManager::class)]
+        protected AuditEventService $auditEventService,
+        #[Autowire(container: DbServicePluginManager::class)]
+        protected UserSessionPersistenceInterface $userSession,
+        protected ServerUrlHelper $serverUrlHelper,
+        #[Autowire(container: HelperPluginManager::class)]
+        protected UrlHelper $urlHelper,
     ) {
     }
 
@@ -123,18 +142,20 @@ class LoginHelper implements HelperInterface
     }
 
     /**
-     * Does the user have catalog credentials available? Returns associative array of patron data if so, otherwise
-     * forwards to appropriate login prompt and returns the response from it. If there is an ILS exception, a
-     * flash message is added and null is returned.
+     * Does the user have catalog credentials available? Returns associative array of patron data if so, or a response
+     * if redirect is needed. Otherwise returns null (only when forwardToCatalogLogin is false).
+     * If there is an ILS exception, a flash message is added.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param ResponseInterface      $response Response
+     * @param ServerRequestInterface $request               Request
+     * @param ResponseInterface      $response              Response
+     * @param bool                   $forwardToCatalogLogin Forward to catalog login if not logged in?
      *
      * @return array|ResponseInterface|null
      */
     public function catalogLogin(
         ServerRequestInterface $request,
         ResponseInterface $response,
+        bool $forwardToCatalogLogin = true
     ): array|ResponseInterface|null {
         // First make sure user is logged in to VuFind:
         if (!($user = $this->authManager->getUserObject())) {
@@ -144,7 +165,6 @@ class LoginHelper implements HelperInterface
         // Now check if the user has provided credentials with which to log in:
         $patron = null;
         $postParams = $request->getParsedBody();
-        $queryParams = $request->getQueryParams();
         if (
             ($username = $postParams['cat_username'] ?? null)
             && ($password = $postParams['cat_password'] ?? null)
@@ -154,6 +174,7 @@ class LoginHelper implements HelperInterface
             if (!$this->authManager->allowsUserIlsLogin()) {
                 throw new \Exception('Unexpected ILS credential submission.');
             }
+            $rawUsername = $username;
             // Check for multiple ILS target selection
             $target = $postParams['target'] ?? '';
             if ($target) {
@@ -161,12 +182,28 @@ class LoginHelper implements HelperInterface
             }
             try {
                 if ('email' === $this->getILSLoginMethod($target)) {
-                    $routeMatch = $request->getAttribute('route-match');
-                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName() : 'myresearch-profile';
-                    $routeParams = $routeMatch ? $routeMatch->getParams() : [];
-                    $this->ilsAuthenticator
-                        ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
-                    $this->flashMessenger->addSuccessMessage('email_login_link_sent');
+                    // Use raw (non-prefixed) username as email to display so that we don't accidentally reveal if a
+                    // patron was found:
+                    $authData = [
+                        'email' => $rawUsername,
+                        'authId' => null,
+                    ];
+                    // Since we're using the email login method, no password is required here.
+                    if ($patron = $this->ils->patronLogin($username, '')) {
+                        $data = compact('username', 'patron');
+                        $authData['authId']
+                            = $this->emailAuthenticator->sendAuthenticationCode($patron['email'], $data);
+                        $this->auditEventService->addEvent(
+                            AuditEventType::User,
+                            AuditEventSubtype::SendCardAuthEmail,
+                            $user,
+                            data: $data
+                        );
+                    }
+                    // Don't reveal the result
+                    $this->userSession->setLibraryCardAuthenticationData($authData);
+                    $this->setFollowupUrlToReferer($request);
+                    return $this->redirectHelper->redirectToRoute($response, 'myresearch-verifyotp');
                 } else {
                     $patron = $this->ilsAuthenticator->newCatalogLogin($username, $password, $user);
 
@@ -178,32 +215,22 @@ class LoginHelper implements HelperInterface
             } catch (ILSException $e) {
                 $this->flashMessenger->addErrorMessage('ils_connection_failed');
             }
-        } elseif (
-            ('ILS' === ($queryParams['auth_method'] ?? null))
-            && ($hash = ($queryParams['hash'] ?? null))
-        ) {
-            try {
-                $patron = $this->ilsAuthenticator->processEmailLoginHash($hash);
-            } catch (AuthException $e) {
-                $this->flashMessenger->addErrorMessage($e->getMessage());
-            }
         } else {
             try {
                 // If no credentials were provided, try the stored values:
                 $patron = $this->ilsAuthenticator->storedCatalogLogin();
             } catch (ILSException $e) {
                 $this->flashMessenger->addErrorMessage('ils_connection_failed');
-                return null;
             }
         }
 
         // If catalog login failed, send the user to the right page:
-        if (!$patron) {
+        if (!$patron && $forwardToCatalogLogin) {
             return $this->forwardHelper->forwardTo($request, $response, 'myresearch/cataloglogin');
         }
 
-        // Send patron array back to caller:
-        return $patron;
+        // Send either null or patron array back to caller:
+        return $patron ?? null;
     }
 
     /**
@@ -220,5 +247,108 @@ class LoginHelper implements HelperInterface
             ['patron' => ['cat_username' => "$target.login"]]
         );
         return $config['loginMethod'] ?? 'password';
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form.
+     *
+     * @return array
+     */
+    public function getILSLoginSettings(): array
+    {
+        $targets = null;
+        $defaultTarget = null;
+        $loginMethod = null;
+        $loginMethods = [];
+        // Connect to the ILS and check if multiple target support is available:
+        if ($this->ils->checkCapability('getLoginDrivers')) {
+            $targets = $this->ils->getLoginDrivers();
+            $defaultTarget = $this->ils->getDefaultLoginDriver();
+            foreach ($targets as $t) {
+                $loginMethods[$t] = $this->getILSLoginMethod($t);
+            }
+        } else {
+            $loginMethod = $this->getILSLoginMethod();
+        }
+        return compact('targets', 'defaultTarget', 'loginMethod', 'loginMethods');
+    }
+
+    /**
+     * Store a referer (if appropriate) to keep post-login redirect pointing
+     * to an appropriate location. This is used when the user clicks the
+     * log in link from an arbitrary page or when a password is mistyped;
+     * separate logic is used for storing followup information when VuFind
+     * forces the user to log in from another context.
+     *
+     * @param ServerRequestInterface $request         Request
+     * @param bool                   $allowCurrentUrl Whether the current URL is valid for followup
+     * @param array                  $extras          Extra data for the followup
+     *
+     * @return void
+     */
+    public function setFollowupUrlToReferer(
+        ServerRequestInterface $request,
+        bool $allowCurrentUrl = true,
+        array $extras = []
+    ): void {
+        // lbreferer is the stored current url of the lightbox
+        // which overrides the url from the server request when present
+        $referer = $request->getQueryParams()['lbreferer'] ?? $request->getHeader('HTTP_REFERER') ?? null;
+        // Get the referer -- if it's empty, there's nothing to store! Also,
+        // if the referer lives outside of VuFind, don't store it! We only
+        // want internal post-login redirects.
+        if (empty($referer) || !$this->isLocalUrl($referer)) {
+            return;
+        }
+        // If the referer is the MyResearch/Home action, it probably means
+        // that the user is repeatedly mistyping their password. We should
+        // ignore this and instead rely on any previously stored referer.
+        $refererNorm = $this->urlHelper->normalizeUrlForComparison($referer);
+        $myResearchHomeUrl = $this->serverUrlHelper->getUrlForPath(
+            $this->routeHelper->getUrlFromRoute('myresearch-home')
+        );
+        $mrhuNorm = $this->urlHelper->normalizeUrlForComparison($myResearchHomeUrl);
+        if ($mrhuNorm === $refererNorm) {
+            return;
+        }
+
+        // If the referer is the MyResearch/UserLogin action, it probably means
+        // that the user is repeatedly mistyping their password. We should
+        // ignore this and instead rely on any previously stored referer.
+        $myUserLogin = $this->serverUrlHelper->getUrlForPath(
+            $this->routeHelper->getUrlFromRoute('myresearch-userlogin')
+        );
+        $mulNorm = $this->urlHelper->normalizeUrlForComparison($myUserLogin);
+        if (str_starts_with($refererNorm, $mulNorm)) {
+            return;
+        }
+
+        // Check that the referer is not current URL if not allowed:
+        if (!$allowCurrentUrl && (string)$request->getUri() === $referer) {
+            return;
+        }
+
+        // Clear previously stored lightboxParent.
+        $this->followupHelper->clear('lightboxParent');
+
+        // If we got this far, we want to store the referer:
+        $this->followupHelper->store($extras, $referer);
+    }
+
+    /**
+     * Is the provided URL local to this instance?
+     *
+     * @param string $url URL to check
+     *
+     * @return bool
+     */
+    public function isLocalUrl(string $url): bool
+    {
+        $baseUrlNorm = $this->urlHelper->normalizeUrlForComparison(
+            $this->serverUrlHelper->getUrlForPath(
+                $this->routeHelper->getUrlFromRoute('home')
+            )
+        );
+        return str_starts_with($this->urlHelper->normalizeUrlForComparison($url), $baseUrlNorm);
     }
 }
