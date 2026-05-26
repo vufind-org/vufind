@@ -203,8 +203,10 @@ function setIndexOf() {
  */
 function getBibKeyString() {
   var skeys = '';
-  $('.previewBibkeys').each(function previewBibkeysEach(){
+  // Only collect from elements not yet processed, then mark them
+  $('.previewBibkeys:not([data-preview-loaded])').each(function previewBibkeysEach(){
     skeys += $(this).attr('class');
+    $(this).attr('data-preview-loaded', '1'); // mark as processed
   });
   return skeys.replace(/previewBibkeys/g, '').replace(/^\s+|\s+$/g, '');
 }
@@ -213,9 +215,12 @@ function getBibKeyString() {
  * Initiate request to various book preview APIs.
  */
 function getBookPreviews() {
-  var skeys = getBibKeyString();
-  var bibkeys = skeys.split(/\s+/);
-  var script;
+  let skeys = getBibKeyString();
+  if (!skeys) {
+    return; // All elements already processed, nothing to do
+  }
+  let bibkeys = skeys.split(/\s+/);
+  let script;
 
   // fetch Google preview if enabled
   if ($('[class*="googlePreviewSpan"]').length > 0) {
@@ -226,7 +231,7 @@ function getBookPreviews() {
       $.getScript(script);
     } else {
       // if so, break request into chunks of 100
-      var keyString = '';
+      let keyString = '';
       // loop through array
       for (let i = 0; i < bibkeys.length; i++){
         keyString += bibkeys[i] + ',';
