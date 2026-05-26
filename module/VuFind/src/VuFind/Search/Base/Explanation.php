@@ -48,21 +48,21 @@ use VuFindSearch\Service as SearchService;
 abstract class Explanation
 {
     /**
-     * Configuration
+     * Configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Configuration file to read search settings from
+     * Configuration file to read search settings from.
      *
      * @var string
      */
     protected $searchIni = 'searches';
 
     /**
-     * Search Service
+     * Search Service.
      *
      * @var SearchService
      */
@@ -83,14 +83,14 @@ abstract class Explanation
     protected $recordId;
 
     /**
-     * Search parameters object
+     * Search parameters object.
      *
      * @var \VuFind\Search\Base\Params
      */
     protected $params;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Base\Params $params        Search Parameter
      * @param SearchService              $searchService Search Service

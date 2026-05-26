@@ -47,7 +47,7 @@ use function in_array;
 class DynamicRoleProviderFactory implements FactoryInterface
 {
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $container Service container
      * @param string             $name      Requested service name (unused)
@@ -135,12 +135,14 @@ class DynamicRoleProviderFactory implements FactoryInterface
                 = 'access.StaffViewTab';
         }
 
-        // Add EIT settings if they are absent:
-        if (!$this->permissionDefined($permissions, 'access.EITModule')) {
-            $permissions['legacy.EITModule'] = [
-                'role' => 'loggedin',
-                'permission' => 'access.EITModule',
-            ];
+        // Add EDS, EIT and EPF settings if they are absent:
+        foreach (['EDSModule', 'EITModule', 'EPFModule'] as $module) {
+            if (!$this->permissionDefined($permissions, 'access.' . $module)) {
+                $permissions['legacy.' . $module] = [
+                    'role' => $module === 'EITModule' ? 'loggedin' : ['guest', 'loggedin'],
+                    'permission' => 'access.' . $module,
+                ];
+            }
         }
 
         // Add Summon settings if they are absent:

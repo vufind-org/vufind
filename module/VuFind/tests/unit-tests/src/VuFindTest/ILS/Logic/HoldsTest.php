@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holds logic test
+ * Holds logic test.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 
 /**
- * Holds logic test
+ * Holds logic test.
  *
  * @category VuFind
  * @package  Tests
@@ -77,14 +77,12 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSuppressedLocations().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function suppressedLocationsProvider(): array
+    public static function suppressedLocationsProvider(): \Iterator
     {
-        return [
-            'default' => [[], []],
-            'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']],
-        ];
+        yield 'default' => [[], []];
+        yield 'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']];
     }
 
     /**
@@ -103,7 +101,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test formatHoldings method
+     * Test formatHoldings method.
      *
      * @return void
      */
@@ -143,7 +141,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create an availability status for testing
+     * Create an availability status for testing.
      *
      * @param bool   $available   Whether the item is available
      * @param string $description Status description
@@ -161,7 +159,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generateHoldings method with different hold types
+     * Test generateHoldings method with different hold types.
      *
      * @return void
      */
@@ -210,7 +208,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getRequestDetails method
+     * Test getRequestDetails method.
      *
      * @return void
      */
@@ -235,7 +233,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Hold', $result['action']);
         $this->assertEquals('test123', $result['record']);
         $this->assertEquals('Solr', $result['source']);
-        $this->assertStringContainsString('hashKey=test-hash-key', $result['query']);
+        $this->assertStringContainsString('hashKey=test-hash-key', (string)$result['query']);
         $this->assertEquals('#tabnav', $result['anchor']);
 
         // Test with link overrides
@@ -247,7 +245,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldingsGroupKey method
+     * Test getHoldingsGroupKey method.
      *
      * @return void
      */
@@ -281,7 +279,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldings with ILS exception
+     * Test getHoldings with ILS exception.
      *
      * @return void
      */
@@ -308,7 +306,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldings with other mode
+     * Test getHoldings with other mode.
      *
      * @return void
      */

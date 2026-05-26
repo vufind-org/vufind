@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Search tabs" view helper
+ * "Search tabs" view helper.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Search\SearchTabsHelper;
 use VuFind\Search\UrlQueryHelper;
 
 /**
- * "Search tabs" view helper
+ * "Search tabs" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -53,35 +53,35 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Search manager
+     * Search manager.
      *
      * @var PluginManager
      */
     protected $results;
 
     /**
-     * Request
+     * Request.
      *
      * @var Request
      */
     protected $request;
 
     /**
-     * Url
+     * Url.
      *
      * @var Url
      */
     protected $url;
 
     /**
-     * Search tab helper
+     * Search tab helper.
      *
      * @var SearchTabsHelper
      */
     protected $helper;
 
     /**
-     * Cached hidden filter url params
+     * Cached hidden filter url params.
      *
      * @var array
      */
@@ -95,7 +95,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     protected $currentHiddenFilterParamsDisabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PluginManager    $results Search results plugin manager
      * @param Url              $url     URL helper
@@ -112,7 +112,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Determine information about search tabs
+     * Determine information about search tabs.
      *
      * @param string $activeSearchClass The search class ID of the active search
      * @param string $query             The current search query
@@ -203,7 +203,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Get the tab configuration
+     * Get the tab configuration.
      *
      * @param \VuFind\Search\Base\Params $params Search parameters
      *
@@ -222,7 +222,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Get an array of hidden filters
+     * Get an array of hidden filters.
      *
      * @param string $searchClassId         Active search class
      * @param bool   $returnDefaultsIfEmpty Whether to return default tab filters if
@@ -245,7 +245,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Get current hidden filters as a string suitable for search URLs
+     * Get current hidden filters as a string suitable for search URLs.
      *
      * @param string $searchClassId            Active search class
      * @param bool   $ignoreHiddenFilterMemory Whether to ignore hidden filters in search memory
@@ -374,7 +374,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Build a hidden filter query fragment from the given filters
+     * Build a hidden filter query fragment from the given filters.
      *
      * @param Results $results Search results
      * @param array   $filters Filters

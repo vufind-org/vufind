@@ -68,7 +68,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function to create a new API key entity
+     * Helper function to create a new API key entity.
      *
      * @param string $title API key title
      *
@@ -84,7 +84,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function to get a revoked API key entity
+     * Helper function to get a revoked API key entity.
      *
      * @return ApiKeyEntityInterface
      */
@@ -98,7 +98,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Helper function to set correct API key configs
+     * Helper function to set correct API key configs.
      *
      * @param string $mode API key mode
      *
@@ -138,21 +138,25 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string  $id          Record    ID to retrieve.
      * @param ?string $apiKeyToken API key token.
+     * @param string  $divId       id of HTML div element for the record API call
      *
      * @return Element
      */
-    protected function makeRecordApiCall($id = 'testbug2', ?string $apiKeyToken = null): Element
-    {
+    protected function makeRecordApiCall(
+        string $id = 'testbug2',
+        ?string $apiKeyToken = null,
+        string $divId = 'operations-Record-get_record'
+    ): Element {
         $session = $this->getMinkSession();
         if ($apiKeyToken) {
             $session->setApiKeyToken($apiKeyToken);
         }
         $session->visit($this->getVuFindUrl() . '/api');
         $page = $session->getPage();
-        $this->clickCss($page, '#operations-Record-get_record button');
-        $this->clickCss($page, '#operations-Record-get_record .try-out button');
-        $this->findCssAndSetValue($page, '#operations-Record-get_record input[type="text"]', $id);
-        $this->clickCss($page, '#operations-Record-get_record .execute-wrapper button');
+        $this->clickCss($page, "#{$divId} button");
+        $this->clickCss($page, "#{$divId} .try-out button");
+        $this->findCssAndSetValue($page, "#{$divId} input[type=\"text\"]", $id);
+        $this->clickCss($page, "#{$divId} .execute-wrapper button");
         return $page;
     }
 
@@ -190,7 +194,30 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+
+        // Test /record.
         $page = $this->makeRecordApiCall();
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        // Test /index2/record.
+        $page = $this->makeRecordApiCall(id: 'geo20031', divId: 'operations-Record-get_index2_record');
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        // Test /authority/record.
+        $page = $this->makeRecordApiCall(id: 'vtls000001427', divId: 'operations-Record-get_authority_record');
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        // Test /web/record.
+        $page = $this->makeRecordApiCall(id: '003', divId: 'operations-Record-get_web_record');
         $this->assertEquals(
             '200',
             $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
@@ -198,7 +225,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test generating API keys
+     * Test generating API keys.
      *
      * @return void
      */
@@ -230,12 +257,12 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
             $text
         );
         $testToken = trim(substr($text, strpos($text, ':') + 1));
-        $this->assertTrue(strlen($testToken) > 0);
+        $this->assertGreaterThan(0, strlen($testToken));
 
         $this->clickCss($page, '.btn-default[data-bs-dismiss="modal"]');
 
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'test title',
             $this->findCssAndGetText($page, '.table.table-striped th', index: 0)
         );

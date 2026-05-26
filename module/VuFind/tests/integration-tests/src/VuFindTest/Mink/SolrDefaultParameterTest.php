@@ -61,7 +61,7 @@ class SolrDefaultParameterTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame(1, intval($actualSize));
         $this->assertStringContainsString(
             "/Record/$id?sid=",
-            $this->findCss($page, '.result a.title')->getAttribute('href')
+            (string)$this->findCss($page, '.result a.title')->getAttribute('href')
         );
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HtmlSafeJsonEncode View Helper Test Class
+ * HtmlSafeJsonEncode View Helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\EscapeHtmlAttr;
 use VuFind\View\Helper\Root\HtmlSafeJsonEncode;
 
 /**
- * HtmlSafeJsonEncode View Helper Test Class
+ * HtmlSafeJsonEncode View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Get helper to test
+     * Get helper to test.
      *
      * @param array $plugins Array of extra plugins for renderer
      *
@@ -66,28 +66,24 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaultEscaping(): void
     {
-        $escapeHtmlAttr = $this->getMockBuilder(EscapeHtmlAttr::class)
-            ->disableOriginalConstructor()->getMock();
+        $escapeHtmlAttr = $this->createMock(EscapeHtmlAttr::class);
         $escapeHtmlAttr->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('1'))
+            ->with('1')
             ->willReturn('1');
         $this->assertEquals('1', ($this->getHelper(compact('escapeHtmlAttr')))(1));
     }
 
     /**
-     * Data provider for JSON encoding tests
+     * Data provider for JSON encoding tests.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getJsonTests(): array
+    public static function getJsonTests(): \Iterator
     {
-        return [
-            'string with special characters'
-                => ['<\'">', '"\u003C\u0027\u0022\u003E"'],
-            'array of special characters' => [
-                ['<', '"', "'", '>', '&'],
-                '["\u003C","\u0022","\u0027","\u003E","\u0026"]',
-            ],
+        yield 'string with special characters' => ['<\'">', '"\u003C\u0027\u0022\u003E"'];
+        yield 'array of special characters' => [
+            ['<', '"', "'", '>', '&'],
+            '["\u003C","\u0022","\u0027","\u003E","\u0026"]',
         ];
     }
 
@@ -102,6 +98,6 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('getJsonTests')]
     public function testCoreEncoding($input, string $expectedOutput): void
     {
-        $this->assertEquals($expectedOutput, ($this->getHelper())($input, null));
+        $this->assertSame($expectedOutput, ($this->getHelper())($input, null));
     }
 }

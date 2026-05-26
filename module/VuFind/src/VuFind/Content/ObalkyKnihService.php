@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Service class for ObalkyKnih
+ * Service class for ObalkyKnih.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Content;
 use function count;
 
 /**
- * Service class for ObalkyKnih
+ * Service class for ObalkyKnih.
  *
  * @category VuFind
  * @package  Content
@@ -49,21 +49,21 @@ class ObalkyKnihService implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Available base URLs
+     * Available base URLs.
      *
      * @var array
      */
     protected $baseUrls = [];
 
     /**
-     * Http referrer
+     * Http referrer.
      *
      * @var string
      */
     protected $referrer;
 
     /**
-     * Sigla - library identifier
+     * Sigla - library identifier.
      *
      * @var string
      */
@@ -71,21 +71,21 @@ class ObalkyKnihService implements
 
     /**
      * Array with endpoints, possible endpoints(array keys) are: books, cover, toc,
-     * authority, citation, recommend, alive
+     * authority, citation, recommend, alive.
      *
      * @var array
      */
     protected $endpoints;
 
     /**
-     * Whether to check servers availability before API calls
+     * Whether to check servers availability before API calls.
      *
      * @var bool
      */
     protected $checkServersAvailability = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config Configuration for service
      */
@@ -114,7 +114,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Get an HTTP client
+     * Get an HTTP client.
      *
      * @param ?string $url URL for client to use
      *
@@ -134,7 +134,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Creates cache key based on ids
+     * Creates cache key based on ids.
      *
      * @param array $ids Record identifiers
      *
@@ -150,7 +150,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Get data from cache, or from service
+     * Get data from cache, or from service.
      *
      * @param array $ids Record identifiers
      *
@@ -168,7 +168,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Get data from service
+     * Get data from service.
      *
      * @param array $ids Record identifiers
      *
@@ -204,7 +204,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Get query params for service
+     * Get query params for service.
      *
      * @param array $ids Record identifiers
      *
@@ -241,7 +241,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Create identifier of local record
+     * Create identifier of local record.
      *
      * @param string $recordid Record identifier
      *
@@ -257,7 +257,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Get currently available base URL
+     * Get currently available base URL.
      *
      * @return string
      */
@@ -268,7 +268,7 @@ class ObalkyKnihService implements
     }
 
     /**
-     * Check base URLs and return the first available
+     * Check base URLs and return the first available.
      *
      * @return string
      */

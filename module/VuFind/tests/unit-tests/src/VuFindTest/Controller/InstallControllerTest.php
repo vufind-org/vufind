@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class InstallControllerTest
+ * Class InstallControllerTest.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\Controller;
 use VuFind\Controller\InstallController;
 
 /**
- * Class InstallControllerTest
+ * Class InstallControllerTest.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\Controller\InstallController;
 class InstallControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test getMinimalPhpVersion with actual composer.json file
+     * Test getMinimalPhpVersion with actual composer.json file.
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Simulate missing composer.json file
+     * Simulate missing composer.json file.
      *
      * @return void
      */
@@ -76,7 +76,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Simulate no PHP version defined in composer.json file
+     * Simulate no PHP version defined in composer.json file.
      *
      * @return void
      */
@@ -90,99 +90,97 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test data for getMinimalPhpVersion
+     * Test data for getMinimalPhpVersion.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getMinimalPhpVersionProvider(): array
+    public static function getMinimalPhpVersionProvider(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    'require' => [
-                        'php' => '>=7.4.1',
+                'require' => [
+                    'php' => '>=7.4.1',
+                ],
+            ],
+            '7.4.1',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '7.3.0',
+                ],
+            ],
+            '7.3.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '^7.2.0',
+                ],
+            ],
+            '7.2.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '~7.1.0',
+                ],
+                'config' => [
+                    'platform' => [
+                        'php' => '5.6.0',
                     ],
                 ],
-                '7.4.1',
             ],
+            '7.1.0',
+        ];
+        yield [
             [
-                [
-                    'require' => [
-                        'php' => '7.3.0',
+                'config' => [
+                    'platform' => [
+                        'php' => '7.0.0',
                     ],
                 ],
-                '7.3.0',
             ],
+            '7.0.0',
+        ];
+        yield [
             [
-                [
-                    'require' => [
-                        'php' => '^7.2.0',
+                'require' => [
+                    'php' => '5.8.0 || 5.9.0',
+                ],
+            ],
+            '5.8.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '^5.7',
+                ],
+            ],
+            '5.7.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '^5',
+                ],
+            ],
+            '5.0.0',
+        ];
+        yield [
+            [
+                'config' => [
+                    'platform' => [
+                        'php' => '4',
                     ],
                 ],
-                '7.2.0',
             ],
-            [
-                [
-                    'require' => [
-                        'php' => '~7.1.0',
-                    ],
-                    'config' => [
-                        'platform' => [
-                            'php' => '5.6.0',
-                        ],
-                    ],
-                ],
-                '7.1.0',
-            ],
-            [
-                [
-                    'config' => [
-                        'platform' => [
-                            'php' => '7.0.0',
-                        ],
-                    ],
-                ],
-                '7.0.0',
-            ],
-            [
-                [
-                    'require' => [
-                        'php' => '5.8.0 || 5.9.0',
-                    ],
-                ],
-                '5.8.0',
-            ],
-            [
-                [
-                    'require' => [
-                        'php' => '^5.7',
-                    ],
-                ],
-                '5.7.0',
-            ],
-            [
-                [
-                    'require' => [
-                        'php' => '^5',
-                    ],
-                ],
-                '5.0.0',
-            ],
-            [
-                [
-                    'config' => [
-                        'platform' => [
-                            'php' => '4',
-                        ],
-                    ],
-                ],
-                '4.0.0',
-            ],
+            '4.0.0',
         ];
     }
 
     /**
-     * Test getMinimalPhpVersion with actual composer.json file
+     * Test getMinimalPhpVersion with actual composer.json file.
      *
      * @param array  $json     JSON data
      * @param string $expected Expected version number
@@ -201,7 +199,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Mock controller
+     * Mock controller.
      *
      * @param array $json JSON data
      *
@@ -222,17 +220,15 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return method InstallController::getMinimalPhpVersion
+     * Return method InstallController::getMinimalPhpVersion.
      *
      * @return \ReflectionMethod
      */
     protected function getMinimalPhpVersionMethod(): \ReflectionMethod
     {
-        $method = new \ReflectionMethod(
+        return new \ReflectionMethod(
             InstallController::class,
             'getMinimalPhpVersion'
         );
-        $method->setAccessible(true);
-        return $method;
     }
 }

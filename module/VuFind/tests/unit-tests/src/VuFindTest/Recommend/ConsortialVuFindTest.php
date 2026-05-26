@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ConsortialVuFind recommendation module Test Class
+ * ConsortialVuFind recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Search\Base\Params;
 use VuFindTest\Search\TestHarness\Results;
 
 /**
- * ConsortialVuFind recommendation module Test Class
+ * ConsortialVuFind recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,14 +53,14 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
-     * ExternalVuFind connection object
+     * ExternalVuFind connection object.
      *
      * @var ExternalVuFind
      */
     protected $connector;
 
     /**
-     * ConsortialVuFind object
+     * ConsortialVuFind object.
      *
      * @var ConsortialVuFind
      */
@@ -74,16 +74,14 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         // Mock ExternalVuFind connector
-        $this->connector = $this->getMockBuilder(ExternalVuFind::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->connector = $this->createMock(ExternalVuFind::class);
         $searchResultsFixture = $this->getFixture('externalvufind/search');
         $searchResults = json_decode(substr($searchResultsFixture, strpos($searchResultsFixture, '{')), true);
         $this->connector->method('search')->willReturn($searchResults);
     }
 
     /**
-     * Test the getResults function
+     * Test the getResults function.
      *
      * @return void
      */
@@ -108,7 +106,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the getMoreResultsUrl function
+     * Test the getMoreResultsUrl function.
      *
      * @return void
      */
@@ -122,7 +120,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build an object representing an ExternalVuFind.ini configuration file
+     * Build an object representing an ExternalVuFind.ini configuration file.
      *
      * @return array
      */
@@ -138,7 +136,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build and pre-process a ConsortialVuFind object
+     * Build and pre-process a ConsortialVuFind object.
      *
      * @param array $config The config array
      *
@@ -156,7 +154,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a partially mocked Results object for a given query string
+     * Build a partially mocked Results object for a given query string.
      *
      * @param string $queryString The query string
      * @param array  $facets      The result facets
@@ -176,9 +174,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
         $queryResults = new Results(
             $queryParams,
             $this->createStub(\VuFindSearch\Service::class),
-            $this->getMockBuilder(\VuFind\Record\Loader::class)
-                ->disableOriginalConstructor()
-                ->getMock(),
+            $this->createMock(\VuFind\Record\Loader::class),
             null,
             $facets
         );

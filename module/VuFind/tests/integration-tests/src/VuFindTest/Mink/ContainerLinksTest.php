@@ -72,8 +72,8 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
             parse_url($url, PHP_URL_PATH)
         );
         parse_str(parse_url($url, PHP_URL_QUERY), $query);
-        $this->assertEquals('JournalTitle', $query['type']);
-        $this->assertEquals('"Arithmetic Facts"', $query['lookfor']);
+        $this->assertSame('JournalTitle', $query['type']);
+        $this->assertSame('"Arithmetic Facts"', $query['lookfor']);
     }
 
     /**

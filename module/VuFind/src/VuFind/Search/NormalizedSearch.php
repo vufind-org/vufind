@@ -47,49 +47,49 @@ use function get_class;
 class NormalizedSearch
 {
     /**
-     * Search results manager
+     * Search results manager.
      *
      * @var ResultsManager
      */
     protected $resultsManager;
 
     /**
-     * Raw search object provided to constructor
+     * Raw search object provided to constructor.
      *
      * @var Results
      */
     protected $raw;
 
     /**
-     * Minified version of search
+     * Minified version of search.
      *
      * @var Minified
      */
     protected $minified;
 
     /**
-     * Normalized search object
+     * Normalized search object.
      *
      * @var Results
      */
     protected $normalized;
 
     /**
-     * Search URL from normalized search object
+     * Search URL from normalized search object.
      *
      * @var string
      */
     protected $url;
 
     /**
-     * Checksum of normalized search URL
+     * Checksum of normalized search URL.
      *
      * @var string
      */
     protected $checksum;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResultsManager $resultsManager ResultsManager
      * @param Results        $results        Search results object

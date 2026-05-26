@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Record tab interface
+ * Record tab interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\RecordTab;
 
 /**
- * Record tab interface
+ * Record tab interface.
  *
  * @category VuFind
  * @package  RecordTabs

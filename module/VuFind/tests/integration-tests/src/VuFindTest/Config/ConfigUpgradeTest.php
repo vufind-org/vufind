@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Upgrade Integration Test Class
+ * Config Upgrade Integration Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\Upgrade;
 use VuFindTest\Integration\ConfigTestCase;
 
 /**
- * Config Upgrade Integration Test Class
+ * Config Upgrade Integration Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use VuFindTest\Integration\ConfigTestCase;
 class ConfigUpgradeTest extends ConfigTestCase
 {
     /**
-     * Target upgrade version
+     * Target upgrade version.
      *
      * @var string
      */
@@ -98,19 +98,17 @@ class ConfigUpgradeTest extends ConfigTestCase
     /**
      * Upgrade test provider.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function upgradeTestProvider(): array
+    public static function upgradeTestProvider(): \Iterator
     {
-        return [
-            'changing-upgrade' => [
-                'defaultgenerator',
-                'VuFind ' . self::$targetVersion,
-            ],
-            'unchanging-upgrade' => [
-                'customgenerator',
-                'Custom Generator',
-            ],
+        yield 'changing-upgrade' => [
+            'defaultgenerator',
+            'VuFind ' . self::$targetVersion,
+        ];
+        yield 'unchanging-upgrade' => [
+            'customgenerator',
+            'Custom Generator',
         ];
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Support trait for MultiBackend ILS driver test
+ * Support trait for MultiBackend ILS driver test.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
- * Support trait for MultiBackend ILS driver test
+ * Support trait for MultiBackend ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -59,7 +59,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Cancel ILL Request
+     * Cancel ILL Request.
      *
      * Attempts to Cancel an ILL request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -77,7 +77,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Cancel Storage Retrieval Request
+     * Cancel Storage Retrieval Request.
      *
      * Attempts to Cancel a Storage Retrieval Request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -95,7 +95,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Check if hold or recall available
+     * Check if hold or recall available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -114,7 +114,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Check if ILL request available
+     * Check if ILL request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -133,7 +133,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Check if storage retrieval request available
+     * Check if storage retrieval request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -152,7 +152,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get Cancel Hold Request Details
+     * Get Cancel Hold Request Details.
      *
      * @param array $request An array of request data
      * @param array $patron  Patron information from patronLogin
@@ -167,7 +167,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get Cancel ILL Request Details
+     * Get Cancel ILL Request Details.
      *
      * @param array $request An array of request data
      * @param array $patron  Patron information from patronLogin
@@ -182,7 +182,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get Cancel Storage Retrieval Request Details
+     * Get Cancel Storage Retrieval Request Details.
      *
      * @param array $request An array of request data
      * @param array $patron  Patron information from patronLogin
@@ -212,7 +212,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in HorizonXMLAPI.ini
      *
@@ -234,13 +234,12 @@ trait ILSMockTrait
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
@@ -249,13 +248,13 @@ trait ILSMockTrait
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         return false;
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL requests by a specific patron.
      *
@@ -270,7 +269,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get ILL Pickup Libraries
+     * Get ILL Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -288,7 +287,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get ILL Pickup Locations
+     * Get ILL Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -307,7 +306,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -333,7 +332,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -352,7 +351,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $bibId       BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -383,7 +382,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details.
@@ -400,7 +399,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Place ILL Request
+     * Place ILL Request.
      *
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details
@@ -417,7 +416,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Place a Storage Retrieval Request
+     * Place a Storage Retrieval Request.
      *
      * Attempts to place a request on a particular item and returns
      * an array with result details.
@@ -434,7 +433,7 @@ trait ILSMockTrait
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().

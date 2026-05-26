@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Stream Handler Test Class
+ * Stream Handler Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Log\Handler\StreamHandler;
 use VuFind\Log\Logger;
 
 /**
- * Stream Log Handler Test Class
+ * Stream Log Handler Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,28 +46,28 @@ use VuFind\Log\Logger;
 class StreamHandlerTest extends TestCase
 {
     /**
-     * Temporary log file path
+     * Temporary log file path.
      *
      * @var string
      */
     protected $tempLogFile;
 
     /**
-     * Stream handler instance
+     * Stream handler instance.
      *
      * @var StreamHandler
      */
     protected $handler;
 
     /**
-     * Logger instance
+     * Logger instance.
      *
      * @var Logger
      */
     protected $logger;
 
     /**
-     * Set up test environment
+     * Set up test environment.
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Clean up test environment
+     * Clean up test environment.
      *
      * @return void
      */
@@ -102,7 +102,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test that the handler can be instantiated
+     * Test that the handler can be instantiated.
      *
      * @return void
      */
@@ -113,7 +113,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test basic log writing functionality
+     * Test basic log writing functionality.
      *
      * @return void
      */
@@ -124,12 +124,12 @@ class StreamHandlerTest extends TestCase
 
         $this->assertFileExists($this->tempLogFile);
         $logContent = file_get_contents($this->tempLogFile);
-        $this->assertStringContainsString($message, $logContent);
-        $this->assertStringContainsString('INFO', $logContent);
+        $this->assertStringContainsString($message, (string)$logContent);
+        $this->assertStringContainsString('INFO', (string)$logContent);
     }
 
     /**
-     * Test all log levels are handled correctly
+     * Test all log levels are handled correctly.
      *
      * @return void
      */
@@ -153,13 +153,13 @@ class StreamHandlerTest extends TestCase
         $logContent = file_get_contents($this->tempLogFile);
 
         foreach ($levels as $level => $message) {
-            $this->assertStringContainsString($message, $logContent);
-            $this->assertStringContainsString(strtoupper($level), $logContent);
+            $this->assertStringContainsString($message, (string)$logContent);
+            $this->assertStringContainsString(strtoupper($level), (string)$logContent);
         }
     }
 
     /**
-     * Test log level filtering
+     * Test log level filtering.
      *
      * @return void
      */
@@ -188,16 +188,16 @@ class StreamHandlerTest extends TestCase
         $logContent = file_get_contents($this->tempLogFile);
 
         // Verify only WARNING and above appear in log
-        $this->assertStringNotContainsString('Debug message', $logContent);
-        $this->assertStringNotContainsString('Info message', $logContent);
-        $this->assertStringNotContainsString('Notice message', $logContent);
-        $this->assertStringContainsString('Warning message', $logContent);
-        $this->assertStringContainsString('Error message', $logContent);
-        $this->assertStringContainsString('Critical message', $logContent);
+        $this->assertStringNotContainsString('Debug message', (string)$logContent);
+        $this->assertStringNotContainsString('Info message', (string)$logContent);
+        $this->assertStringNotContainsString('Notice message', (string)$logContent);
+        $this->assertStringContainsString('Warning message', (string)$logContent);
+        $this->assertStringContainsString('Error message', (string)$logContent);
+        $this->assertStringContainsString('Critical message', (string)$logContent);
     }
 
     /**
-     * Test logging with context data
+     * Test logging with context data.
      *
      * @return void
      */
@@ -214,15 +214,15 @@ class StreamHandlerTest extends TestCase
         $this->logger->info($message, $context);
 
         $logContent = file_get_contents($this->tempLogFile);
-        $this->assertStringContainsString($message, $logContent);
+        $this->assertStringContainsString($message, (string)$logContent);
 
         foreach ($context as $value) {
-            $this->assertStringContainsString((string)$value, $logContent);
+            $this->assertStringContainsString((string)$value, (string)$logContent);
         }
     }
 
     /**
-     * Test concurrent logging
+     * Test concurrent logging.
      *
      * @return void
      */
@@ -237,7 +237,7 @@ class StreamHandlerTest extends TestCase
 
         $logContent = file_get_contents($this->tempLogFile);
         foreach ($messages as $message) {
-            $this->assertStringContainsString($message, $logContent);
+            $this->assertStringContainsString($message, (string)$logContent);
         }
 
         $lines = explode("\n", trim($logContent));
@@ -245,7 +245,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test file permissions and accessibility
+     * Test file permissions and accessibility.
      *
      * @return void
      */
@@ -259,7 +259,7 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test that the handler properly closes resources
+     * Test that the handler properly closes resources.
      *
      * @return void
      */
@@ -271,6 +271,6 @@ class StreamHandlerTest extends TestCase
         $this->handler->close();
         $this->assertFileExists($this->tempLogFile);
         $logContent = file_get_contents($this->tempLogFile);
-        $this->assertStringContainsString('Test message', $logContent);
+        $this->assertStringContainsString('Test message', (string)$logContent);
     }
 }

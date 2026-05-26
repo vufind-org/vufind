@@ -1,7 +1,7 @@
 <?php
 
 /**
- * No Autocomplete Module
+ * No Autocomplete Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * No Autocomplete Module
+ * No Autocomplete Module.
  *
  * This class allows autocomplete to be disabled for certain search types.
  *

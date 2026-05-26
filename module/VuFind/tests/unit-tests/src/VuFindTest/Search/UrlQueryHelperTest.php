@@ -70,7 +70,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         // Test basic getters
         $helper = $this->getHelper();
         $this->assertEquals('?foo=bar&amp;lookfor=search', $helper->getParams());
-        $this->assertEquals('?foo=bar&amp;lookfor=search', (string)$helper);
+        $this->assertSame('?foo=bar&amp;lookfor=search', (string)$helper);
         $this->assertEquals(
             ['foo' => 'bar', 'lookfor' => 'search'],
             $helper->getParamArray()
@@ -82,7 +82,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the behavior of setDefaultParameters
+     * Test the behavior of setDefaultParameters.
      *
      * @return void
      */
@@ -134,7 +134,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test replacing query terms
+     * Test replacing query terms.
      *
      * @return void
      */
@@ -152,7 +152,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test adding/removing facets and filters
+     * Test adding/removing facets and filters.
      *
      * @return void
      */
@@ -179,7 +179,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test stacking setters
+     * Test stacking setters.
      *
      * @return void
      */

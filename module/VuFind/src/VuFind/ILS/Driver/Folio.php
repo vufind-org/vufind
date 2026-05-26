@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FOLIO REST API driver
+ * FOLIO REST API driver.
  *
  * PHP version 8
  *
@@ -49,7 +49,7 @@ use function is_string;
 use function sprintf;
 
 /**
- * FOLIO REST API driver
+ * FOLIO REST API driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -74,26 +74,26 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Maximum number of ids to pass in the query to load FOLIO records with getByBatch()
+     * Maximum number of ids to pass in the query to load FOLIO records with getByBatch().
      */
     protected const QUERY_BY_IDS_BATCH_SIZE = 20;
 
     /**
-     * Authentication tenant (X-Okapi-Tenant)
+     * Authentication tenant (X-Okapi-Tenant).
      *
      * @var string
      */
     protected $tenant = null;
 
     /**
-     * Authentication token (X-Okapi-Token)
+     * Authentication token (X-Okapi-Token).
      *
      * @var string
      */
     protected $token = null;
 
     /**
-     * Authentication token expiration time
+     * Authentication token expiration time.
      *
      * @var string
      */
@@ -107,28 +107,28 @@ class Folio extends AbstractAPI implements
     protected $sessionFactory;
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var \Laminas\Session\Container
      */
     protected $sessionCache;
 
     /**
-     * Date converter
+     * Date converter.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Default availability messages, in case they are not defined in Folio.ini
+     * Default availability messages, in case they are not defined in Folio.ini.
      *
      * @var string[]
      */
     protected $defaultAvailabilityStatuses = ['Open - Awaiting pickup'];
 
     /**
-     * Default in_transit messages, in case they are not defined in Folio.ini
+     * Default in_transit messages, in case they are not defined in Folio.ini.
      *
      * @var string[]
      */
@@ -138,14 +138,21 @@ class Folio extends AbstractAPI implements
     ];
 
     /**
-     * Cache for course reserves course data (null if not yet populated)
+     * Cache for course reserves course data (null if not yet populated).
      *
      * @var ?array
      */
     protected $courseCache = null;
 
     /**
-     * Constructor
+     * Cache for request preference data.
+     *
+     * @var array
+     */
+    protected array $requestPreferenceCache = [];
+
+    /**
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param callable               $sessionFactory Factory function returning
@@ -206,7 +213,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Function that obscures and logs debug data
+     * Function that obscures and logs debug data.
      *
      * @param string                $method      Request method
      * (GET/POST/PUT/DELETE/etc.)
@@ -265,7 +272,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * (From AbstractAPI) Allow default corrections to all requests
+     * (From AbstractAPI) Allow default corrections to all requests.
      *
      * Add X-Okapi headers and Content-Type to every request
      *
@@ -288,7 +295,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Login and receive a new token
+     * Login and receive a new token.
      *
      * @return void
      */
@@ -572,7 +579,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings() -- retrieve holdings by instance ids
+     * Support method for getHoldings() -- retrieve holdings by instance ids.
      *
      * @param string[] $instanceIds the FOLIO instance ids
      *
@@ -601,7 +608,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings() -- retrieve items by holding ids (including bound-with items)
+     * Support method for getHoldings() -- retrieve items by holding ids (including bound-with items).
      *
      * @param string[] $holdingsIds the FOLIO holdings ids
      *
@@ -735,7 +742,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Returns the status for the given bib-level id
+     * Returns the status for the given bib-level id.
      *
      * @param string $bibId Bib-level id
      *
@@ -749,7 +756,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Return statuses for an array of bibIds, optimizing retrieval with bulk calls
+     * Return statuses for an array of bibIds, optimizing retrieval with bulk calls.
      *
      * @param string[] $idList array of bibIds
      *
@@ -783,7 +790,7 @@ class Folio extends AbstractAPI implements
 
     /**
      * Check whether an item is holdable based on its location and any
-     * current loan
+     * current loan.
      *
      * @param string     $locationName locationName from getHolding
      * @param ?\stdClass $currentLoan  The current loan, or null if none
@@ -798,7 +805,7 @@ class Folio extends AbstractAPI implements
 
     /**
      * Check item location against list of configured locations
-     * where holds should be offered
+     * where holds should be offered.
      *
      * @param string $locationName locationName from getHolding
      *
@@ -832,7 +839,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Check whether an item is holdable based on any current loan
+     * Check whether an item is holdable based on any current loan.
      *
      * @param \stdClass $currentLoan The current loan
      *
@@ -877,7 +884,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Inventory Location Name
+     * Get Inventory Location Name.
      *
      * @param string $locationId UUID of item location
      *
@@ -959,7 +966,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method: format a note for display
+     * Support method: format a note for display.
      *
      * @param object $note Note object decoded from FOLIO JSON.
      *
@@ -1186,7 +1193,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings() -- processes a FOLIO item
+     * Support method for getHoldings() -- processes a FOLIO item.
      *
      * @param string $bibId            Bib-level id
      * @param array  $holdingDetails   details for the holding
@@ -1229,7 +1236,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings() -- processes FOLIO records for a single instance
+     * Support method for getHoldings() -- processes FOLIO records for a single instance.
      *
      * @param string   $bibId      Bib-level id
      * @param object[] $holdings   holdings for the instance
@@ -1268,19 +1275,7 @@ class Folio extends AbstractAPI implements
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0 && $showHoldingsNoItems) {
-                $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
-                $invisibleAvailabilityStatus = new AvailabilityStatus(
-                    true,
-                    'HoldingStatus::holding_no_items_availability_message'
-                );
-                $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
-                $nextBatch[] = $locAndHoldings + [
-                    'id' => $bibId,
-                    'callnumber' => $holdingDetails['holdingCallNumber'],
-                    'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
-                    'reserve' => 'N',
-                    'availability' => $invisibleAvailabilityStatus,
-                ];
+                $nextBatch[] = $this->buildHoldingsNoItemsData($bibId, $holdingDetails, $holding);
             }
             $items = array_merge(
                 $items,
@@ -1293,6 +1288,33 @@ class Folio extends AbstractAPI implements
             'total' => count($items),
             'holdings' => $items,
             'electronic_holdings' => [],
+        ];
+    }
+
+    /**
+     * Support method for getHoldings() -- create a fake item for holdings with no items
+     * from FOLIO.
+     *
+     * @param string $bibId          Bib-level id
+     * @param array  $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     * @param object $holding        FOLIO holding record (decoded from JSON)
+     *
+     * @return array An associative array with the item keys
+     */
+    protected function buildHoldingsNoItemsData(string $bibId, array $holdingDetails, object $holding): array
+    {
+        $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
+        $invisibleAvailabilityStatus = new AvailabilityStatus(
+            true,
+            'HoldingStatus::holding_no_items_availability_message'
+        );
+        $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
+        return $locAndHoldings + [
+            'id' => $bibId,
+            'callnumber' => $holdingDetails['holdingCallNumber'],
+            'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
+            'reserve' => 'N',
+            'availability' => $invisibleAvailabilityStatus,
         ];
     }
 
@@ -1370,7 +1392,7 @@ class Folio extends AbstractAPI implements
     /**
      * Support method for getHoldings(): obtaining the Due Date from the
      * current loan, adjusting the timezone and formatting in universal
-     * time with or without due time
+     * time with or without due time.
      *
      * @param \stdClass|string $loan     The current loan, or its itemId for legacy backwards compatibility
      * @param bool             $showTime Determines if date or date & time is returned
@@ -1390,7 +1412,7 @@ class Folio extends AbstractAPI implements
 
     /**
      * Support method for getHoldings(): obtaining any current loan from OKAPI
-     * by calling /circulation/loans with the item->id
+     * by calling /circulation/loans with the item->id.
      *
      * @param string $itemId ID for the item to query
      *
@@ -1596,7 +1618,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Helper function to retrieve a single page of results from FOLIO API
+     * Helper function to retrieve a single page of results from FOLIO API.
      *
      * @param string $interface FOLIO api interface to call
      * @param array  $query     Extra GET parameters (e.g. ['query' => 'your cql here'])
@@ -1623,7 +1645,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Helper function to retrieve paged results from FOLIO API
+     * Helper function to retrieve paged results from FOLIO API.
      *
      * @param string $responseKey Key containing values to collect in response
      * @param string $interface   FOLIO api interface to call
@@ -1651,14 +1673,14 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed Associative array of patron info on successful login,
+     * @return ?array Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -1733,7 +1755,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method queries the ILS for a patron's current profile information
+     * This method queries the ILS for a patron's current profile information.
      *
      * @param array $patron Patron login information from $this->patronLogin
      *
@@ -1765,7 +1787,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method queries the ILS for a patron's current checked out items
+     * This method queries the ILS for a patron's current checked out items.
      *
      * Input: Patron array returned by patronLogin method
      * Output: Returns with a 'count' key (overall result set size) and a 'records'
@@ -1936,7 +1958,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid locations for holds / recall
      * retrieval
@@ -2031,7 +2053,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in HorizonXMLAPI.ini
      *
@@ -2059,7 +2081,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $bibId       BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -2079,15 +2101,9 @@ class Folio extends AbstractAPI implements
         $patron = null,
         $holdDetails = null
     ) {
-        // circulation-storage.request-preferences.collection.get
-        $response = $this->makeRequest(
-            'GET',
-            '/request-preference-storage/request-preference?query=userId==' . $patron['id']
-        );
-        $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
-        $allowHoldShelf = $requestPreferences->holdShelf ?? true;
-        $allowDelivery = ($requestPreferences->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        $allowHoldShelf = $requestPreference['holdShelf'] ?? true;
+        $allowDelivery = ($requestPreference['delivery'] ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
@@ -2104,6 +2120,51 @@ class Folio extends AbstractAPI implements
             ];
         }
         return false;
+    }
+
+    /**
+     * Get Default Request Group.
+     *
+     * In FOLIO, this is equivalent to the fulfillment preference.
+     *
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data. May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return false|string       The default request group for the patron.
+     */
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
+    {
+        $requestPreference = $this->getRequestPreference($patron['id']);
+        return $requestPreference['fulfillment'] ?? 'Hold Shelf';
+    }
+
+    /**
+     * Retrieve and cache the request preference.
+     *
+     * @param string $userId The user's UUID
+     *
+     * @return array An array containing several aspects of request preference
+     */
+    protected function getRequestPreference(string $userId): array
+    {
+        $requestPreference = $this->requestPreferenceCache[$userId] ?? null;
+        if ($requestPreference !== null) {
+            return $requestPreference;
+        }
+
+        // circulation-storage.request-preferences.collection.get
+        $response = $this->makeRequest(
+            'GET',
+            '/request-preference-storage/request-preference?query=userId==' . $userId
+        );
+        $requestPreferencesResponse = json_decode($response->getBody(), true);
+        $requestPreference = $requestPreferencesResponse['requestPreferences'][0] ?? [];
+
+        $this->requestPreferenceCache[$userId] = $requestPreference;
+        return $requestPreference;
     }
 
     /**
@@ -2132,7 +2193,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method queries the ILS for a patron's current holds
+     * This method queries the ILS for a patron's current holds.
      *
      * Input: Patron array returned by patronLogin method
      * Output: Returns an array of associative arrays, one for each hold associated
@@ -2264,15 +2325,30 @@ class Folio extends AbstractAPI implements
         $cacheKey = 'module_version:' . $moduleName;
         $version = $this->getCachedData($cacheKey);
         if ($version === null) {
-            // get latest version of a module enabled for a tenant
+            // Get latest version of a module enabled for a tenant.
+            // Allow errors to not trigger an exception because that means we need to try the
+            // next call that is compatible with pre-Sunflower.
             $response = $this->makeRequest(
                 'GET',
-                '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1'
+                '/modules/discovery?query=(name==' . $moduleName . ')',
+                allowedFailureCodes:[400, 403, 404, 500]
             );
 
+            // If there was a failure with the first method, attempt the second
+            // endpoint to get the version.
+            $json = json_decode($response->getBody(), true);
+            if (empty($json) || isset($json['errors'])) {
+                $response = $this->makeRequest(
+                    'GET',
+                    '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1',
+                );
+                $json = json_decode($response->getBody(), true);
+                $latest = $json[0]['id'] ?? '0';
+            } else {
+                $latest = $json['discovery'][0]['id'] ?? '0';
+            }
+
             // get version major from json result
-            $versions = json_decode($response->getBody());
-            $latest = $versions[0]->id ?? '0';
             preg_match_all('!\d+!', $latest, $matches);
             $version = (int)($matches[0][0] ?? 0);
             if ($version === 0) {
@@ -2387,7 +2463,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details.
@@ -2491,7 +2567,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item. The
      * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
@@ -2551,7 +2627,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Check if request is valid
+     * Check if request is valid.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2633,7 +2709,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -2665,7 +2741,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -2688,7 +2764,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -2761,7 +2837,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -2835,7 +2911,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method queries the ILS for a patron's current fines
+     * This method queries the ILS for a patron's current fines.
      *
      * @param array $patron The patron array from patronLogin
      *
@@ -2961,7 +3037,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * NOT FINISHED BELOW THIS LINE
+     * NOT FINISHED BELOW THIS LINE.
      **/
 
     /**
@@ -2979,7 +3055,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Purchase History Data
+     * Get Purchase History Data.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial). It is used
@@ -2998,11 +3074,13 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -3010,7 +3088,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic loans (i.e. items previously
      * checked out and then returned), for a specific patron.
@@ -3028,7 +3106,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -3045,6 +3123,7 @@ class Folio extends AbstractAPI implements
      * @return array Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {

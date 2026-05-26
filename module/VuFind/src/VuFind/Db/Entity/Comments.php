@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for comments table
+ * Entity model for comments table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for comments table
+ * Entity model for comments table.
  *
  * @category VuFind
  * @package  Database
@@ -149,7 +149,8 @@ class Comments implements CommentsEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

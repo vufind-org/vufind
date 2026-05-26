@@ -35,7 +35,7 @@ use VuFindSearch\Query\WorkKeysQuery;
 use function is_callable;
 
 /**
- * VuFind Action Feature Trait - Record Versions Search
+ * VuFind Action Feature Trait - Record Versions Search.
  *
  * @category VuFind
  * @package  Controller_Plugins

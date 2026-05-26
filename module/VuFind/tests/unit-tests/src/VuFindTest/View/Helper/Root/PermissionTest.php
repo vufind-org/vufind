@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission view helper Test Class
+ * Permission view helper Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\Permission;
 
 /**
- * Permission view helper Test Class
+ * Permission view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -78,7 +78,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test the message display
+     * Test the message display.
      *
      * @return void
      */
@@ -102,7 +102,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the template display
+     * Test the template display.
      *
      * @return void
      */
@@ -128,7 +128,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the template display with an existing template
+     * Test the template display with an existing template.
      *
      * @return void
      */
@@ -147,7 +147,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $helper = new Permission($this->getMockPm(false), $mockPmd);
         $helper->setView($this->getMockView());
 
-        $this->assertEquals(
+        $this->assertSame(
             '<span class="label label-success">Available</span>',
             trim($helper->getAlternateContent('permissionDeniedTemplate'))
         );
@@ -165,13 +165,12 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $mockPmd = $this->getMockBuilder(\VuFind\Role\PermissionDeniedManager::class)
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
-        $mockPmd->expects($this->any())->method('getDeniedTemplateBehavior')
-            ->willReturn($config['deniedTemplateBehavior']);
+        $mockPmd->method('getDeniedTemplateBehavior')->willReturn($config['deniedTemplateBehavior']);
         return $mockPmd;
     }
 
     /**
-     * Get mock permission manager
+     * Get mock permission manager.
      *
      * @param array $isAuthorized isAuthorized value to return
      *
@@ -179,13 +178,9 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockPm($isAuthorized = false)
     {
-        $mockPm = $this->getMockBuilder(\VuFind\Role\PermissionManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockPm->expects($this->any())->method('isAuthorized')
-            ->willReturn($isAuthorized);
-        $mockPm->expects($this->any())->method('permissionRuleExists')
-            ->willReturn(true);
+        $mockPm = $this->createMock(\VuFind\Role\PermissionManager::class);
+        $mockPm->method('isAuthorized')->willReturn($isAuthorized);
+        $mockPm->method('permissionRuleExists')->willReturn(true);
 
         return $mockPm;
     }
@@ -197,8 +192,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
 
     /**

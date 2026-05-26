@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Catalog Connection Class
+ * Catalog Connection Class.
  *
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
@@ -51,7 +51,7 @@ use function is_array;
 use function is_callable;
 
 /**
- * Catalog Connection Class
+ * Catalog Connection Class.
  *
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
@@ -87,14 +87,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $driver = null;
 
     /**
-     * Holds mode
+     * Holds mode.
      *
      * @var string
      */
     protected $holdsMode = 'disabled';
 
     /**
-     * Title-level holds mode
+     * Title-level holds mode.
      *
      * @var string
      */
@@ -108,14 +108,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $failing = false;
 
     /**
-     * Cache life time per method
+     * Cache life time per method.
      *
      * @var array
      */
     protected $cacheLifeTime = ['*' => 60];
 
     /**
-     * Cache storage per method
+     * Cache storage per method.
      *
      * Note: Don't cache anything too large in session before
      * https://openlibraryfoundation.atlassian.net/browse/VUFIND-1652 is implemented
@@ -130,21 +130,21 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     ];
 
     /**
-     * Methods that invalidate the session cache
+     * Methods that invalidate the session cache.
      *
      * @var array
      */
     protected $sessionCacheInvalidatingMethods = ['changePassword'];
 
     /**
-     * Session cache
+     * Session cache.
      *
      * @var Container
      */
     protected $sessionCache = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config                 $config        Configuration
      * representing the [Catalog] section of config.ini
@@ -194,7 +194,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Set cache lifetime settings
+     * Set cache lifetime settings.
      *
      * @param array $settings Lifetime settings
      *
@@ -335,7 +335,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Function
+     * Check Function.
      *
      * This is responsible for checking the driver configuration to determine
      * if the system supports a particular function.
@@ -378,7 +378,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Holds
+     * Check Holds.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Holds.
@@ -436,7 +436,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Cancel Holds
+     * Check Cancel Holds.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling Holds.
@@ -474,7 +474,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Renewals
+     * Check Renewals.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Renewing Items.
@@ -511,7 +511,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Storage Retrieval Request
+     * Check Storage Retrieval Request.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports storage
@@ -546,7 +546,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Cancel Storage Retrieval Requests
+     * Check Cancel Storage Retrieval Requests.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling
@@ -597,7 +597,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check ILL Request
+     * Check ILL Request.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports storage
@@ -635,7 +635,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Cancel ILL Requests
+     * Check Cancel ILL Requests.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling
@@ -684,7 +684,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Password Change
+     * Check Password Change.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports changing
@@ -740,7 +740,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Current Loans
+     * Check Current Loans.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports current
@@ -763,7 +763,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Historic Loans
+     * Check Historic Loans.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports historic
@@ -786,7 +786,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Purge Historic Loans
+     * Check Purge Historic Loans.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports purging of
@@ -809,7 +809,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Patron login
+     * Check Patron login.
      *
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports patron login.
@@ -847,7 +847,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get proper help text from the function config
+     * Get proper help text from the function config.
      *
      * @param string|array $helpText Help text(s)
      *
@@ -863,7 +863,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Request is Valid
+     * Check Request is Valid.
      *
      * This is responsible for checking if a request is valid from hold.php
      *
@@ -894,7 +894,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check Storage Retrieval Request is Valid
+     * Check Storage Retrieval Request is Valid.
      *
      * This is responsible for checking if a storage retrieval request is valid
      *
@@ -931,7 +931,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Check ILL Request is Valid
+     * Check ILL Request is Valid.
      *
      * This is responsible for checking if an ILL request is valid
      *
@@ -965,7 +965,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Holds Mode
+     * Get Holds Mode.
      *
      * This is responsible for returning the holds mode
      *
@@ -977,7 +977,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Offline Mode
+     * Get Offline Mode.
      *
      * This is responsible for returning the offline mode
      *
@@ -1011,7 +1011,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Title Holds Mode
+     * Get Title Holds Mode.
      *
      * This is responsible for returning the Title holds mode
      *
@@ -1023,7 +1023,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Has Holdings
+     * Has Holdings.
      *
      * Obtain information on whether or not the item has holdings
      *
@@ -1046,7 +1046,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Hidden Login Mode
+     * Get Hidden Login Mode.
      *
      * This is responsible for indicating whether login should be hidden.
      *
@@ -1111,7 +1111,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Names of Textual Holdings Fields
+     * Get Names of Textual Holdings Fields.
      *
      * Obtain information on which textual holdings fields should be displayed
      *
@@ -1125,7 +1125,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get the password policy from the driver
+     * Get the password policy from the driver.
      *
      * @param array $patron Patron data
      *
@@ -1141,7 +1141,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1167,7 +1167,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get holdings
+     * Get holdings.
      *
      * Retrieve holdings from ILS driver class and normalize result array and availability if needed.
      *
@@ -1226,7 +1226,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get status
+     * Get status.
      *
      * Retrieve status from ILS driver class and normalize availability if needed.
      *
@@ -1243,7 +1243,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get statuses
+     * Get statuses.
      *
      * Retrieve statuses from ILS driver class and normalize availability if needed.
      *
@@ -1315,7 +1315,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get timed blocks for a method from driver configuration
+     * Get timed blocks for a method from driver configuration.
      *
      * @param string $methodName Method to check
      * @param array  $params     Array of passed parameters
@@ -1377,7 +1377,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 
     /**
      * Check whether a method is currently blocked in TimedBlocks section of
-     * driver configuration
+     * driver configuration.
      *
      * @param string $methodName Method to check
      * @param array  $params     Array of passed parameters
@@ -1406,7 +1406,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get data for an ILS method from shared or session cache
+     * Get data for an ILS method from shared or session cache.
      *
      * @param array $cacheSettings Cache settings
      *
@@ -1451,7 +1451,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Clear session cache if the given method requires it
+     * Clear session cache if the given method requires it.
      *
      * @param string $methodName Method name
      *
@@ -1465,7 +1465,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get cache settings for a method
+     * Get cache settings for a method.
      *
      * @param string $methodName The name of the called method.
      * @param array  $params     Array of passed parameters.

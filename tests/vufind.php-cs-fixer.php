@@ -3,7 +3,8 @@
 $finder = new PhpCsFixer\Finder();
 $finder->in(__DIR__ . '/../config')
     ->in(__DIR__ . '/../module')
-    ->in(__DIR__ . '/../public');
+    ->in(__DIR__ . '/../public')
+    ->in(__DIR__ . '/../tests');
 
 $rules = [
     '@PHP8x2Migration' => true,
@@ -59,6 +60,7 @@ $rules = [
         'sort_algorithm' => 'alpha',
     ],
     'phpdoc_no_access' => true,
+    'phpdoc_summary' => true,
     'php_unit_method_casing' => true,
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,

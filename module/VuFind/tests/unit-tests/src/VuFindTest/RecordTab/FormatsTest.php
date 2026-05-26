@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Formats Test Class
+ * Formats Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\RecordTab;
 use VuFind\RecordTab\Formats;
 
 /**
- * Formats Test Class
+ * Formats Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -58,11 +58,12 @@ class FormatsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Not Enabled' => [false, false], 'Enabled' => [true, true]];
+        yield 'Not Enabled' => [false, false];
+        yield 'Enabled' => [true, true];
     }
 
     /**

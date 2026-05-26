@@ -46,14 +46,14 @@ use VuFind\Search\Memory;
 class SearchMemory extends AbstractHelper
 {
     /**
-     * Search memory
+     * Search memory.
      *
      * @var Memory
      */
     protected $memory;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Memory $memory Search memory
      */
@@ -82,7 +82,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * If a previous search is recorded in the session, return its URL
+     * If a previous search is recorded in the session, return its URL.
      *
      * @return string|null
      */
@@ -178,7 +178,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Retrieve the parameters of the last search by the search class
+     * Retrieve the parameters of the last search by the search class.
      *
      * @param string $searchClassId Search class
      *
@@ -206,7 +206,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get current search id
+     * Get current search id.
      *
      * @return ?int
      */
@@ -216,7 +216,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get current search
+     * Get current search.
      *
      * @return ?\VuFind\Search\Base\Results
      */
@@ -226,7 +226,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get last search id
+     * Get last search id.
      *
      * @return ?int
      */
@@ -236,7 +236,7 @@ class SearchMemory extends AbstractHelper
     }
 
     /**
-     * Get last search
+     * Get last search.
      *
      * @return ?\VuFind\Search\Base\Results
      */

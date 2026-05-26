@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service plugin manager
+ * Database service plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Service;
 use VuFind\Auth\UserSessionPersistenceInterface;
 
 /**
- * Database service plugin manager
+ * Database service plugin manager.
  *
  * @category VuFind
  * @package  Database

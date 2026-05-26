@@ -44,14 +44,14 @@ use function is_array;
 class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Theme resource container
+     * Theme resource container.
      *
      * @var \VuFindTheme\ResourceContainer
      */
     protected $container;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFindTheme\ResourceContainer $container Theme resource container
      */

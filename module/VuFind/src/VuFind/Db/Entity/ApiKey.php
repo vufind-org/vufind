@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for api_key table
+ * Entity model for api_key table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for api_key table
+ * Entity model for api_key table.
  *
  * @category VuFind
  * @package  Database
@@ -152,7 +152,7 @@ class ApiKey implements ApiKeyEntityInterface
     }
 
     /**
-     * Set title
+     * Set title.
      *
      * @param string $title Title
      *
@@ -194,7 +194,8 @@ class ApiKey implements ApiKeyEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**
@@ -217,7 +218,8 @@ class ApiKey implements ApiKeyEntityInterface
      */
     public function getLastUsed(): DateTime
     {
-        return $this->lastUsed;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->lastUsed);
     }
 
     /**

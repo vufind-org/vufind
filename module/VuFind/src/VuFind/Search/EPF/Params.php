@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPF API Params
+ * EPF API Params.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ namespace VuFind\Search\EPF;
 use VuFindSearch\ParamBag;
 
 /**
- * EPF API Params
+ * EPF API Params.
  *
  * @category VuFind
  * @package  EBSCO

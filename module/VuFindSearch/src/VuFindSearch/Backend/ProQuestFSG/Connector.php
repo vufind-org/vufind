@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for accessing ProQuestFSG search API
+ * Class for accessing ProQuestFSG search API.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use function intval;
 use function strval;
 
 /**
- * ProQuestFSG SRU Search Interface
+ * ProQuestFSG SRU Search Interface.
  *
  * @category VuFind
  * @package  ProQuestFSG
@@ -47,7 +47,7 @@ use function strval;
 class Connector extends \VuFindSearch\Backend\SRU\Connector
 {
     /**
-     * The version to specify in the URL
+     * The version to specify in the URL.
      *
      * @var string
      */
@@ -61,7 +61,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     protected $defaultPath = '/all_subscribed';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Laminas\Http\Client $client An HTTP client object
      * @param array                $config ProQuestFSG config

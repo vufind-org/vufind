@@ -46,21 +46,21 @@ abstract class AbstractThemeUtility
     use DirUtilityTrait;
 
     /**
-     * Theme info object
+     * Theme info object.
      *
      * @var ThemeInfo
      */
     protected $info;
 
     /**
-     * Last error message
+     * Last error message.
      *
      * @var string
      */
     protected $lastError = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ThemeInfo $info Theme info object
      */

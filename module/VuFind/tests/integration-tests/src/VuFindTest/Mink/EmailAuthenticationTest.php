@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 /**
  * Email authentication test class.
  *
@@ -83,23 +85,16 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@ignore.com');
         $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
-        $this->assertEquals(
-            'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
-            . " If you don't receive the link shortly, please check also your spam filter.",
-            $this->findCssAndGetText($page, '.alert-success')
+        $this->assertSame(
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+            . " If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-info')
         );
 
-        // Extract the link from the provided message:
-        $email = $this->getLoggedEmail();
-        $headers = $email->getHeaders();
-        $body = $email->getBody()->getBody();
-        $this->assertEquals('From: noreply@vufind.org', $headers->get('from')->toString());
-        $this->assertEquals('To: username1@ignore.com', $headers->get('to')->toString());
-        preg_match('/Link to login: <(http.*)>/', $body, $matches);
-        $loginLink = $matches[1];
-
-        // Follow the verification link:
-        $session->visit($loginLink);
+        // Enter the one-time code:
+        $code = $this->extractLoginCodeFromEmail('username1@ignore.com');
+        $this->findCssAndSetValue($page, '#login_Email_password', $code);
+        $this->clickCss($page, '.form-login .btn-primary');
 
         // Log out (we can't log out unless we successfully logged in):
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -127,10 +122,10 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@foo.bar');
         $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
-        $this->assertEquals(
-            'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
-            . " If you don't receive the link shortly, please check also your spam filter.",
-            $this->findCssAndGetText($page, '.alert-success')
+        $this->assertSame(
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+            . " If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-info')
         );
 
         $this->expectExceptionMessage('No serialized email message data found');
@@ -138,67 +133,182 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test the ILS email authentication process.
+     * Data provider for testEmailAuthenticationAttemptLimit.
+     *
+     * @return \Iterator
+     */
+    public static function emailAuthenticationAttemptLimitProvider(): \Iterator
+    {
+        yield [null, 3];
+        yield [0, 1];
+        yield [1, 1];
+        yield [4, 4];
+    }
+
+    /**
+     * Test the email authentication maximum attempt limit.
+     *
+     * @param ?int $configuredLimit Limit to set in configuration, or null for default
+     * @param int  $limit           Limit to test for
      *
      * @return void
      */
-    public function testILSEmailAuthentication(): void
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailAuthentication')]
+    #[DataProvider('emailAuthenticationAttemptLimitProvider')]
+    public function testEmailAuthenticationAttemptLimit(?int $configuredLimit, int $limit): void
     {
-        // Set up configs, session and message logging:
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Authentication' => [
-                        'method' => 'ILS',
-                        'recover_interval' => 0,
-                    ],
-                    'Catalog' => [
-                        'driver' => 'Demo',
-                    ],
-                    'Mail' => [
-                        'testOnly' => true,
-                        'message_log' => $this->getEmailLogPath(),
-                        'message_log_format' => $this->getEmailLogFormat(),
-                        'default_from' => 'noreply@vufind.org',
-                    ],
+        $config = null === $configuredLimit
+            ? []
+            : [
+                'Authentication' => [
+                    'otp_max_attempts' => $configuredLimit,
                 ],
-                'Demo' => [
-                    'Catalog' => [
-                        'loginMethod' => 'email',
-                    ],
-                ],
-            ]
-        );
+            ];
+        $this->setUpDatabaseEmailConfig($config);
 
         $this->resetEmailLog();
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
 
+        // Request login:
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@ignore.com');
+        $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
+        $this->assertSame(
+            'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+            . " If you don't receive the code shortly, please check also your spam filter.",
+            $this->findCssAndGetText($page, '.alert-info')
+        );
+
+        for ($attempt = 1; $attempt <= $limit + 1; $attempt++) {
+            // Enter an invalid code:
+            $this->findCssAndSetValue($page, '#login_Email_password', '123');
+            $this->clickCss($page, '.form-login .btn-primary');
+            $this->waitForPageLoad($page);
+            $expectedError = $attempt === $limit + 1
+                ? 'The authentication request has expired.'
+                : 'Invalid login -- please try again.';
+            $this->assertSame(
+                $expectedError,
+                $this->findCssAndGetText($page, '.alert-danger')
+            );
+        }
+
+        // Clean up the email log:
+        $this->resetEmailLog();
+    }
+
+    /**
+     * Data provider for testILSEmailAuthentication.
+     *
+     * @return \Iterator
+     */
+    public static function ilsEmailAuthenticationProvider(): \Iterator
+    {
+        yield 'ILS' => [false];
+        yield 'MultiILS' => [true];
+    }
+
+    /**
+     * Test the ILS email authentication process.
+     *
+     * @param bool $multiIls Use MultiILS driver?
+     *
+     * @return void
+     */
+    #[DataProvider('ilsEmailAuthenticationProvider')]
+    public function testILSEmailAuthentication(bool $multiIls): void
+    {
+        // Set up configs, session and message logging:
+        $configs = $multiIls ? [
+            'config' => [
+                'Authentication' => [
+                    'method' => 'MultiILS',
+                    'recover_interval' => 0,
+                ],
+                'Catalog' => [
+                    'driver' => 'MultiBackend',
+                ],
+            ],
+            'MultiBackend' => [
+                'Drivers' => [
+                    'ils1' => 'Demo',
+                    'ils2' => 'Demo',
+                ],
+                'Login' => [
+                    'default_driver' => 'ils1',
+                    'drivers' => [
+                        'ils1',
+                        'ils2',
+                    ],
+                ],
+            ],
+            'Demo:ils1' => [
+                'Catalog' => [
+                    'loginMethod' => 'email',
+                ],
+            ],
+            'Demo:ils2' => [],
+        ] : [
+            'config' => [
+                'Authentication' => [
+                    'method' => 'ILS',
+                    'recover_interval' => 0,
+                ],
+                'Catalog' => [
+                    'driver' => 'Demo',
+                ],
+            ],
+            'Demo' => [
+                'Catalog' => [
+                    'loginMethod' => 'email',
+                ],
+            ],
+        ];
+        $configs['config']['Mail'] = [
+            'testOnly' => true,
+            'message_log' => $this->getEmailLogPath(),
+            'message_log_format' => $this->getEmailLogFormat(),
+            'default_from' => 'noreply@vufind.org',
+        ];
+
+        $this->changeConfigs($configs);
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
         // Request login three times to ensure that repeated requests work:
         for ($i = 1; $i <= 3; $i++) {
+            $this->resetEmailLog();
             $this->clickCss($page, '#loginOptions a');
             $this->findCssAndSetValue($page, '.modal-body [name="username"]', 'catuser@vufind.org');
             $this->clickCss($page, '.modal-body .btn.btn-primary');
-            $this->assertEquals(
-                'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
-                . " If you don't receive the link shortly, please check also your spam filter.",
-                $this->findCssAndGetText($page, '.alert-success')
+            $this->assertSame(
+                'We have sent a login code to your email address. It may take a few moments for the code to arrive.'
+                . " If you don't receive the code shortly, please check also your spam filter.",
+                $this->findCssAndGetText($page, '.alert-info')
             );
-            $this->closeLightbox($page);
+            if ($i < 3) {
+                $this->clickCss($page, '.modal-body .cancel-link');
+                $this->waitForPageLoad($page);
+            }
         }
 
-        // Extract the link from the first provided message:
-        $email = $this->getLoggedEmail();
-        $headers = $email->getHeaders();
-        $body = $email->getBody()->getBody();
-        $this->assertEquals('From: noreply@vufind.org', $headers->get('from')->toString());
-        $this->assertEquals('To: catuser@vufind.org', $headers->get('to')->toString());
-        preg_match('/Link to login: <(http.*)>/', $body, $matches);
-        $loginLink = $matches[1];
+        // Try wrong code first:
+        $passwordField = $multiIls ? '#login_MultiILS_password' : '#login_ILS_password';
+        $this->findCssAndSetValue($page, $passwordField, '123');
+        $this->clickCss($page, '.form-login .btn-primary');
+        $this->assertSame(
+            'Invalid login -- please try again.',
+            $this->findCssAndGetText($page, '.modal .alert-danger')
+        );
 
-        // Follow the verification link:
-        $session->visit($loginLink);
+        // Enter the one-time code:
+        $code = $this->extractLoginCodeFromEmail('catuser@vufind.org');
+        $this->findCssAndSetValue($page, $passwordField, $code);
+        $this->clickCss($page, '.form-login .btn-primary');
 
         // Log out (we can't log out unless we successfully logged in):
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -214,33 +324,38 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'catuser@vufind.org']);
+        static::removeUsers(['username1', 'catuser@vufind.org', 'ils1.catuser@vufind.org']);
     }
 
     /**
-     * Set up configuration for Database+Email authentication
+     * Set up configuration for Database+Email authentication.
+     *
+     * @param array $config Any configuration to augment or override defaults
      *
      * @return void
      */
-    protected function setUpDatabaseEmailConfig(): void
+    protected function setUpDatabaseEmailConfig(array $config = []): void
     {
         // Set up configs, session and message logging:
         $this->changeConfigs(
             [
-                'config' => [
-                    'Authentication' => [
-                        'method' => 'ChoiceAuth',
+                'config' => array_merge_recursive(
+                    [
+                        'Authentication' => [
+                            'method' => 'ChoiceAuth',
+                        ],
+                        'ChoiceAuth' => [
+                            'choice_order' => 'Database,Email',
+                        ],
+                        'Mail' => [
+                            'testOnly' => true,
+                            'message_log' => $this->getEmailLogPath(),
+                            'message_log_format' => $this->getEmailLogFormat(),
+                            'default_from' => 'noreply@vufind.org',
+                        ],
                     ],
-                    'ChoiceAuth' => [
-                        'choice_order' => 'Database,Email',
-                    ],
-                    'Mail' => [
-                        'testOnly' => true,
-                        'message_log' => $this->getEmailLogPath(),
-                        'message_log_format' => $this->getEmailLogFormat(),
-                        'default_from' => 'noreply@vufind.org',
-                    ],
-                ],
+                    $config
+                ),
             ]
         );
     }
