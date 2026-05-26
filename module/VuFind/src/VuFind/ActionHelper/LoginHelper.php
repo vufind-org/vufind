@@ -293,7 +293,7 @@ class LoginHelper implements HelperInterface
     ): void {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
-        $referer = $request->getQueryParams()['lbreferer'] ?? $request->getHeader('HTTP_REFERER') ?? null;
+        $referer = $request->getQueryParams()['lbreferer'] ?? $request->getHeader('Referer')[0] ?? null;
         // Get the referer -- if it's empty, there's nothing to store! Also,
         // if the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
