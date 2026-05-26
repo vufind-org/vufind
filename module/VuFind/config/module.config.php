@@ -167,7 +167,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\BlenderController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -235,8 +234,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'Alma' => 'VuFind\Controller\AlmaController',
-            'alma' => 'VuFind\Controller\AlmaController',
             'Alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'DeveloperSettings' => 'VuFind\Controller\DeveloperSettingsController',
