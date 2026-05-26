@@ -145,7 +145,7 @@ class Folio extends AbstractAPI implements
      */
     protected $courseCache = null;
 
-    /*
+    /**
      * Cache for request preference data.
      *
      * @var array
