@@ -35,8 +35,9 @@ use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\ActionHelper\ForwardHelper;
+use VuFind\ActionHelper\ForwardHelper as ActionHelperForwardHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Login action.
@@ -55,6 +56,7 @@ class LoginAction extends AbstractTemplateRenderingAction
      *
      * @param AuthManager $authManager Authentication manager
      */
+    #[Autowire()]
     public function __construct(
         protected AuthManager $authManager,
     ) {
@@ -89,7 +91,7 @@ class LoginAction extends AbstractTemplateRenderingAction
                 && !($postParams['forcingLogin'] ?? false)
             ) {
                 $postParams['processLogin'] = true;
-                return $this->getHelper(ForwardHelper::class)->forwardTo(
+                return $this->getHelper(ActionHelperForwardHelper::class)->forwardTo(
                     $request->withParsedBody($postParams),
                     $response,
                     'MyResearch/Home'

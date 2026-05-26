@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
@@ -68,7 +68,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         protected RouteHelper $routeHelper,
         protected UserResourceServiceInterface $userResourceService
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
     }
 
     /**
@@ -117,11 +117,11 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // check if user is logged in
@@ -133,8 +133,8 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         }
 
         // loop through each ID check if it is saved to any of the user's lists
-        $ids = $params->fromPost('id', $params->fromQuery('id', []));
-        $sources = $params->fromPost('source', $params->fromQuery('source', []));
+        $ids = $this->getPostOrQueryParam($request, 'id', []);
+        $sources = $this->getPostOrQueryParam($request, 'source', []);
         if (!is_array($ids) || !is_array($sources)) {
             return $this->formatResponse(
                 $this->translate('Argument must be array.'),

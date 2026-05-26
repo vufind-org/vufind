@@ -163,9 +163,9 @@ class LoginHelperTest extends TestCase
      */
     public static function catalogLoginProvider(): Generator
     {
-        yield 'no user' => [false, [], null, 200, 'myresearch/login', false];
+        yield 'no user' => [false, [], null, 200, 'myresearch/login', false, true];
 
-        yield 'user, no credentials' => [true, [], null, 200, 'myresearch/cataloglogin', false];
+        yield 'user, no credentials' => [true, [], null, 200, 'myresearch/cataloglogin', false, true];
 
         yield 'user, correct credentials' => [
             true,
@@ -174,6 +174,7 @@ class LoginHelperTest extends TestCase
             null,
             null,
             false,
+            true,
         ];
 
         yield 'user, correct credentials with target' => [
@@ -183,6 +184,7 @@ class LoginHelperTest extends TestCase
             null,
             null,
             false,
+            true,
         ];
 
         yield 'user, incorrect credentials' => [
@@ -192,6 +194,7 @@ class LoginHelperTest extends TestCase
             200,
             'myresearch/cataloglogin',
             false,
+            true,
         ];
 
         yield 'user, credentials, ILS failure' => [
@@ -201,15 +204,37 @@ class LoginHelperTest extends TestCase
             200,
             'myresearch/cataloglogin',
             true,
+            true,
         ];
 
         yield 'user, no credentials, ILS failure' => [
             true,
             [],
             null,
+            200,
+            'myresearch/cataloglogin',
+            true,
+            true,
+        ];
+
+        yield 'user, credentials, ILS failure, no redirect' => [
+            true,
+            ['cat_username' => 'correct', 'cat_password' => 'password'],
+            'correct',
             null,
             null,
             true,
+            false,
+        ];
+
+        yield 'user, no credentials, ILS failure, no redirect' => [
+            true,
+            [],
+            null,
+            null,
+            null,
+            true,
+            false,
         ];
     }
 
@@ -222,6 +247,7 @@ class LoginHelperTest extends TestCase
      * @param ?int    $expectedStatus   Expected HTTP status code
      * @param ?string $expectedForward  Expected forward route
      * @param bool    $ilsFailure       Should ILSAuthenticator calls throw an ILS exception?
+     * @param bool    $forwardCatLogin  Should the catalogLogin call forward the request if needed?
      *
      * @return void
      */
@@ -233,6 +259,7 @@ class LoginHelperTest extends TestCase
         ?int $expectedStatus,
         ?string $expectedForward,
         bool $ilsFailure,
+        bool $forwardCatLogin,
     ): void {
         $request = (new ServerRequest())
             ->withParsedBody($postParams);
@@ -243,7 +270,7 @@ class LoginHelperTest extends TestCase
         $ilsAuthenticator->expects($postParams ? $this->once() : $this->never())
             ->method('newCatalogLogin')
             ->willReturnCallback(
-                function ($username) use ($expectedUsername, $ilsFailure) {
+                function (string $username) use ($expectedUsername, $ilsFailure) {
                     if ($ilsFailure) {
                         throw new ILSException('boom');
                     }
@@ -290,10 +317,10 @@ class LoginHelperTest extends TestCase
                 FlashMessengerInterface::class => $flashMessenger,
             ]
         );
-        $result = $helper->catalogLogin($request, $response);
+        $result = $helper->catalogLogin($request, $response, $forwardCatLogin);
         if ($expectedUsername && !$ilsFailure) {
             $this->assertSame(['id' => $expectedUsername], $result);
-        } elseif (!$postParams && $ilsFailure) {
+        } elseif ($ilsFailure && !$forwardCatLogin) {
             $this->assertNull($result);
         } else {
             $this->assertSame($expectedStatus, $result->getStatusCode());

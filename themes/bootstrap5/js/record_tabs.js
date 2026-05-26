@@ -59,10 +59,15 @@ VuFind.register('recordTabs', function RecordTabs() {
 
   /**
    * Handle initial hash for supporting outdated links.
+   * @param {boolean} scrollToTabs Whether to scroll to the tabs section.
    */
-  function _handleInitialHash() {
+  function _handleHash(scrollToTabs = true) {
     const hrefParts = window.location.href.split('#');
     if (hrefParts.length < 2) return;
+
+    if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(hrefParts[1])) return;
+    let tabElement = document.querySelector('.record-tabs #tab-button-' + hrefParts[1]);
+    if (!tabElement) return;
 
     if (window.history.replaceState) {
       window.history.replaceState({}, document.title, hrefParts[0]);
@@ -70,12 +75,14 @@ VuFind.register('recordTabs', function RecordTabs() {
       window.location.hash = '#';
     }
 
-    if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(hrefParts[1])) return;
-    let tabElement = document.querySelector('.record-tabs #tab-button-' + hrefParts[1]);
-    if (!tabElement || tabElement.classList.contains('active')) return;
+    if (!tabElement.classList.contains('active')) {
+      let tab = bootstrap.Tab.getOrCreateInstance(tabElement);
+      tab.show();
+    }
 
-    let tab = bootstrap.Tab.getOrCreateInstance(tabElement);
-    tab.show();
+    if (scrollToTabs) {
+      tabElement.scrollIntoView({behavior: 'smooth'});
+    }
   }
 
   /**
@@ -85,7 +92,8 @@ VuFind.register('recordTabs', function RecordTabs() {
     updateContainer({container: document});
     VuFind.listen('embedded-record-init', updateContainer);
 
-    _handleInitialHash()
+    _handleHash(false)
+    window.addEventListener('hashchange', _handleHash);
   }
 
   return {

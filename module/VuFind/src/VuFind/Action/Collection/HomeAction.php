@@ -63,7 +63,6 @@ class HomeAction extends AbstractRecordAction
         $routeMatch = $request->getAttribute('route-match');
         // If collections are active, we may need to check if the driver is actually
         // a collection; if so, we should redirect to the collection controller.
-        $this->getUrlFromRoute('collection');
         $checkRoute = $this->getPostOrQueryParam('checkRoute');
         if ($checkRoute && ($this->config['Collections']['collections'] ?? false)) {
             $routeConfig = $this->config['Collections']['route'] ?? [];
@@ -93,6 +92,7 @@ class HomeAction extends AbstractRecordAction
      */
     protected function init(): void
     {
+        parent::init();
         // Set default tab, if specified:
         if (null !== ($defaultTab = $this->config['Collections']['defaultTab'] ?? null)) {
             $this->fallbackDefaultTab = $defaultTab;
@@ -117,22 +117,27 @@ class HomeAction extends AbstractRecordAction
      * @param string $tab  Name of tab to display
      * @param bool   $ajax Are we in AJAX mode?
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    protected function showTab($tab, $ajax = false)
+    protected function showTab(string $tab, bool $ajax = false): ResponseInterface
     {
         // Check that collections are enabled and redirect if necessary
         if (empty($this->config['Collections']['collections'])) {
             return $this->redirectToRecord();
         }
 
-        $result = parent::showTab($tab, $ajax);
-        if (
-            !$ajax && $result instanceof \Laminas\View\Model\ViewModel
-            && $result->getTemplate() !== 'myresearch/login'
-        ) {
-            $result->setTemplate('collection/view');
-        }
-        return $result;
+        return parent::showTab($tab, $ajax);
+    }
+
+    /**
+     * Get the template to use for rendering a record tab.
+     *
+     * @param bool $ajax Is this an AJAX tab request?
+     *
+     * @return string
+     */
+    protected function getTabTemplate(bool $ajax): string
+    {
+        return $ajax ? 'record/ajaxtab' : 'collection/view';
     }
 }

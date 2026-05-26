@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Collection Controller.
+ * Search2 collection tab action.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2019
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,24 +21,33 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Search2collection;
 
 /**
- * Collection Controller.
+ * Search2 collection tab action.
  *
  * @category VuFind
- * @package  Controller
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Search2collectionController extends CollectionController
+class HomeAction extends \VuFind\Action\Collection\HomeAction
 {
-    protected $searchClassId = 'Search2';
+    /**
+     * Initialize the action.
+     *
+     * @return void
+     */
+    protected function init(): void
+    {
+        $this->sourceId = 'Search2';
+        parent::init();
+    }
 }
