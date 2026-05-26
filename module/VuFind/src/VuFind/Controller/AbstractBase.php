@@ -138,6 +138,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                 ->check($this->accessPermission, $this->accessDeniedBehavior);
             if (is_object($response)) {
                 $e->setResponse($response);
+                $e->stopPropagation(true);
             }
         }
     }
