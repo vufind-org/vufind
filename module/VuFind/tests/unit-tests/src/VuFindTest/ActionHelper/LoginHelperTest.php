@@ -41,11 +41,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper as ActionHelperLoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\ActionHelper\UrlHelper;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\User;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\Session\Helper\FollowupHelper;
 use VuFind\View\FlashMessenger\FlashMessenger;
@@ -492,6 +495,108 @@ class LoginHelperTest extends TestCase
         $ils = $this->getIls($patronLoginConfig, $target);
         $helper = $this->getAutowiredObject(ActionHelperLoginHelper::class, [Connection::class => $ils]);
         $this->assertEquals($expectedMethod, $helper->getILSLoginMethod($target));
+    }
+
+    /**
+     * Data provider for testSetFollowupToReferer.
+     *
+     * @return \Iterator
+     */
+    public static function setFollowupToRefererProvider(): \Iterator
+    {
+        yield 'no referrer' => [null, true, [], null, []];
+        yield 'referrer' => ['http://localhost/vufind/foo', true, [], 'http://localhost/vufind/foo', []];
+        yield 'referrer with extras' => [
+            'http://localhost/vufind/foo',
+            true,
+            ['bar' => 'baz'],
+            'http://localhost/vufind/foo',
+            ['bar' => 'baz'],
+        ];
+        yield 'current URL allowed as referrer' => [
+            'http://localhost/vufind/current',
+            true,
+            [],
+            'http://localhost/vufind/current',
+            [],
+        ];
+        yield 'current URL not allowed as referrer' => [
+            'http://localhost/vufind/current',
+            false,
+            [],
+            null,
+            [],
+        ];
+        yield 'foreign URL' => [
+            'http://vufind.org/',
+            true,
+            [],
+            null,
+            [],
+        ];
+    }
+
+    /**
+     * Test the setFollowupUrlToReferer method.
+     *
+     * @param ?string $referrer               Referer
+     * @param bool    $allowCurrent           Allow current URL as referrer?
+     * @param array   $extras                 Extra information to store
+     * @param ?string $expectedStoredReferrer Expected referrer to be stored
+     * @param array   $expectedStoredExtras   Expected extras to be stored
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('setFollowupToRefererProvider')]
+    public function testSetFollowupToReferer(
+        ?string $referrer,
+        bool $allowCurrent,
+        array $extras,
+        ?string $expectedStoredReferrer,
+        array $expectedStoredExtras
+    ): void {
+        $urlHelper = $this->createMock(UrlHelper::class);
+        $urlHelper->method('normalizeUrlForComparison')
+            ->willReturnArgument(0);
+
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $routeHelper->method('getUrlFromRoute')
+            ->willReturnCallback(
+                function (string $route): string {
+                    return match ($route) {
+                        'home' => '/',
+                        'myresearch-home' => '/MyResearch/Home',
+                        'myresearch-userlogin' => '/MyResearch/UserLogin'
+                    };
+                }
+            );
+
+        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
+        $serverUrlHelper->method('getUrlForPath')
+            ->willReturnCallback(
+                function (string $path): string {
+                    return 'http://localhost/vufind' . $path;
+                }
+            );
+
+        $followupHelper = $this->createMock(FollowupHelper::class);
+        $followupHelper->expects($expectedStoredReferrer ? $this->once() : $this->never())
+            ->method('store')
+            ->with($expectedStoredExtras, $expectedStoredReferrer);
+        $helper = $this->getAutowiredObject(
+            ActionHelperLoginHelper::class,
+            [
+                FollowupHelper::class => $followupHelper,
+                RouteHelper::class => $routeHelper,
+                ServerUrlHelper::class => $serverUrlHelper,
+                UrlHelper::class => $urlHelper,
+            ]
+        );
+        $request = new ServerRequest(uri: 'http://localhost/vufind/current');
+        if (null !== $referrer) {
+            $request = $request->withHeader('Referer', $referrer);
+        }
+        $helper->setFollowupUrlToReferer($request, $allowCurrent, $extras);
     }
 
     /**
