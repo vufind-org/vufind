@@ -73,6 +73,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $categoryAliases = [
         'Authorityrecord' => 'AuthorityRecord',
+        'Browzine' => 'BrowZine',
         'Myresearch' => 'MyResearch',
         'Shortlink' => 'ShortLink',
     ];
