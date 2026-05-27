@@ -687,7 +687,7 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function makeListJSDropdown(): bool
     {
-        return (bool) ($this->config['jsDropdown'] ?? false);
+        return (bool)($this->config['jsDropdown'] ?? false);
     }
 
     /**
