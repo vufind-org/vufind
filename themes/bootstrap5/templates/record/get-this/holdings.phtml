@@ -26,8 +26,11 @@ $getDisplay = function ($view, $item) {
     return $location . $copyNumber . $callNumber;
 };
 
-$getLink = function ($view, $item) {
-    return $view->url(
+$JSDropdown = $this->getThis->makeListJSDropdown();
+$getLink = function ($view, $item, bool $current = false) use ($JSDropdown) {
+    return $current && !$JSDropdown ?
+        '#' :
+        $view->url(
         'record-getthis',
         [
             'id' => $view->driver->getUniqueId(),
@@ -40,11 +43,11 @@ $getLink = function ($view, $item) {
         ]
     );
 };
-
 ?>
 
 <strong><?= $this->transEsc('Items') ?> :</strong>
-<nav role="navigation" class="get-this-dropdown" data-js-dropdown>
+<nav role="navigation" class="get-this-dropdown" <?= $JSDropdown ? 'data-js-dropdown' : '' ?>>
+<?php if ($JSDropdown): ?>
   <div data-js-dropdown-header>
     <a href="#" aria-expanded="false">
       <span><?= $getDisplay($this, $selectedItem) ?></span>
@@ -53,16 +56,18 @@ $getLink = function ($view, $item) {
     </a>
   </div>
   <div class="dropdown" tabindex="-1">
+<?php endif; ?>
     <ul>
       <?php
       $selectedItem['item_id'] ??= -1;
       foreach ($items as $item):
         $item['item_id'] ??= null;
-        $itemClass = ($selectedItem['item_id'] == $item['item_id']) ? 'current' : '';
+        $current = $selectedItem['item_id'] == $item['item_id'];
+        $itemClass = $current ? 'current' : '';
         ?>
         <li>
           <a
-              href="<?= $getLink($this, $item) ?>"
+              href="<?= $getLink($this, $item, $current) ?>"
               class="<?= $itemClass ?>"
               rel="nofollow"
           >
@@ -71,6 +76,8 @@ $getLink = function ($view, $item) {
         </li>
       <?php endforeach; ?>
     </ul>
+  <?php if ($JSDropdown): ?>
   </div>
+  <?php endif; ?>
 </nav>
 <br>

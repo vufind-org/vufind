@@ -672,12 +672,22 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @param ?string $itemId Item ID to filter for
      *
-     * @return bool  If the template should display
+     * @return bool If the template should display
      */
     public function showMicroForm(?string $itemId = null): bool
     {
         $location = $this->getLocation($itemId);
         return $this->matches('LOCATION_MICROFORMS', $location);
+    }
+
+    /**
+     * Whether to make the holding list a JS dropdown.
+     *
+     * @return bool
+     */
+    public function makeListJSDropdown(): bool
+    {
+        return (bool) ($this->config['jsDropdown'] ?? false);
     }
 
     /**
