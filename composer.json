@@ -111,7 +111,7 @@
         "symfony/console": "6.4.25",
         "symfony/mailer": "7.4.12",
         "symfony/rate-limiter": "^7.3",
-        "symfony/var-dumper": "7.3.5",
+        "symfony/var-dumper": "7.4.8",
         "symfony/yaml": "6.4.40",
         "vstelmakh/url-highlight": "3.2.0",
         "vufind-org/vufindcode": "1.2",
