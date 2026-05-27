@@ -31,17 +31,17 @@ $getLink = function ($view, $item, bool $current = false) use ($JSDropdown) {
     return $current && !$JSDropdown ?
         '#' :
         $view->url(
-        'record-getthis',
-        [
-            'id' => $view->driver->getUniqueId(),
-            'action' => 'GetThis',
-        ],
-        [
-            'query' => [
-                'item_id' => $item['item_id'],
+            'record-getthis',
+            [
+                'id' => $view->driver->getUniqueId(),
+                'action' => 'GetThis',
             ],
-        ]
-    );
+            [
+                'query' => [
+                    'item_id' => $item['item_id'],
+                ],
+            ]
+        );
 };
 ?>
 
