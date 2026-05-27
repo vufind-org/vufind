@@ -732,7 +732,7 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @param ?string $itemId The holding item UUID.
      *
-     * @return ?string $itemId for the selected item
+     * @return ?string The provided item ID, or an appropriate default if none provided; null if no IDs found anywhere
      */
     protected function getItemId(?string $itemId = null): ?string
     {
@@ -748,13 +748,13 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Get the holding record for the given item id. If none is provided, the first holding
+     * Get the item record for the given item id. If no id is provided, the first item
      * record will be returned.
      *
-     * @param ?string $itemId The holding item UUID. If null (default) will return for what is set
-     *                        in the class if available, else the first item
+     * @param ?string $itemId The item UUID. If null (default) will return for what is set
+     * in the class if available, else the first item
      *
-     * @return ?array The data for with the holding information of the given item
+     * @return ?array The matching item data (null if no item data available)
      */
     public function getItem(?string $itemId = null): ?array
     {
