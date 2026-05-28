@@ -44,7 +44,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class AdvancedAction extends AbstractBlenderSearchAndResultsAction
 {
     /**
-     * Display search results.
+     * Display advanced search form.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
