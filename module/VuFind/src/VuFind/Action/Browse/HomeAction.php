@@ -55,6 +55,6 @@ class HomeAction extends AbstractBrowseAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        return $this->renderTemplate($request, $response, $this->createTemplateParams('Tag'));
+        return $this->renderTemplate($request, $response, $this->createTemplateParams('Home'));
     }
 }
