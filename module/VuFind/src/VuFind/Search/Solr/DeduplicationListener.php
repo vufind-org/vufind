@@ -395,9 +395,10 @@ class DeduplicationListener
             if (preg_match_all('/\bbuilding:"([^"]+)"/', $fq, $matches)) {
                 $values = $matches[1];
                 foreach ($values as $value) {
-                    $exploded = explode('/', rtrim($value, '/'));
-                    if ($building = end($exploded)) {
-                        $result[] = $building;
+                    $buildingSplit = explode('/', rtrim($value, '/'));
+                    array_shift($buildingSplit);
+                    if ($buildingSplit) {
+                        $result = [...$result, ...$buildingSplit];
                     }
                 }
             }
