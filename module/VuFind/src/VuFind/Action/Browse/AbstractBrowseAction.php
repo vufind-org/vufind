@@ -338,8 +338,8 @@ abstract class AbstractBrowseAction extends AbstractTemplateRenderingAction impl
     protected function getFacetList(
         string $facet,
         ?string $category = null,
-        $sort = 'count',
-        $query = '[* TO *]'
+        string $sort = 'count',
+        string $query = '[* TO *]'
     ): array {
         $results = $this->resultsPluginManager->get('Solr');
         $params = $results->getParams();
