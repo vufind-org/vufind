@@ -81,7 +81,7 @@ class TagAction extends AbstractBrowseAction
                 // Only display tag list when a valid letter is selected:
                 if (null !== ($query = $this->getQueryParam('query'))) {
                     // Note -- this does not need to be escaped because $params['query'] has
-					// already been validated against the getAlphabetList() method below!
+                    // already been validated against the getAlphabetList() method below!
                     $tags = $this->tagsService->getNonListTagsFuzzilyMatchingString($query);
                     $tagList = [];
                     foreach ($tags as $tag) {
