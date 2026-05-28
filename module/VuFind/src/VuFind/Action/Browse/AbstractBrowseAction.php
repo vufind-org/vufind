@@ -204,7 +204,7 @@ abstract class AbstractBrowseAction extends AbstractTemplateRenderingAction impl
                 $this->getQueryParam('facet_field'),
                 $queryField,
                 'count',
-                $this->getQueryParam('query')
+                $query
             );
             $templateParams['resultList'] = [];
             foreach ($results as $result) {
