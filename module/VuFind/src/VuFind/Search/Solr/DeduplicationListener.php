@@ -395,11 +395,9 @@ class DeduplicationListener
             if (preg_match_all('/\bbuilding:"([^"]+)"/', $fq, $matches)) {
                 $values = $matches[1];
                 foreach ($values as $value) {
-                    if (preg_match('/^\d+\/([^\/]+?)\//', $value, $matches)) {
-                        // Hierarchical facets; take only first level:
-                        $result[] = $matches[1];
-                    } else {
-                        $result[] = $value;
+                    $exploded = explode('/', rtrim($value, '/'));
+                    if ($building = end($exploded)) {
+                        $result[] = $building;
                     }
                 }
             }
