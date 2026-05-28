@@ -29,7 +29,7 @@
 
 namespace VuFind\Action\Blender2;
 
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
+use VuFind\Action\Blender\AbstractBlenderSearchAndResultsAction;
 
 /**
  * Abstract base class for Blender2 actions.
@@ -40,7 +40,7 @@ use VuFind\Action\Search\AbstractSearchAndResultsAction;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-abstract class AbstractBlender2SearchAndResultsAction extends AbstractSearchAndResultsAction
+abstract class AbstractBlender2SearchAndResultsAction extends AbstractBlenderSearchAndResultsAction
 {
     /**
      * Initialize the action.
@@ -49,7 +49,7 @@ abstract class AbstractBlender2SearchAndResultsAction extends AbstractSearchAndR
      */
     protected function init(): void
     {
-        $this->searchClassId = 'Blender2';
         parent::init();
+        $this->searchClassId = 'Blender2';
     }
 }

@@ -55,6 +55,6 @@ class HomeAction extends AbstractBlender2SearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        return parent::renderHomePage();
+        return $this->renderHomePage();
     }
 }

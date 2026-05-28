@@ -49,7 +49,7 @@ abstract class AbstractBlenderSearchAndResultsAction extends AbstractSearchAndRe
      */
     protected function init(): void
     {
-        $this->searchClassId = 'Blender';
         parent::init();
+        $this->searchClassId = 'Blender';
     }
 }
