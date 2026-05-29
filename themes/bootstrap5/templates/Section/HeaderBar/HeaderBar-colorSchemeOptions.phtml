@@ -1,0 +1,21 @@
+<?=$this->component('menu-button', [
+    'toggleLabel' => 'color_scheme',
+    'toggleLabelIcon' => 'circle-half-stroke',
+    'toggleLabelIconOnly' => true,
+    'toggleAttrs' => [
+      'class' => 'nav-link dropdown-toggle',
+    ],
+    'wrapperClass' => 'nav-item color-scheme-selector',
+    'wrapperTag' => 'li',
+    'menuItems' => array_map(
+        function ($option) {
+            return [
+              'label' => $option['label'],
+              'icon' => $option['icon'],
+              'url' => $this->url()->addQueryParameters(['color_scheme' => $option['name']]),
+              'selected' => $this->layout()->selectedColorScheme == $option['name'],
+            ];
+        },
+        $this->layout()->colorSchemeOptions
+    ),
+]) ?>
