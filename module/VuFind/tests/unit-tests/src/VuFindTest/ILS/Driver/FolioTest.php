@@ -1653,7 +1653,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $config['Holds'] = [
             ...($limitDeliveryAddressTypes ? ['limitDeliveryAddressTypes' => $limitDeliveryAddressTypes] : []),
         ];
-        $this->createConnector('get-address-types', $config, ['getRequestPreference']);
+        $this->createConnector('get-address-types', $config, null, ['getRequestPreference']);
         $this->driver->method('getRequestPreference')->willReturn($requestPreference);
 
         $patron = [
