@@ -2105,17 +2105,23 @@ class Folio extends AbstractAPI implements
         $allowHoldShelf = $requestPreference['holdShelf'] ?? true;
         $allowDelivery = ($requestPreference['delivery'] ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
+        $noLocationsLabels = $this->config['Holds']['noLocationsLabelByRequestGroup'] ?? [];
+        $selectLocationText = $this->config['Holds']['selectLocationTextByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
                 [
                     'id' => 'Hold Shelf',
                     'name' => 'fulfillment_method_hold_shelf',
                     'locationsLabel' => $locationsLabels['Hold Shelf'] ?? null,
+                    'noLocationsLabel' => $noLocationsLabels['Hold Shelf'] ?? null,
+                    'selectLocationText' => $selectLocationText['Hold Shelf'] ?? null,
                 ],
                 [
                     'id' => 'Delivery',
                     'name' => 'fulfillment_method_delivery',
                     'locationsLabel' => $locationsLabels['Delivery'] ?? null,
+                    'noLocationsLabel' => $noLocationsLabels['Delivery'] ?? null,
+                    'selectLocationText' => $selectLocationText['Delivery'] ?? null,
                 ],
             ];
         }
