@@ -69,6 +69,6 @@ class HomeAction extends AbstractAuthoritySearchAndResultsAction
         }
 
         // Default behavior:
-        return parent::renderHomePage();
+        return $this->renderHomePage();
     }
 }

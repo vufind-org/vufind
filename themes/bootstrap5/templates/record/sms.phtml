@@ -1,6 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('Text this'));
   echo $this->assetManager()->outputInlineScriptLink('vendor/libphonenumber.js');
 
   // Set up breadcrumbs:
@@ -10,8 +8,18 @@
   }
   $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($this->translate('Text This'), active: true);
+  $title = $this->translate('Text this')
+    . ': <span class="title-in-heading">' . $this->escapeHtml($this->driver->getBreadcrumb()) . '</span>';
 ?>
-<h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
+<?=
+  // Set page title and heading.
+  $this->component('page-title', [
+    'title' => $title,
+    'level' => 1,
+    'headTitle' => $this->translate('Text this'),
+    'escape' => false,
+  ])
+?>
 <form method="post" name="smsRecord" class="form-record-sms">
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
