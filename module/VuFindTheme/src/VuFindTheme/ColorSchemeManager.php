@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Color Scheme Manager
+ * Color Scheme Manager.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Cookie\CookieManager;
 use function in_array;
 
 /**
- * Color Scheme Manager
+ * Color Scheme Manager.
  *
  * @category VuFind
  * @package  Theme
@@ -47,14 +47,14 @@ use function in_array;
 class ColorSchemeManager
 {
     /**
-     * Supported color schemes for the current theme
+     * Supported color schemes for the current theme.
      *
      * @var array
      */
     protected $supportedColorSchemes;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array              $config         Theme configuration
      * @param ContainerInterface $serviceManager Top-level service container
