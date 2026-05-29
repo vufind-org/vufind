@@ -27,10 +27,8 @@ $getDisplay = function ($view, $item) {
 };
 
 $JSDropdown = $this->getThis->makeListJSDropdown();
-$getLink = function ($view, $item, bool $current = false) use ($JSDropdown) {
-    return $current && !$JSDropdown ?
-        '#' :
-        $view->url(
+$getLink = function ($view, $item) {
+    return $view->url(
             'record-getthis',
             [
                 'id' => $view->driver->getUniqueId(),
@@ -66,13 +64,17 @@ $getLink = function ($view, $item, bool $current = false) use ($JSDropdown) {
         $itemClass = $current ? 'current' : '';
         ?>
         <li>
-          <a
-              href="<?= $getLink($this, $item, $current) ?>"
-              class="<?= $itemClass ?>"
-              rel="nofollow"
-          >
+          <?php if ($current && !$JSDropdown): ?>
+            <span><?= $getDisplay($this, $item) ?></span>
+          <?php else: ?>
+            <a
+                href="<?= $getLink($this, $item) ?>"
+                class="<?= $itemClass ?>"
+                rel="nofollow"
+            >
             <?= $getDisplay($this, $item) ?>
           </a>
+          <?php endif; ?>
         </li>
       <?php endforeach; ?>
     </ul>

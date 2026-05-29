@@ -681,16 +681,6 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Whether to make the holding list a JS dropdown.
-     *
-     * @return bool
-     */
-    public function makeListJSDropdown(): bool
-    {
-        return (bool)($this->config['jsDropdown'] ?? false);
-    }
-
-    /**
      * Setter for record.
      *
      * @param RecordDriver $record Record driver object
@@ -811,6 +801,26 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function commentTemplateName(): bool
     {
-        return $this->config['commentTemplateName'] ?? false;
+        return (bool)($this->config['commentTemplateName'] ?? false);
+    }
+
+    /**
+     * Whether to make the holding list a JS dropdown.
+     *
+     * @return bool
+     */
+    public function makeListJSDropdown(): bool
+    {
+        return (bool)($this->config['jsDropdown'] ?? false);
+    }
+
+    /**
+     * Whether to display the title as a heading, default true.
+     *
+     * @return bool
+     */
+    public function showHeading(): bool
+    {
+        return (bool)($this->config['showHeading'] ?? true);
     }
 }

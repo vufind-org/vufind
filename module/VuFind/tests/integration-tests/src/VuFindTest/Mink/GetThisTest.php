@@ -140,7 +140,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     public static function getRecordItems(string $recordId, string ...$callNumbers): array
     {
         $items = [];
-        $availableItems = self::getAvailableRecordItems();
+        $availableItems = static::getAvailableRecordItems();
         foreach ($callNumbers as $callNumber) {
             $items[] = [
                 'id' => $recordId,
@@ -173,7 +173,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         ];
 
         if (!empty($items)) {
-            $config['Demo']['StaticHoldings'][$recordId] = json_encode(self::getRecordItems($recordId, ...$items));
+            $config['Demo']['StaticHoldings'][$recordId] = json_encode(static::getRecordItems($recordId, ...$items));
         }
 
         return $config;
@@ -189,7 +189,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $recordId = 'autocomplete1';
         yield [
             // $config
-            self::getVufindConfigArray(
+            static::getVufindConfigArray(
                 $recordId,
                 false,
                 [
@@ -209,11 +209,11 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                 'staff-office-delivery' => true,
             ],
             // $search
-            self::SEARCH,
+            static::SEARCH,
         ];
         yield [
             // $config
-            self::getVufindConfigArray(
+            static::getVufindConfigArray(
                 $recordId,
                 false,
                 [
@@ -230,7 +230,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                 'staff-office-delivery' => false,
             ],
             // $search
-            self::SEARCH,
+            static::SEARCH,
         ];
     }
 
@@ -266,14 +266,14 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $recordId = 'autocomplete1';
 
         $callNumberTest1 = 'CallNumberThree';
-        $callNumberThree = self::getAvailableRecordItems()[$callNumberTest1];
+        $callNumberThree = static::getAvailableRecordItems()[$callNumberTest1];
         $callNumberThree['status'] = $callNumberThree['availability'] ? 'Available' : 'Unavailable';
         $callNumberTest2 = 'CallNumberFive';
-        $callNumberFive = self::getAvailableRecordItems()[$callNumberTest2];
+        $callNumberFive = static::getAvailableRecordItems()[$callNumberTest2];
         $callNumberFive['status'] = $callNumberFive['availability'] ? 'Available' : 'Unavailable';
         yield [
             // $config
-            self::getVufindConfigArray(
+            static::getVufindConfigArray(
                 $recordId,
                 true,
                 [
@@ -299,13 +299,13 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                 'Status : ' . $callNumberThree['status'],
             ],
             // $search
-            self::SEARCH,
+            static::SEARCH,
             // $callNumberSelected
             $callNumberTest1,
         ];
         yield [
             // $config
-            self::getVufindConfigArray(
+            static::getVufindConfigArray(
                 $recordId,
                 true,
                 [
@@ -328,7 +328,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                 'Status : ' . $callNumberFive['status'],
             ],
             // $search
-            self::SEARCH,
+            static::SEARCH,
             // $callNumberSelected
             $callNumberTest2,
         ];
@@ -377,7 +377,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     public function testBlockCommentNotPresent(): void
     {
         $this->changeConfigs(
-            self::getVufindConfigArray(
+            static::getVufindConfigArray(
                 'autocomplete1',
                 false,
                 [
@@ -390,7 +390,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->setCommentBlockConfig(false);
 
-        $page = $this->openGetThisLoaderForSearch(self::SEARCH);
+        $page = $this->openGetThisLoaderForSearch(static::SEARCH);
         $lightbox = $this->getLightbox($page);
         $this->assertInstanceOf(NodeElement::class, $lightbox);
         $presence = str_contains($lightbox->getHtml(), '<!-- Get-This: ');
@@ -410,9 +410,14 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             'CallNumberTwo',
             'CallNumberThree',
         ];
-        $this->changeConfigs(self::getVufindConfigArray('autocomplete1', false, $callNumbers));
+        $this->changeConfigs(static::getVufindConfigArray('autocomplete1', false, $callNumbers));
+        $this->changeYamlConfigs([
+            'GetThis' => [
+                'jsDropdown' => true,
+            ],
+        ]);
 
-        $page = $this->openGetThisLoaderForSearch(self::SEARCH);
+        $page = $this->openGetThisLoaderForSearch(static::SEARCH);
         $lightbox = $this->getLightbox($page);
         $navDropdown = $this->findCss($lightbox, 'nav.get-this-dropdown');
 
