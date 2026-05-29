@@ -10,9 +10,9 @@ function setUpHoldRequestForm(recordId) {
   var $select = $('#pickUpLocation');
   var $icon = $('#pickUpLocationLabel .loading-icon');
   var $emptyOption = $("#pickUpLocation option[value='']");
-  var $noResults = $('<span/>').text(VuFind.translate(
+  var $noResults = $('<span/>').text(
     document.querySelector('#requestGroupId option[selected]').dataset.noLocationsLabel
-  ));
+  );
   $select.parent().append($noResults);
   $noResults.hide();
 
@@ -54,13 +54,13 @@ function setUpHoldRequestForm(recordId) {
             $emptyOption.removeAttr('selected');
           }
           else {
-            $emptyOption.text(VuFind.translate($self.find(':selected').data('select-location-text')));
+            $emptyOption.text($self.find(':selected').data('select-location-text'));
             $emptyOption.removeAttr('hidden');
           }
           $select.show();
         } else {
           $select.hide();
-          $noResults.text(VuFind.translate($self.find(':selected').data('no-locations-label')));
+          $noResults.text($self.find(':selected').data('no-locations-label'));
           $noResults.show();
         }
         $('#pickUpLocationLabel .pick-up-location-label-text').text($self.find(':selected').data('locations-label'));
