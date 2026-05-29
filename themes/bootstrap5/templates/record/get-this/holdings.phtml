@@ -29,17 +29,17 @@ $getDisplay = function ($view, $item) {
 $JSDropdown = $this->getThis->makeListJSDropdown();
 $getLink = function ($view, $item) {
     return $view->url(
-            'record-getthis',
-            [
-                'id' => $view->driver->getUniqueId(),
-                'action' => 'GetThis',
+        'record-getthis',
+        [
+            'id' => $view->driver->getUniqueId(),
+            'action' => 'GetThis',
+        ],
+        [
+            'query' => [
+                'item_id' => $item['item_id'],
             ],
-            [
-                'query' => [
-                    'item_id' => $item['item_id'],
-                ],
-            ]
-        );
+        ]
+    );
 };
 ?>
 
