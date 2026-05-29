@@ -199,7 +199,9 @@ return [
             'currency-usd' => 'FontAwesome:dollar-sign',
             'currency-won' => 'FontAwesome:won-sign',
             'currency-yen' => 'FontAwesome:yen-sign',
-            'dropdown-caret' => 'FontAwesome:caret-down',
+            'dropdown-caret' => 'Alias:dropdown-open', // deprecated, use dropdown-open instead
+            'dropdown-close' => 'FontAwesome:caret-up',
+            'dropdown-open' => 'FontAwesome:caret-down',
             'explain' => 'FontAwesome:question-circle',
             'export' => 'FontAwesome:up-right-from-square',
             'external-link' => 'FontAwesome:link',

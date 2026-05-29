@@ -151,50 +151,11 @@ function getHTPreviews(keys) {
   let batch = [];
   for (let i = 0; i < bibkeys.length; i++) {
     batch.push(bibkeys[i]);
-    if ((i > 0 && i % 20 === 0) || i === bibkeys.length - 1) {
+    if ((i + 1) % 20 === 0 || i === bibkeys.length - 1) {
       fetchHTPreviewBatch(batch);
       batch = [];
     }
   }
-}
-
-/**
- * Array.indexOf is not universally supported
- * We need to set it for users who don't have it.
- *
- * developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/indexOf
- */
-function setIndexOf() {
-  Array.prototype.indexOf = function indexOfPolyfill(searchElement /*, fromIndex */ ) {
-    "use strict";
-    if (this == null) {
-      throw new TypeError();
-    }
-    var t = Object(this);
-    var len = t.length;
-    if (len === 0) {
-      return -1;
-    }
-    var n = 0;
-    if (arguments.length > 1) {
-      n = Number(arguments[1]);
-      if (n !== n) { // shortcut for verifying if it's NaN
-        n = 0;
-      } else if (n !== 0 && n !== Infinity && n !== -Infinity) {
-        n = (n > 0 || -1) * Math.floor(Math.abs(n));
-      }
-    }
-    if (n >= len) {
-      return -1;
-    }
-    var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
-    for (; k < len; k++) {
-      if (k in t && t[k] === searchElement) {
-        return k;
-      }
-    }
-    return -1;
-  };
 }
 
 /**
@@ -203,8 +164,10 @@ function setIndexOf() {
  */
 function getBibKeyString() {
   var skeys = '';
-  $('.previewBibkeys').each(function previewBibkeysEach(){
+  // Only collect from elements not yet processed, then mark them
+  $('.previewBibkeys:not([data-preview-loaded])').each(function previewBibkeysEach(){
     skeys += $(this).attr('class');
+    $(this).attr('data-preview-loaded', '1'); // mark as processed
   });
   return skeys.replace(/previewBibkeys/g, '').replace(/^\s+|\s+$/g, '');
 }
@@ -213,9 +176,12 @@ function getBibKeyString() {
  * Initiate request to various book preview APIs.
  */
 function getBookPreviews() {
-  var skeys = getBibKeyString();
-  var bibkeys = skeys.split(/\s+/);
-  var script;
+  let skeys = getBibKeyString();
+  if (!skeys) {
+    return; // All elements already processed, nothing to do
+  }
+  let bibkeys = skeys.split(/\s+/);
+  let script;
 
   // fetch Google preview if enabled
   if ($('[class*="googlePreviewSpan"]').length > 0) {
@@ -226,13 +192,13 @@ function getBookPreviews() {
       $.getScript(script);
     } else {
       // if so, break request into chunks of 100
-      var keyString = '';
+      let keyString = '';
       // loop through array
-      for (var i = 0; i < bibkeys.length; i++){
+      for (let i = 0; i < bibkeys.length; i++){
         keyString += bibkeys[i] + ',';
         // send request when there are 100 requests ready or when there are no
         // more elements to be sent
-        if ((i > 0 && i % 100 === 0) || i === bibkeys.length - 1) {
+        if ((i + 1) % 100 === 0 || i === bibkeys.length - 1) {
           script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
             + keyString + '&callback=processGBSBookInfo';
           $.getScript(script);
@@ -259,9 +225,6 @@ function getBookPreviews() {
  * The main entry point and initiates the fetching of book previews.
  */
 $(function previewDocReady() {
-  if (!Array.prototype.indexOf) {
-    setIndexOf();
-  }
   getBookPreviews();
   VuFind.listen('results-init', getBookPreviews);
 });

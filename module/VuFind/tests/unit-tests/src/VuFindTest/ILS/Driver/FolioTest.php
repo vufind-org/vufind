@@ -31,6 +31,7 @@
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Response;
+use VuFind\Connection\Webhook;
 use VuFind\ILS\Driver\Folio;
 
 /**
@@ -156,11 +157,12 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $test             Name of test fixture to load
      * @param ?array $config           Driver configuration (null to use default)
+     * @param ?Webhook $webhookConnection Webhook connection (null to use default)
      * @param array  $extraMockMethods Names of additional methods to allow mocking
      *
      * @return void
      */
-    protected function createConnector(string $test, ?array $config = null, array $extraMockMethods = []): void
+    protected function createConnector(string $test, ?array $config = null, ?Webhook $webhookConnection = null, array $extraMockMethods = []): void
     {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("folio/responses/$test.json");
@@ -173,7 +175,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         };
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(Folio::class)
-            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
+            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, $webhookConnection])
             ->onlyMethods(['makeRequest', ...$extraMockMethods])
             ->getMock();
         // Configure the stub
@@ -365,14 +367,37 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Successful place hold test provider.
+     *
+     * @return \Iterator
+     */
+    public static function successfulPlaceHoldTestProvider(): \Iterator
+    {
+        yield 'normal' => [
+            false,
+        ];
+        yield 'using webhook' => [
+            true,
+        ];
+    }
+
+    /**
      * Test successful place hold.
+     *
+     * @param bool $useWebhook Set a webhook url
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
-    public function testSuccessfulPlaceHold(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('successfulPlaceHoldTestProvider')]
+    public function testSuccessfulPlaceHold(bool $useWebhook): void
     {
-        $this->createConnector('successful-place-hold');
+        $config = $this->defaultDriverConfig;
+        if ($useWebhook) {
+            $config['Holds']['webhook'] = 'http://foo.bar';
+        }
+        $webhookConnection = $this->createMock(Webhook::class);
+        $this->createConnector('successful-place-hold', $config, $webhookConnection);
         $details = [
             'requiredBy' => '2022-01-01',
             'requiredByTS' => 1641049790,
@@ -382,6 +407,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
+        if ($useWebhook) {
+            $webhookConnection->expects($this->once())->method('post')->with('http://foo.bar');
+        } else {
+            $webhookConnection->expects($this->never())->method('post');
+        }
         $result = $this->driver->placeHold($details);
         $expected = [
             'success' => true,

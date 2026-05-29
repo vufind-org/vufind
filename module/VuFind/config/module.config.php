@@ -458,6 +458,7 @@ $config = [
             'VuFind\Connection\ExternalVuFind' => 'VuFind\Connection\ExternalVuFindFactory',
             'VuFind\Connection\LibGuides' => 'VuFind\Connection\LibGuidesFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
+            'VuFind\Connection\Webhook' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
             'VuFind\Content\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Content\AuthorNotes\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
