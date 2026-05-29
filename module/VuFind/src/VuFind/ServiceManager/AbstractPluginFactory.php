@@ -99,11 +99,11 @@ class AbstractPluginFactory implements AbstractFactoryInterface
 
     /**
      * Given the name of a class, check if it has default factory behavior assigned; return an array
-     * containing ?string $name and bool $autodetect, as per the DefaultFactory attribute.
+     * of values from the DefaultFactory attribute.
      *
      * @param string $class Class name
      *
-     * @return array
+     * @return array{name: ?string, autodetect: bool}
      */
     protected function getDefaultFactorySettings(string $class): array
     {
