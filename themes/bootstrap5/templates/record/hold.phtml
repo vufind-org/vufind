@@ -88,9 +88,9 @@
         // default:
         $selected = $this->homeLibrary ?? false;
       }
-      $selectPickupLocationText = 
-        array_filter($requestGroups, fn($group) => $group['id'] == $defaultRequestGroup)[0]['selectLocationText']
-        ?? 'select_pickup_location'; 
+      $selectPickupLocationText =
+        array_filter($requestGroups, fn ($group) => $group['id'] == $defaultRequestGroup)[0]['selectLocationText']
+        ?? 'select_pickup_location';
     ?>
     <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
