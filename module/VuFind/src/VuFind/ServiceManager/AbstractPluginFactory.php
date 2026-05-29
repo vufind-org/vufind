@@ -105,7 +105,7 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      *
      * @return array
      */
-    protected function getdefaultFactorySettings(string $class): array
+    protected function getDefaultFactorySettings(string $class): array
     {
         $reflectionClass = new ReflectionClass($class);
         $matches = $reflectionClass->getAttributes(DefaultFactory::class);
@@ -126,7 +126,7 @@ class AbstractPluginFactory implements AbstractFactoryInterface
      */
     protected function detectFactoryForClass(string $class): ?string
     {
-        $defaultFactorySettings = $this->getdefaultFactorySettings($class);
+        $defaultFactorySettings = $this->getDefaultFactorySettings($class);
         if ($defaultFactorySettings['name']) {
             return $defaultFactorySettings['name'];
         }
