@@ -155,15 +155,19 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param string $test             Name of test fixture to load
-     * @param ?array $config           Driver configuration (null to use default)
+     * @param string   $test              Name of test fixture to load
+     * @param ?array   $config            Driver configuration (null to use default)
      * @param ?Webhook $webhookConnection Webhook connection (null to use default)
-     * @param array  $extraMockMethods Names of additional methods to allow mocking
+     * @param array    $extraMockMethods  Names of additional methods to allow mocking
      *
      * @return void
      */
-    protected function createConnector(string $test, ?array $config = null, ?Webhook $webhookConnection = null, array $extraMockMethods = []): void
-    {
+    protected function createConnector(
+        string $test,
+        ?array $config = null,
+        ?Webhook $webhookConnection = null,
+        array $extraMockMethods = []
+    ): void {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("folio/responses/$test.json");
         $this->currentFixture = $test;
