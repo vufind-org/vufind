@@ -187,7 +187,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
 
         // If we have default filters, set them up as a fake "saved" search
         // to properly populate special controls on the advanced screen.
-        if (!$templateParams['saved'] && count($$templateParams['options']->getDefaultFilters()) > 0) {
+        if (!$templateParams['saved'] && count($templateParams['options']->getDefaultFilters()) > 0) {
             $templateParams['saved'] = $this->resultsPluginManager->get($this->searchClassId);
             $templateParams['saved']->getParams()->initFromRequest(
                 new \Laminas\Stdlib\Parameters([])
