@@ -212,7 +212,7 @@ class Ini extends AbstractBase
         }
 
         if (file_exists($outfile) && $currentConfig = parse_ini_file($outfile, true)) {
-            // If file already exits, only update changed lines
+            // If file already exists, only update changed lines
             $writer = new ConfigWriter(
                 $outfile
             );
