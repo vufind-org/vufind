@@ -12,7 +12,8 @@ styles:
 # The following options configure the form for creating notices in the admin module.
 adminForm:
 # Contexts available in admin form. A context specifies the position of a notice and its conditions.
-# See below for the explanation of position and conditions.
+# See below for the explanation of position and conditions. If only one context is specified it will
+# automatically be used.
   contexts:
     global:
     global_header:
