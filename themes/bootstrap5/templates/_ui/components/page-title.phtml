@@ -10,6 +10,7 @@
    * @param int          lightboxLevel Header level in lightbox context. Allows level 1 header to be set.
    * @param string       class         Same as header element class attribute.
    *                                   Appended values are 'vc-page-title' and in lightbox 'vc-page-title lightbox-title'.
+   * @param ?bool        escape        Whether or not to escape heading contents (by default, title is escaped).
    */
   $title = $this->title ?? 'title_missing';
   $headerAttrs = [
@@ -34,5 +35,6 @@
   if (false !== $headTitle) {
     $this->headTitle($headTitle);
   }
+  $escape = $this->escape ?? true;
 ?>
-<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?=$this->escapeHtml($title);?></<?=$tag?>>
+<<?=$tag?><?=$this->htmlAttributes($headerAttrs)?>><?= $escape ? $this->escapeHtml($title) : $title ?></<?=$tag?>>

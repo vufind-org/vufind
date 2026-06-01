@@ -59,6 +59,6 @@ abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAw
         protected Relais $relais,
         protected ?UserEntityInterface $user
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
     }
 }

@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ActionHelper\LoginHelper;
+use VuFind\ActionHelper\PluginManager as ActionHelperPluginManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -61,10 +63,12 @@ class Config
      * Config constructor.
      *
      * @param ConfigManagerInterface $configManager Configuration manager
+     * @param LoginHelper            $loginHelper   Login helper
      */
     public function __construct(
-        #[Autowire]
-        protected ConfigManagerInterface $configManager
+        protected ConfigManagerInterface $configManager,
+        #[Autowire(container: ActionHelperPluginManager::class)]
+        protected LoginHelper $loginHelper,
     ) {
     }
 
@@ -199,6 +203,16 @@ class Config
     {
         return (bool)($this->get('config')->Catalog
             ->display_loan_type_in_holdings ?? false);
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form.
+     *
+     * @return array
+     */
+    public function getILSLoginSettings(): array
+    {
+        return $this->loginHelper->getILSLoginSettings();
     }
 
     /**

@@ -31,6 +31,7 @@ namespace VuFind\Action;
 
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\Http\RouteHelper;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * Interface for action classes.
@@ -60,4 +61,13 @@ interface ActionInterface
      * @return static
      */
     public function setRouteHelper(RouteHelper $routeHelper): static;
+
+    /**
+     * Set session settings.
+     *
+     * @param SessionSettings $sessionSettings Session settings
+     *
+     * @return static
+     */
+    public function setSessionSettings(SessionSettings $sessionSettings): static;
 }

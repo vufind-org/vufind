@@ -198,7 +198,7 @@ class AlmaController extends AbstractBase
             // Get username (could e. g. be the barcode)
             $username = null;
             $userIdentifiers
-                = $requestBodyJson->webhook_user->user->user_identifier ?? null;
+                = $requestBodyJson->webhook_user->user->user_identifier ?? [];
             $idTypeConfig = $this->configAlma['NewUser']['idType'] ?? null;
             foreach ($userIdentifiers as $userIdentifier) {
                 $idTypeHook = $userIdentifier->id_type->value ?? null;
@@ -216,16 +216,16 @@ class AlmaController extends AbstractBase
             $username = ($username == null) ? $primaryId : $username;
 
             // Get user details from Alma Webhook message
-            $firstname = $requestBodyJson->webhook_user->user->first_name ?? null;
-            $lastname = $requestBodyJson->webhook_user->user->last_name ?? null;
+            $firstname = $requestBodyJson->webhook_user->user->first_name ?? '';
+            $lastname = $requestBodyJson->webhook_user->user->last_name ?? '';
 
             $allEmails
-                = $requestBodyJson->webhook_user->user->contact_info->email ?? null;
-            $email = null;
+                = $requestBodyJson->webhook_user->user->contact_info->email ?? [];
+            $email = '';
             foreach ($allEmails as $currentEmail) {
                 $preferred = $currentEmail->preferred ?? false;
                 if ($preferred && $email == null) {
-                    $email = $currentEmail->email_address ?? null;
+                    $email = $currentEmail->email_address ?? '';
                 }
             }
 
@@ -347,6 +347,15 @@ class AlmaController extends AbstractBase
      */
     protected function sendSetPasswordEmail(UserEntityInterface $user): void
     {
+        if (!$user->getEmail()) {
+            // No email address, can't send the message!
+            error_log(
+                'Could not send the \'set-password-email\' to user with ' .
+                'primary ID \'' . $user->getCatId() . '\' | username \'' .
+                $user->getUsername() . '\': Email address missing'
+            );
+            return;
+        }
         // Attempt to send the email
         try {
             // Create a fresh hash
