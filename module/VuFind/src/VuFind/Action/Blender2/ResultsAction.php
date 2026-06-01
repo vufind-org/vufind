@@ -1,11 +1,10 @@
 <?php
 
 /**
- * Authority home action.
+ * Blender2 results action.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,32 +22,29 @@
  *
  * @category VuFind
  * @package  Action
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Authority;
+namespace VuFind\Action\Blender2;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\ActionHelper\RedirectHelper;
 
 /**
- * Authority home action.
+ * Blender2 results action.
  *
  * @category VuFind
  * @package  Action
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HomeAction extends AbstractAuthoritySearchAndResultsAction
+class ResultsAction extends AbstractBlender2SearchAndResultsAction
 {
     /**
-     * Display home page.
+     * Display search results.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -59,16 +55,6 @@ class HomeAction extends AbstractAuthoritySearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // If we came in with a record ID, forward to the record action; this
-        // provides backward compatibility with multiple legacy routes.
-        if ($id = $this->getRouteParam('id')) {
-            if ($id === 'Record') {
-                $id = $this->getQueryParam('id', $id);
-            }
-            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'solrauthrecord', compact('id'));
-        }
-
-        // Default behavior:
-        return $this->renderHomePage();
+        return $this->renderSearchResults();
     }
 }
