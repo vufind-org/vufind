@@ -208,7 +208,11 @@ class Ini extends AbstractBase
 
         if ($baseLocation !== null && file_exists($baseLocation->getPath())) {
             // Copy from base to provide structure
-            !copy($baseLocation->getPath(), $outfile);
+            if (!copy($baseLocation->getPath(), $outfile)) {
+                throw new FileAccessException(
+                    "Error: Problem copying to {$outfile}."
+                );
+            }
         }
 
         if (file_exists($outfile) && $currentConfig = parse_ini_file($outfile, true)) {
