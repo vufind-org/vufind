@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Reserves Support Methods
+ * VuFind Action Helper - Reserves Support Methods.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Service;
 
 /**
- * Action helper to perform reserves-related actions
+ * Action helper to perform reserves-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -53,14 +53,14 @@ class Reserves extends AbstractPlugin
     protected $useIndex;
 
     /**
-     * Search service
+     * Search service.
      *
      * @var Service
      */
     protected $searchService;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bool     $useIndex      Do we need to use the Solr index for reserves
      * (true) or the ILS driver (false)?

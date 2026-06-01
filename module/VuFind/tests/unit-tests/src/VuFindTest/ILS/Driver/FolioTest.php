@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FOLIO ILS driver test
+ * FOLIO ILS driver test.
  *
  * PHP version 8
  *
@@ -31,10 +31,11 @@
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Response;
+use VuFind\Connection\Webhook;
 use VuFind\ILS\Driver\Folio;
 
 /**
- * FOLIO ILS driver test
+ * FOLIO ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +49,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -63,35 +64,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Test data for simulated HTTP responses (reset by each test)
+     * Test data for simulated HTTP responses (reset by each test).
      *
      * @var array
      */
     protected $fixtureSteps = [];
 
     /**
-     * Current fixture step
+     * Current fixture step.
      *
      * @var int
      */
     protected $currentFixtureStep = 0;
 
     /**
-     * Current fixture name
+     * Current fixture name.
      *
      * @var string
      */
     protected $currentFixture = 'none';
 
     /**
-     * Driver under test
+     * Driver under test.
      *
      * @var Folio
      */
     protected $driver = null;
 
     /**
-     * Replace makeRequest to inject test returns
+     * Replace makeRequest to inject test returns.
      *
      * @param string       $method  GET/POST/PUT/DELETE/etc
      * @param string       $path    API path (with a leading /)
@@ -149,17 +150,18 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Generate a new Folio driver to return responses set in a json fixture
+     * Generate a new Folio driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      * Uses session cache
      *
-     * @param string $test   Name of test fixture to load
-     * @param ?array $config Driver configuration (null to use default)
+     * @param string   $test              Name of test fixture to load
+     * @param ?array   $config            Driver configuration (null to use default)
+     * @param ?Webhook $webhookConnection Webhook connection (null to use default)
      *
      * @return void
      */
-    protected function createConnector(string $test, ?array $config = null): void
+    protected function createConnector(string $test, ?array $config = null, ?Webhook $webhookConnection = null): void
     {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("folio/responses/$test.json");
@@ -172,7 +174,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         };
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(Folio::class)
-            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory])
+            ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, $webhookConnection])
             ->onlyMethods(['makeRequest'])
             ->getMock();
         // Configure the stub
@@ -185,7 +187,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Request a token where one does not exist (RTR authentication)
+     * Request a token where one does not exist (RTR authentication).
      *
      * @return void
      */
@@ -196,7 +198,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Request a token where one does not exist (legacy authentication)
+     * Request a token where one does not exist (legacy authentication).
      *
      * @return void
      */
@@ -212,7 +214,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check a valid token retrieved from session cache
+     * Check a valid token retrieved from session cache.
      *
      * @return void
      */
@@ -224,7 +226,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check and renew an invalid token retrieved from session cache (RTR authentication)
+     * Check and renew an invalid token retrieved from session cache (RTR authentication).
      *
      * @return void
      */
@@ -238,7 +240,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check and renew an invalid token retrieved from session cache (legacy authentication)
+     * Check and renew an invalid token retrieved from session cache (legacy authentication).
      *
      * @return void
      */
@@ -293,7 +295,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an unsuccessful patron login with default settings
+     * Test an unsuccessful patron login with default settings.
      *
      * @return void
      */
@@ -305,7 +307,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test patron login with Okapi (RTR authentication)
+     * Test patron login with Okapi (RTR authentication).
      *
      * @return void
      */
@@ -333,7 +335,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test patron login with Okapi (Legacy authentication)
+     * Test patron login with Okapi (Legacy authentication).
      *
      * @return void
      */
@@ -364,14 +366,37 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold
+     * Successful place hold test provider.
+     *
+     * @return \Iterator
+     */
+    public static function successfulPlaceHoldTestProvider(): \Iterator
+    {
+        yield 'normal' => [
+            false,
+        ];
+        yield 'using webhook' => [
+            true,
+        ];
+    }
+
+    /**
+     * Test successful place hold.
+     *
+     * @param bool $useWebhook Set a webhook url
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
-    public function testSuccessfulPlaceHold(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('successfulPlaceHoldTestProvider')]
+    public function testSuccessfulPlaceHold(bool $useWebhook): void
     {
-        $this->createConnector('successful-place-hold');
+        $config = $this->defaultDriverConfig;
+        if ($useWebhook) {
+            $config['Holds']['webhook'] = 'http://foo.bar';
+        }
+        $webhookConnection = $this->createMock(Webhook::class);
+        $this->createConnector('successful-place-hold', $config, $webhookConnection);
         $details = [
             'requiredBy' => '2022-01-01',
             'requiredByTS' => 1641049790,
@@ -381,6 +406,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
+        if ($useWebhook) {
+            $webhookConnection->expects($this->once())->method('post')->with('http://foo.bar');
+        } else {
+            $webhookConnection->expects($this->never())->method('post');
+        }
         $result = $this->driver->placeHold($details);
         $expected = [
             'success' => true,
@@ -390,7 +420,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold (using an old version of mod-circulation)
+     * Test successful place hold (using an old version of mod-circulation).
      *
      * @return void
      */
@@ -416,7 +446,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold with no expiration date
+     * Test successful place hold with no expiration date.
      *
      * @return void
      */
@@ -440,7 +470,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful place hold with invalid expiration date
+     * Test unsuccessful place hold with invalid expiration date.
      *
      * @return void
      */
@@ -465,7 +495,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful place hold using request type fallback
+     * Test successful place hold using request type fallback.
      *
      * @return void
      */
@@ -497,7 +527,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unsuccessful place hold
+     * Test unsuccessful place hold.
      *
      * @return void
      */
@@ -524,7 +554,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test successful place hold when the first method
-     * of getting the mod-circulation version fails with an error
+     * of getting the mod-circulation version fails with an error.
      *
      * @return void
      */
@@ -552,7 +582,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     /**
      * Test successful place hold when the first method
      * of getting the mod-circulation version returns
-     * invalid JSON
+     * invalid JSON.
      *
      * @return void
      */
@@ -578,7 +608,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful renewal
+     * Test successful renewal.
      *
      * @return void
      */
@@ -606,7 +636,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, no items
+     * Test successful call to holds, no items.
      *
      * @return void
      */
@@ -623,7 +653,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, one available item
+     * Test successful call to holds, one available item.
      *
      * @return void
      */
@@ -652,7 +682,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, one available item placed for a proxy
+     * Test successful call to holds, one available item placed for a proxy.
      *
      * @return void
      */
@@ -682,7 +712,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, one in_transit item
+     * Test successful call to holds, one in_transit item.
      *
      * @return void
      */
@@ -711,7 +741,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test successful call to holds, item in queue, position x
+     * Test successful call to holds, item in queue, position x.
      *
      * @return void
      */
@@ -741,7 +771,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable when no excludeHoldLocationsCompareMode
-     * config value is set
+     * config value is set.
      *
      * @return void
      */
@@ -757,7 +787,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calls to isHoldable with the exact compare mode
+     * Test calls to isHoldable with the exact compare mode.
      *
      * @return void
      */
@@ -777,7 +807,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test calls to isHoldable when using regex mode
+     * Test calls to isHoldable when using regex mode.
      *
      * @return void
      */
@@ -798,7 +828,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable to verify handling of invalid regex
-     * when in regex compare mode
+     * when in regex compare mode.
      *
      * @return void
      */
@@ -823,7 +853,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable that verify that the excludeHoldLocationsCompareMode
-     * config is case insensitive
+     * config is case insensitive.
      *
      * @return void
      */
@@ -848,7 +878,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test calls to isHoldable using exact mode with invalid
-     * location values and parameter values to isHoldable
+     * location values and parameter values to isHoldable.
      *
      * @return void
      */
@@ -975,7 +1005,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding with HRID-based lookup
+     * Test getHolding with HRID-based lookup.
      *
      * @return void
      */
@@ -1093,7 +1123,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHoldings with multiple ids
+     * Test getHoldings with multiple ids.
      *
      * @return void
      */
@@ -1342,7 +1372,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPagedResults with less than the limit value returned
+     * Test getPagedResults with less than the limit value returned.
      *
      * @return void
      */
@@ -1370,7 +1400,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPagedResults with greater than the limit value returned
+     * Test getPagedResults with greater than the limit value returned.
      *
      * @return void
      */
@@ -1398,7 +1428,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getPagedResults with results equal to the limit value returned
+     * Test getPagedResults with results equal to the limit value returned.
      *
      * @return void
      */
@@ -1506,5 +1536,26 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test getDefaultRequestGroup with a user UUID-based lookup.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    public function testGetDefaultRequestGroup(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $this->createConnector('get-request-preference', $driverConfig);
+
+        // Confirm the FOLIO call is made only once per user, due to caching
+        $this->driver->expects($this->exactly(2))->method('makeRequest');
+        $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'whatever']);
+        $this->assertEquals('Delivery', $requestGroup);
+        for ($i = 0; $i < 2; $i++) {
+            $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'user2']);
+        }
+        $this->assertEquals('Hold Shelf', $requestGroup);
     }
 }

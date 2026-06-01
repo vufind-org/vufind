@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Search Results
+ * Summon Search Results.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Summon Search Parameters
+ * Summon Search Parameters.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -53,21 +53,21 @@ class Results extends \VuFind\Search\Base\Results
     protected $responseFacets = null;
 
     /**
-     * Best bets
+     * Best bets.
      *
      * @var array|bool
      */
     protected $bestBets = false;
 
     /**
-     * Database recommendations
+     * Database recommendations.
      *
      * @var array|bool
      */
     protected $databaseRecommendations = false;
 
     /**
-     * Topic recommendations
+     * Topic recommendations.
      *
      * @var array|bool
      */
@@ -135,7 +135,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
@@ -277,7 +277,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Process spelling suggestions from the results object
+     * Process spelling suggestions from the results object.
      *
      * @param array $spelling Suggestions from Summon
      *
@@ -349,7 +349,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get complete facet counts for several index fields
+     * Get complete facet counts for several index fields.
      *
      * @param array  $facetfields  name of the Solr fields to return facets for
      * @param bool   $removeFilter Clear existing filters from selected fields (true)

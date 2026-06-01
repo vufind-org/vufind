@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RecordLinker view helper Test Class
+ * RecordLinker view helper Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\View\Helper\Root\Url;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * RecordLinker view helper Test Class
+ * RecordLinker view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -66,7 +66,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Make sure any percent signs in record ID are properly URL-encoded
+     * Make sure any percent signs in record ID are properly URL-encoded.
      *
      * @return void
      */
@@ -84,7 +84,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test behavior when there are multiple GET parameters
+     * Test behavior when there are multiple GET parameters.
      *
      * @return void
      */
@@ -98,7 +98,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test record URL creation with a non-tab action
+     * Test record URL creation with a non-tab action.
      *
      * @return void
      */
@@ -135,7 +135,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBreadcrumbParams
+     * Test getBreadcrumbParams.
      *
      * @param string $breadcrumb Breadcrumb text to test with
      *

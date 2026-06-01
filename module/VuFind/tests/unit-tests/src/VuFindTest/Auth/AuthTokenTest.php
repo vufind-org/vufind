@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class AuthTokenTest
+ * Class AuthTokenTest.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFindTest\Auth;
 use VuFind\Auth\AuthToken;
 
 /**
- * Class AuthTokenTest
+ * Class AuthTokenTest.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -45,7 +45,7 @@ use VuFind\Auth\AuthToken;
 class AuthTokenTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test getting a header value
+     * Test getting a header value.
      *
      * @return void
      */
@@ -58,7 +58,7 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isExpired() method
+     * Test isExpired() method.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getExpiresIn() method
+     * Test getExpiresIn() method.
      *
      * @return void
      */

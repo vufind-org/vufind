@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Sitemap
+ * VuFind Sitemap.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function is_callable;
 use function is_string;
 
 /**
- * Class for generating sitemaps
+ * Class for generating sitemaps.
  *
  * @category VuFind
  * @package  Sitemap
@@ -48,70 +48,70 @@ use function is_string;
 class Generator
 {
     /**
-     * Base URL for sitemap
+     * Base URL for sitemap.
      *
      * @var string
      */
     protected $baseSitemapUrl;
 
     /**
-     * Languages enabled for sitemaps
+     * Languages enabled for sitemaps.
      *
      * @var array
      */
     protected $languages;
 
     /**
-     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
+     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never).
      *
      * @var string
      */
     protected $frequency;
 
     /**
-     * URL entries per sitemap
+     * URL entries per sitemap.
      *
      * @var int
      */
     protected $countPerPage;
 
     /**
-     * Output file path
+     * Output file path.
      *
      * @var string
      */
     protected $fileLocation;
 
     /**
-     * Base path to sitemap files, including base filename
+     * Base path to sitemap files, including base filename.
      *
      * @var string
      */
     protected $fileStart;
 
     /**
-     * Filename of sitemap index
+     * Filename of sitemap index.
      *
      * @var string
      */
     protected $indexFile = false;
 
     /**
-     * Warnings thrown during sitemap generation
+     * Warnings thrown during sitemap generation.
      *
      * @var array
      */
     protected $warnings = [];
 
     /**
-     * Verbose callback
+     * Verbose callback.
      *
      * @var callable
      */
     protected $verbose = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string        $baseUrl       VuFind base URL
      * @param Config        $config        Sitemap configuration settings
@@ -139,7 +139,7 @@ class Generator
     }
 
     /**
-     * Get/set verbose callback
+     * Get/set verbose callback.
      *
      * @param callable|null $newMode Callback for writing verbose messages (or null
      * to disable them)
@@ -155,7 +155,7 @@ class Generator
     }
 
     /**
-     * Write a verbose message (if configured to do so)
+     * Write a verbose message (if configured to do so).
      *
      * @param string $msg Message to display
      *
@@ -169,7 +169,7 @@ class Generator
     }
 
     /**
-     * Get/set base url
+     * Get/set base url.
      *
      * @param string $newUrl New base url
      *
@@ -184,7 +184,7 @@ class Generator
     }
 
     /**
-     * Get/set base sitemap url
+     * Get/set base sitemap url.
      *
      * @param string $newUrl New base sitemap url
      *
@@ -199,7 +199,7 @@ class Generator
     }
 
     /**
-     * Get/set output file path
+     * Get/set output file path.
      *
      * @param string $newLocation New path
      *
@@ -244,7 +244,7 @@ class Generator
     }
 
     /**
-     * Generate sitemaps from all mandatory and configured plugins
+     * Generate sitemaps from all mandatory and configured plugins.
      *
      * @return array
      */
@@ -411,7 +411,7 @@ class Generator
     }
 
     /**
-     * Get the base URL for sitemap index files
+     * Get the base URL for sitemap index files.
      *
      * @return string
      */
@@ -422,7 +422,7 @@ class Generator
     }
 
     /**
-     * Create and setup a plugin
+     * Create and setup a plugin.
      *
      * @param string $pluginName Plugin name
      *
@@ -445,7 +445,7 @@ class Generator
     }
 
     /**
-     * Get languages for a sitemap
+     * Get languages for a sitemap.
      *
      * Returns an array with sitemap languages as keys and VuFind languages as
      * values.

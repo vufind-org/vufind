@@ -49,42 +49,42 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Base url for searches
+     * Base url for searches.
      *
      * @var string
      */
     protected $base;
 
     /**
-     * The HTTP_Request object used for REST transactions
+     * The HTTP_Request object used for REST transactions.
      *
      * @var Client
      */
     protected $client;
 
     /**
-     * EBSCO EIT Profile used for authentication
+     * EBSCO EIT Profile used for authentication.
      *
      * @var string
      */
     protected $prof;
 
     /**
-     * Password associated with the EBSCO EIT Profile
+     * Password associated with the EBSCO EIT Profile.
      *
      * @var string
      */
     protected $pwd;
 
     /**
-     * Array of 3-character EBSCO database abbreviations to include in search
+     * Array of 3-character EBSCO database abbreviations to include in search.
      *
      * @var array
      */
     protected $dbs = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $base   Base URL
      * @param Client $client HTTP client
@@ -146,7 +146,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Make an API call
+     * Make an API call.
      *
      * @param string $method GET or POST
      * @param ?array $params Parameters to send

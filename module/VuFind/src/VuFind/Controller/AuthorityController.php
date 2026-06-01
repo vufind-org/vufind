@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authority Controller
+ * Authority Controller.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Authority Controller
+ * Authority Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -43,7 +43,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class AuthorityController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -54,7 +54,7 @@ class AuthorityController extends AbstractSearch
     }
 
     /**
-     * Home action
+     * Home action.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -74,7 +74,7 @@ class AuthorityController extends AbstractSearch
     }
 
     /**
-     * Search action -- call standard results action
+     * Search action -- call standard results action.
      *
      * @return mixed
      */

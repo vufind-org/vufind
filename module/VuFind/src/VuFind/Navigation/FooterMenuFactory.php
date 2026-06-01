@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FooterMenu section plugin factory
+ * FooterMenu section plugin factory.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * FooterMenu section plugin factory
+ * FooterMenu section plugin factory.
  *
  * @category VuFind
  * @package  Navigation
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
 class FooterMenuFactory extends AbstractMenuFactory
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

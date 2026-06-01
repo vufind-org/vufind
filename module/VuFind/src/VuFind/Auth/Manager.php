@@ -63,56 +63,63 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Authentication modules
+     * Default life time for recovery hashes (one hour).
+     *
+     * @var int
+     */
+    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
+
+    /**
+     * Authentication modules.
      *
      * @var AuthInterface[]
      */
     protected array $auth = [];
 
     /**
-     * Currently selected authentication module
+     * Currently selected authentication module.
      *
      * @var string
      */
     protected string $activeAuth;
 
     /**
-     * List of values allowed to be set into $activeAuth
+     * List of values allowed to be set into $activeAuth.
      *
      * @var array
      */
-    protected array $legalAuthOptions;
+    protected array $legalAuthOptions = [];
 
     /**
-     * Cache for current logged in user object
+     * Cache for current logged in user object.
      *
      * @var ?UserEntityInterface
      */
     protected ?UserEntityInterface $currentUser = null;
 
     /**
-     * Cache for hideLogin setting
+     * Cache for hideLogin setting.
      *
      * @var ?bool
      */
     protected ?bool $hideLogin = null;
 
     /**
-     * ILS Authenticator
+     * ILS Authenticator.
      *
      * @var ?ILSAuthenticator
      */
     protected ?ILSAuthenticator $ilsAuthenticator = null;
 
     /**
-     * Default session initiator target
+     * Default session initiator target.
      *
      * @var ?string
      */
     protected ?string $defaultSessionInitiatorTarget = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config                          $config            VuFind configuration
      * @param UserServiceInterface            $userService       User database service
@@ -141,13 +148,13 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     ) {
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
-        $method = $config->Authentication->method ?? 'Database';
-        $this->legalAuthOptions = [$method];   // mark it as legal
-        $this->setAuthMethod($method);         // load it
+        $method = $this->getPreAuthenticationData()['authMethod'] ?? $config->Authentication->method ?? 'Database';
+        // Set the active authentication method and force it legal:
+        $this->setAuthMethod($method, true);
     }
 
     /**
-     * Set ILS Authenticator
+     * Set ILS Authenticator.
      *
      * @param ILSAuthenticator $ilsAuthenticator ILS authenticator
      *
@@ -183,7 +190,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Helper
+     * Helper.
      *
      * @param string $method auth method to instantiate
      *
@@ -312,7 +319,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Get persistent login lifetime in days
+     * Get persistent login lifetime in days.
      *
      * @return int
      */
@@ -322,7 +329,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Username policy for a new account (e.g. minLength, maxLength)
+     * Username policy for a new account (e.g. minLength, maxLength).
      *
      * @param ?string $authMethod optional; check this auth method rather than
      * the one in config file
@@ -337,7 +344,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $authMethod optional; check this auth method rather than the one in config file
      * @param ?string $target     Authentication target for methods that support target selection
@@ -589,6 +596,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
 
         // Reset authentication state
         $this->getAuth()->clearLoginState();
+        $this->userSession->setPreAuthenticationData(null);
 
         // Clear out the cached user object and session entry.
         $this->currentUser = null;
@@ -666,7 +674,25 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Retrieve CSRF token
+     * Get pre-authentication data.
+     *
+     * @return ?array Data array, or null if pre-authentication has not been performed
+     */
+    public function getPreAuthenticationData(): ?array
+    {
+        if ($data = $this->userSession->getPreAuthenticationData()) {
+            // Check that the data has not expired:
+            $hashLifetime = $this->getRecoveryHashLifeTime();
+            if (time() - $data['timestamp'] > $hashLifetime) {
+                $data = null;
+                $this->userSession->setPreAuthenticationData(null);
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Retrieve CSRF token.
      *
      * If no CSRF token currently exists, or should be regenerated, generates one.
      *
@@ -684,7 +710,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Get the logged-in user's identity (null if not logged in)
+     * Get the logged-in user's identity (null if not logged in).
      *
      * @return ?IdentityInterface
      */
@@ -864,12 +890,18 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      * @throws AuthException
      * @throws \VuFind\Exception\PasswordSecurity
      * @throws \VuFind\Exception\AuthInProgress
-     * @return UserEntityInterface Object representing logged-in user.
+     * @return ?UserEntityInterface Object representing logged-in user, or null if user has only been pre-authenticated.
      */
-    public function login(Request $request): UserEntityInterface
+    public function login(Request $request): ?UserEntityInterface
     {
         // Wrap everything in try-catch so that we can reset the state on failure:
         try {
+            if ($request->getPost()->get('processCancel')) {
+                $this->getAuth()->clearLoginState();
+                $this->userSession->setPreAuthenticationData(null);
+                return null;
+            }
+
             // Allow the auth module to inspect the request (used by ChoiceAuth,
             // for example):
             $this->getAuth()->preLoginCheck($request);
@@ -890,6 +922,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             ) {
                 if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                     $this->getAuth()->clearLoginState();
+                    $this->userSession->setPreAuthenticationData(null);
                     $this->logWarning('Invalid CSRF token passed to login');
                     throw new AuthException('authentication_error_technical');
                 } else {
@@ -899,8 +932,33 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             }
 
             // Perform authentication:
+            $user = null;
             try {
+                // Continue to full authentication only if we don't get a pre-authenticated user for multi-factor
+                // authentication:
+                $this->getAuth()->setPreAuthenticationData($this->getPreAuthenticationData());
+                if ($preAuthData = $this->getAuth()->preAuthenticate($request)) {
+                    // Store pre-authentication data without actually logging the user in:
+                    $preAuthData['authMethod'] = $mainAuthMethod;
+                    $preAuthData['timestamp'] = time();
+                    $this->auditEventService->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::Login,
+                        null,
+                        data: [
+                            'main_method' => $mainAuthMethod,
+                            'delegate_method' => $delegate,
+                            'request' => $request->getPost()->toArray(),
+                            'pre_auth_data' => $preAuthData,
+                        ]
+                    );
+                    $this->userSession->setPreAuthenticationData($preAuthData);
+                    return null;
+                }
+                // Pre-authentication completed or bypassed, try to authenticate the user:
                 $user = $this->getAuth()->authenticate($request);
+                // Clear pre-authentication data after successful authentication:
+                $this->userSession->setPreAuthenticationData(null);
             } catch (AuthException $e) {
                 $this->auditEventService->addEvent(
                     AuditEventType::User,
@@ -1000,12 +1058,15 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             return $user;
         } catch (\Exception $e) {
             $this->getAuth()->clearLoginState();
+            if ($e->getMessage() !== 'authentication_error_invalid') {
+                $this->userSession->setPreAuthenticationData(null);
+            }
             throw $e;
         }
     }
 
     /**
-     * Delete a login token
+     * Delete a login token.
      *
      * @param string $series Series to identify the token
      *
@@ -1017,7 +1078,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Delete all login tokens for a user
+     * Delete all login tokens for a user.
      *
      * @param int $userId User identifier
      *
@@ -1029,7 +1090,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Setter
+     * Setter.
      *
      * @param string $method     The auth class to proxy
      * @param bool   $forceLegal Whether to force the new method legal
@@ -1081,7 +1142,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *
@@ -1122,7 +1183,17 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Update common user attributes on login
+     * Get recovery hash life time in seconds.
+     *
+     * @return int
+     */
+    public function getRecoveryHashLifeTime(): int
+    {
+        return $this->config['Authentication']['recover_hash_lifetime'] ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+    }
+
+    /**
+     * Update common user attributes on login.
      *
      * @param UserEntityInterface $user       User object
      * @param ?string             $authMethod Authentication method to user
@@ -1158,7 +1229,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     }
 
     /**
-     * Process a raw policy configuration
+     * Process a raw policy configuration.
      *
      * @param array $policy Policy configuration
      *

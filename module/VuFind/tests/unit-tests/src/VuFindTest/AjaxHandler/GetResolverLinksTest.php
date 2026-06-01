@@ -55,7 +55,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    protected function setupConfig($config = [])
+    protected function setupConfig($config = []): void
     {
         $this->container->set(
             \VuFind\Config\ConfigManagerInterface::class,
@@ -68,7 +68,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testResponse()
+    public function testResponse(): void
     {
         // Set up session settings:
         $ss = $this->container->createMock(Settings::class, ['disableWrite']);
@@ -95,9 +95,9 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $mockPlugin->expects($this->once())
             ->method('supportsMoreOptionsLink')
             ->willReturn(false);
-        $rm = $this->container->createMock(PluginManager::class, ['get']);
-        $rm->expects($this->once())->method('get')->with('generic')
-            ->willReturn($mockPlugin);
+        $rm = $this->container->createMock(PluginManager::class);
+        $rm->expects($this->once())->method('has')->with('generic')->willReturn(true);
+        $rm->expects($this->once())->method('get')->with('generic')->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
         // Set up view helper and renderer:

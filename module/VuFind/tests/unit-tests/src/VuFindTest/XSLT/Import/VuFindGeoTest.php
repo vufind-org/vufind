@@ -73,7 +73,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
             protected $messages = [];
 
             /**
-             * Capture a log message
+             * Capture a log message.
              *
              * @param string $msg Log message
              *
@@ -85,7 +85,7 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
             }
 
             /**
-             * Get the top message from the message stack
+             * Get the top message from the message stack.
              *
              * @return string
              */

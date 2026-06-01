@@ -46,14 +46,14 @@ use VuFindSearch\Query\Query;
 class CursorMarkIdFetcher extends AbstractIdFetcher
 {
     /**
-     * Previous cursor mark
+     * Previous cursor mark.
      *
      * @var string
      */
     protected $prevCursorMark = '';
 
     /**
-     * Default parameters to send to Solr with each request
+     * Default parameters to send to Solr with each request.
      *
      * @var array
      */
@@ -67,7 +67,7 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
     ];
 
     /**
-     * Get the initial offset to seed the search process
+     * Get the initial offset to seed the search process.
      *
      * @return string
      */

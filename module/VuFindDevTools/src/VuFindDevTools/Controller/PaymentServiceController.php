@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Payment Service Simulator Controller
+ * Payment Service Simulator Controller.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Cache\CacheTrait;
 use VuFind\Controller\AjaxResponseTrait;
 
 /**
- * Payment Service Simulator Controller
+ * Payment Service Simulator Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -49,7 +49,7 @@ class PaymentServiceController extends \VuFind\Controller\AbstractBase
     use CacheTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -64,7 +64,7 @@ class PaymentServiceController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Initialize a payment request
+     * Initialize a payment request.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -103,7 +103,7 @@ class PaymentServiceController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Handle a payment request (UI)
+     * Handle a payment request (UI).
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -138,7 +138,7 @@ class PaymentServiceController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Get payment status
+     * Get payment status.
      *
      * @return \Laminas\View\Model\ViewModel
      */
@@ -176,7 +176,7 @@ class PaymentServiceController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Add signature to a URL
+     * Add signature to a URL.
      *
      * @param string $url URL
      *
@@ -192,7 +192,7 @@ class PaymentServiceController extends \VuFind\Controller\AbstractBase
     }
 
     /**
-     * Call client's notify handler
+     * Call client's notify handler.
      *
      * @param string $notifyUrl URL to call
      *

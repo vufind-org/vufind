@@ -44,7 +44,7 @@ use VuFind\AjaxHandler\SystemStatus;
 class SystemStatusTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the AJAX handler's "health check file" response
+     * Test the AJAX handler's "health check file" response.
      *
      * @return void
      */
@@ -60,7 +60,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the AJAX handler's Solr failure response
+     * Test the AJAX handler's Solr failure response.
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the AJAX handler's database failure response
+     * Test the AJAX handler's database failure response.
      *
      * @return void
      */
@@ -111,7 +111,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the AJAX handler's successful response
+     * Test the AJAX handler's successful response.
      *
      * @return void
      */
@@ -134,7 +134,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock Params class for request params
+     * Get mock Params class for request params.
      *
      * @param array $requestParams Parameters to return
      *

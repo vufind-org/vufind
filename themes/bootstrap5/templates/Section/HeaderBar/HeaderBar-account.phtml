@@ -6,7 +6,7 @@
       <span class="icon-link__label"><?=$this->transEsc('Your Account')?></span>
     </a>
     <?php if ($account->dropdownEnabled()): ?>
-      <a class="nav-link account-dropdown-toggle" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
+      <a class="nav-link account-dropdown-toggle" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-open') ?></a>
       <div class="dropdown-menu">
         <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => '', 'idPrefix' => 'header_'])?>
       </div>

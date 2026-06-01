@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Cache Key Generator Trait
+ * VuFind Cache Key Generator Trait.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use function get_class;
 
 /**
- * VuFind Cache Key Generator Trait
+ * VuFind Cache Key Generator Trait.
  *
  * Provides functions for generating uniform cache keys.
  *

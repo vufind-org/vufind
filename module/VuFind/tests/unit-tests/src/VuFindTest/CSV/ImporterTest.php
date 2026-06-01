@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CSV Importer Test Class
+ * CSV Importer Test Class.
  *
  * PHP version 8
  *
@@ -30,13 +30,12 @@
 namespace VuFindTest\CSV;
 
 use VuFind\CSV\Importer;
-use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
 
 use function array_slice;
 
 /**
- * CSV Importer Test Class
+ * CSV Importer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -149,7 +148,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test skipping the header row in the CSV
+     * Test skipping the header row in the CSV.
      *
      * @return void
      */
@@ -178,7 +177,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test importing a CSV with extra callbacks using advanced features
+     * Test importing a CSV with extra callbacks using advanced features.
      *
      * @return void
      */
@@ -288,7 +287,8 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             'Solr',
             $this->callback(
                 function ($doc) {
-                    return $doc instanceof RawJSONDocument;
+                    $this->assertInstanceOf(\VuFindSearch\Backend\Solr\Document\RawJSONDocument::class, $doc);
+                    return true;
                 }
             ),
             'update'

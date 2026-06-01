@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Controller for developer settings i.e API keys
+ * Controller for developer settings i.e API keys.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\Exception\Forbidden;
 
 /**
- * Controller for developer settings i.e API keys
+ * Controller for developer settings i.e API keys.
  *
  * @category VuFind
  * @package  Controller
@@ -44,7 +44,7 @@ use VuFind\Exception\Forbidden;
 class DeveloperSettingsController extends AbstractBase
 {
     /**
-     * Display developer settings
+     * Display developer settings.
      *
      * @return mixed
      */

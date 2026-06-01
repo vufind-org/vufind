@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Reserves aspect of the Search Multi-class (Options)
+ * Solr Reserves aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Search\SolrReserves;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Solr Reserves Search Options
+ * Solr Reserves Search Options.
  *
  * @category VuFind
  * @package  Search_SolrReserves
@@ -45,7 +45,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

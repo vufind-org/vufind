@@ -5,7 +5,8 @@
 # The format of this configuration is as follows:
 #
 # Array keys for every menu item could be:
-#   - name: name of an item
+#   - name: name of an item, used to add an 'active' CSS class on the menu item's
+#     <a> tag when the name matches the page template name
 #   - label: the text shown as link, will be translated - required
 #   - route: route name used to generate link target - required
 #   - icon: icon used for the item, has to be defined in theme config

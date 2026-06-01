@@ -46,7 +46,7 @@ use VuFind\Tags\TagsService;
 class GetRecordTags extends AbstractBase
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TagsService          $tagsService Tags service
      * @param ?UserEntityInterface $user        Logged in user (or null)

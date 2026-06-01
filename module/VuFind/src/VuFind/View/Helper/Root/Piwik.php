@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Piwik view helper
+ * Piwik view helper.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use function is_array;
 use function strlen;
 
 /**
- * Piwik Web Analytics view helper
+ * Piwik Web Analytics view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,49 +44,49 @@ use function strlen;
 class Piwik extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Piwik URL (false if disabled)
+     * Piwik URL (false if disabled).
      *
      * @var string|bool
      */
     protected $url;
 
     /**
-     * Piwik Site ID
+     * Piwik Site ID.
      *
      * @var int
      */
     protected $siteId;
 
     /**
-     * Search prefix (see config.ini for details)
+     * Search prefix (see config.ini for details).
      *
      * @var string
      */
     protected $searchPrefix;
 
     /**
-     * Whether to disable cookies (see config.ini for details)
+     * Whether to disable cookies (see config.ini for details).
      *
      * @var bool
      */
     protected $disableCookies;
 
     /**
-     * Whether to track use custom variables to track additional information
+     * Whether to track use custom variables to track additional information.
      *
      * @var bool
      */
     protected $customVars;
 
     /**
-     * Request object
+     * Request object.
      *
      * @var \Laminas\Http\PhpEnvironment\Request
      */
     protected $request;
 
     /**
-     * Router object
+     * Router object.
      *
      * @var \Laminas\Router\Http\RouteMatch
      */
@@ -100,7 +100,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     protected $lightbox;
 
     /**
-     * Additional parameters
+     * Additional parameters.
      *
      * @var array
      */
@@ -115,7 +115,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     protected $timestamp;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|bool                         $url        Piwik address
      * (false if disabled)
@@ -178,7 +178,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Search
+     * Track a Search.
      *
      * @param VuFind\Search\Base\Results $results Search Results
      *
@@ -199,7 +199,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Combined Search
+     * Track a Combined Search.
      *
      * @param VuFind\Search\Base\Results $results         Search Results
      * @param array                      $combinedResults Combined Search Results
@@ -221,7 +221,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Record View
+     * Track a Record View.
      *
      * @param VuFind\RecordDriver\AbstractBase $recordDriver Record Driver
      *
@@ -242,7 +242,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Track a Generic Page View
+     * Track a Generic Page View.
      *
      * @return string Tracking Code
      */
@@ -261,7 +261,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Search Results if on a Results Page
+     * Get Search Results if on a Results Page.
      *
      * @return VuFind\Search\Base\Results|null Search results or null if not
      * on a search page
@@ -287,7 +287,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Combined Search Results if on a Results Page
+     * Get Combined Search Results if on a Results Page.
      *
      * @return array|null Array of search results or null if not on a combined search
      * page
@@ -310,7 +310,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Record Driver if on a Record Page
+     * Get Record Driver if on a Record Page.
      *
      * @return VuFind\RecordDriver\AbstractBase|null Record driver or null if not
      * on a record page
@@ -338,7 +338,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Custom Variables for Search Results
+     * Get Custom Variables for Search Results.
      *
      * @param VuFind\Search\Base\Results $results Search results
      *
@@ -375,7 +375,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Custom Variables for a Record Page
+     * Get Custom Variables for a Record Page.
      *
      * @param VuFind\RecordDriver\AbstractBase $recordDriver Record driver
      *
@@ -410,7 +410,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Custom Variables for lightbox actions
+     * Get Custom Variables for lightbox actions.
      *
      * @return array Associative array of custom variables
      */
@@ -420,7 +420,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Custom Variables for a Generic Page View
+     * Get Custom Variables for a Generic Page View.
      *
      * @return array Associative array of custom variables
      */
@@ -430,7 +430,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the Initialization Part of the Tracking Code
+     * Get the Initialization Part of the Tracking Code.
      *
      * @return string JavaScript Code Fragment
      */
@@ -458,7 +458,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the custom URL of the Tracking Code
+     * Get the custom URL of the Tracking Code.
      *
      * @return string URL
      */
@@ -481,7 +481,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the Finalization Part of the Tracking Code
+     * Get the Finalization Part of the Tracking Code.
      *
      * @return string JavaScript Code Fragment
      */
@@ -506,7 +506,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Convert a Custom Variables Array to JavaScript Code
+     * Convert a Custom Variables Array to JavaScript Code.
      *
      * @param array $customVars Custom Variables
      *
@@ -536,7 +536,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Site Search Tracking Code
+     * Get Site Search Tracking Code.
      *
      * @param VuFind\Search\Base\Results $results Search results
      *
@@ -561,7 +561,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Site Search Tracking Code for Combined Search
+     * Get Site Search Tracking Code for Combined Search.
      *
      * @param VuFind\Search\Base\Results $results         Search results
      * @param array                      $combinedResults Combined Search Results
@@ -596,7 +596,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get Page View Tracking Code
+     * Get Page View Tracking Code.
      *
      * @return string JavaScript Code Fragment
      */

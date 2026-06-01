@@ -118,6 +118,6 @@ class UpdateDocument implements DocumentInterface
         SerializableRecordInterface $record,
         array $indexAttr = []
     ): void {
-        $this->records->attach($record, $indexAttr);
+        $this->records->offsetSet($record, $indexAttr);
     }
 }

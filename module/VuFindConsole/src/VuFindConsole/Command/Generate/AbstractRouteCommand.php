@@ -44,14 +44,14 @@ use VuFindConsole\Generator\GeneratorTools;
 abstract class AbstractRouteCommand extends AbstractCommand
 {
     /**
-     * Route generator
+     * Route generator.
      *
      * @var RouteGenerator
      */
     protected $routeGenerator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param GeneratorTools $tools    Generator tools
      * @param RouteGenerator $routeGen Route generator

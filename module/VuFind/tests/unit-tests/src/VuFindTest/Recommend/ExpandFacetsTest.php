@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExpandFacets recommendation module Test Class
+ * ExpandFacets recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Recommend\ExpandFacets;
 
 /**
- * ExpandFacets recommendation module Test Class
+ * ExpandFacets recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Test getEmptyResults()
+     * Test getEmptyResults().
      *
      * @return void
      */
@@ -88,7 +88,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param ?\VuFind\Config\ConfigManagerInterface $configManager config manager
      * @param ?\VuFind\Search\Solr\Results           $results       populated results object

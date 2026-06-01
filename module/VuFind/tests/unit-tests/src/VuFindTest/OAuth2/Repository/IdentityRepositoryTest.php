@@ -52,7 +52,7 @@ use VuFind\OAuth2\Repository\IdentityRepository;
 class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * OAuth2 configuration
+     * OAuth2 configuration.
      *
      * @var array
      */
@@ -81,14 +81,14 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     ];
 
     /**
-     * User's birth date
+     * User's birth date.
      *
      * @var string
      */
     protected $userBirthDate;
 
     /**
-     * Setup tests
+     * Setup tests.
      *
      * @return void
      */
@@ -99,7 +99,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Data provider for testIdentityRepository
+     * Data provider for testIdentityRepository.
      *
      * @return \Iterator
      */
@@ -111,7 +111,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test identity repository
+     * Test identity repository.
      *
      * @param ?bool $blocks Blocks status
      *
@@ -158,7 +158,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Get a mock ILSAuthenticator
+     * Get a mock ILSAuthenticator.
      *
      * @return ILSAuthenticator
      * @throws InvalidArgumentException
@@ -177,7 +177,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test identity repository with a failing ILS connection
+     * Test identity repository with a failing ILS connection.
      *
      * @return void
      */
@@ -187,7 +187,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $nonce = bin2hex(random_bytes(5));
         $accessTokenService->storeNonce(2, $nonce);
         $repo = new IdentityRepository(
-            $this->getMockUserService(),
+            $this->getMockUserService(1),
             $accessTokenService,
             $this->getMockFailingIlsConnection(),
             $this->oauth2Config,
@@ -215,7 +215,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
      * @return MockObject&UserEntityInterface
      */
@@ -235,13 +235,15 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Create a mock user service that returns a fake user object.
      *
+     * @param int $getCalls Number of expected calls to getUserByField.
+     *
      * @return MockObject&\VuFind\Db\Service\UserServiceInterface
      */
-    protected function getMockUserService(): MockObject&UserServiceInterface
+    protected function getMockUserService(int $getCalls = 2): MockObject&UserServiceInterface
     {
         $user = $this->getMockUser();
         $userService = $this->createMock(UserServiceInterface::class);
-        $userService->method('getUserByField')
+        $userService->expects($this->exactly($getCalls))->method('getUserByField')
             ->willReturnMap(
                 [
                     ['id', 1, null],
@@ -356,7 +358,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Create a hash from a user name
+     * Create a hash from a user name.
      *
      * @param string $username User name
      *

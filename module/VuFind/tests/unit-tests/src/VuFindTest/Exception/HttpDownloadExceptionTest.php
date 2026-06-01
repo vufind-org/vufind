@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HttpDownloadException Test Class
+ * HttpDownloadException Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Exception;
 use VuFind\Exception\HttpDownloadException;
 
 /**
- * HttpDownloadException Test Class
+ * HttpDownloadException Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Exception\HttpDownloadException;
 class HttpDownloadExceptionTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test the exception
+     * Test the exception.
      *
      * @return void
      */

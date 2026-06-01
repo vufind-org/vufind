@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Deprecated legacy factory for instantiating Mailer objects
+ * Deprecated legacy factory for instantiating Mailer objects.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\Mailer;
 
 /**
- * Deprecated legacy factory for instantiating Mailer objects
+ * Deprecated legacy factory for instantiating Mailer objects.
  *
  * @category VuFind
  * @package  Mailer

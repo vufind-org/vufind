@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\RecordDriver\SolrMarcRemote;
 use VuFindHttp\HttpServiceInterface;
 
 /**
- * SolrMarcRemote Record Driver Test Class
+ * SolrMarcRemote Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -99,7 +99,7 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock HttpService for testing
+     * Get a mock HttpService for testing.
      *
      * @return HttpServiceInterface
      */

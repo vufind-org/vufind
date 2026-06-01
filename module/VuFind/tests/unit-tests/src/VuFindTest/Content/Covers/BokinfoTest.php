@@ -71,7 +71,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock response object
+     * Get mock response object.
      *
      * @return Response
      */
@@ -129,7 +129,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @return void
      */
@@ -148,7 +148,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */
@@ -159,7 +159,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing API key
+     * Test missing API key.
      *
      * @return void
      */

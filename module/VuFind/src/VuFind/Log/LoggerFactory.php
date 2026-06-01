@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for instantiating Logger
+ * Factory for instantiating Logger.
  *
  * PHP version 8
  *
@@ -66,7 +66,7 @@ use function substr;
 use function trim;
 
 /**
- * Factory for instantiating Logger
+ * Factory for instantiating Logger.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -340,7 +340,7 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
-     * Applies an array of filters to a writer
+     * Applies an array of filters to a writer.
      *
      * Filter keys: alert, error, notice, debug
      *
@@ -440,7 +440,7 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
-     * Get proxy class to instantiate from the requested class name
+     * Get proxy class to instantiate from the requested class name.
      *
      * @param string $requestedName Service being created
      *
@@ -457,7 +457,7 @@ class LoggerFactory implements FactoryInterface
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

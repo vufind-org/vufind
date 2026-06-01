@@ -97,7 +97,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make sure the record page works, channels exists, search
+     * Make sure the record page works, channels exists, search.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make sure the search page works, channels exists, search
+     * Make sure the search page works, channels exists, search.
      *
      * @return void
      */
@@ -142,7 +142,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Add channels button
+     * Add channels button.
      *
      * @return void
      */
@@ -170,7 +170,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Switch to search
+     * Switch to search.
      *
      * @return void
      */
@@ -199,7 +199,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testPopovers
+     * Data provider for testPopovers.
      *
      * @return \Iterator
      */
@@ -248,7 +248,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test popover behavior by clicking back and forth between two records
+     * Test popover behavior by clicking back and forth between two records.
      *
      * @param string $query               Search query
      * @param string $record1             ID of first record
@@ -303,7 +303,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test ILS-powered channels
+     * Test ILS-powered channels.
      *
      * @param string $channel       Name of channel to test
      * @param string $expectedTitle Expected channel title
@@ -343,7 +343,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test Solr-powered new items channel
+     * Test Solr-powered new items channel.
      *
      * @return void
      */
@@ -371,7 +371,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test Random channel
+     * Test Random channel.
      *
      * @return void
      */
@@ -401,7 +401,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test deep pagination of Facets channel
+     * Test deep pagination of Facets channel.
      *
      * @return void
      */
@@ -450,5 +450,27 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $allIds = array_unique(array_map(fn ($item) => $item->getAttribute('data-record-id'), $allItems));
         $this->assertCount(54, $allItems);
         $this->assertCount(54, $allIds);
+    }
+
+    /**
+     * Test loading channels in the Similar Items tab.
+     *
+     * @return void
+     */
+    public function testSimilarItemsTab(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Record/geo20001');
+        $page = $session->getPage();
+        // No channel entries before opening tab:
+        $this->assertCount(0, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        // Switch to tab:
+        $this->clickCss($page, '.record-tab.channels a');
+        $this->waitForPageLoad($page);
+        // There should be one row of results:
+        $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        // Add more results and confirm they loaded:
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
     }
 }

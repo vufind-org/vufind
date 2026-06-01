@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: web crawler
+ * Console command: web crawler.
  *
  * PHP version 8
  *
@@ -44,7 +44,7 @@ use function ord;
 use function strlen;
 
 /**
- * Console command: web crawler
+ * Console command: web crawler.
  *
  * @category VuFind
  * @package  Console
@@ -66,7 +66,7 @@ class WebCrawlCommand extends Command
     protected bool $bypassCacheExpiration = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Importer    $importer XSLT importer
      * @param Writer      $solr     Solr writer
@@ -364,7 +364,7 @@ class WebCrawlCommand extends Command
                     }
                 } catch (\Exception $e) {
                     if ($verbose) {
-                        $output->writeln($e::class . ': ' . $e->getMessage());
+                        $output->writeln((string)$e);
                     }
                     $retVal = false;
                 }

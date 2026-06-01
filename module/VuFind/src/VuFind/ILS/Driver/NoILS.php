@@ -50,14 +50,14 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Record loader
+     * Record loader.
      *
      * @var \VuFind\Record\Loader
      */
     protected $recordLoader;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Record\Loader $loader Record loader
      */
@@ -125,7 +125,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -162,7 +162,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -186,7 +186,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -266,7 +266,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Has Holdings
+     * Has Holdings.
      *
      * This is responsible for determining if holdings exist for a particular
      * bibliographic id
@@ -289,7 +289,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -304,7 +304,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get New Items
+     * Get New Items.
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
@@ -321,6 +321,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @return array       Associative array with 'count' and 'results' keys
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @deprecated
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -328,7 +329,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Offline Mode
+     * Get Offline Mode.
      *
      * This is responsible for returning the offline mode
      *
@@ -341,7 +342,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Hidden Login Mode
+     * Get Hidden Login Mode.
      *
      * This is responsible for indicating whether login should be hidden.
      *
@@ -353,7 +354,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -361,7 +362,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @param string $password Patron password
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -373,12 +374,14 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Funds
+     * Get Funds.
      *
      * Return a list of funds which may be used to limit the getNewItems list.
      *
      * @throws ILSException
      * @return array An associative array with key = fund ID, value = fund name.
+     *
+     * @deprecated
      */
     public function getFunds()
     {
@@ -387,7 +390,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -401,7 +404,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -415,7 +418,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -429,7 +432,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *

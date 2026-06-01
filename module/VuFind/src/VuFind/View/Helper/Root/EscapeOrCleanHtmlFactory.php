@@ -48,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class EscapeOrCleanHtmlFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FacetCloud recommendation module Test Class
+ * FacetCloud recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\FacetCloud;
 
 /**
- * FacetCloud recommendation module Test Class
+ * FacetCloud recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Test getEmptyResults()
+     * Test getEmptyResults().
      *
      * @return void
      */
@@ -59,7 +59,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fully configured module
+     * Get a fully configured module.
      *
      * @param ?\VuFind\Search\Solr\Results $results populated results object
      *

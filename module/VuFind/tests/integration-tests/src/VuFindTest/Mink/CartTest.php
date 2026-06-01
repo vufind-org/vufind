@@ -796,7 +796,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Assert visibility
+     * Assert visibility.
      *
      * @param array  $combo    Current Site configuration
      * @param bool[] $elements Array of element visibility states indexed by name
@@ -814,7 +814,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Run tests on a specified configuration
+     * Run tests on a specified configuration.
      *
      * @param Element $page  Page element
      * @param array   $combo Site configuration to test
@@ -858,7 +858,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test toolbar visibility configuration combinations
+     * Test toolbar visibility configuration combinations.
      *
      * @return void
      */

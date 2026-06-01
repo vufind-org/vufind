@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait providing email settings
+ * Trait providing email settings.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Config\Feature;
 use VuFind\Config\Config;
 
 /**
- * Trait providing email settings
+ * Trait providing email settings.
  *
  * N.B. User-oriented email settings are handled by \VuFind\Config\AccountCapabilities.
  *
@@ -45,7 +45,7 @@ use VuFind\Config\Config;
 trait EmailSettingsTrait
 {
     /**
-     * Get sender email address
+     * Get sender email address.
      *
      * @param array|Config $config    VuFind configuration
      * @param ?string      $userEmail User's own email address that is used if permitted by settings

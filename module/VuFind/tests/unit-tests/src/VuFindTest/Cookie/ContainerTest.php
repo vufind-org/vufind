@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cookie Container Test Class
+ * Cookie Container Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Cookie;
 use VuFind\Cookie\Container;
 
 /**
- * Cookie Container Test Class
+ * Cookie Container Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Cookie\Container;
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Cookie container
+     * Cookie container.
      *
      * @var Container
      */
@@ -72,7 +72,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getters and setters
+     * Test getters and setters.
      *
      * @return void
      */
@@ -94,7 +94,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test isset/unset
+     * Test isset/unset.
      *
      * @return void
      */

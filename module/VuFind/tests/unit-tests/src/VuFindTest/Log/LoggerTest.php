@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Logger Test Class
+ * Logger Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function count;
 use function is_array;
 
 /**
- * Logger Test Class
+ * Logger Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use function is_array;
 class LoggerTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test logException()
+     * Test logException().
      *
      * @return void
      */

@@ -22,11 +22,7 @@
   .media-left { padding-left: 0; }
   .media-right { padding-right: 0; }
   .record-cover img { border: 1px solid $gray-lighter; }
-  .record-number {
-    font-size: $reduced-font-size;
-    font-weight: bold;
-    color: $gray;
-  }
+  .record-number { color: $gray-dark; }
 
   .title { font-size: 1rem; }
   .callnumAndLocation {
@@ -109,7 +105,7 @@
     text-shadow: 0 1px 0 $black;
   }
   @include media-breakpoint-up(sm) {
-    height: 300px;
+    min-height: 300px;
     padding: 7rem calc(50vw - 50%); // Align searchbox with container
   }
 }

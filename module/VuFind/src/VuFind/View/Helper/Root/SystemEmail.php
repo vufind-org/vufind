@@ -41,14 +41,14 @@ namespace VuFind\View\Helper\Root;
 class SystemEmail extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * System email
+     * System email.
      *
      * @var string
      */
     protected $email;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $email System email
      */
