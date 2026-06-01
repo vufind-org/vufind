@@ -32,6 +32,8 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use VuFind\I18n\Locale\LocaleSettings;
+
 /**
  * Functions for locale-specific processing in record drivers.
  *
@@ -53,8 +55,8 @@ trait LocaleSupportTrait
      */
     protected function getLocaleSpecificResults(array $localeResults, array|string $allResults): array|string
     {
-        if (null === $this->localeSettings) {
-            return $allResults;
+        if (!(($this->localeSettings ?? null) instanceof LocaleSettings)) {
+            throw new \Exception('LocaleSettings not available as $this->localeSettings');
         }
         $userLocale = $this->localeSettings->getUserLocale();
         if (null !== ($results = $this->getBestLocaleMatch($userLocale, $localeResults))) {
