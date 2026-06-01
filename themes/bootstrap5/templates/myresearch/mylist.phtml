@@ -22,7 +22,7 @@
   // Convenience variable:
   $account = $this->auth()->getManager();
   $user = $this->auth()->getUserObject();
-  $title = isset($list) ? $this->escapeHtml($list->getTitle()) : $this->translate('saved_items');
+  $title = isset($list) ? $list->getTitle() : $this->translate('saved_items');
 ?>
 
 <?=$this->component('show-account-menu-button')?>
