@@ -29,7 +29,7 @@
 
 namespace VuFind\RecordDriver\Feature;
 
-use FinnaXml\XmlDoc;
+use VuFindXml\XmlDoc;
 
 /**
  * Functions for reading XML records.
@@ -58,7 +58,7 @@ trait XmlTrait
      *
      * @var string
      */
-    protected string $xmlClass = \FinnaXml\XmlDoc::class;
+    protected string $xmlClass = \VuFindXml\XmlDoc::class;
 
     /**
      * XML instance. Access only via getXmlReader() as this is initialized lazily.

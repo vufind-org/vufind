@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SolrQdc Record Driver Test Class
+ * SolrQdc Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RecordDriver\SolrQdc;
 
 /**
- * SolrQdc Record Driver Test Class
+ * SolrQdc Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests

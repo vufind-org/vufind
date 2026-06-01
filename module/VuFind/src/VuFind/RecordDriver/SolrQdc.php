@@ -50,7 +50,7 @@ class SolrQdc extends SolrDefault implements LocaleSettingsAwareInterface
     use XmlTrait;
 
     /**
-     * Dublin Core XML namespace
+     * Dublin Core XML namespace.
      *
      * Note: this is a property instead of a constant to make use of it in strings cleaner.
      *
@@ -59,7 +59,7 @@ class SolrQdc extends SolrDefault implements LocaleSettingsAwareInterface
     protected string $dcNs = 'http://purl.org/dc/elements/1.1/';
 
     /**
-     * Dublin Core Terms vocabulary namespace
+     * Dublin Core Terms vocabulary namespace.
      *
      * Note: this is a property instead of a constant to make use of it in strings cleaner.
      *
