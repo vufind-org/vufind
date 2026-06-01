@@ -22,7 +22,7 @@ adminForm:
         - type: logged_in
           checkedValues: "true"
           comparator: =
-  # Uncomment to override the default languages from config.ini [Languages]
+# Uncomment to override the default languages from config.ini [Languages]
 #  languages:
 #    - "de"
 #    - "en"
