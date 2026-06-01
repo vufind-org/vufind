@@ -272,7 +272,7 @@ class Ini extends AbstractBase
                     throw new ConfigException('Can not write INI configuration with inheritance.');
                 }
                 if ($setting === '@include') {
-                    throw new ConfigException('Can not write INI configuration with @inlcude statement.');
+                    throw new ConfigException('Can not write INI configuration with @include statement.');
                 }
                 if (is_string($value) && str_starts_with($value, 'include::')) {
                     throw new ConfigException('Can not write INI configuration with include:: statement.');
