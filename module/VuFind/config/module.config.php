@@ -378,7 +378,6 @@ $config = [
         ],
         'factories' => [
             \League\CommonMark\MarkdownConverter::class => \VuFind\Service\MarkdownFactory::class,
-            \VuFind\ActionHelper\PluginManager::class => \VuFind\ServiceManager\AbstractPluginManagerFactory::class,
             \VuFind\Date\Converter::class => \VuFind\Service\DateConverterFactory::class,
             \VuFind\I18n\Locale\LocaleSettings::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
