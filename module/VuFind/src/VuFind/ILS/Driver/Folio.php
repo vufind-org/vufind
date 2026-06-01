@@ -34,6 +34,7 @@ use DateTimeZone;
 use Exception;
 use Laminas\Http\Response;
 use VuFind\Config\Feature\SecretTrait;
+use VuFind\Connection\Webhook;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Logic\AvailabilityStatus;
@@ -152,15 +153,24 @@ class Folio extends AbstractAPI implements
     protected array $requestPreferenceCache = [];
 
     /**
+     * Timeout in seconds for webhook calls.
+     *
+     * @var float
+     */
+    protected float $webhookTimeout = 5;
+
+    /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param callable               $sessionFactory Factory function returning
-     * SessionContainer object
+     * @param \VuFind\Date\Converter $dateConverter     Date converter object
+     * @param callable               $sessionFactory    Factory function returning
+     *                                                  SessionContainer object
+     * @param ?Webhook               $webhookConnection Connection for webhooks (optional)
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory,
+        protected ?Webhook $webhookConnection = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -2412,6 +2422,25 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for placeHold(): Notify an external process
+     * that a request was successfully submitted.
+     *
+     * @return void
+     */
+    protected function sendWebhookAfterHoldRequest()
+    {
+        $url = $this->config['Holds']['webhook'] ?? null;
+        if ($url) {
+            if (!$this->webhookConnection) {
+                throw new ILSException('Webhook connection not set.');
+            }
+
+            // Short timeout -- don't impact user.
+            $this->webhookConnection->post($url, $this->webhookTimeout);
+        }
+    }
+
+    /**
      * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
      * @param string  $instanceId  Instance UUID being requested
@@ -2545,6 +2574,7 @@ class Folio extends AbstractAPI implements
             $requestBody['requestType'] = $requestType;
             $result = $this->performHoldRequest($requestBody);
             if ($result['success']) {
+                $this->sendWebhookAfterHoldRequest();
                 break;
             }
         }
