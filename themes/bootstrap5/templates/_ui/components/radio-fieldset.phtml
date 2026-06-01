@@ -12,7 +12,7 @@
     $this->values = array_combine($this->values, $this->values);
   }
   if (!in_array($this->checkedValue, array_keys($this->values))) {
-    $this->checkedValue = $this->values[0] ?? null;
+    $this->checkedValue = array_key_first($this->values);
   }
 ?>
 <fieldset name="<?=$escGroupNameAttr?>_fieldset">
