@@ -3,6 +3,9 @@
 /**
  * Functions for locale-specific processing in record drivers.
  *
+ * Prerequisites:
+ * - LocaleSettings as $this->localeSettings (typically via LocaleSettingsAwareTrait)
+ *
  * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2026.
@@ -84,7 +87,6 @@ trait LocaleSupportTrait
         }
 
         // Check for matching language in locale-specific results:
-        [$language] = explode('-', $locale);
         foreach ($localeResults as $resultLocale => $results) {
             [$resultLanguage] = explode('-', $resultLocale);
             if ($resultLanguage === $language) {
