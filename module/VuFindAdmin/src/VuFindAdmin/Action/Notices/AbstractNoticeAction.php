@@ -138,7 +138,7 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
     }
 
     /**
-     * Determine which configured contexts matches the notice the best.
+     * Determine which configured context matches the notice the best.
      *
      * @param array $notice   Notice data
      * @param array $contexts Contexts
