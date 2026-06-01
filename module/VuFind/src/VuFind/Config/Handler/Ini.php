@@ -262,7 +262,7 @@ class Ini extends AbstractBase
 
         foreach ($config as $section => $sectionConfig) {
             if ($section === '@include') {
-                throw new ConfigException('Can not write INI configuration with @inlcude statement.');
+                throw new ConfigException('Can not write INI configuration with @include statement.');
             }
             if (is_string($sectionConfig) && str_starts_with($sectionConfig, 'include::')) {
                 throw new ConfigException('Can not write INI configuration with include:: statement.');
