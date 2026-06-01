@@ -74,7 +74,7 @@ class ConfigWritingTest extends ConfigTestCase
         yield 'ini @include section' => [
             'ini-file-with-include',
             'test-section',
-            'Can not write INI configuration with @inlcude statement.',
+            'Can not write INI configuration with @include statement.',
         ];
     }
 
