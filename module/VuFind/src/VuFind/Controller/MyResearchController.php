@@ -323,38 +323,6 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Login Action.
-     *
-     * @return mixed
-     */
-    public function loginAction()
-    {
-        // If this authentication method doesn't use a VuFind-generated login
-        // form, force it through:
-        if ($this->getAuthManager()->hasSessionInitiator()) {
-            // Don't get stuck in an infinite loop -- if processLogin is already
-            // set, it probably means Home action is forwarding back here to
-            // report an error!
-            //
-            // Also don't attempt to process a login that hasn't happened yet;
-            // if we've just been forced here from another page, we need the user
-            // to click the session initiator link before anything can happen.
-            if (
-                !$this->params()->fromPost('processLogin', false)
-                && !$this->params()->fromPost('forcingLogin', false)
-            ) {
-                $this->getRequest()->getPost()->set('processLogin', true);
-                return $this->forwardTo('MyResearch', 'Home');
-            }
-        }
-
-        // Make request available to view for form updating:
-        $view = $this->createViewModel();
-        $view->request = $this->getRequest()->getPost();
-        return $view;
-    }
-
-    /**
      * User login action -- clear any previous follow-up information prior to
      * triggering a login process. This is used for explicit login links within
      * the UI to differentiate them from contextual login links that are triggered
@@ -743,7 +711,7 @@ class MyResearchController extends AbstractBase
         $config = $this->getConfigArray();
         $allowHomeLibrary = $config['Account']['set_home_library'] ?? true;
 
-        $patron = $this->catalogLogin();
+        $patron = $this->catalogLogin(false);
         if (is_array($patron)) {
             // Process home library parameter (if present and allowed):
             $homeLibrary = $this->params()->fromPost('home_library');
@@ -796,10 +764,10 @@ class MyResearchController extends AbstractBase
             if ($catalog->checkCapability('getProxyingUsers', [$patron])) {
                 $view->proxyingUsers = $catalog->getProxyingUsers($patron);
             }
+        } elseif ($patron instanceof Response) {
+            return $patron;
         } else {
-            $view->patronLoginView = $patron;
-            // Turn off account menu in embedded login display:
-            $view->patronLoginView->showMenu = false;
+            $view->showCatalogLoginForm = true;
         }
 
         $view->accountDeletion = !empty($config['Authentication']['account_deletion']);
@@ -835,17 +803,6 @@ class MyResearchController extends AbstractBase
                 );
             }
         }
-    }
-
-    /**
-     * Catalog Login Action.
-     *
-     * @return mixed
-     */
-    public function catalogloginAction()
-    {
-        $loginSettings = $this->getILSLoginSettings();
-        return $this->createViewModel($loginSettings);
     }
 
     /**

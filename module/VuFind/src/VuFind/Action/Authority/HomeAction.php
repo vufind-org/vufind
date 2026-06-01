@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Authority Controller.
+ * Authority home action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,65 +22,53 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Authority;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\RedirectHelper;
 
 /**
- * Authority Controller.
+ * Authority home action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AuthorityController extends AbstractSearch
+class HomeAction extends AbstractAuthoritySearchAndResultsAction
 {
     /**
-     * Constructor.
+     * Display home page.
      *
-     * @param ServiceLocatorInterface $sm Service locator
-     */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'SolrAuth';
-        parent::__construct($sm);
-    }
-
-    /**
-     * Home action.
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
      *
-     * @return \Laminas\View\Model\ViewModel
+     * @return ResponseInterface
      */
-    public function homeAction()
-    {
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
         // If we came in with a record ID, forward to the record action; this
         // provides backward compatibility with multiple legacy routes.
-        if ($id = $this->params()->fromRoute('id', false)) {
+        if ($id = $this->getRouteParam('id')) {
             if ($id === 'Record') {
-                $id = $this->params()->fromQuery('id', $id);
+                $id = $this->getQueryParam('id', $id);
             }
-            return $this->redirect()->toRoute('solrauthrecord', compact('id'));
+            return $this->getHelper(RedirectHelper::class)->redirectToRoute($response, 'solrauthrecord', compact('id'));
         }
 
         // Default behavior:
-        return parent::homeAction();
-    }
-
-    /**
-     * Search action -- call standard results action.
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        return $this->resultsAction();
+        return $this->renderHomePage();
     }
 }

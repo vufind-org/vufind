@@ -47,7 +47,6 @@ use VuFind\OAuth2\Repository\IdentityRepository;
 use VuFind\Validator\CsrfInterface;
 
 use function in_array;
-use function is_array;
 
 /**
  * OAuth2 Controller.
@@ -225,13 +224,13 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         }
 
         $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
-        $patron = $this->catalogLogin();
-        $patronLoginView = is_array($patron) ? null : $patron;
-        if ($patronLoginView instanceof \Laminas\View\Model\ViewModel) {
-            $patronLoginView->showMenu = false;
+        $patron = $this->catalogLogin(false);
+        if ($patron instanceof Response) {
+            return $patron;
         }
+        $showCatalogLoginForm = !$patron;
         return $this->createViewModel(
-            compact('authRequest', 'user', 'patron', 'patronLoginView', 'userIdentifierField')
+            compact('authRequest', 'user', 'patron', 'showCatalogLoginForm', 'userIdentifierField')
         );
     }
 
