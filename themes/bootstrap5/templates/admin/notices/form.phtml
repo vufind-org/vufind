@@ -35,26 +35,20 @@
         $valueMapping[$context] = 'NoticeContext::' . $context;
       }
     ?>
-    <?=$this->component(
-        'radio-fieldset',
-        [
-        'groupName' => 'context',
-        'displayName' => 'Context',
-        'values' => $valueMapping,
-        'checkedValue' => $this->formData['activeContext'] ?? null,
-      ]
-    )?>
+    <?=$this->component('radio-fieldset', [
+      'groupName' => 'context',
+      'displayName' => 'Context',
+      'values' => $valueMapping,
+      'checkedValue' => $this->formData['activeContext'] ?? null,
+    ])?>
   <?php endif; ?>
   <?php if (count($this->formData['contentTypes'] ?? []) > 1): ?>
-    <?=$this->component(
-        'radio-fieldset',
-        [
-        'groupName' => 'content_type',
-        'displayName' => 'Content Type',
-        'values' => $this->formData['contentTypes'],
-        'checkedValue' => $this->formData['activeContentType'] ?? null,
-      ]
-    )?>
+    <?=$this->component('radio-fieldset', [
+      'groupName' => 'content_type',
+      'displayName' => 'Content Type',
+      'values' => $this->formData['contentTypes'],
+      'checkedValue' => $this->formData['activeContentType'] ?? null,
+    ])?>
   <?php endif; ?>
   <div class="content-form-tabs">
     <?php if (count($tabs) > 1): ?>
