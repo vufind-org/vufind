@@ -32,7 +32,7 @@
     <?php
       $valueMapping = [];
       foreach ($this->formData['contexts'] as $context) {
-        $valueMapping[$context] = 'Notice::' . $context;
+        $valueMapping[$context] = 'NoticeContext::' . $context;
       }
     ?>
     <?=$this->component(
