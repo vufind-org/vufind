@@ -36,6 +36,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         VuFind.setInnerHtml(callnumAndLocation, VuFind.updateCspNonce(result.full_status));
       });
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.status').forEach((e) => { e.classList.add('hidden'); });
+      el.querySelectorAll('.getThis').forEach((link) => {
+        VuFind.lightbox.bind(link);
+      });
     } else if (typeof(result.missing_data) !== 'undefined'
       && result.missing_data
     ) {
