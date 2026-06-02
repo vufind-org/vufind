@@ -44,18 +44,15 @@ $getLink = function ($view, $item) {
 ?>
 
 <strong><?= $this->transEsc('Items') ?> :</strong>
-<nav role="navigation" class="get-this-dropdown" <?= $JSDropdown ? 'data-js-dropdown' : '' ?>>
+<nav role="navigation" class="get-this-dropdown <?= $JSDropdown ? 'dropdown' : '' ?>">
 <?php if ($JSDropdown): ?>
-  <div data-js-dropdown-header>
-    <a href="#" aria-expanded="false">
+    <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
       <span><?= $getDisplay($this, $selectedItem) ?></span>
       <?=$this->icon('dropdown-open', 'dropdown-open') ?>
-      <?=$this->icon('dropdown-close', 'dropdown-close') ?>
-    </a>
-  </div>
-  <div class="dropdown" tabindex="-1">
+    </button>
+  <div class="dropdown">
 <?php endif; ?>
-    <ul>
+    <ul <?= $JSDropdown ? 'class="dropdown-menu"' : '' ?>>
       <?php
       $selectedItem['item_id'] ??= -1;
       foreach ($items as $item):
@@ -69,7 +66,7 @@ $getLink = function ($view, $item) {
           <?php else: ?>
             <a
                 href="<?= $getLink($this, $item) ?>"
-                class="<?= $itemClass ?>"
+                class="<?= $itemClass ?> <?= $JSDropdown ? 'dropdown-item' : '' ?>"
                 rel="nofollow"
             >
             <?= $getDisplay($this, $item) ?>

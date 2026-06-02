@@ -760,7 +760,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Setter for defaultItemId.
+     * Setter for defaultItemId, the default will be set only if the item_id exists.
      *
      * @param ?string $defaultItemId Item id of the holding for the record
      *
@@ -768,7 +768,9 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function setDefaultItemId(?string $defaultItemId): void
     {
-        $this->defaultItemId = $defaultItemId;
+        if ($this->getItem($defaultItemId) !== null) {
+            $this->defaultItemId = $defaultItemId;
+        }
     }
 
     /**

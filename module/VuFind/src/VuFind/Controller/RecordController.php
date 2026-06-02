@@ -79,7 +79,7 @@ class RecordController extends AbstractRecord
 
         $items = $this->getILS()->getHolding($this->params()->fromRoute('id'));
         $itemId = $this->params()->fromQuery('item_id');
-        $getThis = $this->serviceLocator->get(GetThisLoader::class);
+        $getThis = $this->getService(GetThisLoader::class);
         if (isset($view->driver)) {
             $getThis->setRecord($view->driver);
         }

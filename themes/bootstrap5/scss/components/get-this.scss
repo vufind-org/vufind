@@ -1,5 +1,5 @@
 // Turn ul into a dropdown
-.get-this-dropdown[data-js-dropdown] {
+.get-this-dropdown.dropdown {
   font-size: 1.1rem;
   letter-spacing: 0;
   background: $gray-lighter;
@@ -9,38 +9,24 @@
     text-decoration: none;
     width: 100%;
     display: inline-block;
-    padding: 0.3rem;
   }
 
-  *[data-js-dropdown-header] a {
+  .dropdown-toggle {
     display: inline-flex;
     justify-content: space-between;
+    width: 100%;
     color: $gray-darker;
-  }
-
-  .dropdown-close {
-    display: none;
+    border: 1px solid gray;
+    text-align: left;
+    border-radius: 0.2rem;
   }
 
   div {
-    border: 0.15rem solid $gray;
     border-radius: 0.2rem;
   }
 
   .dropdown {
-    max-height: 15rem;
-    overflow-y: auto;
-    visibility: hidden;
-    display: none;
     background: $gray-lighter;
-    position: absolute;
-    width: 100%;
-
-    &.active {
-      visibility: visible;
-      display: block;
-      z-index: 10;
-    }
 
     ul {
       width: 100%;
@@ -49,7 +35,6 @@
       padding-left: 0;
 
       li {
-        display: block;
         text-decoration: none;
         transition-duration: 0.25s;
 
