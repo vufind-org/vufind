@@ -33,6 +33,8 @@ use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Helper\ServerUrl;
+use Laminas\View\HelperPluginManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -70,9 +72,10 @@ class ServerUrlHelperFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $viewRenderer = $container->get('ViewRenderer');
         return new $requestedName(
-            Closure::fromCallable($viewRenderer->plugin('serverurl'))
+            // Defer fetching of the plugin until it's actually needed to allow for Laminas MvcEvent to be dispatched
+            // first:
+            Closure::fromCallable(fn () => $container->get(HelperPluginManager::class)->get(ServerUrl::class))
         );
     }
 }
