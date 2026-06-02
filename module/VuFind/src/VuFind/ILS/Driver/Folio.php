@@ -1876,7 +1876,7 @@ class Folio extends AbstractAPI implements
             $count = $this->getResultCount('/circulation/loans', compact('query'));
         }
 
-        // Apply local sorted if requested
+        // Apply local sorting if requested
         if ($localSortField) {
             $transactions = $this->sortArray($transactions, $localSortField);
             $transactions = array_slice($transactions, $offset, $limit);
