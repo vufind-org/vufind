@@ -99,7 +99,6 @@ return [
             'operatorToFieldPrefix' => 'VuFind\View\Helper\Root\OperatorToFieldPrefix',
             'overdrive' => 'VuFind\View\Helper\Root\Overdrive',
             'permission' => 'VuFind\View\Helper\Root\Permission',
-            'piwik' => 'VuFind\View\Helper\Root\Piwik',
             'printArrayHtml' => 'VuFind\View\Helper\Root\PrintArrayHtml',
             'printms' => 'VuFind\View\Helper\Root\Printms',
             'proxyUrl' => 'VuFind\View\Helper\Root\ProxyUrl',
