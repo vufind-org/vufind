@@ -95,13 +95,15 @@
               $url = empty($item['routeDetails'])
                 ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}")
                 : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']);
+              $channelItemAttrs = [
+                'class' => 'channel-item' . ($index < $channel['config']['pageSize'] ? '' : ' hidden-batch-item'),
+                'data-channel-id' => $channelID,
+                'data-record-id' => $item['id'],
+                'data-record-source' => $item['source'],
+                'id' => $channelID . '-item-' . str_pad($index, 3, '0'),
+              ];
             ?>
-            <li
-              class="channel-item <?=$index < $channel['config']['pageSize'] ? '' : 'hidden-batch-item' ?>"
-              data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>"
-              data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>"
-              data-record-source="<?=$this->escapeHtmlAttr($item['source']) ?>"
-            >
+            <li<?=$this->htmlAttributes($channelItemAttrs) ?>>
               <div class="channel-item-thumb">
                 <img
                   class="channel-item-img"
@@ -152,6 +154,8 @@
           ?>
           <button <?=$this->htmlAttributes($btnAttrs) ?>><?=$this->transEsc('channel_more_items') ?></button>
         </div>
+
+        <div class="gallery-polite-alert visually-hidden" aria-live="polite"></div>
       </div>
     <?php endforeach; ?>
   </div>

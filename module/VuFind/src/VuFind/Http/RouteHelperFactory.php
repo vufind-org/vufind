@@ -33,7 +33,6 @@ use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\View\HelperPluginManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\View\Helper\Root\Url;
@@ -75,7 +74,7 @@ class RouteHelperFactory implements FactoryInterface
         return new $requestedName(
             // Defer fetching of the plugin until it's actually needed to allow for Laminas MvcEvent to be dispatched
             // first:
-            Closure::fromCallable(fn () => $container->get(HelperPluginManager::class)->get(Url::class))
+            Closure::fromCallable(fn () => $container->get('ViewHelperManager')->get(Url::class))
         );
     }
 }

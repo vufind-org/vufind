@@ -31,6 +31,7 @@
 namespace VuFind\Http;
 
 use Closure;
+use Laminas\View\Helper\ServerUrl;
 
 /**
  * Server URL Helper class.  Wrapper around Laminas ServerUrlHelper.
@@ -45,13 +46,20 @@ use Closure;
 class ServerUrlHelper
 {
     /**
+     * Server URL helper.
+     *
+     * @var ?ServerUrl
+     */
+    protected ?ServerUrl $serverUrlHelper = null;
+
+    /**
      * Constructor.
      *
-     * @param Closure $serverUrlHelper Server URL helper function
+     * @param Closure $serverUrlHelperFactory Server URL helper factory callback
      *
      * @return void
      */
-    public function __construct(protected Closure $serverUrlHelper)
+    public function __construct(protected Closure $serverUrlHelperFactory)
     {
     }
 
@@ -62,7 +70,7 @@ class ServerUrlHelper
      */
     public function getBaseUrl(): string
     {
-        return ($this->serverUrlHelper)(null);
+        return ($this->getServerUrlHelper())(null);
     }
 
     /**
@@ -72,7 +80,7 @@ class ServerUrlHelper
      */
     public function getCurrentUrl(): string
     {
-        return ($this->serverUrlHelper)(true);
+        return ($this->getServerUrlHelper())(true);
     }
 
     /**
@@ -84,6 +92,19 @@ class ServerUrlHelper
      */
     public function getUrlForPath(string $path): string
     {
-        return ($this->serverUrlHelper)($path);
+        return ($this->getServerUrlHelper())($path);
+    }
+
+    /**
+     * Get ServerUrl helper.
+     *
+     * @return ServerUrl
+     */
+    protected function getServerUrlHelper(): ServerUrl
+    {
+        if (null === $this->serverUrlHelper) {
+            $this->serverUrlHelper = ($this->serverUrlHelperFactory)();
+        }
+        return $this->serverUrlHelper;
     }
 }
