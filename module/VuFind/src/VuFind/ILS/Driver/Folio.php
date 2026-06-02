@@ -2002,7 +2002,7 @@ class Folio extends AbstractAPI implements
                 if (
                     empty($limitDeliveryAddressTypes)
                     || in_array($addressType, $limitDeliveryAddressTypes)
-                    || ($defaultDeliveryAddressTypeId ?? null) == $addressTypeId
+                    || ($defaultDeliveryAddressTypeId ?? null) === $addressTypeId
                 ) {
                     $deliveryPickupLocations[] = [
                         'locationID' => $addressTypeId,
