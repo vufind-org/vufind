@@ -29,8 +29,6 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * ILS driver plugin manager.
  *
@@ -84,34 +82,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Aleph::class => AlephFactory::class,
         Alma::class => DriverWithDateConverterFactory::class,
-        Amicus::class => InvokableFactory::class,
-        ComposedDriver::class => AbstractMultiDriverFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
-        Demo::class => DemoFactory::class,
         Evergreen::class => DriverWithDateConverterFactory::class,
-        Folio::class => FolioFactory::class,
-        GeniePlus::class => GeniePlusFactory::class,
         Horizon::class => DriverWithDateConverterFactory::class,
         HorizonXMLAPI::class => DriverWithDateConverterFactory::class,
-        Innovative::class => InvokableFactory::class,
         Koha::class => DriverWithDateConverterFactory::class,
         KohaILSDI::class => DriverWithDateConverterFactory::class,
-        KohaRest::class => KohaRestFactory::class,
-        MultiBackend::class => MultiBackendFactory::class,
-        NewGenLib::class => InvokableFactory::class,
-        NoILS::class => NoILSFactory::class,
-        PAIA::class => PAIAFactory::class,
-        Polaris::class => InvokableFactory::class,
-        Sample::class => InvokableFactory::class,
-        SierraRest::class => SierraRestFactory::class,
-        Symphony::class => SymphonyFactory::class,
-        Unicorn::class => UnicornFactory::class,
-        Virtua::class => InvokableFactory::class,
         Voyager::class => DriverWithDateConverterFactory::class,
-        VoyagerRestful::class => VoyagerRestfulFactory::class,
-        XCNCIP2::class => XCNCIP2Factory::class,
     ];
 
     /**
