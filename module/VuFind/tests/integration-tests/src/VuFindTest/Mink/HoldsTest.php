@@ -50,6 +50,20 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
+     * Sample record titles.
+     *
+     * @var array
+     */
+    protected array $sampleRecordTitles = [
+        'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
+        'Rational living.',
+        'Psychotherapy in private practice.',
+        'Journal of quantitative criminology.',
+        'The Journal of parapsychology.',
+        'Journal of mathematics and mechanics.',
+    ];
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -62,17 +76,42 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get config.ini override settings for testing ILS functions.
      *
+     * @param bool $pagination If pagination on holds is enabled
+     *
      * @return array
      */
-    public function getConfigIniOverrides(): array
+    public function getConfigIniOverrides(bool $pagination = false): array
     {
         return [
             'Catalog' => [
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',
                 'title_level_holds_mode' => 'driver',
+                'holds_page_size' => $pagination ? 2 : 0,
             ],
         ];
+    }
+
+    /**
+     * Get Demo.ini override settings for testing myHolds.
+     *
+     * @param int  $itemCount Number of items to be set up
+     * @param bool $ilsPaging If ils paging should be enabled
+     *
+     * @return array
+     */
+    public function getDemoIniOverridesForTestsWithMultipleItems(int $itemCount = 1, bool $ilsPaging = false): array
+    {
+        $config = $this->getDemoIniOverrides();
+        // first two records are already set
+        for ($i = 3; $i <= $itemCount; $i++) {
+            $config['StaticHoldings']['testsample' . $i] = json_encode([$this->getFakeItem()]);
+        }
+        if ($ilsPaging) {
+            $config['Holds']['paging'] = true;
+            $config['Holds']['max_page_size'] = 2;
+        }
+        return $config;
     }
 
     /**
@@ -448,61 +487,40 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test canceling a request.
+     * Data provider for tests with multiple items and pagination.
      *
-     * @param Element $page Page element.
-     * @param string  $type Request type being tested.
-     *
-     * @return void
+     * @return \Iterator
      */
-    protected function cancelProcedure(Element $page, string $type): void
+    public static function multipleItemsAndPaginationTestProvider(): \Iterator
     {
-        // Test that control is disabled upon empty selection
-        $this->clickCss($page, '#cancelSelected');
-        $this->unFindCss($page, '.btn-group.open');
-
-        // Test "cancel all" button -- first make sure item is there before
-        // cancel is pushed:
-        $this->assertSame(
-            'Journal of rational emotive therapy :'
-            . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCssAndGetText($page, 'a.title')
-        );
-
-        // Click cancel but bail out with no... item should still be there.
-        $this->clickCss($page, '#cancelAll');
-        $this->clickButtonGroupLink($page, 'No');
-        $this->assertSame(
-            'Journal of rational emotive therapy :'
-            . ' the journal of the Institute for Rational-Emotive Therapy.',
-            $this->findCssAndGetText($page, 'a.title')
-        );
-
-        // Now cancel for real:
-        $this->clickCss($page, '#cancelAll');
-        $this->clickButtonGroupLink($page, 'Yes');
-        $this->assertSame(
-            '1 request(s) were successfully canceled',
-            $this->findCssAndGetText($page, '.alert.alert-success')
-        );
-        $this->unFindCss($page, 'a.title');
+        yield 'single' => [1, false, false];
+        yield 'multiple' => [6, false, false];
+        yield 'single-with-pagination' => [1, true, false];
+        yield 'multiple-with-pagination' => [6, true, false];
+        yield 'single-with-ils-pagination' => [1, true, true];
+        yield 'multiple-with-ils-pagination' => [6, true, true];
     }
 
     /**
      * Test canceling a hold.
      *
+     * @param int  $itemCount  Number of items to place holds on
+     * @param bool $pagination If pagination on holds is enabled
+     * @param bool $ilsPaging  If ils paging should be enabled
+     *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
-    public function testCancelHold(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
+    public function testCancelHold(int $itemCount, bool $pagination, bool $ilsPaging): void
     {
         // Turn on "cancel holds" in addition to normal defaults:
-        $config = $this->getConfigIniOverrides();
+        $config = $this->getConfigIniOverrides($pagination);
         $config['Catalog']['cancel_holds_enabled'] = 1;
         $this->changeConfigs(
             [
                 'config' => $config,
-                'Demo' => $this->getDemoIniOverrides(),
+                'Demo' => $this->getDemoIniOverridesForTestsWithMultipleItems($itemCount, $ilsPaging),
             ]
         );
 
@@ -514,11 +532,164 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
 
-        // Place the hold:
+        // Place hold on first items
+        for ($i = 2; $i <= $itemCount; $i++) {
+            $this->placeHold($page);
+            $this->closeLightbox($page);
+            $page = $this->gotoRecordById('testsample' . $i);
+        }
+
+        // Place the hold on last item:
         $this->placeHoldAndGoToHoldsScreen($page);
 
-        // Test canceling the hold:
-        $this->cancelProcedure($page, 'holds');
+        if ($itemCount === 1) {
+            // Test canceling one hold:
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->unFindCss($page, '.pagination');
+
+            // Test "cancel all" button -- first make sure item is there before
+            // cancel is pushed:
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+
+            // Click cancel but bail out with no... item should still be there.
+            $this->clickCss($page, '#cancelAll');
+            $this->clickButtonGroupLink($page, 'No');
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+
+            // Now cancel for real:
+            $this->clickCss($page, '#cancelAll');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+            $this->unFindCss($page, 'a.title');
+        } elseif (!$pagination) {
+            // Test canceling multiple items without pagination:
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->unFindCss($page, '.pagination');
+
+            for ($i = 0; $i < $itemCount; $i++) {
+                $this->assertSame(
+                    $this->sampleRecordTitles[$i],
+                    $this->findCssAndGetText($page, 'a.title', index: $i)
+                );
+            }
+
+            $this->clickCss($page, '.checkbox-select-item', index: 2);
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $reducedRecords = $this->sampleRecordTitles;
+            unset($reducedRecords[2]);
+            for ($i = 0; $i < $itemCount - 1; $i++) {
+                $this->assertSame(
+                    array_values($reducedRecords)[$i],
+                    $this->findCssAndGetText($page, 'a.title', index: $i)
+                );
+            }
+
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '5 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+            $this->unFindCss($page, 'a.title');
+        } else {
+            // Test canceling multiple items with pagination:
+            $this->assertStringStartsWith(
+                'Showing 1 - 2 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->clickCss($page, '#cancelSelected');
+            $this->unFindCss($page, '.btn-group.open');
+            $this->assertSame(
+                $this->sampleRecordTitles[0],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[1],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+
+            $this->clickCss($page, '.page-next .page-link');
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[2],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[3],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+
+            $this->clickCss($page, '.checkbox-select-item', index: 1);
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '1 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 5 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[2],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[4],
+                $this->findCssAndGetText($page, 'a.title', index: 1)
+            );
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#cancelSelected');
+            $this->clickButtonGroupLink($page, 'Yes');
+            $this->assertSame(
+                '2 request(s) were successfully canceled',
+                $this->findCssAndGetText($page, '.alert.alert-success')
+            );
+
+            $this->assertStringStartsWith(
+                'Showing 3 - 3 of 3 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+            $this->assertSame(
+                $this->sampleRecordTitles[5],
+                $this->findCssAndGetText($page, 'a.title')
+            );
+            $this->unFindCss($page, 'a.title', index: 1);
+            if ($ilsPaging) {
+                $this->unFindCss($page, '#cancelAll');
+            } else {
+                $this->clickCss($page, '#cancelAll');
+                $this->clickButtonGroupLink($page, 'Yes');
+                $this->assertSame(
+                    '3 request(s) were successfully canceled',
+                    $this->findCssAndGetText($page, '.alert.alert-success')
+                );
+                $this->unFindCss($page, 'a.title');
+            }
+        }
     }
 
     /**

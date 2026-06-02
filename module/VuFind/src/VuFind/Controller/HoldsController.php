@@ -37,6 +37,7 @@ use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\RecordsHelper;
+use VuFind\ILS\PaginationHelper;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -64,6 +65,13 @@ class HoldsController extends AbstractBase
      * @var CsrfInterface
      */
     protected $csrf;
+
+    /**
+     * ILS Pagination Helper.
+     *
+     * @var PaginationHelper
+     */
+    protected $paginationHelper = null;
 
     /**
      * Constructor.
@@ -144,12 +152,43 @@ class HoldsController extends AbstractBase
         $view->cancelForm = false;
         $view->updateForm = false;
 
+        // Get paging setup:
+        $pageOptions = $this->getPageOptions($patron);
+
         // Get held item details:
-        $result = $catalog->getMyHolds($patron);
-        $driversNeeded = [];
+        $result = $catalog->getMyHolds($patron, $pageOptions['ilsParams']);
+
+        if (!$pageOptions['ilsPaging']) {
+            // Cache the current list of requests for editing:
+            $this->putCachedData(
+                $this->getCacheId($patron, 'holds'),
+                $result
+            );
+        } else {
+            $this->removeCachedData($this->getCacheId($patron, 'holds'));
+        }
+
+        // Build paginator if needed:
+        $paginator = $this->getPaginationHelper()->getPaginator(
+            $pageOptions,
+            $result['count'],
+            $result['records']
+        );
+        if ($paginator) {
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
+        } else {
+            $pageStart = 0;
+            $pageEnd = $result['count'];
+        }
+        $view->paginator = $paginator;
+        $view->ilsPaging = $pageOptions['ilsPaging'];
+        $view->params = $pageOptions['ilsParams'];
+
+        $driversNeeded = $hiddenHolds = [];
         $this->holds()->resetValidation();
         $holdConfig = $catalog->checkFunction('Holds', compact('patron'));
-        foreach ($result as $current) {
+        foreach ($result['records'] as $i => $current) {
             // Add cancel details if appropriate:
             $current = $this->holds()->addCancelDetails(
                 $catalog,
@@ -178,13 +217,14 @@ class HoldsController extends AbstractBase
                 }
             }
 
-            $driversNeeded[] = $current;
+            // Build record drivers (only for the current visible page):
+            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
+                $driversNeeded[] = $current;
+            } else {
+                $hiddenHolds[] = $current;
+            }
         }
-        // Cache the current list of requests for editing:
-        $this->putCachedData(
-            $this->getCacheId($patron, 'holds'),
-            $driversNeeded
-        );
+        $view->hiddenHolds = $hiddenHolds;
 
         // Get List of PickUp Libraries based on patron's home library
         try {
@@ -201,7 +241,14 @@ class HoldsController extends AbstractBase
 
         $recordsHelper = $this->getService(RecordsHelper::class);
         $view->recordList = $recordsHelper->getDrivers($driversNeeded);
-        $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
+
+        // If the results are not paged in the ILS, collect up to date stats for ajax
+        // account notifications:
+        if (!$pageOptions['ilsPaging'] || !$paginator || $result['count'] === count($result['records'])) {
+            $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
+        } else {
+            $view->accountStatus = null;
+        }
         return $view;
     }
 
@@ -345,11 +392,11 @@ class HoldsController extends AbstractBase
         $catalog = $this->getILS();
         // Get holds from cache if available:
         $holds = $this->getCachedData($this->getCacheId($patron, 'holds'))
-            ?? $catalog->getMyHolds($patron);
+            ?? $catalog->getMyHolds($patron, $this->getPageOptions($patron)['ilsParams']);
         $checks = 0;
         $pickupLocations = [];
         $differences = false;
-        foreach ($holds as $hold) {
+        foreach ($holds['records'] as $hold) {
             if (in_array((string)($hold['updateDetails'] ?? ''), $selectedIds)) {
                 try {
                     $locations = $catalog->getPickUpLocations($patron, $hold);
@@ -508,5 +555,38 @@ class HoldsController extends AbstractBase
     {
         return "$type::" . $patron['id'] . '::'
             . ($patron['cat_id'] ?? $patron['cat_username'] ?? '');
+    }
+
+    /**
+     * Get page options.
+     *
+     * @param array $patron Patron
+     *
+     * @return array
+     */
+    protected function getPageOptions($patron)
+    {
+        // Get paging setup:
+        $config = $this->getConfigArray();
+        $pageSize = $config['Catalog']['holds_page_size'] ?? 50;
+        return $this->getPaginationHelper()->getOptions(
+            (int)$this->params()->fromQuery('page', 1),
+            null,
+            $pageSize,
+            $this->getILS()->checkFunction('getMyHolds', $patron)
+        );
+    }
+
+    /**
+     * Get the ILS pagination helper.
+     *
+     * @return PaginationHelper
+     */
+    protected function getPaginationHelper()
+    {
+        if (null === $this->paginationHelper) {
+            $this->paginationHelper = new PaginationHelper();
+        }
+        return $this->paginationHelper;
     }
 }

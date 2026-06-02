@@ -7,6 +7,10 @@
     ->add($this->translate('My Holds'), active: true);
 
   $this->assetManager()->appendScriptLink('requests.js');
+
+  // Check if "Cancel All" button can be displayed:
+  $paginator = $this->paginator;
+  $cancelAll = !$this->ilsPaging || !$paginator;
 ?>
 
 <?=$this->component('show-account-menu-button')?>
@@ -19,8 +23,26 @@
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
   <?php if (!empty($this->recordList)): ?>
+    <nav class="search-header hidden-print">
+      <?php if ($paginator): ?>
+        <div class="search-stats">
+          <?php
+          $startRecord = $paginator->getAbsoluteItemNumber(1);
+          $abs = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
+          $end = min($abs, $paginator->getTotalItemCount());
+          $transParams = [
+            '%%start%%' => $this->localizedNumber($startRecord),
+            '%%end%%' => $this->localizedNumber($end),
+            '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount()),
+          ];
+          ?>
+          <?=$this->translate('showing_items_of_html', $transParams); ?>
+        </div>
+      <?php endif; ?>
+    </nav>
+
     <?php if ($this->cancelForm || $this->updateForm): ?>
-      <form name="updateForm" class="inline" method="post" action="<?=$this->escapeHtmlAttr($this->url('holds-list'))?>" id="update_holds" data-clear-account-cache="holds" data-lightbox>
+      <form name="updateForm" class="inline" method="post" id="update_holds" data-clear-account-cache="holds" data-lightbox>
         <input type="hidden" id="submitType" name="cancelSelected" value="1">
         <input type="hidden" id="cancelConfirm" name="confirm" value="0">
         <div class="toolbar account-action-toolbar">
@@ -44,21 +66,23 @@
                   ]
               )
             ?>
-            <?=
-              $this->component(
-                  'confirm-button',
-                  [
-                    'buttonId' => 'cancelAll',
-                    'buttonName' => 'cancelAll',
-                    'buttonLabel' => 'hold_cancel_all',
-                    'header' => 'confirm_hold_cancel_all_text',
-                    'confirmId' => 'confirm_cancel_all_yes',
-                    'confirmTitle' => 'confirm_hold_cancel_all_text',
-                    'cancelClass' => 'confirm_cancel_no',
-                    'ignoreLightbox' => true,
-                  ]
-              )
-            ?>
+            <?php if ($cancelAll): ?>
+              <?=
+                $this->component(
+                    'confirm-button',
+                    [
+                      'buttonId' => 'cancelAll',
+                      'buttonName' => 'cancelAll',
+                      'buttonLabel' => 'hold_cancel_all',
+                      'header' => 'confirm_hold_cancel_all_text',
+                      'confirmId' => 'confirm_cancel_all_yes',
+                      'confirmTitle' => 'confirm_hold_cancel_all_text',
+                      'cancelClass' => 'confirm_cancel_no',
+                      'ignoreLightbox' => true,
+                    ]
+                )
+              ?>
+            <?php endif; ?>
           <?php endif; ?>
         </div>
         <div class="select-all-container">
@@ -69,10 +93,26 @@
         </div>
       <?php endif; ?>
 
+    <?php foreach ($this->hiddenHolds as $ilsDetails): ?>
+      <?php if (isset($ilsDetails['item_id']) && isset($this->cancelResults['items'][$ilsDetails['item_id']])): ?>
+        <?php $cancelResult = $this->cancelResults['items'][$ilsDetails['item_id']]; ?>
+        <?php if ($cancelResult['success'] == false): ?>
+          <?php $prefix = $ilsDetails['title'] ?? $ilsDetails['item_id']; ?>
+          <div class="alert alert-danger">
+            <?=
+              $this->escapeHtml($prefix . ': ') . $this->transEsc($cancelResult['status'])
+              . (($cancelResult['sysMessage'] ?? false) ? ' : ' . $this->transEsc($cancelResult['sysMessage']) : '')
+            ?>
+          </div>
+        <?php endif; ?>
+      <?php endif; ?>
+      <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
+        <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
+      <?php endif; ?>
+    <?php endforeach; ?>
+
     <ul class="record-list">
-      <?php $iteration = 0; ?>
-      <?php foreach ($this->recordList as $resource): ?>
-        <?php $iteration++; ?>
+      <?php foreach ($this->recordList as $iteration => $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li class="result">
           <label class="checkbox-select">
@@ -86,7 +126,7 @@
               <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']); ?>
               <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item" aria-label="<?=$this->transEscAttr('select_item_hold_cancel')?>">
             <?php endif; ?>
-            <span class="checkbox-select-number"><?=$this->escapeHtml($iteration) ?></span>
+            <span class="checkbox-select-number"><?=$this->escapeHtml($iteration + 1) ?></span>
           </label>
 
           <?php
@@ -213,6 +253,7 @@
       <?php endforeach; ?>
     </ul>
     <?php if ($this->cancelForm): ?></form><?php endif; ?>
+    <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', compact('params')) : ''?>
   <?php else: ?>
     <?=$this->transEsc('You do not have any holds or recalls placed') ?>.
   <?php endif; ?>
