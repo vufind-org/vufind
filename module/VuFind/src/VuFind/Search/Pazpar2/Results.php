@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pazpar2 Search Results
+ * Pazpar2 Search Results.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Pazpar2;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * Pazpar2 Search Parameters
+ * Pazpar2 Search Parameters.
  *
  * @category VuFind
  * @package  Search_Pazpar2
@@ -76,7 +76,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
      * @param array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.

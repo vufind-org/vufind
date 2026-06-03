@@ -41,7 +41,7 @@ namespace VuFind\Content\Reviews;
 class Syndetics extends \VuFind\Content\AbstractSyndetics
 {
     /**
-     * List of syndetic review sources
+     * List of syndetic review sources.
      *
      * @var array
      */

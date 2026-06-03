@@ -59,7 +59,7 @@ class Container
     protected $manager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string         $groupName Prefix to use for cookie values.
      * @param ?CookieManager $manager   Cookie manager.

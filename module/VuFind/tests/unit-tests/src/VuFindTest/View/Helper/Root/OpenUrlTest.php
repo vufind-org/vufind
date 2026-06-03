@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OpenUrl Test Class
+ * OpenUrl Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\Config;
 use VuFind\View\Helper\Root\OpenUrl;
 
 /**
- * OpenUrl Test Class
+ * OpenUrl Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +49,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Configuration array providing basic settings for testing OpenUrlRules
+     * Configuration array providing basic settings for testing OpenUrlRules.
      *
      * @var array
      */
@@ -92,7 +92,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test checkContext() with no URL set (everything should be false!)
+     * Test checkContext() with no URL set (everything should be false!).
      *
      * @return void
      */
@@ -107,7 +107,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkExcludedRecordRules() with rule not applying (isActive() will return
-     * TRUE!!)
+     * TRUE!!).
      *
      * @return void
      */
@@ -121,7 +121,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkExcludedRecordRules() with matching rule (isActive() will return
-     * FALSE!!)
+     * FALSE!!).
      *
      * @return void
      */
@@ -156,7 +156,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkSupportedRecordRules() with no matching rule (isActive() will return
-     * FALSE!!)
+     * FALSE!!).
      *
      * @return void
      */
@@ -190,7 +190,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test checkSupportedRecordRules() with matching rule (isActive() will return
-     * TRUE!!)
+     * TRUE!!).
      *
      * @return void
      */
@@ -234,8 +234,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
 
     /**
@@ -254,19 +253,15 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         $formats = ['ElectronicArticle', 'Article'],
         $issn = '1234-5678'
     ) {
-        $driver = $this->getMockBuilder($class)
-            ->disableOriginalConstructor()->getMock();
-        $driver->expects($this->any())->method('getOpenUrl')
-            ->willReturn($openUrl);
-        $driver->expects($this->any())->method('getCleanISSN')
-            ->willReturn($issn);
-        $driver->expects($this->any())->method('getFormats')
-            ->willReturn($formats);
+        $driver = $this->createMock($class);
+        $driver->method('getOpenUrl')->willReturn($openUrl);
+        $driver->method('getCleanISSN')->willReturn($issn);
+        $driver->method('getFormats')->willReturn($formats);
         return $driver;
     }
 
     /**
-     * Get the object to test
+     * Get the object to test.
      *
      * @param array  $rules       JSON-decoded array containing rules (optional)
      * @param array  $config      Configuration settings (optional)
@@ -282,8 +277,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         if (null === $mockContext) {
             $mockContext = $this->getMockContext();
         }
-        $mockPm = $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockPm = $this->createMock(\VuFind\Resolver\Driver\PluginManager::class);
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());
         return $openUrl;

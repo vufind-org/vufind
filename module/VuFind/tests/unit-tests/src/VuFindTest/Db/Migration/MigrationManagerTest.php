@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database Migration Manager Test Class
+ * Database Migration Manager Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Db\Migration\MigrationManager;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Database Migration Loader Test Class
+ * Database Migration Loader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -106,11 +106,11 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             array_keys($testData)
         );
         $loader->method('getMigrationsFromDir')->willReturnCallback(
-            fn ($version) => array_map(fn ($file) => "$version/$file.sql", $testData[$version])
+            fn (string $version): array => array_map(fn ($file) => "$version/$file.sql", $testData[$version])
         );
         $manager = $this->getMockMigrationManager(['getAppliedMigrations'], loader: $loader);
-        $manager->expects($this->any())->method('getAppliedMigrations')->willReturn([]);
-        $this->assertEquals(
+        $manager->method('getAppliedMigrations')->willReturn([]);
+        $this->assertSame(
             [
                 '/fake/path/9.0/001-bar.sql',
                 '/fake/path/9.0/002-baz.sql',
@@ -133,7 +133,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $connection = $this->createMock(Connection::class);
         $manager = $this->getMockMigrationManager(['applyMigration']);
         $manager->expects($this->exactly(3))->method('applyMigration')->willReturnCallback(
-            function (string $migration, ?Connection $incomingConnection) use ($connection) {
+            function (string $migration, ?Connection $incomingConnection) use ($connection): string {
                 $this->assertEquals($connection, $incomingConnection);
                 return $migration;
             }
@@ -157,7 +157,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(['execute chunk 1', 'execute chunk 2']);
         $manager = $this->getMockMigrationManager(['logMigrationEvent', 'cleanUpMigrationEvents'], loader: $loader);
         $manager->expects($this->exactly(4))->method('logMigrationEvent')->willReturnCallback(
-            function ($incomingConnection, $name, $msg) use ($connection) {
+            function (?\VuFind\Db\Connection $incomingConnection, string $name, string $msg) use ($connection): string {
                 $this->assertEquals($connection, $incomingConnection);
                 return "log $name : $msg\n";
             }
@@ -166,7 +166,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $manager->expects($this->once())->method('cleanUpMigrationEvents')->with($connection, $shortName)
             ->willReturn('cleanup');
         $result = $manager->applyMigration($basePath . '/' . $shortName, $connection);
-        $this->assertEquals(
+        $this->assertSame(
             <<<EXPECTED_RESULT
                 log 10.1/001-dummy.sql : start
                 log 10.1/001-dummy.sql : writing chunk 0
@@ -190,7 +190,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $loader = $this->createMock(MigrationLoader::class);
         $loader->expects($this->once())->method('getMigrationDirForPlatform')->willReturn('/base/path/foo');
         $manager = $this->getMockMigrationManager([], loader: $loader);
-        $this->assertEquals('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
+        $this->assertSame('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
     }
 
     /**
@@ -208,6 +208,6 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $manager->expects($this->once())->method('getShortMigrationName')->with($longName)->willReturn($shortName);
         $manager->expects($this->once())->method('logMigrationEvent')->with($connection, $shortName, 'success')
             ->willReturn($resultSql);
-        $this->assertEquals($resultSql, $manager->markMigrationApplied($longName, $connection));
+        $this->assertSame($resultSql, $manager->markMigrationApplied($longName, $connection));
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Upgrade Test Class
+ * Config Upgrade Test Class.
  *
  * PHP version 8
  *
@@ -34,10 +34,8 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
-use function in_array;
-
 /**
- * Config Upgrade Test Class
+ * Config Upgrade Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,11 +51,21 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Target upgrade version
+     * Target upgrade version.
      *
      * @var string
      */
-    protected string $targetVersion = '11.0';
+    protected string $targetVersion = '11.1';
+
+    /**
+     * This deprecation warning is expected in many situations as we prepare to remove
+     * ILS-driven new items in release 12.0. This property can be removed after the
+     * transition is completed and the config upgrader's behavior is finalized.
+     *
+     * @var string
+     */
+    protected $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method '
+        . 'setting of "ils" is deprecated; you should switch to "solr" or "disabled".';
 
     /**
      * Get an upgrade object for the specified source version:
@@ -96,64 +104,62 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDatabaseUpgrade().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function databaseUpgradeProvider(): array
+    public static function databaseUpgradeProvider(): \Iterator
     {
-        return [
-            'legacy and new formats' => [
-                'database-both-formats',
-                // New format should take precedence:
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password' => 'password',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        yield 'legacy and new formats' => [
+            'database-both-formats',
+            // New format should take precedence:
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password' => 'password',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
-            'legacy format only' => [
-                'database-legacy-format',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database' => 'mysql://user:pass@localhost/vufind_custom',
-                ],
+        ];
+        yield 'legacy format only' => [
+            'database-legacy-format',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database' => 'mysql://user:pass@localhost/vufind_custom',
             ],
-            'new format only' => [
-                'database-new-format',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password' => 'password',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        ];
+        yield 'new format only' => [
+            'database-new-format',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password' => 'password',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
-            'new format only, with file-based password' => [
-                'database-new-format-password-file',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password_file' => '/path/to/secret',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        ];
+        yield 'new format only, with file-based password' => [
+            'database-new-format-password-file',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password_file' => '/path/to/secret',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
         ];
     }
 
     /**
-     * Test database upgrade in config.ini
+     * Test database upgrade in config.ini.
      *
      * @param string $fixture  Fixture file
      * @param array  $expected Expected result
@@ -226,16 +232,26 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test new items ILS method deprecation.
+     *
+     * @return void
+     */
+    public function testIlsNewItems(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
+        $results = $upgrader->getNewConfigs();
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+    }
+
+    /**
      * Data provider for testSyndetics.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function syndeticsProvider(): array
+    public static function syndeticsProvider(): \Iterator
     {
-        return [
-            'syndeticsurl' => ['syndeticsurl'],
-            'syndeticsplus' => ['syndeticsplus'],
-        ];
+        yield 'syndeticsurl' => ['syndeticsurl'];
+        yield 'syndeticsplus' => ['syndeticsplus'];
     }
 
     /**
@@ -258,7 +274,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test Google preview setting upgrade
+     * Test Google preview setting upgrade.
      *
      * @return void
      */
@@ -273,7 +289,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test permission upgrade
+     * Test permission upgrade.
      *
      * @return void
      */
@@ -307,11 +323,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $results['permissions']['access.SummonExtendedResults']
         );
 
+        // EDS assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EDSModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EDSModuleAccess']
+        );
+
         // EIT assertions:
         $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
         $this->assertEquals(
             $eitConfig,
             $results['permissions']['default.EITModule']
+        );
+
+        // EPF assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EPFModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EPFModule']
         );
 
         // Primo assertions:
@@ -348,11 +378,21 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('booksite');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'The [Booksite] section of config.ini is no longer supported.',
-                $warnings
-            )
+        $this->assertContains('The [Booksite] section of config.ini is no longer supported.', $warnings);
+    }
+
+    /**
+     * Test [Piwik] section handling.
+     *
+     * @return void
+     */
+    public function testPiwikHandling(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik');
+        $warnings = $upgrader->getWarnings();
+        $this->assertContains(
+            'You are using the deprecated [Piwik] section for analytics. Please switch to [Matomo] instead.',
+            $warnings
         );
     }
 
@@ -365,19 +405,13 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('googlewarnings');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'The [GoogleSearch] section of config.ini is no '
-                . 'longer supported due to changes in Google APIs.',
-                $warnings
-            )
+        $this->assertContains(
+            'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
+            $warnings
         );
-        $this->assertTrue(
-            in_array(
-                'Google Maps is no longer a supported Content/recordMap option;'
-                . ' please review your config.ini.',
-                $warnings
-            )
+        $this->assertContains(
+            'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
+            $warnings
         );
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Content']['recordMap']));
@@ -395,31 +429,27 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('worldcatwarnings');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'The [WorldCat] section of config.ini has been removed following'
-                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
-                $warnings
-            )
+        $this->assertContains(
+            'The [WorldCat] section of config.ini has been removed following'
+            . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
+            $warnings
         );
     }
 
     /**
-     * Data provider for testEbscoUpgrades
+     * Data provider for testEbscoUpgrades.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function ebscoUpgradeProvider(): array
+    public static function ebscoUpgradeProvider(): \Iterator
     {
-        return [
-            [
-                'eds',
-                'EDS',
-            ],
-            [
-                'epf',
-                'EPF',
-            ],
+        yield [
+            'eds',
+            'EDS',
+        ];
+        yield [
+            'epf',
+            'EPF',
         ];
     }
 
@@ -435,7 +465,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEbscoUpgrade(string $backend, string $configName): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($backend);
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             ['foo' => 'bar'],
@@ -455,7 +485,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeSimple(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-default');
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
@@ -471,7 +501,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeAdvanced(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-advanced');
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $edsRecordDataFormatterConfig = $results['RecordDataFormatter/EDS'];
@@ -541,7 +571,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testPrimoUpgrade(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('primo');
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([$this->expectedNewItemDeprecationWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'http://my-id.hosted.exlibrisgroup.com:1701',
@@ -560,7 +590,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
             . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
             . 'You may need to reimplement your custom theme.';
-        $this->assertEquals([$expectedWarning], $upgrader->getWarnings());
+        $this->assertContains($expectedWarning, $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'sandal5',
@@ -581,12 +611,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
         $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertTrue(
-                in_array(
-                    "WARNING: You have $service content enabled, but VuFind no longer sup"
-                    . "ports it. You should remove $service references from config.ini.",
-                    $warnings
-                ),
+            $this->assertContains(
+                "WARNING: You have $service content enabled, but VuFind no longer sup"
+                . "ports it. You should remove $service references from config.ini.",
+                $warnings,
                 "Missing $service warning"
             );
         }
@@ -602,12 +630,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
         $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertTrue(
-                in_array(
-                    "WARNING: You have $service content enabled, but VuFind no longer sup"
-                    . "ports it. You should remove $service references from config.ini.",
-                    $warnings
-                ),
+            $this->assertContains(
+                "WARNING: You have $service content enabled, but VuFind no longer sup"
+                . "ports it. You should remove $service references from config.ini.",
+                $warnings,
                 "Missing $service warning"
             );
         }
@@ -632,14 +658,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMailRequireLoginMigration().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function mailRequireLoginProvider(): array
+    public static function mailRequireLoginProvider(): \Iterator
     {
-        return [
-            'false' => ['email-require-login-false', 'enabled'],
-            'true' => ['email-require-login-true', 'require_login'],
-        ];
+        yield 'false' => ['email-require-login-false', 'enabled'];
+        yield 'true' => ['email-require-login-true', 'require_login'];
     }
 
     /**
@@ -657,6 +681,37 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Mail']['require_login']));
         $this->assertEquals($expected, $results['config']['Mail']['email_action']);
+    }
+
+    /**
+     * Data provider for testLdapUriMigration.
+     *
+     * @return \Iterator
+     */
+    public static function ldapUriMigrationProvider(): \Iterator
+    {
+        yield 'host and port' => ['ldaphostandport', 'ldap://foo:123'];
+        yield 'uri already present' => ['ldapuri', 'ldap://foo'];
+        yield 'host only' => ['ldaphost', 'ldap://foo:389'];
+        yield 'port only' => ['ldapport', 'ldap://localhost:123'];
+    }
+
+    /**
+     * Test migration of [LDAP] host/port settings.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated uri setting
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ldapUriMigrationProvider')]
+    public function testLdapUriMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config']['LDAP']['host']));
+        $this->assertFalse(isset($results['config']['LDAP']['port']));
+        $this->assertEquals($expected, $results['config']['LDAP']['uri']);
     }
 
     /**

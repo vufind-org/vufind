@@ -36,8 +36,6 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 
-use function get_class;
-
 /**
  * ILS authentication module.
  *
@@ -51,14 +49,14 @@ use function get_class;
 class ILS extends AbstractBase
 {
     /**
-     * Catalog connection
+     * Catalog connection.
      *
      * @var \VuFind\ILS\Connection
      */
     protected $catalog = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\ILS\Connection        $connection         ILS connection to set
      * @param \VuFind\Auth\ILSAuthenticator $authenticator      ILS authenticator
@@ -96,6 +94,26 @@ class ILS extends AbstractBase
     }
 
     /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array
+    {
+        if ($this->preAuthenticationData) {
+            return null;
+        }
+
+        $username = trim($request->getPost()->get('username', ''));
+        $loginMethod = $this->getILSLoginMethod();
+
+        return $this->handlePreAuthentication('', $username, $loginMethod);
+    }
+
+    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
@@ -114,7 +132,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -129,7 +147,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
@@ -146,7 +164,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
@@ -255,7 +273,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *
@@ -285,6 +303,48 @@ class ILS extends AbstractBase
     }
 
     /**
+     * Handle pre-authentication.
+     *
+     * @param string $target      MultiILS login target
+     * @param string $username    User name
+     * @param string $loginMethod Login method
+     *
+     * @return ?array
+     */
+    protected function handlePreAuthentication(
+        string $target,
+        string $username,
+        string $loginMethod,
+    ): ?array {
+        if ('email' !== $loginMethod) {
+            return null;
+        }
+
+        $username = trim($username);
+        if (!$username) {
+            throw new AuthException('authentication_error_blank');
+        }
+
+        // Fetch user by email address and send a one-time password by email if found:
+        $preAuthData = [
+            'authId' => null,
+            'target' => $target,
+            'email' => $username,
+            'messageHtml' => 'email_login_code_sent_html',
+        ];
+        if ($target) {
+            $username = "$target.$username";
+        }
+        if ($patron = $this->getCatalog()->patronLogin($username, null)) {
+            $preAuthData['authId'] = $this->emailAuthenticator->sendAuthenticationCode(
+                $preAuthData['email'],
+                compact('patron')
+            );
+        }
+        return $preAuthData;
+    }
+
+    /**
      * Handle the actual login with the ILS.
      *
      * @param string $username    User name
@@ -297,42 +357,36 @@ class ILS extends AbstractBase
      */
     protected function handleLogin($username, $password, $loginMethod, $rememberMe)
     {
-        if ($username == '' || ('password' === $loginMethod && $password == '')) {
+        if ($password == '') {
             throw new AuthException('authentication_error_blank');
         }
 
-        // Connect to catalog:
-        try {
-            $patron = $this->getCatalog()->patronLogin($username, $password);
-        } catch (AuthException $e) {
-            // Pass Auth exceptions through
-            throw $e;
-        } catch (\Exception $e) {
-            throw new AuthException('authentication_error_technical');
+        $patron = null;
+        if ('email' === $loginMethod) {
+            if (
+                ($authId = $this->preAuthenticationData['authId'] ?? null)
+                && ($authData = $this->emailAuthenticator->verifyAuthenticationCode($authId, $password))
+            ) {
+                if (!($patron = $authData['patron'] ?? null)) {
+                    throw new AuthException('authentication_error_technical');
+                }
+            }
+        } else {
+            if ($username == '') {
+                throw new AuthException('authentication_error_blank');
+            }
+            // Connect to catalog:
+            try {
+                $patron = $this->getCatalog()->patronLogin($username, $password);
+            } catch (AuthException $e) {
+                // Pass Auth exceptions through
+                throw $e;
+            } catch (\Exception $e) {
+                throw new AuthException('authentication_error_technical');
+            }
         }
 
         // Did the patron successfully log in?
-        if ('email' === $loginMethod) {
-            if (null === $this->emailAuthenticator) {
-                throw new \Exception('Email authenticator not set');
-            }
-            if ($patron) {
-                $class = get_class($this);
-                if ($p = strrpos($class, '\\')) {
-                    $class = substr($class, $p + 1);
-                }
-                $this->emailAuthenticator->sendAuthenticationLink(
-                    $patron['email'],
-                    [
-                        'userData' => $patron,
-                        'rememberMe' => $rememberMe,
-                    ],
-                    ['auth_method' => $class]
-                );
-            }
-            // Don't reveal the result
-            throw new \VuFind\Exception\AuthInProgress('email_login_link_sent');
-        }
         if ($patron) {
             return $this->processILSUser($patron);
         }
@@ -392,7 +446,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Make sure passwords match and fulfill ILS policy
+     * Make sure passwords match and fulfill ILS policy.
      *
      * @param array   $params request parameters
      * @param ?string $target Authentication target for methods that support target selection
@@ -414,7 +468,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Get the Currently Logged-In Patron
+     * Get the Currently Logged-In Patron.
      *
      * @throws AuthException
      *

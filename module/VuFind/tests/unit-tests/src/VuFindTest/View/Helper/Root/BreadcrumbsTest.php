@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Breadcrumbs view helper Test Class
+ * Breadcrumbs view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\View\Helper\Root\Breadcrumbs;
 
 /**
- * Breadcrumbs view helper Test Class
+ * Breadcrumbs view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -83,10 +83,10 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
         $helper->add('a', 'b');
         $helper->add('c', active: true);
         $helper->prepend('d');
-        $this->assertEquals('d|-|F>a|b|F>c|-|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('d|-|F>a|b|F>c|-|T>', $layoutModel->breadcrumbs);
         $helper->set('z', 'y', true);
-        $this->assertEquals('z|y|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('z|y|T>', $layoutModel->breadcrumbs);
         $helper->reset();
-        $this->assertEquals('', $layoutModel->breadcrumbs);
+        $this->assertSame('', $layoutModel->breadcrumbs);
     }
 }

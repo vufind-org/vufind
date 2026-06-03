@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Resolver\Driver Plugin Manager Test Class
+ * Resolver\Driver Plugin Manager Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Resolver\Driver;
 use VuFind\Resolver\Driver\PluginManager;
 
 /**
- * Resolver\Driver Plugin Manager Test Class
+ * Resolver\Driver Plugin Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

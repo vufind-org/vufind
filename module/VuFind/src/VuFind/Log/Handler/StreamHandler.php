@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Stream handler
+ * Stream handler.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Monolog\Handler\StreamHandler as MonologStreamHandler;
 use Monolog\LogRecord;
 
 /**
- * This class extends Monolog's StreamHandler to add verbosity control over log records
+ * This class extends Monolog's StreamHandler to add verbosity control over log records.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -49,14 +49,14 @@ class StreamHandler extends MonologStreamHandler
     use VerbosityTrait;
 
     /**
-     * Standard LineFormatter for file logging (used/initialized by getStandardFileFormatter())
+     * Standard LineFormatter for file logging (used/initialized by getStandardFileFormatter()).
      *
      * @var ?LineFormatter
      */
     protected ?LineFormatter $standardFileFormatter = null;
 
     /**
-     * Writes the record down to the log
+     * Writes the record down to the log.
      *
      * @param LogRecord $record Log record to process
      *

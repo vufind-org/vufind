@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DPLATerms Recommendations Module
+ * DPLATerms Recommendations Module.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Laminas\Http\Client as HttpClient;
 use function is_array;
 
 /**
- * DPLATerms Recommendations Module
+ * DPLATerms Recommendations Module.
  *
  * This class uses current search terms to query the DPLA API.
  *
@@ -48,35 +48,35 @@ use function is_array;
 class DPLATerms implements RecommendInterface
 {
     /**
-     * Config
+     * Config.
      *
      * @var string
      */
     protected $apiKey;
 
     /**
-     * VuFind HTTP Client
+     * VuFind HTTP Client.
      *
      * @var HttpClient
      */
     protected $client;
 
     /**
-     * Setting of initial collapsedness
+     * Setting of initial collapsedness.
      *
      * @var bool
      */
     protected $collapsed;
 
     /**
-     * Search results object
+     * Search results object.
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $searchObject;
 
     /**
-     * Map of Solr field names to equivalent API parameters
+     * Map of Solr field names to equivalent API parameters.
      *
      * @var array
      */
@@ -91,7 +91,7 @@ class DPLATerms implements RecommendInterface
     ];
 
     /**
-     * List of fields to retrieve from the API
+     * List of fields to retrieve from the API.
      *
      * @var array
      */
@@ -103,7 +103,7 @@ class DPLATerms implements RecommendInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string     $apiKey API key
      * @param HttpClient $client VuFind HTTP client
@@ -244,7 +244,7 @@ class DPLATerms implements RecommendInterface
     }
 
     /**
-     * Return the list of facets configured to be collapsed
+     * Return the list of facets configured to be collapsed.
      *
      * @return array
      */

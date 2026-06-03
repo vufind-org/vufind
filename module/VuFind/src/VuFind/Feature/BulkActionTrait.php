@@ -32,7 +32,7 @@
 namespace VuFind\Feature;
 
 /**
- * VuFind Action Feature Trait - Bulk action helper methods
+ * VuFind Action Feature Trait - Bulk action helper methods.
  *
  * @category VuFind
  * @package  Feature
@@ -44,14 +44,14 @@ namespace VuFind\Feature;
 trait BulkActionTrait
 {
     /**
-     * Config
+     * Config.
      *
      * @var \VuFind\Config\Config
      */
     protected $bulkActionConfig;
 
     /**
-     * Export Config
+     * Export Config.
      *
      * @var \VuFind\Config\Config
      */

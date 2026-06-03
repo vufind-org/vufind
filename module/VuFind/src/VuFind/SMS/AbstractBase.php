@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class to enable sharing of common methods between SMS subclasses
+ * Base class to enable sharing of common methods between SMS subclasses.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\SMS;
 
 /**
- * Base class to enable sharing of common methods between SMS subclasses
+ * Base class to enable sharing of common methods between SMS subclasses.
  *
  * @category VuFind
  * @package  SMS
@@ -41,14 +41,14 @@ namespace VuFind\SMS;
 abstract class AbstractBase implements SMSInterface
 {
     /**
-     * SMS configuration
+     * SMS configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $smsConfig;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config SMS configuration
      */
@@ -58,7 +58,7 @@ abstract class AbstractBase implements SMSInterface
     }
 
     /**
-     * Filter bad characters from a phone number
+     * Filter bad characters from a phone number.
      *
      * @param string $num Phone number to filter
      *
@@ -71,7 +71,7 @@ abstract class AbstractBase implements SMSInterface
     }
 
     /**
-     * Get validation type for phone numbers
+     * Get validation type for phone numbers.
      *
      * @return string
      */

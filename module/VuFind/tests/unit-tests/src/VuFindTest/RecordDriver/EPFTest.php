@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ namespace VuFindTest\RecordDriver;
 use VuFind\RecordDriver\EPF;
 
 /**
- * EPF Record Driver Test Class
+ * EPF Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests

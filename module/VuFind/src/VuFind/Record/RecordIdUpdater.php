@@ -46,7 +46,7 @@ use VuFind\Db\Service\UserResourceServiceInterface;
 class RecordIdUpdater
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ResourceServiceInterface     $resourceService     Resource database service
      * @param CommentsServiceInterface     $commentsService     Comments database service

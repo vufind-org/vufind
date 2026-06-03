@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FavoriteFacets Recommendations Module
+ * FavoriteFacets Recommendations Module.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * FavoriteFacets Recommendations Module
+ * FavoriteFacets Recommendations Module.
  *
  * This class provides special facets for the Favorites area (tags/lists)
  *
@@ -43,14 +43,14 @@ namespace VuFind\Recommend;
 class FavoriteFacets extends SideFacets
 {
     /**
-     * Tag capability setting
+     * Tag capability setting.
      *
      * @var string
      */
     protected $tagSetting;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      * @param string                                $tagSetting    Tag capability setting

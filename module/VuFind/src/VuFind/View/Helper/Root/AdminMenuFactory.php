@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin menu view helper factory
+ * Admin menu view helper factory.
  *
  * PHP version 8
  *
@@ -36,18 +36,20 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Admin menu view helper factory
+ * Admin menu view helper factory.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use \VuFind\View\Helper\Root\SectionFactory instead
  */
 class AdminMenuFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

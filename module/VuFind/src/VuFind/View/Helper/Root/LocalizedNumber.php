@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Localization based number formatting
+ * Localization based number formatting.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\View\Helper\AbstractHelper;
 
 /**
  * Class NumberFormat
- * allows localization based formatting of numbers in view
+ * allows localization based formatting of numbers in view.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -44,21 +44,21 @@ use Laminas\View\Helper\AbstractHelper;
 class LocalizedNumber extends AbstractHelper
 {
     /**
-     * Default decimal point character
+     * Default decimal point character.
      *
      * @var string
      */
     protected $defaultDecimalPoint = '.';
 
     /**
-     * Default thousands separator character
+     * Default thousands separator character.
      *
      * @var string
      */
     protected $defaultThousandSep = ',';
 
     /**
-     * Localize number
+     * Localize number.
      *
      * @param int|float $number     Number to format
      * @param int       $decimals   How many decimal places?

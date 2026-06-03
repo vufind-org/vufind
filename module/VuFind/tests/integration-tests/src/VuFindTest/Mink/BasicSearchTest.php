@@ -43,28 +43,28 @@ use Behat\Mink\Element\Element;
 class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Selector for active pagination item
+     * Selector for active pagination item.
      *
      * @var string
      */
     protected $activePageSelector = '.pagination li.active';
 
     /**
-     * Selector for current pagination item
+     * Selector for current pagination item.
      *
      * @var string
      */
     protected $ariaCurrentPageSelector = '.pagination li[aria-current=page] a';
 
     /**
-     * Selector for active top pagination item
+     * Selector for active top pagination item.
      *
      * @var string
      */
     protected $topActivePageSelector = '.pagination-top li.active';
 
     /**
-     * Selector for current top pagination item
+     * Selector for current top pagination item.
      *
      * @var string
      */
@@ -89,20 +89,18 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Data provider for testDefaultTopPagination
+     * Data provider for testDefaultTopPagination.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function topPaginationProvider(): array
+    public static function topPaginationProvider(): \Iterator
     {
-        return [
-            [false],
-            [true],
-        ];
+        yield [false];
+        yield [true];
     }
 
     /**
-     * Test default top pagination
+     * Test default top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
@@ -139,7 +137,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test simple top pagination
+     * Test simple top pagination.
      *
      * @param bool $jsResults Whether to update search results with JS
      *
@@ -181,12 +179,12 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $dropdown = $this->findCss($page, '.nav-item.language .dropdown__item', index: 1);
         $this->clickCss($dropdown, '.dropdown__link');
         $this->waitForPageLoad($page);
-        $this->assertEquals('Sprache', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+        $this->assertSame('Sprache', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
         // ...and back:
         $this->clickCss($page, '.nav-item.language .dropdown__link');
         $this->waitForPageLoad($page);
         $this->assertShowingResults($page, '21 - 40');
-        $this->assertEquals('Language', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
+        $this->assertSame('Language', $this->findCssAndGetText($page, '.nav-item.language .dropdown-toggle'));
 
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
@@ -195,7 +193,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test full top pagination
+     * Test full top pagination.
      *
      * @return void
      */
@@ -238,7 +236,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test bottom pagination
+     * Test bottom pagination.
      *
      * @return void
      */
@@ -263,7 +261,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Check that correct result range is being displayed
+     * Check that correct result range is being displayed.
      *
      * @param Element $page    Page
      * @param string  $results Result range (e.g. '1 - 20')
@@ -281,7 +279,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Scroll to results immediately to avoid elements from moving around while we click them
+     * Scroll to results immediately to avoid elements from moving around while we click them.
      *
      * @return void
      */

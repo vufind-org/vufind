@@ -75,7 +75,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected $exactSpecs = [];
 
     /**
-     * Global extra Solr query parameters
+     * Global extra Solr query parameters.
      *
      * @var array
      */
@@ -98,7 +98,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected $createSpellingQuery = false;
 
     /**
-     * Lucene syntax helper
+     * Lucene syntax helper.
      *
      * @var LuceneSyntaxHelper
      */
@@ -178,7 +178,7 @@ class QueryBuilder implements QueryBuilderInterface
                 }
             } elseif ($handler->hasDismax()) {
                 $newParams->set('qf', implode(' ', $handler->getDismaxFields()));
-                $newParams->set('qt', $handler->getDismaxHandler());
+                $newParams->set('defType', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
                     $newParams->add(reset($param), next($param));
                 }
@@ -215,7 +215,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Check if the conditions match for an extra parameter
+     * Check if the conditions match for an extra parameter.
      *
      * @param AbstractQuery $query      Search query
      * @param ?ParamBag     $params     Search backend parameters
@@ -281,7 +281,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Check if any of the given search types has the field in DismaxParams
+     * Check if any of the given search types has the field in DismaxParams.
      *
      * @param array  $searchTypes Search types to check
      * @param string $field       Field to check for
@@ -303,7 +303,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Get an array of search types used in the given search
+     * Get an array of search types used in the given search.
      *
      * @param AbstractQuery $query Query
      *
@@ -395,7 +395,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Get Lucene syntax helper
+     * Get Lucene syntax helper.
      *
      * @return LuceneSyntaxHelper
      */
@@ -408,7 +408,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Set Lucene syntax helper
+     * Set Lucene syntax helper.
      *
      * @param LuceneSyntaxHelper $helper Lucene syntax helper
      *

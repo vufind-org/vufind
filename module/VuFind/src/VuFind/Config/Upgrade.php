@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VF Configuration Upgrade Tool
+ * VF Configuration Upgrade Tool.
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Class to upgrade previous VuFind configurations to the current version
+ * Class to upgrade previous VuFind configurations to the current version.
  *
  * @category VuFind
  * @package  Config
@@ -67,21 +67,21 @@ class Upgrade implements LoggerAwareInterface
     ];
 
     /**
-     * Parsed old configurations
+     * Parsed old configurations.
      *
      * @var array
      */
     protected array $oldConfigs = [];
 
     /**
-     * Processed new configurations
+     * Processed new configurations.
      *
      * @var array
      */
     protected array $newConfigs = [];
 
     /**
-     * Warnings generated during upgrade process
+     * Warnings generated during upgrade process.
      *
      * @var array
      */
@@ -107,7 +107,7 @@ class Upgrade implements LoggerAwareInterface
     protected array $writtenConfig = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param PathResolver           $pathResolver  Path Resolver
      * @param ConfigManagerInterface $configManager Config Manager
@@ -119,7 +119,7 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Set write mode
+     * Set write mode.
      *
      * @param bool $writeMode Write mode (true for enabling and false for disabling writing)
      *
@@ -541,6 +541,12 @@ class Upgrade implements LoggerAwareInterface
             );
         }
 
+        // Warn the user about the deprecated Piwik analytics section:
+        if (!empty($newConfig['Piwik'] ?? [])) {
+            $this->addWarning(
+                'You are using the deprecated [Piwik] section for analytics. Please switch to [Matomo] instead.'
+            );
+        }
         // Upgrade Google Options:
         if (
             isset($newConfig['Content']['GoogleOptions'])
@@ -632,6 +638,24 @@ class Upgrade implements LoggerAwareInterface
                 $newConfig['CacheConfigName_searchspecs']['disabled'] = true;
             }
             unset($this->newConfigs['searches']['Cache']);
+        }
+
+        // Update LDAP settings (replace deprecated host/port with uri):
+        $ldapHost = $newConfig['LDAP']['host'] ?? null;
+        $ldapPort = $newConfig['LDAP']['port'] ?? null;
+        if ($ldapHost || $ldapPort) {
+            if (!isset($newConfig['LDAP']['uri'])) {
+                if ($ldapHost && (str_starts_with($ldapHost, 'ldap://') || str_starts_with($ldapHost, 'ldaps://'))) {
+                    // Note that ldap_connect ignores the port setting when the first argument is a URI, so it is
+                    // intentional that we ignore the port setting this case.
+                    $newConfig['LDAP']['uri'] = $ldapHost;
+                } else {
+                    // If the host setting is not a URI, convert it into one:
+                    $newConfig['LDAP']['uri'] = 'ldap://' . ($ldapHost ?? 'localhost') . ':' . ($ldapPort ?? '389');
+                }
+            }
+            unset($newConfig['LDAP']['host']);
+            unset($newConfig['LDAP']['port']);
         }
 
         // Translate obsolete permission settings:
@@ -781,6 +805,13 @@ class Upgrade implements LoggerAwareInterface
             }
         }
 
+        if (($newConfig['NewItem']['method'] ?? null) === 'ils') {
+            $this->addWarning(
+                'The searches.ini [NewItem] method setting of "ils" is deprecated; '
+                . 'you should switch to "solr" or "disabled".'
+            );
+        }
+
         // save the configuration
         $this->saveModifiedConfig('searches');
     }
@@ -820,7 +851,7 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Upgrade EDS or EPF
+     * Upgrade EDS or EPF.
      *
      * @param string $configName Config name
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExtendedIniReader Test Class
+ * ExtendedIniReader Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\I18n\Translator\Loader;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 
 /**
- * ExtendedIniReader Test Class
+ * ExtendedIniReader Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -69,7 +69,7 @@ class ExtendedIniReaderTest extends \PHPUnit\Framework\TestCase
             'keepquotes' => "''",
         ];
         $reader = new ExtendedIniReader();
-        $this->assertEquals($output, (array)$reader->getTextDomain($input));
+        $this->assertSame($output, (array)$reader->getTextDomain($input));
     }
 
     /**
@@ -85,7 +85,7 @@ class ExtendedIniReaderTest extends \PHPUnit\Framework\TestCase
         $nonJoiner = html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8');
         $nonJoinerOutput = ['foo' => 'bar', 'baz' => $nonJoiner];
         // Test behavior with and without the $convertBlanks switch:
-        $this->assertEquals($output, (array)$reader->getTextDomain($input, false));
-        $this->assertEquals($nonJoinerOutput, (array)$reader->getTextDomain($input));
+        $this->assertSame($output, (array)$reader->getTextDomain($input, false));
+        $this->assertSame($nonJoinerOutput, (array)$reader->getTextDomain($input));
     }
 }

@@ -65,7 +65,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             [$session, 'getCurrentUrl']
         );
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
-        $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
+        $this->assertSame('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
     /**
@@ -94,7 +94,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
         $this->assertEquals('Holdings', $staffViewTab->getText());
         $staffViewTab->click();
-        $this->assertEquals(
+        $this->assertSame(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.record-tabs .holdings-tab h2')
         );
@@ -159,15 +159,13 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPermalink().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function permalinkProvider(): array
+    public static function permalinkProvider(): \Iterator
     {
-        return [
-            'default' => [null],
-            'enabled' => [true],
-            'disabled' => [false],
-        ];
+        yield 'default' => [null];
+        yield 'enabled' => [true];
+        yield 'disabled' => [false];
     }
 
     /**

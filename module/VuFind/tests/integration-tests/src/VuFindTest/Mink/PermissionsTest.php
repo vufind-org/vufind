@@ -80,11 +80,11 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'test-error-message',
             $this->findCssAndGetText($page, '.alert-danger')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred',
             $this->findCssAndGetText($page, '.breadcrumb .active')
         );
@@ -99,7 +99,7 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
         // Now that we're logged in, we should see search results:
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Search Results',
             $this->findCssAndGetText($page, '.breadcrumb .active')
         );

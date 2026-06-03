@@ -83,20 +83,20 @@ class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
         );
         $tools->expects($this->once())->method('getModuleConfigPath')
-            ->with($this->equalTo('xyzzy'))
+            ->with('xyzzy')
             ->willReturn($configFixturePath);
         $tools->expects($this->once())->method('backUpFile')
-            ->with($this->equalTo($configFixturePath));
+            ->with($configFixturePath);
         $tools->expects($this->once())->method('writeModuleConfig')
             ->with(
-                $this->equalTo($configFixturePath),
-                $this->equalTo($expectedConfig)
+                $configFixturePath,
+                $expectedConfig
             );
         $generator = $this->getMockRouteGenerator(['addStaticRoute']);
         $generator->expects($this->once())->method('addStaticRoute')
             ->with(
-                $this->equalTo($expectedConfig),
-                $this->equalTo('foo')
+                $expectedConfig,
+                'foo'
             );
         $command = new StaticRouteCommand($tools, $generator);
         $commandTester = new CommandTester($command);
@@ -106,11 +106,11 @@ class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'xyzzy',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
-     * Get a mock generator tools object
+     * Get a mock generator tools object.
      *
      * @param array $methods Methods to mock
      *
@@ -125,7 +125,7 @@ class StaticRouteCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock container object
+     * Get a mock container object.
      *
      * @param array $methods Methods to mock
      *

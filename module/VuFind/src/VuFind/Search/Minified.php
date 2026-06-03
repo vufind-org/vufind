@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Minified Search Object
+ * VuFind Minified Search Object.
  *
  * PHP version 8
  *
@@ -59,84 +59,84 @@ use VuFind\Search\Base\Results;
 class Minified
 {
     /**
-     * Search terms
+     * Search terms.
      *
      * @var array
      */
     public $t = [];
 
     /**
-     * Filters
+     * Filters.
      *
      * @var array
      */
     public $f = [];
 
     /**
-     * Hidden Filters
+     * Hidden Filters.
      *
      * @var array
      */
     public $hf = [];
 
     /**
-     * Search ID
+     * Search ID.
      *
      * @var int
      */
     public $id;
 
     /**
-     * Search start time
+     * Search start time.
      *
      * @var float
      */
     public $i;
 
     /**
-     * Search duration
+     * Search duration.
      *
      * @var float
      */
     public $s;
 
     /**
-     * Total result count
+     * Total result count.
      *
      * @var int
      */
     public $r;
 
     /**
-     * Search type
+     * Search type.
      *
      * @var string
      */
     public $ty;
 
     /**
-     * Search class
+     * Search class.
      *
      * @var string
      */
     public $cl;
 
     /**
-     * Extra data (not used by default)
+     * Extra data (not used by default).
      *
      * @var array
      */
     public $ex = [];
 
     /**
-     * Extra params data (not used by default)
+     * Extra params data (not used by default).
      *
      * @var array
      */
     public $exp = [];
 
     /**
-     * Search context parameters
+     * Search context parameters.
      *
      * @var array
      */

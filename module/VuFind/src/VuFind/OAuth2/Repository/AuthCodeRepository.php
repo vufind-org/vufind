@@ -35,6 +35,7 @@ use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\AuthCodeEntity;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * OAuth2 authorization code repository implementation.
@@ -48,15 +49,18 @@ use VuFind\OAuth2\Entity\AuthCodeEntity;
 class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepositoryInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                       $oauth2Config       OAuth2 configuration
      * @param AccessTokenServiceInterface $accessTokenService Access token service
      * @param UserServiceInterface        $userService        User service
      */
     public function __construct(
+        #[Autowire(container: \VuFind\Config\YamlReader::class, service: 'OAuth2Server.yaml')]
         array $oauth2Config,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         AccessTokenServiceInterface $accessTokenService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         UserServiceInterface $userService
     ) {
         parent::__construct(
@@ -69,7 +73,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
     }
 
     /**
-     * Create a new authentication code
+     * Create a new authentication code.
      *
      * @return AuthCodeEntityInterface
      */

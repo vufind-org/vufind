@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ShortenUrl view helper Test Class
+ * ShortenUrl view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\View\Helper\Root\ShortenUrl;
 use VuFind\View\Helper\Root\ShortenUrlFactory;
 
 /**
- * ShortenUrl view helper Test Class
+ * ShortenUrl view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class ShortenUrlTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $service = $container->createMock(Database::class, ['shorten']);
         $service->expects($this->once())->method('shorten')
-            ->with($this->equalTo('foo'))->willReturn('bar');
+            ->with('foo')->willReturn('bar');
         $container->set(UrlShortenerInterface::class, $service);
         $factory = new ShortenUrlFactory();
         $helper = $factory($container, ShortenUrl::class);

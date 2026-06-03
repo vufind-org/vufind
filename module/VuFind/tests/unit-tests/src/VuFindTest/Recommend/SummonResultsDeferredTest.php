@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonResultsDeferred recommendation module Test Class
+ * SummonResultsDeferred recommendation module Test Class.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindTest\Recommend;
 
 /**
- * SummonResultsDeferred recommendation module Test Class
+ * SummonResultsDeferred recommendation module Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\Recommend;
 class SummonResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Test standard operation
+     * Test standard operation.
      *
      * @return void
      */
@@ -49,10 +49,9 @@ class SummonResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCa
     {
         $results = $this->getMockResults();
         $params = $results->getParams();
-        $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()->getMock();
+        $options = $this->createMock(\VuFind\Search\Solr\Options::class);
         $options->expects($this->once())->method('getLabelForBasicHandler')
-            ->with($this->equalTo('bar'))->willReturn('baz');
+            ->with('bar')->willReturn('baz');
         $params->expects($this->once())->method('getOptions')->willReturn($options);
         $params->expects($this->once())->method('getSearchHandler')->willReturn('bar');
         $mod = $this->getRecommend(\VuFind\Recommend\SummonResultsDeferred::class, '', null, $results);

@@ -40,17 +40,17 @@ use VuFindConsole\Command\Util\ExpireAccessTokensCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireAccessTokensCommandTest extends AbstractExpireCommandTest
+class ExpireAccessTokensCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireAccessTokensCommand::class;
 
     /**
-     * Name of a valid service class (or interface) to test with
+     * Name of a valid service class (or interface) to test with.
      *
      * @var string
      */

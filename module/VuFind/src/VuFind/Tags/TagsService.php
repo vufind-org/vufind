@@ -55,7 +55,7 @@ use function is_array;
 class TagsService
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TagServiceInterface          $tagDbService        Tag database service
      * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
@@ -208,7 +208,7 @@ class TagsService
     }
 
     /**
-     * Support method for fixDuplicateTags()
+     * Support method for fixDuplicateTags().
      *
      * @param string $tag           Tag to deduplicate.
      * @param bool   $caseSensitive Treat tags as case-sensitive?
@@ -266,7 +266,7 @@ class TagsService
     }
 
     /**
-     * Get the tags that match a string
+     * Get the tags that match a string.
      *
      * @param string $text  Tag to look up.
      * @param string $sort  Sort type
@@ -507,7 +507,7 @@ class TagsService
     }
 
     /**
-     * Get Resource Tags Paginator
+     * Get Resource Tags Paginator.
      *
      * @param ?int    $userId     ID of user (null for any)
      * @param ?int    $resourceId ID of the resource (null for any)

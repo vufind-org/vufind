@@ -164,7 +164,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render('storageRetrievalRequests')?>
+  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'storageRetrievalRequests'])?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'storageRetrievalRequests', 'accountStatus' => $this->accountStatus]); ?>

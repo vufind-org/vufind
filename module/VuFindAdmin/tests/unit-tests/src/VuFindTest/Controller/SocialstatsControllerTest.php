@@ -75,8 +75,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
 
         $mockRatingsStats = ['users' => 1, 'resources' => 2, 'total' => 3];
         $ratingsService = $this->createMock(RatingsServiceInterface::class);
-        $ratingsService->expects($this->any())->method('getStatistics')
-            ->willReturn($mockRatingsStats);
+        $ratingsService->method('getStatistics')->willReturn($mockRatingsStats);
         $dbServices->set(RatingsServiceInterface::class, $ratingsService);
 
         $mockTagStats = ['users' => 31, 'resources' => 32, 'total' => 33];

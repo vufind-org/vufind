@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Record Controller
+ * EDS Record Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFindSearch\ParamBag;
 
 /**
- * EDS Record Controller
+ * EDS Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -47,13 +47,14 @@ class EdsrecordController extends AbstractRecord
     use HoldsTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
+        $this->accessPermission = 'access.EDSModule';
         $this->sourceId = 'EDS';
         $this->fallbackDefaultTab = 'Description';
 

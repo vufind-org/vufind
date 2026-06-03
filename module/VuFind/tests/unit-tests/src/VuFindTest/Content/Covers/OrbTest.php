@@ -59,12 +59,10 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     {
         $loader = new Orb('http://foo', 'fakeuser', 'fakekey');
         if ($fixtureFile) {
-            $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $mockDownloader = $this->createMock(CachingDownloader::class);
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('downloadJson')
-                ->with($this->equalTo("https://fakeuser:fakekey@http://foo/products?eans=$expectedEAN&sort=ean_asc"))
+                ->with("https://fakeuser:fakekey@http://foo/products?eans=$expectedEAN&sort=ean_asc")
                 ->willReturn(json_decode($fixture));
             $loader->setCachingDownloader($mockDownloader);
         }
@@ -72,7 +70,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading
+     * Test cover loading.
      *
      * @return void
      */
@@ -91,7 +89,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover not available
+     * Test cover not available.
      *
      * @return void
      */
@@ -109,7 +107,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing downloader
+     * Test missing downloader.
      *
      * @return void
      */
@@ -125,7 +123,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */

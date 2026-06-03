@@ -1,9 +1,16 @@
-<?php $loginMethod = $this->auth()->getManager()->getILSLoginMethod(); ?>
+<?php
+  $authManager = $this->auth()->getManager();
+  $loginMethod = $authManager->getILSLoginMethod();
+?>
 <?php if ('email' === $loginMethod): ?>
-  <div class="form-group">
-    <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>:</label>
-    <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control" autocomplete="username">
-  </div>
+  <?php if ($authManager->getPreAuthenticationData()): ?>
+    <?=$this->auth()->getOtpLoginFields()?>
+  <?php else: ?>
+    <div class="form-group">
+      <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>:</label>
+      <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control" autocomplete="username">
+    </div>
+  <?php endif; ?>
 <?php else: ?>
   <div class="form-group">
     <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>

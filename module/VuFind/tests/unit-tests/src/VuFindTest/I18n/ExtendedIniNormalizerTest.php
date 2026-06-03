@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ExtendedIniNormalizer Test Class
+ * ExtendedIniNormalizer Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\I18n\ExtendedIniNormalizer;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 
 /**
- * ExtendedIniNormalizer Test Class
+ * ExtendedIniNormalizer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -96,16 +96,14 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testEscaping
+     * Data provider for testEscaping.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function escapingProvider(): array
+    public static function escapingProvider(): \Iterator
     {
-        return [
-            ['foo = "This is a backslash: \\\\"'],
-            ["foo = 'Single \\'quote\\' vs. double \"quote\"'"],
-        ];
+        yield ['foo = "This is a backslash: \\\\"'];
+        yield ["foo = 'Single \\'quote\\' vs. double \"quote\"'"];
     }
 
     /**

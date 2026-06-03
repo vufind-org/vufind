@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class CspHeaderGeneratorFactory
+ * Class CspHeaderGeneratorFactory.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for creating  Content Security Policy http headers generator class
+ * Factory for creating  Content Security Policy http headers generator class.
  *
  * @category VuFind
  * @package  Security
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class CspHeaderGeneratorFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

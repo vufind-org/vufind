@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Covers content loader plugin manager
+ * Covers content loader plugin manager.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 use VuFind\Content\ObalkyKnihContentFactory;
 
 /**
- * Covers content loader plugin manager
+ * Covers content loader plugin manager.
  *
  * @category VuFind
  * @package  Content

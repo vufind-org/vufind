@@ -46,7 +46,7 @@ class InsecureCookie implements PermissionProviderInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param CookieManager $cookieManager Cookie manager
      */

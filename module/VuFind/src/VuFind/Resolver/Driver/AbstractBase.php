@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AbstractBase for Resolver Driver
+ * AbstractBase for Resolver Driver.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\Resolver\Driver;
 
 /**
- * AbstractBase for Resolver Driver
+ * AbstractBase for Resolver Driver.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -43,14 +43,14 @@ namespace VuFind\Resolver\Driver;
 abstract class AbstractBase implements DriverInterface
 {
     /**
-     * Base URL for link resolver
+     * Base URL for link resolver.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $baseUrl Base URL for link resolver
      */
@@ -60,7 +60,7 @@ abstract class AbstractBase implements DriverInterface
     }
 
     /**
-     * Get Resolver Url
+     * Get Resolver Url.
      *
      * Transform the OpenURL as needed to get a working link to the resolver.
      *
@@ -74,6 +74,20 @@ abstract class AbstractBase implements DriverInterface
         $url .= !str_contains($url, '?') ? '?' : '&';
         $url .= $openURL;
         return $url;
+    }
+
+    /**
+     * Get Resolver Url for more options link.
+     *
+     * Transform the OpenURL as needed to get a working link to the resolver.
+     *
+     * @param string $openURL openURL (url-encoded)
+     *
+     * @return string Returns resolver specific url
+     */
+    public function getResolverUrlForMoreOptions(string $openURL): string
+    {
+        return $this->getResolverUrl($openURL);
     }
 
     /**
