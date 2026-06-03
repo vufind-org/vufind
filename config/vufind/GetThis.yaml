@@ -4,10 +4,7 @@
 
 # Whether to display the holdings list in a JS dropdown or a regular list, default false
 # This setting is experimental; the setting or the default value might change or disappear in future upgrades.
-#jsDropdown: false
-
-# Whether to display the title as a heading, default true
-#showHeading: true
+#holdingsDropdown: false
 
 # Whether to display the copy number (next to the call number), default false
 #showCopyNumber: false

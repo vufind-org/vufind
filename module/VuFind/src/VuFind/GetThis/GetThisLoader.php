@@ -807,22 +807,12 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Whether to make the holding list a JS dropdown.
+     * Whether to make the holding list a dropdown.
      *
      * @return bool
      */
-    public function makeListJSDropdown(): bool
+    public function makeHoldingsDropdown(): bool
     {
-        return (bool)($this->config['jsDropdown'] ?? false);
-    }
-
-    /**
-     * Whether to display the title as a heading, default true.
-     *
-     * @return bool
-     */
-    public function showHeading(): bool
-    {
-        return (bool)($this->config['showHeading'] ?? true);
+        return (bool)($this->config['holdingsDropdown'] ?? false);
     }
 }

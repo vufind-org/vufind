@@ -5,20 +5,7 @@ $templates = $this->getThis->getSubTemplates();
 $commentTemplateName = $this->getThis->commentTemplateName();
 
 $recordTitle = $this->driver->getRawData()['title_full'] ?? '';
-$headTitle = $this->translate('Get This') . ' : ' . $recordTitle;
-if ($this->showHeading !== false && $this->getThis->showHeading()) {
-    // Set page title and heading.
-    $heading = $this->component('page-title', [
-        'title' => $recordTitle,
-        'headTitle' => $this->translate('Get This') . ' : ' . $recordTitle,
-        'level' => 1,
-    ]);
-} else {
-    // Set page title.
-    $this->headTitle($headTitle);
-    $heading = '';
-}
-echo $heading;
+$this->headTitle($this->translate('Get This') . ' : ' . $recordTitle);
 
 foreach ($templates as $template) {
     if ($commentTemplateName) {

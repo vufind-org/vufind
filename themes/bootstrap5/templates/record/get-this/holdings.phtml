@@ -26,7 +26,7 @@ $getDisplay = function ($view, $item) {
     return $location . $copyNumber . $callNumber;
 };
 
-$JSDropdown = $this->getThis->makeListJSDropdown();
+$useDropdown = $this->getThis->makeHoldingsDropdown();
 $getLink = function ($view, $item) {
     return $view->url(
         'record-getthis',
@@ -44,15 +44,15 @@ $getLink = function ($view, $item) {
 ?>
 
 <strong><?= $this->transEsc('Items') ?> :</strong>
-<nav role="navigation" class="get-this-dropdown <?= $JSDropdown ? 'dropdown' : '' ?>">
-<?php if ($JSDropdown): ?>
+<nav role="navigation" class="get-this-dropdown <?= $useDropdown ? 'dropdown' : '' ?>">
+<?php if ($useDropdown): ?>
     <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
       <span><?= $getDisplay($this, $selectedItem) ?></span>
       <?=$this->icon('dropdown-open', 'dropdown-open') ?>
     </button>
   <div class="dropdown">
 <?php endif; ?>
-    <ul <?= $JSDropdown ? 'class="dropdown-menu"' : '' ?>>
+    <ul <?= $useDropdown ? 'class="dropdown-menu"' : '' ?>>
       <?php
       $selectedItem['item_id'] ??= -1;
       foreach ($items as $item):
@@ -61,12 +61,12 @@ $getLink = function ($view, $item) {
         $itemClass = $current ? 'current' : '';
         ?>
         <li>
-          <?php if ($current && !$JSDropdown): ?>
+          <?php if ($current && !$useDropdown): ?>
             <span><?= $getDisplay($this, $item) ?></span>
           <?php else: ?>
             <a
                 href="<?= $getLink($this, $item) ?>"
-                class="<?= $itemClass ?> <?= $JSDropdown ? 'dropdown-item' : '' ?>"
+                class="<?= $itemClass ?> <?= $useDropdown ? 'dropdown-item' : '' ?>"
                 rel="nofollow"
             >
             <?= $getDisplay($this, $item) ?>
@@ -75,7 +75,7 @@ $getLink = function ($view, $item) {
         </li>
       <?php endforeach; ?>
     </ul>
-  <?php if ($JSDropdown): ?>
+  <?php if ($useDropdown): ?>
   </div>
   <?php endif; ?>
 </nav>

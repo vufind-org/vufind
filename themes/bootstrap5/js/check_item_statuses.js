@@ -34,11 +34,11 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       // Full status mode is on -- display the HTML and hide extraneous junk:
       callnumAndLocations.forEach((callnumAndLocation) => {
         VuFind.setInnerHtml(callnumAndLocation, VuFind.updateCspNonce(result.full_status));
+        callnumAndLocation.querySelectorAll('.getThis').forEach((link) => {
+          VuFind.lightbox.bind(link);
+        });
       });
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.status').forEach((e) => { e.classList.add('hidden'); });
-      el.querySelectorAll('.getThis').forEach((link) => {
-        VuFind.lightbox.bind(link);
-      });
     } else if (typeof(result.missing_data) !== 'undefined'
       && result.missing_data
     ) {
@@ -46,10 +46,13 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       el.querySelectorAll('.callnumAndLocation,.status').forEach((e) => e.classList.add('hidden'));
     } else if (result.locationList) {
       // We have multiple locations - hide unwanted labels and display HTML from response:
-      el.querySelectorAll('.callnumber,.hideIfDetailed,.location').forEach((e) => e.classList.add('hidden'));
+      el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.getThis').forEach((e) => e.classList.add('hidden'));
       el.querySelectorAll('.locationDetails').forEach((locationDetails) => {
         locationDetails.classList.remove('hidden');
         VuFind.setInnerHtml(locationDetails, result.locationList);
+      });
+      el.querySelectorAll('.getThis').forEach((link) => {
+        VuFind.lightbox.bind(link);
       });
     } else {
       // Default case -- load call number and location into appropriate containers:

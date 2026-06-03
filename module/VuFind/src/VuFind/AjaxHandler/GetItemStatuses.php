@@ -385,6 +385,10 @@ class GetItemStatuses extends AbstractBase implements
             $locations[$info['location']]['items'][] = $info;
         }
 
+        if (isset($this->getThis)) {
+            $urlHelper = $this->renderer->plugin('url');
+            $this->getThis->setItems($record);
+        }
         // Build list split out by location:
         $locationList = [];
         foreach ($locations as $location => $details) {
@@ -397,12 +401,27 @@ class GetItemStatuses extends AbstractBase implements
 
             // Get combined availability for location
             $locationStatus = $this->availabilityStatusManager->combine($details['items']);
+            if (
+                isset($this->getThis)
+                && !$this->getThis->isOnlineResource($locationStatus['item_id'] ?? null)
+            ) {
+                $itemIdParams = !empty($locationStatus['item_id']) ?
+                    ['query' => ['item_id' => $locationStatus['item_id']]] : null;
+                $getThisURI = $urlHelper(
+                    'record-getthis',
+                    ['id' => $record[0]['id'] ?? null],
+                    $itemIdParams
+                );
+            } else {
+                $getThisURI = '';
+            }
 
             $locationInfo = [
                 'availability' => $locationStatus['availability'],
                 'location' => $this->translateWithPrefix('location_', $location),
                 'callnumberHtml' =>
                     $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
+                'getThisURI' => $getThisURI,
             ];
             $locationList[] = $locationInfo;
         }
