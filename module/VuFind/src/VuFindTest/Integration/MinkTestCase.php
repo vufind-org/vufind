@@ -1078,7 +1078,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $expected,
             $callback,
             function ($expected, $result): bool {
-                return $expected == $result;
+                return $expected === $result;
             },
             [$this, 'assertEquals'],
             $timeout
