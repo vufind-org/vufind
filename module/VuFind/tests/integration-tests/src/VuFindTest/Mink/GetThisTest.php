@@ -165,8 +165,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         bool $fullStatus,
         array $items,
         ?string $multipleLocations = null
-    ): array
-    {
+    ): array {
         $config = [
             'config' => [
                 'Catalog' => ['driver' => 'Demo'],
