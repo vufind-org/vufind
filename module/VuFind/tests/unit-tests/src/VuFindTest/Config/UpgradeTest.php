@@ -382,6 +382,21 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test [Piwik] section handling.
+     *
+     * @return void
+     */
+    public function testPiwikHandling(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik');
+        $warnings = $upgrader->getWarnings();
+        $this->assertContains(
+            'You are using the deprecated [Piwik] section for analytics. Please switch to [Matomo] instead.',
+            $warnings
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
