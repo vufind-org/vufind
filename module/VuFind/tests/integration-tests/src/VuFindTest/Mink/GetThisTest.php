@@ -153,18 +153,27 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Getter for the Demo config array.
      *
-     * @param string $recordId   Record id to work with
-     * @param bool   $fullStatus Whether to use full status (or standard status)
-     * @param array  $items      Call numbers of the holdings to use
+     * @param string  $recordId          Record id to work with
+     * @param bool    $fullStatus        Whether to use full status (or standard status)
+     * @param array   $items             Call numbers of the holdings to use
+     * @param ?string $multipleLocations Setting for multiple_locations
      *
      * @return array|array[]
      */
-    public static function getVufindConfigArray(string $recordId, bool $fullStatus, array $items): array
+    public static function getVufindConfigArray(
+        string $recordId,
+        bool $fullStatus,
+        array $items,
+        ?string $multipleLocations = null
+    ): array
     {
         $config = [
             'config' => [
                 'Catalog' => ['driver' => 'Demo'],
-                'Item_Status' => ['show_full_status' => $fullStatus],
+                'Item_Status' => [
+                    'show_full_status' => $fullStatus,
+                    'multiple_locations' => $multipleLocations ?? 'msg',
+                ],
             ],
             'Demo' => [
                 'StaticHoldings' => [],
@@ -254,6 +263,30 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($expectedPresence as $blockName => $presence) {
             $this->assertBlockPresence($page, $blockName, $presence);
         }
+    }
+
+    /**
+     * Test opening the GetThis dialog when using standard status and multiple_locations = group in the config.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testGetThisStandardStatusMultipleLocations(): void
+    {
+        $recordId = 'autocomplete1';
+        $this->changeConfigs(static::getVufindConfigArray(
+            $recordId,
+            false,
+            [
+                'CallNumberFive',
+            ],
+            'group'
+        ));
+        $page = $this->searchAndWaitForItemsStatus(static::SEARCH);
+        $getThisLink = $this->findAndAssertLink($page, 'Get This');
+        $getThisLink->click();
+        $lightbox = $this->getLightbox($page);
+        $this->assertTrue(str_contains($lightbox->getHtml(), 'CallNumberFive'));
     }
 
     /**
@@ -413,7 +446,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(static::getVufindConfigArray('autocomplete1', false, $callNumbers));
         $this->changeYamlConfigs([
             'GetThis' => [
-                'jsDropdown' => true,
+                'holdingsDropdown' => true,
             ],
         ]);
 
