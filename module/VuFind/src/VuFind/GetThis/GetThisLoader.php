@@ -773,11 +773,8 @@ class GetThisLoader implements LoggerAwareInterface
     public function setDefaultItemId(?string $defaultItemId): void
     {
         // We make sure the passed id matched an item we have
-        if (($this->getItem($defaultItemId)['item_id'] ?? null) == $defaultItemId) {
-            $this->defaultItemId = $defaultItemId;
-        } else {
-            $this->defaultItemId = null;
-        }
+        $this->defaultItemId = ($this->getItem($defaultItemId)['item_id'] ?? null) == $defaultItemId
+            ? $defaultItemId : null;
     }
 
     /**
