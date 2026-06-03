@@ -1518,8 +1518,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->getMinkSession()->evaluateScript('window.sessionStorage.clear();');
         // Also clear on unload to ensure we remove everything that could be added on unload (note: it would be nice
-        // to first navigate to e.g. about:blank to let the unload handlers run, but at least in Chromium-based browsers
-        // the session storage is disabled on the about:blank page as well as `data:` URIs):
+        // to be able to trigger any page unload handlers here and then clear the storage, but loading another page 
+        // would slow things down, and about:blank loaded in resetMinkSession won't allow access to VuFind's session 
+        // storage).
         $this->getMinkSession()
             ->evaluateScript('window.addEventListener("beforeunload", () => window.sessionStorage.clear());');
     }
