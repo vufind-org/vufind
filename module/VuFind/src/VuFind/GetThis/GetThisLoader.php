@@ -750,10 +750,14 @@ class GetThisLoader implements LoggerAwareInterface
     {
         $item = null;
         $itemId = $this->getItemId($itemId);
-        foreach ($this->getItems() as $hold_item) {
-            if (isset($hold_item['item_id']) && $hold_item['item_id'] == $itemId) {
-                $item = $hold_item;
-                break;
+        if ($itemId === null && current($this->items) !== null) {
+            $item = current($this->items);
+        } else {
+            foreach ($this->getItems() as $hold_item) {
+                if (isset($hold_item['item_id']) && $hold_item['item_id'] == $itemId) {
+                    $item = $hold_item;
+                    break;
+                }
             }
         }
         return $item;
@@ -768,7 +772,8 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function setDefaultItemId(?string $defaultItemId): void
     {
-        if ($this->getItem($defaultItemId) !== null) {
+        // We make sure the passed id matched an item we have
+        if ($defaultItemId !== null && ($this->getItem($defaultItemId)['item_id'] ?? null) == $defaultItemId) {
             $this->defaultItemId = $defaultItemId;
         }
     }

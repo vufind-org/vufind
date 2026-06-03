@@ -285,7 +285,8 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $getThisLink = $this->findAndAssertLink($page, 'Get This');
         $getThisLink->click();
         $lightbox = $this->getLightbox($page);
-        $this->assertTrue(str_contains($lightbox->getHtml(), 'CallNumberFive'));
+        $this->assertInstanceOf(NodeElement::class, $lightbox);
+        $this->assertStringContainsString('CallNumberFive', $lightbox->getHtml());
     }
 
     /**
@@ -456,10 +457,10 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         next($callNumbers);
         for ($i = 1; $i < count($callNumbers); $i++) {
             // Open the dropdown
-            $navDropdown->click();
+            $this->clickCss($navDropdown, '.dropdown-toggle');
 
             // Get the link and click on the next one
-            $links = $navDropdown->find('css', '.dropdown')->findAll('css', 'a');
+            $links = $navDropdown->findAll('css', 'a.dropdown-item');
             $links[$i]->click();
 
             // Wait for the lightbox to be refreshed
