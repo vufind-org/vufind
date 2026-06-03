@@ -85,6 +85,29 @@ class Session extends \Behat\Mink\Session
     }
 
     /**
+     * Reset session driver state.
+     *
+     * Calling any action before visiting a page is an undefined behavior.
+     * The only supported method calls on a fresh driver are
+     * - visit()
+     * - setRequestHeader()
+     * - setBasicAuth()
+     * - reset()
+     * - stop()
+     *
+     * @return void
+     */
+    public function reset()
+    {
+        parent::reset();
+
+        $this->testName = '';
+        $this->coverageDir = '';
+        $this->disableWhoops = false;
+        $this->apiKeyToken = null;
+    }
+
+    /**
      * Toggle HTTP header that disables Whoops.
      *
      * @param bool $disable Whether to disable Whoops

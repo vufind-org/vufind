@@ -1759,6 +1759,7 @@ class Folio extends AbstractAPI implements
                     fn ($address) => $address->addressTypeId,
                     $profile->personal->addresses ?? []
                 ),
+                'addresses' => $profile->personal->addresses ?? [],
             ],
         );
     }
@@ -2049,7 +2050,11 @@ class Folio extends AbstractAPI implements
                 if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
                     $deliveryPickupLocations[] = [
                         'locationID' => $addressTypeId,
-                        'locationDisplay' => $addressType,
+                        'locationDisplay' => $this->formatDeliveryAddress(
+                            $addressTypeId,
+                            $addressType,
+                            $patron['addresses'] ?? []
+                        ),
                     ];
                 }
             }
@@ -2257,6 +2262,39 @@ class Folio extends AbstractAPI implements
             $this->putCachedData($cacheKey, $addressTypes);
         }
         return $addressTypes;
+    }
+
+    /**
+     * Get a formatted display string for delivery to a particular patron address type.
+     *
+     * Can include patron specific information, i.e. "Campus - 123 Main St.".
+     *
+     * @param string $addressTypeId Type id of the address
+     * @param string $addressType   Type of the address
+     * @param array  $addresses     Patron's list of addresses
+     *
+     * @return string The display-formatted address
+     */
+    protected function formatDeliveryAddress(string $addressTypeId, string $addressType, array $addresses): string
+    {
+        if (!($this->config['Holds']['formatDeliveryAddressTypes'] ?? false)) {
+            return $addressType;
+        }
+
+        foreach ($addresses as $address) {
+            if ($addressTypeId == $address->addressTypeId) {
+                $tokens = [
+                    'type' => $addressType,
+                    'line1' => ($address?->addressLine1 ?? '') ?: 'EMPTY',
+                    'line2' => ($address?->addressLine2 ?? '') ?: 'EMPTY',
+                    'city' => ($address?->city ?? '') ?: 'EMPTY',
+                    'region' => ($address?->region ?? '') ?: 'EMPTY',
+                    'postalCode' => ($address?->postalCode ?? '') ?: 'EMPTY',
+                ];
+                return $this->translate('pick_up_location_delivery_address_format', $tokens, null, true);
+            }
+        }
+        return $addressType;
     }
 
     /**
