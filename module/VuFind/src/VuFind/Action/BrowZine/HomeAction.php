@@ -58,6 +58,6 @@ class HomeAction extends AbstractBrowZineSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        return parent::renderHomePage();
+        return $this->renderHomePage();
     }
 }
