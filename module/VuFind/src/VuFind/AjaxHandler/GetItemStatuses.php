@@ -405,8 +405,8 @@ class GetItemStatuses extends AbstractBase implements
                 isset($this->getThis)
                 && !$this->getThis->isOnlineResource($locationStatus['item_id'] ?? null)
             ) {
-                $itemIdParams = !empty($locationStatus['item_id']) ?
-                    ['query' => ['item_id' => $locationStatus['item_id']]] : null;
+                $itemIdParams = !empty($locationStatus['item_id'])
+                    ? ['query' => ['item_id' => $locationStatus['item_id']]] : null;
                 $getThisURI = $urlHelper(
                     'record-getthis',
                     ['id' => $record[0]['id'] ?? null],
