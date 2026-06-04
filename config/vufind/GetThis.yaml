@@ -1,15 +1,15 @@
 ---
-# This file contains the settings for the GetThis feature
-# See Regex.yaml for comments related to regex
+# This file contains the settings for the GetThis feature.
+# See Regex.yaml for comments related to regex.
 
-# Whether to display the holdings list in a JS dropdown or a regular list, default false
+# Whether to display the holdings list in a JS dropdown or a regular list, default false.
 # This setting is experimental; the setting or the default value might change or disappear in future upgrades.
 #holdingsDropdown: false
 
-# Whether to display the copy number (next to the call number), default false
+# Whether to display the copy number (next to the call number), default false.
 #showCopyNumber: false
 
-# Whether to comment in the HTML code the displayed template name for troubleshooting/debugging, default false
+# Whether to comment in the HTML code the displayed template name for troubleshooting/debugging, default false.
 #commentTemplateName: false
 
 templates:
@@ -19,8 +19,8 @@ templates:
   #   enabled: true/false, whether to enable the template
   #   view_variables: array of extra variables made available to the templates.
   #     It can be used with placeholders if available; see example below.
-  #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template
-  #     The result of the function can be negated if prefixed with "!"
+  #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template.
+  #     The result of the function can be negated if prefixed with "!".
   #     note : If the function does not exist, the condition will evaluate to false
   #   condition_group: if condition_function is limiting for you, condition_group replaces it to give more flexibility.
   #     This element defines a set of logical conditions.
@@ -35,7 +35,7 @@ templates:
   #         This is non-positional and can be placed anywhere within the group
   #
   #   Example; Values surrounded with brackets are placeholders serving as example :
-  #   These nested conditions are equivalent to ((test_function1 AND test_function2) OR test_function3) OR test_function4
+  #   These nested conditions are equivalent to ((test_function1 AND test_function2) OR test_function3) OR test_function4.
   #     {template_name}:
   #       condition_group:
   #         - condition_group:

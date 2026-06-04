@@ -5,7 +5,13 @@ $templates = $this->getThis->getSubTemplates();
 $commentTemplateName = $this->getThis->commentTemplateName();
 
 $recordTitle = $this->driver->getRawData()['title_full'] ?? '';
-$this->headTitle($this->translate('Get This') . ' : ' . $recordTitle);
+echo $this->component(
+    'page-title',
+    [
+        'title' => $this->translate('Get This') . ' : ' . $recordTitle,
+        'level' => 1,
+    ]
+);
 
 foreach ($templates as $template) {
     if ($commentTemplateName) {
