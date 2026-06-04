@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Search params plugin factory.
+ * VuFind Default Factory Attribute.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,32 +21,37 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Search
+ * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Search\Params;
+namespace VuFind\ServiceManager\Factory;
+
+use Attribute;
 
 /**
- * Search params plugin factory.
+ * VuFind Default Factory Attribute.
  *
  * @category VuFind
- * @package  Search
+ * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
+#[Attribute]
+class DefaultFactory
 {
     /**
      * Constructor.
+     *
+     * @param ?string| $name       Class name of factory to use by default, null if undetermined
+     * @param bool     $autodetect Should we autodetect a factory if $name is unspecified?
      */
-    public function __construct()
-    {
-        $this->defaultNamespace = 'VuFind\Search';
-        $this->defaultFactory = ParamsFactory::class;
-        $this->classSuffix = '\Params';
+    public function __construct(
+        public readonly ?string $name = null,
+        public readonly bool $autodetect = true
+    ) {
     }
 }

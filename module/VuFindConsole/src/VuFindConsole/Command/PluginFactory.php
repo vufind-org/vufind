@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Search params plugin factory.
+ * Console command plugin factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,22 +21,22 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Search
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Search\Params;
+namespace VuFindConsole\Command;
 
 /**
- * Search params plugin factory.
+ * Console command plugin factory.
  *
  * @category VuFind
- * @package  Search
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
@@ -45,8 +45,6 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      */
     public function __construct()
     {
-        $this->defaultNamespace = 'VuFind\Search';
-        $this->defaultFactory = ParamsFactory::class;
-        $this->classSuffix = '\Params';
+        $this->defaultNamespace = 'VuFindConsole\Command';
     }
 }

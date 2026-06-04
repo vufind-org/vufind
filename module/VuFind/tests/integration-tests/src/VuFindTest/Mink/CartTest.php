@@ -729,6 +729,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Do the export:
         $session = $this->getMinkSession();
+        $windowName = $session->getWindowName();
         $windowNames = $session->getWindowNames();
         $windowCount = count($session->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
@@ -746,6 +747,8 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             $exportUrl,
             [$session, 'getCurrentUrl']
         );
+        // Switch back to main window to ensure correct session reset:
+        $session->switchToWindow($windowName);
     }
 
     /**

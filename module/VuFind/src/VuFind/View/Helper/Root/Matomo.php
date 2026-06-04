@@ -36,7 +36,6 @@ use Laminas\View\Helper\HeadTitle;
 use Laminas\View\Helper\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Renderer\RendererInterface;
-use VuFind\Config\Config;
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -124,7 +123,7 @@ class Matomo
     /**
      * Constructor.
      *
-     * @param Config            $config        VuFind configuration
+     * @param array             $config        VuFind configuration
      * @param TreeRouteStack    $router        Router
      * @param Request           $request       Request
      * @param RendererInterface $viewRenderer  View renderer
@@ -136,8 +135,8 @@ class Matomo
      * @param HeadTitle         $headTitle     HeadTitle view helper
      */
     public function __construct(
-        #[Autowire(config: 'config', configType: 'object')]
-        Config $config,
+        #[Autowire(config: 'config', configType: 'array')]
+        array $config,
         #[Autowire(service: 'Router')]
         protected TreeRouteStack $router,
         #[Autowire(service: 'Request')]
@@ -156,15 +155,20 @@ class Matomo
         #[Autowire(container: 'ViewHelperManager')]
         protected HeadTitle $headTitle,
     ) {
-        $this->url = $config->Matomo->url ?? '';
+        $matomoConfig = $config['Matomo'] ?? [];
+        // Fall back to legacy Piwik config if Matomo section is missing:
+        if (empty($matomoConfig)) {
+            $matomoConfig = $config['Piwik'] ?? [];
+        }
+        $this->url = $matomoConfig['url'] ?? '';
         if ($this->url && !str_ends_with($this->url, '/')) {
             $this->url .= '/';
         }
-        $this->siteId = $config->Matomo->site_id ?? 1;
-        $this->searchPrefix = $config->Matomo->searchPrefix ?? '';
-        $this->disableCookies = $config->Matomo->disableCookies ?? false;
-        $this->customVars = $config->Matomo->custom_variables ?? false;
-        $this->customDimensions = $config->Matomo->custom_dimensions ?? [];
+        $this->siteId = $matomoConfig['site_id'] ?? 1;
+        $this->searchPrefix = $matomoConfig['searchPrefix'] ?? '';
+        $this->disableCookies = $matomoConfig['disableCookies'] ?? false;
+        $this->customVars = $matomoConfig['custom_variables'] ?? false;
+        $this->customDimensions = $matomoConfig['custom_dimensions'] ?? [];
         $this->timestamp = round(microtime(true) * 1000);
     }
 

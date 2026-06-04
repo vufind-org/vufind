@@ -405,6 +405,42 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test [Piwik] / [Matomo] section conflict handling.
+     *
+     * @return void
+     */
+    public function testPiwikAndMatomoConflict(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik-and-matomo');
+        $warnings = $upgrader->getWarnings();
+        $configs = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['url' => 'bar', 'site_id' => 2],
+            $configs['config']['Matomo']
+        );
+        $this->assertContains(
+            'You are using the deprecated [Piwik] section for analytics but also have [Matomo] settings.'
+            . ' The [Piwik] settings have been removed.',
+            $warnings
+        );
+    }
+
+    /**
+     * Test [Piwik] getting upgraded to [Matomo].
+     *
+     * @return void
+     */
+    public function testPiwikUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik');
+        $configs = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['url' => 'foo', 'site_id' => 1],
+            $configs['config']['Matomo']
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
