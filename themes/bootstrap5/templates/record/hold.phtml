@@ -62,6 +62,8 @@
           <option
             value="<?=$this->escapeHtmlAttr($group['id'])?>"
             data-locations-label="<?=$this->transEsc($group['locationsLabel'] ?? 'pick_up_location')?>"
+            data-no-locations-label="<?=$this->transEsc($group['noLocationsLabel'] ?? 'No pickup locations available')?>"
+            data-select-location-text="<?=$this->transEsc($group['selectLocationText'] ?? 'select_pickup_location')?>"
             <?=($selected == $group['id']) ? ' selected="selected"' : ''?>
           >
             <?=$this->transEsc('request_group_' . $group['name'], null, $group['name'])?>
@@ -86,6 +88,9 @@
         // default:
         $selected = $this->homeLibrary ?? false;
       }
+      $selectPickupLocationText =
+        array_filter($requestGroups, fn ($group) => $group['id'] == $defaultRequestGroup)[0]['selectLocationText']
+        ?? 'select_pickup_location';
     ?>
     <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
@@ -99,7 +104,7 @@
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-select">
           <?php if ($selected === false): ?>
           <option value="" selected="selected">
-            <?=$this->transEsc('select_pickup_location')?>
+            <?=$this->transEsc($selectPickupLocationText)?>
           </option>
           <?php endif; ?>
         </select>
@@ -110,7 +115,7 @@
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-select">
           <?php if ($selected === false && count($this->pickup) > 1): ?>
             <option value="" selected="selected">
-              <?=$this->transEsc('select_pickup_location')?>
+              <?=$this->transEsc($selectPickupLocationText)?>
             </option>
           <?php endif; ?>
           <?php foreach ($this->pickup as $lib): ?>
