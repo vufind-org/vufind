@@ -100,7 +100,7 @@
                 'data-channel-id' => $channelID,
                 'data-record-id' => $item['id'],
                 'data-record-source' => $item['source'],
-                'id' => $channelID . '-item-' . str_pad($index, 3, '0'),
+                'id' => $channelID . '-item-' . str_pad($index, 3, '0', STR_PAD_LEFT),
               ];
             ?>
             <li<?=$this->htmlAttributes($channelItemAttrs) ?>>
