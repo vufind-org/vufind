@@ -101,7 +101,7 @@
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-select">
           <?php if ($selected === false): ?>
           <option value="" selected="selected">
-            <?php 
+            <?php
               $selectPickupLocationText = array_filter($requestGroups, fn ($group) => $group['id'] == $defaultRequestGroup)[0]['selectLocationText']
                 ?? 'select_pickup_location';
             ?>
