@@ -167,11 +167,8 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\BrowZineController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
-            'VuFind\Controller\ChannelsController' => 'VuFind\Controller\ChannelsControllerFactory',
             'VuFind\Controller\CollectionsController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\CombinedController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CommentsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -230,16 +227,10 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'Alma' => 'VuFind\Controller\AlmaController',
-            'alma' => 'VuFind\Controller\AlmaController',
             'DeveloperSettings' => 'VuFind\Controller\DeveloperSettingsController',
             'developersettings' => 'VuFind\Controller\DeveloperSettingsController',
-            'BrowZine' => 'VuFind\Controller\BrowZineController',
-            'browzine' => 'VuFind\Controller\BrowZineController',
             'Cart' => 'VuFind\Controller\CartController',
             'cart' => 'VuFind\Controller\CartController',
-            'Channels' => 'VuFind\Controller\ChannelsController',
-            'channels' => 'VuFind\Controller\ChannelsController',
             'Collections' => 'VuFind\Controller\CollectionsController',
             'collections' => 'VuFind\Controller\CollectionsController',
             'Combined' => 'VuFind\Controller\CombinedController',
