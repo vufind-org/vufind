@@ -102,8 +102,7 @@ class PermissionHelper implements
      * @param ResponseInterface      $response        Response
      * @param string                 $permission      Permission to check
      * @param ?string                $defaultBehavior Default behavior to use if none configured
-     *                                                (null to use default configured in the
-     *                                                manager, false to take no action).
+     * (null to use default configured in the manager, false to take no action).
      * @param bool                   $passIfUndefined Should the check pass if no rules are defined for $permission in
      * permissions.ini?
      *
