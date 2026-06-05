@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Alma controller.
+ * Alma webhook action.
  *
  * PHP version 8
  *
  * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,111 +22,116 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Michael Birkner <michael.birkner@akwien.at>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Alma;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use Laminas\Stdlib\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use VuFind\Account\UserAccountService;
+use VuFind\Action\AbstractAction;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Log\LoggerAwareTrait;
+use VuFind\Mailer\Mailer;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\Renderer\TemplateRendererInterface;
+use VuFindHttp\HttpService;
+
+use function is_object;
 
 /**
- * Alma controller, mainly for webhooks.
+ * Alma webhook action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Michael Birkner <michael.birkner@akwien.at>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class AlmaController extends AbstractBase
+class WebhookAction extends AbstractAction implements LoggerAwareInterface, TranslatorAwareInterface
 {
-    /**
-     * Http service.
-     *
-     * @var \VuFindHttp\HttpService
-     */
-    protected $httpService;
+    use EmailSettingsTrait;
+    use LoggerAwareTrait;
+    use TranslatorAwareTrait;
 
     /**
-     * Http response.
+     * Constructor.
      *
-     * @var \Laminas\Http\PhpEnvironment\Response
+     * @param AuthManager               $authManager        Authentication manager
+     * @param HttpService               $httpService        HTTP service
+     * @param Mailer                    $mailer             Mailer
+     * @param array                     $config             VuFind configuration
+     * @param array                     $configAlma         Alma configuration
+     * @param UserServiceInterface      $userService        User database service
+     * @param UserAccountService        $userAccountService User account service
+     * @param ServerUrlHelper           $serverUrlHelper    Server URL helper
+     * @param TemplateRendererInterface $templateRenderer   Template renderer
      */
-    protected $httpResponse;
-
-    /**
-     * Http headers.
-     *
-     * @var \Laminas\Http\Headers
-     */
-    protected $httpHeaders;
-
-    /**
-     * Alma.ini config.
-     *
-     * @var array
-     */
-    protected $configAlma;
-
-    /**
-     * User database service.
-     *
-     * @var UserServiceInterface
-     */
-    protected $userService;
-
-    /**
-     * Alma Controller constructor.
-     *
-     * @param ServiceLocatorInterface $sm The ServiceLocatorInterface
-     */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        parent::__construct($sm);
-        $this->httpResponse = $this->getResponse();
-        $this->httpHeaders = $this->httpResponse->getHeaders();
-        $this->configAlma = $this->getConfigArray('Alma');
-        $this->userService = $this->getDbService(UserServiceInterface::class);
+    public function __construct(
+        protected AuthManager $authManager,
+        protected HttpService $httpService,
+        protected Mailer $mailer,
+        #[Autowire(config: 'config')]
+        protected array $config,
+        #[Autowire(config: 'Alma')]
+        protected array $configAlma,
+        #[Autowire(container: DbServicePluginManager::class)]
+        protected UserServiceInterface $userService,
+        protected UserAccountService $userAccountService,
+        protected ServerUrlHelper $serverUrlHelper,
+        protected TemplateRendererInterface $templateRenderer,
+    ) {
+        parent::__construct();
     }
 
     /**
-     * Action that is executed when the webhook page is called.
+     * Process a webhook request.
      *
-     * @return \Laminas\Http\Response|NULL
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function webhookAction()
-    {
-        // Request from external
-        $request = $this->getRequest();
-
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
         // Get request method (GET, POST, ...)
         $requestMethod = $request->getMethod();
 
         // Get request body if method is POST and is not empty
         $requestBodyJson = null;
         if (
-            $request->getContent() != null
-            && !empty($request->getContent())
-            && $requestMethod == 'POST'
+            'POST' === $requestMethod
+            && $request->getBody()->getSize()
         ) {
             try {
                 $this->checkMessageSignature($request);
             } catch (\VuFind\Exception\Forbidden $ex) {
                 return $this->createJsonResponse(
-                    'Access to Alma Webhook is forbidden. ' .
-                    'The message signature is not correct.',
+                    'Access to Alma Webhook is forbidden. The message signature is not correct.',
                     403
                 );
             }
-            $requestBodyJson = json_decode($request->getContent());
+            $requestBodyJson = json_decode((string)$request->getBody());
+            if (!is_object($requestBodyJson)) {
+                throw new \Exception('Invalid request body');
+            }
         }
 
         // Get webhook action
@@ -147,7 +153,6 @@ class AlmaController extends AbstractBase
                 }
 
                 return $this->webhookUser($requestBodyJson);
-                break;
             case 'JOB_END':
             case 'NOTIFICATION':
             case 'LOAN':
@@ -155,7 +160,6 @@ class AlmaController extends AbstractBase
             case 'BIB':
             case 'ITEM':
                 return $this->webhookNotImplemented($webhookAction);
-                break;
             default:
                 $accessPermission = 'access.alma.webhook.challenge';
                 try {
@@ -169,18 +173,17 @@ class AlmaController extends AbstractBase
                     );
                 }
                 return $this->webhookChallenge();
-                break;
         }
     }
 
     /**
      * Webhook actions related to a newly created, updated or deleted user in Alma.
      *
-     * @param mixed $requestBodyJson A JSON string decode with json_decode()
+     * @param object $requestBodyJson Request JSON object
      *
-     * @return NULL|\Laminas\Http\Response
+     * @return ?ResponseInterface
      */
-    protected function webhookUser($requestBodyJson)
+    protected function webhookUser(object $requestBodyJson): ?ResponseInterface
     {
         // Initialize user variable that should hold the user table row
         $user = null;
@@ -197,8 +200,7 @@ class AlmaController extends AbstractBase
         if ($method == 'CREATE' || $method == 'UPDATE') {
             // Get username (could e. g. be the barcode)
             $username = null;
-            $userIdentifiers
-                = $requestBodyJson->webhook_user->user->user_identifier ?? [];
+            $userIdentifiers = $requestBodyJson->webhook_user->user->user_identifier ?? [];
             $idTypeConfig = $this->configAlma['NewUser']['idType'] ?? null;
             foreach ($userIdentifiers as $userIdentifier) {
                 $idTypeHook = $userIdentifier->id_type->value ?? null;
@@ -219,12 +221,11 @@ class AlmaController extends AbstractBase
             $firstname = $requestBodyJson->webhook_user->user->first_name ?? '';
             $lastname = $requestBodyJson->webhook_user->user->last_name ?? '';
 
-            $allEmails
-                = $requestBodyJson->webhook_user->user->contact_info->email ?? [];
+            $allEmails = $requestBodyJson->webhook_user->user->contact_info->email ?? [];
             $email = '';
             foreach ($allEmails as $currentEmail) {
                 $preferred = $currentEmail->preferred ?? false;
-                if ($preferred && $email == null) {
+                if ($preferred && $email === '') {
                     $email = $currentEmail->email_address ?? '';
                 }
             }
@@ -276,7 +277,7 @@ class AlmaController extends AbstractBase
             $user = $this->userService->getUserByCatId($primaryId);
             if ($user) {
                 try {
-                    $this->getService(UserAccountService::class)->purgeUserData($user);
+                    $this->userAccountService->purgeUserData($user);
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully deleted user with primary ID \'' . $primaryId .
                         '\' in VuFind.',
@@ -306,24 +307,24 @@ class AlmaController extends AbstractBase
      * The webhook challenge. This is used to activate the webhook in Alma. Without
      * activating it, Alma will not send its webhook messages to VuFind.
      *
-     * @return \Laminas\Http\Response
+     * @return ResponseInterface
      */
-    protected function webhookChallenge()
+    protected function webhookChallenge(): ResponseInterface
     {
         // Get challenge string from the get parameter that Alma sends us. We need to
         // return this string in the return message.
-        $secret = $this->params()->fromQuery('challenge');
+        $secret = $this->getQueryParam('challenge');
 
         // Create the return array
         $returnArray = [];
 
+        $statusCode = 200;
         if (isset($secret) && !empty(trim($secret))) {
             $returnArray['challenge'] = $secret;
-            $this->httpResponse->setStatusCode(200);
         } else {
             $returnArray['error'] = 'GET parameter \'challenge\' is empty, not ' .
             'set or not available when receiving webhook challenge from Alma.';
-            $this->httpResponse->setStatusCode(500);
+            $statusCode = 500;
         }
 
         // Remove null from array
@@ -331,10 +332,11 @@ class AlmaController extends AbstractBase
 
         // Create return JSON value and set it to the response
         $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
-        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
-        $this->httpResponse->setContent($returnJson);
+        $response = $this->response->withHeader('Content-type', 'application/json')
+            ->withStatus($statusCode);
+        $response->getBody()->write($returnJson);
 
-        return $this->httpResponse;
+        return $response;
     }
 
     /**
@@ -348,8 +350,7 @@ class AlmaController extends AbstractBase
     protected function sendSetPasswordEmail(UserEntityInterface $user): void
     {
         if (!$user->getEmail()) {
-            // No email address, can't send the message!
-            error_log(
+            $this->logError(
                 'Could not send the \'set-password-email\' to user with ' .
                 'primary ID \'' . $user->getCatId() . '\' | username \'' .
                 $user->getUsername() . '\': Email address missing'
@@ -359,38 +360,44 @@ class AlmaController extends AbstractBase
         // Attempt to send the email
         try {
             // Create a fresh hash
-            $this->getAuthManager()->updateUserVerifyHash($user);
-            $config = $this->getConfigArray();
-            $renderer = $this->getViewRenderer();
-            $method = $this->getAuthManager()->getAuthMethod();
+            $this->authManager->updateUserVerifyHash($user);
+            $method = $this->authManager->getAuthMethod();
 
             // Custom template for emails (text-only)
-            $message = $renderer->render(
+            $message = $this->templateRenderer->renderTemplateAsString(
+                $this->request,
                 'Email/new-user-welcome.phtml',
                 [
-                    'library' => $config['Site']['title'],
+                    'library' => $this->config['Site']['title'] ?? '',
                     'firstname' => $user->getFirstname(),
                     'lastname' => $user->getLastname(),
                     'username' => $user->getUsername(),
-                    'url' => $this->getServerUrl('myresearch-verify') . '?hash='
-                        . $user->getVerifyHash() . '&auth_method=' . $method,
+                    'url' => $this->serverUrlHelper->getUrlForPath(
+                        $this->routeHelper->getUrlFromRoute(
+                            'myresearch-verify',
+                            queryParams: [
+                                'hash' => $user->getVerifyHash(),
+                                'auth_method' => $method,
+                            ],
+                        )
+                    ),
                 ]
             );
             // Send the email
-            $this->getService(\VuFind\Mailer\Mailer::class)->send(
+            $this->mailer->send(
                 $user->getEmail(),
-                $this->getEmailSenderAddress($config),
+                $this->getEmailSenderAddress($this->config),
                 $this->translate(
                     'new_user_welcome_subject',
-                    ['%%library%%' => $config['Site']['title']]
+                    ['%%library%%' => $this->config['Site']['title'] ?? '']
                 ),
                 $message
             );
         } catch (\VuFind\Exception\Mail $e) {
-            error_log(
+            $this->logError(
                 'Could not send the \'set-password-email\' to user with ' .
                 'primary ID \'' . $user->getCatId() . '\' | username \'' .
-                $user->getUsername() . '\': ' . $e->getMessage()
+                $user->getUsername() . '\': ' . (string)$e
             );
         }
     }
@@ -403,17 +410,17 @@ class AlmaController extends AbstractBase
      * @param int    $httpStatusCode The HTTP status code that should be sent back
      *                               to Alma
      *
-     * @return \Laminas\Http\Response
+     * @return ResponseInterface
      */
-    protected function createJsonResponse($text, $httpStatusCode)
+    protected function createJsonResponse($text, $httpStatusCode): ResponseInterface
     {
         $returnArray = [];
         $returnArray[] = $text;
         $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
-        $this->httpHeaders->addHeaderLine('Content-type', 'application/json');
-        $this->httpResponse->setStatusCode($httpStatusCode);
-        $this->httpResponse->setContent($returnJson);
-        return $this->httpResponse;
+        $response = $this->response->withHeader('Content-type', 'application/json')
+            ->withStatus($httpStatusCode);
+        $response->getBody()->write($returnJson);
+        return $response;
     }
 
     /**
@@ -422,9 +429,9 @@ class AlmaController extends AbstractBase
      *
      * @param string $webhookType The type of the webhook
      *
-     * @return \Laminas\Http\Response
+     * @return ResponseInterface
      */
-    protected function webhookNotImplemented($webhookType)
+    protected function webhookNotImplemented(string $webhookType): ResponseInterface
     {
         return $this->createJsonResponse(
             $webhookType . ' Alma Webhook is not (yet) implemented in VuFind.',
@@ -442,11 +449,11 @@ class AlmaController extends AbstractBase
      *
      * @return void
      */
-    protected function checkPermission($accessPermission)
+    protected function checkPermission(string $accessPermission): void
     {
         $this->accessPermission = $accessPermission;
         $this->accessDeniedBehavior = 'exception';
-        $this->validateAccessPermission($this->getEvent());
+        $this->validateAccessPermission();
     }
 
     /**
@@ -455,22 +462,20 @@ class AlmaController extends AbstractBase
      * the 'X-Exl-Signature' in the request header. This is a security measure to
      * be sure that the request comes from Alma.
      *
-     * @param RequestInterface $request The request from Alma.
+     * @param ServerRequestInterface $request The request from Alma.
      *
      * @throws \VuFind\Exception\Forbidden Throws forbidden exception if hash values
      * are not the same.
      *
      * @return void
      */
-    protected function checkMessageSignature(RequestInterface $request)
+    protected function checkMessageSignature(ServerRequestInterface $request): void
     {
         // Get request content
-        $requestBodyString = $request->getContent();
+        $requestBodyString = (string)$request->getBody();
 
         // Get hashed message signature from request header of Alma webhook request
-        $almaSignature = ($request->getHeaders()->get('X-Exl-Signature'))
-        ? $request->getHeaders()->get('X-Exl-Signature')->getFieldValue()
-        : null;
+        $almaSignature = $request->getHeader('X-Exl-Signature')[0] ?? null;
 
         // Get the webhook secret defined in Alma.ini
         $secretConfig = $this->configAlma['Webhook']['secret'] ?? null;
@@ -488,15 +493,14 @@ class AlmaController extends AbstractBase
 
         // Check for correct signature
         if ($almaSignature != $calculatedHash) {
-            error_log(
+            $this->logError(
                 '[Alma] Unauthorized: Signature value not correct! ' .
                 'Hash from Alma: "' . $almaSignature . '". ' .
                 'Calculated hash: "' . $calculatedHash . '". ' .
                 'Body content for calculating the hash was: ' .
                 '"' . json_encode(
                     json_decode($requestBodyString),
-                    JSON_UNESCAPED_UNICODE |
-                        JSON_UNESCAPED_SLASHES
+                    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
                 ) . '"'
             );
             throw new \VuFind\Exception\Forbidden();
