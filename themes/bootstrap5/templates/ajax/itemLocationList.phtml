@@ -8,9 +8,9 @@
   </div>
   <div class="groupCallnumber">
     <span><?=$location['callnumberHtml']?></span>
-    <?php if (!empty($location['getThisURI'])): ?>
+    <?php if (!empty($location['getThisURL'])): ?>
       <span class="getThis">
-        <a rel="nofollow" data-lightbox href="<?= $location['getThisURI'] ?>"><?=$this->transEsc('Get This')?></a>
+        <a rel="nofollow" data-lightbox href="<?= $location['getThisURL'] ?>"><?=$this->transEsc('Get This')?></a>
       </span>
     <?php endif; ?>
   </div>

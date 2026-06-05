@@ -9,7 +9,7 @@
         $getThisLoader->setItems([$holding]);
         $getThisLoader->setRecord($this->driver);
         $isOnlineResource = $getThisLoader->isOnlineResource($holding['item_id'] ?? null);
-        $getThisURI = $isOnlineResource ? null : $this->url(
+        $getThisURL = $isOnlineResource ? null : $this->url(
             'record-getthis',
             ['id' => $holding['id']],
             ['query' => ['item_id' => $holding['item_id'] ?? null]]
@@ -62,8 +62,8 @@
             <span class="icon-link__label"><?=$this->transEsc($checkILLRequest ? 'ill_request_check_text' : 'ill_request_place_text')?></span>
           </a>
         <?php endif; ?>
-        <?php if (isset($getThisURI, $isOnlineResource) && !$isOnlineResource): ?>
-          <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURI) ?>" rel="nofollow">
+        <?php if (isset($getThisURL, $isOnlineResource) && !$isOnlineResource): ?>
+          <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURL) ?>" rel="nofollow">
             <?=$this->transEsc('Get This')?>
           </a>
         <?php endif; ?>
@@ -82,8 +82,8 @@
               <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
             </a>
           <?php endif; ?>
-          <?php if (isset($getThisURI)): ?>
-            <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURI) ?>" rel="nofollow">
+          <?php if (isset($getThisURL)): ?>
+            <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURL) ?>" rel="nofollow">
               <?=$this->transEsc('Get This')?>
             </a>
           <?php endif; ?>

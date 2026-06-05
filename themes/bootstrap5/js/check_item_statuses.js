@@ -34,10 +34,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       // Full status mode is on -- display the HTML and hide extraneous junk:
       callnumAndLocations.forEach((callnumAndLocation) => {
         VuFind.setInnerHtml(callnumAndLocation, VuFind.updateCspNonce(result.full_status));
-        callnumAndLocation.querySelectorAll('.getThis').forEach((link) => {
-          VuFind.lightbox.bind(link);
-        });
       });
+      VuFind.lightbox.bind(callnumAndLocations);
       el.querySelectorAll('.callnumber,.hideIfDetailed,.location,.status').forEach((e) => { e.classList.add('hidden'); });
     } else if (typeof(result.missing_data) !== 'undefined'
       && result.missing_data
@@ -51,9 +49,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         locationDetails.classList.remove('hidden');
         VuFind.setInnerHtml(locationDetails, result.locationList);
       });
-      el.querySelectorAll('.getThis').forEach((link) => {
-        VuFind.lightbox.bind(link);
-      });
+      VuFind.lightbox.bind(el);
     } else {
       // Default case -- load call number and location into appropriate containers:
       el.querySelectorAll('.callnumber').forEach((callnumber) => {
@@ -64,8 +60,8 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         }
       });
       el.querySelectorAll('.getThis').forEach((getThisContainer) => {
-        if (result.getThisURI) {
-          getThisContainer.getElementsByTagName('a')[0].href = result.getThisURI;
+        if (result.getThisURL && getThisContainer.getElementsByTagName('a').length > 0) {
+          getThisContainer.getElementsByTagName('a')[0].href = result.getThisURL;
         } else {
           getThisContainer.remove();
         }

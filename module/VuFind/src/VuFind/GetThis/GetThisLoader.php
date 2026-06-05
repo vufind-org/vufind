@@ -92,7 +92,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Initializes the loader.
      *
-     * @param array $config Config pulled from the config file defined above
+     * @param array $config Config to use
      * @param Regex $regex  Regex service
      */
     public function __construct(

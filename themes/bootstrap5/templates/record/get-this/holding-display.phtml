@@ -1,0 +1,22 @@
+<?php
+$item['item_id'] ??= null;
+$location = $this->getThis->getLocation($item['item_id']);
+if (!empty($location)) {
+    $location .= ': ';
+} else {
+    $location = '';
+}
+$copyNumber = $this->getThis->getCopyNumber($item['item_id']);
+if (!empty($copyNumber)) {
+    $copyNumber = $this->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) . ' ';
+} else {
+    $copyNumber = '';
+}
+if ($callNumberData = $this->getThis->getCallNumber($item['item_id'])) {
+    $rawCallNumber = $callNumberData['text'] ?? '';
+    $callNumber = ($callNumberData['translate'] ?? false) ? $this->translate($rawCallNumber) : $this->escapeHtml($rawCallNumber);
+    $callNumber = '(' . $callNumber . ')';
+} else {
+    $callNumber = '';
+}
+echo $location . $copyNumber . $callNumber;

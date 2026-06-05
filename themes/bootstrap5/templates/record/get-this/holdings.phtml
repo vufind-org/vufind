@@ -1,82 +1,28 @@
 <?php
 $selectedItem = $this->getThis->getItem();
-$items = $this->getThis->getItems();
-
-$getDisplay = function ($view, $item) {
-    $item['item_id'] ??= null;
-    $location = $view->getThis->getLocation($item['item_id']);
-    if (!empty($location)) {
-        $location .= ': ';
-    } else {
-        $location = '';
-    }
-    $copyNumber = $view->getThis->getCopyNumber($item['item_id']);
-    if (!empty($copyNumber)) {
-        $copyNumber = $view->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) . ' ';
-    } else {
-        $copyNumber = '';
-    }
-    if ($callNumberData = $view->getThis->getCallNumber($item['item_id'])) {
-        $rawCallNumber = $callNumberData['text'] ?? '';
-        $callNumber = ($callNumberData['translate'] ?? false) ? $view->translate($rawCallNumber) : $view->escapeHtml($rawCallNumber);
-        $callNumber = '(' . $callNumber . ')';
-    } else {
-        $callNumber = '';
-    }
-    return $location . $copyNumber . $callNumber;
-};
-
 $useDropdown = $this->getThis->makeHoldingsDropdown();
-$getLink = function ($view, $item) {
-    return $view->url(
-        'record-getthis',
-        [
-            'id' => $view->driver->getUniqueId(),
-            'action' => 'GetThis',
-        ],
-        [
-            'query' => [
-                'item_id' => $item['item_id'],
-            ],
-        ]
-    );
-};
+$holdingsList = $this->render('record/get-this/holdings-list.phtml');
 ?>
 
 <strong><?= $this->transEsc('Items') ?> :</strong>
-<nav role="navigation" class="get-this-dropdown <?= $useDropdown ? 'dropdown' : '' ?>">
-<?php if ($useDropdown): ?>
+<nav role="navigation" class="get-this-dropdown<?= $useDropdown ? ' dropdown' : '' ?>">
+  <?php if ($useDropdown): ?>
     <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      <span><?= $getDisplay($this, $selectedItem) ?></span>
+      <span>
+        <?= $this->context($this)->renderInContext(
+            'record/get-this/holding-display.phtml',
+            [
+                'item' => $selectedItem,
+            ]
+        ); ?>
+      </span>
       <?=$this->icon('dropdown-open', 'dropdown-open') ?>
     </button>
-  <div class="dropdown">
-<?php endif; ?>
-    <ul <?= $useDropdown ? 'class="dropdown-menu"' : '' ?>>
-      <?php
-      $selectedItem['item_id'] ??= -1;
-      foreach ($items as $item):
-        $item['item_id'] ??= null;
-        $current = $selectedItem['item_id'] == $item['item_id'];
-        $itemClass = $current ? 'current' : '';
-        ?>
-        <li>
-          <?php if ($current && !$useDropdown): ?>
-            <span><?= $getDisplay($this, $item) ?></span>
-          <?php else: ?>
-            <a
-                href="<?= $getLink($this, $item) ?>"
-                class="<?= $itemClass ?> <?= $useDropdown ? 'dropdown-item' : '' ?>"
-                rel="nofollow"
-            >
-            <?= $getDisplay($this, $item) ?>
-          </a>
-          <?php endif; ?>
-        </li>
-      <?php endforeach; ?>
-    </ul>
-  <?php if ($useDropdown): ?>
-  </div>
+    <div class="dropdown">
+      <?= $holdingsList ?>
+    </div>
+  <?php else: ?>
+    <?= $holdingsList ?>
   <?php endif; ?>
 </nav>
 <br>

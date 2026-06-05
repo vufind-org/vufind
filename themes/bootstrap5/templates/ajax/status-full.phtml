@@ -15,7 +15,7 @@ if ($getThisEnabled) {
     <?php
       if ($getThisEnabled) {
         $isOnlineResource = $this->getThis->isOnlineResource($item['item_id'] ?? null);
-        $getThisURI = !$isOnlineResource ? $this->escapeHtmlAttr($this->url(
+        $getThisURL = !$isOnlineResource ? $this->escapeHtmlAttr($this->url(
             'record-getthis',
             ['id' => $item['id'] ?? null],
             ['query' => ['item_id' => $item['item_id'] ?? null]]
@@ -60,7 +60,7 @@ if ($getThisEnabled) {
           ?>
           <span class="<?=$this->escapeHtmlAttr($statusClass)?>"><?=$this->transEsc($statusDescription, $statusDescriptionTokens)?></span>
           <?php if ($getThisEnabled && !$isOnlineResource): ?>
-            <span class="getThis"><a rel="nofollow" data-lightbox href="<?= $getThisURI ?>"><?=$this->transEsc('Get This')?></a></span>
+            <span class="getThis"><a rel="nofollow" data-lightbox href="<?= $getThisURL ?>"><?=$this->transEsc('Get This')?></a></span>
           <?php endif; ?>
       </td>
     </tr>

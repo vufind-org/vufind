@@ -30,7 +30,7 @@ use function array_key_exists;
 class Regex
 {
     /**
-     * Initializes the loader.
+     * Constructor.
      *
      * @param array $config Regular expression configuration
      */

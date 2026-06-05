@@ -64,20 +64,20 @@ class HoldingsILS extends AbstractBase
     /**
      * Constructor.
      *
-     * @param ?Connection $catalog             ILS connection to use to check for holdings before
-     *                                         displaying the tab; may be set to null if no check
-     *                                         is needed.
-     * @param ?string     $template            Holdings template to use
-     * @param bool        $hideWhenEmpty       Whether the holdings tab should be hidden when
-     *                                         empty or not
-     * @param ?Closure    $getThisLoaderGetter Closure to get the getThisLoader if enabled in the
-     *                                         config And prevent loading it if not necessary
+     * @param ?Connection $catalog                      ILS connection to use to check for holdings before
+     *                                                  displaying the tab; may be set to null if no check
+     *                                                  is needed.
+     * @param ?string     $template                     Holdings template to use
+     * @param bool        $hideWhenEmpty                Whether the holdings tab should be hidden when
+     *                                                  empty or not
+     * @param ?Closure    $getThisLoaderFactoryCallback Closure to get the getThisLoader if enabled in the
+     *                                                  config And prevent loading it if not necessary
      */
     public function __construct(
         protected ?Connection $catalog = null,
         ?string $template = null,
         protected bool $hideWhenEmpty = false,
-        protected ?Closure $getThisLoaderGetter = null
+        protected ?Closure $getThisLoaderFactoryCallback = null
     ) {
         $this->template = $template ?? 'standard';
     }
@@ -225,8 +225,8 @@ class HoldingsILS extends AbstractBase
     public function getGetThisLoader(): ?GetThisLoader
     {
         if (!isset($this->getThisLoader)) {
-            $this->getThisLoader = isset($this->getThisLoaderGetter)
-                ? call_user_func($this->getThisLoaderGetter) : null;
+            $this->getThisLoader = isset($this->getThisLoaderFactoryCallback)
+                ? call_user_func($this->getThisLoaderFactoryCallback) : null;
         }
         return $this->getThisLoader;
     }

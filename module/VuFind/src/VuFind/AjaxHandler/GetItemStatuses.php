@@ -287,7 +287,7 @@ class GetItemStatuses extends AbstractBase implements
      *     reserve: string,
      *     reserve_message: string,
      *     callnumberHtml: string,
-     *     getThisURI: string,
+     *     getThisURL: string,
      * } Summarized availability information
      */
     protected function getItemStatus(
@@ -298,13 +298,13 @@ class GetItemStatuses extends AbstractBase implements
         if (isset($this->getThis)) {
             $urlHelper = $this->renderer->plugin('url');
             $itemIdParams = !empty($record[0]['item_id']) ? ['query' => ['item_id' => $record[0]['item_id']]] : null;
-            $getThisURI = $urlHelper(
+            $getThisURL = $urlHelper(
                 'record-getthis',
                 ['id' => $record[0]['id'] ?? null],
                 $itemIdParams
             );
         } else {
-            $getThisURI = '';
+            $getThisURL = '';
         }
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
@@ -360,7 +360,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
             'callnumberHtml' => $this->renderCallnumbers($callnumberSetting, $callNumber),
-            'getThisURI' => $getThisURI,
+            'getThisURL' => $getThisURL,
         ];
     }
 
@@ -407,13 +407,13 @@ class GetItemStatuses extends AbstractBase implements
             ) {
                 $itemIdParams = !empty($locationStatus['item_id'])
                     ? ['query' => ['item_id' => $locationStatus['item_id']]] : null;
-                $getThisURI = $urlHelper(
+                $getThisURL = $urlHelper(
                     'record-getthis',
                     ['id' => $record[0]['id'] ?? null],
                     $itemIdParams
                 );
             } else {
-                $getThisURI = '';
+                $getThisURL = '';
             }
 
             $locationInfo = [
@@ -421,7 +421,7 @@ class GetItemStatuses extends AbstractBase implements
                 'location' => $this->translateWithPrefix('location_', $location),
                 'callnumberHtml' =>
                     $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
-                'getThisURI' => $getThisURI,
+                'getThisURL' => $getThisURL,
             ];
             $locationList[] = $locationInfo;
         }
