@@ -64,13 +64,13 @@
             value="<?=$this->escapeHtmlAttr($group['id'])?>"
             data-locations-label="<?=$this->transEsc($group['locationsLabel'] ?? 'pick_up_location')?>"
             data-no-locations-label="<?=$this->transEsc($group['noLocationsLabel'] ?? 'No pickup locations available')?>"
-            data-select-location-text="<?=$this->transEsc($group['selectLocationText'] ?? 'select_pickup_location')?>"
+            data-select-location-text="<?=$this->transEsc($group['selectLocationText'] ?? $selectPickupLocationText)?>"
             <?=($selected == $group['id']) ? ' selected="selected"' : ''?>
           >
             <?=$this->transEsc('request_group_' . $group['name'], null, $group['name'])?>
           </option>
           <?php if ($group['id'] === $this->defaultRequestGroup) {
-            $selectPickupLocationText = $group['selectLocationText'] ?? 'select_pickup_location';
+            $selectPickupLocationText = $group['selectLocationText'] ?? $selectPickupLocationText;
           } ?>
         <?php endforeach; ?>
       </select>
@@ -116,7 +116,7 @@
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-select">
           <?php if ($selected === false && count($this->pickup) > 1): ?>
             <option value="" selected="selected">
-              <?=$this->transEsc('select_pickup_location')?>
+              <?=$this->transEsc($selectPickupLocationText)?>
             </option>
           <?php endif; ?>
           <?php foreach ($this->pickup as $lib): ?>
