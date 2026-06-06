@@ -9,7 +9,7 @@
 
     $enumchronRaw = $this->gatheredDetails['requestedItem']['enumchron'] ?? '';
     $enumchron = $enumchronRaw !== '' ? " ($enumchronRaw)" : '';
-    $defaultRequestGroupLocationText = 'select_pickup_location';
+    $defaultRequestGroupLocationText = null;
 ?>
 <?=$this->component('page-title', ['title' => $this->translate('request_place_text'), 'headTitle' => $this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
 <?php if ($this->helpTextHtml): ?>
