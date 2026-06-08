@@ -35,7 +35,7 @@
               <button type="button" class="channel-add-more-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
               <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="visually-hidden"><?=$this->transEscAttr('channel_list_dropdown_toggle', ['%%channel%%' => $channel['title']]) ?></span>
-                <span aria-hidden="true"><?=$this->icon('dropdown-caret') ?></span>
+                <span aria-hidden="true"><?=$this->icon('dropdown-open') ?></span>
               </button>
               <ul class="dropdown-menu">
                 <?php
@@ -68,7 +68,7 @@
                 aria-label="<?=$this->transEsc('channel_options_dropdown_toggle', ['%%channel%%' => $channel['title']])?>"
               >
                 <?=$this->transEsc('channel_options') ?>
-                <?=$this->icon('dropdown-caret') ?>
+                <?=$this->icon('dropdown-open') ?>
               </button>
               <ul class="dropdown-menu">
                 <?php foreach ($channel['links'] as $item): ?>
@@ -97,9 +97,15 @@
               $channelItemAttrs = [
                 'class' => 'channel-item' . ($index < $channel['config']['pageSize'] ? '' : ' hidden-batch-item'),
                 'data-channel-id' => $channelID,
+<<<<<<< channels-ajax-next
                 'data-index' => $index,
                 'data-record-id' => $item['id'],
                 'data-record-source' => $item['source'],
+=======
+                'data-record-id' => $item['id'],
+                'data-record-source' => $item['source'],
+                'id' => $channelID . '-item-' . str_pad($index, 3, '0', STR_PAD_LEFT),
+>>>>>>> dev
               ];
             ?>
             <li<?=$this->htmlAttributes($channelItemAttrs) ?>>
@@ -153,6 +159,8 @@
           ?>
           <button <?=$this->htmlAttributes($btnAttrs) ?>><?=$this->transEsc('channel_more_items') ?></button>
         </div>
+
+        <div class="gallery-polite-alert visually-hidden" aria-live="polite"></div>
       </div>
     <?php endforeach; ?>
   </div>
