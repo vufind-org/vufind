@@ -9,6 +9,7 @@
 
     $enumchronRaw = $this->gatheredDetails['requestedItem']['enumchron'] ?? '';
     $enumchron = $enumchronRaw !== '' ? " ($enumchronRaw)" : '';
+    $defaultRequestGroupLocationText = null;
 ?>
 <?=$this->component('page-title', ['title' => $this->translate('request_place_text'), 'headTitle' => $this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
 <?php if ($this->helpTextHtml): ?>
@@ -68,6 +69,9 @@
           >
             <?=$this->transEsc('request_group_' . $group['name'], null, $group['name'])?>
           </option>
+          <?php if ($group['id'] === $this->defaultRequestGroup) {
+            $defaultRequestGroupLocationText = $group['selectLocationText'] ?? 'select_pickup_location';
+          } ?>
         <?php endforeach; ?>
       </select>
     </div>
@@ -88,9 +92,6 @@
         // default:
         $selected = $this->homeLibrary ?? false;
       }
-      $selectPickupLocationText =
-        array_filter($requestGroups, fn ($group) => $group['id'] == $defaultRequestGroup)[0]['selectLocationText']
-        ?? 'select_pickup_location';
     ?>
     <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
@@ -104,7 +105,7 @@
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-select">
           <?php if ($selected === false): ?>
           <option value="" selected="selected">
-            <?=$this->transEsc($selectPickupLocationText)?>
+            <?=$this->transEsc($defaultRequestGroupLocationText ?? 'select_pickup_location')?>
           </option>
           <?php endif; ?>
         </select>
@@ -115,7 +116,7 @@
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-select">
           <?php if ($selected === false && count($this->pickup) > 1): ?>
             <option value="" selected="selected">
-              <?=$this->transEsc($selectPickupLocationText)?>
+              <?=$this->transEsc('select_pickup_location')?>
             </option>
           <?php endif; ?>
           <?php foreach ($this->pickup as $lib): ?>
