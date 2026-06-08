@@ -180,7 +180,6 @@ class SearchController extends AbstractSolrSearch
                     $view->from,
                     $view->message,
                     $view->url,
-                    $this->getViewRenderer(),
                     $view->subject,
                     $cc
                 );

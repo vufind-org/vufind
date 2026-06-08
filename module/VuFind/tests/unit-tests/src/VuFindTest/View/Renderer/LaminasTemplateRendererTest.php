@@ -173,6 +173,19 @@ class LaminasTemplateRendererTest extends TestCase
     }
 
     /**
+     * Test renderTemplateAsString.
+     *
+     * @return void
+     */
+    public function testRenderTemplateAsString(): void
+    {
+        $renderer = $this->getRenderer(null, 'Foo!');
+
+        $result = $renderer->renderTemplateAsString(template: 'error/index', params: ['message' => 'Foo']);
+        $this->assertSame('Foo!', $result);
+    }
+
+    /**
      * Get mock layout ViewModel.
      *
      * @param bool   $inLightbox       Are we in lightbox?
@@ -204,18 +217,20 @@ class LaminasTemplateRendererTest extends TestCase
     /**
      * Get LaminasTemplateRenderer.
      *
-     * @param ViewModel $layout  Layout
-     * @param ?string   $content Page content, or null to not expect a call to render() method
+     * @param ?ViewModel $layout  Layout
+     * @param ?string    $content Page content, or null to not expect a call to render() method
      *
      * @return LaminasTemplateRenderer
      */
-    protected function getRenderer(ViewModel $layout, ?string $content): LaminasTemplateRenderer
+    protected function getRenderer(?ViewModel $layout, ?string $content): LaminasTemplateRenderer
     {
         $view = $this->createMock(View::class);
-        $view->expects(null !== $content ? $this->once() : $this->never())
-            ->method('render')
-            ->with($layout)
-            ->willReturn($content);
+        $render = $view->expects(null !== $content ? $this->once() : $this->never())
+            ->method('render');
+        if ($layout) {
+            $render = $render->with($layout);
+        }
+        $render->willReturn($content);
 
         $viewManager = $this->createMock(ViewManager::class);
         $viewManager->method('getView')
