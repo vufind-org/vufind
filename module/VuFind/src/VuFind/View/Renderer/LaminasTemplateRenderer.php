@@ -189,10 +189,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         $templateParts = explode('/', $viewModel->getTemplate());
         $layout->setVariable('templateDir', $templateParts[0]);
         $layout->setVariable('templateName', $templateParts[1] ?? null);
-
-        if ($this->inLightbox($request)) {
-            $this->setupRenderingInLightbox($request, $layout);
-        }
+        $this->setupRenderingInLightbox($request, $layout);
 
         // Clear any previous children (e.g. when rendering an error):
         if ($layout instanceof ViewModel) {
@@ -306,7 +303,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     }
 
     /**
-     * Setup layout for rendering lightbox content.
+     * Setup layout with lightbox-related variables, and template when a lightbox is requested.
      *
      * @param ServerRequestInterface $request Request
      * @param ViewModel              $layout  Layout
@@ -315,7 +312,9 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      */
     protected function setupRenderingInLightbox(ServerRequestInterface $request, ViewModel $layout): void
     {
-        $layout->setTemplate('layout/lightbox');
+        if ($this->inLightbox($request)) {
+            $layout->setTemplate('layout/lightbox');
+        }
         $lightboxParentUrl = new Http($this->serverUrlHelper->getCurrentUrl());
         $query = $lightboxParentUrl->getQueryAsArray();
         unset($query['lightboxChild']);
