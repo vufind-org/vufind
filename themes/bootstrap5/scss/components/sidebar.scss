@@ -16,6 +16,11 @@
   &.full-facet-list :first-child .facet { border-top: 1px solid $list-group-border-color; }
 }
 
+.facet-title {
+  font-size: $font-size-base;
+  margin: 0;
+}
+
 .facet__list {
   list-style: none;
   padding: 0;
@@ -238,10 +243,7 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
   .date-from { padding-right: .25rem; }
   .date-to   { padding-left:  .25rem; }
 }
-h3.facet-title {
-  font-size: $font-size-base;
-  margin: 0;
-}
+
 @include media-breakpoint-up(sm) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }

@@ -454,16 +454,14 @@ header .container.navbar {
   }
 }
 
-.result-body,
-.media-body {
-  h2 {
-    font-size: unset;
-    line-height: $line-height-base;
-    margin: 0;
+.media-body h2,
+.result-body h2 {
+  margin: 0;
+  font-size: inherit;
+  line-height: normal;
 
-    .authors {
-      display: block;
-    }
+  .authors {
+    display: block;
   }
 }
 
