@@ -191,15 +191,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         $layout->setVariable('templateName', $templateParts[1] ?? null);
 
         if ($this->inLightbox($request)) {
-            $layout->setTemplate('layout/lightbox');
-        }
-        $lightboxParentUrl = new Http($this->serverUrlHelper->getCurrentUrl());
-        $query = $lightboxParentUrl->getQueryAsArray();
-        unset($query['lightboxChild']);
-        $lightboxParentUrl->setQuery($query);
-        $layout->lightboxParent = $lightboxParentUrl->toString();
-        if ($lightboxChild = $request->getQueryParams()['lightboxChild'] ?? null) {
-            $layout->lightboxChild = $lightboxChild;
+            $this->setupRenderingInLightbox($request, $layout);
         }
 
         // Clear any previous children (e.g. when rendering an error):
@@ -311,5 +303,26 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
             }
         }
         return strtolower($name);
+    }
+
+    /**
+     * Setup layout for rendering lightbox content.
+     *
+     * @param ServerRequestInterface $request Request
+     * @param ViewModel              $layout  Layout
+     *
+     * @return void
+     */
+    protected function setupRenderingInLightbox(ServerRequestInterface $request, ViewModel $layout): void
+    {
+        $layout->setTemplate('layout/lightbox');
+        $lightboxParentUrl = new Http($this->serverUrlHelper->getCurrentUrl());
+        $query = $lightboxParentUrl->getQueryAsArray();
+        unset($query['lightboxChild']);
+        $lightboxParentUrl->setQuery($query);
+        $layout->setVariable('lightboxParent', $lightboxParentUrl->toString());
+        if ($lightboxChild = $request->getQueryParams()['lightboxChild'] ?? null) {
+            $layout->setVariable('lightboxChild', $lightboxChild);
+        }
     }
 }
