@@ -83,7 +83,7 @@ class ByTitleAction extends AbstractCollectionsAction
         $title = addcslashes($title, '"');
         $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
         $command = new SearchCommand(
-            'Solr',
+            DEFAULT_SEARCH_BACKEND,
             $query,
             0,
             $this->getBrowseLimit()
