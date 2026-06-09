@@ -112,19 +112,28 @@ label,
 select,
 input[type="checkbox"] { cursor: pointer; }
 
-// Set up our own margins for headings
-h1, .h1,
-h2, .h2,
-h3, .h3 {
-  margin-top: $line-height-base * 1rem;
-  margin-bottom: math.div($line-height-base, 2) * 1rem;
+// Bootstrap sets top margin on all headings to 0.
+// Let's adjust that for better readability
+$headings-margin-bottom: 1rem;
+
+h1, .h1 {
+  margin-block: 1rem;
 }
+
+h2, .h2,
+h3, .h3,
 h4, .h4,
 h5, .h5,
 h6, .h6 {
-  margin-top: math.div($line-height-base, 2) * 1rem;
-  margin-bottom: math.div($line-height-base, 2) * 1rem;
+  margin-top: 1em;
 }
+
+// Sidebar heading match to h1
+.sidebar h2,
+.sidebar .h2 {
+  margin-top: 1rem;
+}
+
 // Reset popover-header margins here (N.B. intentionally not using :not() above to avoid specificity issues)
 h3.popover-header {
   margin: 0;

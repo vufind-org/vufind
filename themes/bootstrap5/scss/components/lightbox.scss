@@ -7,7 +7,9 @@
   padding-inline: 1rem;
 
   #lightbox-title {
-    margin-right: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+
     &:focus-visible {
       outline: none;
       box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
@@ -20,10 +22,6 @@
     max-width: #{'min(1200px, calc(100vw - 200px))'};
     min-width: 600px;
     padding: 0;
-
-    #lightbox-title {
-      margin-right: inherit;
-    }
   }
 }
 
@@ -70,13 +68,6 @@
   stroke: currentColor;
   stroke-width: 2px;
   stroke-linecap: round;
-}
-
-
-#modal .modal-body h1,
-#modal .modal-body h2 {
-  margin-top: 0.3rem;
-  margin-bottom: 1.3rem;
 }
 
 #modal .cart-controls .btn { margin-bottom: 4px; }

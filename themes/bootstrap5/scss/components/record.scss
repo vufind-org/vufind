@@ -29,7 +29,6 @@
   }
 }
 
-.media-body h1 { margin-top: 0; }
 @include media-breakpoint-down(sm) {
   .record .media-left,
   .record .media-right { display: block; }
