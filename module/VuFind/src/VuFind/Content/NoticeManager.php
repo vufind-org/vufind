@@ -93,8 +93,15 @@ class NoticeManager implements LocaleSettingsAwareInterface
      */
     public function getDefaults(): array
     {
-        $style = array_keys($this->noticeConfig['styles'] ?? [])[0] ?? null;
-        return compact('style');
+        $noticeFormConfig = $this->noticeConfig['adminForm'] ?? [];
+        $contexts = $noticeFormConfig['contexts'] ?? [];
+        $context = $contexts[array_key_first($contexts)] ?? [];
+        return [
+            'position' => $context['position'] ?? 'default',
+            'conditions' => $context['conditions'] ?? [],
+            'contentType' => $noticeFormConfig['contentTypes'][0] ?? 'text',
+            'style' => array_keys($this->noticeConfig['styles'] ?? [])[0] ?? null,
+        ];
     }
 
     /**
