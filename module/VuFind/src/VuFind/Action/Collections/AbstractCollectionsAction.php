@@ -96,6 +96,6 @@ abstract class AbstractCollectionsAction extends AbstractTemplateRenderingAction
      */
     protected function getBrowseDelimiter(): string
     {
-        return $this->config->Collections->browseDelimiter ?? '{{{_ID_}}}';
+        return $this->config['Collections']['browseDelimiter'] ?? '{{{_ID_}}}';
     }
 }
