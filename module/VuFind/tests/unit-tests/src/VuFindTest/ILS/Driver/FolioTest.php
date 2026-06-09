@@ -330,6 +330,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'addressTypeIds' => [],
             'major' => null,
             'college' => null,
+            'addresses' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -361,6 +362,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'addressTypeIds' => [],
             'major' => null,
             'college' => null,
+            'addresses' => [],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -1485,6 +1487,109 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $result = iterator_to_array($result, false);
 
         $this->assertCount(2, $result);
+    }
+
+    /**
+     * Campus addresss type id.
+     *
+     * @var string
+     */
+    protected static string $campusTypeId = 'e4b2d831-2c9e-4a67-b841-5dfa031e8c92';
+
+    /**
+     * Home addresss type id.
+     *
+     * @var string
+     */
+    protected static string $homeTypeId = 'f5de8b20-1492-498c-be82-cd2831bb2d60';
+
+    /**
+     * Data provider for testGetPickupLocationsForDelivery.
+     *
+     * @return \Iterator
+     */
+    public static function getPickupLocationsProvider(): \Iterator
+    {
+        yield 'undefined' => [
+            null,
+            [
+                [
+                    'locationID' => FolioTest::$campusTypeId,
+                    'locationDisplay' => 'Campus',
+                ],
+                [
+                    'locationID' => FolioTest::$homeTypeId,
+                    'locationDisplay' => 'Home',
+                ],
+            ],
+        ];
+        yield 'no formatting' => [
+            false,
+            [
+                [
+                    'locationID' => FolioTest::$campusTypeId,
+                    'locationDisplay' => 'Campus',
+                ],
+                [
+                    'locationID' => FolioTest::$homeTypeId,
+                    'locationDisplay' => 'Home',
+                ],
+            ],
+        ];
+        yield 'with formatting' => [
+            true,
+            [
+                [
+                    'locationID' => FolioTest::$campusTypeId,
+                    'locationDisplay' => 'pick_up_location_delivery_address_format',
+                ],
+                [
+                    'locationID' => FolioTest::$homeTypeId,
+                    'locationDisplay' => 'pick_up_location_delivery_address_format',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test getPickupLocations for delivery.
+     *
+     * @param ?bool $formatAddresses Configuration of whether to format addresses
+     * @param array $expected        Expected list of delivery locations
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPickupLocationsProvider')]
+    public function testGetPickupLocationsForDelivery(?bool $formatAddresses, array $expected): void
+    {
+        $config = $this->defaultDriverConfig;
+        $config['Holds'] = [
+            ...($formatAddresses ? ['formatDeliveryAddressTypes' => $formatAddresses] : []),
+        ];
+        $this->createConnector('get-address-types', $config);
+
+        $patron = [
+            'addressTypeIds' => [
+                FolioTest::$campusTypeId,
+                FolioTest::$homeTypeId,
+            ],
+            'addresses' => [
+                (object)[
+                    'addressTypeId' => FolioTest::$campusTypeId,
+                    'addressLine1' => '987 University Ave.',
+                    'city' => 'Big City',
+                ],
+                (object)[
+                    'addressTypeId' => FolioTest::$homeTypeId,
+                    'addressLine1' => '123 Chestnut St.',
+                    'city' => 'Small Town',
+                ],
+            ],
+        ];
+        $holdInfo = ['requestGroupId' => 'Delivery'];
+        $addresses = $this->driver->getPickupLocations($patron, $holdInfo);
+        $this->assertEquals($expected, $addresses);
     }
 
     /**
