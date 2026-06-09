@@ -51,6 +51,13 @@ abstract class AbstractCollectionsAction extends AbstractTemplateRenderingAction
     use HasSorterTrait;
 
     /**
+     * The name of the backend providing alphabrowse services.
+     *
+     * @var string
+     */
+    protected string $alphabrowseBackend = DEFAULT_SEARCH_BACKEND;
+
+    /**
      * Constructor.
      *
      * @param array                      $config                     VuFind configuration

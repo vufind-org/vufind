@@ -51,13 +51,6 @@ use function count;
 class HomeAction extends AbstractCollectionsAction
 {
     /**
-     * The name of the backend providing alphabrowse services.
-     *
-     * @var string
-     */
-    protected string $alphabrowseBackend = DEFAULT_SEARCH_BACKEND;
-
-    /**
      * Display home page.
      *
      * @param ServerRequestInterface $request  Server request
