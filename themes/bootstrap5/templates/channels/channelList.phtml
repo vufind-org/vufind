@@ -95,17 +95,12 @@
                 ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}")
                 : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']);
               $channelItemAttrs = [
+                'id' => $channelID . '-item-' . str_pad($index, 3, '0', STR_PAD_LEFT),
                 'class' => 'channel-item' . ($index < $channel['config']['pageSize'] ? '' : ' hidden-batch-item'),
                 'data-channel-id' => $channelID,
-<<<<<<< channels-ajax-next
+                'data-record-id' => $item['id'],
+                'data-record-source' => $item['source'],
                 'data-index' => $index,
-                'data-record-id' => $item['id'],
-                'data-record-source' => $item['source'],
-=======
-                'data-record-id' => $item['id'],
-                'data-record-source' => $item['source'],
-                'id' => $channelID . '-item-' . str_pad($index, 3, '0', STR_PAD_LEFT),
->>>>>>> dev
               ];
             ?>
             <li<?=$this->htmlAttributes($channelItemAttrs) ?>>
