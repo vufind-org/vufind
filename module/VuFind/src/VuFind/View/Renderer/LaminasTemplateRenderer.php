@@ -181,6 +181,9 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         }
 
         // Prepare layout and render:
+        if (null === $request) {
+            throw new InvalidArgumentException('Request is required for rendering with layout');
+        }
         $layout = $this->getLayout($request);
 
         $templateParts = explode('/', $viewModel->getTemplate());
