@@ -76,14 +76,14 @@ class RecordController extends AbstractRecord
     public function getThisAction(): ViewModel
     {
         $view = $this->createViewModel();
-
-        $items = $this->getILS()->getHolding($this->params()->fromRoute('id'));
+        $id = $this->params()->fromRoute('id');
         $itemId = $this->params()->fromQuery('item_id');
+        $items = $this->getILS()->getStatuses([$id]);
         $getThis = $this->getService(GetThisLoader::class);
         if (isset($view->driver)) {
             $getThis->setRecord($view->driver);
         }
-        $getThis->setItems($items['holdings']);
+        $getThis->setItems(current($items));
         $getThis->setDefaultItemId($itemId);
 
         $view->getThis = $getThis;
