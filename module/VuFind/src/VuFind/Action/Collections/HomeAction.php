@@ -258,7 +258,7 @@ class HomeAction extends AbstractCollectionsAction
      *
      * @param array $result Array to sort (passed by reference to use less memory)
      *
-     * @return array $resultOut
+     * @return array
      */
     protected function normalizeAndSortFacets(array &$result): array
     {
