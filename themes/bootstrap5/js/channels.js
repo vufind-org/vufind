@@ -132,32 +132,6 @@ VuFind.register("channels", function Channels() {
 
         // Add channels to DOM
         for (const channelEl of resDOM.querySelectorAll(".channel")) {
-<<<<<<< channels-ajax-next
-=======
-          // Make sure the channel has content
-          if (channelEl.querySelectorAll(".channel-item").length > 0) {
-            // Add related channels menu
-            const relatedMenu = document.querySelector(`.channel-add-menu[data-group="${group}"]`);
-            if (relatedMenu) {
-              channelEl.querySelector(".channel-title").after(relatedMenu.cloneNode(true));
-            }
-            // Add channel
-            callerChannelEl.after(channelEl);
-
-            // Announce to screen readers
-            if (!ariaAnnounced) {
-              ariaAnnounceNewChannel(callerChannelEl, channelEl);
-              ariaAnnounced = true;
-            }
-
-            // Clamp new titles
-            for (const titleEl of channelEl.querySelectorAll(".channel-item-title")) {
-              clampLines(titleEl);
-            }
-            continue;
-          }
-
->>>>>>> dev
           // Empty result
           if (channelEl.querySelectorAll(".channel-item").length === 0) {
             const title = channelEl.querySelector("h2");
@@ -178,9 +152,7 @@ VuFind.register("channels", function Channels() {
           }
 
           // Add related channels menu
-          const relatedMenu = document.querySelector(
-            `.channel-add-menu[data-group="${group}"]`
-          );
+          const relatedMenu = document.querySelector(`.channel-add-menu[data-group="${group}"]`);
           if (relatedMenu) {
             channelEl
               .querySelector(".channel-title")
@@ -190,6 +162,12 @@ VuFind.register("channels", function Channels() {
           // Add channel
           callerChannelEl.after(channelEl);
           channelInit(channelEl);
+
+          // Announce to screen readers
+          if (!ariaAnnounced) {
+            ariaAnnounceNewChannel(callerChannelEl, channelEl);
+            ariaAnnounced = true;
+          }
         }
       });
   }
@@ -207,23 +185,14 @@ VuFind.register("channels", function Channels() {
       return false;
     }
 
-<<<<<<< channels-ajax-next
     // disable more paging
     disableLoadMoreBtn(loadMoreBtn);
-=======
-    // Prep for aria announcement
-    let firstNewItem = null;
-
-    // Disable and relabel button
-    disableLoadMoreBtn(btn);
->>>>>>> dev
 
     // Reveal hidden items
     const pageSize = Number(channelEl.dataset.pageSize);
     let hiddenItems = getHiddenItems(channelEl);
 
     // Reveal hidden items (limit to pageSize)
-<<<<<<< channels-ajax-next
     const revealCount = Math.min(pageSize, hiddenItems.length);
     for (let i = 0; i < revealCount; i++) {
       hiddenItems[i].classList.remove("hidden-batch-item");
@@ -232,6 +201,8 @@ VuFind.register("channels", function Channels() {
 
     channelEl.shownItems += revealCount;
     channelEl.hiddenItems -= revealCount;
+
+    ariaAnnounceNewItems(hiddenItems[0], revealCount);
 
     // Do we need more items?
     // @TODO: replace with await when available
@@ -248,33 +219,6 @@ VuFind.register("channels", function Channels() {
       }
     });
   }
-=======
-    if (hiddenItems.length > 0) {
-      firstNewItem = hiddenItems[0];
-
-      hiddenItems.forEach((item, index) => {
-        if (index < pageSize) {
-          item.classList.remove("hidden-batch-item");
-          clampLines(item.querySelector(".channel-item-title"));
-        }
-      });
-    }
-
-    // Out of records
-    if (hiddenItems.length > 0 && hiddenItems.length < Number(targetChannel.dataset.rowSize)) {
-      ariaAnnounceNewItems(firstNewItem, hiddenItems.length);
-      hideLoadMoreBtn(btn);
-      return;
-    }
-
-    // How many more records do we need?
-    const neededCount = pageSize - hiddenItems.length;
-    if (neededCount <= 0) {
-      ariaAnnounceNewItems(firstNewItem, pageSize);
-      enableLoadMoreBtn(btn);
-      return; // skip loading more records
-    }
->>>>>>> dev
 
   /**
    * AJAX load more records
@@ -302,21 +246,8 @@ VuFind.register("channels", function Channels() {
         let index = channelEl.shownItems;
         for (let i = 0; i < records.length; i++) {
           const record = records[i];
-<<<<<<< channels-ajax-next
-=======
-
-          if (firstNewItem === null) {
-            firstNewItem = record;
-          }
-
-          // Prepare for append
-          record.classList.remove("hidden");
-          if (i >= neededCount) {
-            record.classList.add("hidden-batch-item");
-          }
 
           // Append
->>>>>>> dev
           targetList.append(record);
 
           record.classList.add("hidden-batch-item");
@@ -325,23 +256,11 @@ VuFind.register("channels", function Channels() {
           clampLines(record.querySelector(".channel-item-title"));
         }
 
-<<<<<<< channels-ajax-next
         channelEl.hiddenItems += records.length;
 
         // mark that we've loaded all records
         if (records.length < Number(channelEl.dataset.pageSize)) {
           channelEl.ajaxAvailable = false;
-=======
-        if (firstNewItem !== null) {
-          ariaAnnounceNewItems(firstNewItem, pageSize);
-        }
-
-        // Hide button
-        if (records.length < Number(targetChannel.dataset.batchSize)) {
-          hideLoadMoreBtn(btn);
-        } else {
-          enableLoadMoreBtn(btn);
->>>>>>> dev
         }
 
         // Set button to next page
