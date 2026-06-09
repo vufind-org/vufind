@@ -61,6 +61,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
         'ajax/systemstatus' => Ajax\SystemStatusAction::class,
         'author/facetlist' => Author\FacetListAction::class,
+        'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
     ];
 
