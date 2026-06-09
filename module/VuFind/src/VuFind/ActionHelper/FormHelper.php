@@ -45,6 +45,13 @@ use VuFind\ServiceManager\Factory\Autowire;
 class FormHelper implements HelperInterface
 {
     /**
+     * Default submit element names.
+     *
+     * @var array
+     */
+    protected array $defaultSubmitElements = ['submitButton', 'submit'];
+
+    /**
      * Constructor.
      *
      * @param CaptchaService $captchaService Captcha service
@@ -74,9 +81,8 @@ class FormHelper implements HelperInterface
         $buttonFound = false;
         // Use of 'submit' as an input name was deprecated in release 10.0, but the
         // check is retained for backward compatibility with legacy custom templates.
-        $defaultSubmitElements = ['submitButton', 'submit'];
         $postParams = $request->getParsedBody();
-        foreach ((array)($submitElements ?? $defaultSubmitElements) as $submitElement) {
+        foreach ((array)($submitElements ?? $this->defaultSubmitElements) as $submitElement) {
             if ($postParams[$submitElement] ?? null) {
                 $buttonFound = true;
                 break;
