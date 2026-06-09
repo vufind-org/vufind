@@ -96,17 +96,17 @@ interface TemplateRendererInterface
     /**
      * Render a template and return the result as a string.
      *
-     * @param ServerRequestInterface $request        Request
-     * @param ?string                $template       Template name, or null to use default for the action
-     * @param array                  $params         Template parameters
-     * @param array[]                $childTemplates Any child templates; an array of associative array with keys
-     * 'template' and 'params'
-     * @param bool                   $useLayout      Render full page with the layout?
+     * @param ?ServerRequestInterface $request        Request (must be set if $template is null or $useLayout is true)
+     * @param ?string                 $template       Template name, or null to use default for the action
+     * @param array                   $params         Template parameters
+     * @param array[]                 $childTemplates Any child templates; an array of associative array with keys
+     *                                                'template' and 'params'
+     * @param bool                    $useLayout      Render full page with the layout?
      *
      * @return string
      */
     public function renderTemplateAsString(
-        ServerRequestInterface $request,
+        ?ServerRequestInterface $request = null,
         ?string $template = null,
         array $params = [],
         array $childTemplates = [],

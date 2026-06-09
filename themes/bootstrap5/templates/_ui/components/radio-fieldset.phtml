@@ -2,10 +2,10 @@
   /**
    * Radio form element inside a fieldset for accessibility standards.
    *
-   * @param string  $groupName    Name of the radio group
-   * @param ?string $displayName  Name to be displayed (default = $groupName)
-   * @param array   $values       Array of values
-   * @param ?string $checkedValue Checked value (default is first value)
+   * @property string  $groupName    Name of the radio group
+   * @property ?string $displayName  Name to be displayed (default = $groupName)
+   * @property array   $values       Array of values
+   * @property ?string $checkedValue Checked value (default is first value)
    */
   $escGroupNameAttr = $this->escapeHtmlAttr($this->groupName);
   if (!in_array($this->checkedValue, $this->values)) {

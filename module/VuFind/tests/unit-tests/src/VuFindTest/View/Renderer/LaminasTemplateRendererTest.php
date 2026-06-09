@@ -173,6 +173,37 @@ class LaminasTemplateRendererTest extends TestCase
     }
 
     /**
+     * Test renderTemplateAsString.
+     *
+     * @return void
+     */
+    public function testRenderTemplateAsString(): void
+    {
+        $renderer = $this->getRenderer(null, true);
+
+        $result = $renderer->renderTemplateAsString(template: 'error/index', params: ['message' => 'Foo']);
+        $this->assertJsonStringEqualsJsonString(
+            '{"template": "error\/index", "params": {"message": "Foo"}}',
+            $result
+        );
+    }
+
+    /**
+     * Test missing request with layout in renderTemplateAsString.
+     *
+     * @return void
+     */
+    public function testMissingRequest(): void
+    {
+        $layout = $this->createMock(ViewModel::class);
+        $renderer = $this->getRenderer($layout, null);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Request is required for rendering with layout');
+        $renderer->renderTemplateAsString(template: 'foo', useLayout: true);
+    }
+
+    /**
      * Get mock layout ViewModel.
      *
      * @param bool   $inLightbox       Are we in lightbox?
@@ -204,18 +235,30 @@ class LaminasTemplateRendererTest extends TestCase
     /**
      * Get LaminasTemplateRenderer.
      *
-     * @param ViewModel $layout  Layout
-     * @param ?string   $content Page content, or null to not expect a call to render() method
+     * @param ?ViewModel $layout  Layout
+     * @param ?string    $content Page content, null to not expect a call to render() method or true to return rendering
+     * context
      *
      * @return LaminasTemplateRenderer
      */
-    protected function getRenderer(ViewModel $layout, ?string $content): LaminasTemplateRenderer
+    protected function getRenderer(?ViewModel $layout, string|true|null $content): LaminasTemplateRenderer
     {
         $view = $this->createMock(View::class);
-        $view->expects(null !== $content ? $this->once() : $this->never())
-            ->method('render')
-            ->with($layout)
-            ->willReturn($content);
+        $render = $view->expects(null !== $content ? $this->once() : $this->never())
+            ->method('render');
+        if ($layout) {
+            $render = $render->with($layout);
+        }
+        if (true === $content) {
+            $render->willReturnCallback(
+                fn (ViewModel $viewModel) => json_encode([
+                    'template' => $viewModel->getTemplate(),
+                    'params' => $viewModel->getVariables(),
+                ])
+            );
+        } else {
+            $render->willReturn($content);
+        }
 
         $viewManager = $this->createMock(ViewManager::class);
         $viewManager->method('getView')
