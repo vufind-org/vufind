@@ -2,36 +2,36 @@
   /**
    * Confirm button component: display a button that drops down yes/no options to confirm an action.
    *
-   * @param ?string $align             Menu alignment (default = left)
-   * @param ?string $buttonClass       CSS class to apply to button element (if omitted, default is based on
-   *                                   $buttonLink)
-   * @param ?string $buttonId          ID to use for the button element (defaults to confirm_ concatenated with the
-   *                                   invocation counter)
-   * @param ?string $buttonIcon        Icon name to display with button text (optional; also requires $buttonLabel
-   *                                   to be set)
-   * @param ?string $buttonLabel       Text to display on button
-   * @param ?string $buttonLabelHtml   HTML to display on button (ignored when $buttonIcon and $buttonLabel are
-   *                                   both set; overrides $buttonLabel otherwise)
-   * @param ?string $buttonLink        If set, the component will render as a link pointing to this URL; if unset, the
-   *                                   component will render as a submit button
-   * @param ?string $buttonName        Name attribute value for button (optional)
-   * @param ?string $cancelClass       CSS class(es) to use for cancel (no) option (optional)
-   * @param ?string $cancelId          ID to use for cancel (no) option (optional)
-   * @param ?string $cancelLabelHtml   HTML for cancel (no) option contents (default = translation of
-   *                                   confirm_dialog_no)
-   * @param ?string $cancelTitle       Title attribute to use for cancel (no) option (optional) -- will be translated
-   * @param ?bool   $clearAccountCache Should we set the data-clear-account-cache attribute on the confirm (yes)
-   *                                   option? (default = false)
-   * @param ?string $confirmClass      CSS class(es) to use for confirm (yes) option (optional)
-   * @param ?string $confirmId         ID to use for confirm (yes) option (optional)
-   * @param ?string $confirmLabelHtml  HTML for confirm (yes) option contents (default = translation of
-   *                                   confirm_dialog_yes)
-   * @param ?string $confirmLink       Href attribute to use for confirm (yes) option (optional)
-   * @param ?string $confirmTitle      Title attribute to use for confirm (yes) option (optional) -- will be translated
-   * @param ?string $header            Text to display at the header of the drop-down menu (optional; will be
-   *                                   translated when provided)
-   * @param ?bool   $ignoreLightbox    Should we set data-lightbox-ignore attribute on all interactive elements?
-   *                                   (default = false)
+   * @property ?string $align             Menu alignment (default = left)
+   * @property ?string $buttonClass       CSS class to apply to button element (if omitted, default is based on
+   *                                      $buttonLink)
+   * @property ?string $buttonId          ID to use for the button element (defaults to confirm_ concatenated with the
+   *                                      invocation counter)
+   * @property ?string $buttonIcon        Icon name to display with button text (optional; also requires $buttonLabel
+   *                                      to be set)
+   * @property ?string $buttonLabel       Text to display on button
+   * @property ?string $buttonLabelHtml   HTML to display on button (ignored when $buttonIcon and $buttonLabel are
+   *                                      both set; overrides $buttonLabel otherwise)
+   * @property ?string $buttonLink        If set, the component will render as a link pointing to this URL; if unset, the
+   *                                      component will render as a submit button
+   * @property ?string $buttonName        Name attribute value for button (optional)
+   * @property ?string $cancelClass       CSS class(es) to use for cancel (no) option (optional)
+   * @property ?string $cancelId          ID to use for cancel (no) option (optional)
+   * @property ?string $cancelLabelHtml   HTML for cancel (no) option contents (default = translation of
+   *                                      confirm_dialog_no)
+   * @property ?string $cancelTitle       Title attribute to use for cancel (no) option (optional) -- will be translated
+   * @property ?bool   $clearAccountCache Should we set the data-clear-account-cache attribute on the confirm (yes)
+   *                                      option? (default = false)
+   * @property ?string $confirmClass      CSS class(es) to use for confirm (yes) option (optional)
+   * @property ?string $confirmId         ID to use for confirm (yes) option (optional)
+   * @property ?string $confirmLabelHtml  HTML for confirm (yes) option contents (default = translation of
+   *                                      confirm_dialog_yes)
+   * @property ?string $confirmLink       Href attribute to use for confirm (yes) option (optional)
+   * @property ?string $confirmTitle      Title attribute to use for confirm (yes) option (optional) -- will be translated
+   * @property ?string $header            Text to display at the header of the drop-down menu (optional; will be
+   *                                      translated when provided)
+   * @property ?bool   $ignoreLightbox    Should we set data-lightbox-ignore attribute on all interactive elements?
+   *                                      (default = false)
    */
   $buttonId = $this->buttonId ?? 'confirm_' . $this->_invocation;
   if (null === ($buttonClass = $this->buttonClass)) {
