@@ -27,13 +27,15 @@
 
 #modal .modal-content > .close {
   position: absolute;
-  top: 0.5rem;
+  top: 0;
   right: 0.5rem;
   z-index: 2;
+  width: 3ch;
   padding: 0.5rem;
   opacity: 1;
   border: 0;
   font-size: 1.5rem;
+  text-align: center;
   background-color: var(--#{$prefix}modal-bg);
 
   body.rtl & {
@@ -47,8 +49,8 @@
 }
 @include media-breakpoint-up(sm) {
   #modal .modal-content > .close { // Fancy side X button
-    right: -1.75em;
-    font-size: 32pt;
+    right: -2.25em;
+    font-size: 24pt;
     color: #fff;
     background-color: rgba(0,0,0,0);
     border-radius: 6px;
