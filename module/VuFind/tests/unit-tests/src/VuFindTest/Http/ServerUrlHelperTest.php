@@ -196,7 +196,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     protected function getServerUrlHelper(): ServerUrlHelper
     {
         return new ServerUrlHelper(
-            Closure::fromCallable(new ServerUrl())
+            Closure::fromCallable(fn () => new ServerUrl())
         );
     }
 }

@@ -34,6 +34,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use VuFind\ActionHelper\HelperInterface;
+use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
@@ -84,6 +85,23 @@ abstract class AbstractAction implements ActionInterface
      * @var ?SessionSettings
      */
     protected ?SessionSettings $sessionSettings = null;
+
+    /**
+     * Permission that must be granted to access this module (false for no restriction, null to use configured default
+     * (which is usually the same as false)).
+     *
+     * @var string|bool|null
+     */
+    protected $accessPermission = null;
+
+    /**
+     * Behavior when access is denied (used unless overridden through permissionBehavior.ini). Valid values are
+     * 'promptLogin' and 'exception'. Leave at null to use the defaultDeniedControllerBehavior set in
+     * permissionBehavior.ini (normally 'promptLogin' unless changed).
+     *
+     * @var ?string
+     */
+    protected $accessDeniedBehavior = null;
 
     /**
      * Constructor.
@@ -337,5 +355,21 @@ abstract class AbstractAction implements ActionInterface
             throw new Exception($this::class . ' action not properly initialized; session settings missing');
         }
         return $this->sessionSettings;
+    }
+
+    /**
+     * Validate any access permission for the action.
+     *
+     * @return ?ResponseInterface A response if access is denied, null otherwise
+     */
+    public function validateAccessPermission(): ?ResponseInterface
+    {
+        // If there is an access permission set for this action, pass it through the permission helper, and if the
+        // helper returns a custom response, use that instead of the normal behavior.
+        if ($this->accessPermission) {
+            return $this->getHelper(PermissionHelper::class)
+                ->check($this->request, $this->response, $this->accessPermission, $this->accessDeniedBehavior);
+        }
+        return null;
     }
 }

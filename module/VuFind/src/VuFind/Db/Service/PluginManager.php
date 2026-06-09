@@ -30,6 +30,7 @@
 namespace VuFind\Db\Service;
 
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
  * Database service plugin manager.
@@ -77,37 +78,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        AccessTokenService::class => AbstractDbServiceFactory::class,
-        ApiKeyService::class => AbstractDbServiceFactory::class,
-        AuthHashService::class => AbstractDbServiceFactory::class,
-        ChangeTrackerService::class => AbstractDbServiceFactory::class,
-        CommentsService::class => AbstractDbServiceFactory::class,
-        AuditEventService::class => AuditEventServiceFactory::class,
-        ExternalSessionService::class => AbstractDbServiceFactory::class,
-        FeedbackService::class => AbstractDbServiceFactory::class,
-        LoginTokenService::class => AbstractDbServiceFactory::class,
-        NoticeService::class => AbstractDbServiceFactory::class,
-        OaiResumptionService::class => AbstractDbServiceFactory::class,
-        PaymentService::class => AbstractDbServiceFactory::class,
-        PaymentFeeService::class => AbstractDbServiceFactory::class,
-        RatingsService::class => AbstractDbServiceFactory::class,
-        RecordService::class => AbstractDbServiceFactory::class,
-        ResourceService::class => AbstractDbServiceFactory::class,
-        ResourceTagsService::class => AbstractDbServiceFactory::class,
-        SearchService::class => AbstractDbServiceFactory::class,
-        SessionService::class => AbstractDbServiceFactory::class,
-        ShortlinksService::class => AbstractDbServiceFactory::class,
-        TagService::class => AbstractDbServiceFactory::class,
-        UserCardService::class => UserCardServiceFactory::class,
-        UserListService::class => AbstractDbServiceFactory::class,
-        UserResourceService::class => AbstractDbServiceFactory::class,
-        UserService::class => UserServiceFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

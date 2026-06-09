@@ -2,15 +2,15 @@
   /**
    * Page title component, which checks if the current template is rendered in lightbox or not. Use only once for each page.
    *
-   * @param string       title         Translated title to be used as the header element value
-   * @param string|false headTitle     Translated head title to be set for the page. Default is same as the title.
-   *                                   Set to false to disable.
-   * @param int          level         Header level. Default is 2. Level 1 in lightbox context will be changed to 2
-   *                                   if lightboxLevel is unset.
-   * @param int          lightboxLevel Header level in lightbox context. Allows level 1 header to be set.
-   * @param string       class         Same as header element class attribute.
-   *                                   Appended values are 'vc-page-title' and in lightbox 'vc-page-title lightbox-title'.
-   * @param ?bool        escape        Whether or not to escape heading contents (by default, title is escaped).
+   * @property string       title         Translated title to be used as the header element value
+   * @property string|false headTitle     Translated head title to be set for the page. Default is same as the title.
+   *                                      Set to false to disable.
+   * @property int          level         Header level. Default is 2. Level 1 in lightbox context will be changed to 2
+   *                                      if lightboxLevel is unset.
+   * @property int          lightboxLevel Header level in lightbox context. Allows level 1 header to be set.
+   * @property string       class         Same as header element class attribute.
+   *                                      Appended values are 'vc-page-title' and in lightbox 'vc-page-title lightbox-title'.
+   * @property ?bool        escape        Whether or not to escape heading contents (by default, title is escaped).
    */
   $title = $this->title ?? 'title_missing';
   $headerAttrs = [
