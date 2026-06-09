@@ -1,7 +1,7 @@
 ---
 # This file contains named regular expressions to be used with the VuFind\Regex\Regex matcher.
 # Each named regex can contain one or more expressions.
-# A regex will match if any of the expression matches
+# A regex will match if any of the expressions matches.
 
 # Status
   # Regex in this section are used to match against the specific item status value
