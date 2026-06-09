@@ -73,7 +73,7 @@ class FlashMessagesHelper implements HelperInterface
      */
     public function addErrorMessage(string|array $message): void
     {
-        $this->flashMessenger->addErrorMessage($message);
+        $this->getFlashMessenger()->addErrorMessage($message);
     }
 
     /**
@@ -85,7 +85,7 @@ class FlashMessagesHelper implements HelperInterface
      */
     public function addInfoMessage(string|array $message): void
     {
-        $this->flashMessenger->addInfoMessage($message);
+        $this->getFlashMessenger()->addInfoMessage($message);
     }
 
     /**
@@ -97,7 +97,7 @@ class FlashMessagesHelper implements HelperInterface
      */
     public function addSuccessMessage(string|array $message): void
     {
-        $this->flashMessenger->addSuccessMessage($message);
+        $this->getFlashMessenger()->addSuccessMessage($message);
     }
 
     /**
@@ -109,6 +109,6 @@ class FlashMessagesHelper implements HelperInterface
      */
     public function addWarningMessage(string|array $message): void
     {
-        $this->flashMessenger->addWarningMessage($message);
+        $this->getFlashMessenger()->addWarningMessage($message);
     }
 }
