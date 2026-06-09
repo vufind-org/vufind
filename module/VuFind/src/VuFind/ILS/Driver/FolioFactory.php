@@ -71,6 +71,7 @@ class FolioFactory extends DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container("Folio_$namespace", $manager);
         };
-        return parent::__invoke($container, $requestedName, [$sessionFactory]);
+        $webhookConnection = $container->get(\VuFind\Connection\Webhook::class);
+        return parent::__invoke($container, $requestedName, [$sessionFactory, $webhookConnection]);
     }
 }

@@ -34,12 +34,14 @@ use DateTimeZone;
 use Exception;
 use Laminas\Http\Response;
 use VuFind\Config\Feature\SecretTrait;
+use VuFind\Connection\Webhook;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
 use function array_key_exists;
+use function array_slice;
 use function count;
 use function in_array;
 use function is_callable;
@@ -152,15 +154,24 @@ class Folio extends AbstractAPI implements
     protected array $requestPreferenceCache = [];
 
     /**
+     * Timeout in seconds for webhook calls.
+     *
+     * @var float
+     */
+    protected float $webhookTimeout = 5;
+
+    /**
      * Constructor.
      *
-     * @param \VuFind\Date\Converter $dateConverter  Date converter object
-     * @param callable               $sessionFactory Factory function returning
-     * SessionContainer object
+     * @param \VuFind\Date\Converter $dateConverter     Date converter object
+     * @param callable               $sessionFactory    Factory function returning
+     *                                                  SessionContainer object
+     * @param ?Webhook               $webhookConnection Connection for webhooks (optional)
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        $sessionFactory
+        $sessionFactory,
+        protected ?Webhook $webhookConnection = null
     ) {
         $this->dateConverter = $dateConverter;
         $this->sessionFactory = $sessionFactory;
@@ -1152,18 +1163,31 @@ class Folio extends AbstractAPI implements
      */
     protected function sortHoldings(array $holdings, string $sortField): array
     {
+        return $this->sortArray($holdings, $sortField);
+    }
+
+    /**
+     * Given an array and a sort field, sort the array.
+     *
+     * @param array  $data      Array to sort
+     * @param string $sortField Sort field
+     *
+     * @return array
+     */
+    protected function sortArray(array $data, string $sortField): array
+    {
         usort(
-            $holdings,
+            $data,
             function ($a, $b) use ($sortField) {
                 return strnatcasecmp($a[$sortField], $b[$sortField]);
             }
         );
         // Renumber the re-sorted batch:
-        $nbCount = count($holdings);
+        $nbCount = count($data);
         for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
-            $holdings[$nbIndex]['number'] = $nbIndex + 1;
+            $data[$nbIndex]['number'] = $nbIndex + 1;
         }
-        return $holdings;
+        return $data;
     }
 
     /**
@@ -1735,6 +1759,7 @@ class Folio extends AbstractAPI implements
                     fn ($address) => $address->addressTypeId,
                     $profile->personal->addresses ?? []
                 ),
+                'addresses' => $profile->personal->addresses ?? [],
             ],
         );
     }
@@ -1836,51 +1861,88 @@ class Folio extends AbstractAPI implements
         $limit = $params['limit'] ?? 1000;
         $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
 
-        $query = 'userId==' . $patron['id'] . ' and status.name==Open';
-        if (isset($params['sort'])) {
-            $query .= ' sortby ' . $this->escapeCql($params['sort']);
-        }
-        $resultPage = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
-        $transactions = [];
-        foreach ($resultPage->loans ?? [] as $trans) {
-            $dueStatus = false;
-            $date = $this->getDateTimeFromString($trans->dueDate);
-            $dueDateTimestamp = $date->getTimestamp();
+        $requestedSort = $params['sort'] ?? '';
+        $vufindSortMap = $this->config['Loans']['vufind_sort'] ?? [];
+        $localSortField = $vufindSortMap[$requestedSort] ?? null;
 
-            $now = time();
-            if ($now > $dueDateTimestamp) {
-                $dueStatus = 'overdue';
-            } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
-                $dueStatus = 'due';
+        $query = 'userId==' . $patron['id'] . ' and status.name==Open';
+        $transactions = [];
+        $count = null;
+
+        // Fetch data from FOLIO, only pass sort to API if it is NOT handled locally by VuFind
+        if ($localSortField) {
+            $rawItems = $this->getPagedResults('loans', '/circulation/loans', compact('query'));
+        } else {
+            if (!empty($requestedSort)) {
+                $query .= ' sortby ' . $this->escapeCql($requestedSort);
             }
-            $transactions[] = [
-                'duedate' =>
-                    $this->dateConverter->convertToDisplayDate(
-                        'U',
-                        $dueDateTimestamp
-                    ),
-                'dueTime' =>
-                    $this->dateConverter->convertToDisplayTime(
-                        'U',
-                        $dueDateTimestamp
-                    ),
-                'dueStatus' => $dueStatus,
-                'id' => $this->getBibId($trans->item->instanceId),
-                'item_id' => $trans->item->id,
-                'barcode' => $trans->item->barcode,
-                'renew' => $trans->renewalCount ?? 0,
-                'renewable' => true,
-                'title' => $trans->item->title,
-            ];
+            $result = $this->getResultPage('/circulation/loans', compact('query'), $offset, $limit);
+            $rawItems = $result->loans ?? [];
         }
-        // If we have a full page or have applied an offset, we need to look up the total count of transactions:
+
+        // Format the transaction results
+        foreach ($rawItems as $trans) {
+            $transactions[] = $this->formatTransactionItem($trans);
+        }
+
+        // If we have a full page, have applied an offset, or are not using a vufind_sort option,
+        // we need to look up the total count of transactions:
         $count = count($transactions);
-        if ($offset > 0 || $count >= $limit) {
+        if (!$localSortField && ($offset > 0 || $count >= $limit)) {
             // We could use the count in the result page, but that may be an estimate;
             // safer to do a separate lookup to be sure we have the right number!
             $count = $this->getResultCount('/circulation/loans', compact('query'));
         }
+
+        // Apply local sorting if requested
+        if ($localSortField) {
+            $transactions = $this->sortArray($transactions, $localSortField);
+            $transactions = array_slice($transactions, $offset, $limit);
+        }
+
         return ['count' => $count, 'records' => $transactions];
+    }
+
+    /**
+     * Support method for getMyTransactions to parse a single
+     * transaction result.
+     *
+     * @param array $transaction An single transaction
+     * array from getMyTransactions
+     *
+     * @return string The FOLIO loan ID for this loan
+     */
+    protected function formatTransactionItem($transaction)
+    {
+        $dueStatus = false;
+        $date = $this->getDateTimeFromString($transaction->dueDate);
+        $dueDateTimestamp = $date->getTimestamp();
+
+        $now = time();
+        if ($now > $dueDateTimestamp) {
+            $dueStatus = 'overdue';
+        } elseif ($now > $dueDateTimestamp - (1 * 24 * 60 * 60)) {
+            $dueStatus = 'due';
+        }
+        return [
+            'duedate' =>
+                $this->dateConverter->convertToDisplayDate(
+                    'U',
+                    $dueDateTimestamp
+                ),
+            'dueTime' =>
+                $this->dateConverter->convertToDisplayTime(
+                    'U',
+                    $dueDateTimestamp
+                ),
+            'dueStatus' => $dueStatus,
+            'id' => $this->getBibId($transaction->item->instanceId),
+            'item_id' => $transaction->item->id,
+            'barcode' => $transaction->item->barcode,
+            'renew' => $transaction->renewalCount ?? 0,
+            'renewable' => true,
+            'title' => $transaction->item->title,
+        ];
     }
 
     /**
@@ -1988,7 +2050,11 @@ class Folio extends AbstractAPI implements
                 if (empty($limitDeliveryAddressTypes) || in_array($addressType, $limitDeliveryAddressTypes)) {
                     $deliveryPickupLocations[] = [
                         'locationID' => $addressTypeId,
-                        'locationDisplay' => $addressType,
+                        'locationDisplay' => $this->formatDeliveryAddress(
+                            $addressTypeId,
+                            $addressType,
+                            $patron['addresses'] ?? []
+                        ),
                     ];
                 }
             }
@@ -2105,17 +2171,23 @@ class Folio extends AbstractAPI implements
         $allowHoldShelf = $requestPreference['holdShelf'] ?? true;
         $allowDelivery = ($requestPreference['delivery'] ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
+        $noLocationsLabels = $this->config['Holds']['noLocationsLabelByRequestGroup'] ?? [];
+        $selectLocationText = $this->config['Holds']['selectLocationTextByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
                 [
                     'id' => 'Hold Shelf',
                     'name' => 'fulfillment_method_hold_shelf',
                     'locationsLabel' => $locationsLabels['Hold Shelf'] ?? null,
+                    'noLocationsLabel' => $noLocationsLabels['Hold Shelf'] ?? null,
+                    'selectLocationText' => $selectLocationText['Hold Shelf'] ?? null,
                 ],
                 [
                     'id' => 'Delivery',
                     'name' => 'fulfillment_method_delivery',
                     'locationsLabel' => $locationsLabels['Delivery'] ?? null,
+                    'noLocationsLabel' => $noLocationsLabels['Delivery'] ?? null,
+                    'selectLocationText' => $selectLocationText['Delivery'] ?? null,
                 ],
             ];
         }
@@ -2190,6 +2262,39 @@ class Folio extends AbstractAPI implements
             $this->putCachedData($cacheKey, $addressTypes);
         }
         return $addressTypes;
+    }
+
+    /**
+     * Get a formatted display string for delivery to a particular patron address type.
+     *
+     * Can include patron specific information, i.e. "Campus - 123 Main St.".
+     *
+     * @param string $addressTypeId Type id of the address
+     * @param string $addressType   Type of the address
+     * @param array  $addresses     Patron's list of addresses
+     *
+     * @return string The display-formatted address
+     */
+    protected function formatDeliveryAddress(string $addressTypeId, string $addressType, array $addresses): string
+    {
+        if (!($this->config['Holds']['formatDeliveryAddressTypes'] ?? false)) {
+            return $addressType;
+        }
+
+        foreach ($addresses as $address) {
+            if ($addressTypeId == $address->addressTypeId) {
+                $tokens = [
+                    'type' => $addressType,
+                    'line1' => ($address?->addressLine1 ?? '') ?: 'EMPTY',
+                    'line2' => ($address?->addressLine2 ?? '') ?: 'EMPTY',
+                    'city' => ($address?->city ?? '') ?: 'EMPTY',
+                    'region' => ($address?->region ?? '') ?: 'EMPTY',
+                    'postalCode' => ($address?->postalCode ?? '') ?: 'EMPTY',
+                ];
+                return $this->translate('pick_up_location_delivery_address_format', $tokens, null, true);
+            }
+        }
+        return $addressType;
     }
 
     /**
@@ -2412,6 +2517,25 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method for placeHold(): Notify an external process
+     * that a request was successfully submitted.
+     *
+     * @return void
+     */
+    protected function sendWebhookAfterHoldRequest()
+    {
+        $url = $this->config['Holds']['webhook'] ?? null;
+        if ($url) {
+            if (!$this->webhookConnection) {
+                throw new ILSException('Webhook connection not set.');
+            }
+
+            // Short timeout -- don't impact user.
+            $this->webhookConnection->post($url, $this->webhookTimeout);
+        }
+    }
+
+    /**
      * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
      * @param string  $instanceId  Instance UUID being requested
@@ -2545,6 +2669,7 @@ class Folio extends AbstractAPI implements
             $requestBody['requestType'] = $requestType;
             $result = $this->performHoldRequest($requestBody);
             if ($result['success']) {
+                $this->sendWebhookAfterHoldRequest();
                 break;
             }
         }

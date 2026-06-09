@@ -293,17 +293,17 @@
   <!-- ESLint -->
   <target name="eslint">
     <exec executable="npx" escape="false" checkreturn="true" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js" />
+      <arg line="eslint ${srcdir}/themes/**/*.js ${srcdir}/util/*.js ${srcdir}/util/**/*.js --no-error-on-unmatched-pattern" />
     </exec>
   </target>
   <target name="eslint-fix">
     <exec executable="npx" escape="false" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js --fix" />
+      <arg line="eslint ${srcdir}/themes/**/*.js ${srcdir}/util/*.js ${srcdir}/util/**/*.js --fix --no-error-on-unmatched-pattern" />
     </exec>
   </target>
   <target name="eslint-report">
     <exec executable="npx" escape="false">
-      <arg line="eslint ${srcdir}/themes/**/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
+      <arg line="eslint ${srcdir}/themes/**/*.js ${srcdir}/util/*.js ${srcdir}/util/**/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml --no-error-on-unmatched-pattern" />
     </exec>
   </target>
 

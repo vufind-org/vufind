@@ -541,6 +541,12 @@ class Upgrade implements LoggerAwareInterface
             );
         }
 
+        // Warn the user about the deprecated Piwik analytics section:
+        if (!empty($newConfig['Piwik'] ?? [])) {
+            $this->addWarning(
+                'You are using the deprecated [Piwik] section for analytics. Please switch to [Matomo] instead.'
+            );
+        }
         // Upgrade Google Options:
         if (
             isset($newConfig['Content']['GoogleOptions'])
