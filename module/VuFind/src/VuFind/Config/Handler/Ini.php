@@ -274,7 +274,7 @@ class Ini extends AbstractBase
             if (isset($sectionConfig['@include'])) {
                 throw new ConfigException('Can not write INI configuration with @include statement.');
             }
-            foreach ((array)$sectionConfig as $setting => $value) {
+            foreach ((array)$sectionConfig as $value) {
                 if ($section === 'Parent_Config') {
                     throw new ConfigException('Can not write INI configuration with inheritance.');
                 }
