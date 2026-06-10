@@ -337,7 +337,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                     default => $req->getPost()->toArray() + $req->getQuery()->toArray(),
                 };
                 foreach ($value as $key => $val) {
-                    if ($val !== $allParams[$key] ?? null) {
+                    if ($val !== ($allParams[$key] ?? null)) {
                         return false;
                     }
                 }

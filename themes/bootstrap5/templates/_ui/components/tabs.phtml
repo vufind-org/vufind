@@ -2,12 +2,12 @@
   /**
    * Tabs component.
    *
-   * @param array  $tabs              Tabs
-   * @param string $activeTab         Active tab
-   * @param string $idSuffix          Id suffix (optional)
-   * @param array  $tabNavClasses     Extra classes for the tab bar (optional)
-   * @param array  $tabContentClasses Extra classes for the tab content container (optional)
-   * @param array  $tabPaneClasses    Extra classes for the tab pane (optional)
+   * @property array   $tabs              Tabs
+   * @property string  $activeTab         Active tab
+   * @property ?string $idSuffix          Id suffix (optional)
+   * @property ?array  $tabNavClasses     Extra classes for the tab bar (optional)
+   * @property ?array  $tabContentClasses Extra classes for the tab content container (optional)
+   * @property ?array  $tabPaneClasses    Extra classes for the tab pane (optional)
    */
 
   $tabNavClasses = array_merge(['nav', 'nav-tabs'], $this->tabNavClasses ?? []);
@@ -37,7 +37,7 @@
         'data-bs-toggle' => 'tab',
         'data-bs-target' => '#' . $paneId,
       ]);
-      if ($activeTab == $tabName) {
+      if ($this->activeTab == $tabName) {
         $buttonAttributes->add('class', 'active');
         $buttonAttributes->add('aria-selected', 'true');
       } else {
@@ -64,7 +64,7 @@
         'aria-labelledby' => $getButtonId($tabName),
         'data-tab-name' => $tabName,
       ]);
-      if ($activeTab == $tabName) {
+      if ($this->activeTab == $tabName) {
           $tabPaneAttributes->add('class', 'active');
       }
       $tabPaneAttributes->merge($tab['paneAttributes'] ?? []);
