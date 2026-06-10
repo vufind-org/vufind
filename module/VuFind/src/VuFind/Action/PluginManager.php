@@ -65,6 +65,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'cart/myresearchbulk' => Cart\MyResearchBulkAction::class,
         'cart/printcart' => Cart\PrintCartAction::class,
         'cart/searchresultsbulk' => Cart\SearchResultsBulkAction::class,
+        'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
+        'collections/bytitle' => Collections\ByTitleAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
     ];
 

@@ -33,6 +33,7 @@ use Throwable;
 use VuFind\Db\Service\NoticeService;
 use VuFindTest\Feature\CacheManagementTrait;
 use VuFindTest\Feature\LiveDatabaseTrait;
+use VuFindTest\Feature\UserCreationTrait;
 
 /**
  * Notices test class.
@@ -47,6 +48,17 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
 {
     use CacheManagementTrait;
     use LiveDatabaseTrait;
+    use UserCreationTrait;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public static function setUpBeforeClass(): void
+    {
+        static::failIfDataExists();
+    }
 
     /**
      * Test that no messages are displayed by default.
@@ -364,6 +376,9 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'a[href*="Notices/Add"]');
         $this->waitForPageLoad($page);
 
+        // change context to global_header
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global_header"]');
+
         // change content type to markdown and check that markdown hint link becomes visible
         $this->findCss($page, '.content_type_fieldset-markdown.hidden');
         $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="markdown"]');
@@ -391,7 +406,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
         $this->assertSame('<strong>Test Content1</strong>', $notice1);
 
-        $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning strong');
+        $notice2 = $this->findCssAndGetText($page, '.banner .notices .alert-warning strong');
         $this->assertSame('Test Content2', $notice2);
 
         // test switching language
@@ -401,7 +416,7 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
         $this->assertSame('<strong>Test Content1</strong>', $notice1);
 
-        $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning');
+        $notice2 = $this->findCssAndGetText($page, '.banner .notices .alert-warning');
         $this->assertSame('German Test Content', $notice2);
     }
 
@@ -444,6 +459,9 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.notice-list a[title="Edit"]');
         $this->waitForPageLoad($page);
 
+        // change context to logged_in
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="logged_in"]');
+
         $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="clean_html"]');
 
         $this->findCssAndSetValue(
@@ -459,6 +477,10 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.notice-list a[title="Edit"]', index: 1);
         $this->waitForPageLoad($page);
 
+        // check context global_header is preselected and change context to global
+        $this->findCss($page, 'fieldset[name="context_fieldset"] input[value="global_header"]:checked');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global"]');
+
         // change content type to text and check that markdown hint link becomes hidden
         $this->unFindCss($page, '.content_type_fieldset-markdown.hidden');
         $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="text"]');
@@ -469,12 +491,20 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
 
         // test notice changed
         $this->unFindCss($page, '#content > .notices .alert-success');
-
-        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-danger strong');
-        $this->assertSame('Changed Content', $notice1);
+        $this->unFindCss($page, '#content > .notices .alert-danger strong');
 
         $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning');
         $this->assertSame('**Test Content2**', $notice2);
+
+        // check after login
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-danger strong');
+        $this->assertSame('Changed Content', $notice1);
     }
 
     /**
@@ -541,6 +571,8 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
+        static::removeUsers(['username1', 'catuser']);
+
         // Delete all notices
         try {
             $test = new static('');   // create instance of current class

@@ -40,6 +40,8 @@ use VuFind\I18n\Locale\LocaleSettingsAwareInterface;
 use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
+use function count;
+
 /**
  * Abstract notices action.
  *
@@ -107,13 +109,22 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
         $noticeConfig = $this->noticeManager->getNoticeConfig();
         $noticeFormConfig = $noticeConfig['adminForm'] ?? [];
         $formData = [];
+
+        $contexts = $noticeFormConfig['contexts'] ?? [];
+        $formData['contexts'] = array_keys($contexts);
+        if ($notice && $activeContext = $this->getBestMatchingContext($notice, $contexts)) {
+            $formData['activeContext'] = $activeContext;
+        }
+
         $formData['contentTypes'] = $noticeFormConfig['contentTypes'] ?? [];
         if ($activeContentType = $notice['contentType'] ?? null) {
             $formData['activeContentType'] = $activeContentType;
         }
+
         foreach ($this->getFormLanguages() as $language) {
             $formData['translations'][$language] = $notice['translations'][$language] ?? null;
         }
+
         $styles = $noticeConfig['styles'] ?? [];
         $activeStyle = $notice['style'] ?? array_keys($styles)[0] ?? null;
         foreach ($styles as $style => $attributes) {
@@ -122,7 +133,70 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
             }
             $formData['styles'][$style] = $attributes;
         }
+
         return $formData;
+    }
+
+    /**
+     * Determine which configured context matches the notice the best.
+     *
+     * @param array $notice   Notice data
+     * @param array $contexts Contexts
+     *
+     * @return ?string
+     */
+    protected function getBestMatchingContext(array $notice, array $contexts): ?string
+    {
+        $context = null;
+        $maxMatch = -1;
+        $maxMatchAdditionalConfigs = 0;
+        $noticeConfigMatchKeys = $this->createConfigMatchKeys($notice);
+        foreach ($contexts as $name => $currentContext) {
+            $contextConfigMatchKeys = $this->createConfigMatchKeys($currentContext ?? []);
+
+            $matchingConfigs = count(array_intersect(
+                $contextConfigMatchKeys,
+                $noticeConfigMatchKeys,
+            ));
+            $additionalConfigs = count(array_diff(
+                $contextConfigMatchKeys,
+                $noticeConfigMatchKeys
+            ));
+
+            // select preset that has most matching configs and as few additional configs as possible as decider
+            if (
+                $maxMatch < $matchingConfigs
+                || ($maxMatch === $matchingConfigs && $additionalConfigs < $maxMatchAdditionalConfigs)
+            ) {
+                $context = $name;
+                $maxMatch = $matchingConfigs;
+                $maxMatchAdditionalConfigs = $additionalConfigs;
+            }
+        }
+        return $context;
+    }
+
+    /**
+     * Create keys for context on which it can be compared to another one.
+     *
+     * @param array $context Context
+     *
+     * @return string[]
+     */
+    protected function createConfigMatchKeys(array $context): array
+    {
+        $configMatchKeys = array_map(
+            function ($condition) {
+                $values = $condition['values'] ?? [];
+                sort($values);
+                return 'cond_' . $condition['type'] . '_' . $condition['comparator'] . '_' . implode(',', $values);
+            },
+            $context['conditions'] ?? []
+        );
+        if ($position = $context['position'] ?? null) {
+            $configMatchKeys[] = 'pos_' . $position;
+        }
+        return $configMatchKeys;
     }
 
     /**
@@ -133,6 +207,12 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
     protected function formDataToNotice(): array
     {
         $notice = $this->noticeManager->getDefaults();
+
+        if ($context = $this->getPostParam('context_fieldset')['context'] ?? null) {
+            $contextConfig = $this->noticeManager->getNoticeConfig()['adminForm']['contexts'][$context] ?? [];
+            $notice['position'] = $contextConfig['position'] ?? 'default';
+            $notice['conditions'] = $contextConfig['conditions'] ?? [];
+        }
 
         if ($contentType = $this->getPostParam('content_type_fieldset')['content_type'] ?? null) {
             $notice['contentType'] = $contentType;
