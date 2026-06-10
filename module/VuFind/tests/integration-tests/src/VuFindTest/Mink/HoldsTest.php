@@ -31,6 +31,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
+use Iterator;
 
 /**
  * Test class for holds-related functionality.
@@ -489,9 +490,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for tests with multiple items and pagination.
      *
-     * @return \Iterator
+     * @return Iterator
      */
-    public static function multipleItemsAndPaginationTestProvider(): \Iterator
+    public static function multipleItemsAndPaginationTestProvider(): Iterator
     {
         yield 'single' => [1, false, false];
         yield 'multiple' => [6, false, false];
@@ -696,9 +697,11 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      * Create a frozen hold and navigate to the holds list. Return the page
      * object that was set up during the process.
      *
+     * @param int $itemCount Number of items to place holds on
+     *
      * @return DocumentElement
      */
-    protected function setUpFrozenHold(): DocumentElement
+    protected function setUpFrozenHold(int $itemCount = 1): DocumentElement
     {
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
@@ -711,6 +714,14 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Place the hold:
         $futureDate = date('m-d-Y', strtotime('+2 days'));
         $expectedDate = date('m-d-Y', strtotime('+1 day'));
+
+        // Place hold on first items
+        for ($i = 2; $i <= $itemCount; $i++) {
+            $this->placeHold($page, ['#startDate' => $futureDate]);
+            $this->closeLightbox($page);
+            $page = $this->gotoRecordById('testsample' . $i);
+        }
+
         $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
 
         // Confirm that the hold is frozen, as expected (note that the expected
@@ -756,21 +767,26 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test creating, and then editing, a frozen hold.
      *
+     * @param int $itemCount Number of items to place holds on
+     * @param bool $pagination If pagination on holds is enabled
+     * @param bool $ilsPaging If ils paging should be enabled
+     *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
-    public function testFrozenHoldEditing(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
+    public function testFrozenHoldEditing(int $itemCount, bool $pagination, bool $ilsPaging): void
     {
-        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig = $this->getDemoIniOverridesForTestsWithMultipleItems($itemCount, $ilsPaging);
         $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(),
+                'config' => $this->getConfigIniOverrides($pagination),
                 'Demo' => $demoConfig,
             ]
         );
 
-        $page = $this->setUpFrozenHold();
+        $page = $this->setUpFrozenHold($itemCount);
 
         // Confirm that no cancel buttons appear, since they are not configured:
         $this->unFindCss($page, '#cancelSelected');
@@ -779,6 +795,16 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that there are edit controls on the page:
         $this->findCss($page, '#update_selected');
 
+        if ($pagination && $itemCount > 1) {
+            $this->clickCss($page, '.page-next .page-link');
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                'Showing 3 - 4 of 6 Items',
+                trim($this->findCssAndGetText($page, '.search-stats'))
+            );
+        }
+
+        // Test editing one hold
         // Open the edit dialog box using the link:
         $this->clickCss($page, '.hold-edit');
 
@@ -790,9 +816,42 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that the values have changed
         $this->waitForPageLoad($page);
         $this->assertNotFalse(strstr($page->getContent(), 'Campus A'));
-        $this->assertFalse(
-            strstr($page->getContent(), 'Frozen (temporarily suspended) through ')
+        $expectedFrozenCount = $itemCount - 1;
+        if ($pagination && $itemCount > 1) {
+            $expectedFrozenCount = 1;
+        }
+        $this->assertEquals(
+            $expectedFrozenCount,
+            substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
         );
+
+        if ($itemCount > 1) {
+            if ($pagination) {
+                $this->clickCss($page, '.page-next .page-link');
+                $this->waitForPageLoad($page);
+                $this->assertStringStartsWith(
+                    'Showing 5 - 6 of 6 Items',
+                    trim($this->findCssAndGetText($page, '.search-stats'))
+                );
+                $this->assertEquals(
+                    2,
+                    substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
+                );
+            }
+
+            // Edit all holds on page
+            $this->clickCss($page, '.checkbox-select-all');
+            $this->clickCss($page, '#update_selected');
+
+            // Release the hold and change the pickup location
+            $this->findCssAndSetValue($page, '#frozen', '0');
+            $this->findCss($page, '#modal .btn.btn-primary')->click();
+
+            $this->assertEquals(
+                0,
+                substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
+            );
+        }
     }
 
     /**
