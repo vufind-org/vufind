@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for GetResolverLinks AJAX handler.
@@ -72,7 +73,7 @@ class GetResolverLinksFactory implements \Laminas\ServiceManager\Factory\Factory
         return new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Resolver\Driver\PluginManager::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
             $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
     }

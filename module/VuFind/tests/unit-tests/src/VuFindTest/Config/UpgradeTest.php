@@ -320,11 +320,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $results['permissions']['access.SummonExtendedResults']
         );
 
+        // EDS assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EDSModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EDSModuleAccess']
+        );
+
         // EIT assertions:
         $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
         $this->assertEquals(
             $eitConfig,
             $results['permissions']['default.EITModule']
+        );
+
+        // EPF assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EPFModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EPFModule']
         );
 
         // Primo assertions:
@@ -388,6 +402,42 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader($fixture);
         $this->assertSame([$expectedWarning], $upgrader->getWarnings());
+    }
+
+    /**
+     * Test [Piwik] / [Matomo] section conflict handling.
+     *
+     * @return void
+     */
+    public function testPiwikAndMatomoConflict(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik-and-matomo');
+        $warnings = $upgrader->getWarnings();
+        $configs = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['url' => 'bar', 'site_id' => 2],
+            $configs['config']['Matomo']
+        );
+        $this->assertContains(
+            'You are using the deprecated [Piwik] section for analytics but also have [Matomo] settings.'
+            . ' The [Piwik] settings have been removed.',
+            $warnings
+        );
+    }
+
+    /**
+     * Test [Piwik] getting upgraded to [Matomo].
+     *
+     * @return void
+     */
+    public function testPiwikUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik');
+        $configs = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['url' => 'foo', 'site_id' => 1],
+            $configs['config']['Matomo']
+        );
     }
 
     /**

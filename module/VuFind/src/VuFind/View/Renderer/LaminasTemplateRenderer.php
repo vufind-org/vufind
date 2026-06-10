@@ -34,7 +34,7 @@ use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ModelInterface;
 use Laminas\View\Model\ViewModel;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\PhpRenderer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Http\ServerUrlHelper;
@@ -58,7 +58,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * Constructor.
      *
      * @param ServerUrlHelper        $serverUrlHelper        Server URL helper
-     * @param RendererInterface      $viewRenderer           View renderer
+     * @param PhpRenderer            $viewRenderer           View renderer
      * @param ViewManager            $viewManager            View manager
      * @param InjectTemplateListener $injectTemplateListener Template injection listener (for prefixes)
      * @param bool                   $displayExceptions      Display exceptions?
@@ -69,7 +69,7 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(service: 'ViewRenderer')]
-        protected RendererInterface $viewRenderer,
+        protected PhpRenderer $viewRenderer,
         #[Autowire(service: 'ViewManager')]
         protected ViewManager $viewManager,
         protected InjectTemplateListener $injectTemplateListener,
@@ -85,20 +85,23 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     /**
      * Render a template and return the result in the response object.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param ResponseInterface      $response Response object
-     * @param array                  $params   Template parameters
-     * @param ?string                $template Template name, or null to use default for the action
+     * @param ServerRequestInterface $request        Request
+     * @param ResponseInterface      $response       Response object
+     * @param ?string                $template       Template name, or null to use default for the action
+     * @param array                  $params         Template parameters
+     * @param array[]                $childTemplates Any child templates; an array of associative array with keys
+     * 'template' and 'params'
      *
      * @return ResponseInterface
      */
     public function renderTemplate(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params = [],
         ?string $template = null,
+        array $params = [],
+        array $childTemplates = [],
     ): ResponseInterface {
-        $response->getBody()->write($this->renderTemplateAsString($request, $params, $template));
+        $response->getBody()->write($this->renderTemplateAsString($request, $template, $params, useLayout: true));
         return $response;
     }
 
@@ -120,8 +123,8 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         return $this->renderTemplate(
             $request,
             $response->withStatus(500),
-            $params,
-            $this->errorTemplate
+            $this->errorTemplate,
+            $params
         );
     }
 
@@ -142,28 +145,52 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
         return $this->renderTemplate(
             $request,
             $response->withStatus(404),
-            $params + ['message' => 'Page not found.'],
-            $this->notFoundTemplate
+            $this->notFoundTemplate,
+            $params + ['message' => 'Page not found.']
         );
     }
 
     /**
      * Render a template and return the result as a string.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param array                  $params   Template parameters
-     * @param ?string                $template Template name, or null to use default for the action
+     * @param ?ServerRequestInterface $request        Request (must be set if $template is null or $useLayout is true)
+     * @param ?string                 $template       Template name, or null to use default for the action
+     * @param array                   $params         Template parameters
+     * @param array[]                 $childTemplates Any child templates; an array of associative array with keys
+     *                                                'template' and 'params'
+     * @param bool                    $useLayout      Render full page with the layout?
      *
      * @return string
      */
     public function renderTemplateAsString(
-        ServerRequestInterface $request,
-        array $params = [],
+        ?ServerRequestInterface $request = null,
         ?string $template = null,
+        array $params = [],
+        array $childTemplates = [],
+        bool $useLayout = false,
     ): string {
         $view = $this->viewManager->getView();
         $viewModel = $this->createViewModel($request, $params, $template);
+        foreach ($childTemplates as $current) {
+            $viewModel->addChild($this->createViewModel($request, $current['params'] ?? [], $current['template']));
+        }
+        if (!$useLayout) {
+            // Force renderer to return the result:
+            $viewModel->setOption('has_parent', true);
+            return $view->render($viewModel);
+        }
+
+        // Prepare layout and render:
+        if (null === $request) {
+            throw new InvalidArgumentException('Request is required for rendering with layout');
+        }
         $layout = $this->getLayout($request);
+
+        $templateParts = explode('/', $viewModel->getTemplate());
+        $layout->setVariable('templateDir', $templateParts[0]);
+        $layout->setVariable('templateName', $templateParts[1] ?? null);
+        $this->setupRenderingInLightbox($request, $layout);
+
         // Clear any previous children (e.g. when rendering an error):
         if ($layout instanceof ViewModel) {
             $layout->clearChildren();
@@ -175,36 +202,35 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     }
 
     /**
+     * Find the filename for a template.
+     *
+     * @param string $template Template
+     *
+     * @return ?string Filename, or null if not found
+     */
+    public function resolveTemplateFilename(string $template): ?string
+    {
+        return $this->viewRenderer->resolver($template);
+    }
+
+    /**
      * Create a new ViewModel.
      *
-     * @param ServerRequestInterface $request  Request
-     * @param array                  $params   Parameters to pass to ViewModel constructor
-     * @param ?string                $template Template name, or null to use default for the action
+     * @param ?ServerRequestInterface $request  Request
+     * @param array                   $params   Parameters to pass to ViewModel constructor
+     * @param ?string                 $template Template name, or null to use default for the action
      *
      * @return ViewModel
      */
     public function createViewModel(
-        ServerRequestInterface $request,
+        ?ServerRequestInterface $request,
         array $params,
         ?string $template = null
     ): ViewModel {
         $template ??= $this->getDefaultTemplateName($request);
-        $layout = $this->getLayout($request);
-        if ($this->inLightbox($request)) {
-            $layout->setTemplate('layout/lightbox');
+        if ($request && $this->inLightbox($request)) {
             $params['inLightbox'] = true;
         }
-        $lightboxParentUrl = new Http($this->serverUrlHelper->getCurrentUrl());
-        $query = $lightboxParentUrl->getQueryAsArray();
-        unset($query['lightboxChild']);
-        $lightboxParentUrl->setQuery($query);
-        $layout->lightboxParent = $lightboxParentUrl->toString();
-        if ($lightboxChild = $request->getQueryParams()['lightboxChild'] ?? null) {
-            $layout->lightboxChild = $lightboxChild;
-        }
-        $templateParts = explode('/', $template);
-        $layout->setVariable('templateDir', $templateParts[0]);
-        $layout->setVariable('templateName', $templateParts[1] ?? null);
         $viewModel = new ViewModel($params);
         $viewModel->setTemplate($template);
         return $viewModel;
@@ -221,10 +247,11 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      */
     public function getLayout(ServerRequestInterface $request): ModelInterface
     {
-        if (!($result = $request->getAttribute('view-model'))) {
+        if (!($layout = $request->getAttribute('view-model'))) {
             throw new InvalidArgumentException("Request must include the 'view-model' attribute");
         }
-        return $result;
+
+        return $layout;
     }
 
     /**
@@ -243,13 +270,13 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
     /**
      * Get default template name for the action.
      *
-     * @param ServerRequestInterface $request Request
+     * @param ?ServerRequestInterface $request Request
      *
      * @return string
      */
-    protected function getDefaultTemplateName(ServerRequestInterface $request): string
+    protected function getDefaultTemplateName(?ServerRequestInterface $request): string
     {
-        if (!($action = $request->getAttribute('action-id'))) {
+        if (!($action = $request?->getAttribute('action-id'))) {
             throw new \InvalidArgumentException("Request must include the 'action-id' attribute");
         }
         $parts = explode('/', $action);
@@ -273,5 +300,28 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
             }
         }
         return strtolower($name);
+    }
+
+    /**
+     * Setup layout with lightbox-related variables, and template when a lightbox is requested.
+     *
+     * @param ServerRequestInterface $request Request
+     * @param ViewModel              $layout  Layout
+     *
+     * @return void
+     */
+    protected function setupRenderingInLightbox(ServerRequestInterface $request, ViewModel $layout): void
+    {
+        if ($this->inLightbox($request)) {
+            $layout->setTemplate('layout/lightbox');
+        }
+        $lightboxParentUrl = new Http($this->serverUrlHelper->getCurrentUrl());
+        $query = $lightboxParentUrl->getQueryAsArray();
+        unset($query['lightboxChild']);
+        $lightboxParentUrl->setQuery($query);
+        $layout->setVariable('lightboxParent', $lightboxParentUrl->toString());
+        if ($lightboxChild = $request->getQueryParams()['lightboxChild'] ?? null) {
+            $layout->setVariable('lightboxChild', $lightboxChild);
+        }
     }
 }

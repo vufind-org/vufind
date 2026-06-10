@@ -34,9 +34,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use VuFind\ActionHelper\HelperInterface;
+use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
+use VuFind\Session\Settings as SessionSettings;
 
 /**
  * Abstract base class for actions.
@@ -78,21 +80,35 @@ abstract class AbstractAction implements ActionInterface
     protected ?HelperPluginManager $helperPluginManager = null;
 
     /**
+     * Session settings.
+     *
+     * @var ?SessionSettings
+     */
+    protected ?SessionSettings $sessionSettings = null;
+
+    /**
+     * Permission that must be granted to access this module (false for no restriction, null to use configured default
+     * (which is usually the same as false)).
+     *
+     * @var string|bool|null
+     */
+    protected $accessPermission = null;
+
+    /**
+     * Behavior when access is denied (used unless overridden through permissionBehavior.ini). Valid values are
+     * 'promptLogin' and 'exception'. Leave at null to use the defaultDeniedControllerBehavior set in
+     * permissionBehavior.ini (normally 'promptLogin' unless changed).
+     *
+     * @var ?string
+     */
+    protected $accessDeniedBehavior = null;
+
+    /**
      * Constructor.
      */
     public function __construct()
     {
         $this->init();
-    }
-
-    /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        // This function is called after constructor for any initialization required.
     }
 
     /**
@@ -122,6 +138,19 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Set session settings.
+     *
+     * @param SessionSettings $sessionSettings Session settings
+     *
+     * @return static
+     */
+    public function setSessionSettings(SessionSettings $sessionSettings): static
+    {
+        $this->sessionSettings = $sessionSettings;
+        return $this;
+    }
+
+    /**
      * Invoke the action.
      *
      * @param ServerRequestInterface $request  Server request
@@ -143,6 +172,16 @@ abstract class AbstractAction implements ActionInterface
     }
 
     /**
+     * Initialize the action.
+     *
+     * @return void
+     */
+    protected function init(): void
+    {
+        // This function is called after constructor for any initialization required.
+    }
+
+    /**
      * Perform the action.
      *
      * @param ServerRequestInterface $request  Server request
@@ -154,6 +193,19 @@ abstract class AbstractAction implements ActionInterface
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface;
+
+    /**
+     * Prevent session writes -- this is designed to be called prior to time-
+     * consuming AJAX operations to help reduce the odds of a timing-related bug
+     * that causes the wrong version of session data to be written to disk (see
+     * VUFIND-716 for more details).
+     *
+     * @return void
+     */
+    protected function disableSessionWrites()
+    {
+        $this->getSessionSettings()->disableWrite();
+    }
 
     /**
      * Handle an exception during action.
@@ -290,5 +342,34 @@ abstract class AbstractAction implements ActionInterface
             throw new Exception($this::class . ' action not properly initialized; route helper missing');
         }
         return $this->routeHelper;
+    }
+
+    /**
+     * Get session settings.
+     *
+     * @return SessionSettings
+     */
+    protected function getSessionSettings(): SessionSettings
+    {
+        if (null === $this->sessionSettings) {
+            throw new Exception($this::class . ' action not properly initialized; session settings missing');
+        }
+        return $this->sessionSettings;
+    }
+
+    /**
+     * Validate any access permission for the action.
+     *
+     * @return ?ResponseInterface A response if access is denied, null otherwise
+     */
+    public function validateAccessPermission(): ?ResponseInterface
+    {
+        // If there is an access permission set for this action, pass it through the permission helper, and if the
+        // helper returns a custom response, use that instead of the normal behavior.
+        if ($this->accessPermission) {
+            return $this->getHelper(PermissionHelper::class)
+                ->check($this->request, $this->response, $this->accessPermission, $this->accessDeniedBehavior);
+        }
+        return null;
     }
 }

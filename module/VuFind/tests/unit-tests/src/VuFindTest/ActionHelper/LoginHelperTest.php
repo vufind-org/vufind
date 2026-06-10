@@ -41,11 +41,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper as ActionHelperLoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\ActionHelper\UrlHelper;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\User;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\ILS\Connection;
 use VuFind\Session\Helper\FollowupHelper;
 use VuFind\View\FlashMessenger\FlashMessenger;
@@ -163,9 +166,9 @@ class LoginHelperTest extends TestCase
      */
     public static function catalogLoginProvider(): Generator
     {
-        yield 'no user' => [false, [], null, 200, 'myresearch/login', false];
+        yield 'no user' => [false, [], null, 200, 'myresearch/login', false, true];
 
-        yield 'user, no credentials' => [true, [], null, 200, 'myresearch/cataloglogin', false];
+        yield 'user, no credentials' => [true, [], null, 200, 'myresearch/cataloglogin', false, true];
 
         yield 'user, correct credentials' => [
             true,
@@ -174,6 +177,7 @@ class LoginHelperTest extends TestCase
             null,
             null,
             false,
+            true,
         ];
 
         yield 'user, correct credentials with target' => [
@@ -183,6 +187,7 @@ class LoginHelperTest extends TestCase
             null,
             null,
             false,
+            true,
         ];
 
         yield 'user, incorrect credentials' => [
@@ -192,6 +197,7 @@ class LoginHelperTest extends TestCase
             200,
             'myresearch/cataloglogin',
             false,
+            true,
         ];
 
         yield 'user, credentials, ILS failure' => [
@@ -201,15 +207,37 @@ class LoginHelperTest extends TestCase
             200,
             'myresearch/cataloglogin',
             true,
+            true,
         ];
 
         yield 'user, no credentials, ILS failure' => [
             true,
             [],
             null,
+            200,
+            'myresearch/cataloglogin',
+            true,
+            true,
+        ];
+
+        yield 'user, credentials, ILS failure, no redirect' => [
+            true,
+            ['cat_username' => 'correct', 'cat_password' => 'password'],
+            'correct',
             null,
             null,
             true,
+            false,
+        ];
+
+        yield 'user, no credentials, ILS failure, no redirect' => [
+            true,
+            [],
+            null,
+            null,
+            null,
+            true,
+            false,
         ];
     }
 
@@ -222,6 +250,7 @@ class LoginHelperTest extends TestCase
      * @param ?int    $expectedStatus   Expected HTTP status code
      * @param ?string $expectedForward  Expected forward route
      * @param bool    $ilsFailure       Should ILSAuthenticator calls throw an ILS exception?
+     * @param bool    $forwardCatLogin  Should the catalogLogin call forward the request if needed?
      *
      * @return void
      */
@@ -233,6 +262,7 @@ class LoginHelperTest extends TestCase
         ?int $expectedStatus,
         ?string $expectedForward,
         bool $ilsFailure,
+        bool $forwardCatLogin,
     ): void {
         $request = (new ServerRequest())
             ->withParsedBody($postParams);
@@ -290,10 +320,10 @@ class LoginHelperTest extends TestCase
                 FlashMessengerInterface::class => $flashMessenger,
             ]
         );
-        $result = $helper->catalogLogin($request, $response);
+        $result = $helper->catalogLogin($request, $response, $forwardCatLogin);
         if ($expectedUsername && !$ilsFailure) {
             $this->assertSame(['id' => $expectedUsername], $result);
-        } elseif (!$postParams && $ilsFailure) {
+        } elseif ($ilsFailure && !$forwardCatLogin) {
             $this->assertNull($result);
         } else {
             $this->assertSame($expectedStatus, $result->getStatusCode());
@@ -465,6 +495,108 @@ class LoginHelperTest extends TestCase
         $ils = $this->getIls($patronLoginConfig, $target);
         $helper = $this->getAutowiredObject(ActionHelperLoginHelper::class, [Connection::class => $ils]);
         $this->assertEquals($expectedMethod, $helper->getILSLoginMethod($target));
+    }
+
+    /**
+     * Data provider for testSetFollowupToReferer.
+     *
+     * @return \Iterator
+     */
+    public static function setFollowupToRefererProvider(): \Iterator
+    {
+        yield 'no referrer' => [null, true, [], null, []];
+        yield 'referrer' => ['http://localhost/vufind/foo', true, [], 'http://localhost/vufind/foo', []];
+        yield 'referrer with extras' => [
+            'http://localhost/vufind/foo',
+            true,
+            ['bar' => 'baz'],
+            'http://localhost/vufind/foo',
+            ['bar' => 'baz'],
+        ];
+        yield 'current URL allowed as referrer' => [
+            'http://localhost/vufind/current',
+            true,
+            [],
+            'http://localhost/vufind/current',
+            [],
+        ];
+        yield 'current URL not allowed as referrer' => [
+            'http://localhost/vufind/current',
+            false,
+            [],
+            null,
+            [],
+        ];
+        yield 'foreign URL' => [
+            'http://vufind.org/',
+            true,
+            [],
+            null,
+            [],
+        ];
+    }
+
+    /**
+     * Test the setFollowupUrlToReferer method.
+     *
+     * @param ?string $referrer               Referer
+     * @param bool    $allowCurrent           Allow current URL as referrer?
+     * @param array   $extras                 Extra information to store
+     * @param ?string $expectedStoredReferrer Expected referrer to be stored
+     * @param array   $expectedStoredExtras   Expected extras to be stored
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('setFollowupToRefererProvider')]
+    public function testSetFollowupToReferer(
+        ?string $referrer,
+        bool $allowCurrent,
+        array $extras,
+        ?string $expectedStoredReferrer,
+        array $expectedStoredExtras
+    ): void {
+        $urlHelper = $this->createMock(UrlHelper::class);
+        $urlHelper->method('normalizeUrlForComparison')
+            ->willReturnArgument(0);
+
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $routeHelper->method('getUrlFromRoute')
+            ->willReturnCallback(
+                function (string $route): string {
+                    return match ($route) {
+                        'home' => '/',
+                        'myresearch-home' => '/MyResearch/Home',
+                        'myresearch-userlogin' => '/MyResearch/UserLogin'
+                    };
+                }
+            );
+
+        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
+        $serverUrlHelper->method('getUrlForPath')
+            ->willReturnCallback(
+                function (string $path): string {
+                    return 'http://localhost/vufind' . $path;
+                }
+            );
+
+        $followupHelper = $this->createMock(FollowupHelper::class);
+        $followupHelper->expects($expectedStoredReferrer ? $this->once() : $this->never())
+            ->method('store')
+            ->with($expectedStoredExtras, $expectedStoredReferrer);
+        $helper = $this->getAutowiredObject(
+            ActionHelperLoginHelper::class,
+            [
+                FollowupHelper::class => $followupHelper,
+                RouteHelper::class => $routeHelper,
+                ServerUrlHelper::class => $serverUrlHelper,
+                UrlHelper::class => $urlHelper,
+            ]
+        );
+        $request = new ServerRequest(uri: 'http://localhost/vufind/current');
+        if (null !== $referrer) {
+            $request = $request->withHeader('Referer', $referrer);
+        }
+        $helper->setFollowupUrlToReferer($request, $allowCurrent, $extras);
     }
 
     /**

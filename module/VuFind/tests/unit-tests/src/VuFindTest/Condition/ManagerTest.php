@@ -51,6 +51,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     protected function getManager(): ConditionManager
     {
         $handlerManager = $this->createMock(\VuFind\Condition\Handler\PluginManager::class);
+        $handlerManager->method('has')->willReturn(true);
         $handlerManager->method('get')->willReturn(new StringHandler());
         return new ConditionManager($handlerManager);
     }

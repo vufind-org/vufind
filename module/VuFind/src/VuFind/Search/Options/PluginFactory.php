@@ -29,9 +29,6 @@
 
 namespace VuFind\Search\Options;
 
-use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManagerInterface;
-
 /**
  * Search options plugin factory.
  *
@@ -49,26 +46,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     public function __construct()
     {
         $this->defaultNamespace = 'VuFind\Search';
+        $this->defaultFactory = OptionsFactory::class;
         $this->classSuffix = '\Options';
-    }
-
-    /**
-     * Create a service for the specified name.
-     *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     * @param array              $options       Options (unused)
-     *
-     * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function __invoke(
-        ContainerInterface $container,
-        $requestedName,
-        ?array $options = null
-    ) {
-        $class = $this->getClassName($requestedName);
-        return new $class($container->get(ConfigManagerInterface::class));
     }
 }

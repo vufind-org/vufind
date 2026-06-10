@@ -32,6 +32,7 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\ServiceManager\Factory\DefaultFactory;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
@@ -139,6 +140,7 @@ class SolrDefault extends DefaultRecord implements
      * @param \VuFind\Config\Config $searchSettings Search-specific configuration
      * file
      */
+    #[DefaultFactory(name: SolrDefaultFactory::class)]
     public function __construct(
         $mainConfig = null,
         $recordConfig = null,
