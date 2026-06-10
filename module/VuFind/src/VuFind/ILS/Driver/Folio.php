@@ -2427,7 +2427,7 @@ class Folio extends AbstractAPI implements
             $holds[] = $currentHold;
         }
 
-        $count = $count ?? count($holds);
+        $count ??= count($holds);
 
         return ['count' => $count, 'records' => $holds];
     }
