@@ -264,19 +264,19 @@ class Ini extends AbstractBase
 
         $config = parse_ini_file($configLocation->getPath(), true);
 
+        if (isset($config['@include'])) {
+            throw new ConfigException('Can not write INI configuration with @include statement.');
+        }
         foreach ($config as $section => $sectionConfig) {
-            if ($section === '@include') {
-                throw new ConfigException('Can not write INI configuration with @include statement.');
-            }
             if (is_string($sectionConfig) && str_starts_with($sectionConfig, 'include::')) {
                 throw new ConfigException('Can not write INI configuration with include:: statement.');
+            }
+            if (isset($sectionConfig['@include'])) {
+                throw new ConfigException('Can not write INI configuration with @include statement.');
             }
             foreach ((array)$sectionConfig as $setting => $value) {
                 if ($section === 'Parent_Config') {
                     throw new ConfigException('Can not write INI configuration with inheritance.');
-                }
-                if ($setting === '@include') {
-                    throw new ConfigException('Can not write INI configuration with @include statement.');
                 }
                 if (is_string($value) && str_starts_with($value, 'include::')) {
                     throw new ConfigException('Can not write INI configuration with include:: statement.');
