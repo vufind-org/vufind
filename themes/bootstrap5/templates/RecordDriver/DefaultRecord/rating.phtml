@@ -19,7 +19,7 @@
     <?php endif; ?>
     <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => $ratingData, 'labelAttrs' => ['data-click-callback="addRecordRating"']]);?>
     <span class="rating-summary">
-      <a href="<?=$addUrlEsc?>" data-lightbox title="<?=$this->transEscAttr('rating_add_or_update')?>">
+      <a href="<?=$addUrlEsc?>" data-lightbox title="<?=$this->transEscAttr('rating_add_or_update')?>" role="button">
         <?=$this->transEsc($countKeys[$ratingData['count']] ?? 'rating_summary', $translationParams)?>
       </a>
     </span>

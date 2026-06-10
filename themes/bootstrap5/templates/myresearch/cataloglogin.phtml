@@ -1,25 +1,41 @@
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('Login'));
+  /**
+   * Variables used by the view.
+   *
+   * @property bool    $showMenu      Whether to show the side menu (default: true). The menu won't show in a lightbox
+   * @property bool    $headTitle     Whether to set the page title or leave it to what it as been previously set (default: true)
+   * @property int     $level         Heading level for main heading. Default is 1
+   * @property ?array  $targets       Available login targets (if supported)
+   * @property mixed   $defaultTarget Default login target (if applicable)
+   * @property ?string $loginMethod   Active login method
+   */
 
-    // Set up breadcrumbs:
-    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
-      ->add($this->translate('Login'), active: true);
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Login'), active: true);
 
-    // Convenience variable:
-    $offlineMode = $this->ils()->getOfflineMode();
+  // Convenience variable:
+  $offlineMode = $this->ils()->getOfflineMode();
 
-    // We should show the account menu unless it's been switched off or we're in the lightbox:
-    $showMenu = ($this->showMenu ?? true) && !$this->inLightbox;
+  // We should show the account menu unless it's been switched off or we're in the lightbox:
+  $showMenu = ($this->showMenu ?? true) && !$this->inLightbox;
+
+  // Set page title and heading.
+  $heading = $this->component('page-title', [
+      'title' => $this->transEsc('Library Catalog Profile'),
+      'level' => $this->level ?? 1,
+      'headTitle' => ($this->headTitle ?? true) ? $this->translate('Login') : null,
+  ])
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
+  <?= $heading ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php elseif (!$this->auth()->getManager()->allowsUserIlsLogin()): ?>
-  <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+  <?= $heading ?>
   <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>
 <?php else: ?>
   <div class="<?=$showMenu ? $this->layoutClass('mainbody') : ''?>">
-    <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+    <?= $heading ?>
     <?=$this->flashmessages()?>
     <p>
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>

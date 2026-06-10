@@ -158,11 +158,16 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      * @param string   $test              Name of test fixture to load
      * @param ?array   $config            Driver configuration (null to use default)
      * @param ?Webhook $webhookConnection Webhook connection (null to use default)
+     * @param array    $extraMockMethods  Names of additional methods to allow mocking
      *
      * @return void
      */
-    protected function createConnector(string $test, ?array $config = null, ?Webhook $webhookConnection = null): void
-    {
+    protected function createConnector(
+        string $test,
+        ?array $config = null,
+        ?Webhook $webhookConnection = null,
+        array $extraMockMethods = []
+    ): void {
         // Setup test responses
         $this->fixtureSteps = $this->getJsonFixture("folio/responses/$test.json");
         $this->currentFixture = $test;
@@ -175,7 +180,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         // Create a stub for the SomeClass class
         $this->driver = $this->getMockBuilder(Folio::class)
             ->setConstructorArgs([new \VuFind\Date\Converter(), $factory, $webhookConnection])
-            ->onlyMethods(['makeRequest'])
+            ->onlyMethods(['makeRequest', ...$extraMockMethods])
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($config ?? $this->defaultDriverConfig);
@@ -1662,5 +1667,122 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             $requestGroup = $this->driver->getDefaultRequestGroup(['id' => 'user2']);
         }
         $this->assertEquals('Hold Shelf', $requestGroup);
+    }
+
+    /**
+     * Example campus pickup location.
+     *
+     * @var array
+     */
+    protected static array $campusPickupLocation = [
+        'locationID' => 'e4b2d831-2c9e-4a67-b841-5dfa031e8c92',
+        'locationDisplay' => 'Campus',
+    ];
+
+    /**
+     * Example home pickup location.
+     *
+     * @var array
+     */
+    protected static array $homePickupLocation = [
+        'locationID' => 'f5de8b20-1492-498c-be82-cd2831bb2d60',
+        'locationDisplay' => 'Home',
+    ];
+
+    /**
+     * Data provider for testGetPickupLocationsForDelivery.
+     *
+     * @return \Iterator
+     */
+    public static function getPickupLocationsLimitAddressTypesProvider(): \Iterator
+    {
+        yield 'no config, no default' => [
+            null,
+            [],
+            [static::$campusPickupLocation, static::$homePickupLocation],
+        ];
+        yield 'no config, default is campus' => [
+            null,
+            ['defaultDeliveryAddressTypeId' => static::$campusPickupLocation['locationID'],],
+            [static::$campusPickupLocation, static::$homePickupLocation],
+        ];
+        yield 'campus only, no default' => [
+            ['Campus'],
+            [],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus only, default is campus' => [
+            ['Campus'],
+            ['defaultDeliveryAddressTypeId' => static::$campusPickupLocation['locationID'],],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus only, default is home' => [
+            ['Campus'],
+            ['defaultDeliveryAddressTypeId' => static::$homePickupLocation['locationID'],],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus or default only, no default' => [
+            ['Campus', 'FOLIO_DEFAULT'],
+            [],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus or default only, default is campus' => [
+            ['Campus', 'FOLIO_DEFAULT'],
+            ['defaultDeliveryAddressTypeId' => static::$campusPickupLocation['locationID'],],
+            [static::$campusPickupLocation],
+        ];
+        yield 'campus or default only, default is home' => [
+            ['Campus', 'FOLIO_DEFAULT'],
+            ['defaultDeliveryAddressTypeId' => static::$homePickupLocation['locationID'],],
+            [static::$campusPickupLocation, static::$homePickupLocation],
+        ];
+    }
+
+    /**
+     * Test that getPickupLocations for delivery can limit by address type.
+     *
+     * @param ?array $limitDeliveryAddressTypes Configuration of limitDeliveryAddressTypes
+     * @param array  $requestPreference         Mock requestPreference object containing a defaultDeliveryAddressTypeId
+     * @param array  $expected                  Expected list of delivery locations
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testTokens')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPickupLocationsLimitAddressTypesProvider')]
+    public function testGetPickupLocationsLimitAddressTypes(
+        ?array $limitDeliveryAddressTypes,
+        array $requestPreference,
+        array $expected
+    ): void {
+        $config = $this->defaultDriverConfig;
+        $config['Holds'] = [
+            ...($limitDeliveryAddressTypes ? ['limitDeliveryAddressTypes' => $limitDeliveryAddressTypes] : []),
+        ];
+        $this->createConnector('get-address-types', $config, null, ['getRequestPreference']);
+        $this->driver->method('getRequestPreference')->willReturn($requestPreference);
+
+        $patron = [
+            'id' => 'foo',
+            'addressTypeIds' => [
+                static::$campusPickupLocation['locationID'],
+                static::$homePickupLocation['locationID'],
+            ],
+            'addresses' => [
+                (object)[
+                    'addressTypeId' => static::$campusPickupLocation['locationID'],
+                    'addressLine1' => '987 University Ave.',
+                    'city' => 'Big City',
+                ],
+                (object)[
+                    'addressTypeId' => static::$homePickupLocation['locationID'],
+                    'addressLine1' => '123 Chestnut St.',
+                    'city' => 'Small Town',
+                ],
+            ],
+        ];
+
+        $holdInfo = ['requestGroupId' => 'Delivery'];
+        $addresses = $this->driver->getPickupLocations($patron, $holdInfo);
+        $this->assertEquals($expected, $addresses);
     }
 }

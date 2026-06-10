@@ -10,7 +10,14 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('page-title', ['title' => $this->translate('Your Fines'), 'headTitle' => $this->translate('My Fines')]);?>
+  <?=
+    // Set page title and heading.
+    $this->component('page-title', [
+      'title' => $this->translate('Your Fines'),
+      'headTitle' => $this->translate('My Fines'),
+      'level' => 1,
+    ]);
+  ?>
   <?=$this->flashmessages()?>
 
   <?php // Online payment registration notification: ?>
