@@ -27,17 +27,19 @@
       <?php if ($paginator): ?>
         <div class="search-stats">
           <?php
-          $startRecord = $paginator->getAbsoluteItemNumber(1);
-          $abs = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
-          $end = min($abs, $paginator->getTotalItemCount());
-          $transParams = [
-            '%%start%%' => $this->localizedNumber($startRecord),
-            '%%end%%' => $this->localizedNumber($end),
-            '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount()),
-          ];
+            $startRecord = $paginator->getAbsoluteItemNumber(1);
+            $abs = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
+            $end = min($abs, $paginator->getTotalItemCount());
+            $transParams = [
+              '%%start%%' => $this->localizedNumber($startRecord),
+              '%%end%%' => $this->localizedNumber($end),
+              '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount()),
+            ];
           ?>
           <?=$this->translate('showing_items_of_html', $transParams); ?>
         </div>
+      <?php else: ?>
+        <?php $startRecord = 1; ?>
       <?php endif; ?>
     </nav>
 
