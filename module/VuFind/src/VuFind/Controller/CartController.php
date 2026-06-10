@@ -306,7 +306,6 @@ class CartController extends AbstractBase
                     $view->from,
                     $view->message,
                     $url,
-                    $this->getViewRenderer(),
                     $view->subject,
                     $cc
                 );

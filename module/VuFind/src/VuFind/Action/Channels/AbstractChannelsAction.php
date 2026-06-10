@@ -1,11 +1,11 @@
 <?php
 
 /**
- * BrowZine Controller.
+ * Abstract base class for channels actions.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,45 +21,38 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Channels;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ChannelProvider\ChannelLoader;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * BrowZine Controller.
+ * Abstract base class for channels actions.
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class BrowZineController extends AbstractSearch
+abstract class AbstractChannelsAction extends AbstractTemplateRenderingAction
 {
     /**
      * Constructor.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param ChannelLoader $channelLoader Channel loader
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'BrowZine';
-        parent::__construct($sm);
-    }
-
-    /**
-     * Search action -- call standard results action.
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        return $this->resultsAction();
+    #[Autowire()]
+    public function __construct(
+        protected ChannelLoader $channelLoader,
+    ) {
+        parent::__construct();
     }
 }
