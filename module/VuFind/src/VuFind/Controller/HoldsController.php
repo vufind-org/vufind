@@ -69,9 +69,9 @@ class HoldsController extends AbstractBase
     /**
      * ILS Pagination Helper.
      *
-     * @var PaginationHelper
+     * @var ?PaginationHelper
      */
-    protected $paginationHelper = null;
+    protected ?PaginationHelper $paginationHelper = null;
 
     /**
      * Constructor.
@@ -242,7 +242,7 @@ class HoldsController extends AbstractBase
         $recordsHelper = $this->getService(RecordsHelper::class);
         $view->recordList = $recordsHelper->getDrivers($driversNeeded);
 
-        // If the results are not paged in the ILS, collect up to date stats for ajax
+        // If the results are not paged in the ILS, collect up-to-date stats for ajax
         // account notifications:
         if (!$pageOptions['ilsPaging'] || !$paginator || $result['count'] === count($result['records'])) {
             $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);

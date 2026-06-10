@@ -94,7 +94,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get Demo.ini override settings for testing myHolds.
+     * Get Demo.ini override settings for testing myHolds with multiple items.
      *
      * @param int  $itemCount Number of items to be set up
      * @param bool $ilsPaging If ils paging should be enabled

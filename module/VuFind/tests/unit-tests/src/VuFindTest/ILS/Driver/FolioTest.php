@@ -681,9 +681,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'in_transit' => false,
                     'last_pickup_date' => '12-29-2022',
                     'position' => 1,
-                ]
+                ],
             ],
-            'count' => 1
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -716,9 +716,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'last_pickup_date' => '12-29-2022',
                     'position' => 1,
                     'proxiedFor' => 'TestuserJohn, John',
-                ]
+                ],
             ],
-            'count' => 1
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -750,9 +750,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'in_transit' => true,
                     'last_pickup_date' => null,
                     'position' => 1,
-                ]
+                ],
             ],
-            'count' => 1
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -784,9 +784,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'in_transit' => false,
                     'last_pickup_date' => null,
                     'position' => 3,
-                ]
+                ],
             ],
-            'count' => 1
+            'count' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
