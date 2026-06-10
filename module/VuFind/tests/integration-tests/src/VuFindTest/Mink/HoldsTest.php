@@ -767,9 +767,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test creating, and then editing, a frozen hold.
      *
-     * @param int $itemCount Number of items to place holds on
+     * @param int  $itemCount  Number of items to place holds on
      * @param bool $pagination If pagination on holds is enabled
-     * @param bool $ilsPaging If ils paging should be enabled
+     * @param bool $ilsPaging  If ils paging should be enabled
      *
      * @return void
      */
@@ -820,7 +820,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         if ($pagination && $itemCount > 1) {
             $expectedFrozenCount = 1;
         }
-        $this->assertEquals(
+        $this->assertSame(
             $expectedFrozenCount,
             substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
         );
@@ -833,7 +833,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
                     'Showing 5 - 6 of 6 Items',
                     trim($this->findCssAndGetText($page, '.search-stats'))
                 );
-                $this->assertEquals(
+                $this->assertSame(
                     2,
                     substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
                 );
@@ -847,7 +847,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndSetValue($page, '#frozen', '0');
             $this->findCss($page, '#modal .btn.btn-primary')->click();
 
-            $this->assertEquals(
+            $this->assertSame(
                 0,
                 substr_count($page->getContent(), 'Frozen (temporarily suspended) through ')
             );
