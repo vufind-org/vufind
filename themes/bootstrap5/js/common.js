@@ -978,21 +978,6 @@ function setupJumpMenus(_container) {
 }
 
 /**
- * Set up expandable texts.
- * @returns {void}
- */
-function setupExpandableTexts() {
-  if (!VuFind.isPrinting()) {
-    document.querySelectorAll('.expandable-text').forEach((expandableText) => {
-      if (expandableText.offsetHeight > 100) {
-        expandableText.classList.add('collapse');
-        expandableText.nextElementSibling.classList.remove('hidden');
-      }
-    });
-  }
-}
-
-/**
  * Set up dynamic login fields for multi-ILS login.
  * @param {object} loginMethods An object mapping login targets to their method.
  * @param {string} idPrefix     An optional prefix for ID selectors.
@@ -1045,9 +1030,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // Expandable texts
-  setupExpandableTexts();
 
   // Print
   if (VuFind.isPrinting()) {

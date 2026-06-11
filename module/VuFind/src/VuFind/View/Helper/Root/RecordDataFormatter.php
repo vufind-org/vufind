@@ -70,7 +70,7 @@ class RecordDataFormatter
      * @param Record       $recordHelper    Record view helper
      * @param TransEsc     $transEsc        TransEsc view helper
      * @param EscapeHtml   $escapeHtml      EscapeHtml view helper
-     * @param Component    $componentHelper Component view helper
+     * @param HtmlSafeJsonEncode    $htmlSafeJsonEncode HtmlSafeJsonEncode view helper
      */
     public function __construct(
         protected SpecsManager $specsManager,
@@ -81,7 +81,7 @@ class RecordDataFormatter
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtml,
         #[Autowire(container: 'ViewHelperManager')]
-        protected Component $componentHelper
+        protected HtmlSafeJsonEncode $htmlSafeJsonEncode
     ) {
     }
 
@@ -179,14 +179,10 @@ class RecordDataFormatter
             return $value;
         }
 
-        if ($options['expandable'] ?? false) {
-            $value = ($this->componentHelper)(
-                'expandable-text',
-                [
-                    'id' => 'expandable-field-' . preg_replace('/\W/', '-', $field),
-                    'text' => $value,
-                ]
-            );
+        if ($rows = $options['truncate'] ?? false) {
+            $value = '<div class="truncate-record-field" data-truncate="'
+                . ($this->htmlSafeJsonEncode)(['rows' => $rows]). '">' .
+                $value . '</div>';
         }
 
         // Allow dynamic label override:
