@@ -386,7 +386,6 @@ class GetItemStatuses extends AbstractBase implements
         }
 
         if (isset($this->getThis)) {
-            $urlHelper = $this->renderer->plugin('url');
             $this->getThis->setItems($record);
         }
         // Build list split out by location:
@@ -407,6 +406,7 @@ class GetItemStatuses extends AbstractBase implements
             ) {
                 $itemIdParams = !empty($locationStatus['item_id'])
                     ? ['query' => ['item_id' => $locationStatus['item_id']]] : null;
+                $urlHelper ??= $this->renderer->plugin('url');
                 $getThisURL = $urlHelper(
                     'record-getthis',
                     ['id' => $record[0]['id'] ?? null],
