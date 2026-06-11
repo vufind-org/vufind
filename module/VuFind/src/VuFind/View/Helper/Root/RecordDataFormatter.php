@@ -66,11 +66,11 @@ class RecordDataFormatter
     /**
      * Constructor.
      *
-     * @param SpecsManager $specsManager    Specs plugin manager
-     * @param Record       $recordHelper    Record view helper
-     * @param TransEsc     $transEsc        TransEsc view helper
-     * @param EscapeHtml   $escapeHtml      EscapeHtml view helper
-     * @param HtmlSafeJsonEncode    $htmlSafeJsonEncode HtmlSafeJsonEncode view helper
+     * @param SpecsManager       $specsManager       Specs plugin manager
+     * @param Record             $recordHelper       Record view helper
+     * @param TransEsc           $transEsc           TransEsc view helper
+     * @param EscapeHtml         $escapeHtml         EscapeHtml view helper
+     * @param HtmlSafeJsonEncode $htmlSafeJsonEncode HtmlSafeJsonEncode view helper
      */
     public function __construct(
         protected SpecsManager $specsManager,
@@ -181,7 +181,7 @@ class RecordDataFormatter
 
         if ($rows = $options['truncate'] ?? false) {
             $value = '<div class="truncate-record-field" data-truncate="'
-                . ($this->htmlSafeJsonEncode)(['rows' => $rows]). '">' .
+                . ($this->htmlSafeJsonEncode)(['rows' => $rows]) . '">' .
                 $value . '</div>';
         }
 
