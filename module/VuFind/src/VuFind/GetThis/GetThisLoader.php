@@ -87,7 +87,7 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @var RecordDriver
      */
-    protected RecordDriver $driver;
+    protected RecordDriver $recordDriver;
 
     /**
      * Initializes the loader.
@@ -374,7 +374,7 @@ class GetThisLoader implements LoggerAwareInterface
         $isProvidedItemIdNull = null === $itemId;
         $itemId = $this->getItemId($itemId);
 
-        $holdings = $this->driver->getRealTimeHoldings();
+        $holdings = $this->recordDriver->getRealTimeHoldings();
         if (!isset($holdings['holdings'])) {
             return '';
         }
@@ -460,7 +460,7 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function getSummary(): string
     {
-        return implode(', ', $this->driver->getSummary());
+        return implode(', ', $this->recordDriver->getSummary());
     }
 
     /**
@@ -483,7 +483,7 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function isSerial(): bool
     {
-        foreach ($this->driver->getFormats() as $format) {
+        foreach ($this->recordDriver->getFormats() as $format) {
             if ($this->matches('FORMAT_SERIAL', $format)) {
                 return true;
             }
@@ -687,9 +687,9 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return void
      */
-    public function setDriver(RecordDriver $driver): void
+    public function setRecordDriver(RecordDriver $driver): void
     {
-        $this->driver = $driver;
+        $this->recordDriver = $driver;
         $this->subTemplates = null;
     }
 

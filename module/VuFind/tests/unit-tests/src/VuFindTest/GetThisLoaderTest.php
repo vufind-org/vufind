@@ -584,12 +584,12 @@ class GetThisLoaderTest extends TestCase
         ]);
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn([]);
-        $getThis->setDriver($driver);
+        $getThis->setRecordDriver($driver);
         $this->assertSame('', $getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn(['holdings' => [123]]);
-        $getThis->setDriver($driver);
+        $getThis->setRecordDriver($driver);
         $this->assertSame('', $getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
@@ -617,7 +617,7 @@ class GetThisLoaderTest extends TestCase
                 ],
             ],
         ]);
-        $getThis->setDriver($driver);
+        $getThis->setRecordDriver($driver);
         $this->assertSame('https://what_a_great_link.com', $getThis->getLink());
         $this->assertSame('https://what_another_great_link.com', $getThis->getLink('3'));
     }
@@ -737,7 +737,7 @@ class GetThisLoaderTest extends TestCase
         $getThis = $this->getGetThis();
         $driver = $this->getMockRecordDriver();
         $driver->method('getSummary')->willReturnOnConsecutiveCalls([], ['sum1'], ['sum1', 'sum2']);
-        $getThis->setDriver($driver);
+        $getThis->setRecordDriver($driver);
 
         $this->assertSame('', $getThis->getSummary());
         $this->assertSame('sum1', $getThis->getSummary());
@@ -792,7 +792,7 @@ class GetThisLoaderTest extends TestCase
             ['still not'],
             ['neither', 'and finally not'],
         );
-        $getThis->setDriver($driver);
+        $getThis->setRecordDriver($driver);
 
         $this->assertFalse($getThis->isSerial());
         $this->assertTrue($getThis->isSerial());
@@ -926,7 +926,7 @@ class GetThisLoaderTest extends TestCase
         $templates = $getThis->getSubTemplates();
         $this->assertNotEmpty($templates);
         $driver = $this->getMockRecordDriver();
-        $getThis->setDriver($driver);
+        $getThis->setRecordDriver($driver);
         $templates = $this->getProperty($getThis, 'subTemplates');
         $this->assertNull($templates);
     }

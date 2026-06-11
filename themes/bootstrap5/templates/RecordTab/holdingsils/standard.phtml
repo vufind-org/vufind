@@ -7,7 +7,7 @@
     $getThisLoader = $tab->getGetThisLoader();
     if ($getThisLoader?->areItemsSupported([$holding])) {
         $getThisLoader->setItems([$holding]);
-        $getThisLoader->setDriver($this->driver);
+        $getThisLoader->setRecordDriver($this->driver);
         $isOnlineResource = $getThisLoader->isOnlineResource($holding['item_id'] ?? null);
         $getThisURL = $isOnlineResource ? null : $this->url(
             'record-getthis',

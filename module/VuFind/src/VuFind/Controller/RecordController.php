@@ -81,7 +81,7 @@ class RecordController extends AbstractRecord
         $items = $this->getILS()->getStatus($id);
         $getThis = $this->getService(GetThisLoader::class);
         if (isset($view->driver)) {
-            $getThis->setDriver($view->driver);
+            $getThis->setRecordDriver($view->driver);
         }
         $getThis->setItems($items);
         $getThis->setDefaultItemId($itemId);
