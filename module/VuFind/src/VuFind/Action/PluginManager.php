@@ -63,6 +63,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'author/facetlist' => Author\FacetListAction::class,
         'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
         'collections/bytitle' => Collections\ByTitleAction::class,
+        'developersettings/deleteapikey' => DeveloperSettings\DeleteApiKeyAction::class,
+        'developersettings/displaysettings' => DeveloperSettings\DisplaySettingsAction::class,
+        'developersettings/generateapikey' => DeveloperSettings\GenerateApiKeyAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
     ];
 
