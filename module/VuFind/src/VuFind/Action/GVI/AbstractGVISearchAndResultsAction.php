@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GVI Record Controller.
+ * Abstract base class for GVI search actions.
  *
  * PHP version 8
  *
@@ -21,36 +21,35 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Stefan Weil <sw@weilnetz.de>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
- */
-
-namespace VuFind\Controller;
-
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
-/**
- * GVI Record Controller.
- *
- * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Stefan Weil <sw@weilnetz.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class GVIrecordController extends AbstractRecord
+
+namespace VuFind\Action\GVI;
+
+use VuFind\Action\Search\AbstractSearchAndResultsAction;
+
+/**
+ * Abstract base class for GVI search actions.
+ *
+ * @category VuFind
+ * @package  Action
+ * @author   Stefan Weil <sw@weilnetz.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+abstract class AbstractGVISearchAndResultsAction extends AbstractSearchAndResultsAction
 {
     /**
-     * Constructor.
+     * Initialize the action.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @return void
      */
-    public function __construct(ServiceLocatorInterface $sm)
+    protected function init(): void
     {
-        $this->sourceId = 'GVI';
-        $this->fallbackDefaultTab = 'Description';
-        parent::__construct($sm);
+        parent::init();
+        $this->searchClassId = 'GVI';
     }
 }
