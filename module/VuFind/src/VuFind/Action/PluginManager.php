@@ -63,10 +63,16 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'author/facetlist' => Author\FacetListAction::class,
         'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
         'collections/bytitle' => Collections\ByTitleAction::class,
+        'comments/deletecomments' => Comments\DeleteCommentsAction::class,
+        'comments/userlist' => Comments\UserListAction::class,
         'developersettings/deleteapikey' => DeveloperSettings\DeleteApiKeyAction::class,
         'developersettings/displaysettings' => DeveloperSettings\DisplaySettingsAction::class,
         'developersettings/generateapikey' => DeveloperSettings\GenerateApiKeyAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
+        'ratings/deleteratings' => Ratings\DeleteRatingsAction::class,
+        'ratings/userlist' => Ratings\UserListAction::class,
+        'tag/deletetags' => Tag\DeleteTagsAction::class,
+        'tag/userlist' => Tag\UserListAction::class,
     ];
 
     /**
