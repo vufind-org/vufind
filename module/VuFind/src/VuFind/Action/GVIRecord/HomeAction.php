@@ -27,14 +27,14 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\GVI;
+namespace VuFind\Action\GVIRecord;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Record\AbstractRecordAction;
 
 /**
- * GVI record home action.
+ * GVIRecord home action.
  *
  * @category VuFind
  * @package  Action
