@@ -273,6 +273,7 @@ return [
             'keyboard' => 'FontAwesome:keyboard fa-regular',
             'lightbox-close' => 'FontAwesome:times',
             'link' => 'FontAwesome:link',
+            'microphone' => 'FontAwesome:microphone',
             'more' => 'FontAwesome:chevron-circle-right',
             'more-rtl' => 'FontAwesome:chevron-circle-left',
             'my-account' => 'FontAwesome:circle-user fa-regular',

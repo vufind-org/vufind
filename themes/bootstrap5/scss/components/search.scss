@@ -954,6 +954,11 @@ table.search-history-table {
       }
     }
 
+    /* Adjust padding when speech button is visible */
+    #searchForm_lookfor.with-speech {
+      padding-right: 70px;
+    }
+
     #searchForm_controls {
       position: absolute;
       top: 0;
@@ -976,7 +981,30 @@ table.search-history-table {
       font-size: 1em;
       cursor: pointer;
     }
+
+    #searchForm-speech {
+      width: 2em;
+      height: 2em;
+      border: none;
+      border-radius: 50%;
+      background-color: $gray-lighter;
+      margin: 0;
+      padding: 2px;
+      font-size: 1em;
+      cursor: pointer;
+
+      &.listening {
+        background-color: var(--bs-danger, #dc3545);
+        color: white;
+        animation: searchbox-speech-pulse 1s infinite;
+      }
+    }
   }
+}
+
+@keyframes searchbox-speech-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
 }
 
 /* Hide virtual keyboard on narrow screens */
