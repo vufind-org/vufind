@@ -429,6 +429,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->getChannelsHomePage();
         $channel = $this->findCss($page, 'div.channel', index: 1);
+        $channelId = $channel->getAttribute('id');
         $this->assertSame('Format: Book Chapter', $this->findCssAndGetText($channel, 'h2.channel-title'));
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
         $this->assertCount(6, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
@@ -437,9 +438,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             $button->click();
             $this->waitForPageLoad($page);
             // Confirm that the button's labels remain appropriate after clicks:
-            $dataHref = $button->getAttribute('data-href');
-            $selector = 'button[data-href="' . $dataHref . '"]';
-            $js = "false === document.querySelector('$selector').textContent.startsWith('Loading')";
+            $selector = "document.querySelector('#$channelId .channel-load-more-btn')";
+            $js = "$selector && !$selector.textContent.startsWith('Loading')";
             $this->waitStatement($js);
             $this->assertEquals('Load more items', $button->getText());
             $this->assertEquals('Load more items into Format: Book Chapter', $button->getAttribute('aria-label'));
