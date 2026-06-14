@@ -31,6 +31,7 @@ namespace VuFind\Action\Browse;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\UserContentHelper;
 use VuFind\Exception\Forbidden as ForbiddenException;
 
 use function array_slice;
@@ -58,7 +59,7 @@ class TagAction extends AbstractBrowseAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        if (!$this->tagsEnabled()) {
+        if (!$this->getHelper(UserContentHelper::class)->tagsEnabled()) {
             throw new ForbiddenException('Tags disabled.');
         }
 

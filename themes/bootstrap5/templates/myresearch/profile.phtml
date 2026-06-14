@@ -10,7 +10,13 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('page-title', ['title' => $this->translate('Your Profile'), 'headTitle' => $this->translate('My Profile')]);?>
+  <?=
+    $this->component('page-title', [
+        'title' => $this->translate('Your Profile'),
+        'headTitle' => $this->translate('My Profile'),
+        'level' => 1,
+    ]);
+  ?>
   <?=$this->flashmessages();?>
 
   <table class="table table-striped">
@@ -168,7 +174,7 @@
       <?php endforeach; ?>
     <?php endif; ?>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->showCatalogLoginForm): ?>
-    <?=$this->component('catalog-login-form')?>
+    <?=$this->component('catalog-login-form', ['headTitle' => false, 'level' => 2])?>
   <?php endif; ?>
 
   <?php if ($this->developerSettings()->isEnabled()): ?>

@@ -3,6 +3,11 @@
    * Component to display the catalog login form.
    *
    * @property bool $showMenu Should we render the AccountMenu section in a sidebar (default = false)?
+   * @property bool    $headTitle     Whether to set the page title or leave it to what it as been previously set (default: true)
+   * @property int     $level         Heading level for main heading. Default is 1
+   * @property ?array  $targets       Available login targets (if supported)
+   * @property mixed   $defaultTarget Default login target (if applicable)
+   * @property ?string $loginMethod   Active login method
    */
 
   // Convenience variable:
@@ -11,16 +16,23 @@
   // We should show the account menu unless it's been switched off or we're in the lightbox:
   $showMenu = ($this->showMenu ?? false) && !$this->inLightbox;
 
+  // Set page title and heading.
+  $heading = $this->component('page-title', [
+      'title' => $this->transEsc('Library Catalog Profile'),
+      'level' => $this->level ?? 1,
+      'headTitle' => ($this->headTitle ?? true) ? $this->translate('Login') : null,
+  ]);
+
   $loginSettings = $this->config()->getILSLoginSettings();
 ?>
 <?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_login_message'])?>
 <?php elseif (!$this->auth()->getManager()->allowsUserIlsLogin()): ?>
-  <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+  <?= $heading ?>
   <div class="alert alert-warning"><?=$this->transEsc('ils_connection_failed')?></div>
 <?php else: ?>
   <div class="<?=$showMenu ? $this->layoutClass('mainbody') : ''?>">
-    <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+    <?= $heading ?>
     <?=$this->flashmessages()?>
     <p>
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
