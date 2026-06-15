@@ -117,8 +117,8 @@ class SummonBackendFactory extends AbstractBackendFactory
     protected function createConnector()
     {
         // Load credentials:
-        $id = $this->config->Summon->apiId ?? '';
-        $key = $this->config->Summon->apiKey ?? '';
+        $id = $this->config->Summon->apiId ?? null;
+        $key = $this->config->Summon->apiKey ?? null;
 
         // Create connector:
         $options = ['authedUser' => $this->isAuthed()];
