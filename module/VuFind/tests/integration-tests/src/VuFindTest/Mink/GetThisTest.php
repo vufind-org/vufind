@@ -284,6 +284,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->searchAndWaitForItemsStatus(static::SEARCH);
         $getThisLink = $this->findAndAssertLink($page, 'Get This');
         $getThisLink->click();
+        $this->unFindCss($page, '.loading-overlay,.loading-spinner');
         $lightbox = $this->getLightbox($page);
         $this->assertInstanceOf(NodeElement::class, $lightbox);
         $this->assertStringContainsString('CallNumberFive', $lightbox->getHtml());
