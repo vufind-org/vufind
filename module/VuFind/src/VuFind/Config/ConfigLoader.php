@@ -81,14 +81,15 @@ class ConfigLoader
     /**
      * Get config location by config path.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return ?ConfigLocationInterface
      */
-    public function getConfigLocation(string $configPath, bool $useLocalConfig = true): ?ConfigLocationInterface
+    public function getConfigLocation(string $configName, bool $useLocalConfig = true): ?ConfigLocationInterface
     {
-        $subsection = explode('/', $configPath);
+        $subsection = explode('/', $configName);
         $configName = array_shift($subsection);
         $configLocation = $useLocalConfig
             ? $this->pathResolver->getConfigLocation($configName)

@@ -919,6 +919,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');
+        $this->assertStringContainsString(
+            'No Comments',
+            $page->getContent()
+        );
 
         $this->clickCss($page, 'li#user-content-tag a.nav-link');
         $this->waitForPageLoad($page);
@@ -928,6 +932,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');
+        $this->assertStringContainsString(
+            'No Tags',
+            $page->getContent()
+        );
 
         $this->clickCss($page, 'li#user-content-ratings a.nav-link');
         $this->waitForPageLoad($page);
@@ -939,6 +947,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');
+        $this->assertStringContainsString(
+            'No Ratings',
+            $page->getContent()
+        );
     }
 
     /**

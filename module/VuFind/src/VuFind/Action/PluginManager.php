@@ -67,7 +67,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'cart/searchresultsbulk' => Cart\SearchResultsBulkAction::class,
         'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
         'collections/bytitle' => Collections\ByTitleAction::class,
+        'comments/deletecomments' => Comments\DeleteCommentsAction::class,
+        'comments/userlist' => Comments\UserListAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
+        'ratings/deleteratings' => Ratings\DeleteRatingsAction::class,
+        'ratings/userlist' => Ratings\UserListAction::class,
+        'tag/deletetags' => Tag\DeleteTagsAction::class,
+        'tag/userlist' => Tag\UserListAction::class,
     ];
 
     /**
