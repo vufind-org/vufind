@@ -213,36 +213,38 @@ class PathResolver
     /**
      * Get the config location based on the config path.
      *
-     * @param string  $configNamePath       Config name path (path relative to configuration directory)
+     * @param string  $configName           Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param ?string $overrideConfigSubdir Relative path to search for configurations within the config directory
      * stack; if omitted, default value -- usually "config/vufind" -- will be used.
      *
      * @return ?ConfigLocationInterface
      */
     public function getConfigLocation(
-        string $configNamePath,
+        string $configName,
         ?string $overrideConfigSubdir = null,
     ): ?ConfigLocationInterface {
-        return $this->getLocalConfigLocation($configNamePath, $overrideConfigSubdir)
-            ?? $this->getBaseConfigLocation($configNamePath, $overrideConfigSubdir);
+        return $this->getLocalConfigLocation($configName, $overrideConfigSubdir)
+            ?? $this->getBaseConfigLocation($configName, $overrideConfigSubdir);
     }
 
     /**
      * Get the local config location based on the config path.
      *
-     * @param string  $configNamePath       Config name path (path relative to configuration directory)
+     * @param string  $configName           Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param ?string $overrideConfigSubdir Relative path to search for configurations within the config directory
      * stack; if omitted, default value -- usually "config/vufind" -- will be used.
      *
      * @return ?ConfigLocationInterface
      */
     public function getLocalConfigLocation(
-        string $configNamePath,
+        string $configName,
         ?string $overrideConfigSubdir = null,
     ): ?ConfigLocationInterface {
         $currentLocation = null;
         foreach ($this->localConfigDirStack as $localDirSpec) {
-            $configLocation = $this->getConfigLocationFromSpec($configNamePath, $localDirSpec, $overrideConfigSubdir);
+            $configLocation = $this->getConfigLocationFromSpec($configName, $localDirSpec, $overrideConfigSubdir);
             if ($configLocation !== null) {
                 $configLocation->setDirLocationsParent($currentLocation);
                 $currentLocation = $configLocation;
@@ -254,19 +256,20 @@ class PathResolver
     /**
      * Get the local config location based on the config path even if it does not yet exist.
      *
-     * @param string $configNamePath Config name path (path relative to configuration directory)
+     * @param string $configName Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      *
      * @return ConfigLocationInterface
      */
-    public function getForcedLocalConfigLocation(string $configNamePath): ConfigLocationInterface
+    public function getForcedLocalConfigLocation(string $configName): ConfigLocationInterface
     {
         // If configuration exists, return it's location
-        if ($destinationLocation = $this->getLocalConfigLocation($configNamePath)) {
+        if ($destinationLocation = $this->getLocalConfigLocation($configName)) {
             return $destinationLocation;
         }
 
         // Otherwise, create location based on base config location
-        $baseConfigLocation = $this->getBaseConfigLocation($configNamePath);
+        $baseConfigLocation = $this->getBaseConfigLocation($configName);
         $destinationLocation = clone $baseConfigLocation;
         $destinationLocation->setBasePath(
             $this->getLocalConfigDirPath()
@@ -277,17 +280,18 @@ class PathResolver
     /**
      * Get the base config location based on the config path.
      *
-     * @param string  $configNamePath       Config name path (path relative to configuration directory)
+     * @param string  $configName           Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param ?string $overrideConfigSubdir Relative path to search for configurations within the config directory
      * stack; if omitted, default value -- usually "config/vufind" -- will be used.
      *
      * @return ?ConfigLocationInterface
      */
     public function getBaseConfigLocation(
-        string $configNamePath,
+        string $configName,
         ?string $overrideConfigSubdir = null,
     ): ?ConfigLocationInterface {
-        return $this->getConfigLocationFromSpec($configNamePath, $this->baseDirectorySpec, $overrideConfigSubdir);
+        return $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $overrideConfigSubdir);
     }
 
     /**
@@ -366,7 +370,8 @@ class PathResolver
     /**
      * Get the config location from a dir specification stack.
      *
-     * @param string  $configNamePath       Config name path (path relative to configuration directory)
+     * @param string  $configName           Config name (typically mapping to a file path inside the configuration
+     * directory; e.g. "config" or "RecordDataFormatter/EDS")
      * @param array   $dirSpec              Directory specification stack
      * @param ?string $overrideConfigSubdir Relative path to search for configurations within the config directory
      * stack; if omitted, default value -- usually "config/vufind" -- will be used.
@@ -374,14 +379,16 @@ class PathResolver
      * @return ?ConfigLocationInterface
      */
     public function getConfigLocationFromSpec(
-        string $configNamePath,
+        string $configName,
         array $dirSpec,
         ?string $overrideConfigSubdir
     ): ?ConfigLocationInterface {
-        $configNameParts = explode('/', $configNamePath, 2);
+        $configNameParts = explode('/', $configName, 2);
         $subDir = (count($configNameParts) > 1) ? '/' . $configNameParts[0] : '';
-        $configName = $configNameParts[1] ?? $configNamePath;
-        return $this->getMatchingConfigLocation($this->buildPath($dirSpec, $overrideConfigSubdir) . $subDir, $configName);
+        return $this->getMatchingConfigLocation(
+            $this->buildPath($dirSpec, $overrideConfigSubdir) . $subDir,
+            $configNameParts[1] ?? $configName
+        );
     }
 
     /**

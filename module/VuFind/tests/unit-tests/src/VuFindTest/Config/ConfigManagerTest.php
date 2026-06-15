@@ -784,14 +784,14 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test loading of configs with inheritance and a local dir stack.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name
      * @param array  $expectedConfig Expected config
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('localDirStackTestProvider')]
     public function testConfigsInLocalDirStack(
-        $configPath,
+        $configName,
         $expectedConfig
     ): void {
         $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
@@ -800,7 +800,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             localDir: $fixtureDir . 'primary'
         )->get(ConfigManagerInterface::class);
 
-        $config = $configManager->getConfigArray($configPath);
+        $config = $configManager->getConfigArray($configName);
         $this->assertEquals(
             $expectedConfig,
             $config
