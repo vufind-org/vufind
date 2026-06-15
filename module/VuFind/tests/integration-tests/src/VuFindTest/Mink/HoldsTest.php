@@ -180,7 +180,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure we arrived where we expected to:
         $this->assertSame(
             'Your Holds and Recalls',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
@@ -795,7 +795,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertSame(
             'Your Holds and Recalls',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
