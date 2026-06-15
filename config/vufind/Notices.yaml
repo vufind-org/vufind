@@ -23,6 +23,11 @@ adminForm:
         - type: logged_in
           checkedValues: "true"
           comparator: =
+# Date and time types available in admin form.
+  dateTimeTypes:
+    - date_time
+    - date
+    - time
 # Uncomment to override the default languages from config.ini [Languages]
 #  languages:
 #    - "de"

@@ -30,18 +30,65 @@
 <form method="POST" class="content-form notice-form">
   <?php if (count($this->formData['contexts'] ?? []) > 1): ?>
     <?php
-      $valueMapping = [];
+      $contextValueMapping = [];
       foreach ($this->formData['contexts'] as $context) {
-        $valueMapping[$context] = 'NoticeContext::' . $context;
+        $contextValueMapping[$context] = 'NoticeContext::' . $context;
       }
     ?>
     <?=$this->component('radio-fieldset', [
       'groupName' => 'context',
       'displayName' => 'Context',
-      'values' => $valueMapping,
+      'values' => $contextValueMapping,
       'checkedValue' => $this->formData['activeContext'] ?? null,
     ])?>
   <?php endif; ?>
+
+  <?php
+    $dateTimeContextClasses = array_map(
+      fn ($context) => 'context_fieldset-' . $context,
+      $this->formData['dateTimeContexts'] ?? []
+    );
+    $dateTimeTypes = $this->formData['date_time_types'] ?? [];
+  ?>
+  <div<?=$dateTimeContextClasses ? ' class="' . $this->escapeHtmlAttr(implode(' ', $dateTimeContextClasses)) . '" data-inverted' : ''?>>
+    <?php if (count($dateTimeTypes) > 1): ?>
+      <?=$this->component('radio-fieldset', [
+        'groupName' => 'date_time_type',
+        'displayName' => 'Date and Time Restriction Type',
+        'values' => $dateTimeTypes,
+        'checkedValue' => $this->formData['activeDateTimeType'] ?? null,
+      ])?>
+    <?php endif; ?>
+    <div class="alert alert-info"><?=$this->transEsc('content_form_date_time_info')?></div>
+    <?php foreach ($dateTimeTypes as $dateTimeType): ?>
+      <?php
+      $inputType = ($dateTimeType === 'date_time') ? 'datetime-local' : $dateTimeType;
+      $groupClasses = ['form-group'];
+      if (count($dateTimeTypes) > 1) {
+        $groupClasses[] = 'date_time_type_fieldset-' . $dateTimeType;
+      }
+      ?>
+      <?php foreach (['start', 'end'] as $prefix): ?>
+        <?php
+          $dateTimeInputName = $prefix . '_' . $dateTimeType;
+          $dateTimeInputAttributes = [
+            'id' => $dateTimeInputName,
+            'name' => $dateTimeInputName,
+            'class' => 'form-control',
+            'type' => $inputType,
+          ];
+          if ($dateTimeInputValue = $this->formData[$dateTimeInputName] ?? null) {
+            $dateTimeInputAttributes['value'] = $dateTimeInputValue;
+          }
+        ?>
+        <div class="<?=implode(' ', $groupClasses)?>">
+          <label for="<?=$this->escapeHtmlAttr($dateTimeInputName)?>"><?=$this->transEsc($dateTimeInputName)?></label>
+          <input<?=$this->htmlAttributes($dateTimeInputAttributes)?>>
+        </div>
+      <?php endforeach; ?>
+    <?php endforeach; ?>
+  </div>
+
   <?php if (count($this->formData['contentTypes'] ?? []) > 1): ?>
     <?=$this->component('radio-fieldset', [
       'groupName' => 'content_type',
@@ -64,7 +111,7 @@
     <?php endif; ?>
   </div>
 
-  <?php if (count($this->formData['styles']) > 1): ?>
+  <?php if (count($this->formData['styles'] ?? []) > 1): ?>
     <fieldset name="style_fieldset">
       <legend><?=$this->transEsc('Style')?></legend>
       <div class="form-group form-check">

@@ -23,6 +23,44 @@
             <a class="content-edit-button" href="<?=$this->url('admin/notices', ['action' => 'Delete'])?>?notice_id=<?=$notice['id']?>" title="<?=$this->transEsc('Delete')?>"><?=$this->icon('content-delete')?></a>
           </td>
           <td>
+            <?php
+              $start = $notice['start'] ?? null;
+              $end = $notice['end'] ?? null;
+              $dateTimeType = $notice['dateTimeType'] ?? null;
+              $dateTimeFormat = $notice['dateTimeFormat'] ?? null;
+              $dateTimeDisplayFunction = $notice['dateTimeDisplayFunction'] ?? null
+            ?>
+            <?php if (($dateTimeType !== null) && (($start !== null) || ($end !== null))): ?>
+              <?php
+                $isActive = false;
+                if ($dateTimeFormat !== null) {
+                  $now = date($dateTimeFormat);
+                  $isActive = (($start === null) || $start <= $now)
+                    && (($end === null) || $end >= $now);
+                  if ($start !== null && $dateTimeDisplayFunction !== null) {
+                    try {
+                      $start = $this->dateTime()->$dateTimeDisplayFunction($dateTimeFormat, $start);
+                    } catch (\VuFind\Date\DateException $e) {
+                    }
+                  }
+                  if ($end !== null && $dateTimeDisplayFunction !== null) {
+                    try {
+                      $end = $this->dateTime()->$dateTimeDisplayFunction($dateTimeFormat, $end);
+                    } catch (\VuFind\Date\DateException $e) {
+                    }
+                  }
+                }
+              ?>
+              <div class="<?=$isActive ? 'text-success' : 'text-danger'?>">
+                <?php if ($start !== null): ?>
+                  <?=$this->transEsc('start_' . $dateTimeType)?>: <?=$this->escapeHtml($start)?>
+                <?php endif; ?>
+
+                <?php if ($end !== null): ?>
+                  <?=$this->transEsc('end_' . $dateTimeType)?>: <?=$this->escapeHtml($end)?>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
             <?=$this->notices()->renderNotice($notice);?>
           </td>
         </tr>
