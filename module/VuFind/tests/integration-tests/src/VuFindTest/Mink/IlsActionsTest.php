@@ -123,7 +123,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertSame(
             'Interlibrary Loan Requests',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
@@ -158,7 +158,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertSame(
             'Storage Retrieval Requests',
-            $this->findCssAndGetText($page, 'h2')
+            $this->findCssAndGetText($page, 'h1')
         );
     }
 
