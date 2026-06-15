@@ -129,6 +129,9 @@ class YamlReader
             $cacheConfig['CacheConfigName_' . $this->cacheName] ?? [],
         );
         $reloadOnFileChange = $cacheOptions['reloadOnFileChange'] ?? true;
+        if ($cacheOptions['disabled'] ?? false) {
+            $cache = false;
+        }
 
         // Generate cache key:
         $cacheKey = $defaultFile .
