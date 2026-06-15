@@ -169,6 +169,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $config = [
             'config' => [
                 'Catalog' => ['driver' => 'Demo'],
+                'ConfigCache' => ['disabled' => true], // prevent config caching from interfering with YAML updates
                 'Item_Status' => [
                     'show_full_status' => $fullStatus,
                     'multiple_locations' => $multipleLocations ?? 'msg',
