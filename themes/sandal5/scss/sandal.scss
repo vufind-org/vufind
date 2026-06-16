@@ -24,6 +24,15 @@ body {
   }
 }
 
+/* -- Typography -- */
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.424rem; }
+h5 { font-size: 1.266rem; }
+h6 { font-size: 1.125rem; }
+
 /* --- Header --- */
 .navbar {
   border-radius: 0;
@@ -189,7 +198,6 @@ a:hover .login-dropdown-caret {
 }
 .info-col h3 {
   margin-top: 0;
-  font-weight: 500;
 }
 .record .sidebar { margin-top: 1rem; }
 .comment-list { margin-top: .5rem; }
@@ -202,8 +210,6 @@ a:hover .login-dropdown-caret {
   padding: 1rem;
   font-size: $reduced-font-size;
   background-color: $light-gray;
-
-  h1,h2,h3:not(#acc-menu-lists-header):not(#acc-menu-favs-header),h4 { margin-top: 0; }
 
   .facet-group,
   .datevis-form {
