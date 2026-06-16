@@ -51,10 +51,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PrintCartAction extends AbstractCartAction implements TranslatorAwareInterface
+class PrintCartAction extends AbstractCartAction
 {
     use ListItemSelectionTrait;
-    use TranslatorAwareTrait;
 
     /**
      * Print cart.
