@@ -35,6 +35,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
+use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\Cart;
 use VuFind\Export;
@@ -43,7 +44,6 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
-use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\Record;
 
 use function count;
@@ -70,7 +70,6 @@ class ExportAction extends AbstractCartAction implements TranslatorAwareInterfac
      * @param Export         $export           Export handler
      * @param Cart           $cart             Cart handler
      * @param FollowupHelper $followupHelper   Followup helper
-     * @param FlashMessenger $flashMessenger   Flash messenger
      * @param RecordLoader   $recordLoader     Record loader
      * @param Record         $recordViewHelper Record view helper
      */
@@ -78,12 +77,11 @@ class ExportAction extends AbstractCartAction implements TranslatorAwareInterfac
         Export $export,
         Cart $cart,
         FollowupHelper $followupHelper,
-        FlashMessenger $flashMessenger,
         protected RecordLoader $recordLoader,
         #[Autowire(container: 'ViewHelperManager')]
         protected Record $recordViewHelper,
     ) {
-        parent::__construct($export, $cart, $followupHelper, $flashMessenger);
+        parent::__construct($export, $cart, $followupHelper);
     }
 
     /**
@@ -168,7 +166,7 @@ class ExportAction extends AbstractCartAction implements TranslatorAwareInterfac
 
         // No legal export options?  Display a warning:
         if (!$templateParams['exportOptions']) {
-            $this->flashMessenger->addErrorMessage('bulk_export_not_supported');
+            $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('bulk_export_not_supported');
         }
 
         return $this->renderTemplate($request, $response, $templateParams);

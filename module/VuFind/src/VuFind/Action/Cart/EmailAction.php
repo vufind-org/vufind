@@ -36,6 +36,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\EmailHelper;
+use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
@@ -51,7 +52,6 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Mailer\Mailer;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Helper\FollowupHelper;
-use VuFind\View\FlashMessenger\FlashMessenger;
 
 use function count;
 use function is_array;
@@ -77,7 +77,6 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
      * @param Export              $export              Export handler
      * @param Cart                $cart                Cart handler
      * @param FollowupHelper      $followupHelper      Followup helper
-     * @param FlashMessenger      $flashMessenger      Flash messenger
      * @param AccountCapabilities $accountCapabilities Account capabilities
      * @param Mailer              $mailer              Mailer
      * @param AuthManager         $authManager         Authentication manager
@@ -89,7 +88,6 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
         Export $export,
         Cart $cart,
         FollowupHelper $followupHelper,
-        FlashMessenger $flashMessenger,
         protected AccountCapabilities $accountCapabilities,
         protected Mailer $mailer,
         protected AuthManager $authManager,
@@ -97,7 +95,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
         protected CaptchaService $captchaService,
         protected ServerUrlHelper $serverUrlHelper,
     ) {
-        parent::__construct($export, $cart, $followupHelper, $flashMessenger);
+        parent::__construct($export, $cart, $followupHelper);
     }
 
     /**
@@ -194,7 +192,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
                 );
                 return $bulkActionHelper->redirectToSource($request, $response, 'success', 'bulk_email_success', true);
             } catch (MailException $e) {
-                $this->flashMessenger->addErrorMessage($e->getDisplayMessage());
+                $this->getHelper(FlashMessagesHelper::class)->addErrorMessage($e->getDisplayMessage());
             }
         }
 

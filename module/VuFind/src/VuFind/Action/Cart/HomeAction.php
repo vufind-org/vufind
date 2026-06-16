@@ -35,6 +35,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
+use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -99,7 +100,7 @@ class HomeAction extends AbstractCartAction implements TranslatorAwareInterface
                     $msg = $this->translate('bookbag_full_msg') . '. '
                         . $addItems['notAdded'] . ' '
                         . $this->translate('items_already_in_bookbag') . '.';
-                    $this->flashMessenger->addInfoMessage($msg);
+                    $this->getHelper(FlashMessagesHelper::class)->addInfoMessage($msg);
                 }
             }
         }

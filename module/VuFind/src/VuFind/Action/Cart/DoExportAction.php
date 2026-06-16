@@ -43,7 +43,6 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
-use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\Record;
 
 use function count;
@@ -70,7 +69,6 @@ class DoExportAction extends AbstractCartAction implements TranslatorAwareInterf
      * @param Export         $export           Export handler
      * @param Cart           $cart             Cart handler
      * @param FollowupHelper $followupHelper   Followup helper
-     * @param FlashMessenger $flashMessenger   Flash messenger
      * @param RecordLoader   $recordLoader     Record loader
      * @param Record         $recordViewHelper Record view helper
      */
@@ -78,12 +76,11 @@ class DoExportAction extends AbstractCartAction implements TranslatorAwareInterf
         Export $export,
         Cart $cart,
         FollowupHelper $followupHelper,
-        FlashMessenger $flashMessenger,
         protected RecordLoader $recordLoader,
         #[Autowire(container: 'ViewHelperManager')]
         protected Record $recordViewHelper,
     ) {
-        parent::__construct($export, $cart, $followupHelper, $flashMessenger);
+        parent::__construct($export, $cart, $followupHelper);
     }
 
     /**

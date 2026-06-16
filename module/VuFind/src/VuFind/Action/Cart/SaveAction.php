@@ -35,6 +35,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
+use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
@@ -51,7 +52,6 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
-use VuFind\View\FlashMessenger\FlashMessenger;
 
 use function count;
 use function is_array;
@@ -77,7 +77,6 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
      * @param Export                   $export              Export handler
      * @param Cart                     $cart                Cart handler
      * @param FollowupHelper           $followupHelper      Followup helper
-     * @param FlashMessenger           $flashMessenger      Flash messenger
      * @param AccountCapabilities      $accountCapabilities Account capabilities
      * @param AuthManager              $authManager         Authentication manager
      * @param RecordLoader             $recordLoader        Record loader
@@ -88,7 +87,6 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
         Export $export,
         Cart $cart,
         FollowupHelper $followupHelper,
-        FlashMessenger $flashMessenger,
         protected AccountCapabilities $accountCapabilities,
         protected AuthManager $authManager,
         protected RecordLoader $recordLoader,
@@ -96,7 +94,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
         protected UserListServiceInterface $userListService,
         protected FavoritesService $favoritesService,
     ) {
-        parent::__construct($export, $cart, $followupHelper, $flashMessenger);
+        parent::__construct($export, $cart, $followupHelper);
     }
 
     /**
@@ -181,7 +179,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
                 . '<a href="' . $listUrl . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
             ];
-            $this->flashMessenger->addSuccessMessage($message);
+            $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage($message);
             return $this->getRedirectResponse($response, $listUrl);
         }
 

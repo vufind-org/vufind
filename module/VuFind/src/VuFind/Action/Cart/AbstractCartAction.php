@@ -36,7 +36,6 @@ use VuFind\Cart;
 use VuFind\Export;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
-use VuFind\View\FlashMessenger\FlashMessenger;
 
 /**
  * Abstract base class for cart actions.
@@ -56,14 +55,12 @@ abstract class AbstractCartAction extends AbstractTemplateRenderingAction
      * @param Export         $export         Export handler
      * @param Cart           $cart           Cart handler
      * @param FollowupHelper $followupHelper Followup helper
-     * @param FlashMessenger $flashMessenger Flash messenger
      */
     #[Autowire()]
     public function __construct(
         protected Export $export,
         protected Cart $cart,
         protected FollowupHelper $followupHelper,
-        protected FlashMessenger $flashMessenger,
     ) {
         parent::__construct();
     }
