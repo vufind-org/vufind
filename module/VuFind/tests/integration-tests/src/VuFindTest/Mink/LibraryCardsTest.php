@@ -247,7 +247,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
         // Confirm that we are on the profile page with no cards showing:
-        $this->assertSame('Your Profile', $this->findCssAndGetText($page, 'h2'));
+        $this->assertSame('Your Profile', $this->findCssAndGetText($page, 'h1'));
         $this->unFindCss($page, '#library_card');
     }
 

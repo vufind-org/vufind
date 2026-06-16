@@ -6,10 +6,17 @@
   $this->assetManager()->appendScriptLink('requests.js');
   $tabs = $this->accountCapabilities()->getUserContentTabs();
 ?>
-<?php $this->headTitle($this->translate('Comments'));?>
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
+  <?=
+    // Set page title and heading.
+    $this->component('page-title', [
+        'title' => $this->translate('user_content'),
+        'headTitle' => $this->translate('user_content') . ' - ' . $this->translate('Comments'),
+        'level' => 1,
+    ])
+  ?>
   <ul class="nav nav-tabs" role="tablist">
     <?php foreach ($tabs as $tab => $title): ?>
       <li class="nav-item" role="presentation" id="user-content-<?=$this->escapeHtmlAttr($tab)?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='comments' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'userlist')?>"><?=$this->transEsc($title)?></a></li>

@@ -33,7 +33,7 @@ namespace VuFind\Action\Browse;
 
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Config\AccountCapabilities;
+use VuFind\ActionHelper\UserContentHelper;
 use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\HasSorterTrait;
 use VuFind\Search\Results\PluginManager as ResultsPluginManager;
@@ -60,14 +60,12 @@ abstract class AbstractBrowseAction extends AbstractTemplateRenderingAction impl
      * Constructor.
      *
      * @param array                $config               VuFind configuration
-     * @param AccountCapabilities  $accountCapabilities  Account capabilities
      * @param TagsService          $tagsService          Tags service
      * @param ResultsPluginManager $resultsPluginManager Search results plugin manager
      */
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
-        protected AccountCapabilities $accountCapabilities,
         protected TagsService $tagsService,
         protected ResultsPluginManager $resultsPluginManager,
     ) {
@@ -132,7 +130,7 @@ abstract class AbstractBrowseAction extends AbstractTemplateRenderingAction impl
                     $browseOptions[] = $this->buildBrowseOption('LCC', $lccLabel);
                     break;
                 case 'tag':
-                    if ($this->tagsEnabled()) {
+                    if ($this->getHelper(UserContentHelper::class)->tagsEnabled()) {
                         $browseOptions[] = $this->buildBrowseOption('Tag', 'Tag');
                     }
                     break;
@@ -471,15 +469,5 @@ abstract class AbstractBrowseAction extends AbstractTemplateRenderingAction impl
             }
         }
         return $result;
-    }
-
-    /**
-     * Are tags enabled?
-     *
-     * @return bool
-     */
-    protected function tagsEnabled(): bool
-    {
-        return $this->accountCapabilities->getTagSetting() !== 'disabled';
     }
 }
