@@ -38,8 +38,6 @@ use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\Exception\Forbidden as ForbiddenException;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 /**
  * Generate API key action.
@@ -51,9 +49,8 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class GenerateApiKeyAction extends AbstractDeveloperSettingsAction implements TranslatorAwareInterface
+class GenerateApiKeyAction extends AbstractDeveloperSettingsAction
 {
-    use TranslatorAwareTrait;
 
     /**
      * Generate a new API key.
