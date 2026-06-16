@@ -145,40 +145,39 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
                 ['cartIds' => $ids, 'cartAction' => 'Save']
             );
         }
-        $formHelper = $this->getHelper(FormHelper::class);
-        if (
-            !($submitDisabled ?? false)
-            && $formHelper->formWasSubmitted($request, 'newList')
-        ) {
-            // Remove submit now from parameters
-            $postParams = $request->getParsedBody();
-            unset($postParams['newList']);
-            unset($postParams['submitButton']);
-            // Set id to NEW:
-            $routeMatch = $this->request->getAttribute('route-match');
-            $routeMatch?->setParam('id', 'NEW');
-            // Forward:
-            return $this->getHelper(ForwardHelper::class)->forwardTo(
-                $request->withParsedBody($postParams),
-                $response,
-                'MyResearch/EditList'
-            );
-        }
-        // Process submission if necessary:
-        if ($formHelper->formWasSubmitted($request)) {
-            $results = $this->favoritesService->saveRecordsToFavorites($request->getParsedBody(), $user);
-            $listUrl = $this->getRouteHelper()->getUrlFromRoute(
-                'userList',
-                ['id' => $results['listId']]
-            );
-            $message = [
-                'html' => true,
-                'msg' => $this->translate('bulk_save_success') . '. '
-                . '<a href="' . $listUrl . '" class="gotolist">'
-                . $this->translate('go_to_list') . '</a>.',
-            ];
-            $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage($message);
-            return $this->getRedirectResponse($response, $listUrl);
+        if (!($submitDisabled ?? false)) {
+            $formHelper = $this->getHelper(FormHelper::class);
+            if ($formHelper->formWasSubmitted($request, 'newList')) {
+                // Remove submit now from parameters
+                $postParams = $request->getParsedBody();
+                unset($postParams['newList']);
+                unset($postParams['submitButton']);
+                // Set id to NEW:
+                $routeMatch = $this->request->getAttribute('route-match');
+                $routeMatch?->setParam('id', 'NEW');
+                // Forward:
+                return $this->getHelper(ForwardHelper::class)->forwardTo(
+                    $request->withParsedBody($postParams),
+                    $response,
+                    'MyResearch/EditList'
+                );
+            }
+            // Process submission if necessary:
+            if ($formHelper->formWasSubmitted($request)) {
+                $results = $this->favoritesService->saveRecordsToFavorites($request->getParsedBody(), $user);
+                $listUrl = $this->getRouteHelper()->getUrlFromRoute(
+                    'userList',
+                    ['id' => $results['listId']]
+                );
+                $message = [
+                    'html' => true,
+                    'msg' => $this->translate('bulk_save_success') . '. '
+                    . '<a href="' . $listUrl . '" class="gotolist">'
+                    . $this->translate('go_to_list') . '</a>.',
+                ];
+                $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage($message);
+                return $this->getRedirectResponse($response, $listUrl);
+            }
         }
 
         // Pass record and list information to template:
