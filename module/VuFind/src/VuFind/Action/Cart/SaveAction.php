@@ -128,10 +128,10 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
             }
             $submitDisabled = true;
         } elseif (count($ids) > $actionLimit) {
-            $errorMsg = $this->translate(
-                'bulk_limit_exceeded',
-                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
-            );
+            $errorMsg = [
+                'msg' => 'bulk_limit_exceeded',
+                'translateTokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+            ];
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', $errorMsg)) {
                 return $redirect;
             }
