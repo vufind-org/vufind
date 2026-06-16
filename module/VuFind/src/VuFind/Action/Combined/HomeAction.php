@@ -58,8 +58,8 @@ class HomeAction extends AbstractCombinedSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        // We need to load blocks differently in this action since it
-        // doesn't follow the usual configuration pattern.
+        // We need to load blocks differently in this action since it doesn't follow the usual configuration pattern
+        // (the search class ID is "Combined" but the config name is "combined").
         $blocks = $this->blockLoader->getFromConfig('combined');
         return $this->renderTemplate(
             $this->request,
