@@ -425,7 +425,7 @@ VuFind.register("channels", function Channels() {
                   <h2>${title.innerHTML}</h2>
                 </div>
                 <div class="channel-content">
-                  ${VuFind.translate("nohit_heading")}
+                  ${VuFind.transEsc("nohit_heading")}
                 </div>
               </div>`,
               "text/html"
