@@ -33,9 +33,9 @@ use Behat\Mink\Element\NodeElement;
 use Exception;
 use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
-
 use VuFindTest\Feature\DemoDriverTestTrait;
 use VuFindTest\Integration\MinkTestCase;
+
 use function count;
 
 /**
