@@ -183,7 +183,6 @@ VuFind.register("channels", function Channels() {
 
           // update information
           record.id = `${channelID}-item-${String(index + i).padStart(3, "0")}`;
-          record.dataset.index = index + i;
 
           // append
           targetList.append(record);
