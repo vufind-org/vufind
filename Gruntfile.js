@@ -61,7 +61,8 @@ module.exports = function(grunt) {
       'dart-sass': {
         options: {
           outputStyle: 'compressed',
-          quietDeps: true
+          quietDeps: true,
+          sourceMap: true
         }
       }
     },
