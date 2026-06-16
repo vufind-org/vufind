@@ -322,7 +322,7 @@ VuFind.register("channels", function Channels() {
       .setAttribute("href", `${VuFind.path}/Channels/Record?${expandParams}`);
 
     const prevBtn = content.querySelector(".ql-prev-item-btn");
-    if (Number(record.dataset.index) > 0) {
+    if (record.previousElementSibling) {
       prevBtn.classList.remove("disabled");
       prevBtn.removeAttribute("disabled");
     } else {
@@ -513,7 +513,7 @@ VuFind.register("channels", function Channels() {
           group.dataset.recordSource,
           group.dataset.recordId
         );
-        if (Number(record.dataset.index) > 0) {
+        if (record.previousElementSibling) {
           quickLook(record.previousElementSibling, group.dataset.channelId);
           event.preventDefault();
           return false;
