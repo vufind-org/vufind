@@ -558,6 +558,12 @@ class LoginHelperTest extends TestCase
         $urlHelper = $this->createMock(UrlHelper::class);
         $urlHelper->method('normalizeUrlForComparison')
             ->willReturnArgument(0);
+        $urlHelper->method('isLocalUrl')
+            ->willReturnCallback(
+                function (string $s): bool {
+                    return str_starts_with($s, 'http://localhost/vufind/');
+                }
+            );
 
         $routeHelper = $this->createMock(RouteHelper::class);
         $routeHelper->method('getUrlFromRoute')
