@@ -228,7 +228,7 @@
           echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($this->searchClassId) . '">';
         }
         /* Load hidden limit preference from Session */
-        if (!empty($lastLimit)) {
+        if (!empty($lastLimit) && $lastLimit !== $options?->getDefaultLimit()) {
           echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '">';
         }
         if (
