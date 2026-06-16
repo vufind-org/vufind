@@ -51,7 +51,6 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  */
 class GenerateApiKeyAction extends AbstractDeveloperSettingsAction
 {
-
     /**
      * Generate a new API key.
      *
