@@ -505,16 +505,18 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test canceling a hold.
      *
-     * @param int  $itemCount  Number of items to place holds on
-     * @param bool $pagination If pagination on holds is enabled
-     * @param bool $ilsPaging  If ILS paging should be enabled
+     * @param bool $testWithMultipleItems If testing with multiple items
+     * @param bool $pagination            If pagination on holds is enabled
+     * @param bool $ilsPaging             If ILS paging should be enabled
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
     #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
-    public function testCancelHold(int $itemCount, bool $pagination, bool $ilsPaging): void
+    public function testCancelHold(bool $testWithMultipleItems, bool $pagination, bool $ilsPaging): void
     {
+        $itemCount = $testWithMultipleItems ? 6 : 1;
+
         // Turn on "cancel holds" in addition to normal defaults:
         $config = $this->getConfigIniOverrides($pagination);
         $config['Catalog']['cancel_holds_enabled'] = 1;
@@ -543,7 +545,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Place the hold on last item:
         $this->placeHoldAndGoToHoldsScreen($page);
 
-        if ($itemCount === 1) {
+        if (!$testWithMultipleItems) {
             // Test canceling one hold:
             $this->clickCss($page, '#cancelSelected');
             $this->unFindCss($page, '.btn-group.open');
@@ -767,16 +769,18 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test creating, and then editing, a frozen hold.
      *
-     * @param int  $itemCount  Number of items to place holds on
-     * @param bool $pagination If pagination on holds is enabled
-     * @param bool $ilsPaging  If ils paging should be enabled
+     * @param bool $testWithMultipleItems If testing with multiple items
+     * @param bool $pagination            If pagination on holds is enabled
+     * @param bool $ilsPaging             If ils paging should be enabled
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
     #[\PHPUnit\Framework\Attributes\DataProvider('multipleItemsAndPaginationTestProvider')]
-    public function testFrozenHoldEditing(int $itemCount, bool $pagination, bool $ilsPaging): void
+    public function testFrozenHoldEditing(bool $testWithMultipleItems, bool $pagination, bool $ilsPaging): void
     {
+        $itemCount = $testWithMultipleItems ? 6 : 1;
+
         $demoConfig = $this->getDemoIniOverridesForTestsWithMultipleItems($itemCount, $ilsPaging);
         $demoConfig['Holds'] = ['updateFields' => 'frozen:frozenThrough:pickUpLocation'];
         $this->changeConfigs(
