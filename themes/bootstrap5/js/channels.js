@@ -281,7 +281,7 @@ VuFind.register("channels", function Channels() {
     }
 
     // Less hidden items than needed for a second page
-    if (channelEl.hiddenItems < pageSize) {
+    if (channelEl.ajaxAvailable && channelEl.hiddenItems < pageSize) {
       requestMoreItems(loadMoreBtn, channelEl);
     }
   }
