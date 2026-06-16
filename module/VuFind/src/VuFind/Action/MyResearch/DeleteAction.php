@@ -42,8 +42,6 @@ use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Favorites\FavoritesService;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\FlashMessenger\FlashMessenger;
@@ -61,10 +59,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class DeleteAction extends AbstractTemplateRenderingAction implements TranslatorAwareInterface
+class DeleteAction extends AbstractTemplateRenderingAction
 {
     use ListItemSelectionTrait;
-    use TranslatorAwareTrait;
 
     /**
      * Constructor.
