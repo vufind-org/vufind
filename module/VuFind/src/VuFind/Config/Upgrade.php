@@ -365,16 +365,20 @@ class Upgrade implements LoggerAwareInterface
             return;
         }
 
-        $configNameParts = explode('/', $configName, 2);
-        $subDir = (count($configNameParts) > 1) ? '/' . $configNameParts[0] : '';
-        $baseConfigLocation = $this->pathResolver->getMatchingConfigLocation(
-            $this->pathResolver->getBaseConfigDirPath() . $subDir,
-            $configNameParts[1] ?? $configName
-        );
-
-        $destinationLocation = clone $baseConfigLocation;
-        $destinationLocation->setBasePath($this->pathResolver->getLocalConfigDirPath() . $subDir);
-        $this->configManager->writeConfig($destinationLocation, $this->newConfigs[$configName], $baseConfigLocation);
+        $baseConfigLocation = $this->pathResolver->getBaseConfigLocation($configName);
+        $destinationLocation = $this->pathResolver->getForcedLocalConfigLocation($configName);
+        try {
+            $this->configManager->writeConfig(
+                $destinationLocation,
+                $this->newConfigs[$configName],
+                $baseConfigLocation
+            );
+        } catch (\Exception $e) {
+            $this->addWarning(
+                'Could not upgrade ' . $destinationLocation->getPath()
+                . '. Manual upgrade required. (Error: ' . $e->getMessage() . ')'
+            );
+        }
     }
 
     /**

@@ -95,6 +95,8 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                 => new ConfigFile($this->getFixturePath('configs/inheritance/unit-test-child2.ini')),
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
             'ini-file-with-include' => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test.ini')),
+            'ini-file-with-include-section'
+                => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test-section.ini')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
             'dir-config-with-inheritance'
                 => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
@@ -506,6 +508,37 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test loading of INI config with include statements on section level.
+     *
+     * @return void
+     */
+    public function testIniConfigWithIncludeStatementOnSectionLevel(): void
+    {
+        $config = $this->getConfig('ini-file-with-include-section');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    'a' => 1,
+                    'b' => 2,
+                ],
+                'Section2' => [
+                    'c' => 3,
+                    'd' => 4,
+                    'e' => 5,
+                ],
+                'Section3' => [
+                    'f' => 6,
+                    'g' => 7,
+                    'h' => 8,
+                    'i' => 9,
+                    'j' => 10,
+                ],
+            ],
+            $config
+        );
+    }
+
+    /**
      * Test loading of directory config with handling of parent configuration disabled.
      *
      * @return void
@@ -751,14 +784,14 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test loading of configs with inheritance and a local dir stack.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name
      * @param array  $expectedConfig Expected config
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('localDirStackTestProvider')]
     public function testConfigsInLocalDirStack(
-        $configPath,
+        $configName,
         $expectedConfig
     ): void {
         $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
@@ -767,7 +800,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             localDir: $fixtureDir . 'primary'
         )->get(ConfigManagerInterface::class);
 
-        $config = $configManager->getConfigArray($configPath);
+        $config = $configManager->getConfigArray($configName);
         $this->assertEquals(
             $expectedConfig,
             $config
