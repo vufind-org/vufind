@@ -39,8 +39,6 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\Cart;
 use VuFind\Export;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
@@ -59,10 +57,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ExportAction extends AbstractCartAction implements TranslatorAwareInterface
+class ExportAction extends AbstractCartAction
 {
     use ListItemSelectionTrait;
-    use TranslatorAwareTrait;
 
     /**
      * Constructor.
