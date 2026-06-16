@@ -81,10 +81,10 @@ class GenerateApiKeyAction extends AbstractDeveloperSettingsAction implements Tr
             $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
             if ($title = $this->getPostOrQueryParam('title')) {
                 if ($apiKey = $this->developerSettingsService->generateApiKeyForUser($user, $title)) {
-                    $successMsg = $this->translate(
-                        'Developer::api_key_generation_success',
-                        ['%%TOKEN%%' => $apiKey->getToken()]
-                    );
+                    $successMsg = [
+                        'msg' => 'Developer::api_key_generation_success',
+                        'translateTokens' => ['%%TOKEN%%' => $apiKey->getToken()],
+                    ];
                     $flashMessagesHelper->addSuccessMessage($successMsg);
                     return $this->renderTemplate($request, $response);
                 }
