@@ -494,12 +494,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function multipleItemsAndPaginationTestProvider(): Iterator
     {
-        yield 'single' => [1, false, false];
-        yield 'multiple' => [6, false, false];
-        yield 'single-with-pagination' => [1, true, false];
-        yield 'multiple-with-pagination' => [6, true, false];
-        yield 'single-with-ils-pagination' => [1, true, true];
-        yield 'multiple-with-ils-pagination' => [6, true, true];
+        yield 'single' => [false, false, false];
+        yield 'multiple' => [true, false, false];
+        yield 'single-with-pagination' => [false, true, false];
+        yield 'multiple-with-pagination' => [true, true, false];
+        yield 'single-with-ils-pagination' => [false, true, true];
+        yield 'multiple-with-ils-pagination' => [true, true, true];
     }
 
     /**
