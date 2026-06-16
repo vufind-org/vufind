@@ -79,7 +79,7 @@ class GenerateApiKeyAction extends AbstractDeveloperSettingsAction
                 if ($apiKey = $this->developerSettingsService->generateApiKeyForUser($user, $title)) {
                     $successMsg = [
                         'msg' => 'Developer::api_key_generation_success',
-                        'translateTokens' => ['%%TOKEN%%' => $apiKey->getToken()],
+                        'tokens' => ['%%TOKEN%%' => $apiKey->getToken()],
                     ];
                     $flashMessagesHelper->addSuccessMessage($successMsg);
                     return $this->renderTemplate($request, $response);
