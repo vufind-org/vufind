@@ -297,7 +297,7 @@ class LoginHelper implements HelperInterface
         // Get the referer -- if it's empty, there's nothing to store! Also,
         // if the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
-        if (empty($referer) || !$this->isLocalUrl($referer)) {
+        if (empty($referer) || !$this->urlHelper->isLocalUrl($referer)) {
             return;
         }
         // If the referer is the MyResearch/Home action, it probably means
@@ -333,22 +333,5 @@ class LoginHelper implements HelperInterface
 
         // If we got this far, we want to store the referer:
         $this->followupHelper->store($extras, $referer);
-    }
-
-    /**
-     * Is the provided URL local to this instance?
-     *
-     * @param string $url URL to check
-     *
-     * @return bool
-     */
-    public function isLocalUrl(string $url): bool
-    {
-        $baseUrlNorm = $this->urlHelper->normalizeUrlForComparison(
-            $this->serverUrlHelper->getUrlForPath(
-                $this->routeHelper->getUrlFromRoute('home')
-            )
-        );
-        return str_starts_with($this->urlHelper->normalizeUrlForComparison($url), $baseUrlNorm);
     }
 }

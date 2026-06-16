@@ -42,8 +42,18 @@
       </div>
     <?php endif; ?>
 
-    <div class="facet-lightbox-filter form-group hidden" role="group" aria-labelledby="facet-lightbox-filter-label">
-      <?php if ($this->results->getParams()->supportsFacetFiltering($this->facet) === true): ?>
+    <?php
+      $supportsFacetFiltering = $this->results->getParams()->supportsFacetFiltering($this->facet) === true;
+      $divAttrs = $this->htmlAttributes([
+          'class' => 'facet-lightbox-filter form-group hidden',
+          'role' => 'group',
+      ]);
+      if ($supportsFacetFiltering) {
+          $divAttrs->add('aria-labelledby', 'facet-lightbox-filter-label');
+      }
+    ?>
+    <div<?= $divAttrs ?>>
+      <?php if ($supportsFacetFiltering): ?>
         <label id="facet-lightbox-filter-label" class="form-label" for="input-contains"><?=$this->transEsc('Filter') ?></label>
         <input id="input-contains" class="ajax_param form-control" data-name="contains" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
         <button id="btn-reset-contains" class="btn btn-default <?=strlen($this->contains) < 1 ? 'hidden' : ''?>" type="reset" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>

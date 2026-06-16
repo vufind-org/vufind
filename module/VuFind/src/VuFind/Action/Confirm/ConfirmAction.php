@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Confirm Controller.
+ * Confirm action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,41 +22,53 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Confirm;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\Record\AbstractRecordAction;
+use VuFind\ActionHelper\FlashMessagesHelper;
 
 use function is_array;
 
 /**
- * Redirects the user to the appropriate VuFind action.
+ * Confirm action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ConfirmController extends AbstractBase
+class ConfirmAction extends AbstractRecordAction
 {
     /**
-     * Determines what elements are displayed on the home page based on whether
-     * the user is logged in.
+     * Confirm an operation.
      *
-     * @return mixed
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function confirmAction()
-    {
-        // Get Data from the route
-        $data = $this->params()->fromRoute('data');
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        // Get data from the route
+        $data = $this->getRouteParam('data');
 
         // Assign Flash Messages
+        $flashMessagesHelper = $this->getHelper(FlashMessagesHelper::class);
         if (isset($data['messages'])) {
             foreach ($data['messages'] as $message) {
                 $flash = (true === is_array($message))
@@ -64,11 +77,10 @@ class ConfirmController extends AbstractBase
                         'tokens' => $message['tokens'] ?? [],
                     ]
                     : $message;
-                $this->getFlashMessenger()->addInfoMessage($flash);
+                $flashMessagesHelper->addInfoMessage($flash);
             }
         }
 
-        // Assign Data
-        return $this->createViewModel($data);
+        return $this->renderTemplate($request, $response, $data);
     }
 }
