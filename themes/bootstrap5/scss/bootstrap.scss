@@ -108,10 +108,6 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 
 html { font-size: 14px; } // Root font size from Bootstrap, allows consistent use of rem units
 
-// Bootstrap sets top margin on all headings to 0.
-// Let's adjust that for better readability
-$headings-margin-bottom: 1rem;
-
 h1, .h1 {
   margin-block: 1rem;
 }
@@ -124,10 +120,10 @@ h6, .h6 {
   margin-top: 1em;
 }
 
-// Sidebar heading match to h1
+// Remove top margin for sidebar heading
 .sidebar h2,
-.sidebar .h2 {
-  margin-top: 1rem;
+.record h1 /* Align record heading */ {
+  margin-top: 0;
 }
 
 // Reset popover-header margins here (N.B. intentionally not using :not() above to avoid specificity issues)
@@ -294,10 +290,6 @@ body.rtl .dropdown-menu {
 }
 
 /* ------ Navigation ------ */
-.navbar-brand {
-  font-size: 1.4rem;
-  text-decoration: underline;
-}
 
 .nav > li > a, .nav > li > button {
   @extend .icon-link;

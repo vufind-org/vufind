@@ -41,6 +41,10 @@ $navbar-padding-y:                  0 !default;
 // Disable !important utilities by default:
 $enable-important-utilities:        false !default;
 
+// Bootstrap sets top margin on all headings to 0.
+// Let's adjust that for better readability
+$headings-margin-bottom: 1rem;
+
 // Disable several default icons:
 $accordion-button-active-icon:      none !default;
 $accordion-button-active-icon-dark: none !default;
