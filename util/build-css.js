@@ -23,31 +23,38 @@ program
   )
   .option(
     "-e, --entry <string>",
-    "SCSS to compile in theme/scss",
+    "target SCSS in {theme}/scss",
     "compiled.scss"
   )
   .option(
     "-o, --outname <string>",
-    "CSS file to output in theme/css",
+    "CSS file to output into {theme}/css",
     "compiled.css"
-  )
-  .option("-M, --no-minify", "skip minifying CSS with clean-css")
-  .option(
-    "-S, --no-sourcemaps",
-    "do not generate sourcemaps (faster compilation)"
   )
   .option(
     "-c, --check-only",
-    "compile but do not write result"
+    "compile but do not write result",
+    false
+  )
+  .option("-M, --no-minify", "do not minify CSS with clean-css (faster compilation)")
+  .option(
+    "-S, --no-sourcemaps",
+    "do not generate sourcemaps (faster compilation)"
   );
 
 program.parse(process.argv);
 const CLI_OPTIONS = program.opts();
 
+// minify CSS, unless told not to with --no-minify (-M)
+// i.e., npm run build:scss -- --no-minify
 const DO_MINIFY = Boolean(CLI_OPTIONS.minify);
-const DO_SOURCEMAPS = Boolean(CLI_OPTIONS.sourcemaps ?? CLI_OPTIONS.minify);
 
-console.log(`CHECK-ONLY: ${String(CLI_OPTIONS.checkOnly ?? false)}`);
+// build source maps, unless told not to with --no-sourcemaps (-S)
+// source maps allow compiled CSS to be mapped to the original SCSS source
+// i.e., npm run build:scss -- --no-sourcemaps
+const DO_SOURCEMAPS = Boolean(CLI_OPTIONS.sourcemaps);
+
+console.log(`CHECK-ONLY: ${String(CLI_OPTIONS.checkOnly)}`);
 console.log(`MINIFY: ${String(DO_MINIFY)}`);
 console.log(`SOURCEMAPS: ${String(DO_SOURCEMAPS)}`);
 
