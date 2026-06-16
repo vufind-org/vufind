@@ -2359,9 +2359,7 @@ class Folio extends AbstractAPI implements
             );
         }
 
-        foreach (
-            $rawHolds as $hold
-        ) {
+        foreach ($rawHolds as $hold) {
             $requestDate = $this->dateConverter->convertToDisplayDate(
                 'Y-m-d H:i',
                 $hold->requestDate
