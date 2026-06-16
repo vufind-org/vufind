@@ -167,7 +167,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CombinedController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CoverController' => 'VuFind\Controller\CoverControllerFactory',
             'VuFind\Controller\EdsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -221,8 +220,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'DeveloperSettings' => 'VuFind\Controller\DeveloperSettingsController',
-            'developersettings' => 'VuFind\Controller\DeveloperSettingsController',
             'Combined' => 'VuFind\Controller\CombinedController',
             'combined' => 'VuFind\Controller\CombinedController',
             'Cover' => 'VuFind\Controller\CoverController',
