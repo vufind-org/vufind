@@ -75,7 +75,6 @@ class DeleteAction extends AbstractTemplateRenderingAction implements Translator
      * @param UserListServiceInterface $userListService  User list database service
      * @param RecordLoader             $recordLoader     Record loader
      */
-    #[Autowire()]
     public function __construct(
         protected AuthManager $authManager,
         protected FavoritesService $favoritesService,
@@ -141,7 +140,8 @@ class DeleteAction extends AbstractTemplateRenderingAction implements Translator
             $request,
             $response,
             [
-                'list' => $list, 'deleteIDS' => $ids,
+                'list' => $list,
+                'deleteIDS' => $ids,
                 'records' => $this->recordLoader->loadBatch($ids),
             ]
         );
