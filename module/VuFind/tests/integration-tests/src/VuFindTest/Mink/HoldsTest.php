@@ -507,7 +507,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param int  $itemCount  Number of items to place holds on
      * @param bool $pagination If pagination on holds is enabled
-     * @param bool $ilsPaging  If ils paging should be enabled
+     * @param bool $ilsPaging  If ILS paging should be enabled
      *
      * @return void
      */
