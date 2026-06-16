@@ -67,13 +67,11 @@ class DisplaySettingsAction extends AbstractDeveloperSettingsAction
             throw new ForbiddenException('Developer settings disabled.');
         }
         $apiKeys = $this->developerSettingsService->getApiKeysForUser($user);
+        $createAllowed = !$this->developerSettingsService->apiKeysBlocked($apiKeys);
         return $this->renderTemplate(
             $request,
             $response,
-            [
-                'apiKeys' => $apiKeys,
-                'createAllowed' => !$this->developerSettingsService->apiKeysBlocked($apiKeys),
-            ]
+            compact('apiKeys', 'createAllowed')
         );
     }
 }
