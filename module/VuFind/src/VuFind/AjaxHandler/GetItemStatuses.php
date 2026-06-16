@@ -83,7 +83,7 @@ class GetItemStatuses extends AbstractBase implements
      * @param RendererInterface         $renderer                  View renderer
      * @param Holds                     $holdLogic                 Holds logic
      * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
-     * @param ?GetThisLoader            $getThis                   Get This loader or null if not enabled
+     * @param ?GetThisLoader            $getThisLoader             Get This loader or null if not enabled
      */
     public function __construct(
         SessionSettings $ss,
@@ -92,7 +92,7 @@ class GetItemStatuses extends AbstractBase implements
         protected RendererInterface $renderer,
         protected Holds $holdLogic,
         protected AvailabilityStatusManager $availabilityStatusManager,
-        protected ?GetThisLoader $getThis,
+        protected ?GetThisLoader $getThisLoader,
     ) {
         $this->sessionSettings = $ss;
     }
@@ -295,7 +295,7 @@ class GetItemStatuses extends AbstractBase implements
         $locationSetting,
         $callnumberSetting
     ) {
-        if (isset($this->getThis)) {
+        if (isset($this->getThisLoader)) {
             $urlHelper = $this->renderer->plugin('url');
             $itemIdParams = !empty($record[0]['item_id']) ? ['query' => ['item_id' => $record[0]['item_id']]] : null;
             $getThisURL = $urlHelper(
@@ -385,11 +385,12 @@ class GetItemStatuses extends AbstractBase implements
             $locations[$info['location']]['items'][] = $info;
         }
 
-        if (isset($this->getThis)) {
-            $this->getThis->setItems($record);
+        if (isset($this->getThisLoader)) {
+            $this->getThisLoader->setItems($record);
         }
         // Build list split out by location:
         $locationList = [];
+        $urlHelper = $this->renderer->plugin('url');
         foreach ($locations as $location => $details) {
             // Determine call number string based on findings:
             $locationCallnumbers = $this->pickValue(
@@ -401,12 +402,11 @@ class GetItemStatuses extends AbstractBase implements
             // Get combined availability for location
             $locationStatus = $this->availabilityStatusManager->combine($details['items']);
             if (
-                isset($this->getThis)
-                && !$this->getThis->isOnlineResource($locationStatus['item_id'] ?? null)
+                isset($this->getThisLoader)
+                && !$this->getThisLoader->isOnlineResource($locationStatus['item_id'] ?? null)
             ) {
                 $itemIdParams = !empty($locationStatus['item_id'])
                     ? ['query' => ['item_id' => $locationStatus['item_id']]] : null;
-                $urlHelper ??= $this->renderer->plugin('url');
                 $getThisURL = $urlHelper(
                     'record-getthis',
                     ['id' => $record[0]['id'] ?? null],
@@ -508,7 +508,7 @@ class GetItemStatuses extends AbstractBase implements
 
         $values = array_merge(
             [
-                'getThis' => $this->getThis,
+                'getThisLoader' => $this->getThisLoader,
                 'statusItems' => $record,
                 'simpleStatus' => $simpleStatus,
                 'callnumberHandler' => $this->getCallnumberHandler(),

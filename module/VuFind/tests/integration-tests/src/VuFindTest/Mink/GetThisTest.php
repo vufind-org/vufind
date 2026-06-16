@@ -31,8 +31,11 @@ namespace VuFindTest\Mink;
 use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\NodeElement;
 use Exception;
+use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+use VuFindTest\Feature\DemoDriverTestTrait;
+use VuFindTest\Integration\MinkTestCase;
 use function count;
 
 /**
@@ -44,9 +47,9 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class GetThisTest extends \VuFindTest\Integration\MinkTestCase
+class GetThisTest extends MinkTestCase
 {
-    use \VuFindTest\Feature\DemoDriverTestTrait;
+    use DemoDriverTestTrait;
 
     /**
      * Search to perform.
@@ -191,9 +194,9 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Provider for testGetThisStandardStatus.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return Iterator<(int | string), array>
      */
-    public static function provideStandardStatusTestData(): \Iterator
+    public static function provideStandardStatusTestData(): Iterator
     {
         $recordId = 'autocomplete1';
         yield [
@@ -294,9 +297,9 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Provider for testGetThisFullStatus.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return Iterator<(int | string), array>
      */
-    public static function provideFullStatusTestData(): \Iterator
+    public static function provideFullStatusTestData(): Iterator
     {
         $recordId = 'autocomplete1';
 

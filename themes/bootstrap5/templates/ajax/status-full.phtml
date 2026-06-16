@@ -1,7 +1,7 @@
 <?php
-$getThisEnabled = $this->getThis?->areItemsSupported($this->statusItems);
+$getThisEnabled = $this->getThisLoader?->areItemsSupported($this->statusItems);
 if ($getThisEnabled) {
-    $this->getThis->setItems($this->statusItems);
+    $this->getThisLoader->setItems($this->statusItems);
 }
 ?>
 <table class="table table-condensed">
@@ -14,7 +14,7 @@ if ($getThisEnabled) {
   <?php foreach (array_slice($this->statusItems, 0, $maxItems) as $item): ?>
     <?php
       if ($getThisEnabled) {
-        $isOnlineResource = $this->getThis->isOnlineResource($item['item_id'] ?? null);
+        $isOnlineResource = $this->getThisLoader->isOnlineResource($item['item_id'] ?? null);
         $getThisURL = !$isOnlineResource ? $this->escapeHtmlAttr($this->url(
             'record-getthis',
             ['id' => $item['id'] ?? null],

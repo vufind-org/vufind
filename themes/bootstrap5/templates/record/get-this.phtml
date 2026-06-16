@@ -1,8 +1,8 @@
 <?php
 # Usually this is displayed in a modal, but if it is not (coming back from login), we don't want the search box.
 $this->layout()->searchbox = false;
-$templates = $this->getThis->getSubTemplates();
-$commentTemplateName = $this->getThis->commentTemplateName();
+$templates = $this->getThisLoader->getSubTemplates();
+$commentTemplateName = $this->getThisLoader->commentTemplateName();
 
 $recordTitle = $this->driver->getRawData()['title_full'] ?? '';
 echo $this->component(
@@ -19,6 +19,6 @@ foreach ($templates as $template) {
     }
     echo $this->context()->renderInContext(
         'record/get-this/' . $template . '.phtml',
-        ['getThisParams' => $this->getThis->getSubTemplateParams($template)]
+        ['getThisParams' => $this->getThisLoader->getSubTemplateParams($template)]
     );
 }

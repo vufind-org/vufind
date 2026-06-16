@@ -1,8 +1,8 @@
 <?php
 $item['item_id'] ??= null;
-$location = $this->getThis->getLocation($item['item_id']);
-$copyNumber = $this->getThis->getCopyNumber($item['item_id']) ?? '';
-$callNumberData = $this->getThis->getCallNumber($item['item_id']);
+$location = $this->getThisLoader->getLocation($item['item_id']);
+$copyNumber = $this->getThisLoader->getCopyNumber($item['item_id']) ?? '';
+$callNumberData = $this->getThisLoader->getCallNumber($item['item_id']);
 if (!empty($location) && ($callNumberData || '' !== $copyNumber)) {
     $location .= ': ';
 }
