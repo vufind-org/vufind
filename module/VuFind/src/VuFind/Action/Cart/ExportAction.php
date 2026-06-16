@@ -146,7 +146,8 @@ class ExportAction extends AbstractCartAction implements TranslatorAwareInterfac
                 $params['url'] = $url;
             }
             $msg = [
-                'translate' => false, 'html' => true,
+                'translate' => false,
+                'html' => true,
                 'msg' => $this->getTemplateRenderer()->renderTemplateAsString(
                     template: 'cart/export-success.phtml',
                     params: $params
