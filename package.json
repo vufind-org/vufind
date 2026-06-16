@@ -20,8 +20,8 @@
     "build:css": "npm run build:scss",
     "watch:css": "npm run watch:scss",
 
-    "build:scss": "npm run installBuildDeps && node util/build-css.js --minify",
-    "check:scss": "npm run installBuildDeps && node util/build-css.js --minify --check-only",
+    "build:scss": "npm run installBuildDeps && node util/build-css.js",
+    "check:scss": "npm run installBuildDeps && node util/build-css.js --check-only",
     "watch:scss": "npm run installBuildDeps && nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node util/build-css.js\"",
     "check:jsTranslations": "npm run check:jsTranslations --workspaces --if-present --ignore-scripts"
   },

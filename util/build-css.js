@@ -16,7 +16,6 @@ const sass = require("sass");
 // Arguments
 
 program
-  .option("-m, --minify", "minify CSS with clean-css")
   .option(
     "-t, --themes [themes...]",
     "themes to compile - if excluded all themes will be compiled",
@@ -32,6 +31,7 @@ program
     "CSS file to output in theme/css",
     "compiled.css"
   )
+  .option("-M, --no-minify", "skip minifying CSS with clean-css")
   .option(
     "-S, --no-sourcemaps",
     "do not generate sourcemaps (faster compilation)"
