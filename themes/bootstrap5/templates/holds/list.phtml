@@ -96,10 +96,11 @@
       <?php endif; ?>
 
     <?php foreach ($this->hiddenHolds as $ilsDetails): ?>
-      <?php if (isset($ilsDetails['item_id']) && isset($this->cancelResults['items'][$ilsDetails['item_id']])): ?>
-        <?php $cancelResult = $this->cancelResults['items'][$ilsDetails['item_id']]; ?>
+      <?php $currentItemId = $ilsDetails['item_id'] ?? null; ?>
+      <?php if (null !== $currentItemId && isset($this->cancelResults['items'][$currentItemId])): ?>
+        <?php $cancelResult = $this->cancelResults['items'][$currentItemId]; ?>
         <?php if ($cancelResult['success'] == false): ?>
-          <?php $prefix = $ilsDetails['title'] ?? $ilsDetails['item_id']; ?>
+          <?php $prefix = $ilsDetails['title'] ?? $currentItemId; ?>
           <div class="alert alert-danger">
             <?=
               $this->escapeHtml($prefix . ': ') . $this->transEsc($cancelResult['status'])
