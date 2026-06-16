@@ -9,7 +9,7 @@ VuFind.register("channels", function Channels() {
    */
   function findChannelItem(channelID, source, id) {
     const channel = document.getElementById(channelID);
-    // avoid bad selectors with sources or ids
+    // Avoid bad selectors with sources or ids
     for (const item of channel.querySelectorAll(".channel-item")) {
       if (
         item.dataset.recordId === id &&
@@ -110,12 +110,12 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function disableLoadMoreBtn(loadMoreBtn) {
-    // disable
+    // Disable
     loadMoreBtn.classList.add("disabled");
     loadMoreBtn.setAttribute("aria-disabled", "true");
-    // store label for later
+    // Store label for later
     loadMoreBtn.setAttribute("data-enabled-label", loadMoreBtn.getAttribute("aria-label"));
-    // change content
+    // Change content
     loadMoreBtn.textContent = VuFind.translate("loading_ellipsis");
     loadMoreBtn.setAttribute("aria-label", VuFind.translate("loading_ellipsis"));
   }
@@ -126,10 +126,10 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function enableLoadMoreBtn(loadMoreBtn) {
-    // disable
+    // Disable
     loadMoreBtn.classList.remove("disabled");
     loadMoreBtn.removeAttribute("aria-disabled");
-    // change content
+    // Change content
     loadMoreBtn.textContent = VuFind.translate("channel_more_items");
     loadMoreBtn.setAttribute(
       "aria-label",
@@ -145,10 +145,10 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function hideLoadMoreBtn(loadMoreBtn) {
-    // screen-reader disable
+    // Screen-reader disable
     loadMoreBtn.classList.add("disabled");
     loadMoreBtn.setAttribute("aria-disabled", "true");
-    // visually hide
+    // Visually hide
     loadMoreBtn.classList.add("visually-hidden");
   }
 
@@ -174,20 +174,20 @@ VuFind.register("channels", function Channels() {
           ? firstChannel.querySelectorAll(".channel-item")
           : [];
 
-        // add new records (hidden)
+        // Add new records (hidden)
         const targetList = channelEl.querySelector(".channel-list");
         const channelID = targetList.closest(".channel").getAttribute("id");
         const index = channelEl.shownItems + channelEl.hiddenItems;
         for (let i = 0; i < records.length; i++) {
           const record = records[i];
 
-          // update information
+          // Update information
           record.id = `${channelID}-item-${String(index + i).padStart(3, "0")}`;
 
-          // append
+          // Append
           targetList.append(record);
 
-          // show
+          // Show
           record.classList.add("hidden-batch-item");
           record.classList.remove("hidden");
 
@@ -196,7 +196,7 @@ VuFind.register("channels", function Channels() {
 
         channelEl.hiddenItems += records.length;
 
-        // mark that we've loaded all records
+        // Mark that we've loaded all records
         if (records.length < Number(channelEl.dataset.pageSize)) {
           channelEl.ajaxAvailable = false;
         }
@@ -219,7 +219,7 @@ VuFind.register("channels", function Channels() {
       return;
     }
 
-    // disable more paging
+    // Disable more paging
     disableLoadMoreBtn(loadMoreBtn);
 
     // Reveal hidden items
@@ -244,7 +244,7 @@ VuFind.register("channels", function Channels() {
       ? requestMoreItems(loadMoreBtn, channelEl)
       : Promise.resolve(); // no load needed
 
-    // update button after load
+    // Update button after load
     promise.then(() => {
       if (channelEl.hiddenItems === 0 && !channelEl.ajaxAvailable) {
         hideLoadMoreBtn(loadMoreBtn);
@@ -296,7 +296,7 @@ VuFind.register("channels", function Channels() {
     const template = document.getElementById("template-channels-quick-look");
     const content = template.content.cloneNode(true).children[0];
 
-    // set title
+    // Set title
     const titleLink = record.querySelector(".channel-item-title");
     const qlTitleEl = content.querySelector(".ql-title");
     if (titleLink.title) {
@@ -307,7 +307,7 @@ VuFind.register("channels", function Channels() {
       qlTitleEl.removeAttribute("title");
     }
 
-    // update View Record link
+    // Update View Record link
     content
       .querySelector(".ql-view-record-btn")
       .setAttribute("href", titleLink.getAttribute("href"));
