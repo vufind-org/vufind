@@ -421,13 +421,13 @@ VuFind.register("channels", function Channels() {
             const title = channelEl.querySelector("h2");
             const emptyWrapper = parser.parseFromString(
               `<div class="channel">
-              <div class="channel-title">
-                <h2>${title.innerHTML}</h2>
-              </div>
-              <div class="channel-content">
-                ${VuFind.translate("nohit_heading")}
-              </div>
-            </div>`,
+                <div class="channel-title">
+                  <h2>${title.innerHTML}</h2>
+                </div>
+                <div class="channel-content">
+                  ${VuFind.translate("nohit_heading")}
+                </div>
+              </div>`,
               "text/html"
             );
 
