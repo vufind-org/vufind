@@ -41,6 +41,8 @@ use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
+use function in_array;
+
 /**
  * Action helper for bulk actions.
  *
@@ -141,5 +143,39 @@ class BulkActionHelper implements HelperInterface
     public function getCartFollowupSession(): Container
     {
         return new \Laminas\Session\Container('cart_followup', $this->sessionManager);
+    }
+
+    /**
+     * Get selected ids.
+     *
+     * @param ServerRequestInterface $request Request
+     *
+     * @return array
+     */
+    public function getSelectedIds(ServerRequestInterface $request): array
+    {
+        // Values may be stored as a default state (checked_default), a list of IDs that do not
+        // match the default state (non_default_ids), and a list of all IDs (all_ids_global). If these
+        // values are found, we need to calculate the selected list from them.
+        $postParams = $request->getParsedBody();
+        $checkedDefault = isset($postParams['checked_default']);
+        $nonDefaultIds = $postParams['non_default_ids'] ?? null;
+        $allIdsGlobal = $postParams['all_ids_global'] ?? '[]';
+        if ($nonDefaultIds !== null) {
+            $nonDefaultIds = json_decode($nonDefaultIds);
+            return array_values(array_filter(
+                json_decode($allIdsGlobal),
+                function ($id) use ($checkedDefault, $nonDefaultIds) {
+                    $nonDefaultId = in_array($id, $nonDefaultIds);
+                    return $checkedDefault xor $nonDefaultId;
+                }
+            ));
+        }
+        // If we got this far, values were passed in a simpler format: a list of checked IDs (ids),
+        // a list of all IDs on the current page (idsAll), and whether the whole page is
+        // selected (selectAll):
+        return isset($postParams['selectAll'])
+            ? ($postParams['idsAll'] ?? [])
+            : ($postParams['ids'] ?? []);
     }
 }

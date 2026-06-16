@@ -33,7 +33,6 @@ namespace VuFind\Action\Cart;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
@@ -59,8 +58,6 @@ use function is_array;
  */
 class ExportAction extends AbstractCartAction
 {
-    use ListItemSelectionTrait;
-
     /**
      * Constructor.
      *
@@ -94,13 +91,13 @@ class ExportAction extends AbstractCartAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Get the desired ID list:
-        $ids = $this->getSelectedIds();
+        $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
+        $ids = $bulkActionHelper->getSelectedIds($request);
 
         // Get export tools:
         $export = $this->export;
 
         // Get id limit
-        $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
         $format = $this->getPostParam('format');
         $actionLimit = $format
             ? $bulkActionHelper->getExportActionLimit($format)
@@ -113,7 +110,7 @@ class ExportAction extends AbstractCartAction
         } elseif (count($ids) > $actionLimit) {
             $errorMsg = [
                 'msg' => 'bulk_limit_exceeded',
-                'translateTokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+                'tokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
             ];
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', $errorMsg)) {
                 return $redirect;

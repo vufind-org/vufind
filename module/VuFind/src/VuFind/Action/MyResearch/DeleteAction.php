@@ -34,7 +34,6 @@ namespace VuFind\Action\MyResearch;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
-use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
@@ -61,8 +60,6 @@ use function is_array;
  */
 class DeleteAction extends AbstractTemplateRenderingAction
 {
-    use ListItemSelectionTrait;
-
     /**
      * Constructor.
      *
@@ -107,9 +104,9 @@ class DeleteAction extends AbstractTemplateRenderingAction
             : $this->getUrlFromRoute('userList', ['id' => $listID]);
 
         // Fail if we have nothing to delete:
-        $ids = $this->getSelectedIds();
-
         $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
+        $ids = $bulkActionHelper->getSelectedIds($request);
+
         $actionLimit = $bulkActionHelper->getBulkActionLimit('delete');
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
@@ -118,7 +115,7 @@ class DeleteAction extends AbstractTemplateRenderingAction
         } elseif (count($ids) > $actionLimit) {
             $errorMsg = [
                 'msg' => 'bulk_limit_exceeded',
-                'translateTokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+                'tokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
             ];
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', $errorMsg)) {
                 return $redirect;

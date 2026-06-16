@@ -33,7 +33,6 @@ namespace VuFind\Action\Cart;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\Cart;
 use VuFind\Exception\BadConfig;
@@ -60,7 +59,6 @@ use function is_array;
  */
 class DoExportAction extends AbstractCartAction implements TranslatorAwareInterface
 {
-    use ListItemSelectionTrait;
     use TranslatorAwareTrait;
 
     /**

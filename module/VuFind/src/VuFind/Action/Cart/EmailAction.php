@@ -33,7 +33,6 @@ namespace VuFind\Action\Cart;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\EmailHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
@@ -68,7 +67,6 @@ use function is_array;
  */
 class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
 {
-    use ListItemSelectionTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -111,13 +109,13 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
         ResponseInterface $response,
     ): ResponseInterface {
         // Retrieve ID list:
-        $ids = $this->getSelectedIds();
+        $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
+        $ids = $bulkActionHelper->getSelectedIds($request);
 
         // Retrieve follow-up information if necessary:
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followupHelper->retrieveAndClear('cartIds') ?? [];
         }
-        $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
         $actionLimit = $bulkActionHelper->getBulkActionLimit('email');
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
@@ -127,7 +125,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
         } elseif (count($ids) > $actionLimit) {
             $errorMsg = [
                 'msg' => 'bulk_limit_exceeded',
-                'translateTokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+                'tokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
             ];
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', $errorMsg)) {
                 return $redirect;

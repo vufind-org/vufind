@@ -33,7 +33,6 @@ namespace VuFind\Action\Cart;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
@@ -52,7 +51,6 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  */
 class HomeAction extends AbstractCartAction implements TranslatorAwareInterface
 {
-    use ListItemSelectionTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -78,22 +76,21 @@ class HomeAction extends AbstractCartAction implements TranslatorAwareInterface
         $this->followupHelper->retrieveAndClear('cartAction');
         $this->followupHelper->retrieveAndClear('cartIds');
 
-        $ids = $this->getSelectedIds();
+        $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
+        $ids = $bulkActionHelper->getSelectedIds($request);
 
         // Add items if necessary:
         if ('' !== $this->getPostParam('empty', '')) {
             $this->cart->emptyCart();
         } elseif ('' !== $this->getPostParam('delete', '')) {
             if (empty($ids)) {
-                return $this->getHelper(BulkActionHelper::class)
-                    ->redirectToSource($request, $response, 'error', 'bulk_noitems_advice');
+                return $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice');
             } else {
                 $this->cart->removeItems($ids);
             }
         } elseif ('' !== $this->getPostParam('add', '')) {
             if (empty($ids)) {
-                return $this->getHelper(BulkActionHelper::class)
-                    ->redirectToSource($request, $response, 'error', 'bulk_noitems_advice');
+                return $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice');
             } else {
                 $addItems = $this->cart->addItems($ids);
                 if (!$addItems['success']) {

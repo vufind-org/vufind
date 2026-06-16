@@ -33,7 +33,6 @@ namespace VuFind\Action\Cart;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
@@ -68,7 +67,6 @@ use function is_array;
  */
 class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
 {
-    use ListItemSelectionTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -116,11 +114,11 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
 
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
-        $ids = $this->getSelectedIds();
+        $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
+        $ids = $bulkActionHelper->getSelectedIds($request);
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followupHelper->retrieveAndClear('cartIds') ?? [];
         }
-        $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
         $actionLimit = $bulkActionHelper->getBulkActionLimit('saveCart');
         if (!is_array($ids) || empty($ids)) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
@@ -130,7 +128,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
         } elseif (count($ids) > $actionLimit) {
             $errorMsg = [
                 'msg' => 'bulk_limit_exceeded',
-                'translateTokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+                'tokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
             ];
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', $errorMsg)) {
                 return $redirect;

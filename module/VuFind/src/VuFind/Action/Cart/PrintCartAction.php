@@ -33,7 +33,6 @@ namespace VuFind\Action\Cart;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\ListItemSelectionTrait;
 use VuFind\ActionHelper\BulkActionHelper;
 
 use function count;
@@ -51,8 +50,6 @@ use function is_array;
  */
 class PrintCartAction extends AbstractCartAction
 {
-    use ListItemSelectionTrait;
-
     /**
      * Print cart.
      *
@@ -66,9 +63,9 @@ class PrintCartAction extends AbstractCartAction
         ResponseInterface $response,
     ): ResponseInterface {
         // Retrieve ID list:
-        $ids = $this->getSelectedIds();
-
         $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
+        $ids = $bulkActionHelper->getSelectedIds($request);
+
         if (!is_array($ids) || empty($ids)) {
             return $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')
                 ?? $this->getRedirectResponse($response, $this->getUrlFromRoute('Cart/Home'));
@@ -79,7 +76,7 @@ class PrintCartAction extends AbstractCartAction
         if (count($ids) > $actionLimit) {
             $errorMsg = [
                 'msg' => 'bulk_limit_exceeded',
-                'translateTokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
+                'tokens' => ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
             ];
             return $bulkActionHelper->redirectToSource($request, $response, 'error', $errorMsg);
         }
