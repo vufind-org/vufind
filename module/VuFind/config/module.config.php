@@ -167,7 +167,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
             'VuFind\Controller\CombinedController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CoverController' => 'VuFind\Controller\CoverControllerFactory',
             'VuFind\Controller\EdsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -221,8 +220,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'Cart' => 'VuFind\Controller\CartController',
-            'cart' => 'VuFind\Controller\CartController',
             'Combined' => 'VuFind\Controller\CombinedController',
             'combined' => 'VuFind\Controller\CombinedController',
             'Cover' => 'VuFind\Controller\CoverController',

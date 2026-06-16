@@ -73,7 +73,6 @@ use VuFind\Session\Helper\FollowupHelper;
 use VuFind\Tags\TagsService;
 use VuFind\Validator\CsrfInterface;
 
-use function count;
 use function in_array;
 use function intval;
 use function is_array;
@@ -823,60 +822,6 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Delete group of records from favorites.
-     *
-     * @return mixed
-     */
-    public function deleteAction()
-    {
-        // Force login:
-        if (!($user = $this->getUser())) {
-            return $this->forceLogin();
-        }
-
-        // Get target URL for after deletion:
-        $listID = $this->params()->fromPost('listID');
-        $newUrl = empty($listID)
-            ? $this->url()->fromRoute('myresearch-favorites')
-            : $this->url()->fromRoute('userList', ['id' => $listID]);
-
-        // Fail if we have nothing to delete:
-        $ids = $this->getSelectedIds();
-
-        $actionLimit = $this->getBulkActionLimit('delete');
-        if (!is_array($ids) || empty($ids)) {
-            if ($redirect = $this->redirectToSource('error', 'bulk_noitems_advice')) {
-                return $redirect;
-            }
-        } elseif (count($ids) > $actionLimit) {
-            $errorMsg = $this->translate(
-                'bulk_limit_exceeded',
-                ['%%count%%' => count($ids), '%%limit%%' => $actionLimit],
-            );
-            if ($redirect = $this->redirectToSource('error', $errorMsg)) {
-                return $redirect;
-            }
-        } elseif ($this->formWasSubmitted()) {
-            $this->getService(FavoritesService::class)
-                ->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
-            $this->getFlashMessenger()->addSuccessMessage('fav_delete_success');
-            return $this->redirect()->toUrl($newUrl);
-        }
-
-        // If we got this far, the operation has not been confirmed yet; show
-        // the necessary dialog box:
-        $list = empty($listID)
-            ? false
-            : $this->getDbService(UserListServiceInterface::class)->getUserListById($listID);
-        return $this->createViewModel(
-            [
-                'list' => $list, 'deleteIDS' => $ids,
-                'records' => $this->getRecordLoader()->loadBatch($ids),
-            ]
-        );
-    }
-
-    /**
      * Delete record.
      *
      * @param string $id     ID of record to delete
@@ -1183,7 +1128,7 @@ class MyResearchController extends AbstractBase
             // send them back to the appropriate place in the cart.
             $bulkIds = $this->params()->fromPost('ids') ?? $this->params()->fromQuery('ids', []);
             if (!empty($bulkIds)) {
-                // Add final id of the list to request post so cartcontroller saveaction
+                // Add final id of the list to request post so Cart/Save action
                 // can properly load the list
                 $this->getRequest()->getPost()->set('list', $finalId);
                 return $this->forwardTo('Cart', 'Save');
