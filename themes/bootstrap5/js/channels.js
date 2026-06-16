@@ -176,14 +176,19 @@ VuFind.register("channels", function Channels() {
 
         // add new records (hidden)
         const targetList = channelEl.querySelector(".channel-list");
+        const channelID = targetList.closest(".channel").getAttribute("id");
         const index = channelEl.shownItems + channelEl.hiddenItems;
         for (let i = 0; i < records.length; i++) {
           const record = records[i];
 
-          // Append
+          // update information
+          record.id = `${channelID}-item-${String(index + i).padStart(3, "0")}`;
+          record.dataset.index = index + i;
+
+          // append
           targetList.append(record);
 
-          record.dataset.index = index + i;
+          // show
           record.classList.add("hidden-batch-item");
           record.classList.remove("hidden");
 
