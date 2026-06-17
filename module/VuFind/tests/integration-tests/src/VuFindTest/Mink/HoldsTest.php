@@ -850,6 +850,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             // Release the hold and change the pickup location
             $this->findCssAndSetValue($page, '#frozen', '0');
             $this->findCss($page, '#modal .btn.btn-primary')->click();
+            $this->waitForPageLoad($page);
 
             $this->assertSame(
                 0,
