@@ -368,9 +368,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'defaultDeniedActionBehavior' => 'message:Unavailable',
-                'defaultDeniedTemplateBehavior' => false,
+                'defaultDeniedTemplateBehavior' => '',
                 'controllerAccess' => [
-                    '*' => 'Default.foo',
+                    'VuFind\Controller\SearchController' => 'Default.search',
+                ],
+                'actionAccess' => [
+                    '*' => 'Default.all',
                 ],
             ],
             $results['permissionBehavior']['global']
@@ -383,8 +386,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertSame(
             [
-                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini, but VuFind no'
-                . ' longer supports it. You should replace any controllerAccess setting with a corresponding'
+                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini that VuFind no'
+                . ' longer supports. You should replace any controllerAccess setting with a corresponding'
                 . ' actionAccess setting.',
             ],
             $upgrader->getWarnings()

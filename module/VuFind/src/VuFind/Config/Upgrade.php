@@ -1208,10 +1208,15 @@ class Upgrade implements LoggerAwareInterface
             }
         }
 
+        if (isset($newConfig['global']['controllerAccess']['*'])) {
+            $newConfig['global']['actionAccess']['*'] = $newConfig['global']['controllerAccess']['*'];
+            unset($newConfig['global']['controllerAccess']['*']);
+        }
+
         if (isset($newConfig['global']['controllerAccess'])) {
             $this->addWarning(
-                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini, but VuFind no'
-                . ' longer supports it. You should replace any controllerAccess setting with a corresponding'
+                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini that VuFind no'
+                . ' longer supports. You should replace any controllerAccess setting with a corresponding'
                 . ' actionAccess setting.'
             );
         }

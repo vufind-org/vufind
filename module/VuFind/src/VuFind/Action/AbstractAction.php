@@ -372,13 +372,6 @@ abstract class AbstractAction implements ActionInterface
         // configured default; thus, we should apply the default value:
         if (null === $this->accessPermission) {
             $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
-            // Bail out if legacy controllerAcccess setting is defined:
-            if (isset($permissionBehaviorConfig['global']['controllerAccess'])) {
-                throw new ConfigException(
-                    'permissionBehavior.ini must not contain the legacy controllerAccess setting'
-                );
-            }
-
             $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
             if ($actionPermissions) {
                 // Iterate through parent classes until we find the most specific class access permission defined
