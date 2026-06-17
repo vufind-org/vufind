@@ -1,6 +1,8 @@
 <?php
-  $view = $currentSearch['view'];
-  $results = $view->results;
+  // Initialize theme resources:
+  $this->setupThemeResources();
+  $templateParams = $this->currentSearch['templateParams'];
+  $results = $templateParams['results'];
   $params = $results->getParams();
   $lookfor = $results->getUrlQuery()->isQuerySuppressed() ? '' : $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
@@ -9,7 +11,7 @@
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
 
   // Advanced search link
-  $advancedSearchAction = ($currentSearch['advanced_link_bottom'] ?? false)
+  $advancedSearchAction = ($this->currentSearch['advanced_link_bottom'] ?? false)
     ? $params->getOptions()->getAdvancedSearchAction() : null;
   $advancedSearchUrl = $advancedSearchAction
     ? $this->url($advancedSearchAction, [], ['query' => ['sid' => $results->getSearchId()]])
@@ -44,7 +46,7 @@
   };
 
   // Update result counts (and, if necessary, href attributes) in jump links
-  $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
+  $classId = $this->escapeHtml($domId ?? 'combined_' . $this->searchClassId);
   $jsMoreUrl = $this->escapeJs(html_entity_decode($moreUrl));
   $countsJs = <<<JS
       function updateJumpLink_$classId() {
@@ -75,24 +77,25 @@
       }
       JS;
 ?>
+<?=$this->headLink()?>
 <?=$this->assetManager()->outputInlineScriptString($countsJs)?>
 
-<?php if ($currentSearch['more_link'] ?? false): ?>
+<?php if ($this->currentSearch['more_link'] ?? false): ?>
   <div class="float-end">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
       <?=$this->icon('options', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('More options')?></span>
     </a>
   </div>
-  <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['label'])?></a></h2>
+  <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($this->currentSearch['label'])?></a></h2>
 <?php else: ?>
-  <h2><?=$this->transEsc($currentSearch['label'])?></h2>
+  <h2><?=$this->transEsc($this->currentSearch['label'])?></h2>
 <?php endif; ?>
-<?php if (isset($currentSearch['sublabel'])): ?>
-  <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
+<?php if (isset($this->currentSearch['sublabel'])): ?>
+  <p><i><?=$this->transEsc($this->currentSearch['sublabel'])?></i></p>
 <?php endif; ?>
 
-<?php $permission = $currentSearch['permission'] ?? null ?>
+<?php $permission = $this->currentSearch['permission'] ?? null ?>
 <?php if (isset($permission) && !$this->permission()->allowDisplay($permission)): ?>
   <?php if ($block = $this->permission()->getAlternateContent($permission)): ?>
     <?=$block?>
@@ -140,7 +143,7 @@
   <p class="alert alert-danger">
     <?=$this->slot('empty-message')->get($this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)])); ?>
   </p>
-  <?php if (isset($view->parseError)): ?>
+  <?php if (isset($templateParams['parseError'])): ?>
     <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
   <?php endif; ?>
   <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
@@ -168,17 +171,17 @@
       ? 'list' : $params->getView();
     $viewParams = [
       'results' => $results,
-      'request' => $view->request,
+      'request' => $templateParams['request'],
       'params' => $params,
       'excludeResultIds' => true, // Don't add id attributes to results to avoid duplicates
       'combined' => true, // Flag that we're in combined mode; may be useful to customize template behavior
     ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  <?php if ($currentSearch['more_link'] ?? false): ?>
+  <?php if ($this->currentSearch['more_link'] ?? false): ?>
     <p class="more_link_bottom">
       <a class="icon-link" href="<?=$moreUrl?>">
-        <span class="icon-link__label"><?=$this->transEsc($currentSearch['more_link'])?></span>
+        <span class="icon-link__label"><?=$this->transEsc($this->currentSearch['more_link'])?></span>
         <?=$this->icon('more', 'icon-link__icon') ?>
       </a>
     </p>
@@ -186,7 +189,7 @@
   <?php if ($advancedSearchUrl): ?>
     <p class="advanced_link_bottom">
       <a class="icon-link" href="<?=$advancedSearchUrl?>">
-        <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link_bottom'])?></span>
+        <span class="icon-link__label"><?=$this->transEsc($this->currentSearch['advanced_link_bottom'])?></span>
         <?=$this->icon('more', 'icon-link__icon') ?>
       </a>
     </p>

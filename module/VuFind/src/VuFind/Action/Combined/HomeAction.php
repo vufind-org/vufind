@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Tag home action.
+ * Combined search home action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2026.
+ * Copyright (C) The National Library of Finland 2024-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,16 +29,13 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Action\Tag;
+namespace VuFind\Action\Combined;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Action\Search\AbstractSearchAndResultsAction;
-use VuFind\ActionHelper\UserContentHelper;
-use VuFind\Exception\Forbidden as ForbiddenException;
 
 /**
- * Tag home action.
+ * Combined search home action.
  *
  * @category VuFind
  * @package  Action
@@ -47,10 +44,10 @@ use VuFind\Exception\Forbidden as ForbiddenException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HomeAction extends AbstractSearchAndResultsAction
+class HomeAction extends AbstractCombinedSearchAndResultsAction
 {
     /**
-     * Display tag list.
+     * Display home page.
      *
      * @param ServerRequestInterface $request  Server request
      * @param ResponseInterface      $response Response
@@ -61,21 +58,13 @@ class HomeAction extends AbstractSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $userContentHelper = $this->getHelper(UserContentHelper::class);
-        if (!$userContentHelper->tagsEnabled()) {
-            throw new ForbiddenException('Tags disabled');
-        }
-        return $this->renderSearchResults($request, $response);
-    }
-
-    /**
-     * Initialize the action.
-     *
-     * @return void
-     */
-    protected function init(): void
-    {
-        parent::init();
-        $this->searchClassId = 'Tags';
+        // We need to load blocks differently in this action since it doesn't follow the usual configuration pattern
+        // (the search class ID is "Combined" but the config name is "combined").
+        $blocks = $this->blockLoader->getFromConfig('combined');
+        return $this->renderTemplate(
+            $this->request,
+            $this->response,
+            $this->createTemplateParams(compact('blocks'))
+        );
     }
 }
