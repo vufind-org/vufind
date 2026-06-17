@@ -103,7 +103,7 @@
 <div class="clearfix">
   <div class="float-start help-block">
     <?php if ($recordTotal > 0): ?>
-      <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
+      <?php foreach (($results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
       <?php foreach (($results->getRecommendations('side')) as $current):
@@ -143,16 +143,18 @@
   <?php if (isset($view->parseError)): ?>
     <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
   <?php endif; ?>
-  <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
+  <?php
+    $recommendations = array_unique(array_merge(
+      $results->getRecommendations('top'),
+      $results->getRecommendations('noresults'),
+      $results->getRecommendations('bottom')
+    ));
+  ?>
+  <?php foreach ($recommendations as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
-  <?php foreach ($results->getRecommendations('noresults') as $current): ?>
-    <?php if (!in_array($current, $top)): ?>
-      <?=$this->recommend($current)?>
-    <?php endif; ?>
-  <?php endforeach; ?>
   <?php foreach ($results->getRecommendations('noresults_side') as $current): ?>
-    <?php if (!in_array($current, $top)):
+    <?php if (!in_array($current, $recommendations)):
       $recommendationClass = str_replace('\\', '_', $current::class);
       $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
       ?>
@@ -191,4 +193,7 @@
       </a>
     </p>
   <?php endif; ?>
+  <?php foreach (($results->getRecommendations('bottom')) as $current): ?>
+    <?=$this->recommend($current)?>
+  <?php endforeach; ?>
 <?php endif; ?>

@@ -85,6 +85,9 @@
         <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
         <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $results]])?>
       </form>
+      <?php foreach ($results->getRecommendations('bottom') as $current): ?>
+        <?=$this->recommend($current)?>
+      <?php endforeach; ?>
     <?php else: ?>
       <h4><?=$this->transEsc($params->getDisplayQuery() || ($filterCount ?? 0) > 0 ? 'nohit_heading' : 'collection_empty')?></h4>
       <div class="clearfix">

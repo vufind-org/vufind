@@ -95,18 +95,23 @@
         $emptyMessage = $this->slot('empty-message')->get($default);
         $this->layout()->srmessage = $emptyMessage;
         echo $emptyMessage;
+        $topRecommendations = $this->results->getRecommendations('top');
+        $bottomRecommendations = $this->results->getRecommendations('bottom');
       ?>
     </p>
     <?php if (isset($this->parseError)): ?>
       <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
     <?php endif; ?>
-    <?php foreach (($top = $this->results->getRecommendations('top')) as $index => $current): ?>
+    <?php foreach ($topRecommendations as $index => $current): ?>
       <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
     <?php foreach ($this->results->getRecommendations('noresults') as $index => $current): ?>
-      <?php if (!in_array($current, $top)): ?>
+      <?php if (!in_array($current, $topRecommendations) && !in_array($current, $bottomRecommendations)): ?>
         <?=$this->recommend($current, 'noresults', $index)?>
       <?php endif; ?>
+    <?php endforeach; ?>
+    <?php foreach ($bottomRecommendations as $index => $current): ?>
+      <?=$this->recommend($current, 'bottom', $index)?>
     <?php endforeach; ?>
   <?php else: ?>
     <?php if ($this->results->getOptions()->getTopPaginatorStyle() === 'full'): ?>
@@ -119,6 +124,9 @@
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['isBottom' => true, 'formAttr' => 'search-cart-form'])?>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination.phtml', ['params' => ['results' => $this->results], 'options' => $this->paginationOptions ?? []])?>
     <?=$this->context($this)->renderInContext('search/controls/results-tools.phtml', ['results' => $this->results])?>
+    <?php foreach ($this->results->getRecommendations('bottom') as $index => $current): ?>
+      <?=$this->recommend($current, 'bottom', $index)?>
+    <?php endforeach; ?>
   <?php endif; ?>
 </div>
 <?php /* End Main Listing */ ?>
