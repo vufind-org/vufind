@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Eds Controller.
+ * EDS advanced search action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,80 +22,67 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Eds;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Search\Base\Results;
 use VuFind\Solr\Utils as SolrUtils;
 
 use function array_key_exists;
 use function in_array;
 
 /**
- * EDS Controller.
+ * EDS advanced search action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class EdsController extends AbstractSearch
+class AdvancedAction extends AbstractEdsSearchAndResultsAction
 {
     /**
-     * Constructor.
+     * Display advanced search page.
      *
-     * @param ServiceLocatorInterface $sm Service locator
-     */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'EDS';
-        $this->accessPermission = 'access.EDSModule';
-        parent::__construct($sm);
-    }
-
-    /**
-     * Handle an advanced search.
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
      *
-     * @return mixed
+     * @return ResponseInterface
      */
-    public function advancedAction()
-    {
-        // Standard setup from base class:
-        $view = parent::advancedAction();
-        // Set up facet information:
-        $view->limiterList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets(),
-            $view->saved
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        $templateParams = [];
+        return $this->renderAdvancedSearch(
+            fn (array $templateParams): array => $templateParams + [
+                'limiterList' => $this->processAdvancedFacets(
+                    $this->getAdvancedFacets(),
+                    $templateParams['saved']
+                ),
+                'expanderList' => $this->processAdvancedExpanders($templateParams['saved']),
+                'searchModes' => $this->processAdvancedSearchModes($templateParams['saved']),
+                'dateRangeLimit' => $this->processPublicationDateRange($templateParams['saved']),
+            ]
         );
-        $view->expanderList = $this->processAdvancedExpanders($view->saved);
-        $view->searchModes = $this->processAdvancedSearchModes($view->saved);
-        $view->dateRangeLimit = $this->processPublicationDateRange($view->saved);
-        return $view;
     }
 
     /**
-     * Search action -- call standard results action.
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        return $this->resultsAction();
-    }
-
-    /**
-     * Return a Search Results object containing advanced facet information. This
-     * data may come from the cache.
+     * Return an array containing advanced facet information. This data may come from the cache.
      *
      * @return array
      */
-    protected function getAdvancedFacets()
+    protected function getAdvancedFacets(): array
     {
         // VuFind facets are what the EDS API calls limiters. Available limiters
         // are returned with a call to the EDS API Info method and are cached.
@@ -103,21 +91,20 @@ class EdsController extends AbstractSearch
 
         // Check if we have facet results stored in session. Build them if we don't.
         // pull them from the session cache
-        $results = $this->getResultsManager()->get('EDS');
-        $params = $results->getParams();
-        $options = $params->getOptions();
+        $results = $this->resultsPluginManager->get('EDS');
+        $options = $results->getOptions();
         return $options->getAdvancedLimiters();
     }
 
     /**
      * Process the facets to be used as limits on the Advanced Search screen.
      *
-     * @param array  $facetList    The advanced facet values
-     * @param object $searchObject Saved search object (false if none)
+     * @param array         $facetList    The advanced facet values
+     * @param Results|false $searchObject Saved search object (false if none)
      *
-     * @return array               Sorted facets, with selected values flagged.
+     * @return array Sorted facets, with selected values flagged.
      */
-    protected function processAdvancedFacets($facetList, $searchObject = false)
+    protected function processAdvancedFacets(array $facetList, Results|false $searchObject = false): array
     {
         // Process the facets, assuming they came back
         foreach ($facetList as $facet => $list) {
@@ -159,15 +146,14 @@ class EdsController extends AbstractSearch
     /**
      * Process the expanders to be used on the Advanced Search screen.
      *
-     * @param object $searchObject Saved search object (false if none)
+     * @param Results|false $searchObject Saved search object (false if none)
      *
-     * @return array               Sorted facets, with selected values flagged.
+     * @return array Sorted facets, with selected values flagged.
      */
-    protected function processAdvancedExpanders($searchObject = false)
+    protected function processAdvancedExpanders(Results|false $searchObject = false): array
     {
-        $results = $this->getResultsManager()->get('EDS');
-        $params = $results->getParams();
-        $options = $params->getOptions();
+        $results = $this->resultsPluginManager->get('EDS');
+        $options = $results->getOptions();
         $availableExpanders = $options->getAvailableExpanders();
         $defaultExpanders = $options->getDefaultExpanders();
         // Process the expanders, assuming they came back
@@ -192,44 +178,16 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Process the publication date range limiter widget.
-     *
-     * @param object $searchObject Saved search object (false if none)
-     *
-     * @return array               To and from dates
-     */
-    protected function processPublicationDateRange($searchObject = false)
-    {
-        $from = $to = '';
-        if ($searchObject) {
-            $filters = $searchObject->getParams()->getFilterList();
-            foreach ($filters as $key => $value) {
-                if ('PublicationDate' == $key) {
-                    if ($range = SolrUtils::parseRange($value[0]['value'])) {
-                        $from = $range['from'] == '*' ? '11' : $range['from'];
-                        $to = $range['to'] == '*' ? '12' : $range['to'];
-                    }
-                    $searchObject->getParams()
-                        ->removeFilter($key . ':' . $value[0]['value']);
-                    break;
-                }
-            }
-        }
-        return [$from, $to];
-    }
-
-    /**
      * Process the search modes to be used on the Advanced Search screen.
      *
-     * @param object $searchObject Saved search object (false if none)
+     * @param Results|false $searchObject Saved search object (false if none)
      *
-     * @return array               search modes with selected values flagged.
+     * @return array Search modes with selected values flagged.
      */
-    protected function processAdvancedSearchModes($searchObject = false)
+    protected function processAdvancedSearchModes(Results|false $searchObject = false): array
     {
-        $results = $this->getResultsManager()->get('EDS');
-        $params = $results->getParams();
-        $options = $params->getOptions();
+        $results = $this->resultsPluginManager->get('EDS');
+        $options = $results->getOptions();
         $searchModes = $options->getModeOptions();
         $useDefault = true;
         // Process the facets, assuming they came back
@@ -255,5 +213,32 @@ class EdsController extends AbstractSearch
         }
 
         return $searchModes;
+    }
+
+    /**
+     * Process the publication date range limiter widget.
+     *
+     * @param Results|false $searchObject Saved search object (false if none)
+     *
+     * @return array To and from dates
+     */
+    protected function processPublicationDateRange(Results|false $searchObject = false)
+    {
+        $from = $to = '';
+        if ($searchObject) {
+            $filters = $searchObject->getParams()->getFilterList();
+            foreach ($filters as $key => $value) {
+                if ('PublicationDate' == $key) {
+                    if ($range = SolrUtils::parseRange($value[0]['value'])) {
+                        $from = $range['from'] == '*' ? '11' : $range['from'];
+                        $to = $range['to'] == '*' ? '12' : $range['to'];
+                    }
+                    $searchObject->getParams()
+                        ->removeFilter($key . ':' . $value[0]['value']);
+                    break;
+                }
+            }
+        }
+        return [$from, $to];
     }
 }
