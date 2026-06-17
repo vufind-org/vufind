@@ -34,6 +34,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
 use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
+use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -57,12 +58,14 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      * @param ResultsManager          $resultsManager Results manager
      * @param Config                  $config         Top-level VuFind configuration (config.ini)
      * @param SessionServiceInterface $sessionService Session database service
+     * @param Connection              $ils            ILS connection
      */
     public function __construct(
         protected SessionManager $sessionManager,
         protected ResultsManager $resultsManager,
         protected Config $config,
-        protected SessionServiceInterface $sessionService
+        protected SessionServiceInterface $sessionService,
+        protected Connection $ils
     ) {
     }
 
@@ -106,6 +109,20 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             }
         }
 
+        // Test EDS connection
+        if ($params->fromPost('eds') ?? $params->fromQuery('eds', 0)) {
+            try {
+                $results = $this->resultsManager->get('EDS');
+                $results->getParams()->setBasicSearch('*');
+                $results->performAndProcessSearch();
+            } catch (\Exception $e) {
+                return $this->formatResponse(
+                    'EDS connection error: ' . $e->getMessage(),
+                    self::STATUS_HTTP_ERROR
+                );
+            }
+        }
+
         // Test database connection
         if ($params->fromPost('database') ?? $params->fromQuery('database', 1)) {
             try {
@@ -113,6 +130,20 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             } catch (\Exception $e) {
                 return $this->formatResponse(
                     'Database error: ' . $e->getMessage(),
+                    self::STATUS_HTTP_ERROR
+                );
+            }
+        }
+
+        // Test ILS connection
+        if ($params->fromPost('ils') ?? $params->fromQuery('ils', 0)) {
+            try {
+                if ($this->ils->getOfflineMode(true) == 'ils-offline') {
+                    throw new \Exception('ILS offline');
+                }
+            } catch (\Exception $e) {
+                return $this->formatResponse(
+                    'ILS connection error: ' . $e->getMessage(),
                     self::STATUS_HTTP_ERROR
                 );
             }
