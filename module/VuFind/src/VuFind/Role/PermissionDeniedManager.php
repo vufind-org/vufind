@@ -92,7 +92,7 @@ class PermissionDeniedManager
             }
         }
 
-        // if the config contains a defaultDeniedActionBehavior setting, apply it:        ;
+        // if the config contains a defaultDeniedActionBehavior setting, apply it:
         if (null !== ($defaultDeniedActionBehavior = $config['global']['defaultDeniedActionBehavior'] ?? null)) {
             $this->defaultDeniedActionBehavior = $defaultDeniedActionBehavior;
         }
