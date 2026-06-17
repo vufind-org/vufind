@@ -163,9 +163,11 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     /**
      * Render advanced search page.
      *
+     * @param ?callable $setupCallback Optional callback for setting up additional template parameters
+     *
      * @return ResponseInterface
      */
-    protected function renderAdvancedSearch(): ResponseInterface
+    protected function renderAdvancedSearch(?callable $setupCallback = null): ResponseInterface
     {
         $templateParams = $this->createTemplateParams(
             [
@@ -192,6 +194,10 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             $templateParams['saved']->getParams()->initFromRequest(
                 new \Laminas\Stdlib\Parameters([])
             );
+        }
+
+        if ($setupCallback) {
+            $templateParams = $setupCallback($templateParams);
         }
 
         return $this->renderTemplate($this->request, $this->response, $templateParams);
