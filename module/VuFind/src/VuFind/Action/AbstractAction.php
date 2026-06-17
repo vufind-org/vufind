@@ -37,6 +37,7 @@ use VuFind\ActionHelper\HelperInterface;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -87,7 +88,7 @@ abstract class AbstractAction implements ActionInterface
     protected ?SessionSettings $sessionSettings = null;
 
     /**
-     * Permission that must be granted to access this module (false for no restriction, null to use configured default
+     * Permission that must be granted to access this action (false for no restriction, null to use configured default
      * (which is usually the same as false)).
      *
      * @var string|bool|null
@@ -96,7 +97,7 @@ abstract class AbstractAction implements ActionInterface
 
     /**
      * Behavior when access is denied (used unless overridden through permissionBehavior.ini). Valid values are
-     * 'promptLogin' and 'exception'. Leave at null to use the defaultDeniedControllerBehavior set in
+     * 'promptLogin' and 'exception'. Leave at null to use the defaultDeniedActionBehavior set in
      * permissionBehavior.ini (normally 'promptLogin' unless changed).
      *
      * @var ?string
@@ -165,6 +166,9 @@ abstract class AbstractAction implements ActionInterface
         $this->request = $request;
         $this->response = $response;
         try {
+            if ($accessDeniedResponse = $this->validateAccessPermission()) {
+                return $accessDeniedResponse;
+            }
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
@@ -364,8 +368,47 @@ abstract class AbstractAction implements ActionInterface
      */
     public function validateAccessPermission(): ?ResponseInterface
     {
-        // If there is an access permission set for this action, pass it through the permission helper, and if the
-        // helper returns a custom response, use that instead of the normal behavior.
+        // If the current permission is null (as opposed to false or a string), that means it has no internally
+        // configured default; thus, we should apply the default value:
+        if (null === $this->accessPermission) {
+            $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
+            // Bail out if legacy controllerAcccess setting is defined:
+            if (isset($permissionBehaviorConfig['global']['controllerAccess'])) {
+                throw new ConfigException(
+                    'permissionBehavior.ini must not contain the legacy controllerAccess setting'
+                );
+            }
+
+            $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
+            if ($actionPermissions) {
+                // Iterate through parent classes until we find the most specific class access permission defined
+                // (if any):
+                $class = static::class;
+                $categoryPermission = null;
+                do {
+                    if (null !== ($classPermission = $actionPermissions[$class] ?? null)) {
+                        $this->accessPermission = $classPermission;
+                        break;
+                    }
+
+                    // Check for action category specific configuration:
+                    if (null === $categoryPermission) {
+                        $categoryName = preg_replace('/\\\\Action\\\\(.+?)\\\\.*/', '\\Action\\\$1', $class);
+                        $categoryPermission = $actionPermissions[$categoryName] ?? null;
+                    }
+
+                    $class = get_parent_class($class);
+                } while ($class);
+
+                $this->accessPermission ??= $categoryPermission;
+            }
+
+            // Check for a default permission if a more specific permission was not found above:
+            $this->accessPermission ??= $actionPermissions['*'] ?? null;
+        }
+
+        // If there is an access permission set for this action, pass it through to the permission helper and return the
+        // response:
         if ($this->accessPermission) {
             return $this->getHelper(PermissionHelper::class)
                 ->check($this->request, $this->response, $this->accessPermission, $this->accessDeniedBehavior);

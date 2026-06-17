@@ -46,23 +46,22 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
-     * Test that a default permission can be applied to all controllers and
-     * configured to display a custom error message.
+     * Test that a default permission can be applied to all actions and configured to display a custom error message.
      *
      * @return void
      */
-    public function testDefaultControllerPermissionWithCustomErrorMessage(): void
+    public function testDefaultActionPermissionWithCustomErrorMessage(): void
     {
         $this->changeConfigs(
             [
                 'permissionBehavior' => [
                     'global' => [
-                        'controllerAccess' => [
+                        'actionAccess' => [
                             '*' => 'access.VuFindInterface',
                         ],
                     ],
                     'access.VuFindInterface' => [
-                        'deniedControllerBehavior' => 'showMessage:test-error-message',
+                        'deniedActionBehavior' => 'showMessage:test-error-message',
                     ],
                 ],
                 'permissions' => [

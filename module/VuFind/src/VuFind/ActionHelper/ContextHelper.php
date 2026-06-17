@@ -30,6 +30,8 @@
 namespace VuFind\ActionHelper;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\Session\Helper\FollowupHelper;
 
 /**
  * Action helper for context information.
@@ -42,6 +44,17 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ContextHelper implements HelperInterface
 {
+    /**
+     * Constructor.
+     *
+     * @param FollowupHelper $followupHelper Followup helper
+     */
+    #[Autowire()]
+    public function __construct(
+        protected FollowupHelper $followupHelper,
+    ) {
+    }
+
     /**
      * Are we currently in a lightbox context?
      *
