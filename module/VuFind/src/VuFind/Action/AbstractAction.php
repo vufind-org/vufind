@@ -37,7 +37,6 @@ use VuFind\ActionHelper\HelperInterface;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Session\Settings as SessionSettings;
 
