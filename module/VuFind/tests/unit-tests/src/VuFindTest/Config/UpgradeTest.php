@@ -371,6 +371,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 'defaultDeniedTemplateBehavior' => '',
                 'controllerAccess' => [
                     'VuFind\Controller\SearchController' => 'Default.search',
+                    '*' => 'Default.all',
                 ],
                 'actionAccess' => [
                     '*' => 'Default.all',
