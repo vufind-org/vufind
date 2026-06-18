@@ -80,8 +80,7 @@ class SolrQdcTest extends \PHPUnit\Framework\TestCase
             'sv',
             ['en-gb', 'fi'],
             [
-                'Abstract in English.',
-                'Another abstract in English.',
+                'Abstract in British English.',
             ],
         ];
 
@@ -115,6 +114,7 @@ class SolrQdcTest extends \PHPUnit\Framework\TestCase
                 'Abstrakti suomeksi.',
                 'Abstract in English.',
                 'Another abstract in English.',
+                'Abstract in British English.',
             ],
         ];
     }
