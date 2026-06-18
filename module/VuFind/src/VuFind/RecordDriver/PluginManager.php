@@ -67,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'solrmarc' => SolrMarc::class,
         'solrmarcremote' => SolrMarcRemote::class,
         'solroverdrive' => SolrOverdrive::class,
+        'solrqdc' => SolrQdc::class,
         'solrreserves' => SolrReserves::class,
         'solrweb' => SolrWeb::class,
         'summon' => Summon::class,
