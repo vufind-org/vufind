@@ -36,6 +36,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Cart;
 use VuFind\Export;
 use VuFind\Record\Loader as RecordLoader;
@@ -118,7 +119,7 @@ class ExportAction extends AbstractCartAction
         } elseif ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
             $url = $export->getBulkUrl($format, $ids);
             if ($export->needsRedirect($format)) {
-                return $this->getRedirectResponse($response, $url);
+                return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $url);
             }
             $exportType = $export->getBulkExportType($format);
             $params = [

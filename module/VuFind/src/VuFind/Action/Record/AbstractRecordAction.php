@@ -35,6 +35,7 @@ use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\LoginHelper;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -356,7 +357,10 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     protected function redirectToRecord(string $params = '', ?string $tab = null): ResponseInterface
     {
         $details = $this->recordRouter->getTabRouteDetails($this->loadRecord(), $tab);
-        $target = $this->getUrlFromRoute($details['route'], $details['params']);
-        return $this->getRedirectResponse($this->response, $target . $params);
+        return $this->getHelper(RedirectHelper::class)->redirectToRoute(
+            $this->response,
+            $details['route'],
+            $details['params']
+        );
     }
 }
