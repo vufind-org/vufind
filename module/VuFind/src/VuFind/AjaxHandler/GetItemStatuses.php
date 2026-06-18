@@ -473,7 +473,7 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Sort statuses according to given config (by default it come from config.ini)
      *
-     * @param array[] $holdings The holdings to sort
+     * @param array[] $holdings      The holdings to sort
      * @param array[] $sortingFields Config on how to sort the fields (first values are prioritized for sorting)
      *
      * @return void
