@@ -357,10 +357,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     protected function redirectToRecord(string $params = '', ?string $tab = null): ResponseInterface
     {
         $details = $this->recordRouter->getTabRouteDetails($this->loadRecord(), $tab);
-        return $this->getHelper(RedirectHelper::class)->redirectToRoute(
-            $this->response,
-            $details['route'],
-            $details['params']
-        );
+        $target = $this->getRouteHelper()->getUrlFromRoute($details['route'], $details['params']);
+        return $this->getHelper(RedirectHelper::class)->redirectToUrl($this->response, $target . $params);
     }
 }
