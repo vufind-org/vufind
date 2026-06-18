@@ -448,7 +448,12 @@ function applyRecordTabHash(scrollToTabs) {
   const activeLi = recordTabs.querySelector('li.active');
   const activeTab = activeLi ? activeLi.dataset.tab : undefined;
   const initiallyActiveTab = recordTabs.querySelector('li.initiallyActive a');
-  const newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase().substring(1) : '';
+  let newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase().substring(1) : '';
+  const prefix = 'record-tab-';
+
+  if (newTab.startsWith(prefix)) {
+    newTab = newTab.replace(prefix, '');
+  }
 
   // Open tab in url hash
   if (initiallyActiveTab && (newTab === '' || newTab === 'tabnav')) {
