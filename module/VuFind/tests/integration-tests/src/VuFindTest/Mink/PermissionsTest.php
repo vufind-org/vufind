@@ -56,7 +56,7 @@ final class PermissionsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'permissionBehavior' => [
                     'global' => [
-                        'actionAccess' => [
+                        'controllerAccess' => [
                             '*' => 'access.VuFindInterface',
                         ],
                     ],
