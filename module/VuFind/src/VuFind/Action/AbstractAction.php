@@ -37,6 +37,7 @@ use VuFind\ActionHelper\HelperInterface;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
 use VuFind\ActionHelper\RedirectHelper;
+use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -371,6 +372,19 @@ abstract class AbstractAction implements ActionInterface
         // configured default; thus, we should apply the default value:
         if (null === $this->accessPermission) {
             $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
+            // If controllerAccess is defined, make sure it's not configured for a controller that no longer exists:
+            if ($controllerAccess = $permissionBehaviorConfig['global']['controllerAccess'] ?? null) {
+                foreach (array_keys($controllerAccess) as $controller) {
+                    // TODO: remove the class_exists check when controllers are no longer supported.
+                    if (!class_exists($controller)) {
+                        throw new ConfigException(
+                            "permissionBehavior configuration defines controllerAccess for controller '$controller'"
+                            . ' that does not exist. Please review configuration and replace controllerAccess with'
+                            . ' actionAccess where appropriate.'
+                        );
+                    }
+                }
+            }
             $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
             if ($actionPermissions) {
                 // Iterate through parent classes until we find the most specific class access permission defined
