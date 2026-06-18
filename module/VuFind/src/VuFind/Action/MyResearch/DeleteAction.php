@@ -35,6 +35,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
 use VuFind\ActionHelper\BulkActionHelper;
+use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
@@ -44,7 +45,6 @@ use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\FlashMessenger\FlashMessenger;
 
 use function count;
 use function is_array;
@@ -66,14 +66,12 @@ class DeleteAction extends AbstractTemplateRenderingAction
      *
      * @param AuthManager              $authManager      Authentication manager
      * @param FavoritesService         $favoritesService Favorites service
-     * @param FlashMessenger           $flashMessenger   Flash messages
      * @param UserListServiceInterface $userListService  User list database service
      * @param RecordLoader             $recordLoader     Record loader
      */
     public function __construct(
         protected AuthManager $authManager,
         protected FavoritesService $favoritesService,
-        protected FlashMessenger $flashMessenger,
         #[Autowire(container: DbServicePluginManager::class)]
         protected UserListServiceInterface $userListService,
         protected RecordLoader $recordLoader,
@@ -120,7 +118,7 @@ class DeleteAction extends AbstractTemplateRenderingAction
             }
         } elseif ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
             $this->favoritesService->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
-            $this->flashMessenger->addSuccessMessage('fav_delete_success');
+            $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('fav_delete_success');
             $redirectHelper = $this->getHelper(RedirectHelper::class);
             return $listID
                 ? $redirectHelper->redirectToRoute($response, 'userList', ['id' => $listID])

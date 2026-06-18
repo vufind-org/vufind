@@ -38,6 +38,7 @@ use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
@@ -58,7 +59,6 @@ use VuFind\Search\SearchNormalizer;
 use VuFind\Search\SearchRunner;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Solr\Utils as SolrUtils;
-use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\ResultFeed;
 use VuFindTheme\ThemeInfo;
 
@@ -110,7 +110,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param RecommendPluginManager     $recommendPluginManager     Recommendation plugin manager
      * @param SearchMemory               $searchMemory               Search memoy
      * @param BlockLoader                $blockLoader                Content block loader
-     * @param FlashMessenger             $flashMessenger             Flash messenger
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
      * @param SessionManager             $sessionManager             Session manager
@@ -129,7 +128,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         protected RecommendPluginManager $recommendPluginManager,
         protected SearchMemory $searchMemory,
         protected BlockLoader $blockLoader,
-        protected FlashMessenger $flashMessenger,
         protected ConfigManager $configManager,
         protected RecordRouter $recordRouter,
         protected SessionManager $sessionManager,
@@ -316,7 +314,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         } else {
             foreach ($results->getErrors() as $error) {
                 try {
-                    $this->flashMessenger->addErrorMessage($error);
+                    $this->getHelper(FlashMessagesHelper::class)->addErrorMessage($error);
                 } catch (\Exception $e) {
                     // The flash messenger will throw an exception if session writes are disabled,
                     // which will happen in combined search AJAX requests. For that situation, we'll
@@ -570,7 +568,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             throw new \Exception('Unrecoverable deep paging error.');
         }
         $request['page'] = $page;
-        $this->flashMessenger->addErrorMessage(
+        $this->getHelper(FlashMessagesHelper::class)->addErrorMessage(
             [
                 'msg' => 'deep_paging_failure',
                 'tokens' => ['%%page%%' => $page],
@@ -747,7 +745,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger->addErrorMessage('advSearchError_notFound');
+            $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('advSearchError_notFound');
             return null;
         }
 
@@ -762,7 +760,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
-                $this->flashMessenger->addErrorMessage('advSearchError_notAdvanced');
+                $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('advSearchError_notAdvanced');
                 return null;
             }
         }
