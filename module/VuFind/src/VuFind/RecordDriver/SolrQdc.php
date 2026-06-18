@@ -92,7 +92,8 @@ class SolrQdc extends SolrDefault implements LocaleSettingsAwareInterface
      * Get elements from the terms or elements namespaces with fallback to default namespace.
      *
      * @param string $nodeName   Node name
-     * @param bool   $valuesOnly Return only values?
+     * @param bool   $valuesOnly Return only values (if true, returns strings, otherwise returns element arrays for
+     * further processing)?
      *
      * @return array
      */
@@ -101,22 +102,29 @@ class SolrQdc extends SolrDefault implements LocaleSettingsAwareInterface
         $xml = $this->getXmlReader();
         // Prefer elements in the terms namespace:
         $method = $valuesOnly ? 'allValues' : 'all';
-        return $this->getDcTermsElements($nodeName, $valuesOnly)
-            ?: $xml->$method(path: "{{$this->dcNs}}$nodeName");
+        return $this->getDcTermsElements($nodeName, $valuesOnly, false)
+            ?: $xml->$method(path: "{{$this->dcNs}}$nodeName")
+            ?: $xml->$method(path: "$nodeName");
     }
 
     /**
-     * Get elements from the DcTerms namespace with fallback to default namespace.
+     * Get elements from the DcTerms namespace with optional fallback to default namespace.
      *
-     * @param string $nodeName   Node name
-     * @param bool   $valuesOnly Return only values?
+     * @param string $nodeName          Node name
+     * @param bool   $valuesOnly        Return only values (if true, returns strings, otherwise returns element arrays
+     * for further processing)?
+     * @param bool   $defaultNsFallback Try with default namespace if not found in the DcTerms namespace?
      *
      * @return array
      */
-    protected function getDcTermsElements(string $nodeName, bool $valuesOnly = false): array
-    {
+    protected function getDcTermsElements(
+        string $nodeName,
+        bool $valuesOnly = false,
+        bool $defaultNsFallback = true
+    ): array {
         $xml = $this->getXmlReader();
         $method = $valuesOnly ? 'allValues' : 'all';
-        return $xml->$method(path: "{{$this->dcTermsNs}}$nodeName") ?: $xml->$method(path: $nodeName);
+        return $xml->$method(path: "{{$this->dcTermsNs}}$nodeName")
+            ?: ($defaultNsFallback ? $xml->$method(path: $nodeName) : []);
     }
 }
