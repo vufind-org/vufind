@@ -1210,7 +1210,8 @@ class Upgrade implements LoggerAwareInterface
 
         if (isset($newConfig['global']['controllerAccess']['*'])) {
             $newConfig['global']['actionAccess']['*'] = $newConfig['global']['controllerAccess']['*'];
-            unset($newConfig['global']['controllerAccess']['*']);
+            // TODO: enable when controllers are no longer supported:
+            //unset($newConfig['global']['controllerAccess']['*']);
         }
 
         if (isset($newConfig['global']['controllerAccess'])) {

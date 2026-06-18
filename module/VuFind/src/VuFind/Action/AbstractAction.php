@@ -368,24 +368,32 @@ abstract class AbstractAction implements ActionInterface
      */
     public function validateAccessPermission(): ?ResponseInterface
     {
+        $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
+        $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
+        // If controllerAccess is defined, make sure it's not configured for a controller that no longer exists,
+        // and any controllerAccess['*'] matches actionAccess['*']:
+        if ($controllerAccess = $permissionBehaviorConfig['global']['controllerAccess'] ?? null) {
+            foreach ($controllerAccess as $controller => $permission) {
+                // TODO: remove the conditions when controllers are no longer supported.
+                if ('*' === $controller) {
+                    if ($permission !== ($actionPermissions['*'] ?? null)) {
+                        throw new ConfigException(
+                            "actionAccess['*'] and controllerAccess['*'] must match in permissionBehavior configuration"
+                        );
+                    }
+                } else if (!class_exists($controller)) {
+                    throw new ConfigException(
+                        "permissionBehavior configuration defines controllerAccess for controller '$controller'"
+                        . ' that does not exist. Please review configuration and replace controllerAccess with'
+                        . ' actionAccess where appropriate.'
+                    );
+                }
+            }
+        }
+
         // If the current permission is null (as opposed to false or a string), that means it has no internally
         // configured default; thus, we should apply the default value:
         if (null === $this->accessPermission) {
-            $permissionBehaviorConfig = $this->getHelper(PermissionHelper::class)->getPermissionBehaviorConfig();
-            // If controllerAccess is defined, make sure it's not configured for a controller that no longer exists:
-            if ($controllerAccess = $permissionBehaviorConfig['global']['controllerAccess'] ?? null) {
-                foreach (array_keys($controllerAccess) as $controller) {
-                    // TODO: remove the class_exists check when controllers are no longer supported.
-                    if (!class_exists($controller)) {
-                        throw new ConfigException(
-                            "permissionBehavior configuration defines controllerAccess for controller '$controller'"
-                            . ' that does not exist. Please review configuration and replace controllerAccess with'
-                            . ' actionAccess where appropriate.'
-                        );
-                    }
-                }
-            }
-            $actionPermissions = $permissionBehaviorConfig['global']['actionAccess'] ?? [];
             if ($actionPermissions) {
                 // Iterate through parent classes until we find the most specific class access permission defined
                 // (if any):
