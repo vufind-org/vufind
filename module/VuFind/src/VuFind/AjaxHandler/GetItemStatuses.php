@@ -471,6 +471,31 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
+     * Sort statuses according to given config (by default it come from config.ini)
+     *
+     * @param array[] $holdings The holdings to sort
+     * @param array[] $sortingFields Config on how to sort the fields (first values are prioritized for sorting)
+     *
+     * @return void
+     */
+    protected function sortStatuses(array &$holdings, array $sortingFields): void
+    {
+        usort($holdings, function ($a, $b) use ($sortingFields) {
+            foreach ($sortingFields as $field => $order) {
+                if (!isset($a[$field], $b[$field])) {
+                    continue;
+                }
+                $result = $a[$field] <=> $b[$field];
+                if ($result === 0) {
+                    continue;
+                }
+                return $order !== "reversed" ? $result : -$result;
+            }
+            return 0;
+        });
+    }
+
+    /**
      * Handle a request.
      *
      * @param Params $params Parameter helper from controller
@@ -524,6 +549,9 @@ class GetItemStatuses extends AbstractBase implements
 
             // Skip empty records:
             if (count($record)) {
+                if (($this->config->Record->getStatusesSorting ?? "false") !== "false") {
+                    $this->sortStatuses($record, current($this->config->Record->getStatusesSorting));
+                }
                 // Check for errors
                 if (!empty($record[0]['error'])) {
                     $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
