@@ -381,7 +381,7 @@ abstract class AbstractAction implements ActionInterface
                             "actionAccess['*'] and controllerAccess['*'] must match in permissionBehavior configuration"
                         );
                     }
-                } else if (!class_exists($controller)) {
+                } elseif (!class_exists($controller)) {
                     throw new ConfigException(
                         "permissionBehavior configuration defines controllerAccess for controller '$controller'"
                         . ' that does not exist. Please review configuration and replace controllerAccess with'
