@@ -92,10 +92,10 @@ class SolrQdc extends SolrDefault implements LocaleSettingsAwareInterface
      * Get elements from the terms or elements namespaces with fallback to default namespace.
      *
      * @param string $nodeName   Node name
-     * @param bool   $valuesOnly Return only values (if true, returns strings, otherwise returns element arrays for
-     * further processing)?
+     * @param bool   $valuesOnly Return only values?
      *
-     * @return array
+     * @return array Array of XML elements for further processing with VuFindXml methods, or a string array of element
+     * values if $valuesOnly is true
      */
     protected function getElements(string $nodeName, bool $valuesOnly = false): array
     {
@@ -111,11 +111,11 @@ class SolrQdc extends SolrDefault implements LocaleSettingsAwareInterface
      * Get elements from the DcTerms namespace with optional fallback to default namespace.
      *
      * @param string $nodeName          Node name
-     * @param bool   $valuesOnly        Return only values (if true, returns strings, otherwise returns element arrays
-     * for further processing)?
+     * @param bool   $valuesOnly        Return only values?
      * @param bool   $defaultNsFallback Try with default namespace if not found in the DcTerms namespace?
      *
-     * @return array
+     * @return array Array of XML elements for further processing with VuFindXml methods, or a string array of element
+     * values if $valuesOnly is true
      */
     protected function getDcTermsElements(
         string $nodeName,
