@@ -55,6 +55,6 @@ class SearchAction extends AbstractBrowZineSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        return $this->renderSearchResults();
+        return $this->renderSearchResults($request, $response);
     }
 }

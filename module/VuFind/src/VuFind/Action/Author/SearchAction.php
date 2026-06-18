@@ -59,6 +59,6 @@ class SearchAction extends AbstractSearchAndResultsAction
         $this->searchClassId = 'SolrAuthorFacets';
         $this->saveToHistory = false;
         $this->rememberSearch = false;
-        return $this->renderSearchResults();
+        return $this->renderSearchResults($request, $response);
     }
 }

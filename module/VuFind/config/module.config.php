@@ -167,8 +167,6 @@ $config = [
     ],
     'controllers' => [
         'factories' => [
-            'VuFind\Controller\CombinedController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\EdsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\EdsrecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\EITController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\EITrecordController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -219,10 +217,6 @@ $config = [
             'VuFind\ServiceManager\ServiceInitializer',
         ],
         'aliases' => [
-            'Combined' => 'VuFind\Controller\CombinedController',
-            'combined' => 'VuFind\Controller\CombinedController',
-            'EDS' => 'VuFind\Controller\EdsController',
-            'eds' => 'VuFind\Controller\EdsController',
             'EdsRecord' => 'VuFind\Controller\EdsrecordController',
             'edsrecord' => 'VuFind\Controller\EdsrecordController',
             'EIT' => 'VuFind\Controller\EITController',

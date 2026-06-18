@@ -65,6 +65,6 @@ class ResultsAction extends AbstractSearchAndResultsAction
         // iterate you through that search).
         $this->saveToHistory = $this->getOptionsForClass()->resultScrollerActive();
 
-        return $this->renderSearchResults();
+        return $this->renderSearchResults($request, $response);
     }
 }
