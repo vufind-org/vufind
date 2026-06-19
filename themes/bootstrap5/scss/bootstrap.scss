@@ -1,14 +1,17 @@
+// Set Font Awesome font path
+@use "vendor/font-awesome/variables" with (
+  $font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts"
+);
+
 @use "sass:color";
 @use "sass:map";
 @use "sass:math";
 
-$font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
-
 // Include Font Awesome
-@import "vendor/font-awesome/fontawesome";
-@import "vendor/font-awesome/regular";
-@import "vendor/font-awesome/solid";
-@import "vendor/font-awesome/v4-shims";
+@use "vendor/font-awesome/fontawesome";
+@use "vendor/font-awesome/regular";
+@use "vendor/font-awesome/solid";
+@use "vendor/font-awesome/v4-shims";
 
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
 @import "bootstrap/scss/functions";
