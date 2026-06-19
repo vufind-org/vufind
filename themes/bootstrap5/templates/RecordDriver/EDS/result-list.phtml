@@ -37,15 +37,6 @@
         $formatter = $this->recordDataFormatter($this->driver);
         $items = $formatter->getData($formatter->getDefaults('result-list'));
       ?>
-      <?php if ($this->driver->isPlaceholder()): ?>
-        <div class="resultItemLine1">
-          <p>
-            <?=$this->transEsc('This result is not displayed to guests')?>
-            <br>
-            <?=$this->render('error/loginForAccess.phtml')?>
-          </p>
-        </div>
-      <?php endif; ?>
       <?php
         // We prefer the title from the items (for highlighting), but sometimes it is missing, so use getTitle() to set a default.
         $mainTitleHtml = $this->escapeHtml($this->driver->getTitle());
@@ -74,6 +65,23 @@
           <?php endif;?>
         </div>
       <?php endforeach; ?>
+
+      <?php if (
+        $this->driver->isPlaceholder()
+        || ($this->params->getOptions()->showRestrictedViewWarning('result_list_entry') && $this->driver->isRestrictedView())
+        ): ?>
+        <div class="resultItemLine1">
+          <p>
+            <?=$this->transEsc(
+              $this->driver->isPlaceholder()
+                ? 'This result is not displayed to guests'
+                : 'This result has a restricted view for guests'
+            )?>
+            <br>
+            <?=$this->render('error/loginForAccess.phtml')?>
+          </p>
+        </div>
+      <?php endif; ?>
 
       <div class="resultItemLine4 custom-links">
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());

@@ -84,10 +84,6 @@
   </div>
   <?php /* End Listing Options */ ?>
 
-  <?php if ($options->showRestrictedViewWarning() && $this->results->isRestrictedView()): ?>
-    <?=$this->render('error/restrictedViewWarning.phtml')?>
-  <?php endif; ?>
-
   <?php if ($recordTotal < 1): ?>
     <p>
       <?php
@@ -109,6 +105,9 @@
       <?php endif; ?>
     <?php endforeach; ?>
   <?php else: ?>
+    <?php if ($options->showRestrictedViewWarning('result_list_top') && $this->results->isRestrictedView()): ?>
+      <?=$this->render('error/restrictedViewWarning.phtml')?>
+    <?php endif; ?>
     <?php if ($this->results->getOptions()->getTopPaginatorStyle() === 'full'): ?>
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'Helpers/pagination-top.phtml', ['params' => ['results' => $this->results], 'options' => $this->paginationOptions ?? []])?>
     <?php endif; ?>

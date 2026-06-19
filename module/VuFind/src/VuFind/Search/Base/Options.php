@@ -441,6 +441,13 @@ abstract class Options implements TranslatorAwareInterface
     protected bool $showRestrictedViewWarning;
 
     /**
+     * Contexts where the restricted view warning is being displayed.
+     *
+     * @var array
+     */
+    protected array $showRestrictedViewWarningContexts;
+
+    /**
      * VuFind main configuration.
      *
      * @var array
@@ -543,6 +550,9 @@ abstract class Options implements TranslatorAwareInterface
             = (bool)($this->searchSettings['Results_Settings']['display_citation_links'] ?? true);
         $this->showRestrictedViewWarning
             = (bool)($this->searchSettings['General']['show_restricted_view_warning'] ?? false);
+        $this->showRestrictedViewWarningContexts = $this->explodeListSetting(
+            $this->searchSettings['General']['show_restricted_view_warning_contexts'] ?? '*'
+        );
     }
 
     /**
@@ -1506,13 +1516,18 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we display a warning in restricted views?
+     * Should we display a warning in restricted views in the given context?
+     *
+     * @param string $context Context
      *
      * @return bool
      */
-    public function showRestrictedViewWarning(): bool
+    public function showRestrictedViewWarning(string $context): bool
     {
-        return $this->showRestrictedViewWarning;
+        if (!$this->showRestrictedViewWarning) {
+            return false;
+        }
+        return !empty(array_intersect([$context, '*'], $this->showRestrictedViewWarningContexts));
     }
 
     /**
