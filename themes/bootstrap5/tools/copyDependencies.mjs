@@ -14,7 +14,6 @@ console.log('Copying dependencies...');
 await cp('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/', { recursive: true });
 
 // Font Awesome
-await cp('node_modules/@fortawesome/fontawesome-free/scss/.', 'scss/vendor/font-awesome/', { recursive: true });
 await cp('node_modules/@fortawesome/fontawesome-free/webfonts/.', 'css/vendor/font-awesome/webfonts/', { recursive: true });
 
 if (buildDepsOnly) {
