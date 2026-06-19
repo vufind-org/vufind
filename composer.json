@@ -57,7 +57,7 @@
         "endroid/qr-code": "6.0.9",
         "ezyang/htmlpurifier": "4.19.0",
         "firebase/php-jwt": "^7.0.0",
-        "guzzlehttp/guzzle": "7.11.0",
+        "guzzlehttp/guzzle": "7.12.1",
         "jaybizzle/crawler-detect": "^1.2",
         "laminas/laminas-cache": "3.14.0",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",
