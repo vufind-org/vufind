@@ -18,6 +18,9 @@ if (buildDepsOnly) {
     process.exit();
 }
 
+// Font Awesome
+await cp('node_modules/@fortawesome/fontawesome-free/webfonts/.', 'css/vendor/font-awesome/webfonts/', { recursive: true });
+
 await copyFile('node_modules/bootstrap/dist/js/bootstrap.min.js', 'js/vendor/bootstrap.min.js');
 
 // Popper (Bootstrap 5 dependency)
