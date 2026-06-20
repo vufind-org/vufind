@@ -226,6 +226,9 @@ function getLoadPaths(themeName) {
         paths.push(subpath);
       }
     }
+
+    // Add node_modules as a final fallback (for libraries like Bootstrap / Font Awesome)
+    paths.push(path.join(process.env.VUFIND_HOME, "node_modules"));
   }
 
   // Iterate through theme.config.php files collecting parent themes in search path:

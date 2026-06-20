@@ -1,64 +1,67 @@
+// Set Font Awesome font path
+@use "@fortawesome/fontawesome-free/scss/variables" with (
+  $font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts"
+);
+
+// Include Font Awesome
+@use "@fortawesome/fontawesome-free/scss/fontawesome";
+@use "@fortawesome/fontawesome-free/scss/regular";
+@use "@fortawesome/fontawesome-free/scss/solid";
+@use "@fortawesome/fontawesome-free/scss/v4-shims";
+
 @use "sass:color";
 @use "sass:map";
 @use "sass:math";
 
-$fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
-
-// Include Font Awesome
-@import "vendor/font-awesome/fontawesome";
-@import "vendor/font-awesome/regular";
-@import "vendor/font-awesome/solid";
-@import "vendor/font-awesome/v4-shims";
-
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
-@import "vendor/bootstrap/functions";
+@import "bootstrap/scss/functions";
 
 // Include any variable overrides here
 @import "bootstrap-variable-overrides";
 
 // Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
-@import "vendor/bootstrap/variables";
-//@import "vendor/bootstrap/variables-dark";
+@import "bootstrap/scss/variables";
+//@import "bootstrap/scss/variables-dark";
 
 // Include any map overrides here
 @import "bootstrap-map-overrides";
 
 // Include remainder of required parts
-@import "vendor/bootstrap/maps";
-@import "vendor/bootstrap/mixins";
-@import "vendor/bootstrap/root";
-@import "vendor/bootstrap/reboot";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
 
 // Optionally include any other parts as needed
-@import "vendor/bootstrap/accordion";
-@import "vendor/bootstrap/alert";
-@import "vendor/bootstrap/badge";
-@import "vendor/bootstrap/breadcrumb";
-@import "vendor/bootstrap/buttons";
-@import "vendor/bootstrap/button-group";
-@import "vendor/bootstrap/card";
-@import "vendor/bootstrap/carousel";
-@import "vendor/bootstrap/containers";
-@import "vendor/bootstrap/dropdown";
-@import "vendor/bootstrap/forms";
-@import "vendor/bootstrap/grid";
-@import "vendor/bootstrap/helpers";
-@import "vendor/bootstrap/images";
-@import "vendor/bootstrap/list-group";
-@import "vendor/bootstrap/modal";
-@import "vendor/bootstrap/nav";
-@import "vendor/bootstrap/navbar";
-@import "vendor/bootstrap/offcanvas";
-@import "vendor/bootstrap/pagination";
-@import "vendor/bootstrap/popover";
-@import "vendor/bootstrap/tables";
-@import "vendor/bootstrap/tooltip";
-@import "vendor/bootstrap/transitions";
-@import "vendor/bootstrap/type";
-@import "vendor/bootstrap/utilities";
+@import "bootstrap/scss/accordion";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/carousel";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/helpers";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/list-group";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/offcanvas";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/utilities";
 
 // Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
-@import "vendor/bootstrap/utilities/api";
+@import "bootstrap/scss/utilities/api";
 
 // Include variables
 @import "variables";
@@ -79,6 +82,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/devtools";
 @import "components/explain";
 @import "components/form";
+@import "components/get-this";
 @import "components/icons";
 @import "components/keyboard";
 @import "components/lightbox";
@@ -196,6 +200,7 @@ img { max-width: 100%; }
 }
 .tab-content { padding: 4px; }
 
+h1 { font-size: 28px; }
 h2 { font-size: 20px; }
 h3 { font-size: 16px; }
 
@@ -716,6 +721,9 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
 .callnumAndLocation .table, .table.holdings-table {
   td {
     word-wrap: break-word;
+    & > * {
+      vertical-align: middle;
+    }
   }
 }
 // No wrapping for fines or staff view table in wide windows

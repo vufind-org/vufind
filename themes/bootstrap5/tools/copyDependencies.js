@@ -4,13 +4,6 @@
 const { copyFileSync, cpSync, statSync } = require('node:fs');
 const path = require('node:path');
 
-let buildDepsOnly = false;
-process.argv.forEach(arg => {
-  if (arg === '--only-build-deps') {
-    buildDepsOnly = true;
-  }
-});
-
 /**
  * Helper function to take from root, to theme
  * @param {string} fromRelPath relative path to source
@@ -33,15 +26,10 @@ function copy(fromRelPath, toRelPath) {
   }
 }
 
-console.log('Copying bootstrap5 dependencies...');
+console.log('Copying dependencies...');
 
-// Bootstrap 5 SCSS
-copy('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/');
-
-if (buildDepsOnly) {
-  console.log('= Done copying build dependencies.');
-  process.exit();
-}
+// Font Awesome
+copy('node_modules/@fortawesome/fontawesome-free/webfonts/.', 'css/vendor/font-awesome/webfonts/');
 
 // Bootstrap 5 JS
 copy('node_modules/bootstrap/dist/js/bootstrap.min.js', 'js/vendor/bootstrap.min.js');

@@ -1,7 +1,4 @@
 <?php
-  // Set up page title:
-  $this->headTitle($this->translate('My Holds'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
     ->add($this->translate('My Holds'), active: true);
@@ -12,7 +9,14 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Your Holds and Recalls') ?></h2>
+  <?=
+    // Set page title and heading.
+    $this->component('page-title', [
+      'title' => $this->translate('Your Holds and Recalls'),
+      'headTitle' => $this->translate('My Holds'),
+      'level' => 1,
+    ])
+  ?>
 
   <?=$this->flashmessages()?>
 

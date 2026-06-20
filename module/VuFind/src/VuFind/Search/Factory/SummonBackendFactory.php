@@ -119,6 +119,9 @@ class SummonBackendFactory extends AbstractBackendFactory
         // Load credentials:
         $id = $this->config->Summon->apiId ?? null;
         $key = $this->config->Summon->apiKey ?? null;
+        if (null === $id || null === $key) {
+            throw new \Exception('Credentials missing from [Summon] section of config.ini.');
+        }
 
         // Create connector:
         $options = ['authedUser' => $this->isAuthed()];

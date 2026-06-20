@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('Search History'));
-
   // Set up breadcrumbs; hide the account breadcrumb when login is disabled:
   $account = $this->auth()->getManager();
   $this->breadcrumbs()->reset();
@@ -32,6 +29,13 @@
     </div>
   <?php endif; ?>
   <?=$this->flashmessages()?>
+  <?=
+    // Set page title and heading.
+    $this->component('page-title', [
+      'title' => $this->translate('Search History'),
+      'level' => 1,
+    ])
+  ?>
   <?php if ($saveSupported): ?>
     <h2><?=$this->transEsc('history_saved_searches')?></h2>
     <?php if (!empty($this->saved)): ?>
