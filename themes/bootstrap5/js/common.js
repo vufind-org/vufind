@@ -713,6 +713,7 @@ var VuFind = (function VuFindModule() {
     loading: loading,
     loadingElement: loadingElement,
     loadingOverlay,
+    transEsc: transEsc,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
