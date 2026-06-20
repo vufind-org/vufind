@@ -5,7 +5,7 @@ $holdingsList = $this->render('record/get-this/holdings-list.phtml');
 ?>
 
 <strong><?= $this->transEsc('Items') ?> :</strong>
-<nav role="navigation" class="get-this-dropdown<?= $useDropdown ? ' dropdown' : '' ?>">
+<nav class="get-this-dropdown<?= $useDropdown ? ' dropdown' : '' ?>">
   <?php if ($useDropdown): ?>
     <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
       <span>

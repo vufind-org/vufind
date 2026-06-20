@@ -127,7 +127,7 @@
             <?=$this->transEsc('loading_ellipsis')?>
           </span>
           <div class="locationDetails"></div>
-          <span class="getThis ajax-availability hidden"><a rel="nofollow" data-lightbox><?=$this->transEsc('Get This')?></a></span>
+          <span class="getThis ajax-availability hidden"><a rel="nofollow" href="<?= $this->url('record-getthis', ['id' => $this->driver->getUniqueId()]) ?>" data-lightbox><?=$this->transEsc('Get This')?></a></span>
         <?php else: ?>
           <?php $summCallNo = $this->driver->getCallNumber(); ?>
           <?php if (!empty($summCallNo)): ?>
