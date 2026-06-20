@@ -82,6 +82,7 @@
 @import "components/devtools";
 @import "components/explain";
 @import "components/form";
+@import "components/get-this";
 @import "components/icons";
 @import "components/keyboard";
 @import "components/lightbox";
@@ -720,6 +721,9 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
 .callnumAndLocation .table, .table.holdings-table {
   td {
     word-wrap: break-word;
+    & > * {
+      vertical-align: middle;
+    }
   }
 }
 // No wrapping for fines or staff view table in wide windows

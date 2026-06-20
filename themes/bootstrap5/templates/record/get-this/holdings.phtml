@@ -1,0 +1,28 @@
+<?php
+$selectedItem = $this->getThisLoader->getItem();
+$useDropdown = $this->getThisLoader->makeHoldingsDropdown();
+$holdingsList = $this->render('record/get-this/holdings-list.phtml');
+?>
+
+<strong><?= $this->transEsc('Items') ?> :</strong>
+<nav role="navigation" class="get-this-dropdown<?= $useDropdown ? ' dropdown' : '' ?>">
+  <?php if ($useDropdown): ?>
+    <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <span>
+        <?= $this->context($this)->renderInContext(
+            'record/get-this/holding-display.phtml',
+            [
+                'item' => $selectedItem,
+            ]
+        ); ?>
+      </span>
+      <?=$this->icon('dropdown-open', 'dropdown-open') ?>
+    </button>
+    <div class="dropdown">
+      <?= $holdingsList ?>
+    </div>
+  <?php else: ?>
+    <?= $holdingsList ?>
+  <?php endif; ?>
+</nav>
+<br>

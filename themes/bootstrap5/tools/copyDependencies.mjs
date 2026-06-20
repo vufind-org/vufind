@@ -1,22 +1,7 @@
 import { cp } from 'node:fs/promises';
 import { copyFile } from 'node:fs/promises';
 
-let buildDepsOnly = false;
-process.argv.forEach(arg => {
-    if (arg === '--only-build-deps') {
-        buildDepsOnly = true;
-    }
-});
-
 console.log('Copying dependencies...');
-
-// Bootstrap 5
-await cp('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/', { recursive: true });
-
-if (buildDepsOnly) {
-    console.log('Done copying build dependencies.');
-    process.exit();
-}
 
 // Font Awesome
 await cp('node_modules/@fortawesome/fontawesome-free/webfonts/.', 'css/vendor/font-awesome/webfonts/', { recursive: true });

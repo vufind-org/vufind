@@ -615,6 +615,7 @@ $nonTabRecordActions = [
     'Epub',
     'Explain',
     'Export',
+    'GetThis',
     'Hold',
     'Home',
     'ILLRequest',

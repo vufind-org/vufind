@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for building the HoldingsILS tab.
+ * Factory for Regex.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Michigan State University Board of Trustees 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,43 +17,44 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, see
- * <https://www.gnu.org/licenses/>.
+ * along with this program; if not, see <https://www.gnu.org/licenses/>
  *
  * @category VuFind
- * @package  RecordTabs
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Regex
+ * @author   Robby Roudon <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\RecordTab;
+namespace VuFind\Regex;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\GetThis\GetThisLoader;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Factory for building the HoldingsILS tab.
+ * Factory for GetThisLoader.
  *
  * @category VuFind
- * @package  RecordTabs
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  GetThis
+ * @author   Robby Roudon <roudonro@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class RegexFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object.
      *
      * @param ContainerInterface $container     Service manager
-     * @param string             $requestedName Service being created
+     * @param class-string<T>    $requestedName Service being created
      * @param null|array         $options       Extra options (optional)
      *
-     * @return object
+     * @template T
+     *
+     * @return T
      *
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
@@ -67,21 +68,8 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        // If VuFind is configured to suppress the holdings tab when the
-        // ILS driver specifies no holdings, we need to pass in a connection
-        // object:
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $catalog = $container->get(\VuFind\ILS\Connection::class);
-        $getThisEnabled = (bool)($config['Record']['getThisEnabled'] ?? false);
-        $getThisLoaderFactoryCallback = $getThisEnabled ? (fn () => $container->get(GetThisLoader::class))(...) : null;
         return new $requestedName(
-            $catalog,
-            (string)($config['Site']['holdingsTemplate'] ?? 'standard'),
-            (bool)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false),
-            $getThisLoaderFactoryCallback
+            $container->get(ConfigManagerInterface::class)->getConfigArray('Regex'),
         );
     }
 }

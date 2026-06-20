@@ -4,6 +4,17 @@
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
+    $getThisLoader = $tab->getGetThisLoader();
+    if ($getThisEnabled = $getThisLoader?->areItemsSupported([$holding])) {
+        $getThisLoader->setItems([$holding]);
+        $getThisLoader->setRecordDriver($this->record($this->driver));
+        $isOnlineResource = $getThisLoader->isOnlineResource($holding['item_id'] ?? null);
+        $getThisURL = $isOnlineResource ? null : $this->url(
+            'record-getthis',
+            ['id' => $holding['id']],
+            ['query' => ['item_id' => $holding['item_id'] ?? null]]
+        );
+    }
   ?>
   <tr class="holding-row"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'typeof' => 'Offer'])?>>
     <td colspan="2" class="holding-<?=$availabilityStatus->isAvailable() ? 'available' : 'unavailable' ?>">
@@ -83,6 +94,13 @@
               </a>
             <?php endif; ?>
             <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
+          </span>
+        <?php endif; ?>
+        <?php if (isset($getThisURL)): ?>
+          <span class="holding-field get-this">
+            <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURL) ?>" rel="nofollow">
+              <?=$this->transEsc('Get This')?>
+            </a>
           </span>
         <?php endif; ?>
       </div>
