@@ -71,7 +71,6 @@ return [
         ['file' => 'covers.js', 'priority' => 410],
         ['file' => 'validation.js', 'priority' => 420],
         ['file' => 'copy_to_clipboard.js', 'priority' => 430],
-        ['file' => 'js_dropdown.js', 'priority' => 440],
     ],
     /**
      * Configuration for a single or multiple favicons.
