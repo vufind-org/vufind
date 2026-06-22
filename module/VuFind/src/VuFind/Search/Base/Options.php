@@ -1519,7 +1519,8 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * Should we display a warning in restricted views? Context should be used to support
-     * deactivation of specific contexts via configuration.
+     * deactivation of specific contexts via configuration. If omitted, returns true if ANY
+     * contexts are enabled.
      *
      * @param ?string $context Optional context
      *
