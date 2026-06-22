@@ -57,7 +57,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      * @param ?ResultsManager          $resultsManager Results plugin manager
      * @param array                    $config         Config
      * @param ?SessionServiceInterface $sessionService Session service
-     * @param ?Connection $ilsConnection ILS connection
+     * @param ?Connection              $ilsConnection  ILS connection
      * @param bool                     $accessGranted  If access is granted
      *
      * @return SystemStatus
@@ -74,7 +74,13 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager ??= $this->createMock(ResultsManager::class);
         $sessionService ??= $this->createMock(SessionServiceInterface::class);
         $ilsConnection ??= $this->createMock(Connection::class);
-        $handler = new SystemStatus($sessionManager, $resultsManager, new Config($config), $sessionService, $ilsConnection);
+        $handler = new SystemStatus(
+            $sessionManager,
+            $resultsManager,
+            new Config($config),
+            $sessionService,
+            $ilsConnection
+        );
         $mockAuth = $this->createMock(AuthorizationService::class);
         $mockAuth->method('isGranted')
             ->with('access.SystemStatus')
