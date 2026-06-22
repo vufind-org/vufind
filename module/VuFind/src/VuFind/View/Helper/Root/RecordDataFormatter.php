@@ -66,11 +66,10 @@ class RecordDataFormatter
     /**
      * Constructor.
      *
-     * @param SpecsManager       $specsManager       Specs plugin manager
-     * @param Record             $recordHelper       Record view helper
-     * @param TransEsc           $transEsc           TransEsc view helper
-     * @param EscapeHtml         $escapeHtml         EscapeHtml view helper
-     * @param HtmlSafeJsonEncode $htmlSafeJsonEncode HtmlSafeJsonEncode view helper
+     * @param SpecsManager $specsManager Specs plugin manager
+     * @param Record       $recordHelper Record view helper
+     * @param TransEsc     $transEsc     TransEsc view helper
+     * @param EscapeHtml   $escapeHtml   EscapeHtml view helper
      */
     public function __construct(
         protected SpecsManager $specsManager,
@@ -80,8 +79,6 @@ class RecordDataFormatter
         protected TransEsc $transEsc,
         #[Autowire(container: 'ViewHelperManager')]
         protected EscapeHtml $escapeHtml,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected HtmlSafeJsonEncode $htmlSafeJsonEncode
     ) {
     }
 
@@ -180,9 +177,10 @@ class RecordDataFormatter
         }
 
         if ($rows = $options['truncate'] ?? false) {
-            $value = '<div class="truncate-record-field" data-truncate="'
-                . ($this->htmlSafeJsonEncode)(['rows' => $rows]) . '">' .
-                $value . '</div>';
+            $value = ($this->recordHelper)($this->driver)->renderTemplate(
+                'truncated-field.phtml',
+                ['truncatedRows' => $rows, 'content' => $value]
+            );
         }
 
         // Allow dynamic label override:

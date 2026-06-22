@@ -404,7 +404,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $helpers['record'],
             $helpers['transEsc'],
             $helpers['escapeHtml'],
-            $helpers['htmlSafeJsonEncode']
         );
 
         return $formatter;
