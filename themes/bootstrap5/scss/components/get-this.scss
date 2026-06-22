@@ -1,0 +1,52 @@
+// Turn ul into a dropdown
+.get-this-dropdown.dropdown {
+  font-size: 1.1rem;
+  letter-spacing: 0;
+  background: $gray-lighter;
+  position: relative;
+
+  a {
+    text-decoration: none;
+    width: 100%;
+    display: inline-block;
+  }
+
+  .dropdown-toggle {
+    display: inline-flex;
+    justify-content: space-between;
+    width: 100%;
+    color: $gray-darker;
+    border: 1px solid gray;
+    text-align: left;
+    border-radius: 0.2rem;
+  }
+
+  div {
+    border-radius: 0.2rem;
+  }
+
+  .dropdown {
+    background: $gray-lighter;
+
+    ul {
+      width: 100%;
+      list-style: none;
+      margin: 0;
+      padding-left: 0;
+
+      li {
+        text-decoration: none;
+        transition-duration: 0.25s;
+
+        a.current {
+          font-weight: bold;
+        }
+
+        a:hover,
+        a:focus {
+          background-color: lighten($gray-base, 70%);
+        }
+      }
+    }
+  }
+}
