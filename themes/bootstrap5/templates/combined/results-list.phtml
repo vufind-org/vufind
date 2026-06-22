@@ -4,10 +4,10 @@
   $params = $results->getParams();
   $lookfor = $results->getUrlQuery()->isQuerySuppressed() ? '' : $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
-  $sideRecommendations = $this->results->getRecommendations('side');
-  $topRecommendations = $this->results->getRecommendations('top');
-  $bottomRecommendations = $this->results->getRecommendations('bottom');
-  $noResultsRecommendations = $this->results->getRecommendations('noresults');
+  $sideRecommendations = $results->getRecommendations('side');
+  $topRecommendations = $results->getRecommendations('top');
+  $bottomRecommendations = $results->getRecommendations('bottom');
+  $noResultsRecommendations = $results->getRecommendations('noresults');
   $noResultsSideRecommendations = $results->getRecommendations('noresults_side');
 
   // More link should use default limit, not custom limit:
