@@ -1302,14 +1302,10 @@ abstract class Options implements TranslatorAwareInterface
 
         foreach (['Top', 'Bottom', 'Side', 'NoResults'] as $position) {
             $lcPosition = strtolower($position);
-            if (
-                null !== $handler
-                && $recommendSettings = $searchSettings[$position . 'Recommendations'][$handler] ?? null
-            ) {
-                $recommend[$lcPosition] = $recommendSettings;
-            } else {
-                $recommend[$lcPosition] = $searchSettings['General']['default_' . $lcPosition . '_recommend'] ?? false;
-            }
+            $recommend[$lcPosition]
+                = (null !== $handler ? $searchSettings[$position . 'Recommendations'][$handler] ?? null : null)
+                ?? $searchSettings['General']['default_' . $lcPosition . '_recommend']
+                ?? false;
         }
 
         return $recommend;
