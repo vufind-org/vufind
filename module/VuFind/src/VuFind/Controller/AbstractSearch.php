@@ -38,6 +38,7 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Http\RouteHelper;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -892,7 +893,9 @@ class AbstractSearch extends AbstractBase
         // Has the request been sent in an AJAX context?
         $ajax = (int)$this->params()->fromQuery('ajax', 0);
         $urlBase = $this->params()->fromQuery('urlBase', '');
-        $searchAction = $this->params()->fromQuery('searchAction', '');
+        $defaultSearchAction = $this->getService(RouteHelper::class)
+            ->getUrlFromRoute($params->getOptions()->getSearchAction());
+        $searchAction = $this->params()->fromQuery('searchAction', $defaultSearchAction);
         // $urlBase and $searchAction should be relative URLs; if there is an
         // absolute URL passed in, this may be a sign of malicious activity and
         // we should fail.
