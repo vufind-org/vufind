@@ -3,10 +3,11 @@
   "description": "Dependencies for the bootstrap5 theme",
   "scripts": {
     "check:jsTranslations": "node tools/jsTranslationsCheck.js",
-    "installBuildDeps": "npm install --ignore-scripts --no-audit && node tools/copyDependencies.mjs --only-build-deps",
+    "installBuildDeps": "npm install --ignore-scripts --no-audit",
     "updateDeps": "npm update --ignore-scripts && node tools/copyDependencies.mjs"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.2.0",
     "@popperjs/core": "2.11.8",
     "autocomplete.js": "vufind-org/autocomplete.js#v2.1.10",
     "bootstrap": "5.3.8",

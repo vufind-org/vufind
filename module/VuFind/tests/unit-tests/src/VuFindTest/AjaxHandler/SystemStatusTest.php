@@ -31,6 +31,7 @@ namespace VuFindTest\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\AjaxHandler\SystemStatus;
 use VuFind\Config\Config;
@@ -54,25 +55,45 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?SessionManager          $sessionManager Session manager
      * @param ?ResultsManager          $resultsManager Results plugin manager
-     * @param ?Config                  $config         Config
+     * @param array                    $config         Config
      * @param ?SessionServiceInterface $sessionService Session service
-     * @param ?Connection              $ilsConnection  ILS connection
+     * @param ?Connection $ilsConnection ILS connection
+     * @param bool                     $accessGranted  If access is granted
      *
      * @return SystemStatus
      */
     protected function getHandler(
         ?SessionManager $sessionManager = null,
         ?ResultsManager $resultsManager = null,
-        ?Config $config = null,
+        array $config = [],
         ?SessionServiceInterface $sessionService = null,
-        ?Connection $ilsConnection = null
+        ?Connection $ilsConnection = null,
+        bool $accessGranted = true
     ): SystemStatus {
         $sessionManager ??= $this->createMock(SessionManager::class);
         $resultsManager ??= $this->createMock(ResultsManager::class);
-        $config ??= new Config([]);
         $sessionService ??= $this->createMock(SessionServiceInterface::class);
         $ilsConnection ??= $this->createMock(Connection::class);
-        return new SystemStatus($sessionManager, $resultsManager, $config, $sessionService, $ilsConnection);
+        $handler = new SystemStatus($sessionManager, $resultsManager, new Config($config), $sessionService, $ilsConnection);
+        $mockAuth = $this->createMock(AuthorizationService::class);
+        $mockAuth->method('isGranted')
+            ->with('access.SystemStatus')
+            ->willReturn($accessGranted);
+        $handler->setAuthorizationService($mockAuth);
+        return $handler;
+    }
+
+    /**
+     * Test the AJAX handler's response if access is denied.
+     *
+     * @return void
+     */
+    public function testAccessDenied(): void
+    {
+        $this->expectException(\VuFind\Exception\Forbidden::class);
+        $this->expectExceptionMessage('Access denied');
+        $handler = $this->getHandler(accessGranted: false);
+        $handler->handleRequest($this->getMockRequestParams());
     }
 
     /**
@@ -82,7 +103,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      */
     public function testHealthCheckFile(): void
     {
-        $config = new Config(['System' => ['healthCheckFile' => __FILE__]]);
+        $config = ['System' => ['healthCheckFile' => __FILE__]];
         $handler = $this->getHandler(config: $config);
         $response = $handler->handleRequest($this->getMockRequestParams());
         $this->assertEquals(['Health check file exists', 503], $response);
