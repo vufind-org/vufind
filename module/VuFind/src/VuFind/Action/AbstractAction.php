@@ -165,6 +165,9 @@ abstract class AbstractAction implements ActionInterface
         $this->request = $request;
         $this->response = $response;
         try {
+            if ($accessDeniedResponse = $this->validateAccessPermission()) {
+                return $accessDeniedResponse;
+            }
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);

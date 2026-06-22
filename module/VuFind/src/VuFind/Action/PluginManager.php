@@ -61,9 +61,22 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ajax/onlinepaymentnotify' => Ajax\OnlinePaymentNotifyAction::class,
         'ajax/systemstatus' => Ajax\SystemStatusAction::class,
         'author/facetlist' => Author\FacetListAction::class,
+        'cart/doexport' => Cart\DoExportAction::class,
+        'cart/myresearchbulk' => Cart\MyResearchBulkAction::class,
+        'cart/printcart' => Cart\PrintCartAction::class,
+        'cart/searchresultsbulk' => Cart\SearchResultsBulkAction::class,
         'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
         'collections/bytitle' => Collections\ByTitleAction::class,
+        'comments/deletecomments' => Comments\DeleteCommentsAction::class,
+        'comments/userlist' => Comments\UserListAction::class,
+        'developersettings/deleteapikey' => DeveloperSettings\DeleteApiKeyAction::class,
+        'developersettings/displaysettings' => DeveloperSettings\DisplaySettingsAction::class,
+        'developersettings/generateapikey' => DeveloperSettings\GenerateApiKeyAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
+        'ratings/deleteratings' => Ratings\DeleteRatingsAction::class,
+        'ratings/userlist' => Ratings\UserListAction::class,
+        'tag/deletetags' => Tag\DeleteTagsAction::class,
+        'tag/userlist' => Tag\UserListAction::class,
     ];
 
     /**

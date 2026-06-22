@@ -41,7 +41,6 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Upgrade as ConfigUpgrader;
 use VuFind\Config\Version;
-use VuFind\Config\Writer;
 use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
@@ -253,12 +252,10 @@ class UpgradeController extends AbstractBase
      */
     protected function setDbEncodingConfiguration($charset)
     {
-        $config = $this->getForcedLocalConfigPath('config.ini');
-        $writer = new Writer($config);
-        $writer->set('Database', 'charset', $charset);
-        if (!$writer->save()) {
-            throw new Exception('Problem writing DB encoding to config.ini');
-        }
+        $this->changeConfig(
+            'config',
+            ['Database' => ['charset' => $charset]]
+        );
     }
 
     /**
@@ -647,7 +644,7 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(
-            ['configDir' => dirname($this->getForcedLocalConfigPath('config.ini'))]
+            ['configDir' => dirname($this->getForcedLocalConfigPath('config'))]
         );
     }
 

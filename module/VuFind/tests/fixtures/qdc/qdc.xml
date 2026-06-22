@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<dcterms:qualifieddc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/">
+  <dc:title lang="-">Test</dc:title>
+  <dcterms:abstract lang="fi">Abstrakti suomeksi.</dcterms:abstract>
+  <dcterms:abstract lang="en">Abstract in English.</dcterms:abstract>
+  <dcterms:abstract lang="en">Another abstract in English.</dcterms:abstract>
+  <dcterms:abstract lang="en-gb">Abstract in British English.</dcterms:abstract>
+</dcterms:qualifieddc>
