@@ -1518,16 +1518,20 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we display a warning in restricted views in the given context?
+     * Should we display a warning in restricted views? Context should be used to support
+     * deactivation of specific contexts via configuration.
      *
-     * @param string $context Context
+     * @param ?string $context Optional context
      *
      * @return bool
      */
-    public function showRestrictedViewWarning(string $context): bool
+    public function showRestrictedViewWarning(?string $context = null): bool
     {
         if (!$this->showRestrictedViewWarning) {
             return false;
+        }
+        if ($context === null) {
+            return true;
         }
         return !empty(array_intersect([$context, '*'], $this->showRestrictedViewWarningContexts));
     }
