@@ -31,7 +31,7 @@
         </select>
         <a href="#" class="adv-term-remove">
           <?=$this->icon('ui-remove') ?>
-          <span class="visually-hidden"><?=$this->transEsc('remove_search') ?></span>
+          <span class="visually-hidden"><?=$this->transEsc('del_search_field') ?></span>
         </a>
       </div>
       <?php if ($search === 0): ?>
@@ -39,7 +39,7 @@
       <?php endif; ?>
     <?php endfor; ?>
     <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
-    <a href="#" class="add_search_link hidden"><?=$this->transEsc('add_search')?></a>
+    <a href="#" class="add_search_link hidden"><?=$this->transEsc('add_search_field')?></a>
   </div>
 </div>
 <?php
