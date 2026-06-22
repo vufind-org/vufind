@@ -54,7 +54,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?SessionManager          $sessionManager Session manager
      * @param ?ResultsManager          $resultsManager Results plugin manager
-     * @param ?Config                  $config         Config
+     * @param array                    $config         Config
      * @param ?SessionServiceInterface $sessionService Session service
      * @param bool                     $accessGranted  If access is granted
      *
@@ -63,15 +63,14 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     protected function getHandler(
         ?SessionManager $sessionManager = null,
         ?ResultsManager $resultsManager = null,
-        ?Config $config = null,
+        array $config = [],
         ?SessionServiceInterface $sessionService = null,
         bool $accessGranted = true
     ): SystemStatus {
         $sessionManager ??= $this->createMock(SessionManager::class);
         $resultsManager ??= $this->createMock(ResultsManager::class);
-        $config ??= new Config([]);
         $sessionService ??= $this->createMock(SessionServiceInterface::class);
-        $handler = new SystemStatus($sessionManager, $resultsManager, $config, $sessionService);
+        $handler = new SystemStatus($sessionManager, $resultsManager, new Config($config), $sessionService);
         $mockAuth = $this->createMock(AuthorizationService::class);
         $mockAuth->method('isGranted')
             ->with('access.SystemStatus')
@@ -100,7 +99,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      */
     public function testHealthCheckFile(): void
     {
-        $config = new Config(['System' => ['healthCheckFile' => __FILE__]]);
+        $config = ['System' => ['healthCheckFile' => __FILE__]];
         $handler = $this->getHandler(config: $config);
         $response = $handler->handleRequest($this->getMockRequestParams());
         $this->assertEquals(['Health check file exists', 503], $response);
