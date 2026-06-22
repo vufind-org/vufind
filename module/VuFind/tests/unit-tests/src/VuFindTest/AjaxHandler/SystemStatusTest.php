@@ -240,6 +240,26 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test the AJAX handler's does not check a component if disabled.
+     *
+     * @return void
+     */
+    public function testDisabledSettings(): void
+    {
+        $sessionService = $this->createMock(SessionServiceInterface::class);
+        $sessionService->expects($this->never())->method('getSessionById');
+
+        $handler = $this->getHandler(
+            sessionService: $sessionService,
+            config: ['System' => ['statusChecks' => ['database' => 'always_disabled']]]
+        );
+
+        $handler->handleRequest($this->getMockRequestParams());
+        $handler->handleRequest($this->getMockRequestParams(['database' => '0']));
+        $handler->handleRequest($this->getMockRequestParams(['database' => '1']));
+    }
+
+    /**
      * Get mock Params class for request params.
      *
      * @param array $requestParams Parameters to return
