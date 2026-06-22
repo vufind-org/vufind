@@ -84,6 +84,8 @@ function compileTheme(themeName) {
       style: "expanded",
       sourceMap: DO_SOURCEMAPS,
       embedSources: true,
+      // needed due to limitations of Bootstrap 5 as of June, 2026:
+      silenceDeprecations: ['import'],
       // no equivalent for no-error-css
       loadPaths: getLoadPaths(themeName),
     }
