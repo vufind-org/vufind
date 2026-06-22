@@ -71,6 +71,7 @@ return [
         ['file' => 'covers.js', 'priority' => 410],
         ['file' => 'validation.js', 'priority' => 420],
         ['file' => 'copy_to_clipboard.js', 'priority' => 430],
+        ['file' => 'js_dropdown.js', 'priority' => 440],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -98,13 +99,14 @@ return [
      */
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
+        'abstract_factories' => [
+            \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+        ],
         'factories' => [
             'VuFind\View\Helper\Bootstrap5\BulkAction' => 'VuFind\View\Helper\Root\BulkActionFactory',
-            'VuFind\View\Helper\Bootstrap5\CopyToClipboardButton' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap5\Flashmessages' => 'VuFind\View\Helper\Root\FlashmessagesFactory',
             'VuFind\View\Helper\Bootstrap5\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap5\LayoutClass' => 'VuFind\View\Helper\Bootstrap5\LayoutClassFactory',
-            'VuFind\View\Helper\Bootstrap5\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
         ],
         'aliases' => [
             'bulkAction' => 'VuFind\View\Helper\Bootstrap5\BulkAction',
@@ -186,6 +188,8 @@ return [
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'content-delete' => 'FontAwesome:trash',
+            'content-edit' => 'FontAwesome:edit',
             'user-content' => 'FontAwesome:comment',
             'cover-replacement' => 'FontAwesome:question',
             'currency-eur' => 'FontAwesome:euro-sign',

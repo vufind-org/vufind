@@ -365,16 +365,20 @@ class Upgrade implements LoggerAwareInterface
             return;
         }
 
-        $configNameParts = explode('/', $configName, 2);
-        $subDir = (count($configNameParts) > 1) ? '/' . $configNameParts[0] : '';
-        $baseConfigLocation = $this->pathResolver->getMatchingConfigLocation(
-            $this->pathResolver->getBaseConfigDirPath() . $subDir,
-            $configNameParts[1] ?? $configName
-        );
-
-        $destinationLocation = clone $baseConfigLocation;
-        $destinationLocation->setBasePath($this->pathResolver->getLocalConfigDirPath() . $subDir);
-        $this->configManager->writeConfig($destinationLocation, $this->newConfigs[$configName], $baseConfigLocation);
+        $baseConfigLocation = $this->pathResolver->getBaseConfigLocation($configName);
+        $destinationLocation = $this->pathResolver->getForcedLocalConfigLocation($configName);
+        try {
+            $this->configManager->writeConfig(
+                $destinationLocation,
+                $this->newConfigs[$configName],
+                $baseConfigLocation
+            );
+        } catch (\Exception $e) {
+            $this->addWarning(
+                'Could not upgrade ' . $destinationLocation->getPath()
+                . '. Manual upgrade required. (Error: ' . $e->getMessage() . ')'
+            );
+        }
     }
 
     /**
@@ -543,9 +547,16 @@ class Upgrade implements LoggerAwareInterface
 
         // Warn the user about the deprecated Piwik analytics section:
         if (!empty($newConfig['Piwik'] ?? [])) {
-            $this->addWarning(
-                'You are using the deprecated [Piwik] section for analytics. Please switch to [Matomo] instead.'
-            );
+            if (!empty($newConfig['Matomo'] ?? [])) {
+                $this->addWarning(
+                    'You are using the deprecated [Piwik] section for analytics but also have [Matomo] settings.'
+                    . ' The [Piwik] settings have been removed.'
+                );
+            } else {
+                // Move Piwik settings to Matomo:
+                $newConfig['Matomo'] = $newConfig['Piwik'];
+                unset($newConfig['Piwik']);
+            }
         }
         // Upgrade Google Options:
         if (
@@ -556,8 +567,15 @@ class Upgrade implements LoggerAwareInterface
                 = ['link' => $newConfig['Content']['GoogleOptions']];
         }
 
-        // Disable unused, obsolete setting:
+        // Disable unused, obsolete settings:
         unset($newConfig['Index']['local']);
+        if (isset($newConfig['Cache']['umask'])) {
+            unset($newConfig['Cache']['umask']);
+            $this->addWarning(
+                'The Cache umask setting never worked as intended and is no longer supported; '
+                . 'if you need a custom umask, please configure it at the operating system level.'
+            );
+        }
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'sandal5');
@@ -804,13 +822,15 @@ class Upgrade implements LoggerAwareInterface
                 }
             }
         }
-
         if (($newConfig['NewItem']['method'] ?? null) === 'ils') {
+            $newConfig['NewItem']['method'] = 'disabled';
             $this->addWarning(
-                'The searches.ini [NewItem] method setting of "ils" is deprecated; '
-                . 'you should switch to "solr" or "disabled".'
+                'The searches.ini [NewItem] method setting of "ils" has been removed; '
+                . 'you should enable change tracking (if not already done) and switch to "solr". For now,'
+                . ' new item search has been disabled.'
             );
         }
+        unset($newConfig['NewItem']['result_pages']); // obsolete setting
 
         // save the configuration
         $this->saveModifiedConfig('searches');

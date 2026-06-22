@@ -65,7 +65,7 @@ class ConfigController extends AbstractAdmin
     {
         $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         if (!($configFile = $resolver->getLocalConfigPath('config.ini'))) {
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 'Could not enable auto-configuration; local '
                 . $configFile . ' not found.'
             );
@@ -80,14 +80,14 @@ class ConfigController extends AbstractAdmin
             // Failure -- leave $success set to false.
         }
         if ($success) {
-            $this->flashMessenger()->addSuccessMessage('Auto-configuration enabled.');
+            $this->getFlashMessenger()->addSuccessMessage('Auto-configuration enabled.');
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
             $this->getService(\VuFind\Config\ConfigManagerInterface::class)
                 ->getConfig('config', forceReload: true);
         } else {
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 'Could not enable auto-configuration; check permissions on '
                 . $configFile . '.'
             );

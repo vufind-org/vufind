@@ -202,7 +202,7 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function supportsPasswordChange();
+    public function supportsPasswordChange(): bool;
 
     /**
      * Does this authentication method support password recovery.
@@ -211,7 +211,7 @@ interface AuthInterface
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null);
+    public function supportsPasswordRecovery(?string $target = null): bool;
 
     /**
      * Does this authentication method support connecting library card of

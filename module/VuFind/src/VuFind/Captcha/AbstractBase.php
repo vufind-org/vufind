@@ -76,11 +76,12 @@ abstract class AbstractBase
     }
 
     /**
-     * Pull the captcha field from controller params and check them for accuracy.
+     * Pull the captcha fields from request params and check them for accuracy.
      *
-     * @param Params $params Controller params
+     * @param array $postParams  POST params
+     * @param array $queryParams Query params
      *
      * @return bool
      */
-    abstract public function verify(Params $params): bool;
+    abstract public function verify(array $postParams, array $queryParams): bool;
 }

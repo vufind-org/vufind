@@ -47,7 +47,7 @@ trait GetServiceTrait
      *
      * @var ContainerInterface
      */
-    protected $serviceLocator;
+    protected ContainerInterface $serviceLocator;
 
     /**
      * Retrieve a service.

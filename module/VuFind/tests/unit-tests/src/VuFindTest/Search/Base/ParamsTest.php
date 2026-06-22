@@ -84,7 +84,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         // None by default:
         $params = $this->getMockParams();
-        $this->assertEquals([], $params->getCheckboxFacets());
+        $this->assertSame([], $params->getCheckboxFacets());
 
         $expectedSelected = $expectedUnselected = [
             'desc' => 'checkbox_label',
@@ -120,7 +120,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $params->addFacet('building', 'building_label');
 
         // No filters:
-        $this->assertEquals([], $params->getFilterList());
+        $this->assertSame([], $params->getFilterList());
 
         // Add multiple filters:
         $params->addFilter('~format:bar');
@@ -130,7 +130,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($params->hasFilter('~format:bar'));
         $this->assertTrue($params->hasFilter('~format:baz'));
         $this->assertTrue($params->hasFilter('building:main'));
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'format_label' => [
                     [
@@ -166,7 +166,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Remove format filters and verify:
         $params->removeAllFilters('format');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'building_label' => [
                     [
@@ -189,7 +189,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Remove building:main filter and verify:
         $params->removeFilter('building:main');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'building_label' => [
                     [
@@ -206,7 +206,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Remove the remaining building filter with removeAllFilters and verify:
         $params->removeAllFilters('building');
-        $this->assertEquals([], $params->getFilterList());
+        $this->assertSame([], $params->getFilterList());
 
         // Test that removeAllFilters without parameters removes everything:
         $params->addFilter('~format:bar');
@@ -220,7 +220,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($params->hasFilter('~format:bar'));
         $this->assertFalse($params->hasFilter('format:baz'));
         $this->assertFalse($params->hasFilter('-building:main'));
-        $this->assertEquals([], $params->getFilterList());
+        $this->assertSame([], $params->getFilterList());
     }
 
     /**
@@ -232,18 +232,18 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $params = $this->getMockParams();
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // If we add a checkbox facet for a field that already has an assigned label,
         // we expect the checkbox label to override the field label:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo', 'bar'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo', 'baz'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
     }
 
     /**
@@ -263,16 +263,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
 
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo_old'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo_old'));
 
         // If we add a checkbox facet for a field that already has an assigned label,
         // we expect the checkbox label to override the field label:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo_old', 'bar'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo_old', 'bar'));
     }
 
     /**
@@ -282,7 +282,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Mock', $this->getMockParams()->getSearchClassId());
+        $this->assertSame('Mock', $this->getMockParams()->getSearchClassId());
     }
 
     /**
@@ -296,14 +296,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Key test: word boundaries:
         $params->setBasicSearch('go good googler');
-        $this->assertEquals(
+        $this->assertSame(
             'run good googler',
             $params->getDisplayQueryWithReplacedTerm('go', 'run')
         );
 
         // Key test: replacement of wildcard queries:
         $params->setBasicSearch('oftamologie*');
-        $this->assertEquals(
+        $this->assertSame(
             'ophtalmologie*',
             $params->getDisplayQueryWithReplacedTerm(
                 'oftamologie*',

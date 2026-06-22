@@ -29,7 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use function is_array;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindTheme\View\Helper\AssetManager;
 
 /**
  * GoogleAnalytics view helper.
@@ -40,40 +41,28 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
+class GoogleAnalytics
 {
-    /**
-     * API key (false if disabled).
-     *
-     * @var string|bool
-     */
-    protected $key;
-
     /**
      * Options to pass to the ga() create command.
      *
      * @var string
      */
-    protected $createOptions;
+    protected string $createOptions;
 
     /**
      * Constructor.
      *
-     * @param string|bool $key     API key (false if disabled)
-     * @param bool|array  $options Configuration options (supported option:
-     * 'create_options_js'). If a Boolean is provided instead of an array,
-     * no options will be set (for backward compatibility).
+     * @param ?string      $key          API key (null if disabled)
+     * @param AssetManager $assetManager AssetManager Helper
+     * @param array        $options      Configuration options (supported option: 'create_options_js').
      */
-    public function __construct($key, $options = [])
-    {
-        // The second constructor parameter used to be a Boolean representing
-        // an obsolete setting, but that is no longer meaningful, so treat it as
-        // an empty array for legacy compatibility. We should remove Boolean
-        // support entirely in a future release.
-        if (!is_array($options)) {
-            $options = [];
-        }
-        $this->key = $key;
+    public function __construct(
+        protected ?string $key,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AssetManager $assetManager,
+        array $options = []
+    ) {
         $this->createOptions = $options['create_options_js'] ?? "'auto'";
     }
 
@@ -104,11 +93,11 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
         if (!$this->key) {
             return '';
         }
-        $assetManager = $this->getView()->plugin('assetManager');
+
         $url = 'https://www.googletagmanager.com/gtag/js?id=' . urlencode($this->key);
         $code = $this->getRawJavascript();
         return
-            $assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
-            . $assetManager->outputInlineScriptString($code);
+            $this->assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
+            . $this->assetManager->outputInlineScriptString($code);
     }
 }

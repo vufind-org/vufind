@@ -29,6 +29,9 @@
 
 namespace VuFindTheme\View\Helper;
 
+use Laminas\View\Helper\Url;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Image link view helper (extended for VuFind's theme system).
  *
@@ -38,25 +41,22 @@ namespace VuFindTheme\View\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ImageLink extends \Laminas\View\Helper\AbstractHelper
+class ImageLink
 {
     use RelativePathTrait;
-
-    /**
-     * Theme information service.
-     *
-     * @var \VuFindTheme\ThemeInfo
-     */
-    protected $themeInfo;
 
     /**
      * Constructor.
      *
      * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
+     * @param Url                    $urlHelper Url view helper
      */
-    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
-    {
-        $this->themeInfo = $themeInfo;
+    public function __construct(
+        #[Autowire]
+        protected \VuFindTheme\ThemeInfo $themeInfo,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $urlHelper
+    ) {
     }
 
     /**
@@ -83,10 +83,9 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
             return null;
         }
 
-        $urlHelper = $this->getView()->plugin('url');
         $parts = explode('/', $relPath);
         $encodedRelPath = implode('/', array_map('rawurlencode', $parts));
-        $url = $urlHelper('home') . "themes/{$details['theme']}/" . $encodedRelPath;
+        $url = ($this->urlHelper)('home') . "themes/{$details['theme']}/" . $encodedRelPath;
         $url .= strstr($url, '?') ? '&_=' : '?_=';
         $url .= filemtime($details['path']);
 

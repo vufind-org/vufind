@@ -9,6 +9,32 @@ styles:
 #  my-custom-style-name:
 #    classes: my-custom-css-class my-other-custom-css-class
 
+# The following options configure the form for creating notices in the admin module.
+adminForm:
+# Contexts available in admin form. A context specifies the position of a notice and its conditions.
+# See below for the explanation of position and conditions. If only one context is specified it will
+# automatically be used.
+  contexts:
+    global:
+    global_header:
+      position: "header"
+    logged_in:
+      conditions:
+        - type: logged_in
+          checkedValues: "true"
+          comparator: =
+# Uncomment to override the default languages from config.ini [Languages]
+#  languages:
+#    - "de"
+#    - "en"
+# Content types available in admin forms. See below for explanation of values.
+  contentTypes:
+    - text
+    # To allow completely unescaped HTML uncomment the following option.
+    # Everyone who can edit the content must be trusted and know what they are doing!
+    #  - html
+    - clean_html
+    - markdown
 # Notices can be configured here. You can use the following options:
 # - content: The message to be displayed. It can be translated using the language files.
 # - translations: To configure multiple languages in this file use this option instead of content.
@@ -19,6 +45,8 @@ styles:
 # - contentType: Specifies how the messages should be displayed. The default is "text". The options are
 #                - "text": The message will be display as is. HTML will be escaped.
 #                - "html": HTML in messages will not be escaped.
+#                - "clean_html": Unsafe HTML will be escaped. See also \VuFind\View\Helper\Root\CleanHtmlFactory
+#                                for additional information.
 #                - "markdown": Messages will be rendered using Markdown.
 # - style: Specifies one of the styles above.
 # - position: Specifies the position of the notice. By default, the notices are displayed above the main content.

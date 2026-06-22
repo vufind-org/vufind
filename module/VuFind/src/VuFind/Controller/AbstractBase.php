@@ -30,13 +30,16 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Router\RouteMatch;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Action\ActionDispatchListener;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Controller\Feature\RequestHelperTrait;
@@ -51,6 +54,8 @@ use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Service\GetServiceTrait;
+use VuFind\Session\Helper\FollowupHelper;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function intval;
 use function is_object;
@@ -65,17 +70,9 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  *
- * @method Plugin\Captcha captcha() Captcha plugin
- * @method FlashMessenger flashMessenger() FlashMessenger plugin
- * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
- * @method Plugin\IlsRecords ilsRecords() IlsRecords plugin
- * @method Plugin\NewItems newItems() NewItems plugin
  * @method Plugin\Permission permission() Permission plugin
- * @method Plugin\Renewals renewals() Renewals plugin
- * @method Plugin\Reserves reserves() Reserves plugin
- * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
  *
@@ -361,9 +358,9 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras);
+        $this->getService(FollowupHelper::class)->store($extras);
         if (!empty($msg)) {
-            $this->flashMessenger()->addErrorMessage($msg);
+            $this->getFlashMessenger()->addErrorMessage($msg);
         }
 
         // Set a flag indicating that we are forcing login:
@@ -376,14 +373,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Does the user have catalog credentials available?  Returns associative array
-     * of patron data if so, otherwise forwards to appropriate login prompt and
-     * returns false. If there is an ILS exception, a flash message is added and
-     * a newly created ViewModel is returned.
+     * Does the user have catalog credentials available? Returns associative array of patron data if so, or a response
+     * if redirect is needed. Otherwise returns null (only when forwardToCatalogLogin is false).
+     * If there is an ILS exception, a flash message is added.
      *
-     * @return bool|array|ViewModel
+     * @param bool $forwardToCatalogLogin Forward to catalog login if not logged in?
+     *
+     * @return null|array|Response
      */
-    protected function catalogLogin()
+    protected function catalogLogin(bool $forwardToCatalogLogin = true): null|array|Response
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
@@ -439,11 +437,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
 
                     // If login failed, store a warning message:
                     if (!$patron) {
-                        $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                        $this->getFlashMessenger()->addErrorMessage('Invalid Patron Login');
                     }
                 }
             } catch (ILSException $e) {
-                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
             }
         } elseif (
             'ILS' === $this->params()->fromQuery('auth_method', false)
@@ -452,25 +450,24 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             try {
                 $patron = $ilsAuth->processEmailLoginHash($hash);
             } catch (AuthException $e) {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                $this->getFlashMessenger()->addErrorMessage($e->getMessage());
             }
         } else {
             try {
                 // If no credentials were provided, try the stored values:
                 $patron = $ilsAuth->storedCatalogLogin();
             } catch (ILSException $e) {
-                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
-                return $this->createViewModel();
+                $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
             }
         }
 
         // If catalog login failed, send the user to the right page:
-        if (!$patron) {
+        if (!$patron && $forwardToCatalogLogin) {
             return $this->forwardTo('MyResearch', 'CatalogLogin');
         }
 
-        // Send value (either false or patron array) back to caller:
-        return $patron;
+        // Send either null or patron array back to caller:
+        return $patron ?: null;
     }
 
     /**
@@ -581,6 +578,22 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function forwardTo($controller, $action, $params = [])
     {
+        // Check for action first before forwarding to a controller:
+        $event = clone $this->getEvent();
+        $routeMatch = new RouteMatch($params);
+        $routeMatch->setParam('controller', $controller);
+        $routeMatch->setParam('action', $action);
+        // Keep original matched route:
+        $routeMatch->setMatchedRouteName($event->getRouteMatch()->getMatchedRouteName());
+        $event->setRouteMatch($routeMatch);
+
+        $actionDispatchListener = $this->getService(ActionDispatchListener::class);
+        if ($result = $actionDispatchListener->onDispatch($event)) {
+            return $result;
+        }
+
+        // No action found, forward to controller:
+
         // Inject action into the RouteMatch parameters
         $params['action'] = $action;
 
@@ -614,7 +627,27 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
         // Fail if all expected submission elements were missing from the POST or
         // if the form was submitted but expected CAPTCHA does not validate.
-        return $buttonFound && (!$useCaptcha || $this->captcha()->verify());
+        return $buttonFound && (!$useCaptcha || $this->verifyCaptcha());
+    }
+
+    /**
+     * Get the captcha service.
+     *
+     * @return CaptchaService
+     */
+    protected function getCaptcha(): CaptchaService
+    {
+        return $this->getService(CaptchaService::class);
+    }
+
+    /**
+     * Verify submitted captcha.
+     *
+     * @return bool
+     */
+    protected function verifyCaptcha(): bool
+    {
+        return $this->getCaptcha()->verify($this->params()->fromPost(), $this->params()->fromQuery());
     }
 
     /**
@@ -768,10 +801,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Clear previously stored lightboxParent.
-        $this->followup()->clear('lightboxParent');
+        $followupHelper = $this->getService(FollowupHelper::class);
+        $followupHelper->clear('lightboxParent');
 
         // If we got this far, we want to store the referer:
-        $this->followup()->store($extras, $referer);
+        $followupHelper->store($extras, $referer);
     }
 
     /**
@@ -795,7 +829,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function hasFollowupUrl()
     {
-        return null !== $this->followup()->retrieve('url');
+        return null !== $this->getService(FollowupHelper::class)->retrieve('url');
     }
 
     /**
@@ -809,8 +843,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        if ($url = $this->followup()->retrieveAndClear('url')) {
-            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+        if ($url = $this->getService(FollowupHelper::class)->retrieveAndClear('url')) {
+            $lightboxParent = $this->getService(FollowupHelper::class)->retrieveAndClear('lightboxParent');
             // If a user clicks on the "Your Account" link, we want to be sure
             // they get to their account rather than being redirected to an old
             // followup URL. We'll use a redirect=0 GET flag to indicate this:
@@ -835,9 +869,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function clearFollowupUrl()
     {
-        $this->followup()->clear('isReferrer');
-        $this->followup()->clear('lightboxParent');
-        $this->followup()->clear('url');
+        $followupHelper = $this->getService(FollowupHelper::class);
+        $followupHelper->clear('isReferrer');
+        $followupHelper->clear('lightboxParent');
+        $followupHelper->clear('url');
     }
 
     /**
@@ -951,5 +986,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             $this->auditEventService = $dbServiceManager->get(AuditEventServiceInterface::class);
         }
         return $this->auditEventService;
+    }
+
+    /**
+     * Get flash messenger.
+     *
+     * @return FlashMessengerInterface
+     */
+    public function getFlashMessenger(): FlashMessengerInterface
+    {
+        return $this->serviceLocator->get(FlashMessengerInterface::class);
     }
 }
