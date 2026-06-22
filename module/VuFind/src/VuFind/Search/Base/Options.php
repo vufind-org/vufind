@@ -1533,7 +1533,7 @@ abstract class Options implements TranslatorAwareInterface
         if ($context === null) {
             return true;
         }
-        return !empty(array_intersect([$context, '*'], $this->showRestrictedViewWarningContexts));
+        return (bool)array_intersect([$context, '*'], $this->showRestrictedViewWarningContexts);
     }
 
     /**
