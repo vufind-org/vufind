@@ -212,6 +212,12 @@
       </div>
 
       <div class="result-links hidden-print">
+        <?php if (count($this->driver->getCitationFormats()) > 0): ?>
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" data-lightbox rel="nofollow" class="icon-link">
+            <?=$this->icon('cite', 'icon-link__icon')?>
+            <span class="icon-link__label"><?=$this->transEsc('Cite this')?></span>
+          </a>
+        <?php endif; ?>
         <?php if ($this->list === null || $this->userlist()->userCanEditList($this->auth()->getManager()->getUserObject(), $this->list)): ?>
           <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool icon-link">
             <?=$this->icon('user-list-entry-edit', 'icon-link__icon') ?>
