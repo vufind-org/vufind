@@ -44,7 +44,7 @@
 
         a:hover,
         a:focus {
-          background-color: lighten($gray-base, 70%);
+          background-color: color.adjust($gray-base, $lightness: 70%);
         }
       }
     }
