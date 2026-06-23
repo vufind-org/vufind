@@ -59,7 +59,6 @@
         'checkedValue' => $this->formData['activeDateTimeType'] ?? null,
       ])?>
     <?php endif; ?>
-    <div class="alert alert-info"><?=$this->transEsc('content_form_date_time_info')?></div>
     <?php foreach ($dateTimeTypes as $dateTimeType): ?>
       <?php
       $inputType = ($dateTimeType === 'date_time') ? 'datetime-local' : $dateTimeType;
@@ -82,7 +81,7 @@
           }
         ?>
         <div class="<?=implode(' ', $groupClasses)?>">
-          <label for="<?=$this->escapeHtmlAttr($dateTimeInputName)?>"><?=$this->transEsc($dateTimeInputName)?></label>
+          <label for="<?=$this->escapeHtmlAttr($dateTimeInputName)?>"><?=$this->transEsc($dateTimeInputName)?> (<?=$this->transEsc('optional')?>)</label>
           <input<?=$this->htmlAttributes($dateTimeInputAttributes)?>>
         </div>
       <?php endforeach; ?>
