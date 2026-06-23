@@ -118,7 +118,7 @@ class Section
      */
     public function __invoke(
         string $key,
-        array|string $config = SectionServiceInterface::DEFAULT_CONFIG_PATH,
+        array|string $config = SectionServiceInterface::DEFAULT_CONFIG_NAME,
         ?string $template = null
     ): static {
         // Always call section service as the configuration might be different.

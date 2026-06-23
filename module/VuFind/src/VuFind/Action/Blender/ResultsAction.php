@@ -55,6 +55,6 @@ class ResultsAction extends AbstractBlenderSearchAndResultsAction
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        return $this->renderSearchResults();
+        return $this->renderSearchResults($request, $response);
     }
 }
