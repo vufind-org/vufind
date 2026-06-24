@@ -38,6 +38,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\ForwardHelper;
 use VuFind\ActionHelper\LoginHelper;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
@@ -176,7 +177,7 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
                     . $this->translate('go_to_list') . '</a>.',
                 ];
                 $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage($message);
-                return $this->getRedirectResponse($response, $listUrl);
+                return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $listUrl);
             }
         }
 

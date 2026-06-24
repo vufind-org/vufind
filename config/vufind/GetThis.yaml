@@ -1,0 +1,128 @@
+---
+# This file contains the settings for the GetThis feature.
+# See Regex.yaml for comments related to regex.
+
+# Whether to display the holdings list in a JS dropdown or a regular list, default false.
+# This setting is experimental; the setting or the default value might change or disappear in future upgrades.
+#holdingsDropdown: false
+
+# Whether to display the copy number (next to the call number), default false.
+#showCopyNumber: false
+
+# Whether to comment in the HTML code the displayed template name for troubleshooting/debugging, default false.
+#commentTemplateName: false
+
+templates:
+  # Elements here correspond to .phtml template files within templates/record/get-this
+  # (e.g. the holdings section configures templates/record/get-this/holdings.phtml)
+  # Elements parameter, all parameters are optional :
+  #   enabled: true/false, whether to enable the template
+  #   view_variables: array of extra variables made available to the templates.
+  #     It can be used with placeholders if available; see example below.
+  #   condition_function: a function within GetThisLoader returning a boolean indicating whether to display the template.
+  #     The result of the function can be negated if prefixed with "!".
+  #     note : If the function does not exist, the condition will evaluate to false
+  #   condition_group: if condition_function is limiting for you, condition_group replaces it to give more flexibility.
+  #     This element defines a set of logical conditions.
+  #     If any entry is true, the whole list is considered true (logical OR).
+  #     The structure is recursive, allowing nested combinations of AND/OR logic.
+  #     At each level, condition_group is a list of entries.
+  #     Entries can be:
+  #       condition_function: evaluates a single condition.
+  #       condition_group: a nested conditions block used to combine conditions.
+  #       operator: The string "and" is the only supported.
+  #         It acts as a logical AND between all sibling conditions in the group (but not the descendent).
+  #         This is non-positional and can be placed anywhere within the group
+  #
+  #   Example; Values surrounded with brackets are placeholders serving as example :
+  #   These nested conditions are equivalent to ((test_function1 AND test_function2) OR test_function3) OR test_function4.
+  #     {template_name}:
+  #       condition_group:
+  #         - condition_group:
+  #             - condition_group:
+  #                 - condition_function: {test_function1}
+  #                 - operator: and
+  #                 - condition_function: {test_function2}
+  #             - condition_function: {test_function3}
+  #         - condition_function: {test_function4}
+  #       view_variables:
+  #         - {my_link}: {https://your_lib.edu}
+  #         - {my_link_with_placeholder}: {https://mylib.edu/%%location%%/open_hours}
+
+  holdings:
+    condition_function: showHoldings
+
+  biblio-info:
+    enabled: true
+
+  micro-form:
+    # Template displayed if the location matches LOCATION_MICROFORMS in Regex.yaml
+    condition_function: showMicroForm
+    view_variables:
+      open_hours: https://your_lib.edu/hours
+
+  staff-office-delivery:
+    # Part of the logic to choose whether to display the template belongs in the following regex (Regex.yaml) :
+    #   STATUS_AVAILABLE
+    #   STATUS_CHECKED_OUT
+    #   STATUS_UNAVAILABLE
+    condition_function: showStaffDelivery
+    view_variables:
+      # Has the following placeholders available:
+      #   %%item%% : Item record
+      #   %%location%%: Location of the item
+      #   %%callNum%%: Call number
+      #   %%title%%: Title
+      #   %%author%%: Author
+      #   %%isbn%%: ISBN
+      general_link: https://your_lib.edu/facstaffdelivery
+      request_link: https://interlib.your_lib.edu/request_link/
+
+  inter-library:
+    condition_function: showInterLibrary
+    # Part of the logic to choose whether to display the template belongs in the following regex (Regex.yaml) :
+    #   STATUS_AVAILABLE
+    #   STATUS_CHECKED_OUT
+    #   STATUS_UNAVAILABLE
+    #   LOCATION_EXCLUSIVE
+    #   STATUS_LIB_USE_ONLY
+    view_variables:
+      # Has the following placeholders available:
+      #   %%item%% : Item record
+      #   %%location%%: Location of the item
+      #   %%status%%: Availability status
+      #   %%callNum%%: Call number
+      #   %%title%%: Title
+      #   %%author%%: Author
+      #   %%isbn%%: ISBN
+      general_link: https://your_lib.edu/ils/
+      request_link: https://interlib.your_lib.edu/request_link/
+
+
+  remote-delivery:
+    # Part of the logic to choose whether to display the template belongs in the following regex (Regex.yaml) :
+    #   STATUS_AVAILABLE
+    #   STATUS_CHECKED_OUT
+    #   STATUS_UNAVAILABLE
+    condition_function: showRemoteDelivery
+    view_variables:
+      # Has the following placeholders available:
+      #   %%item%% : Item record
+      #   %%location%%: Location of the item
+      #   %%status%%: Availability status
+      #   %%callNum%%: Call number
+      #   %%title%%: Title
+      #   %%author%%: Author
+      #   %%isbn%%: ISBN
+      general_link: https://your_lib.edu/ils/distance
+      request_link: https://interlib.your_lib.edu/request_link/
+
+# The order you want the templates to be displayed
+templates_order:
+  - holdings
+  - biblio-info
+  - micro-form
+  - message
+  - staff-office-delivery
+  - inter-library
+  - remote-delivery

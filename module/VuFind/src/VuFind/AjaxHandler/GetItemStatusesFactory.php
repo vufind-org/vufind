@@ -70,13 +70,18 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $getThisEnabled = ($config['Record']['getThisEnabled'] ?? null) == true;
+        $getThis = $getThisEnabled ? $container->get(\VuFind\GetThis\GetThisLoader::class) : null;
         $handler = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
+            $config,
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(TemplateRendererInterface::class),
             $container->get(\VuFind\ILS\Logic\Holds::class),
-            $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class)
+            $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class),
+            $getThis,
+            $container->get(\VuFind\Http\RouteHelper::class)
         );
         $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $handler;
