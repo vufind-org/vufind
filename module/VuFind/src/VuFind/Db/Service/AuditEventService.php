@@ -330,7 +330,7 @@ class AuditEventService extends AbstractDbService implements
      *
      * @param array $details Details
      *
-     * @return @rray
+     * @return array
      */
     protected function scrubSecrets(array $details): array
     {
