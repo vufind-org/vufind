@@ -94,11 +94,7 @@ function compileTheme(themeName) {
   );
 
   let cssContent = compiled.css;
-  let sourceMapContent = null;
-
-  if (DO_SOURCEMAPS) {
-    sourceMapContent = JSON.stringify(compiled.sourceMap);
-  }
+  let sourceMapContent = DO_SOURCEMAPS ? JSON.stringify(compiled.sourceMap) : null;
 
   if (DO_MINIFY) {
     console.log("- minifying");
