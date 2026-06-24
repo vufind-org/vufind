@@ -36,7 +36,6 @@ use Throwable;
 use VuFind\ActionHelper\HelperInterface;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\PluginManager as HelperPluginManager;
-use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Http\RouteHelper;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -302,36 +301,6 @@ abstract class AbstractAction implements ActionInterface
             throw new Exception($this::class . ' action not properly initialized; helper plugin manager missing');
         }
         return $this->helperPluginManager->get($name);
-    }
-
-    /**
-     * Get a 302 redirect response.
-     *
-     * @param ResponseInterface $response Response
-     * @param string            $url      Target URL
-     *
-     * @return ResponseInterface
-     */
-    protected function getRedirectResponse(ResponseInterface $response, string $url): ResponseInterface
-    {
-        return $this->getHelper(RedirectHelper::class)->redirectToUrl($response, $url);
-    }
-
-    /**
-     * Generate a URL given the name of a route.
-     *
-     * @param string $name        Name of the route
-     * @param array  $routeParams Path parameters
-     * @param array  $queryParams Query parameters
-     *
-     * @return string Url For the link href attribute
-     */
-    protected function getUrlFromRoute(
-        string $name,
-        array $routeParams = [],
-        array $queryParams = []
-    ): string {
-        return $this->getRouteHelper()->getUrlFromRoute($name, $routeParams, $queryParams);
     }
 
     /**

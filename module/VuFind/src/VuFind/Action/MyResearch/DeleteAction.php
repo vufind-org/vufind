@@ -38,6 +38,7 @@ use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\FormHelper;
 use VuFind\ActionHelper\LoginHelper;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Service\PluginManager as DbServicePluginManager;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -97,9 +98,6 @@ class DeleteAction extends AbstractTemplateRenderingAction
 
         // Get target URL for after deletion:
         $listID = $this->getPostParam('listID');
-        $newUrl = empty($listID)
-            ? $this->getUrlFromRoute('myresearch-favorites')
-            : $this->getUrlFromRoute('userList', ['id' => $listID]);
 
         // Fail if we have nothing to delete:
         $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
@@ -121,7 +119,10 @@ class DeleteAction extends AbstractTemplateRenderingAction
         } elseif ($this->getHelper(FormHelper::class)->formWasSubmitted($request)) {
             $this->favoritesService->deleteFavorites($ids, $listID === null ? null : (int)$listID, $user);
             $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage('fav_delete_success');
-            return $this->getRedirectResponse($response, $newUrl);
+            $redirectHelper = $this->getHelper(RedirectHelper::class);
+            return $listID
+                ? $redirectHelper->redirectToRoute($response, 'userList', ['id' => $listID])
+                : $redirectHelper->redirectToRoute($response, 'myresearch-favorites');
         }
 
         // If we got this far, the operation has not been confirmed yet; show the necessary dialog box:
