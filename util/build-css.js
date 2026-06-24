@@ -76,6 +76,7 @@ function compileTheme(themeName) {
 
   console.log("- compiling SCSS to CSS");
 
+  // Inspired by bootstrap5 compilation, but adjusted for project needs.
   // @link https://github.com/twbs/bootstrap/blob/main/package.json
   // sass --style expanded --source-map --embed-sources --no-error-css scss/:dist/css/
   const compiled = sass.compile(
