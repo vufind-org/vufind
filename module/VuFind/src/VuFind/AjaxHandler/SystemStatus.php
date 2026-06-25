@@ -32,8 +32,11 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
+use VuFind\Exception\Forbidden;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -46,9 +49,10 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
+class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface, AuthorizationServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use AuthorizationServiceAwareTrait;
 
     /**
      * Constructor.
@@ -77,6 +81,11 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      */
     public function handleRequest(Params $params)
     {
+
+        if (!$this->getAuthorizationService()->isGranted('access.SystemStatus')) {
+            throw new Forbidden('Access denied');
+        }
+
         // Check system status
         if (
             !empty($this->config->System->healthCheckFile)
