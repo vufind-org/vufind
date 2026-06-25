@@ -96,7 +96,7 @@ jobs:
           ini-values: error_reporting=E_ALL
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Configure Apache for PHP ${{ matrix.php-version }}
         if: ${{ inputs.phing_task_phpunit }}
