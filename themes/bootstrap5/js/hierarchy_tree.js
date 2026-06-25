@@ -252,13 +252,15 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
             scrollToSelected(treeEl);
           });
           const selectedElement = containerEl.querySelector('li.hierarchy-tree__selected');
-          const selectedElementToggle = selectedElement.querySelector('button.js-toggle-expanded');
-          if (selectedElementToggle) {
-            selectedElementToggle.addEventListener('click', () => {
-              if (!showEl.checked) {
-                showCurrentPathFullHierarchy(selectedElement);
-              }
-            });
+          if (selectedElement) {
+            const selectedElementToggle = selectedElement.querySelector('button.js-toggle-expanded');
+            if (selectedElementToggle) {
+              selectedElementToggle.addEventListener('click', () => {
+                if (!showEl.checked) {
+                  showCurrentPathFullHierarchy(selectedElement);
+                }
+              });
+            }
           }
         }
       }
