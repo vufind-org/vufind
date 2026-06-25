@@ -122,35 +122,35 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Cache php-cs-fixer data
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .php_cs_cache
           key: "php-${{ matrix.php-version }}-php-cs-fixer-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-php-cs-fixer-"
 
       - name: Cache phpstan data
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .phpstan_cache
           key: "php-${{ matrix.php-version }}-phpstan-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpstan-"
 
       - name: Cache PHP_CodeSniffer data
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: tests/phpcs.cache.json
           key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpcs-"
 
       - name: Cache rector data
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .rector
           key: "php-${{ matrix.php-version }}-rector-${{ github.sha }}"
@@ -166,7 +166,7 @@ jobs:
       - name: Restore Solr download cache (used in `composer install`)
         if: ${{ inputs.phing_task_phpunit }}
         id: cache-solr
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
           key: solr-${{ steps.solr-version.outputs.version }}
@@ -177,14 +177,14 @@ jobs:
 
       - name: Save Solr download cache (if downloaded in `composer install`)
         if: ${{ inputs.phing_task_phpunit && steps.cache-solr.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: downloads/solr-${{ steps.solr-version.outputs.version }}.tgz
           key: solr-${{ steps.solr-version.outputs.version }}
 
       - name: Cache NPM dependencies
         if: ${{ inputs.phing_task_qa_console }}
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           key: npm-${{ hashFiles('**/package.json') }}
           path: ~/.npm
