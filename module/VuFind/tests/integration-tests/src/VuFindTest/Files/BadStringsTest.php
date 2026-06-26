@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  *
- * @VuFind.SkipBadStringCheck
+ * @VuFindSkipBadStringCheck
  */
 
 namespace VuFindTest\Files;
@@ -70,7 +70,10 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
         foreach ($filesToCheck as $fileToCheck) {
             $fileContents = file_get_contents($fileToCheck);
             // Use annotation to skip files:
-            if (str_contains($fileContents, '* @VuFind.SkipBadStringTest')) {
+            if (
+                str_contains($fileContents, '* @VuFind.SkipBadStringTest')
+                || str_contains($fileContents, '* @VuFindSkipBadStringTest')
+            ) {
                 continue;
             }
             $reasons = [];

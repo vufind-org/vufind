@@ -65,7 +65,7 @@ class HomeAction extends AbstractSearchAndResultsAction
         if (!$userContentHelper->tagsEnabled()) {
             throw new ForbiddenException('Tags disabled');
         }
-        return $this->renderSearchResults();
+        return $this->renderSearchResults($request, $response);
     }
 
     /**

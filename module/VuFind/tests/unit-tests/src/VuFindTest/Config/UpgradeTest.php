@@ -364,6 +364,35 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             ];
             $this->assertEquals($permDetails, $results['permissions'][$perm]);
         }
+
+        $this->assertEquals(
+            [
+                'defaultDeniedActionBehavior' => 'message:Unavailable',
+                'defaultDeniedTemplateBehavior' => '',
+                'controllerAccess' => [
+                    'VuFind\Controller\SearchController' => 'Default.search',
+                    '*' => 'Default.all',
+                ],
+                'actionAccess' => [
+                    '*' => 'Default.all',
+                ],
+            ],
+            $results['permissionBehavior']['global']
+        );
+        $this->assertEquals(
+            [
+                'deniedActionBehavior' => 'promptLogin',
+            ],
+            $results['permissionBehavior']['Foo']
+        );
+        $this->assertSame(
+            [
+                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini that VuFind no'
+                . ' longer supports. You should replace any controllerAccess setting with a corresponding'
+                . ' actionAccess setting.',
+            ],
+            $upgrader->getWarnings()
+        );
     }
 
     /**

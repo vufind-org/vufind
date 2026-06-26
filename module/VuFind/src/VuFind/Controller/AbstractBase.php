@@ -97,7 +97,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     /**
      * Behavior when access is denied (used unless overridden through
      * permissionBehavior.ini). Valid values are 'promptLogin' and 'exception'.
-     * Leave at null to use the defaultDeniedControllerBehavior set in
+     * Leave at null to use the defaultDeniedActionBehavior set in
      * permissionBehavior.ini (normally 'promptLogin' unless changed).
      *
      * @var string

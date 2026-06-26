@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\ConfigException;
 
 /**
  * Generic controller factory.
@@ -58,6 +59,13 @@ class AbstractBaseFactory implements FactoryInterface
     {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissionBehavior');
         $permissions = $config['global']['controllerAccess'] ?? [];
+
+        // Check that actions also have the same setting:
+        if (($permissions['*'] ?? null) !== ($config['global']['actionAccess']['*'] ?? null)) {
+            throw new ConfigException(
+                "actionAccess['*'] and controllerAccess['*'] must match in permissionBehavior configuration"
+            );
+        }
 
         if (!empty($permissions) && $controller instanceof Feature\AccessPermissionInterface) {
             // Iterate through parent classes until we find the most specific

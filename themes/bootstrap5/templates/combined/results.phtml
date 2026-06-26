@@ -69,14 +69,14 @@
 </form>
 <?php
   $viewParams = [
-    'searchClassId' => $searchClassId,
+    'searchClassId' => $this->searchClassId,
     'combinedResults' => $this->combinedResults,
   ];
 ?>
 
 <?php if (!empty($columnSideRecommendations)): ?>
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+    <?=$this->context($this)->renderInContext('combined/stack-' . $this->placement . '.phtml', $viewParams); ?>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
@@ -87,7 +87,7 @@
     <?php endforeach; ?>
   </div>
 <?php else: ?>
-  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  <?=$this->context($this)->renderInContext('combined/stack-' . $this->placement . '.phtml', $viewParams); ?>
 <?php endif; ?>
 
 <?php $recs = $combinedResults->getRecommendations('bottom'); ?>

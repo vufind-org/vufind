@@ -36,7 +36,9 @@ use Exception;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManager;
@@ -57,7 +59,6 @@ use VuFind\Search\SearchNormalizer;
 use VuFind\Search\SearchRunner;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Solr\Utils as SolrUtils;
-use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\ResultFeed;
 use VuFindTheme\ThemeInfo;
 
@@ -109,7 +110,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
      * @param RecommendPluginManager     $recommendPluginManager     Recommendation plugin manager
      * @param SearchMemory               $searchMemory               Search memoy
      * @param BlockLoader                $blockLoader                Content block loader
-     * @param FlashMessenger             $flashMessenger             Flash messenger
      * @param ConfigManager              $configManager              Configuration manager
      * @param RecordRouter               $recordRouter               Record router
      * @param SessionManager             $sessionManager             Session manager
@@ -128,7 +128,6 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         protected RecommendPluginManager $recommendPluginManager,
         protected SearchMemory $searchMemory,
         protected BlockLoader $blockLoader,
-        protected FlashMessenger $flashMessenger,
         protected ConfigManager $configManager,
         protected RecordRouter $recordRouter,
         protected SessionManager $sessionManager,
@@ -163,9 +162,11 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     /**
      * Render advanced search page.
      *
+     * @param ?callable $setupCallback Optional callback for setting up additional template parameters
+     *
      * @return ResponseInterface
      */
-    protected function renderAdvancedSearch(): ResponseInterface
+    protected function renderAdvancedSearch(?callable $setupCallback = null): ResponseInterface
     {
         $templateParams = $this->createTemplateParams(
             [
@@ -194,59 +195,115 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             );
         }
 
+        if ($setupCallback) {
+            $templateParams = $setupCallback($templateParams);
+        }
+
         return $this->renderTemplate($this->request, $this->response, $templateParams);
     }
 
     /**
      * Perform a search and render the results.
      *
-     * @param ?callable $setupCallback Optional setup callback that overrides the default one
+     * @param ServerRequestInterface $request       Server request
+     * @param ResponseInterface      $response      Response
+     * @param ?callable              $setupCallback Optional setup callback that overrides the default one
      *
      * @return ResponseInterface
      */
-    protected function renderSearchResults(?callable $setupCallback = null): ResponseInterface
-    {
-        $templateParams = $this->createTemplateParams();
-        $config = $this->configManager->getConfigArray($this->getOptionsForClass()->getFacetsIni());
-        $templateParams['multiFacetsSelection'] = static::getMultiSelectionValueFromConfig($config);
-        $extraErrors = [];
-
+    protected function renderSearchResults(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        ?callable $setupCallback = null
+    ): ResponseInterface {
         // Handle saved search requests:
         $savedId = $this->getQueryParam('saved');
         if ($savedId !== null) {
             return $this->redirectToSavedSearch((int)$savedId);
         }
 
-        // Send both GET and POST variables to search class:
-        $templateParams['request'] = $request = $this->request->getQueryParams() + $this->request->getParsedBody();
-
-        $lastView = $this->searchMemory->retrieveLastSetting($this->searchClassId, 'view');
-        try {
-            $templateParams['results'] = $results = $this->searchRunner->run(
-                $request,
-                $this->searchClassId,
-                $setupCallback ?: $this->getSearchSetupCallback(),
-                $lastView
-            );
-        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
-            return $this->redirectToLegalSearchPage($request, $e->getLegalPage());
-        }
-        $templateParams['params'] = $params = $results->getParams();
+        $templateParams = $this->getSearchResultsTemplateParams($request, $this->searchClassId, $setupCallback);
 
         // For page parameter being out of results list, we want to redirect to correct page
-        $page = $params->getPage();
-        $totalResults = $results->getResultTotal();
-        $limit = $params->getLimit();
+        $page = $templateParams['params']->getPage();
+        $totalResults = $templateParams['results']->getResultTotal();
+        $limit = $templateParams['params']->getLimit();
         $lastPage = $limit ? ceil($totalResults / $limit) : 1;
         if ($totalResults > 0 && $page > $lastPage) {
-            $queryParams = $request;
+            $queryParams = $templateParams['request'];
             $queryParams['page'] = $lastPage;
             return $this->getHelper(RedirectHelper::class)->redirectToRoute(
                 $this->response,
-                $params->getOptions()->getSearchAction(),
+                $templateParams['params']->getOptions()->getSearchAction(),
                 queryParams: $queryParams
             );
         }
+
+        // If a "jumpto" parameter is set, deal with that now:
+        if ($jump = $this->processJumpTo($templateParams['results'])) {
+            return $jump;
+        }
+
+        // Remember the current URL as the last search.
+        $this->rememberSearch($templateParams['results']);
+
+        // Add to search history:
+        if ($this->saveToHistory) {
+            $this->saveSearchToHistory($templateParams['results']);
+        }
+
+        // Jump to only result, if configured:
+        if ($jump = $this->processJumpToOnlyResult($templateParams['results'])) {
+            return $jump;
+        }
+
+        // Special case: If we're in RSS view, we need to render differently:
+        if (isset($templateParams['params']) && $templateParams['params']?->getView() == 'rss') {
+            return $this->getRssSearchResponse($templateParams);
+        }
+
+        // Set up results scroller:
+        if ($templateParams['results']->getOptions()->resultScrollerActive()) {
+            $this->resultScroller->init($templateParams['results']);
+        }
+
+        return $this->renderTemplate($request, $response, $templateParams);
+    }
+
+    /**
+     * Get template params for rendering search results.
+     *
+     * @param ServerRequestInterface $request       Server request
+     * @param string                 $searchClassId Search class id
+     * @param ?callable              $setupCallback Optional setup callback that overrides the default one
+     *
+     * @return array
+     */
+    protected function getSearchResultsTemplateParams(
+        ServerRequestInterface $request,
+        string $searchClassId,
+        ?callable $setupCallback = null
+    ): array {
+        $templateParams = $this->createTemplateParams();
+        $config = $this->configManager->getConfigArray($this->getOptionsForClass()->getFacetsIni());
+        $templateParams['multiFacetsSelection'] = static::getMultiSelectionValueFromConfig($config);
+        $extraErrors = [];
+
+        // Send both GET and POST variables to search class:
+        $templateParams['request'] = $request->getQueryParams() + $request->getParsedBody();
+
+        $lastView = $this->searchMemory->retrieveLastSetting($searchClassId, 'view');
+        try {
+            $templateParams['results'] = $results = $this->searchRunner->run(
+                $templateParams['request'],
+                $searchClassId,
+                $setupCallback ?: $this->getSearchSetupCallback($request),
+                $lastView
+            );
+        } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
+            return $this->redirectToLegalSearchPage($templateParams['request'], $e->getLegalPage());
+        }
+        $templateParams['params'] = $results->getParams();
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
@@ -255,32 +312,9 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $templateParams['parseError'] = true;
         } else {
-            // If a "jumpto" parameter is set, deal with that now:
-            if ($jump = $this->processJumpTo($results)) {
-                return $jump;
-            }
-
-            // Remember the current URL as the last search.
-            $this->rememberSearch($results);
-
-            // Add to search history:
-            if ($this->saveToHistory) {
-                $this->saveSearchToHistory($results);
-            }
-
-            // Jump to only result, if configured:
-            if ($jump = $this->processJumpToOnlyResult($results)) {
-                return $jump;
-            }
-
-            // Set up results scroller:
-            if ($results->getOptions()->resultScrollerActive()) {
-                $this->resultScroller->init($results);
-            }
-
             foreach ($results->getErrors() as $error) {
                 try {
-                    $this->flashMessenger->addErrorMessage($error);
+                    $this->getHelper(FlashMessagesHelper::class)->addErrorMessage($error);
                 } catch (\Exception $e) {
                     // The flash messenger will throw an exception if session writes are disabled,
                     // which will happen in combined search AJAX requests. For that situation, we'll
@@ -290,20 +324,16 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             }
         }
 
-        // Special case: If we're in RSS view, we need to render differently:
-        if (isset($templateParams['params']) && $templateParams['params']?->getView() == 'rss') {
-            return $this->getRssSearchResponse($templateParams);
-        }
-
         // Schedule options for footer tools
         $templateParams['scheduleOptions'] = $this->searchHistory->getScheduleOptions();
         $templateParams['saveToHistory'] = $this->saveToHistory;
 
         // Add extra errors, if necessary:
-        if (count($extraErrors) > 0) {
+        if ($extraErrors) {
             $templateParams['extraErrors'] = $extraErrors;
         }
-        return $this->renderTemplate($this->request, $this->response, $templateParams);
+
+        return $templateParams;
     }
 
     /**
@@ -449,7 +479,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     {
         // Only save search URL if the property tells us to...
         if ($this->rememberSearch) {
-            $searchUrl = $this->routeHelper->getUrlFromRoute(
+            $searchUrl = $this->getRouteHelper()->getUrlFromRoute(
                 $results->getOptions()->getSearchAction(),
                 $results->getUrlQuery()->getParamArray()
             );
@@ -464,13 +494,15 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     /**
      * Get active recommendation module settings.
      *
+     * @param ServerRequestInterface $request Current request
+     *
      * @return array
      */
-    protected function getActiveRecommendationSettings()
+    protected function getActiveRecommendationSettings(ServerRequestInterface $request): array
     {
         // Enable recommendations unless explicitly told to disable them:
         $all = ['top', 'side', 'noresults', 'bottom'];
-        $noRecommend = $this->getQueryParam('noRecommend', '');
+        $noRecommend = $request->getQueryParams()['noRecommend'] ?? '';
         if (in_array($noRecommend, [1, '1', 'true', true], true)) {
             return [];
         } elseif (in_array($noRecommend, [0, '0', 'false', false], true)) {
@@ -485,24 +517,25 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
     /**
      * Get a callback for setting up a search (or null if callback is unnecessary).
      *
+     * @param ServerRequestInterface $request Current request
+     *
      * @return mixed
      */
-    protected function getSearchSetupCallback()
+    protected function getSearchSetupCallback(ServerRequestInterface $request)
     {
         // Setup callback to attach listener if appropriate:
-        $activeRecs = $this->getActiveRecommendationSettings();
+        $activeRecs = $this->getActiveRecommendationSettings($request);
         if (empty($activeRecs)) {
             return null;
         }
 
-        $override = $this->getQueryParam('recommendOverride');
+        $override = $request->getQueryParams()['recommendOverride'] ?? null;
 
         // Retrieve recommend settings from params object:
         return function ($runner, $params, $searchId) use ($activeRecs, $override): void {
             $listener = new RecommendListener($this->recommendPluginManager, $searchId);
             $config = [];
-            $rawConfig = $params->getOptions()
-                ->getRecommendationSettings($params->getSearchHandler());
+            $rawConfig = $params->getOptions()->getRecommendationSettings($params->getSearchHandler());
             foreach ($rawConfig as $key => $value) {
                 if (in_array($key, $activeRecs)) {
                     $config[$key] = $value;
@@ -535,13 +568,14 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             throw new \Exception('Unrecoverable deep paging error.');
         }
         $request['page'] = $page;
-        $this->flashMessenger->addErrorMessage(
+        $this->getHelper(FlashMessagesHelper::class)->addErrorMessage(
             [
                 'msg' => 'deep_paging_failure',
                 'tokens' => ['%%page%%' => $page],
             ]
         );
-        return $this->getRedirectResponse($this->response, '?' . http_build_query($request));
+        return $this->getHelper(RedirectHelper::class)
+            ->redirectToUrl($this->response, '?' . http_build_query($request));
     }
 
     /**
@@ -711,7 +745,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
         // Look up search in database and fail if it is not found:
         $search = $this->retrieveSearchSecurely($searchId);
         if (empty($search)) {
-            $this->flashMessenger->addErrorMessage('advSearchError_notFound');
+            $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('advSearchError_notFound');
             return null;
         }
 
@@ -726,7 +760,7 @@ abstract class AbstractSearchAndResultsAction extends AbstractTemplateRenderingA
             try {
                 $savedSearch->getParams()->convertToAdvancedSearch();
             } catch (\Exception $ex) {
-                $this->flashMessenger->addErrorMessage('advSearchError_notAdvanced');
+                $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('advSearchError_notAdvanced');
                 return null;
             }
         }

@@ -63,11 +63,12 @@ class PermissionHelper implements
     /**
      * Constructor.
      *
-     * @param PermissionManager       $permissionManager       Permission Manager
-     * @param PermissionDeniedManager $permissionDeniedManager Permission Denied Manager
-     * @param AuthManager             $authManager             Auth manager
-     * @param LoginHelper             $loginHelper             Login helper
-     * @param RedirectHelper          $redirectHelper          Redirect helper
+     * @param PermissionManager       $permissionManager        Permission Manager
+     * @param PermissionDeniedManager $permissionDeniedManager  Permission Denied Manager
+     * @param AuthManager             $authManager              Auth manager
+     * @param LoginHelper             $loginHelper              Login helper
+     * @param RedirectHelper          $redirectHelper           Redirect helper
+     * @param array                   $permissionBehaviorConfig Permission behavior configuration
      */
     public function __construct(
         protected PermissionManager $permissionManager,
@@ -77,6 +78,8 @@ class PermissionHelper implements
         protected LoginHelper $loginHelper,
         #[Autowire(container: PluginManager::class)]
         protected RedirectHelper $redirectHelper,
+        #[Autowire(config: 'permissionBehavior')]
+        protected array $permissionBehaviorConfig,
     ) {
     }
 
@@ -89,7 +92,7 @@ class PermissionHelper implements
      *
      * @return bool
      */
-    public function isAuthorized($permission, $context = null)
+    public function isAuthorized(string $permission, mixed $context = null): bool
     {
         return $this->permissionManager->isAuthorized($permission, $context);
     }
@@ -101,12 +104,12 @@ class PermissionHelper implements
      * @param ServerRequestInterface $request         Request
      * @param ResponseInterface      $response        Response
      * @param string                 $permission      Permission to check
-     * @param ?string                $defaultBehavior Default behavior to use if none configured
-     * (null to use default configured in the manager, false to take no action).
+     * @param ?string                $defaultBehavior Default behavior to use if none configured (null to use default
+     * configured in the manager, false to take no action).
      * @param bool                   $passIfUndefined Should the check pass if no rules are defined for $permission in
      * permissions.ini?
      *
-     * @return mixed
+     * @return ?ResponseInterface
      */
     public function check(
         ServerRequestInterface $request,
@@ -126,7 +129,7 @@ class PermissionHelper implements
 
         // Make sure the current user has permission:
         if ($this->permissionManager->isAuthorized($permission) !== true) {
-            $dl = $this->permissionDeniedManager->getDeniedControllerBehavior(
+            $dl = $this->permissionDeniedManager->getDeniedActionBehavior(
                 $permission,
                 $defaultBehavior
             );
@@ -181,5 +184,15 @@ class PermissionHelper implements
     public function getIdentity(): ?IdentityInterface
     {
         return $this->authManager->getIdentity();
+    }
+
+    /**
+     * Get permission behavior configuration.
+     *
+     * @return array
+     */
+    public function getPermissionBehaviorConfig(): array
+    {
+        return $this->permissionBehaviorConfig;
     }
 }

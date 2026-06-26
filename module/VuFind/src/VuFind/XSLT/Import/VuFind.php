@@ -615,18 +615,30 @@ class VuFind
      * Best is defined as the first value to consist of only YYYY or YYYY-ZZZZ,
      * with no other text. If no "best" match is found, the first value is used.
      *
-     * @param array $input DOM elements to search.
+     * @param array $input  DOM elements to search.
+     * @param bool  $strict Only return valid Solr date range values.
      *
      * @return string
      */
-    public static function extractBestDateOrRange($input)
+    public static function extractBestDateOrRange($input, $strict = false)
     {
+        $fallback = null;
         foreach ($input as $current) {
             if (preg_match('/^\d{4}(-\d{4})?$/', $current->textContent)) {
-                return $current->textContent;
+                return ($strict && str_contains($current->textContent, '-'))
+                    ? '[' . str_replace('-', ' TO ', $current->textContent) . ']'
+                    : $current->textContent;
+            } elseif (null === $fallback) {
+                if ($strict) {
+                    if (preg_match('/\d{4}/', $current->textContent, $matches)) {
+                        $fallback = $matches[0];
+                    }
+                } else {
+                    $fallback = $current->textContent;
+                }
             }
         }
-        return reset($input)->textContent;
+        return $fallback ?? '';
     }
 
     /**
