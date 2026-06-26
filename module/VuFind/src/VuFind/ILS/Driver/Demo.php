@@ -2295,25 +2295,23 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $proxies = $this->getProxiedUsers($holdDetails['patron']);
             $proxiedFor = $proxies[$holdDetails['proxiedUser']];
         }
-        $session->holds[] =
-            [
-                'id'       => $holdDetails['id'],
-                'source'   => $this->getRecordSource(),
-                'location' => $holdDetails['pickUpLocation'],
-                'expire'   => $expire,
-                'create'   =>
-                    $this->dateConverter->convertToDisplayDate('U', time()),
-                'reqnum'   => $reqNum,
-                'item_id'  => $nextId,
-                'volume'   => '',
-                'processed' => '',
-                'requestGroup' => $requestGroup,
-                'frozen'   => $frozen,
-                'frozenThrough' => $frozenThrough,
-                'updateDetails' => $reqNum,
-                'cancel_details' => $reqNum,
-                'proxiedFor' => $proxiedFor,
-            ];
+        $session->holds[] = [
+            'id'       => $holdDetails['id'],
+            'source'   => $this->getRecordSource(),
+            'location' => $holdDetails['pickUpLocation'],
+            'expire'   => $expire,
+            'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
+            'reqnum'   => $reqNum,
+            'item_id'  => $nextId,
+            'volume'   => '',
+            'processed' => '',
+            'requestGroup' => $requestGroup,
+            'frozen'   => $frozen,
+            'frozenThrough' => $frozenThrough,
+            'updateDetails' => $reqNum,
+            'cancel_details' => $reqNum,
+            'proxiedFor' => $proxiedFor,
+        ];
 
         return ['success' => true];
     }
@@ -2434,20 +2432,16 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
 
-        $session->storageRetrievalRequests[] =
-            [
-                'id'       => $details['id'],
-                'source'   => $this->getRecordSource(),
-                'location' => $details['pickUpLocation'],
-                'expire'   =>
-                    $this->dateConverter->convertToDisplayDate('U', $expire),
-                'create'   =>
-                    $this->dateConverter->convertToDisplayDate('U', time()),
-                'processed' => rand() % 3 == 0
-                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
-                'reqnum'   => sprintf('%06d', $nextId),
-                'item_id'  => $nextId,
-            ];
+        $session->storageRetrievalRequests[] = [
+            'id'       => $details['id'],
+            'source'   => $this->getRecordSource(),
+            'location' => $details['pickUpLocation'],
+            'expire'   => $this->dateConverter->convertToDisplayDate('U', $expire),
+            'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
+            'processed' => rand() % 3 == 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
+            'reqnum'   => sprintf('%06d', $nextId),
+            'item_id'  => $nextId,
+        ];
 
         return ['success' => true];
     }
@@ -2573,20 +2567,16 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
 
-        $session->ILLRequests[] =
-            [
-                'id'       => $details['id'],
-                'source'   => $this->getRecordSource(),
-                'location' => $pickupLocation,
-                'expire'   =>
-                    $this->dateConverter->convertToDisplayDate('U', $expire),
-                'create'   =>
-                    $this->dateConverter->convertToDisplayDate('U', time()),
-                'processed' => rand() % 3 == 0
-                    ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
-                'reqnum'   => sprintf('%06d', $nextId),
-                'item_id'  => $nextId,
-            ];
+        $session->ILLRequests[] = [
+            'id'       => $details['id'],
+            'source'   => $this->getRecordSource(),
+            'location' => $pickupLocation,
+            'expire'   => $this->dateConverter->convertToDisplayDate('U', $expire),
+            'create'   => $this->dateConverter->convertToDisplayDate('U', time()),
+            'processed' => rand() % 3 == 0 ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
+            'reqnum'   => sprintf('%06d', $nextId),
+            'item_id'  => $nextId,
+        ];
 
         return ['success' => true];
     }
