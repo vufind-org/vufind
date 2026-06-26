@@ -26,7 +26,7 @@
     "grunt": "^1.0.4",
     "grunt-dart-sass": "^2.0.1",
     "jit-grunt": "^0.10.0",
-    "sass": "1.72.0"
+    "sass": "^1.99.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

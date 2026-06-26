@@ -127,7 +127,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @param ?string $text The text to decrypt (null values will be returned as null)
      *
-     * @return ?string|bool The decrypted string (null if empty or false if invalid)
+     * @return null|string|bool The decrypted string (null if empty or false if invalid)
      * @throws \VuFind\Exception\PasswordSecurity
      */
     public function decrypt(?string $text)
@@ -140,7 +140,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @param ?string $text The text to encrypt (null values will be returned as null)
      *
-     * @return ?string|bool The encrypted string (null if empty or false if invalid)
+     * @return null|string|bool The encrypted string (null if empty or false if invalid)
      * @throws \VuFind\Exception\PasswordSecurity
      */
     public function encrypt(?string $text)
@@ -168,7 +168,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @param bool    $encrypt True if we wish to encrypt text, False if we wish to
      * decrypt text.
      *
-     * @return ?string|bool    The encrypted/decrypted string (null = empty input; false = error)
+     * @return null|string|bool The encrypted/decrypted string (null = empty input; false = error)
      * @throws \VuFind\Exception\PasswordSecurity
      */
     protected function encryptOrDecrypt(?string $text, bool $encrypt = true)
