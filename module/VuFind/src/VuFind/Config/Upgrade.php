@@ -677,6 +677,16 @@ class Upgrade implements LoggerAwareInterface
             unset($newConfig['LDAP']['port']);
         }
 
+        $this->applyOldSettings('RecordDataFormatter/DefaultRecord');
+        if ($subjectLimit = $newConfig['Record']['subjectLimit'] ?? null) {
+            unset($newConfig['Record']['subjectLimit']);
+            $this->newConfigs['RecordDataFormatter/DefaultRecord']['Field_Subjects'] = [
+                'truncateRows' => $subjectLimit,
+                'truncateTopToggle' => 30,
+                'truncateElement' => '.subject-line',
+            ];
+        }
+
         // Translate obsolete permission settings:
         $this->upgradeAdminPermissions();
 

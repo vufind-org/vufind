@@ -188,7 +188,7 @@ class RecordDataFormatter
                 'truncated-field.phtml',
                 [
                     'truncateSettings' => $truncateSettings,
-                    'content' => $value
+                    'content' => $value,
                 ]
             );
         }
