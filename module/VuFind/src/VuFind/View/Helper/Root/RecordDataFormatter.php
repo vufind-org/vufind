@@ -176,10 +176,20 @@ class RecordDataFormatter
             return $value;
         }
 
-        if ($rows = $options['truncate'] ?? false) {
+        if ($rows = $options['truncateRows'] ?? false) {
+            $truncateSettings = ['rows' => $rows];
+            if ($topToggle = $options['truncateTopToggle'] ?? null) {
+                $truncateSettings['top-toggle'] = $topToggle;
+            }
+            if ($truncateElement = $options['truncateElement'] ?? null) {
+                $truncateSettings['element'] = $truncateElement;
+            }
             $value = ($this->recordHelper)($this->driver)->renderTemplate(
                 'truncated-field.phtml',
-                ['truncatedRows' => $rows, 'content' => $value]
+                [
+                    'truncateSettings' => $truncateSettings,
+                    'content' => $value
+                ]
             );
         }
 
