@@ -61,7 +61,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
      *
      * @var string
      */
-    protected $blenderMappingsYaml = 'BlenderMappings';
+    protected $blenderMappingsConfig = 'BlenderMappings';
 
     /**
      * Create an object.
@@ -102,8 +102,9 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
             $searchParams[] = $paramsManager->get($backendId);
         }
 
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $blenderMappings = $yamlReader->get($this->blenderMappingsYaml . '.yaml');
+        $blenderMappings = $container
+            ->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->blenderMappingsConfig);
         return parent::__invoke(
             $container,
             $requestedName,

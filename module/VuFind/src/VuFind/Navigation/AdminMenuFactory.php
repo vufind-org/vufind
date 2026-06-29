@@ -69,7 +69,7 @@ class AdminMenuFactory extends AbstractMenuFactory
             $container,
             $requestedName,
             [
-                'AdminMenu.yaml',
+                'AdminMenu',
                 $config['Overdrive']['showOverdriveAdminMenu'] ?? false,
                 ...($options ?? []),
             ]

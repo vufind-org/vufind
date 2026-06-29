@@ -155,7 +155,7 @@ class TagsController extends AbstractAdmin
                 : $this->params()->fromPost('idsAll');
 
             if (!is_array($ids) || empty($ids)) {
-                $this->flashMessenger()->addErrorMessage('bulk_noitems_advice');
+                $this->getFlashMessenger()->addErrorMessage('bulk_noitems_advice');
                 return $this->redirect()->toUrl($originUrl);
             }
 
@@ -166,14 +166,14 @@ class TagsController extends AbstractAdmin
         }
 
         if (0 == $delete) {
-            $this->flashMessenger()->addErrorMessage('tags_delete_fail');
+            $this->getFlashMessenger()->addErrorMessage('tags_delete_fail');
             return $this->redirect()->toUrl($originUrl);
         }
 
         // If we got this far, we should clean up orphans:
         $this->getDbService(TagServiceInterface::class)->deleteOrphanedTags();
 
-        $this->flashMessenger()->addSuccessMessage(
+        $this->getFlashMessenger()->addSuccessMessage(
             [
                 'msg' => 'tags_deleted',
                 'tokens' => ['%count%' => $delete],

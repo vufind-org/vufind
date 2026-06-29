@@ -108,24 +108,25 @@
 }
 
 /* --- Fieldsets --- */
-@include media-breakpoint-up(sm) {
-  fieldset,
-  .fieldset {
-    float: left;
-    width: 33%;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
-  }
-  .solr-facets,
-  .summon-facets {
-    float: none;
-    width: auto;
-    margin-top: 1rem;
-  }
-  .summon-facets .facet-fieldset {
-    float: left;
-    width: 50%;
-    padding-right: 1rem;
+#advSearchForm {
+  @include media-breakpoint-up(sm) {
+    fieldset {
+      float: left;
+      width: 33%;
+      padding-right: 1rem;
+      padding-bottom: 1rem;
+    }
+    .solr-facets,
+    .summon-facets {
+      float: none;
+      width: auto;
+      margin-top: 1rem;
+    }
+    .summon-facets .facet-fieldset {
+      float: left;
+      width: 50%;
+      padding-right: 1rem;
+    }
   }
 }
 
@@ -195,8 +196,7 @@
 
 /* -- Right to left --- */
 body.rtl {
-  fieldset,
-  .fieldset,
+  #advSearchForm fieldset,
   .adv-search .adv-term-input,
   .adv-search .adv-term-type,
   .eds-adv .help-block,

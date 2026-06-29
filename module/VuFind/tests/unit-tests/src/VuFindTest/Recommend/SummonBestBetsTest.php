@@ -59,7 +59,7 @@ class SummonBestBetsTest extends \PHPUnit\Framework\TestCase
             ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getBestBets')
-            ->willReturn(false);
-        $this->assertFalse($obj->getResults());
+            ->willReturn([]);
+        $this->assertEquals([], $obj->getResults());
     }
 }

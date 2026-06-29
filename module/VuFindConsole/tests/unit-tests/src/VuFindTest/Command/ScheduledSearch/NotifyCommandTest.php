@@ -282,7 +282,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'url' => 'http://foo',
                 'unsubscribeUrl' => 'http://foo?id=1&key=',
                 'checkboxFilters' => [],
-                'filters' => null,
+                'filters' => [],
                 'userInstitution' => 'My Institution',
             ],
         ];

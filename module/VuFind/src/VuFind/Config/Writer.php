@@ -152,6 +152,8 @@ class Writer
             $this->content .= $line . "\n";
         }
 
+        $this->content = substr($this->content, 0, -1); // remove trailing \n
+
         // Did we loop through everything without finding a place to put the setting?
         if (!$settingSet && $value !== null) {
             // We never found the target section?

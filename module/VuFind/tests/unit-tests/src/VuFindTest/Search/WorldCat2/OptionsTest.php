@@ -72,7 +72,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchAction(): void
     {
-        $this->assertEquals('worldcat2-search', $this->getOptions()->getSearchAction());
+        $this->assertSame('worldcat2-search', $this->getOptions()->getSearchAction());
     }
 
     /**
@@ -82,7 +82,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetAdvancedSearchAction(): void
     {
-        $this->assertEquals('worldcat2-advanced', $this->getOptions()->getAdvancedSearchAction());
+        $this->assertSame('worldcat2-advanced', $this->getOptions()->getAdvancedSearchAction());
     }
 
     /**

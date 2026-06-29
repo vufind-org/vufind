@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * "Get Request Group Pickup Locations" AJAX handler.
@@ -47,15 +47,15 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $id = $params->fromQuery('id');
-        $requestGroupId = $params->fromQuery('requestGroupId');
+        $id = $this->getQueryParam($request, 'id');
+        $requestGroupId = $this->getQueryParam($request, 'requestGroupId');
         if (null === $id || null === $requestGroupId) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),

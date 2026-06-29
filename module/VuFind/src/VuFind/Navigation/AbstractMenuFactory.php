@@ -70,10 +70,10 @@ class AbstractMenuFactory implements FactoryInterface
         if (empty($options)) {
             throw new \Exception('Expected options not sent to factory.');
         }
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $menu = new $requestedName(
             // First array item should be the name of the menu configuration file.
-            $yamlReader->get(reset($options)),
+            $configManager->getConfigArray(reset($options)),
             ...array_slice($options, 1)
         );
 
