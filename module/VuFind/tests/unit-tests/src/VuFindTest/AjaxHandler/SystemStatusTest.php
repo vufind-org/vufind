@@ -29,15 +29,14 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationService;
-use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\AjaxHandler\SystemStatus;
 use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFindTest\Unit\AjaxHandlerTestCase;
 
 /**
  * SystemStatus test class.
@@ -48,7 +47,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SystemStatusTest extends \PHPUnit\Framework\TestCase
+class SystemStatusTest extends AjaxHandlerTestCase
 {
     /**
      * Get SystemStatus Ajax handler.
@@ -99,7 +98,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\VuFind\Exception\Forbidden::class);
         $this->expectExceptionMessage('Access denied');
         $handler = $this->getHandler(accessGranted: false);
-        $handler->handleRequest($this->getMockRequestParams());
+        $handler->handleRequest($this->getRequest());
     }
 
     /**
@@ -111,8 +110,8 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
     {
         $config = ['System' => ['healthCheckFile' => __FILE__]];
         $handler = $this->getHandler(config: $config);
-        $response = $handler->handleRequest($this->getMockRequestParams());
-        $this->assertEquals(['Health check file exists', 503], $response);
+        $response = $handler->handleRequest($this->getRequest());
+        $this->assertSame(['Health check file exists', 503], $response);
     }
 
     /**
@@ -130,11 +129,11 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
         $handler = $this->getHandler(resultsManager: $resultsManager);
-        $response = $handler->handleRequest($this->getMockRequestParams());
-        $this->assertEquals(['Search index error: kaboom', 500], $response);
+        $response = $handler->handleRequest($this->getRequest());
+        $this->assertSame(['Search index error: kaboom', 500], $response);
         // Disable index check:
-        $response = $handler->handleRequest($this->getMockRequestParams(['index' => '0']));
-        $this->assertEquals([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame([''], $response);
     }
 
     /**
@@ -152,11 +151,11 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $params = $this->createMock(\VuFind\Search\EDS\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
         $handler = $this->getHandler(resultsManager: $resultsManager);
-        $response = $handler->handleRequest($this->getMockRequestParams(['index' => '0']));
-        $this->assertEquals([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame([''], $response);
         // Enable EDS check:
-        $response = $handler->handleRequest($this->getMockRequestParams(['index' => '0', 'eds' => '1']));
-        $this->assertEquals(['EDS connection error: kaboom', 500], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'eds' => '1']));
+        $this->assertSame(['EDS connection error: kaboom', 500], $response);
     }
 
     /**
@@ -170,11 +169,11 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $e = new \Exception('kaboom');
         $sessionService->expects($this->once())->method('getSessionById')->willThrowException($e);
         $handler = $this->getHandler(sessionService: $sessionService);
-        $response = $handler->handleRequest($this->getMockRequestParams(['index' => '0']));
-        $this->assertEquals(['Database error: kaboom', 500], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame(['Database error: kaboom', 500], $response);
         // Disable database check:
-        $response = $handler->handleRequest($this->getMockRequestParams(['index' => '0', 'database' => '0']));
-        $this->assertEquals([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '0']));
+        $this->assertSame([''], $response);
     }
 
     /**
@@ -188,11 +187,11 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $e = new \Exception('kaboom');
         $connection->expects($this->once())->method('getOfflineMode')->willThrowException($e);
         $handler = $this->getHandler(ilsConnection: $connection);
-        $response = $handler->handleRequest($this->getMockRequestParams(['index' => '0']));
-        $this->assertEquals([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame([''], $response);
         // Enable ILS check:
-        $response = $handler->handleRequest($this->getMockRequestParams(['index' => '0', 'ils' => '1']));
-        $this->assertEquals(['ILS connection error: kaboom', 500], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'ils' => '1']));
+        $this->assertSame(['ILS connection error: kaboom', 500], $response);
     }
 
     /**
@@ -232,11 +231,11 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
             resultsManager: $resultsManager,
             sessionService: $sessionService
         );
-        $response = $handler->handleRequest($this->getMockRequestParams());
-        $this->assertEquals([''], $response);
+        $response = $handler->handleRequest($this->getRequest());
+        $this->assertSame([''], $response);
         // Enable EDS and ILS check:
-        $response = $handler->handleRequest($this->getMockRequestParams(['eds' => '1', 'ils' => '1']));
-        $this->assertEquals([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['eds' => '1', 'ils' => '1']));
+        $this->assertSame([''], $response);
     }
 
     /**
@@ -254,27 +253,8 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
             config: ['System' => ['statusChecks' => ['database' => 'always_disabled']]]
         );
 
-        $handler->handleRequest($this->getMockRequestParams());
-        $handler->handleRequest($this->getMockRequestParams(['database' => '0']));
-        $handler->handleRequest($this->getMockRequestParams(['database' => '1']));
-    }
-
-    /**
-     * Get mock Params class for request params.
-     *
-     * @param array $requestParams Parameters to return
-     *
-     * @return MockObject&Params
-     */
-    protected function getMockRequestParams(array $requestParams = []): Params
-    {
-        $params = $this->createMock(Params::class);
-        $params->method('fromQuery')
-            ->willReturnCallback(
-                function ($param, $default = null) use ($requestParams) {
-                    return $requestParams[$param] ?? $default;
-                }
-            );
-        return $params;
+        $handler->handleRequest($this->getRequest());
+        $handler->handleRequest($this->getRequest(['database' => '0']));
+        $handler->handleRequest($this->getRequest(['database' => '1']));
     }
 }

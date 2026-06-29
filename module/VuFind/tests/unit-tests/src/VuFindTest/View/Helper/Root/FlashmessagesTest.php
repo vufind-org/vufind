@@ -29,8 +29,10 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Helper\Layout;
+use Laminas\View\Model\ViewModel;
+use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\Flashmessages;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
@@ -46,7 +48,6 @@ use VuFind\View\Helper\Root\Translate;
  */
 class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
@@ -223,38 +224,24 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         };
 
         $mockMessenger = $this->createMock(FlashMessenger::class);
-        $mockMessenger->method('getMessages')->with($this->isType('string'))->willReturnCallback($getMessages);
-        $mockMessenger->method('getCurrentMessages')->with($this->isType('string'))->willReturn([]);
+        $mockMessenger->method('getErrorMessages')->willReturnCallback(fn (): array => $getMessages('error'));
+        $mockMessenger->method('getInfoMessages')->willReturnCallback(fn (): array => $getMessages('info'));
+        $mockMessenger->method('getSuccessMessages')->willReturnCallback(fn (): array => $getMessages('success'));
+        $mockMessenger->method('getWarningMessages')->willReturnCallback(fn (): array => $getMessages('warning'));
 
-        $fm = new Flashmessages($mockMessenger);
+        $layoutModel = new ViewModel();
+        $mockLayout = $this->createMock(Layout::class);
+        $mockLayout->method('__invoke')->willReturn($layoutModel);
 
-        $layout = new class () {
-            /**
-             * Set layout template or retrieve "layout" view model.
-             *
-             * If no arguments are given, grabs the "root" or "layout" view model.
-             * Otherwise, attempts to set the template for that view model.
-             *
-             * @param null|string $template Template
-             *
-             * @return Model|null|self
-             */
-            public function __invoke($template = null)
-            {
-                return $this;
-            }
-        };
+        $dependencies = $this->getViewHelpers();
 
-        $helpers = array_merge(
-            $this->getViewHelpers(),
-            [
-                'layout' => $layout,
-            ]
+        return new Flashmessages(
+            $mockMessenger,
+            $mockLayout,
+            $dependencies['translate'],
+            $dependencies['escapeHtml'],
+            $dependencies['transEsc']
         );
-
-        $fm->setView($this->getPhpRenderer($helpers));
-
-        return $fm;
     }
 
     /**
@@ -262,7 +249,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getViewHelpers()
+    protected function getViewHelpers(): array
     {
         $translations = [
             'default' => [
@@ -275,15 +262,8 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $transEsc = new TransEsc();
-        $transEsc->setView(
-            $this->getPhpRenderer(
-                [
-                    'escapeHtml' => new EscapeHtml(),
-                    'translate' => $translate,
-                ]
-            )
-        );
-        return compact('transEsc', 'translate');
+        $escapeHtml = new EscapeHtml();
+        $transEsc = new TransEsc($translate, $escapeHtml);
+        return compact('translate', 'escapeHtml', 'transEsc');
     }
 }

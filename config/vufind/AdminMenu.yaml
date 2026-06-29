@@ -55,3 +55,7 @@ Admin:
     - name: payment
       label: Online Payment
       route: admin/payment
+
+    - name: notices
+      label: Notices
+      route: admin/notices

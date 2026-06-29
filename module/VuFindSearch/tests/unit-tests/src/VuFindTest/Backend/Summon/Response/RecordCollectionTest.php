@@ -55,8 +55,8 @@ class RecordCollectionTest extends TestCase
         $this->assertEquals(0, $rc->getOffset());
         $this->assertEquals([], $rc->getFacets());
         $this->assertEquals([], $rc->getSpellcheck());
-        $this->assertEquals(false, $rc->getBestBets());
-        $this->assertEquals(false, $rc->getDatabaseRecommendations());
-        $this->assertEquals(false, $rc->getTopicRecommendations());
+        $this->assertEquals([], $rc->getBestBets());
+        $this->assertEquals([], $rc->getDatabaseRecommendations());
+        $this->assertEquals([], $rc->getTopicRecommendations());
     }
 }

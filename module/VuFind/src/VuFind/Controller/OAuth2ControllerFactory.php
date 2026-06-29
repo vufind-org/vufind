@@ -118,8 +118,9 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         $this->pathResolver = $container->get(PathResolver::class);
 
         // Load configuration:
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $this->oauth2Config = $yamlReader->get('OAuth2Server.yaml');
+        $this->oauth2Config = $container
+            ->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('OAuth2Server');
 
         // Check that user identifier field is valid
         $this->checkIfUserIdentifierFieldIsValid();
@@ -308,7 +309,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
     {
         if (!($result = $this->oauth2Config['Server'][$setting] ?? '')) {
             throw new \Exception(
-                "Server/$setting missing from OAuth2Server.yaml"
+                "Server/$setting missing from OAuth2Server config"
             );
         }
         return $result;

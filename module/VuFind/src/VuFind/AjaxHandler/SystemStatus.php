@@ -30,10 +30,10 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
@@ -71,18 +71,19 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         protected SessionServiceInterface $sessionService,
         protected Connection $ils
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
 
         if (!$this->getAuthorizationService()->isGranted('access.SystemStatus')) {
@@ -114,7 +115,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             if (
                 method_exists($this, $checkMethod)
                 && ($setting !== 'always_disabled')
-                && ($params->fromPost($component) ?? $params->fromQuery($component, ($setting === 'default_enabled')))
+                && $this->getPostOrQueryParam($request, $component, ($setting === 'default_enabled'))
                 && $errorResponse = $this->$checkMethod()
             ) {
                 return $errorResponse;

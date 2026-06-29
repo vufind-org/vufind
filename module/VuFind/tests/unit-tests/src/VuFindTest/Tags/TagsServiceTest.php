@@ -72,7 +72,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testTagParsing()
     {
-        $this->assertEquals(
+        $this->assertSame(
             ['this', 'that', 'the other'],
             $this->getTagsService()->parse('this that "the other"')
         );
@@ -85,7 +85,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmptyTagParsing()
     {
-        $this->assertEquals([], $this->getTagsService()->parse(''));
+        $this->assertSame([], $this->getTagsService()->parse(''));
     }
 
     /**
@@ -95,7 +95,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testDeduplication()
     {
-        $this->assertEquals(['test'], $this->getTagsService()->parse('test test test'));
+        $this->assertSame(['test'], $this->getTagsService()->parse('test test test'));
     }
 
     /**
@@ -106,6 +106,6 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
     public function testTruncation()
     {
         // Create custom object w/ small size limit:
-        $this->assertEquals(['0123456789'], $this->getTagsService(10)->parse('01234567890'));
+        $this->assertSame(['0123456789'], $this->getTagsService(10)->parse('01234567890'));
     }
 }

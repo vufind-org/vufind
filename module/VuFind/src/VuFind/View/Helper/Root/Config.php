@@ -29,7 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ActionHelper\LoginHelper;
+use VuFind\ActionHelper\PluginManager as ActionHelperPluginManager;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Config view helper.
@@ -40,7 +43,7 @@ use VuFind\Config\ConfigManagerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Config extends \Laminas\View\Helper\AbstractHelper
+class Config
 {
     /**
      * Display date format.
@@ -60,9 +63,13 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      * Config constructor.
      *
      * @param ConfigManagerInterface $configManager Configuration manager
+     * @param LoginHelper            $loginHelper   Login helper
      */
-    public function __construct(protected ConfigManagerInterface $configManager)
-    {
+    public function __construct(
+        protected ConfigManagerInterface $configManager,
+        #[Autowire(container: ActionHelperPluginManager::class)]
+        protected LoginHelper $loginHelper,
+    ) {
     }
 
     /**
@@ -196,5 +203,25 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return (bool)($this->get('config')->Catalog
             ->display_loan_type_in_holdings ?? false);
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form.
+     *
+     * @return array
+     */
+    public function getILSLoginSettings(): array
+    {
+        return $this->loginHelper->getILSLoginSettings();
+    }
+
+    /**
+     * Return this helper instance (for method chaining).
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

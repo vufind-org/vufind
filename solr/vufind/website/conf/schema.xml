@@ -133,8 +133,6 @@
   <uniqueKey>id</uniqueKey>
   <!-- CopyFields for Spelling -->
   <copyField source="title"    dest="spellingShingle"/>
-  <!-- Copy title information to special field for sorting -->
-  <copyField source="title"    dest="title_sort"/>
   <!-- CopyFields to allow keyword searching within URL -->
   <copyField source="url" dest="url_keywords"/>
   <!-- CopyFields for unstemmed searching -->

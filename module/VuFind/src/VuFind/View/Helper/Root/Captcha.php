@@ -30,6 +30,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
+
 use function count;
 
 /**
@@ -42,44 +45,35 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Captcha extends \Laminas\View\Helper\AbstractHelper
+class Captcha
 {
     use ClassBasedTemplateRendererTrait;
 
     /**
-     * Captcha services.
-     *
-     * @var array
-     */
-    protected $captchas = [];
-
-    /**
-     * Config.
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config   Config
-     * @param array                 $captchas Captchas
+     * @param \VuFind\Config\Config          $config       Config
+     * @param \VuFind\Captcha\AbstractBase[] $captchas     Captchas
+     * @param RendererInterface              $viewRenderer View renderer
+     * @param ResolverInterface              $viewResolver View resolver
+     * @param Context                        $context      Context helper
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        array $captchas = []
+        protected \VuFind\Config\Config $config,
+        protected array $captchas,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        Context $context
     ) {
-        $this->config = $config;
-        $this->captchas = $captchas;
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
     }
 
     /**
      * Return this object.
      *
-     * @return \VuFind\View\Helper\Root\Captcha
+     * @return static
      */
-    public function __invoke(): \VuFind\View\Helper\Root\Captcha
+    public function __invoke(): static
     {
         return $this;
     }
@@ -114,10 +108,12 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
             return '';
         }
 
-        return $this->getView()->render(
+        return $this->viewRenderer->render(
             'Helpers/captcha',
-            ['wrapHtml' => $wrapHtml,
-                                'captchas' => $this->captchas]
+            [
+                'wrapHtml' => $wrapHtml,
+                'captchas' => $this->captchas,
+            ]
         );
     }
 

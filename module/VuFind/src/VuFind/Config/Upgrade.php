@@ -161,6 +161,7 @@ class Upgrade implements LoggerAwareInterface
         $this->upgradeEPF();
         $this->upgradeSummon();
         $this->upgradePrimo();
+        $this->upgradePermissionBehavior();
 
         // The previous upgrade routines may have added values to permissions.ini,
         // so we should save it last. It doesn't have its own upgrade routine.
@@ -365,16 +366,20 @@ class Upgrade implements LoggerAwareInterface
             return;
         }
 
-        $configNameParts = explode('/', $configName, 2);
-        $subDir = (count($configNameParts) > 1) ? '/' . $configNameParts[0] : '';
-        $baseConfigLocation = $this->pathResolver->getMatchingConfigLocation(
-            $this->pathResolver->getBaseConfigDirPath() . $subDir,
-            $configNameParts[1] ?? $configName
-        );
-
-        $destinationLocation = clone $baseConfigLocation;
-        $destinationLocation->setBasePath($this->pathResolver->getLocalConfigDirPath() . $subDir);
-        $this->configManager->writeConfig($destinationLocation, $this->newConfigs[$configName], $baseConfigLocation);
+        $baseConfigLocation = $this->pathResolver->getBaseConfigLocation($configName);
+        $destinationLocation = $this->pathResolver->getForcedLocalConfigLocation($configName);
+        try {
+            $this->configManager->writeConfig(
+                $destinationLocation,
+                $this->newConfigs[$configName],
+                $baseConfigLocation
+            );
+        } catch (\Exception $e) {
+            $this->addWarning(
+                'Could not upgrade ' . $destinationLocation->getPath()
+                . '. Manual upgrade required. (Error: ' . $e->getMessage() . ')'
+            );
+        }
     }
 
     /**
@@ -543,9 +548,16 @@ class Upgrade implements LoggerAwareInterface
 
         // Warn the user about the deprecated Piwik analytics section:
         if (!empty($newConfig['Piwik'] ?? [])) {
-            $this->addWarning(
-                'You are using the deprecated [Piwik] section for analytics. Please switch to [Matomo] instead.'
-            );
+            if (!empty($newConfig['Matomo'] ?? [])) {
+                $this->addWarning(
+                    'You are using the deprecated [Piwik] section for analytics but also have [Matomo] settings.'
+                    . ' The [Piwik] settings have been removed.'
+                );
+            } else {
+                // Move Piwik settings to Matomo:
+                $newConfig['Matomo'] = $newConfig['Piwik'];
+                unset($newConfig['Piwik']);
+            }
         }
         // Upgrade Google Options:
         if (
@@ -556,8 +568,15 @@ class Upgrade implements LoggerAwareInterface
                 = ['link' => $newConfig['Content']['GoogleOptions']];
         }
 
-        // Disable unused, obsolete setting:
+        // Disable unused, obsolete settings:
         unset($newConfig['Index']['local']);
+        if (isset($newConfig['Cache']['umask'])) {
+            unset($newConfig['Cache']['umask']);
+            $this->addWarning(
+                'The Cache umask setting never worked as intended and is no longer supported; '
+                . 'if you need a custom umask, please configure it at the operating system level.'
+            );
+        }
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'sandal5');
@@ -804,13 +823,15 @@ class Upgrade implements LoggerAwareInterface
                 }
             }
         }
-
         if (($newConfig['NewItem']['method'] ?? null) === 'ils') {
+            $newConfig['NewItem']['method'] = 'disabled';
             $this->addWarning(
-                'The searches.ini [NewItem] method setting of "ils" is deprecated; '
-                . 'you should switch to "solr" or "disabled".'
+                'The searches.ini [NewItem] method setting of "ils" has been removed; '
+                . 'you should enable change tracking (if not already done) and switch to "solr". For now,'
+                . ' new item search has been disabled.'
             );
         }
+        unset($newConfig['NewItem']['result_pages']); // obsolete setting
 
         // save the configuration
         $this->saveModifiedConfig('searches');
@@ -1118,7 +1139,7 @@ class Upgrade implements LoggerAwareInterface
      * this is handled as a separate method so that all affected settings are
      * addressed in one place.
      *
-     * This gets called from updateConfig(), which gets called before other
+     * This gets called from upgradeConfig(), which gets called before other
      * configuration upgrade routines. This means that we need to modify the
      * config.ini settings in the newConfigs property (since it is currently
      * being worked on and will be written to disk shortly), but we need to
@@ -1161,5 +1182,47 @@ class Upgrade implements LoggerAwareInterface
             }
             unset($this->oldConfigs['facets']['StripFacets']);
         }
+    }
+
+    /**
+     * Upgrade permissionBehavior.ini.
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradePermissionBehavior(): void
+    {
+        $this->applyOldSettings('permissionBehavior');
+
+        // Fix controller-specific settings:
+        $newConfig = & $this->newConfigs['permissionBehavior'];
+        if (isset($newConfig['global']['defaultDeniedControllerBehavior'])) {
+            $newConfig['global']['defaultDeniedActionBehavior']
+                = $newConfig['global']['defaultDeniedControllerBehavior'];
+            unset($newConfig['global']['defaultDeniedControllerBehavior']);
+        }
+        foreach (array_keys($newConfig) as $section) {
+            if (isset($newConfig[$section]['deniedControllerBehavior'])) {
+                $newConfig[$section]['deniedActionBehavior'] = $newConfig[$section]['deniedControllerBehavior'];
+                unset($newConfig[$section]['deniedControllerBehavior']);
+            }
+        }
+
+        if (isset($newConfig['global']['controllerAccess']['*'])) {
+            $newConfig['global']['actionAccess']['*'] = $newConfig['global']['controllerAccess']['*'];
+            // TODO: enable when controllers are no longer supported:
+            //unset($newConfig['global']['controllerAccess']['*']);
+        }
+
+        if (isset($newConfig['global']['controllerAccess'])) {
+            $this->addWarning(
+                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini that VuFind no'
+                . ' longer supports. You should replace any controllerAccess setting with a corresponding'
+                . ' actionAccess setting.'
+            );
+        }
+
+        // save the configuration
+        $this->saveModifiedConfig('permissionBehavior');
     }
 }
