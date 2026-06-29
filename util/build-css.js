@@ -40,6 +40,10 @@ program
   .option(
     "-S, --no-sourcemaps",
     "do not generate sourcemaps (faster compilation)"
+  )
+  .option("--temp <path>",
+    "Override temporary file location",
+    "/tmp"
   );
 
 program.parse(process.argv);
@@ -136,8 +140,8 @@ function compileTheme(themeName) {
   if (CLI_OPTIONS.checkOnly) {
     // Check if compiled.css is up-to-date
     if (fs.existsSync(outCSSPath)) {
-      console.log(`- writing /tmp/scss-check-${themeName}.css for comparison`);
-      const tmpCSSPath = `/tmp/scss-check-${themeName}.css`;
+      console.log(`- writing ${CLI_OPTIONS.temp}/scss-check-${themeName}.css for comparison`);
+      const tmpCSSPath = `${CLI_OPTIONS.temp}/scss-check-${themeName}.css`;
       fs.writeFileSync(tmpCSSPath, cssContent, "utf8");
 
       try {
