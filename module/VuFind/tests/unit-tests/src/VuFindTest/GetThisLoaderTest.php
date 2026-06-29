@@ -439,7 +439,7 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider.
      *
-     * @return Iterator<(int | string), mixed>
+     * @return Iterator<(int | string), array>
      */
     public static function provideSubTemplateParamsData(): Iterator
     {
@@ -676,7 +676,7 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider for testShowCopyNumber().
      *
-     * @return Iterator<?bool, array, bool>
+     * @return Iterator<(int | string), array>
      */
     public static function provideShowCopyNumberData(): Iterator
     {

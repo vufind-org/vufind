@@ -33,6 +33,7 @@ namespace VuFindAdmin\Action\Notices;
 
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Content\NoticeManager;
 use VuFind\Exception\BadRequest;
 use VuFind\Exception\NotFound;
@@ -76,7 +77,7 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
      */
     protected function returnToNoticesAdminHome(): ResponseInterface
     {
-        return $this->getRedirectResponse($this->response, $this->getUrlFromRoute('admin/notices'));
+        return $this->getHelper(RedirectHelper::class)->redirectToRoute($this->response, 'admin/notices');
     }
 
     /**

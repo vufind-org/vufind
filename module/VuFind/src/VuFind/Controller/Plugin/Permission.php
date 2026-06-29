@@ -132,7 +132,7 @@ class Permission extends AbstractPlugin implements
 
         // Make sure the current user has permission to access the module:
         if ($this->permissionManager->isAuthorized($permission) !== true) {
-            $dl = $this->permissionDeniedManager->getDeniedControllerBehavior(
+            $dl = $this->permissionDeniedManager->getDeniedActionBehavior(
                 $permission,
                 $defaultBehavior
             );

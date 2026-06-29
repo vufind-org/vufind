@@ -161,6 +161,7 @@ class Upgrade implements LoggerAwareInterface
         $this->upgradeEPF();
         $this->upgradeSummon();
         $this->upgradePrimo();
+        $this->upgradePermissionBehavior();
 
         // The previous upgrade routines may have added values to permissions.ini,
         // so we should save it last. It doesn't have its own upgrade routine.
@@ -1138,7 +1139,7 @@ class Upgrade implements LoggerAwareInterface
      * this is handled as a separate method so that all affected settings are
      * addressed in one place.
      *
-     * This gets called from updateConfig(), which gets called before other
+     * This gets called from upgradeConfig(), which gets called before other
      * configuration upgrade routines. This means that we need to modify the
      * config.ini settings in the newConfigs property (since it is currently
      * being worked on and will be written to disk shortly), but we need to
@@ -1181,5 +1182,47 @@ class Upgrade implements LoggerAwareInterface
             }
             unset($this->oldConfigs['facets']['StripFacets']);
         }
+    }
+
+    /**
+     * Upgrade permissionBehavior.ini.
+     *
+     * @throws FileAccessException
+     * @return void
+     */
+    protected function upgradePermissionBehavior(): void
+    {
+        $this->applyOldSettings('permissionBehavior');
+
+        // Fix controller-specific settings:
+        $newConfig = & $this->newConfigs['permissionBehavior'];
+        if (isset($newConfig['global']['defaultDeniedControllerBehavior'])) {
+            $newConfig['global']['defaultDeniedActionBehavior']
+                = $newConfig['global']['defaultDeniedControllerBehavior'];
+            unset($newConfig['global']['defaultDeniedControllerBehavior']);
+        }
+        foreach (array_keys($newConfig) as $section) {
+            if (isset($newConfig[$section]['deniedControllerBehavior'])) {
+                $newConfig[$section]['deniedActionBehavior'] = $newConfig[$section]['deniedControllerBehavior'];
+                unset($newConfig[$section]['deniedControllerBehavior']);
+            }
+        }
+
+        if (isset($newConfig['global']['controllerAccess']['*'])) {
+            $newConfig['global']['actionAccess']['*'] = $newConfig['global']['controllerAccess']['*'];
+            // TODO: enable when controllers are no longer supported:
+            //unset($newConfig['global']['controllerAccess']['*']);
+        }
+
+        if (isset($newConfig['global']['controllerAccess'])) {
+            $this->addWarning(
+                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini that VuFind no'
+                . ' longer supports. You should replace any controllerAccess setting with a corresponding'
+                . ' actionAccess setting.'
+            );
+        }
+
+        // save the configuration
+        $this->saveModifiedConfig('permissionBehavior');
     }
 }
