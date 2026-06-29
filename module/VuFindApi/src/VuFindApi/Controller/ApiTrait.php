@@ -223,7 +223,7 @@ trait ApiTrait
      *
      * @param array $settings API key settings from config.ini
      *
-     * @return void;
+     * @return void
      */
     protected function initApiKeySettings(array $settings): void
     {
