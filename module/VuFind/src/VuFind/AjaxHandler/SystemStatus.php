@@ -56,6 +56,18 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     use AuthorizationServiceAwareTrait;
 
     /**
+     * Default status check config.
+     *
+     * @var array
+     */
+    protected array $defaultStatusCheckConfig = [
+        'index' => 'default_enabled',
+        'eds' => 'default_disabled',
+        'database' => 'default_enabled',
+        'ils' => 'default_disabled',
+    ];
+
+    /**
      * Constructor.
      *
      * @param SessionManager          $sessionManager Session manager
@@ -104,14 +116,14 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         // Test logging (note that the message doesn't need to get written for the log writers to initialize):
         $this->log('info', 'SystemStatus log check', [], true);
 
-        $statusChecks = $this->config->System->statusChecks ?? [
-            'index' => 'default_enabled',
-            'eds' => 'default_disabled',
-            'database' => 'default_enabled',
-            'ils' => 'default_disabled',
-        ];
-        foreach ($statusChecks as $component => $setting) {
-            $checkMethod = $component . 'Check';
+        foreach (get_class_methods($this) as $checkMethod) {
+            if (!str_ends_with($checkMethod, 'Check')) {
+                continue;
+            }
+            $component = substr($checkMethod, 0, -5);
+            $setting = $this->config->System->statusChecks[$component]
+                ?? $this->defaultStatusCheckConfig[$component]
+                ?? 'always_disabled';
             if (
                 method_exists($this, $checkMethod)
                 && ($setting !== 'always_disabled')
