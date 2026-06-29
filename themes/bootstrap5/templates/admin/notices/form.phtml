@@ -81,7 +81,7 @@
           }
         ?>
         <div class="<?=implode(' ', $groupClasses)?>">
-          <label for="<?=$this->escapeHtmlAttr($dateTimeInputName)?>"><?=$this->transEsc($dateTimeInputName)?> (<?=$this->transEsc('optional')?>)</label>
+          <label for="<?=$this->escapeHtmlAttr($dateTimeInputName)?>"><?=$this->transEsc($dateTimeInputName)?> <?=$this->transEsc('optional_form_hint')?></label>
           <input<?=$this->htmlAttributes($dateTimeInputAttributes)?>>
         </div>
       <?php endforeach; ?>
