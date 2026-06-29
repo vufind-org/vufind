@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Breadcrumbs view helper Test Class
+ * Breadcrumbs view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\View\Helper\Root\Breadcrumbs;
 
 /**
- * Breadcrumbs view helper Test Class
+ * Breadcrumbs view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -50,11 +50,15 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a breadcrumb helper with the formatBreadcrumb method mocked.
      *
+     * @param \Laminas\View\Renderer\RendererInterface $view   View renderer
+     * @param \Laminas\View\Helper\Layout              $layout Layout helper
+     *
      * @return Breadcrumbs&MockObject
      */
-    protected function getHelperWithFormatMocked(): Breadcrumbs&MockObject
+    protected function getHelperWithFormatMocked($view, $layout): Breadcrumbs&MockObject
     {
         $builder = $this->getMockBuilder(Breadcrumbs::class)
+            ->setConstructorArgs([$view, $layout])
             ->onlyMethods(['formatBreadcrumb'])
             ->getMock();
         $builder->method('formatBreadcrumb')->willReturnCallback(
@@ -76,17 +80,16 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
         $layout = $this->createMock(Layout::class);
         $layout->method('__invoke')->willReturn($layoutModel);
         $view = $this->getPhpRenderer(compact('layout'));
-        $helper = $this->getHelperWithFormatMocked();
-        $helper->setView($view);
+        $helper = $this->getHelperWithFormatMocked($view, $layout);
         $helper->disable();
         $this->assertFalse($layoutModel->breadcrumbs);
         $helper->add('a', 'b');
         $helper->add('c', active: true);
         $helper->prepend('d');
-        $this->assertEquals('d|-|F>a|b|F>c|-|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('d|-|F>a|b|F>c|-|T>', $layoutModel->breadcrumbs);
         $helper->set('z', 'y', true);
-        $this->assertEquals('z|y|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('z|y|T>', $layoutModel->breadcrumbs);
         $helper->reset();
-        $this->assertEquals('', $layoutModel->breadcrumbs);
+        $this->assertSame('', $layoutModel->breadcrumbs);
     }
 }

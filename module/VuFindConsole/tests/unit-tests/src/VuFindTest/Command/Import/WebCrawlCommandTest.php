@@ -52,27 +52,25 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Data provider for testSuccessWithMinimalParameters()
+     * Data provider for testSuccessWithMinimalParameters().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function successWithMinimalParametersProvider(): array
+    public static function successWithMinimalParametersProvider(): \Iterator
     {
-        return [
-            'not verbose, no cache' => [false, false, ''],
-            'verbose, no cache' => [
-                true,
-                false,
-                'Harvesting http://foo... Harvesting http://bar... '
-                . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
-            ],
-            'verbose, cache' => [
-                true,
-                true,
-                'Harvesting http://foo... Harvesting http://bar... '
-                . 'Wrote results to transform cache. '
-                . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
-            ],
+        yield 'not verbose, no cache' => [false, false, ''];
+        yield 'verbose, no cache' => [
+            true,
+            false,
+            'Harvesting http://foo... Harvesting http://bar... '
+            . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
+        ];
+        yield 'verbose, cache' => [
+            true,
+            true,
+            'Harvesting http://foo... Harvesting http://bar... '
+            . 'Wrote results to transform cache. '
+            . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
         ];
     }
 
@@ -112,18 +110,18 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo($fixture2),
-                $this->equalTo('sitemap.properties'),
-                $this->equalTo('SolrWeb'),
-                $this->equalTo(false)
+                $fixture2,
+                'sitemap.properties',
+                'SolrWeb',
+                false
             )->willReturn('<result />');
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('deleteByQuery')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('commit')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('optimize')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $config = new Config(
             [
                 'Cache' => ['transform_cache_dir' => $cache ? $cacheDir : null],
@@ -146,8 +144,8 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $normalizedOutput = $this->normalizeOutput($commandTester->getDisplay());
-        $this->assertEquals($expectedOutput, $normalizedOutput);
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expectedOutput, $normalizedOutput);
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -162,11 +160,11 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('save')->with('SolrWeb', new RawXMLDocument('<sample />'));
         $solr->expects($this->once())->method('deleteByQuery')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('commit')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('optimize')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $config = new Config(
             [
                 'Cache' => ['transform_cache_dir' => $cacheDir],
@@ -178,17 +176,17 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--use-expired-cache' => true]);
         $normalizedOutput = $this->normalizeOutput($commandTester->getDisplay());
-        $this->assertEquals(
+        $this->assertSame(
             'Found http://foo in cache: '
             . $cacheDir . '/0e1383718a2889c12af18febb1a2e3de '
             . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
             $normalizedOutput
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
-     * Get a mock command object
+     * Get a mock command object.
      *
      * @param ?Importer $importer Importer object
      * @param ?Writer   $solr     Solr writer object
@@ -215,7 +213,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock importer object
+     * Get a mock importer object.
      *
      * @param array $methods Methods to mock
      *
@@ -232,7 +230,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock solr writer object
+     * Get a mock solr writer object.
      *
      * @param array $methods Methods to mock
      *

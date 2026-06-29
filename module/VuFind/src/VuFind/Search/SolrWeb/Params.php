@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Web aspect of the Search Multi-class (Params)
+ * Solr Web aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\SolrWeb;
 
 /**
- * Solr Web Search Parameters
+ * Solr Web Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrWeb
@@ -46,5 +46,5 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelSections = ['Facets'];
+    protected array $defaultFacetLabelSections = ['Facets'];
 }

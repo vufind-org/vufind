@@ -41,28 +41,28 @@ namespace VuFind\RecordDriver\Response;
 class PublicationDetails
 {
     /**
-     * Place of publication
+     * Place of publication.
      *
      * @var string
      */
     protected $place;
 
     /**
-     * Name of publisher
+     * Name of publisher.
      *
      * @var string
      */
     protected $name;
 
     /**
-     * Date of publication
+     * Date of publication.
      *
      * @var string
      */
     protected $date;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $place Place of publication
      * @param string $name  Name of publisher
@@ -76,7 +76,7 @@ class PublicationDetails
     }
 
     /**
-     * Get place of publication
+     * Get place of publication.
      *
      * @return string
      */
@@ -86,7 +86,7 @@ class PublicationDetails
     }
 
     /**
-     * Get name of publisher
+     * Get name of publisher.
      *
      * @return string
      */
@@ -96,7 +96,7 @@ class PublicationDetails
     }
 
     /**
-     * Get date of publication
+     * Get date of publication.
      *
      * @return string
      */
@@ -106,7 +106,7 @@ class PublicationDetails
     }
 
     /**
-     * Represent object as a string
+     * Represent object as a string.
      *
      * @return string
      */

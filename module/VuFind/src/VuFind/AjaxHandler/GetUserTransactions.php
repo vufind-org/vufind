@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get User Transactions" AJAX handler
+ * "Get User Transactions" AJAX handler.
  *
  * PHP version 8
  *
@@ -29,11 +29,11 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Account\AccountStatusLevelType;
 
 /**
- * "Get User Transactions" AJAX handler
+ * "Get User Transactions" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -46,7 +46,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * Paginator
+     * Paginator.
      *
      * @var \VuFind\ILS\PaginationHelper
      */
@@ -55,11 +55,11 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
@@ -90,12 +90,12 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
         } while ($page <= $pageEnd);
 
         $result['level'] = $this->getAccountStatusLevel($result);
-        $result['html'] = $this->renderer->render('ajax/account/checkouts.phtml', $result);
+        $result['html'] = $this->renderer->renderTemplateAsString($request, 'ajax/account/checkouts.phtml', $result);
         return $this->formatResponse($result);
     }
 
     /**
-     * Get account status level for notification icon
+     * Get account status level for notification icon.
      *
      * @param array $status Status information
      *
@@ -113,7 +113,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     }
 
     /**
-     * Set the ILS pagination helper
+     * Set the ILS pagination helper.
      *
      * @param \VuFind\ILS\PaginationHelper $helper Pagination helper
      *
@@ -125,7 +125,7 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
     }
 
     /**
-     * Get the ILS pagination helper
+     * Get the ILS pagination helper.
      *
      * @return \VuFind\ILS\PaginationHelper
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind SearchSpecs Configuration Reader.
  *
  * PHP version 8
  *
@@ -30,18 +30,20 @@
 namespace VuFind\Config;
 
 /**
- * VuFind SearchSpecs Configuration Reader
+ * VuFind SearchSpecs Configuration Reader.
  *
  * @category VuFind
  * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @deprecated Use \VuFind\Config\ConfigManager instead
  */
 class SearchSpecsReader extends YamlReader
 {
     /**
-     * Cache directory name
+     * Cache directory name.
      *
      * @var string
      */

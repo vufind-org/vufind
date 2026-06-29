@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * PHP version 8
  *
@@ -29,14 +29,16 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\EscapeHtml;
+use Laminas\View\Helper\Layout;
+use Laminas\View\Model\ViewModel;
+use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\Flashmessages;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
 /**
- * Flashmessages View Helper Test Class
+ * Flashmessages View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,152 +48,149 @@ use VuFind\View\Helper\Root\Translate;
  */
 class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Data provider for testFlashmessageData
+     * Data provider for testFlashmessageData.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestFlashmessageData(): array
+    public static function getTestFlashmessageData(): \Iterator
     {
-        return [
+        yield [
+            [],
+            '',
+        ];
+        yield [
             [
-                [],
-                '',
+                'success' => [
+                    'Foo',
+                ],
             ],
+            '<div role="alert" class="success">Foo</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        'Foo',
+                'error' => [
+                    'Fail',
+                ],
+                'success' => [
+                    'Good',
+                ],
+            ],
+            '<div role="alert" class="error">Fail</div>'
+                . '<div role="alert" class="success">Good Translation</div>',
+        ];
+        yield [
+            [
+                'success' => [
+                    [
+                        'msg' => 'Good',
                     ],
                 ],
-                '<div role="alert" class="success">Foo</div>',
             ],
+            '<div role="alert" class="success">Good Translation</div>',
+        ];
+        yield [
             [
-                [
-                    'error' => [
-                        'Fail',
-                    ],
-                    'success' => [
-                        'Good',
+                'success' => [
+                    [
+                        'msg' => 'Good',
+                        'translate' => false,
                     ],
                 ],
-                '<div role="alert" class="error">Fail</div>'
-                    . '<div role="alert" class="success">Good Translation</div>',
             ],
+            '<div role="alert" class="success">Good</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'Good',
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'Good',
                         ],
                     ],
                 ],
-                '<div role="alert" class="success">Good Translation</div>',
             ],
+            '<div role="alert" class="success">foo Good</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'Good',
-                            'translate' => false,
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'paragraph',
                         ],
+                        'translateTokens' => true,
                     ],
                 ],
-                '<div role="alert" class="success">Good</div>',
             ],
+            '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'Good',
-                            ],
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'html' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'paragraph',
                         ],
+                        'translateTokens' => true,
                     ],
                 ],
-                '<div role="alert" class="success">foo Good</div>',
             ],
+            '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'paragraph',
-                            ],
-                            'translateTokens' => true,
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'html' => true,
+                        'tokens' => [
+                            '%%ph%%' => 'paragraph',
                         ],
+                        'translateTokens' => true,
+                        'tokensHtml' => true,
                     ],
                 ],
-                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
             ],
+            '<div role="alert" class="success">foo Tag <p></div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'html' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'paragraph',
-                            ],
-                            'translateTokens' => true,
+                'success' => [
+                    [
+                        'msg' => 'foo_placeholder',
+                        'translate' => true,
+                        'html' => true,
+                        'tokens' => [
+                            '%%ph%%' => '<b>bold</b>',
                         ],
+                        'translateTokens' => false,
+                        'tokensHtml' => true,
                     ],
                 ],
-                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
             ],
+            '<div role="alert" class="success">foo <b>bold</b></div>',
+        ];
+        yield [
             [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'html' => true,
-                            'tokens' => [
-                                '%%ph%%' => 'paragraph',
-                            ],
-                            'translateTokens' => true,
-                            'tokensHtml' => true,
-                        ],
+                'success' => [
+                    [
+                        'msg' => 'Goof',
+                        'default' => 'Good',
                     ],
                 ],
-                '<div role="alert" class="success">foo Tag <p></div>',
             ],
-            [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'foo_placeholder',
-                            'translate' => true,
-                            'html' => true,
-                            'tokens' => [
-                                '%%ph%%' => '<b>bold</b>',
-                            ],
-                            'translateTokens' => false,
-                            'tokensHtml' => true,
-                        ],
-                    ],
-                ],
-                '<div role="alert" class="success">foo <b>bold</b></div>',
-            ],
-            [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'Goof',
-                            'default' => 'Good',
-                        ],
-                    ],
-                ],
-                '<div role="alert" class="success">Good</div>',
-            ],
+            '<div role="alert" class="success">Good</div>',
         ];
     }
 
@@ -208,11 +207,11 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     {
         $fm = $this->getFlashmessages($messages);
 
-        $this->assertEquals($expected, $fm());
+        $this->assertSame($expected, $fm());
     }
 
     /**
-     * Get a Flashmessages helper with the given messages in the queue
+     * Get a Flashmessages helper with the given messages in the queue.
      *
      * @param array $messages Messages
      *
@@ -224,46 +223,25 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
             return $messages[$ns] ?? [];
         };
 
-        $mockMessenger = $this->getMockBuilder(FlashMessenger::class)
-            ->getMock();
-        $mockMessenger->expects($this->any())
-            ->method('getMessages')
-            ->with($this->isType('string'))
-            ->willReturnCallback($getMessages);
-        $mockMessenger->expects($this->any())
-            ->method('getCurrentMessages')
-            ->with($this->isType('string'))
-            ->willReturn([]);
+        $mockMessenger = $this->createMock(FlashMessenger::class);
+        $mockMessenger->method('getErrorMessages')->willReturnCallback(fn (): array => $getMessages('error'));
+        $mockMessenger->method('getInfoMessages')->willReturnCallback(fn (): array => $getMessages('info'));
+        $mockMessenger->method('getSuccessMessages')->willReturnCallback(fn (): array => $getMessages('success'));
+        $mockMessenger->method('getWarningMessages')->willReturnCallback(fn (): array => $getMessages('warning'));
 
-        $fm = new Flashmessages($mockMessenger);
+        $layoutModel = new ViewModel();
+        $mockLayout = $this->createMock(Layout::class);
+        $mockLayout->method('__invoke')->willReturn($layoutModel);
 
-        $layout = new class () {
-            /**
-             * Set layout template or retrieve "layout" view model
-             *
-             * If no arguments are given, grabs the "root" or "layout" view model.
-             * Otherwise, attempts to set the template for that view model.
-             *
-             * @param null|string $template Template
-             *
-             * @return Model|null|self
-             */
-            public function __invoke($template = null)
-            {
-                return $this;
-            }
-        };
+        $dependencies = $this->getViewHelpers();
 
-        $helpers = array_merge(
-            $this->getViewHelpers(),
-            [
-                'layout' => $layout,
-            ]
+        return new Flashmessages(
+            $mockMessenger,
+            $mockLayout,
+            $dependencies['translate'],
+            $dependencies['escapeHtml'],
+            $dependencies['transEsc']
         );
-
-        $fm->setView($this->getPhpRenderer($helpers));
-
-        return $fm;
     }
 
     /**
@@ -271,7 +249,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getViewHelpers()
+    protected function getViewHelpers(): array
     {
         $translations = [
             'default' => [
@@ -284,15 +262,8 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $transEsc = new TransEsc();
-        $transEsc->setView(
-            $this->getPhpRenderer(
-                [
-                    'escapeHtml' => new EscapeHtml(),
-                    'translate' => $translate,
-                ]
-            )
-        );
-        return compact('transEsc', 'translate');
+        $escapeHtml = new EscapeHtml();
+        $transEsc = new TransEsc($translate, $escapeHtml);
+        return compact('translate', 'escapeHtml', 'transEsc');
     }
 }

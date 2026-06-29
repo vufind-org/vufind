@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for Lucene syntax helper
+ * Unit tests for Lucene syntax helper.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Backend\Solr;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 
 /**
- * Unit tests for Lucene syntax helper
+ * Unit tests for Lucene syntax helper.
  *
  * @category VuFind
  * @package  Search
@@ -45,40 +45,38 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Data provider for testCapitalizeBooleans
+     * Data provider for testCapitalizeBooleans.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function capitalizeBooleansProvider(): array
+    public static function capitalizeBooleansProvider(): \Iterator
     {
-        return [
-            ['this not that', 'this NOT that'],        // capitalize not
-            ['this nOt that', 'this NOT that'],        // strange capitalization
-
-            ['this and that', 'this AND that'],        // capitalize and
-            ['and and and', 'and AND and'],
-            ['this aNd that', 'this AND that'],        // strange capitalization
-
-            ['this or that', 'this OR that'],          // capitalize or
-
-            // handle multiple operators:
-            ['apples and oranges (not that)', 'apples AND oranges (NOT that)'],
-            [
-                '(this or that) and (apples not oranges)',
-                '(this OR that) AND (apples NOT oranges)',
-            ],
-
-            // do not capitalize inside quotes:
-            ['"this not that"', '"this not that"'],
-            ['"this and that"', '"this and that"'],
-            ['"this or that"', '"this or that"'],
-            ['"apples and oranges (not that)"', '"apples and oranges (not that)"'],
-
-            ['this AND that', 'this AND that'], // don't mess up existing caps
-
-            // handle words resembling operators:
-            ['andornot noted andy oranges', 'andornot noted andy oranges'],
+        yield ['this not that', 'this NOT that'];
+        // capitalize not
+        yield ['this nOt that', 'this NOT that'];
+        // strange capitalization
+        yield ['this and that', 'this AND that'];
+        // capitalize and
+        yield ['and and and', 'and AND and'];
+        yield ['this aNd that', 'this AND that'];
+        // strange capitalization
+        yield ['this or that', 'this OR that'];
+        // capitalize or
+        // handle multiple operators:
+        yield ['apples and oranges (not that)', 'apples AND oranges (NOT that)'];
+        yield [
+            '(this or that) and (apples not oranges)',
+            '(this OR that) AND (apples NOT oranges)',
         ];
+        // do not capitalize inside quotes:
+        yield ['"this not that"', '"this not that"'];
+        yield ['"this and that"', '"this and that"'];
+        yield ['"this or that"', '"this or that"'];
+        yield ['"apples and oranges (not that)"', '"apples and oranges (not that)"'];
+        yield ['this AND that', 'this AND that'];
+        // don't mess up existing caps
+        // handle words resembling operators:
+        yield ['andornot noted andy oranges', 'andornot noted andy oranges'];
     }
 
     /**
@@ -222,45 +220,39 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testCapitalizeRanges
+     * Data provider for testCapitalizeRanges.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function capitalizeRangesProvider(): array
+    public static function capitalizeRangesProvider(): \Iterator
     {
-        return [
-            // don't capitalize inside quotes
-            ['"{a to b}"', '"{a to b}"'],
-            ['"[a to b]"', '"[a to b]"'],
-
-            // expand alphabetic cases
-            ['[a to b]', '([a TO b] OR [A TO B])'],
-            ['[a TO b]', '([a TO b] OR [A TO B])'],
-            ['[a To b]', '([a TO b] OR [A TO B])'],
-            ['[a tO b]', '([a TO b] OR [A TO B])'],
-            ['{a to b}', '({a TO b} OR {A TO B})'],
-            ['{a TO b}', '({a TO b} OR {A TO B})'],
-            ['{a To b}', '({a TO b} OR {A TO B})'],
-            ['{a tO b}', '({a TO b} OR {A TO B})'],
-
-            // don't expand numeric cases
-            ['[1900 to 1910]', '[1900 TO 1910]'],
-            ['[1900 TO 1910]', '[1900 TO 1910]'],
-            ['{1900 to 1910}', '{1900 TO 1910}'],
-            ['{1900 TO 1910}', '{1900 TO 1910}'],
-
-            // handle extra spaces
-            ['[a      to      b]', '([a TO b] OR [A TO B])'],
-
-            // special case for timestamps:
-            [
-                '[1900-01-01t00:00:00z to 1900-12-31t23:59:59z]',
-                '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]',
-            ],
-            [
-                '{1900-01-01T00:00:00Z       TO   1900-12-31T23:59:59Z}',
-                '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}',
-            ],
+        // don't capitalize inside quotes
+        yield ['"{a to b}"', '"{a to b}"'];
+        yield ['"[a to b]"', '"[a to b]"'];
+        // expand alphabetic cases
+        yield ['[a to b]', '([a TO b] OR [A TO B])'];
+        yield ['[a TO b]', '([a TO b] OR [A TO B])'];
+        yield ['[a To b]', '([a TO b] OR [A TO B])'];
+        yield ['[a tO b]', '([a TO b] OR [A TO B])'];
+        yield ['{a to b}', '({a TO b} OR {A TO B})'];
+        yield ['{a TO b}', '({a TO b} OR {A TO B})'];
+        yield ['{a To b}', '({a TO b} OR {A TO B})'];
+        yield ['{a tO b}', '({a TO b} OR {A TO B})'];
+        // don't expand numeric cases
+        yield ['[1900 to 1910]', '[1900 TO 1910]'];
+        yield ['[1900 TO 1910]', '[1900 TO 1910]'];
+        yield ['{1900 to 1910}', '{1900 TO 1910}'];
+        yield ['{1900 TO 1910}', '{1900 TO 1910}'];
+        // handle extra spaces
+        yield ['[a      to      b]', '([a TO b] OR [A TO B])'];
+        // special case for timestamps:
+        yield [
+            '[1900-01-01t00:00:00z to 1900-12-31t23:59:59z]',
+            '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]',
+        ];
+        yield [
+            '{1900-01-01T00:00:00Z       TO   1900-12-31T23:59:59Z}',
+            '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}',
         ];
     }
 
@@ -280,7 +272,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test advanced query detection (default settings)
+     * Test advanced query detection (default settings).
      *
      * @return void
      */
@@ -324,7 +316,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test advanced query detection (with case insensitivity)
+     * Test advanced query detection (with case insensitivity).
      *
      * @return void
      */
@@ -346,7 +338,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test case insensitive range normalization
+     * Test case insensitive range normalization.
      *
      * @return void
      */
@@ -361,27 +353,25 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testColonNormalization
+     * Data provider for testColonNormalization.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function colonNormalizationProvider(): array
+    public static function colonNormalizationProvider(): \Iterator
     {
-        return [
-            ['this : that', 'this  that'],
-            ['this: that', 'this that'],
-            ['this that:', 'this that'],
-            [':this that', 'this that'],
-            ['this :that', 'this that'],
-            ['this:that', 'this:that'],
-            ['this::::::that', 'this:that'],
-            ['"this : that"', '"this : that"'],
-            ['::::::::::::::::::::', ''],
-        ];
+        yield ['this : that', 'this  that'];
+        yield ['this: that', 'this that'];
+        yield ['this that:', 'this that'];
+        yield [':this that', 'this that'];
+        yield ['this :that', 'this that'];
+        yield ['this:that', 'this:that'];
+        yield ['this::::::that', 'this:that'];
+        yield ['"this : that"', '"this : that"'];
+        yield ['::::::::::::::::::::', ''];
     }
 
     /**
-     * Test colon normalization
+     * Test colon normalization.
      *
      * @param $input    Input to test
      * @param $expected Expected output
@@ -401,35 +391,33 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testExtractSearchTerms.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function extractSearchTermsProvider(): array
+    public static function extractSearchTermsProvider(): \Iterator
     {
-        return [
-            ['keyword', 'keyword'],
-            ['two keywords', 'two keywords'],
-            ['index:keyword', 'keyword'],
-            ['index:keyword anotherkeyword', 'keyword anotherkeyword'],
-            ['index:keyword anotherindex:anotherkeyword', 'keyword anotherkeyword'],
-            ['(index:keyword)', 'keyword'],
-            ['index:(keyword1 keyword2)', '(keyword1 keyword2)'],
-            ['{!local params}keyword', 'keyword'],
-            ['keyword~', 'keyword'],
-            ['keyword~0.8', 'keyword'],
-            ['keyword keyword2^20', 'keyword keyword2'],
-            ['"keyword keyword2 keyword3"~2', '"keyword keyword2 keyword3"'],
-            ['"kw1 kw2 kw3"~2 kw4^200', '"kw1 kw2 kw3" kw4'],
-            ['+keyword -keyword2^20', 'keyword keyword2'],
-            ['index:+keyword index2:-keyword2^20', 'keyword keyword2'],
-            ['index:[start TO end]', '[start TO end]'],
-            ['index:{start TO end}', '{start TO end}'],
-            ['es\\"caped field:test', 'es\\"caped test'],
-            ['field:"quoted:contents"', '"quoted:contents"'],
-        ];
+        yield ['keyword', 'keyword'];
+        yield ['two keywords', 'two keywords'];
+        yield ['index:keyword', 'keyword'];
+        yield ['index:keyword anotherkeyword', 'keyword anotherkeyword'];
+        yield ['index:keyword anotherindex:anotherkeyword', 'keyword anotherkeyword'];
+        yield ['(index:keyword)', 'keyword'];
+        yield ['index:(keyword1 keyword2)', '(keyword1 keyword2)'];
+        yield ['{!local params}keyword', 'keyword'];
+        yield ['keyword~', 'keyword'];
+        yield ['keyword~0.8', 'keyword'];
+        yield ['keyword keyword2^20', 'keyword keyword2'];
+        yield ['"keyword keyword2 keyword3"~2', '"keyword keyword2 keyword3"'];
+        yield ['"kw1 kw2 kw3"~2 kw4^200', '"kw1 kw2 kw3" kw4'];
+        yield ['+keyword -keyword2^20', 'keyword keyword2'];
+        yield ['index:+keyword index2:-keyword2^20', 'keyword keyword2'];
+        yield ['index:[start TO end]', '[start TO end]'];
+        yield ['index:{start TO end}', '{start TO end}'];
+        yield ['es\\"caped field:test', 'es\\"caped test'];
+        yield ['field:"quoted:contents"', '"quoted:contents"'];
     }
 
     /**
-     * Test search term extraction
+     * Test search term extraction.
      *
      * @param $input    Input to test
      * @param $expected Expected output
@@ -444,69 +432,66 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testUnquotedNormalization
+     * Data provider for testUnquotedNormalization.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function unquotedNormalizationProvider(): array
+    public static function unquotedNormalizationProvider(): \Iterator
     {
-        return [
-            // Unquoted ones that may need changes:
-            ['this - that', 'this that'],
-            ['this -- that', 'this that'],
-            ['- this that', 'this that'],
-            ['this that -', 'this that'],
-            ['-- this -- that --', 'this that'],
-            ['this -that', 'this -that'],
-            ['this + that', 'this that'],
-            ['+ this ++ that +', 'this that'],
-            ['this +that', 'this +that'],
-            ['this / that', 'this "/" that'],
-            ['this/that', 'this/that'],
-            ['/this', 'this'],
-            ['/this that', 'this that'],
-            ['this/', 'this'],
-            ['this that/', 'this that'],
-            ['/this that/', 'this that'],
-            ['(this that', 'this that'],
-            ['((this) that', 'this that'],
-            ['this that)', 'this that'],
-            ['this (that))', 'this that'],
-            ['((( this that', 'this that'],
-            ['\\((( this that', '\\( this that'],
-            ['\\\\\\((( this that', '\\\\\\( this that'],
-            ['\\"((( this that\\"', '\\" this that\\"'],
-            ['&', '&'],
-            ['&&', ''],
-            ['|', '|'],
-            ['||', ''],
-            ['AND', 'and'],
-            ['OR', 'or'],
-            ['NOT', 'not'],
-            ['*:*', ''],
-            [' AND OR', ''],
-            ['AND OR NOT +-"&&||', ''],
-            ['AND OR NOT +-"&&|| &', 'AND OR NOT +-"&&|| &'],
-
-            // Quoted ones that must not be affected:
-            ['"this - that"', '"this - that"'],
-            ['"- this that"', '"- this that"'],
-            ['"this that -"', '"this that -"'],
-            ['"this + that"', '"this + that"'],
-            ['"+ this ++ that +"', '"+ this ++ that +"'],
-            ['"this / that"', '"this / that"'],
-            ['"(this that"', '"(this that"'],
-            ['"(this (that"', '"(this (that"'],
-            ['"this) that"', '"this) that"'],
-            ['"((( this that"', '"((( this that"'],
-            ['"((("', '"((("'],
-            ['"\\((("', '"\\((("'],
-            ['"\\\\((("', '"\\\\((("'],
-        ];
+        // Unquoted ones that may need changes:
+        yield ['this - that', 'this that'];
+        yield ['this -- that', 'this that'];
+        yield ['- this that', 'this that'];
+        yield ['this that -', 'this that'];
+        yield ['-- this -- that --', 'this that'];
+        yield ['this -that', 'this -that'];
+        yield ['this + that', 'this that'];
+        yield ['+ this ++ that +', 'this that'];
+        yield ['this +that', 'this +that'];
+        yield ['this / that', 'this "/" that'];
+        yield ['this/that', 'this/that'];
+        yield ['/this', 'this'];
+        yield ['/this that', 'this that'];
+        yield ['this/', 'this'];
+        yield ['this that/', 'this that'];
+        yield ['/this that/', 'this that'];
+        yield ['(this that', 'this that'];
+        yield ['((this) that', 'this that'];
+        yield ['this that)', 'this that'];
+        yield ['this (that))', 'this that'];
+        yield ['((( this that', 'this that'];
+        yield ['\\((( this that', '\\( this that'];
+        yield ['\\\\\\((( this that', '\\\\\\( this that'];
+        yield ['\\"((( this that\\"', '\\" this that\\"'];
+        yield ['&', '&'];
+        yield ['&&', ''];
+        yield ['|', '|'];
+        yield ['||', ''];
+        yield ['AND', 'and'];
+        yield ['OR', 'or'];
+        yield ['NOT', 'not'];
+        yield ['*:*', ''];
+        yield [' AND OR', ''];
+        yield ['AND OR NOT +-"&&||', ''];
+        yield ['AND OR NOT +-"&&|| &', 'AND OR NOT +-"&&|| &'];
+        // Quoted ones that must not be affected:
+        yield ['"this - that"', '"this - that"'];
+        yield ['"- this that"', '"- this that"'];
+        yield ['"this that -"', '"this that -"'];
+        yield ['"this + that"', '"this + that"'];
+        yield ['"+ this ++ that +"', '"+ this ++ that +"'];
+        yield ['"this / that"', '"this / that"'];
+        yield ['"(this that"', '"(this that"'];
+        yield ['"(this (that"', '"(this (that"'];
+        yield ['"this) that"', '"this) that"'];
+        yield ['"((( this that"', '"((( this that"'];
+        yield ['"((("', '"((("'];
+        yield ['"\\((("', '"\\((("'];
+        yield ['"\\\\((("', '"\\\\((("'];
     }
 
     /**
-     * Test normalization of unquoted special characters
+     * Test normalization of unquoted special characters.
      *
      * @param string $input    Input string
      * @param string $expected Expected result

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine Options Test
+ * BrowZine Options Test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Search\BrowZine\Options;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * BrowZine Options Test
+ * BrowZine Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -58,10 +58,9 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($mockConfigManager);
-        $this->assertEquals('browzine-search', $options->getSearchAction());
-        $this->assertEquals(['relevance' => 'Relevance'], $options->getSortOptions());
-        $this->assertFalse($options->getFacetListAction());
-        $this->assertFalse($options->getAdvancedSearchAction());
-        $this->assertFalse($options->getAdvancedSearchAction());
+        $this->assertSame('browzine-search', $options->getSearchAction());
+        $this->assertSame(['relevance' => 'Relevance'], $options->getSortOptions());
+        $this->assertNull($options->getFacetListAction());
+        $this->assertNull($options->getAdvancedSearchAction());
     }
 }

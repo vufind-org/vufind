@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search Recommendations Interface
+ * Search Recommendations Interface.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 /**
- * Search Recommendations Interface
+ * Search Recommendations Interface.
  *
  * This interface class is the definition of the required methods for
  * generating search recommendations.

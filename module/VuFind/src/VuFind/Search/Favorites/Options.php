@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites aspect of the Search Multi-class (Options)
+ * Favorites aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Favorites;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Search Favorites Options
+ * Search Favorites Options.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -45,7 +45,7 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Config\Feature\ExplodeSettingTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -64,7 +64,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $limit;
         }
         if (null !== ($limitOptions = $this->mainConfig['Social']['lists_limit_options'] ?? null)) {
-            $this->limitOptions = $this->explodeListSetting($limitOptions);
+            $this->limitOptions = $this->explodeListSetting($limitOptions, 'intval');
         }
         if (null !== ($view = $this->mainConfig['Social']['lists_view'] ?? null)) {
             $this->listviewOption = $view;
@@ -80,7 +80,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'myresearch-favorites';
     }
@@ -91,11 +91,11 @@ class Options extends \VuFind\Search\Base\Options
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         return ['side' => 'FavoriteFacets'];
     }

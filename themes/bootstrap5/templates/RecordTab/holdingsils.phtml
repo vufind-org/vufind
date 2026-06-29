@@ -22,6 +22,10 @@
     }
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+    // Check if a warning box should be displayed if there are no physical holdings
+    $noIlsHoldingsWarningConfig = $this->config()->get('config')->Catalog->display_no_ils_holdings_warning ?? null;
+    $hasExternalLinks = !empty($urls) || $openUrlActive || $identifierLinksHtml;
+    $showNoIlsHoldingsWarning = ($noIlsHoldingsWarningConfig == 'always' || ($noIlsHoldingsWarningConfig == 'not_online' && !$hasExternalLinks));
 ?>
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', compact('user')); ?>
@@ -54,6 +58,11 @@
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
+<?php if (empty($holdings['holdings']) && $showNoIlsHoldingsWarning): ?>
+  <div class="alert alert-warning">
+    <?=$this->transEsc('no_holdings_found')?>
+  </div>
+<?php endif; ?>
 <?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); ?>
 <?php if (!empty($holdingTitleHold)): ?>
   <a class="placehold icon-link hidden-print" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
@@ -61,7 +70,7 @@
     <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
   </a>
 <?php endif; ?>
-<?php if (!empty($urls) || $openUrlActive || $identifierLinksHtml): ?>
+<?php if ($hasExternalLinks): ?>
   <h2><?=$this->transEsc('Internet')?></h2>
   <?php if (!empty($urls)): ?>
     <?php foreach ($urls as $current): ?>

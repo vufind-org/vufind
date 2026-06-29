@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Primo Central Search Parameters
+ * Primo Central Search Parameters.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindSearch\ParamBag;
 use function in_array;
 
 /**
- * Primo Central Search Parameters
+ * Primo Central Search Parameters.
  *
  * @category VuFind
  * @package  Search_Primo
@@ -52,7 +52,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelSections
+    protected array $defaultFacetLabelSections
         = ['Advanced_Facets', 'FacetsTop', 'Facets'];
 
     /**
@@ -61,15 +61,15 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+    protected array $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
      * Mappings of specific Primo facet values (spelling errors and other special
-     * cases present at least in CDI)
+     * cases present at least in CDI).
      *
      * @var array
      */
-    protected $facetValueMappings = [
+    protected array $facetValueMappings = [
         'reference_entrys' => 'Reference Entries',
         'newsletterarticle' => 'Newsletter Articles',
         'archival_material_manuscripts' => 'Archival Materials / Manuscripts',
@@ -81,7 +81,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 
@@ -122,7 +122,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-    public function fixPrimoFacetValue($str)
+    public function fixPrimoFacetValue(string $str): string
     {
         if ($replacement = $this->facetValueMappings[$str] ?? '') {
             return $replacement;
@@ -135,11 +135,11 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the current filters as an array
+     * Return the current filters as an array.
      *
      * @return array
      */
-    public function getFilterSettings()
+    public function getFilterSettings(): array
     {
         $result = [];
         $filterList = array_merge_recursive(
@@ -170,7 +170,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array                       Field, values and translation status
      */
-    public function getFilterList($excludeCheckboxFilters = false)
+    public function getFilterList(bool $excludeCheckboxFilters = false): array
     {
         $result = parent::getFilterList($excludeCheckboxFilters);
         if (isset($result['citing'])) {
@@ -185,15 +185,19 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field               Facet field name.
-     * @param string $value               Facet value.
-     * @param string $default             Default field name (null for default behavior).
-     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
+     * @param string  $field               Facet field name.
+     * @param ?string $value               Facet value.
+     * @param ?string $default             Default field name (null for default behavior).
+     * @param bool    $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
      * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
-    {
+    public function getFacetLabel(
+        string $field,
+        ?string $value = null,
+        ?string $default = null,
+        bool $allowCheckboxFacets = true
+    ): string {
         if (in_array($field, ['citing', 'citedby'])) {
             return $field;
         }

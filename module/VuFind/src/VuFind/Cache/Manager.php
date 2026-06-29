@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * PHP version 8
  *
@@ -45,7 +45,7 @@ use function is_array;
 use function strlen;
 
 /**
- * VuFind Cache Manager
+ * VuFind Cache Manager.
  *
  * Creates caches based on configuration
  *
@@ -151,7 +151,7 @@ class Manager implements LoggerAwareInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array                 $config  Main VuFind configuration
      * @param StorageAdapterFactory $factory Cache storage adapter factory
@@ -232,6 +232,23 @@ class Manager implements LoggerAwareInterface
         }
 
         return $dir;
+    }
+
+    /**
+     * Get the path to a specific cache.
+     *
+     * @param string $name Name of the cache
+     *
+     * @return string
+     */
+    public function getNamedCacheDir(string $name): string
+    {
+        $config = $this->cacheSpecs[$name] ?? null;
+        $directory = $config['directory'] ?? null;
+        if ($directory === null) {
+            throw new \Exception('Directory not specified for cache ' . $name);
+        }
+        return $this->getCacheDir($config['cliOverride'] ?? true) . $directory;
     }
 
     /**
@@ -323,7 +340,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Ensure that a file cache is properly set up
+     * Ensure that a file cache is properly set up.
      *
      * @param string $name Cache name
      *
@@ -333,8 +350,8 @@ class Manager implements LoggerAwareInterface
     {
         // Use $this->cacheSettings to determine if $this->createFileCache() has been called yet:
         if (!isset($this->cacheSettings[$name]) && $config = $this->cacheSpecs[$name] ?? null) {
-            $base = $this->getCacheDir($config['cliOverride'] ?? true);
-            $this->createFileCache($name, $base . $config['directory'], $config['options'] ?? []);
+            $cacheDir = $this->getNamedCacheDir($name);
+            $this->createFileCache($name, $cacheDir, $config['options'] ?? []);
         }
     }
 
@@ -366,18 +383,6 @@ class Manager implements LoggerAwareInterface
         $opts = array_merge($this->defaults, $overrideOpts);
 
         if (!is_dir($dirName)) {
-            if (isset($opts['umask'])) {
-                // convert umask from string
-                $umask = octdec($opts['umask']);
-                // validate
-                if ($umask & 0o700) {
-                    throw new \Exception(
-                        'Invalid umask: ' . $opts['umask']
-                        . '; need permission to execute, read and write by owner'
-                    );
-                }
-                umask($umask);
-            }
             if (isset($opts['dir_permission'])) {
                 $dir_perm = octdec($opts['dir_permission']);
             } else {
@@ -437,7 +442,7 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Create an in-memory cache
+     * Create an in-memory cache.
      *
      * @param array $storageConfig See Storage in RateLimiter.yaml
      *

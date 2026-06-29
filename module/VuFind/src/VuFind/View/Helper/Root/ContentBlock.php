@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ContentBlock view helper
+ * ContentBlock view helper.
  *
  * PHP version 8
  *
@@ -29,8 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
- * ContentBlock view helper
+ * ContentBlock view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,9 +42,25 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ContentBlock extends \Laminas\View\Helper\AbstractHelper
+class ContentBlock
 {
     use ClassBasedTemplateRendererTrait;
+
+    /**
+     * Constructor.
+     *
+     * @param RendererInterface $viewRenderer View renderer
+     * @param ResolverInterface $viewResolver View resolver
+     * @param Context           $context      Context helper
+     */
+    public function __construct(
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $context,
+    ) {
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $context);
+    }
 
     /**
      * Render the output of a ContentBlock plugin.

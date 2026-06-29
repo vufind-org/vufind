@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tags aspect of the Search Multi-class (Params)
+ * Tags aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\Search\Tags;
 
+use Laminas\Stdlib\Parameters;
+
 /**
- * Search Tags Parameters
+ * Search Tags Parameters.
  *
  * @category VuFind
  * @package  Search_Tags
@@ -45,27 +47,27 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var bool
      */
-    protected $fuzzy = false;
+    protected bool $fuzzy = false;
 
     /**
      * Is this a fuzzy search?
      *
      * @return bool
      */
-    public function isFuzzyTagSearch()
+    public function isFuzzyTagSearch(): bool
     {
         return $this->fuzzy;
     }
 
     /**
-     * Pull the search parameters
+     * Pull the search parameters.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest($request)
+    public function initFromRequest(Parameters $request): void
     {
         parent::initFromRequest($request);
         $this->fuzzy = ('true' == $request->get('fuzzy', 'false'));

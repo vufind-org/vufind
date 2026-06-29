@@ -34,6 +34,8 @@ namespace VuFind\Connection;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
 
+use function is_array;
+
 /**
  * LibGuides API connection class.
  *
@@ -63,42 +65,42 @@ class LibGuides implements
     }
 
     /**
-     * HTTP Client
+     * HTTP Client.
      *
      * @var \Laminas\Http\HttpClient
      */
     protected $client;
 
     /**
-     * Base URL of the LibGuides API
+     * Base URL of the LibGuides API.
      *
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * Client ID for a client_credentials grant
+     * Client ID for a client_credentials grant.
      *
      * @var string
      */
     protected $clientId;
 
     /**
-     * Client Secret for a client_credentials grant
+     * Client Secret for a client_credentials grant.
      *
      * @var string
      */
     protected $clientSecret;
 
     /**
-     * User agent to send in header
+     * User agent to send in header.
      *
      * @var string
      */
     protected $userAgent = 'VuFind';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Config               $config LibGuides API configuration object
      * @param \Laminas\Http\Client $client HTTP client
@@ -140,10 +142,12 @@ class LibGuides implements
     /**
      * Load all LibGuides AZ databases.
      *
+     * @param bool $excludeHidden Exclude AZ resources marked hidden
+     *
      * @return object|null A JSON object of all LibGuides databases, or null
      * if an error occurs
      */
-    public function getAZ()
+    public function getAZ($excludeHidden = true)
     {
         if (!$this->authenticateAndSetHeaders()) {
             return null;
@@ -156,6 +160,11 @@ class LibGuides implements
         if (isset($result->errorCode)) {
             return null;
         }
+
+        if ($excludeHidden && is_array($result)) {
+            $result = array_filter($result, fn ($database) => $database?->enable_hidden != 1);
+        }
+
         return $result;
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channel provider plugin manager
+ * Channel provider plugin manager.
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\ChannelProvider;
 
+use VuFind\ServiceManager\AbstractPluginFactory;
+
 /**
- * Channel provider plugin manager
+ * Channel provider plugin manager.
  *
  * @category VuFind
  * @package  Channels
@@ -49,7 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'alphabrowse' => AlphaBrowse::class,
         'facets' => Facets::class,
         'listitems' => ListItems::class,
-        'newilsitems' => NewILSItems::class,
+        'newilsitems' => Deprecated::class,
         'newsearchitems' => NewSearchItems::class,
         'random' => Random::class,
         'recentlyreturned' => RecentlyReturned::class,
@@ -58,24 +60,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AlphaBrowse::class => AlphaBrowseFactory::class,
-        Facets::class => FacetsFactory::class,
-        ListItems::class => ListItemsFactory::class,
-        NewILSItems::class => AbstractILSChannelProviderFactory::class,
-        NewSearchItems::class => NewSearchItemsFactory::class,
-        Random::class => RandomFactory::class,
-        RecentlyReturned::class => AbstractILSChannelProviderFactory::class,
-        SimilarItems::class => SimilarItemsFactory::class,
-        TrendingILSItems::class => AbstractILSChannelProviderFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *
@@ -87,6 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $configOrContainerInstance = null,
         array $v3config = []
     ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
         $this->addInitializer(RouterInitializer::class);
         parent::__construct($configOrContainerInstance, $v3config);
     }

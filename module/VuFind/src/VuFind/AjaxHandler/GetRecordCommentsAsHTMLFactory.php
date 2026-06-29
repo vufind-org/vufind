@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for GetRecordCommentsAsHTML AJAX handler.
@@ -46,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class GetRecordCommentsAsHTMLFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -71,7 +72,7 @@ class GetRecordCommentsAsHTMLFactory implements \Laminas\ServiceManager\Factory\
         }
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
-            $container->get('ViewRenderer')
+            $container->get(TemplateRendererInterface::class)
         );
     }
 }

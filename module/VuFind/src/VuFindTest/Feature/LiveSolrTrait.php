@@ -30,7 +30,7 @@
 namespace VuFindTest\Feature;
 
 use Laminas\EventManager\SharedEventManager;
-use VuFind\Config\PathResolver;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\SearchSpecsReader;
 use VuFind\Search\BackendManager;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
@@ -74,7 +74,7 @@ trait LiveSolrTrait
         );
         $container->set(
             SearchSpecsReader::class,
-            new SearchSpecsReader($container->get(PathResolver::class))
+            new SearchSpecsReader($container->get(ConfigManagerInterface::class))
         );
         $container->set('SharedEventManager', new SharedEventManager());
         $container->set(
@@ -112,7 +112,7 @@ trait LiveSolrTrait
     }
 
     /**
-     * Get a search backend
+     * Get a search backend.
      *
      * @param string $name Backend name
      *
@@ -125,7 +125,7 @@ trait LiveSolrTrait
     }
 
     /**
-     * Get a search results object
+     * Get a search results object.
      *
      * @param string $name Backend name
      *

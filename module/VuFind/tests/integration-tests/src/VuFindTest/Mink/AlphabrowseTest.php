@@ -41,19 +41,17 @@ namespace VuFindTest\Mink;
 class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testTitleSearchNormalization
+     * Data provider for testTitleSearchNormalization.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleSearchNormalizationProvider(): array
+    public static function titleSearchNormalizationProvider(): \Iterator
     {
-        return [
-            'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'],
-            'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'],
-            'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'],
-            'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'],
-            'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'],
-        ];
+        yield 'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'];
+        yield 'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'];
+        yield 'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'];
+        yield 'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'];
+        yield 'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'];
     }
 
     /**
@@ -81,7 +79,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that we can jump to a record with an ID containing slashes
+     * Test that we can jump to a record with an ID containing slashes.
      *
      * @return void
      */

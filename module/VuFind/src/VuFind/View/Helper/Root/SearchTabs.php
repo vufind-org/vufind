@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Search tabs" view helper
+ * "Search tabs" view helper.
  *
  * PHP version 8
  *
@@ -31,15 +31,16 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\Http\Request;
-use Laminas\View\Helper\Url;
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Log\LoggerAwareTrait;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager;
 use VuFind\Search\SearchTabsHelper;
 use VuFind\Search\UrlQueryHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * "Search tabs" view helper
+ * "Search tabs" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,40 +49,12 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
+class SearchTabs implements LoggerAwareInterface
 {
-    use \VuFind\Log\LoggerAwareTrait;
+    use LoggerAwareTrait;
 
     /**
-     * Search manager
-     *
-     * @var PluginManager
-     */
-    protected $results;
-
-    /**
-     * Request
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Url
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
-     * Search tab helper
-     *
-     * @var SearchTabsHelper
-     */
-    protected $helper;
-
-    /**
-     * Cached hidden filter url params
+     * Cached hidden filter url params.
      *
      * @var array
      */
@@ -95,24 +68,35 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     protected $currentHiddenFilterParamsDisabled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param PluginManager    $results Search results plugin manager
-     * @param Url              $url     URL helper
-     * @param SearchTabsHelper $helper  Search tabs helper
+     * @param PluginManager    $results      Search results plugin manager
+     * @param Url              $url          URL helper
+     * @param SearchTabsHelper $helper       Search tabs helper
+     * @param SearchMemory     $searchMemory Search memory view helper
      */
     public function __construct(
-        PluginManager $results,
-        Url $url,
-        SearchTabsHelper $helper
+        protected PluginManager $results,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        protected SearchTabsHelper $helper,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected SearchMemory $searchMemory
     ) {
-        $this->results = $results;
-        $this->url = $url;
-        $this->helper = $helper;
     }
 
     /**
-     * Determine information about search tabs
+     * Invoke the helper.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
+    }
+
+    /**
+     * Determine information about search tabs.
      *
      * @param string $activeSearchClass The search class ID of the active search
      * @param string $query             The current search query
@@ -135,18 +119,15 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
         $allSettings = $this->helper->getSettings();
         $retVal['showCounts'] = $allSettings['show_result_counts'] ?? false;
         foreach ($this->helper->getTabConfig() as $key => $label) {
-            $permissionName = null;
-            if (isset($allPermissions[$key])) {
-                $permissionName = $allPermissions[$key];
-            }
+            $permissionName = $allPermissions[$key] ?? null;
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
-            $selected = $class == $activeSearchClass && $this->helper->filtersMatch($class, $hiddenFilters, $filters);
+            $selected = $class == $activeSearchClass
+                && $this->helper->filtersMatch($class, $hiddenFilters, $filters);
             try {
                 if ($type == 'basic') {
                     if (!isset($activeOptions)) {
-                        $activeOptions
-                            = $this->results->get($activeSearchClass)->getOptions();
+                        $activeOptions = $this->results->get($activeSearchClass)->getOptions();
                     }
                     $url = $this->remapBasicSearch(
                         $activeOptions,
@@ -203,7 +184,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Get the tab configuration
+     * Get the tab configuration.
      *
      * @param \VuFind\Search\Base\Params $params Search parameters
      *
@@ -222,7 +203,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Get an array of hidden filters
+     * Get an array of hidden filters.
      *
      * @param string $searchClassId         Active search class
      * @param bool   $returnDefaultsIfEmpty Whether to return default tab filters if
@@ -245,7 +226,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Get current hidden filters as a string suitable for search URLs
+     * Get current hidden filters as a string suitable for search URLs.
      *
      * @param string $searchClassId            Active search class
      * @param bool   $ignoreHiddenFilterMemory Whether to ignore hidden filters in search memory
@@ -262,14 +243,12 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
             return '';
         }
         if (!isset($this->cachedHiddenFilterParams[$searchClassId])) {
-            $view = $this->getView();
             $hiddenFilters = $this->getHiddenFilters(
                 $searchClassId,
                 $ignoreHiddenFilterMemory
             );
             if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
-                $hiddenFilters = $view->plugin('searchMemory')
-                    ->getLastHiddenFilters($searchClassId);
+                $hiddenFilters = $this->searchMemory->getLastHiddenFilters($searchClassId);
                 if (empty($hiddenFilters)) {
                     $hiddenFilters = $this->getHiddenFilters($searchClassId);
                 }
@@ -323,7 +302,6 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
         foreach ($filters as $filter) {
             $params->addHiddenFilter($filter);
         }
-
         // Find matching handler for new query (and use default if no match):
         $options = $results->getOptions();
         $targetHandler = $options->getHandlerForLabel(
@@ -331,7 +309,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
         );
 
         // Build new URL:
-        $results->getParams()->setBasicSearch($query, $targetHandler);
+        $params->setBasicSearch($query, $targetHandler);
         return ($this->url)($options->getSearchAction())
             . $results->getUrlQuery()->getParams(false);
     }
@@ -346,12 +324,9 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
      */
     protected function getHomeTabUrl($class, $filters)
     {
-        // If an advanced search is available, link there; otherwise, just go
-        // to the search home:
         $results = $this->results->get($class);
-        $url = ($this->url)($results->getOptions()->getSearchHomeAction())
+        return ($this->url)($results->getOptions()->getSearchHomeAction())
             . $this->buildUrlHiddenFilters($results, $filters);
-        return $url;
     }
 
     /**
@@ -374,7 +349,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log
     }
 
     /**
-     * Build a hidden filter query fragment from the given filters
+     * Build a hidden filter query fragment from the given filters.
      *
      * @param Results $results Search results
      * @param array   $filters Filters

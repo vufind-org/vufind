@@ -51,10 +51,10 @@ class RawJSONDocumentTest extends TestCase
     public function testBasicBehavior()
     {
         $document = new RawJSONDocument('{}');
-        $this->assertEquals(
+        $this->assertSame(
             'application/json',
             $document->getContentType()
         );
-        $this->assertEquals('{}', $document->getContent());
+        $this->assertSame('{}', $document->getContent());
     }
 }

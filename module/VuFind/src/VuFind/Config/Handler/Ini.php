@@ -38,6 +38,7 @@ use VuFind\Exception\FileAccess as FileAccessException;
 
 use function in_array;
 use function is_array;
+use function is_string;
 
 /**
  * Ini config handler.
@@ -63,11 +64,7 @@ class Ini extends AbstractBase
      */
     public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array
     {
-        $path = $configLocation->getPath();
-        $data = parse_ini_file($path, true);
-        if ($data === false) {
-            throw new FileAccessException('Could not read ini file ' . $path);
-        }
+        $data = $this->loadFromFile($configLocation->getPath());
 
         $config = [];
 
@@ -84,7 +81,12 @@ class Ini extends AbstractBase
             }
 
             if ($parentPath !== null) {
-                $config['parentLocation'] = $this->getParentLocationOnPath($configLocation, $parentPath);
+                $parentConfigLocation = $this->getParentLocationOnPath($configLocation, $parentPath);
+                if ($parentConfigLocation === null) {
+                    throw new FileAccessException("Error: $parentPath does not exist.");
+                }
+                $parentConfigLocation->setSubsection($configLocation->getSubsection());
+                $config['parentLocation'] = $parentConfigLocation;
             } elseif ($parentConfig['use_parent_dir'] ?? false) {
                 $config['parentLocation'] = $configLocation->getDirLocationsParent();
             }
@@ -99,6 +101,44 @@ class Ini extends AbstractBase
         $config['data'] = $data;
 
         return $config;
+    }
+
+    /**
+     * Load from file.
+     *
+     * @param string $path Config file path
+     *
+     * @return array
+     */
+    protected function loadFromFile(string $path): array
+    {
+        $data = parse_ini_file($path, true);
+        if ($data === false) {
+            throw new FileAccessException('Could not read ini file ' . $path);
+        }
+        return $this->handleIncludeStatements($data, pathinfo($path, PATHINFO_DIRNAME));
+    }
+
+    /**
+     * Handle include statements.
+     *
+     * @param array  $data     Config data
+     * @param string $basePath Config file base path
+     *
+     * @return array
+     */
+    protected function handleIncludeStatements(array $data, string $basePath): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->handleIncludeStatements($value, $basePath);
+            } elseif ($key === '@include') {
+                $included = $this->loadFromFile($basePath . DIRECTORY_SEPARATOR . $value);
+                unset($data['@include']);
+                $data = array_replace_recursive($data, $included);
+            }
+        }
+        return $data;
     }
 
     /**
@@ -160,15 +200,48 @@ class Ini extends AbstractBase
             throw new ConfigException('Ini handler can only write array config.');
         }
 
+        $this->checkIfConfigIsWritable($destinationLocation);
+
         // If target file already exists, back it up:
         $outfile = $destinationLocation->getPath();
         $this->backupFile($outfile);
 
-        $comments = [];
-        if ($baseLocation !== null) {
-            $comments = $this->extractComments($baseLocation->getPath());
+        if ($baseLocation !== null && file_exists($baseLocation->getPath())) {
+            // Copy from base to provide structure
+            if (!copy($baseLocation->getPath(), $outfile)) {
+                throw new FileAccessException(
+                    "Error: Problem copying to {$outfile}."
+                );
+            }
         }
-        $writer = $this->getConfigWriter($outfile, $config, $comments);
+
+        if (file_exists($outfile) && $currentConfig = parse_ini_file($outfile, true)) {
+            // If file already exists, only update changed lines
+            $writer = new ConfigWriter(
+                $outfile
+            );
+            // override current config with new config
+            foreach ($config as $section => $sectionConfig) {
+                foreach ($sectionConfig as $setting => $value) {
+                    if (!isset($currentConfig[$section][$setting]) || $currentConfig[$section][$setting] !== $value) {
+                        $writer->set($section, $setting, $value);
+                    }
+                    unset($currentConfig[$section][$setting]);
+                }
+            }
+            // remove current config not included in new config
+            foreach ($currentConfig as $section => $sectionConfig) {
+                foreach ($sectionConfig as $setting => $value) {
+                    $writer->clear($section, $setting);
+                }
+            }
+        } else {
+            // If no file exists yet, create it from scratch
+            $writer = new ConfigWriter(
+                $outfile,
+                $config,
+            );
+        }
         if (!$writer->save()) {
             throw new FileAccessException(
                 "Error: Problem writing to {$outfile}."
@@ -177,32 +250,40 @@ class Ini extends AbstractBase
     }
 
     /**
-     * Get writer object.
+     * Check if a config location is writable. Otherwise, throw an exception.
      *
-     * @param string $outfile  Path to output file
-     * @param array  $config   Configuration to write
-     * @param array  $comments Comments
+     * @param ConfigLocationInterface $configLocation Config location
      *
-     * @return ConfigWriter
+     * @return void
      */
-    protected function getConfigWriter(string $outfile, array $config, array $comments): ConfigWriter
+    protected function checkIfConfigIsWritable(ConfigLocationInterface $configLocation): void
     {
-        return new ConfigWriter(
-            $outfile,
-            $config,
-            $comments
-        );
-    }
+        if (!file_exists($configLocation->getPath())) {
+            return;
+        }
 
-    /**
-     * Extract comments of a file.
-     *
-     * @param string $filename Name of ini file to read.
-     *
-     * @return array
-     */
-    protected function extractComments($filename)
-    {
-        return ConfigWriter::extractComments($filename);
+        $config = parse_ini_file($configLocation->getPath(), true);
+
+        if (isset($config['@include'])) {
+            throw new ConfigException('Can not write INI configuration with @include statement.');
+        }
+        foreach ($config as $section => $sectionConfig) {
+            if (is_string($sectionConfig) && str_starts_with($sectionConfig, 'include::')) {
+                throw new ConfigException('Can not write INI configuration with include:: statement.');
+            }
+            if (isset($sectionConfig['@include'])) {
+                throw new ConfigException('Can not write INI configuration with @include statement.');
+            }
+            foreach ((array)$sectionConfig as $value) {
+                // We only check for this inside the loop so that an empty, harmless [Parent_Config]
+                // section does not trigger an exception:
+                if ($section === 'Parent_Config') {
+                    throw new ConfigException('Can not write INI configuration with inheritance.');
+                }
+                if (is_string($value) && str_starts_with($value, 'include::')) {
+                    throw new ConfigException('Can not write INI configuration with include:: statement.');
+                }
+            }
+        }
     }
 }

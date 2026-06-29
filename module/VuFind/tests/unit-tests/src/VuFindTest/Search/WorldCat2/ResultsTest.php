@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat2 Search Object Results Test
+ * WorldCat2 Search Object Results Test.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
 /**
- * WorldCat2 Search Object Results Test
+ * WorldCat2 Search Object Results Test.
  *
  * @category VuFind
  * @package  Tests
@@ -65,9 +65,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $params->setQuery($query);
         $results = $this->getResults($params);
         // Test getting facets first, see testOverlongSearch for a different approach
-        $this->assertEquals([], $results->getFacetList());
-        $this->assertEquals([], $results->getResults());
-        $this->assertEquals(['empty_search_disallowed'], $results->getErrors());
+        $this->assertSame([], $results->getFacetList());
+        $this->assertSame([], $results->getResults());
+        $this->assertSame(['empty_search_disallowed'], $results->getErrors());
     }
 
     /**
@@ -82,9 +82,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $params->setQuery($query);
         $results = $this->getResults($params);
         // Test getting results first, as a variation of testEmptySearch()
-        $this->assertEquals([], $results->getResults());
-        $this->assertEquals([], $results->getFacetList());
-        $this->assertEquals(
+        $this->assertSame([], $results->getResults());
+        $this->assertSame([], $results->getFacetList());
+        $this->assertSame(
             [
                 [
                     'msg' => 'too_many_query_terms',
@@ -118,11 +118,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $mockCommand->method('getResult')->willReturn($records);
         $searchService->expects($this->once())->method('invoke')->with($expectedCommand)->willReturn($mockCommand);
         $results = $this->getResults($params, $searchService);
-        $this->assertEquals(5, $results->getResultTotal());
+        $this->assertSame(5, $results->getResultTotal());
     }
 
     /**
-     * Get Params object
+     * Get Params object.
      *
      * @param ?Options                $options           Options object (null to create)
      * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
@@ -141,7 +141,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Results object
+     * Get Results object.
      *
      * @param ?Params                $params Params object (null to create)
      * @param ?\VuFindSearch\Service $search Search service (null to create)

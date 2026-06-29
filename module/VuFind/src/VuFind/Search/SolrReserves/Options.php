@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Reserves aspect of the Search Multi-class (Options)
+ * Solr Reserves aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ namespace VuFind\Search\SolrReserves;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Solr Reserves Search Options
+ * Solr Reserves Search Options.
  *
  * @category VuFind
  * @package  Search_SolrReserves
@@ -45,7 +45,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -57,12 +57,12 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return 'search-reservesfacetlist';
     }
@@ -72,20 +72,20 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'search-reserves';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         // Not currently supported:
-        return false;
+        return null;
     }
 }

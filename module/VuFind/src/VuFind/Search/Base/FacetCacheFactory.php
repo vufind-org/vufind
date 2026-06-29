@@ -60,14 +60,14 @@ class FacetCacheFactory implements FactoryInterface
      *
      * @return Results
      */
-    protected function getResults(ContainerInterface $container, $name)
+    protected function getResults(ContainerInterface $container, string $name): Results
     {
         return $container->get(\VuFind\Search\Results\PluginManager::class)
             ->get($name);
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

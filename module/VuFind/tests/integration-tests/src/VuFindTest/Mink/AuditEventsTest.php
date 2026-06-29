@@ -156,7 +156,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'input.btn.btn-primary');
 
         // Delete the account:
-        $this->clickCss($page, '.fa-trash-o');
+        $this->clickCss($page, '.fa-trash-can');
         $this->clickCss($page, '.modal #delete-account-submit');
         $this->waitForPageLoad($page);
 
@@ -261,7 +261,11 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
 
         $eventData = array_map(
             function ($event) {
-                $data = preg_replace('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', '<datetime>', $event->getData());
+                $data = preg_replace(
+                    '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/',
+                    '<datetime>',
+                    json_encode($event->getData())
+                );
                 $data = preg_replace('/"user_id":\d+/', '"user_id":<userid>', $data);
                 return [
                     $event->getType(),

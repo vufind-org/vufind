@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO EIT API Search Options
+ * EBSCO EIT API Search Options.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\ConfigManagerInterface;
 
 /**
  * EBSCO EIT Search Options
- * Largely copied from WorldCat Search Options
+ * Largely copied from WorldCat Search Options.
  *
  * @category VuFind
  * @package  Search_EIT
@@ -46,7 +46,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -61,18 +61,18 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'eit-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return 'eit-advanced';
     }

@@ -52,7 +52,7 @@ use function sprintf;
 class SimilarBuilder implements SimilarBuilderInterface
 {
     /**
-     * Solr field used to store unique identifier
+     * Solr field used to store unique identifier.
      *
      * @var string
      */
@@ -67,14 +67,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     protected $useHandler = false;
 
     /**
-     * MoreLikeThis Handler parameters
+     * MoreLikeThis Handler parameters.
      *
      * @var string
      */
     protected $handlerParams = '';
 
     /**
-     * Number of similar records to retrieve
+     * Number of similar records to retrieve.
      *
      * @var int
      */
@@ -113,13 +113,14 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Return SOLR search parameters based on a record Id and params.
      *
-     * @param string $id Record Id
+     * @param string    $id     Record Id
+     * @param ?ParamBag $params Existing params
      *
      * @return ParamBag
      */
-    public function build($id)
+    public function build(string $id, ?ParamBag $params = null): ParamBag
     {
-        $params = new ParamBag();
+        $params = $params ?: new ParamBag();
         if ($this->useHandler) {
             $mltParams = $this->handlerParams
                 ? $this->handlerParams
@@ -131,7 +132,6 @@ class SimilarBuilder implements SimilarBuilderInterface
                 'q',
                 sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"'))
             );
-            $params->set('qt', 'morelikethis');
         }
         if (null === $params->get('rows')) {
             $params->set('rows', $this->count);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Feature Trait - Configuration file path methods
+ * VuFind Action Feature Trait - Configuration file path methods.
  *
  * PHP version 8
  *
@@ -29,8 +29,11 @@
 
 namespace VuFind\Controller\Feature;
 
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\PathResolver;
+
 /**
- * VuFind Action Feature Trait - Configuration file path methods
+ * VuFind Action Feature Trait - Configuration file path methods.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -41,28 +44,60 @@ namespace VuFind\Controller\Feature;
 trait ConfigPathTrait
 {
     /**
-     * Get path to base configuration file
+     * Get path to base configuration file.
      *
-     * @param string $filename Configuration file name
+     * @param string $configName Configuration name
      *
      * @return string
      */
-    protected function getBaseConfigFilePath(string $filename): string
+    protected function getBaseConfigFilePath(string $configName): string
     {
-        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
-        return $resolver->getBaseConfigPath($filename);
+        return $this->getService(PathResolver::class)
+            ->getBaseConfigLocation($configName)
+            ->getPath();
     }
 
     /**
-     * Get path to local configuration file (even if it does not yet exist)
+     * Get path to local configuration file (even if it does not yet exist).
      *
-     * @param string $filename Configuration file name
+     * @param string $configName Configuration name
      *
      * @return string
      */
-    protected function getForcedLocalConfigPath(string $filename): string
+    protected function getForcedLocalConfigPath(string $configName): string
     {
-        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
-        return $resolver->getLocalConfigPath($filename, null, true);
+        return $this->getService(PathResolver::class)
+            ->getForcedLocalConfigLocation($configName)
+            ->getPath();
+    }
+
+    /**
+     * Change configuration.
+     *
+     * @param string $configName Config name
+     * @param array  $config     Config to change
+     *
+     * @return void
+     */
+    protected function changeConfig(string $configName, array $config): void
+    {
+        $pathResolver = $this->getService(PathResolver::class);
+        $currentConfig = $this->getService(ConfigManagerInterface::class)
+            ->getConfigArray($configName);
+        foreach ($config as $section => $sectionConfig) {
+            foreach ($sectionConfig as $setting => $value) {
+                if ($value === null) {
+                    unset($currentConfig[$section][$setting]);
+                } else {
+                    $currentConfig[$section][$setting] = $value;
+                }
+            }
+        }
+        $configLocation = $pathResolver->getForcedLocalConfigLocation($configName);
+        $baseConfigLocation = file_exists($configLocation->getPath())
+            ? $configLocation
+            : $pathResolver->getBaseConfigLocation($configName);
+        $this->getService(ConfigManagerInterface::class)
+            ->writeConfig($configLocation, $currentConfig, $baseConfigLocation);
     }
 }

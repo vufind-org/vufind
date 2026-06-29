@@ -21,7 +21,7 @@ VuFind.register('covers', function covers() {
       if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
         img.src = response.data.url;
         var inlink = element.parentElement.matches('a.record-cover-link');
-        var medium = img.closest('.media-left, .media-right, .carousel-item');
+        var medium = img.closest('.media-left, .media-right, .carousel-item, .grid-body');
         if (typeof response.data.backlink_text !== 'undefined') {
           if (typeof response.data.backlink_url !== 'undefined') {
             var link = document.createElement('a');
@@ -100,6 +100,10 @@ VuFind.register('covers', function covers() {
   function checkImgSize(img) {
     if (img.getBoundingClientRect().width < 2) {
       img.classList.add('hidden');
+      let recordCoverContainer = img.closest('.record-cover-container');
+      if (recordCoverContainer !== null) {
+        recordCoverContainer.classList.add('hidden');
+      }
     }
     img.dataset.loaded = 'true';
   }

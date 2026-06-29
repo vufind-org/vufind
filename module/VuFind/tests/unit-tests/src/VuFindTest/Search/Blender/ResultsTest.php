@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Results Tests
+ * Blender Results Tests.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFindSearch\Command\SearchCommand;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Results Tests
+ * Blender Results Tests.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +54,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Test performing a search
+     * Test performing a search.
      *
      * @return void
      */
@@ -93,19 +93,16 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             new Config([]),
             []
         );
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         $searchService->expects($this->once())
             ->method('invoke')
             ->willReturnCallback($callback);
-        $recordLoader = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordLoader = $this->createMock(\VuFind\Record\Loader::class);
         $results = new Results($params, $searchService, $recordLoader);
         $results->performAndProcessSearch();
 
-        $this->assertEquals(20, $results->getResultTotal());
-        $this->assertEquals([], $results->getResults());
-        $this->assertEquals(['Error Message'], $results->getErrors());
+        $this->assertSame(20, $results->getResultTotal());
+        $this->assertSame([], $results->getResults());
+        $this->assertSame(['Error Message'], $results->getErrors());
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sitemap generator plugin manager
+ * Sitemap generator plugin manager.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Sitemap;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Sitemap generator plugin manager
+ * Sitemap generator plugin manager.
  *
  * @category VuFind
  * @package  Sitemap
@@ -54,18 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Plugin\ContentPages::class => Plugin\ContentPagesFactory::class,
-        Plugin\Index::class => Plugin\IndexFactory::class,
-        Plugin\StartPage::class => InvokableFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

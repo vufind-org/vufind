@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Options Test
+ * Blender Options Test.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Search\Blender\Options;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Options Test
+ * Blender Options Test.
  *
  * @category VuFind
  * @package  Tests
@@ -46,38 +46,36 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Data provider for testOptions
+     * Data provider for testOptions.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function optionsProvider(): array
+    public static function optionsProvider(): \Iterator
     {
-        return [
+        yield [
+            [],
+            null,
+        ];
+        yield [
             [
-                [],
-                false,
-            ],
-            [
-                [
-                    'Advanced_Searches' => [
-                        'foo' => 'bar',
-                    ],
+                'Advanced_Searches' => [
+                    'foo' => 'bar',
                 ],
-                'blender-advanced',
             ],
+            'blender-advanced',
         ];
     }
 
     /**
      * Test that the Options object returns correct data .
      *
-     * @param array        $config    Blender configuration
-     * @param string|false $advAction Expected advanced search action
+     * @param array   $config    Blender configuration
+     * @param ?string $advAction Expected advanced search action
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('optionsProvider')]
-    public function testOptions(array $config, $advAction): void
+    public function testOptions(array $config, ?string $advAction): void
     {
         $mockConfigManager = $this->getMockConfigManager(
             [
@@ -85,8 +83,8 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($mockConfigManager);
-        $this->assertEquals('blender-results', $options->getSearchAction());
+        $this->assertSame('blender-results', $options->getSearchAction());
         $this->assertEquals($advAction, $options->getAdvancedSearchAction());
-        $this->assertFalse($options->getFacetListAction());
+        $this->assertNull($options->getFacetListAction());
     }
 }

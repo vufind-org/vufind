@@ -1,0 +1,594 @@
+<?php
+
+/**
+ * Notices test class.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Hebis Verbundzentrale 2026.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+
+namespace VuFindTest\Mink;
+
+use Throwable;
+use VuFind\Db\Service\NoticeService;
+use VuFindTest\Feature\CacheManagementTrait;
+use VuFindTest\Feature\LiveDatabaseTrait;
+use VuFindTest\Feature\UserCreationTrait;
+
+/**
+ * Notices test class.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Page
+ */
+final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
+{
+    use CacheManagementTrait;
+    use LiveDatabaseTrait;
+    use UserCreationTrait;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public static function setUpBeforeClass(): void
+    {
+        static::failIfDataExists();
+    }
+
+    /**
+     * Test that no messages are displayed by default.
+     *
+     * @return void
+     */
+    public function testDisabledByDefault(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->unFindCss($page, '.notices');
+    }
+
+    /**
+     * Test configured notices.
+     *
+     * @return void
+     */
+    public function testConfiguredNotices(): void
+    {
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'success',
+                                'content' => 'Test Content',
+                            ],
+                            [
+                                'style' => 'warning',
+                                'position' => 'header',
+                                'content' => 'Test Content2',
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
+        $this->assertSame('Test Content', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.banner .notices .alert-warning');
+        $this->assertSame('Test Content2', $notice2);
+    }
+
+    /**
+     * Test configured notices with translations.
+     *
+     * @return void
+     */
+    public function testConfiguredNoticesWithTranslations(): void
+    {
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearCache('yaml');
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'warning',
+                                'content' => 'ils_offline_status',
+                            ],
+                            [
+                                'style' => 'success',
+                                'translations' => [
+                                    'de' => 'German Content',
+                                    'en' => 'English Content',
+                                    'es' => [],
+                                ],
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // Test default translation
+        $notice = $this->findCssAndGetText($page, '.notices .alert-warning');
+        $this->assertSame('Our Library Management System is currently under maintenance.', $notice);
+
+        // Test configured translation
+        $notice = $this->findCssAndGetText($page, '.notices .alert-success');
+        $this->assertSame('English Content', $notice);
+
+        // Test other configured translation
+        $session->visit($this->getVuFindUrl() . '?lng=de');
+        $this->waitForPageLoad($page);
+        $notice = $this->findCssAndGetText($page, '.notices .alert-success');
+        $this->assertSame('German Content', $notice);
+
+        // Test fallback when translation is empty
+        $session->visit($this->getVuFindUrl() . '?lng=es');
+        $this->waitForPageLoad($page);
+        $notice = $this->findCssAndGetText($page, '.notices .alert-success');
+        $this->assertSame('English Content', $notice);
+
+        // Test that no notice is displayed if language is not configured
+        $session->visit($this->getVuFindUrl() . '?lng=fr');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notices .alert-success');
+    }
+
+    /**
+     * Test content types for notices.
+     *
+     * @return void
+     */
+    public function testContentTypesForConfiguredNotices(): void
+    {
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearCache('yaml');
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'success',
+                                'content' => '<strong>*Test*</strong>',
+                                'contentType' => 'text',
+                            ],
+                            [
+                                'style' => 'info',
+                                'content' => '<strong>Test</strong>',
+                                'contentType' => 'html',
+                            ],
+                            [
+                                'style' => 'danger',
+                                'content' => '**Test**',
+                                'contentType' => 'markdown',
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        $notice = $this->findCssAndGetText($page, '#content > .notices .alert-success');
+        $this->assertSame('<strong>*Test*</strong>', $notice);
+
+        $notice = $this->findCssAndGetText($page, '#content > .notices .alert-info strong');
+        $this->assertSame('Test', $notice);
+
+        $notice = $this->findCssAndGetText($page, '#content > .notices .alert-danger strong');
+        $this->assertSame('Test', $notice);
+    }
+
+    /**
+     * Test configured notices with configured class in style.
+     *
+     * @return void
+     */
+    public function testConfiguredNoticesWithConfiguredClass(): void
+    {
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearCache('yaml');
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'styles' => [
+                      'success' => [
+                          'classes' => 'test-class',
+                      ],
+                    ],
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'success',
+                                'content' => 'Test Content',
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notices .alert-success');
+        $notice = $this->findCssAndGetText($page, '#content > .notices .test-class');
+        $this->assertSame('Test Content', $notice);
+    }
+
+    /**
+     * Test configured notices with conditions.
+     *
+     * @return void
+     */
+    public function testConfiguredNoticesWithConditions(): void
+    {
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearCache('yaml');
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'notices' =>
+                        [
+                            [
+                                'style' => 'success',
+                                'content' => 'Valid',
+                                'conditions' => [
+                                    [
+                                        'type' => 'string',
+                                        'comparator' => '=',
+                                        'checkedValues' => ['foo', 'bar', 'test'],
+                                        'string' => 'test',
+                                    ],
+                                    [
+                                        'type' => 'date',
+                                        'comparator' => 'regex',
+                                        'checkedValues' => '/.*/',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'style' => 'warning',
+                                'content' => 'Not shown',
+                                'conditions' => [
+                                    [
+                                        'type' => 'date',
+                                        'comparator' => '<',
+                                        'checkedValues' => '2000-01-01',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'style' => 'danger',
+                                'content' => 'Invalid',
+                                'conditions' => [
+                                    [
+                                        'type' => 'string',
+                                        'comparator' => '=',
+                                        'checkedValues' => 'test',
+                                    ],
+                                ],
+                            ],
+                        ],
+                ],
+            ],
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // Test that notice with met conditions is shown
+        $this->findCss($page, '#content > .notices .alert-success');
+
+        // Test that notice with unmet conditions is hidden
+        $this->unFindCss($page, '#content > .notices .alert-warning');
+
+        // Test that notice with invalid conditions is hidden
+        $this->unFindCss($page, '#content > .notices .alert-danger');
+    }
+
+    /**
+     * Test adding notices in admin module.
+     *
+     * @return void
+     */
+    public function testAddingNoticesInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // test canceling
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '<strong>Test Content1</strong>'
+        );
+
+        $this->clickCss($page, 'button[name="cancel"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '#content > .notices .alert-success');
+
+        // add notices
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '<strong>Test Content1</strong>'
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        // change context to global_header
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global_header"]');
+
+        // change content type to markdown and check that markdown hint link becomes visible
+        $this->findCss($page, '.content_type_fieldset-markdown.hidden');
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="markdown"]');
+        $this->unFindCss($page, '.content_type_fieldset-markdown.hidden');
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '**Test Content2**'
+        );
+
+        $this->clickCss($page, '#tab-button-de');
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[de]"]',
+            'German Test Content'
+        );
+
+        $this->clickCss($page, 'fieldset[name="style_fieldset"] input[value="warning"]');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        // test notices exist
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.banner .notices .alert-warning strong');
+        $this->assertSame('Test Content2', $notice2);
+
+        // test switching language
+        $session->visit($this->getVuFindUrl() . '?lng=de');
+        $this->waitForPageLoad($page);
+
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.banner .notices .alert-warning');
+        $this->assertSame('German Test Content', $notice2);
+    }
+
+    /**
+     * Test editing notices in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddingNoticesInAdminModule')]
+    public function testEditingNoticesInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // verify notices exist
+        $notice1 = $this->findCssAndGetText($page, '.notice-list .alert-success');
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning strong');
+        $this->assertSame('Test Content2', $notice2);
+
+        // test cancel
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            'Changed Content'
+        );
+        $this->clickCss($page, 'fieldset[name="style_fieldset"] input[value="danger"]');
+
+        $this->clickCss($page, 'button[name="cancel"]');
+        $this->waitForPageLoad($page);
+
+        // edit notices
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        // change context to logged_in
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="logged_in"]');
+
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="clean_html"]');
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '<strong>Changed Content</strong>'
+        );
+        $this->clickCss($page, 'fieldset[name="style_fieldset"] input[value="danger"]');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '.notice-list a[title="Edit"]', index: 1);
+        $this->waitForPageLoad($page);
+
+        // check context global_header is preselected and change context to global
+        $this->findCss($page, 'fieldset[name="context_fieldset"] input[value="global_header"]:checked');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global"]');
+
+        // change content type to text and check that markdown hint link becomes hidden
+        $this->unFindCss($page, '.content_type_fieldset-markdown.hidden');
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="text"]');
+        $this->findCss($page, '.content_type_fieldset-markdown.hidden');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        // test notice changed
+        $this->unFindCss($page, '#content > .notices .alert-success');
+        $this->unFindCss($page, '#content > .notices .alert-danger strong');
+
+        $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // check after login
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-danger strong');
+        $this->assertSame('Changed Content', $notice1);
+    }
+
+    /**
+     * Test deleting notices in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testEditingNoticesInAdminModule')]
+    public function testDeletingNoticesInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // verify notices exist
+        $notice1 = $this->findCssAndGetText($page, '.notice-list .alert-danger');
+        $this->assertSame('Changed Content', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // test cancel
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'button[name="cancel"]');
+        $this->waitForPageLoad($page);
+
+        // verify notices exist
+        $notice1 = $this->findCssAndGetText($page, '.notice-list .alert-danger');
+        $this->assertSame('Changed Content', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // test delete first
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '#content > .notices .alert-danger');
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // test delete second
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '#content > .notices');
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass(): void
+    {
+        static::removeUsers(['username1', 'catuser']);
+
+        // Delete all notices
+        try {
+            $test = new static('');   // create instance of current class
+            // If CI is not running, all tests were skipped, so no work is necessary:
+            if (!$test->continuousIntegrationRunning()) {
+                return;
+            }
+            // Delete notices
+            $noticeService = $test->getDbService(NoticeService::class);
+            $notices = $noticeService->getNotices();
+            foreach ($notices as $notice) {
+                $noticeService->delete($notice->getId());
+            }
+            $test->tearDownLiveDatabaseContainer();
+        } catch (Throwable $t) {
+            echo "\n\nError in removing notices: " . (string)$t . "\n";
+        }
+    }
+}

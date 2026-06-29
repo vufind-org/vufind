@@ -51,7 +51,7 @@ use VuFind\OnlinePayment\OnlinePaymentManager;
 class MonitorCommandFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,7 +70,7 @@ class MonitorCommandFactory implements FactoryInterface
         ?array $options = null
     ) {
         // We need to initialize the theme so that the view renderer works:
-        $mainConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
         $theme->init();
 

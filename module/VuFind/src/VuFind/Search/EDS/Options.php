@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Options
+ * EDS API Options.
  *
  * PHP version 8
  *
@@ -31,13 +31,14 @@
 
 namespace VuFind\Search\EDS;
 
+use Closure;
 use VuFind\Config\ConfigManagerInterface;
 
 use function in_array;
 use function is_callable;
 
 /**
- * EDS API Options
+ * EDS API Options.
  *
  * @category VuFind
  * @package  EBSCO
@@ -51,105 +52,105 @@ class Options extends AbstractEDSOptions
     use \VuFind\Config\Feature\ExplodeSettingTrait;
 
     /**
-     * Default limit option
+     * Default limit option.
      *
      * @var ?int
      */
-    protected $defaultLimit = null;
+    protected ?int $defaultLimit = null;
 
     /**
-     * Available search mode options
+     * Available search mode options.
      *
      * @var array
      */
-    protected $modeOptions = [];
+    protected array $modeOptions = [];
 
     /**
-     * Default search mode options
+     * Default search mode options.
      *
      * @var string
      */
-    protected $defaultMode = 'all';
+    protected string $defaultMode = 'all';
 
     /**
-     * The set search mode
+     * The search mode (null to use default mode).
      *
-     * @var string
+     * @var ?string
      */
-    protected $searchMode;
+    protected ?string $searchMode = null;
 
     /**
-     * Default expanders to apply
-     *
-     * @var array
-     */
-    protected $defaultExpanders = [];
-
-    /**
-     * Available expander options
+     * Default expanders to apply.
      *
      * @var array
      */
-    protected $expanderOptions = [];
+    protected array $defaultExpanders = [];
 
     /**
-     * Available limiter options
+     * Available expander options.
      *
      * @var array
      */
-    protected $limiterOptions = [];
+    protected array $expanderOptions = [];
 
     /**
-     * Limiters enabled on advanced search screen (empty for all available)
+     * Available limiter options.
+     *
+     * @var array
+     */
+    protected array $limiterOptions = [];
+
+    /**
+     * Limiters enabled on advanced search screen (empty for all available).
      *
      * @var string[]
      */
-    protected $advancedLimiters = [];
+    protected array $advancedLimiters = [];
 
     /**
-     * Available Search Options from the API or null if not yet initialized
+     * Available Search Options from the API or null if not yet initialized.
      *
      * @var ?array
      */
-    protected $apiInfo;
+    protected ?array $apiInfo;
 
     /**
-     * Callback to get available Search Options from the API
+     * Callback to get available Search Options from the API.
      *
-     * @var ?callable
+     * @var ?Closure
      */
-    protected $apiInfoCallback = null;
+    protected ?Closure $apiInfoCallback = null;
 
     /**
-     * Whether settings based on API info have been initialized
+     * Whether settings based on API info have been initialized.
      *
      * @var bool
      */
-    protected $apiOptionsInitialized = false;
+    protected bool $apiOptionsInitialized = false;
 
     /**
-     * Limiters to display on the basic search screen
+     * Limiters to display on the basic search screen.
      *
      * @var array
      */
-    protected $commonLimiters = [];
+    protected array $commonLimiters = [];
 
     /**
-     * Expanders to display on the basic search screen
+     * Expanders to display on the basic search screen.
      *
      * @var array
      */
-    protected $commonExpanders = [];
+    protected array $commonExpanders = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
-     * @param array|callable         $apiInfo       API information or callback to retrieve it
+     * @param array|callable|null    $apiInfo       API information or callback to retrieve it
      */
     public function __construct(
         ConfigManagerInterface $configManager,
-        $apiInfo = null
+        array|callable|null $apiInfo = null
     ) {
         $this->searchIni = $this->facetsIni = 'EDS';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
@@ -159,7 +160,7 @@ class Options extends AbstractEDSOptions
         // avoid calling the API:
         if (is_callable($apiInfo)) {
             $this->apiInfo = null;
-            $this->apiInfoCallback = $apiInfo;
+            $this->apiInfoCallback = $apiInfo(...);
         } else {
             $this->apiInfo = $apiInfo ?? [];
             $this->setOptionsFromApi();
@@ -174,7 +175,7 @@ class Options extends AbstractEDSOptions
      *
      * @return array
      */
-    public function getAdvancedHandlers()
+    public function getAdvancedHandlers(): array
     {
         return $this->getApiProperty('advancedHandlers');
     }
@@ -184,7 +185,7 @@ class Options extends AbstractEDSOptions
      *
      * @return array
      */
-    public function getBasicHandlers()
+    public function getBasicHandlers(): array
     {
         return $this->getApiProperty('basicHandlers');
     }
@@ -194,7 +195,7 @@ class Options extends AbstractEDSOptions
      *
      * @return string
      */
-    public function getDefaultHandler()
+    public function getDefaultHandler(): string
     {
         $this->setOptionsFromApi();
         return parent::getDefaultHandler();
@@ -205,7 +206,7 @@ class Options extends AbstractEDSOptions
      *
      * @return array
      */
-    public function getSortOptions()
+    public function getSortOptions(): array
     {
         return $this->getApiProperty('sortOptions');
     }
@@ -215,29 +216,29 @@ class Options extends AbstractEDSOptions
      *
      * @return int
      */
-    public function getDefaultLimit()
+    public function getDefaultLimit(): int
     {
         return $this->getApiProperty('defaultLimit');
     }
 
     /**
-     * Obtain the set searchmode
+     * Obtain the set searchmode.
      *
      * @return string the search mode
      */
-    public function getSearchMode()
+    public function getSearchMode(): string
     {
-        return $this->searchMode;
+        return $this->searchMode ?? $this->getDefaultMode();
     }
 
     /**
-     * Set the search mode
+     * Set the search mode.
      *
      * @param string $mode Mode
      *
      * @return void
      */
-    public function setSearchMode($mode)
+    public function setSearchMode(string $mode): void
     {
         $this->searchMode = $mode;
     }
@@ -247,58 +248,58 @@ class Options extends AbstractEDSOptions
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'eds-search';
     }
 
     /**
-     * Get an array of search mode options
+     * Get an array of search mode options.
      *
      * @return array
      */
-    public function getModeOptions()
+    public function getModeOptions(): array
     {
         return $this->getApiProperty('modeOptions');
     }
 
     /**
-     * Get the default search mode
+     * Get the default search mode.
      *
      * @return string
      */
-    public function getDefaultMode()
+    public function getDefaultMode(): string
     {
         return $this->getApiProperty('defaultMode');
     }
 
     /**
-     * Return the expander ids that have the default on flag set in admin
+     * Return the expander ids that have the default on flag set in admin.
      *
      * @return array
      */
-    public function getDefaultExpanders()
+    public function getDefaultExpanders(): array
     {
         return $this->getApiProperty('defaultExpanders');
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return 'eds-advanced';
     }
 
     /**
-     * Set the search options from the Eds API Info methods results
+     * Set the search options from the Eds API Info methods results.
      *
      * @return void
      */
-    public function setOptionsFromApi()
+    public function setOptionsFromApi(): void
     {
         if ($this->apiOptionsInitialized) {
             return;
@@ -423,13 +424,13 @@ class Options extends AbstractEDSOptions
      *
      * @return void
      */
-    protected function setOptionsFromConfig()
+    protected function setOptionsFromConfig(): void
     {
         if (null !== ($limit = $this->searchSettings['General']['default_limit'] ?? null)) {
             $this->defaultLimit = $limit;
         }
         if (null !== ($limitOptions = $this->searchSettings['General']['limit_options'] ?? null)) {
-            $this->limitOptions = $this->explodeListSetting($limitOptions);
+            $this->limitOptions = $this->explodeListSetting($limitOptions, 'intval');
         }
 
         // Set up highlighting preference
@@ -458,7 +459,7 @@ class Options extends AbstractEDSOptions
      *
      * @return string
      */
-    protected function mapSortLabel($label)
+    protected function mapSortLabel(string $label): string
     {
         switch ($label) {
             case 'Date Newest':
@@ -471,11 +472,11 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Populate available search criteria from the EDS API Info method
+     * Populate available search criteria from the EDS API Info method.
      *
      * @return void
      */
-    protected function populateSearchCriteria()
+    protected function populateSearchCriteria(): void
     {
         if (isset($this->apiInfo['AvailableSearchCriteria'])) {
             // Reference for readability:
@@ -559,13 +560,13 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Populate limiter values from the EDS API INFO method data
+     * Populate limiter values from the EDS API INFO method data.
      *
      * @param array $limiterValues Limiter values from the API
      *
-     * @return array
+     * @return ?array
      */
-    protected function populateLimiterValues(array $limiterValues)
+    protected function populateLimiterValues(array $limiterValues): ?array
     {
         $availableLimiterValues = [];
         foreach ($limiterValues as $limiterValue) {
@@ -588,28 +589,28 @@ class Options extends AbstractEDSOptions
      *
      * @return mixed
      */
-    protected function getApiProperty(string $propertyName)
+    protected function getApiProperty(string $propertyName): mixed
     {
         $this->setOptionsFromApi();
         return $this->$propertyName;
     }
 
     /**
-     * Returns the available limiters
+     * Returns the available limiters.
      *
      * @return array
      */
-    public function getAvailableLimiters()
+    public function getAvailableLimiters(): array
     {
         return $this->getApiProperty('limiterOptions');
     }
 
     /**
-     * Returns the enabled limiters for the advanced search
+     * Returns the enabled limiters for the advanced search.
      *
      * @return array
      */
-    public function getAdvancedLimiters()
+    public function getAdvancedLimiters(): array
     {
         // Make sure that everything is labeled with an appropriate translation
         // string:
@@ -639,21 +640,21 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Returns the available expanders
+     * Returns the available expanders.
      *
      * @return array
      */
-    public function getAvailableExpanders()
+    public function getAvailableExpanders(): array
     {
         return $this->getApiProperty('expanderOptions');
     }
 
     /**
-     * Sets the view settings from EDS API info method call data
+     * Sets the view settings from EDS API info method call data.
      *
      * @return void
      */
-    protected function populateViewSettings()
+    protected function populateViewSettings(): void
     {
         $settings = $this->apiInfo['ViewResultSettings'] ?? [];
         // default result Limit
@@ -666,14 +667,14 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Get a translation string (if available) or else use a default
+     * Get a translation string (if available) or else use a default.
      *
      * @param string $label   Translation string to look up
      * @param string $default Default to use if no translation found
      *
      * @return string
      */
-    protected function getLabelForCheckboxFilter($label, $default)
+    protected function getLabelForCheckboxFilter(string $label, string $default): string
     {
         // If translation doesn't change the label, we don't want to
         // display the non-human-readable version so we should instead
@@ -683,11 +684,11 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Obtain limiters to display on the basic search screen
+     * Obtain limiters to display on the basic search screen.
      *
      * @return array
      */
-    public function getSearchScreenLimiters()
+    public function getSearchScreenLimiters(): array
     {
         $ssLimiterOptions = [];
         $limiterOptions = $this->getApiProperty('limiterOptions');
@@ -706,11 +707,11 @@ class Options extends AbstractEDSOptions
     }
 
     /**
-     * Obtain expanders to display on the basic search screen
+     * Obtain expanders to display on the basic search screen.
      *
      * @return array
      */
-    public function getSearchScreenExpanders()
+    public function getSearchScreenExpanders(): array
     {
         $ssExpanderOptions = [];
         $expanderOptions = $this->getApiProperty('expanderOptions');
@@ -732,7 +733,7 @@ class Options extends AbstractEDSOptions
      *
      * @return array
      */
-    public function getDefaultFilters()
+    public function getDefaultFilters(): array
     {
         // Populate defaults if not already set:
         if (!$this->defaultFilters) {

@@ -48,7 +48,7 @@ class UrlQueryHelperFactory
      *
      * @var string
      */
-    protected $helperClass = UrlQueryHelper::class;
+    protected string $helperClass = UrlQueryHelper::class;
 
     /**
      * Extract default settings from the search parameters.
@@ -57,7 +57,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function getDefaults(Params $params)
+    protected function getDefaults(Params $params): array
     {
         $options = $params->getOptions();
         return [
@@ -77,7 +77,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function addDefaultsToConfig(Params $params, array $config)
+    protected function addDefaultsToConfig(Params $params, array $config): array
     {
         // Load defaults unless they have been overridden in existing config
         // array.
@@ -106,7 +106,7 @@ class UrlQueryHelperFactory
      *
      * @return array
      */
-    protected function getUrlParams(Params $params, array $config)
+    protected function getUrlParams(Params $params, array $config): array
     {
         $urlParams = [];
         $sort = $params->getSort();
@@ -146,14 +146,14 @@ class UrlQueryHelperFactory
     }
 
     /**
-     * Construct the UrlQueryHelper
+     * Construct the UrlQueryHelper.
      *
      * @param Params $params VuFind search parameters
      * @param array  $config Config options
      *
      * @return UrlQueryHelper
      */
-    public function fromParams(Params $params, array $config = [])
+    public function fromParams(Params $params, array $config = []): UrlQueryHelper
     {
         $finalConfig = $this->addDefaultsToConfig($params, $config);
         return new $this->helperClass(

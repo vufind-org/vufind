@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sort facet list view helper
+ * Sort facet list view helper.
  *
  * PHP version 8
  *
@@ -29,10 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Sort facet list view helper
+ * Sort facet list view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,10 +40,24 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SortFacetList extends AbstractHelper implements
-    \VuFind\I18n\HasSorterInterface
+class SortFacetList implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\HasSorterTrait;
+
+    /**
+     * Constructor.
+     *
+     * @param Url    $url    Url View Helper
+     * @param Sorter $sorter Sorter service
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url,
+        #[Autowire(container: 'ViewHelperManager')]
+        Sorter $sorter,
+    ) {
+        $this->setSorter($sorter());
+    }
 
     /**
      * Turns facet information into an alphabetical list.
@@ -64,9 +78,8 @@ class SortFacetList extends AbstractHelper implements
         $facets = [];
         // avoid limit on URL
         $results->getParams()->setLimit($results->getOptions()->getDefaultLimit());
-        $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
-            $url = $urlHelper($searchRoute) . $results->getUrlQuery()
+            $url = ($this->url)($searchRoute) . $results->getUrlQuery()
                 ->addFacet($field, $value['value'], ($value['operator'] ?? 'AND'))
                 ->getParams();
             $facets[$url] = $this->facetValueToString($value, $formatString);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Payment handle for Paytrail
+ * Payment handle for Paytrail.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Exception\PaymentException;
 
 /**
- * Payment handle for Paytrail
+ * Payment handle for Paytrail.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -58,7 +58,7 @@ use VuFind\Exception\PaymentException;
 class Paytrail extends AbstractBase
 {
     /**
-     * Mappings from VuFind language codes to Paytrail
+     * Mappings from VuFind language codes to Paytrail.
      *
      * @var array
      */
@@ -69,14 +69,14 @@ class Paytrail extends AbstractBase
     ];
 
     /**
-     * Mappings from fine organizations to merchant identifiers for shop-in-shop support
+     * Mappings from fine organizations to merchant identifiers for shop-in-shop support.
      *
      * @var array
      */
     protected array $organizationMerchantIdMappings = [];
 
     /**
-     * Initialize the handler
+     * Initialize the handler.
      *
      * @param array $paymentConfig Online payment configuration
      *
@@ -184,16 +184,16 @@ class Paytrail extends AbstractBase
 
             $items[] = $item;
         }
-        if ($serviceFee = $this->getServiceFee()) {
+        if (($serviceFee = $this->getServiceFee()) && ($serviceFeeProductCode = $this->getServiceFeeProductCode())) {
             $item = (new Item())
                 ->setDescription($this->translator->translate('Payment::Service Fee'))
-                ->setProductCode($this->getServiceFeeProductCode())
+                ->setProductCode($serviceFeeProductCode)
                 ->setUnitPrice($serviceFee)
                 ->setUnits(1)
                 ->setVatPercentage((float)($this->getServiceFeeTaxRate() ?? 0) / 100.0);
             $items[] = $item;
         }
-        $paymentRequest->setItems($items);
+        $paymentRequest->setItems($items ?: null);
 
         try {
             $paymentResponse = $this->initClient()->createPayment($paymentRequest);
@@ -313,7 +313,7 @@ class Paytrail extends AbstractBase
     }
 
     /**
-     * Initialize the Paytrail client
+     * Initialize the Paytrail client.
      *
      * @return Client
      */

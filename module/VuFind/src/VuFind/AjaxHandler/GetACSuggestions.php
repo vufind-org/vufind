@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Autocomplete Suggestions" AJAX handler
+ * "Get Autocomplete Suggestions" AJAX handler.
  *
  * PHP version 8
  *
@@ -29,13 +29,13 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Autocomplete\Suggester;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * "Get Autocomplete Suggestions" AJAX handler
+ * "Get Autocomplete Suggestions" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -46,35 +46,27 @@ use VuFind\Session\Settings as SessionSettings;
 class GetACSuggestions extends AbstractBase
 {
     /**
-     * Autocomplete suggester
-     *
-     * @var Suggester
-     */
-    protected $suggester;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings $ss        Session settings
      * @param Suggester       $suggester Autocomplete suggester
      */
-    public function __construct(SessionSettings $ss, Suggester $suggester)
+    public function __construct(SessionSettings $ss, protected Suggester $suggester)
     {
-        $this->sessionSettings = $ss;
-        $this->suggester = $suggester;
+        parent::__construct($ss);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $query = new Parameters($params->fromQuery());
+        $query = new Parameters($request->getQueryParams());
         $suggestions = $this->suggester->getSuggestions($query);
         return $this->formatResponse(compact('suggestions'));
     }

@@ -47,14 +47,14 @@ use Psr\Container\ContainerInterface;
 class RecordFormatterFactory implements FactoryInterface
 {
     /**
-     * Record fields configuration file name
+     * Record fields configuration file name.
      *
      * @var string
      */
-    protected $configFile = 'SearchApiRecordFields.yaml';
+    protected $configFile = 'SearchApiRecordFields';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -76,9 +76,10 @@ class RecordFormatterFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $recordFields = $container->get(\VuFind\Config\YamlReader::class)
-            ->get($this->configFile);
+        $recordFields = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->configFile);
         $helperManager = $container->get('ViewHelperManager');
-        return new $requestedName($recordFields, $helperManager);
+        $serverUrlHelper = $container->get(\VuFind\Http\ServerUrlHelper::class);
+        return new $requestedName($recordFields, $helperManager, $serverUrlHelper);
     }
 }

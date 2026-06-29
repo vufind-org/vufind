@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\ILS\Driver\MultiBackend;
 use function call_user_func_array;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -69,7 +69,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     *  Tests that logging works correctly
+     *  Tests that logging works correctly.
      *
      * @return void
      */
@@ -86,7 +86,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getSourceFromParams
+     * Testing method for getSourceFromParams.
      *
      * @return void
      */
@@ -136,7 +136,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for addIdPrefixes
+     * Testing method for addIdPrefixes.
      *
      * @return void
      */
@@ -220,7 +220,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for stripIdPrefixes
+     * Testing method for stripIdPrefixes.
      *
      * @return void
      */
@@ -303,7 +303,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for driverSupportsMethod
+     * Testing method for driverSupportsMethod.
      *
      * @return void
      */
@@ -341,7 +341,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getHolding
+     * Testing method for getHolding.
      *
      * @return void
      */
@@ -369,8 +369,8 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils2->expects($this->once())
             ->method('getHolding')
             ->with(
-                $this->equalTo('123456'),
-                $this->equalTo(['cat_username' => 'test.patron'])
+                '123456',
+                ['cat_username' => 'test.patron']
             )
             ->willReturn(
                 [
@@ -401,7 +401,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getPurchaseHistory
+     * Testing method for getPurchaseHistory.
      *
      * @return void
      */
@@ -428,7 +428,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getLoginDrivers
+     * Testing method for getLoginDrivers.
      *
      * @return void
      */
@@ -441,7 +441,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getDefaultLoginDriver
+     * Testing method for getDefaultLoginDriver.
      *
      * @return void
      */
@@ -475,7 +475,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getStatus
+     * Testing method for getStatus.
      *
      * @return void
      */
@@ -520,7 +520,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getStatuses
+     * Testing method for getStatuses.
      *
      * @return void
      */
@@ -530,7 +530,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils1->expects($this->exactly(2))
             ->method('getStatuses')
             ->with(
-                $this->equalTo(['123456', '098765'])
+                ['123456', '098765']
             )
             ->willReturn(
                 [
@@ -557,7 +557,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils2->expects($this->exactly(1))
             ->method('getStatuses')
             ->with(
-                $this->equalTo(['654321', '567890'])
+                ['654321', '567890']
             )
             ->willReturn(
                 [
@@ -581,14 +581,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils3->expects($this->exactly(1))
             ->method('getStatuses')
             ->with(
-                $this->equalTo(['654321', '567890'])
+                ['654321', '567890']
             )
             ->willThrowException(
                 $exception
             );
 
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($this->exactly(2))
             ->method('get')
             ->with(
@@ -627,8 +626,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $return = $driver->getStatuses($ids);
         $this->assertEquals($expectedReturn, $return);
 
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($this->exactly(2))
             ->method('get')
             ->with(
@@ -686,7 +684,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
     /**
      * Test that MultiBackend can find and use the default ILS driver if parameters
-     * don't include a detectable source id
+     * don't include a detectable source id.
      *
      * @return void
      */
@@ -742,53 +740,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getNewItems without a default driver
-     *
-     * @return void
-     */
-    public function testGetNewItemsNoDefault()
-    {
-        $driver = $this->initDriver();
-
-        // getNewItems only works with a default driver, so this call fails
-        $this->expectException(\VuFind\Exception\ILS::class);
-        $driver->getNewItems(1, 10, 5, 0);
-    }
-
-    /**
-     * Testing method for getNewItems with a default driver
-     *
-     * @return void
-     */
-    public function testGetNewItems()
-    {
-        $return = [
-            'count' => 2,
-            'results' => [['id' => '1'], ['id' => '2']],
-        ];
-
-        $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
-        $ILS->expects($this->once())
-            ->method('getNewItems')
-            ->with($this->equalTo('1'), $this->equalTo('10'), $this->equalTo('5'), $this->equalTo('0'))
-            ->willReturn($return);
-
-        $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
-        $driver = $this->initDriver(['driverManager' => $sm]);
-        $drivers = ['d1' => 'Voyager'];
-        $this->setProperty($driver, 'drivers', $drivers);
-
-        $expected = [
-            'count' => 2,
-            'results' => [['id' => 'd1.1'], ['id' => 'd1.2']],
-        ];
-        $this->setProperty($driver, 'defaultDriver', 'd1');
-        $result = $driver->getNewItems(1, 10, 5, 0);
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * Testing method for getCourses without a default driver
+     * Testing method for getCourses without a default driver.
      *
      * @return void
      */
@@ -802,7 +754,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getCourses with a default driver
+     * Testing method for getCourses with a default driver.
      *
      * @return void
      */
@@ -824,7 +776,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getDepartments without a default driver
+     * Testing method for getDepartments without a default driver.
      *
      * @return void
      */
@@ -838,7 +790,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getDepartments
+     * Testing method for getDepartments.
      *
      * @return void
      */
@@ -860,7 +812,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getInstructors without a default driver
+     * Testing method for getInstructors without a default driver.
      *
      * @return void
      */
@@ -874,7 +826,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getInstructors
+     * Testing method for getInstructors.
      *
      * @return void
      */
@@ -896,7 +848,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for findReserves without a default driver
+     * Testing method for findReserves without a default driver.
      *
      * @return void
      */
@@ -910,7 +862,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for findReserves
+     * Testing method for findReserves.
      *
      * @return void
      */
@@ -934,7 +886,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS = $this->getMockILS('Voyager', ['findReserves', 'init']);
         $ILS->expects($this->once())
             ->method('findReserves')
-            ->with($this->equalTo('course'), $this->equalTo('inst'), $this->equalTo('dept'))
+            ->with('course', 'inst', 'dept')
             ->willReturn($reservesReturn);
 
         $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
@@ -951,7 +903,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getMyProfile
+     * Testing method for getMyProfile.
      *
      * @return void
      */
@@ -980,7 +932,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
 
     /**
      * Test that MultiBackend can properly find a driver and pass
-     * log in credentials to it
+     * log in credentials to it.
      *
      * @return void
      */
@@ -1017,7 +969,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getMyTransactions
+     * Testing method for getMyTransactions.
      *
      * @return void
      */
@@ -1048,7 +1000,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getRenewDetails
+     * Testing method for getRenewDetails.
      *
      * @return void
      */
@@ -1089,7 +1041,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for renewMyItems
+     * Testing method for renewMyItems.
      *
      * @return void
      */
@@ -1130,7 +1082,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getMyFines
+     * Testing method for getMyFines.
      *
      * @return void
      */
@@ -1159,7 +1111,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getHoldLink
+     * Testing method for getHoldLink.
      *
      * @return void
      */
@@ -1188,7 +1140,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getMyHolds
+     * Testing method for getMyHolds.
      *
      * @return void
      */
@@ -1217,7 +1169,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getAccountBlocks
+     * Testing method for getAccountBlocks.
      *
      * @return void
      */
@@ -1247,7 +1199,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getRequestBlocks
+     * Testing method for getRequestBlocks.
      *
      * @return void
      */
@@ -1277,7 +1229,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getMyStorageRetrievalRequests
+     * Testing method for getMyStorageRetrievalRequests.
      *
      * @return void
      */
@@ -1318,7 +1270,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for checkRequestIsValid
+     * Testing method for checkRequestIsValid.
      *
      * @return void
      */
@@ -1404,7 +1356,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for checkStorageRetrievalRequestIsValid
+     * Testing method for checkStorageRetrievalRequestIsValid.
      *
      * @return void
      */
@@ -1464,7 +1416,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getPickUpLocations
+     * Testing method for getPickUpLocations.
      *
      * @return void
      */
@@ -1512,7 +1464,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getDefaultPickUpLocation
+     * Testing method for getDefaultPickUpLocation.
      *
      * @return void
      */
@@ -1560,7 +1512,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getRequestGroups
+     * Testing method for getRequestGroups.
      *
      * @return void
      */
@@ -1608,7 +1560,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getDefaultRequestGroup
+     * Testing method for getDefaultRequestGroup.
      *
      * @return void
      */
@@ -1656,7 +1608,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for placeHold
+     * Testing method for placeHold.
      *
      * @return void
      */
@@ -1721,7 +1673,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for cancelHolds
+     * Testing method for cancelHolds.
      *
      * @return void
      */
@@ -1779,7 +1731,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getCancelHoldDetails
+     * Testing method for getCancelHoldDetails.
      *
      * @return void
      */
@@ -1821,7 +1773,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for placeStorageRetrievalRequest
+     * Testing method for placeStorageRetrievalRequest.
      *
      * @return void
      */
@@ -1886,7 +1838,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for cancelStorageRetrievalRequests
+     * Testing method for cancelStorageRetrievalRequests.
      *
      * @return void
      */
@@ -1944,7 +1896,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getCancelStorageRetrievalRequestDetails
+     * Testing method for getCancelStorageRetrievalRequestDetails.
      *
      * @return void
      */
@@ -1981,7 +1933,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for checkILLRequestIsValid
+     * Testing method for checkILLRequestIsValid.
      *
      * @return void
      */
@@ -2038,7 +1990,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getILLPickupLibraries
+     * Testing method for getILLPickupLibraries.
      *
      * @return void
      */
@@ -2082,7 +2034,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getILLPickupLocations
+     * Testing method for getILLPickupLocations.
      *
      * @return void
      */
@@ -2130,7 +2082,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for placeILLRequest
+     * Testing method for placeILLRequest.
      *
      * @return void
      */
@@ -2191,7 +2143,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getMyILLRequests
+     * Testing method for getMyILLRequests.
      *
      * @return void
      */
@@ -2226,7 +2178,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for cancelILLRequests
+     * Testing method for cancelILLRequests.
      *
      * @return void
      */
@@ -2284,7 +2236,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getCancelILLRequestDetails
+     * Testing method for getCancelILLRequestDetails.
      *
      * @return void
      */
@@ -2321,7 +2273,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method for getConfig
+     * Testing method for getConfig.
      *
      * @return void
      */
@@ -2538,7 +2490,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Get a mock ILS authenticator
+     * Get a mock ILS authenticator.
      *
      * @param string $userSource Source id, if the authenticator should emulate a
      * situation where a user has logged in. Set to null for the attempt to cause an
@@ -2548,29 +2500,23 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      */
     protected function getMockILSAuthenticator($userSource = '')
     {
-        $mockAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         if ($userSource) {
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
+            $mockAuth->method('storedCatalogLogin')
                 ->willReturn(
                     $this->getPatron('username', $userSource)
                 );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
+            $mockAuth->method('getStoredCatalogCredentials')
                 ->willReturn(
                     $this->getPatron('username', $userSource)
                 );
         } elseif (null === $userSource) {
             $e = new ILSException('Simulated exception from ILSAuthenticator');
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
+            $mockAuth->method('storedCatalogLogin')
                 ->willThrowException(
                     $e
                 );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
+            $mockAuth->method('getStoredCatalogCredentials')
                 ->willThrowException(
                     $e
                 );

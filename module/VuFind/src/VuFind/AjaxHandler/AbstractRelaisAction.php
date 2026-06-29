@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract Relais Ajax Action
+ * Abstract Relais Ajax Action.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
- * Abstract Relais Ajax Action
+ * Abstract Relais Ajax Action.
  *
  * @category VuFind
  * @package  AJAX
@@ -48,7 +48,7 @@ abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAw
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SessionSettings      $ss     Session settings
      * @param Relais               $relais Relais connector
@@ -59,6 +59,6 @@ abstract class AbstractRelaisAction extends AbstractBase implements TranslatorAw
         protected Relais $relais,
         protected ?UserEntityInterface $user
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
     }
 }

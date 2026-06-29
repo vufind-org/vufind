@@ -34,6 +34,7 @@ use VuFind\AjaxHandler\GetResolverLinksFactory;
 use VuFind\Resolver\Driver\DriverInterface;
 use VuFind\Resolver\Driver\PluginManager;
 use VuFind\Session\Settings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * GetResolverLinks test class.
@@ -55,7 +56,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    protected function setupConfig($config = [])
+    protected function setupConfig($config = []): void
     {
         $this->container->set(
             \VuFind\Config\ConfigManagerInterface::class,
@@ -68,7 +69,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      *
      * @return void
      */
-    public function testResponse()
+    public function testResponse(): void
     {
         // Set up session settings:
         $ss = $this->container->createMock(Settings::class, ['disableWrite']);
@@ -87,22 +88,29 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // Set up resolver plugin manager:
         $mockPlugin = $this->container->createMock(DriverInterface::class);
         $mockPlugin->expects($this->once())
-            ->method('fetchLinks')->with($this->equalTo('foo'))
+            ->method('fetchLinks')->with('foo')
             ->willReturn('bar');
         $mockPlugin->expects($this->once())
-            ->method('parseLinks')->with($this->equalTo('bar'))
+            ->method('parseLinks')->with('bar')
             ->willReturn($fixtureData);
         $mockPlugin->expects($this->once())
             ->method('supportsMoreOptionsLink')
             ->willReturn(false);
-        $rm = $this->container->createMock(PluginManager::class, ['get']);
-        $rm->expects($this->once())->method('get')->with($this->equalTo('generic'))
-            ->willReturn($mockPlugin);
+        $rm = $this->container->createMock(PluginManager::class);
+        $rm->expects($this->once())->method('has')->with('generic')->willReturn(true);
+        $rm->expects($this->once())->method('get')->with('generic')->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
+        $request = $this->getRequest(
+            [
+                'openurl' => 'foo',
+                'searchClassId' => 'scl',
+            ]
+        );
+
         // Set up view helper and renderer:
-        $view = $this->container->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $expectedViewParams = [
+        $renderer = $this->container->createMock(TemplateRendererInterface::class);
+        $expectedTemplateParams = [
             'openUrlBase' => false,
             'openUrl' => 'foo',
             'print' => [
@@ -131,12 +139,13 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             'searchClassId' => 'scl',
             'moreOptionsLink' => '',
         ];
-        $view->expects($this->once())->method('render')
+        $renderer->expects($this->once())->method('renderTemplateAsString')
             ->with(
-                $this->equalTo('ajax/resolverLinks.phtml'),
-                $this->equalTo($expectedViewParams)
+                $request,
+                'ajax/resolverLinks.phtml',
+                $expectedTemplateParams
             )->willReturn('html');
-        $this->container->set('ViewRenderer', $view);
+        $this->container->set(TemplateRendererInterface::class, $renderer);
 
         // Set up configuration:
         $this->setupConfig();
@@ -144,19 +153,13 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // Build and test the ajax handler:
         $factory = new GetResolverLinksFactory();
         $handler = $factory($this->container, GetResolverLinks::class);
-        $params = $this->getParamsHelper(
-            [
-                'openurl' => 'foo',
-                'searchClassId' => 'scl',
-            ]
-        );
         $this->assertEquals(
             [
                 [
                     'html' => 'html',
                 ],
             ],
-            $handler->handleRequest($params)
+            $handler->handleRequest($request)
         );
     }
 }

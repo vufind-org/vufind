@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use function call_user_func_array;
 
 /**
- * ILS driver test
+ * ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -68,7 +68,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with defaultCall and only main driver
+     * Testing method with defaultCall and only main driver.
      *
      * @return void
      */
@@ -114,7 +114,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with defaultCall and multiple drivers but using base main_driver
+     * Testing method with defaultCall and multiple drivers but using base main_driver.
      *
      * @return void
      */
@@ -165,7 +165,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with defaultCall and multiple drivers and overwritten main_driver
+     * Testing method with defaultCall and multiple drivers and overwritten main_driver.
      *
      * @return void
      */
@@ -218,7 +218,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with mergeSingleArrayResults and base main driver without support
+     * Testing method with mergeSingleArrayResults and base main driver without support.
      *
      * @return void
      */
@@ -269,7 +269,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with mergeSingleArrayResults and base main driver with support
+     * Testing method with mergeSingleArrayResults and base main driver with support.
      *
      * @return void
      */
@@ -329,7 +329,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with mergeSingleArrayResults and overwritten main driver without support
+     * Testing method with mergeSingleArrayResults and overwritten main driver without support.
      *
      * @return void
      */
@@ -381,7 +381,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with mergeSingleArrayResults and overwritten main driver with support
+     * Testing method with mergeSingleArrayResults and overwritten main driver with support.
      *
      * @return void
      */
@@ -442,7 +442,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineArraysOfAssociativeArrays and only base main driver
+     * Testing method with combineArraysOfAssociativeArrays and only base main driver.
      *
      * @return void
      */
@@ -482,7 +482,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineArraysOfAssociativeArrays and only base main driver with results in subfields
+     * Testing method with combineArraysOfAssociativeArrays and only base main driver with results in subfields.
      *
      * @return void
      */
@@ -529,7 +529,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineArraysOfAssociativeArrays and overwritten main driver with results in subfields
+     * Testing method with combineArraysOfAssociativeArrays and overwritten main driver with results in subfields.
      *
      * @return void
      */
@@ -571,7 +571,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineArraysOfAssociativeArrays and overwritten main driver with support drivers
+     * Testing method with combineArraysOfAssociativeArrays and overwritten main driver with support drivers.
      *
      * @return void
      */
@@ -621,7 +621,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
 
     /**
      * Testing method with combineArraysOfAssociativeArrays and base main driver and
-     * with support drivers
+     * with support drivers.
      *
      * @return void
      */
@@ -747,7 +747,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
 
     /**
      * Testing method with combineArraysOfAssociativeArrays and base main driver with results in subfields and
-     * with support drivers
+     * with support drivers.
      *
      * @return void
      */
@@ -882,7 +882,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineArraysOfAssociativeArrays and overwritten main driver with support drivers
+     * Testing method with combineArraysOfAssociativeArrays and overwritten main driver with support drivers.
      *
      * @return void
      */
@@ -1009,7 +1009,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
 
     /**
      * Testing method with combineArraysOfAssociativeArrays and overwritten main driver with results in subfields and
-     * with support drivers
+     * with support drivers.
      *
      * @return void
      */
@@ -1146,7 +1146,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
 
     /**
      * Testing method with combineArraysOfAssociativeArrays and overwritten main driver without optional result
-     * subfields
+     * subfields.
      *
      * @return void
      */
@@ -1223,7 +1223,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineMultipleArraysOfAssociativeArrays and base main driver without support
+     * Testing method with combineMultipleArraysOfAssociativeArrays and base main driver without support.
      *
      * @return void
      */
@@ -1314,7 +1314,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineMultipleArraysOfAssociativeArrays and base main driver with support
+     * Testing method with combineMultipleArraysOfAssociativeArrays and base main driver with support.
      *
      * @return void
      */
@@ -1446,7 +1446,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineMultipleArraysOfAssociativeArrays and overwritten main driver without support
+     * Testing method with combineMultipleArraysOfAssociativeArrays and overwritten main driver without support.
      *
      * @return void
      */
@@ -1539,7 +1539,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Testing method with combineMultipleArraysOfAssociativeArrays and overwritten main driver with support
+     * Testing method with combineMultipleArraysOfAssociativeArrays and overwritten main driver with support.
      *
      * @return void
      */
@@ -1710,7 +1710,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     }
 
     /**
-     * Initialize a ComposedDriver driver for a simple method test
+     * Initialize a ComposedDriver driver for a simple method test.
      *
      * @param string $function       Function name
      * @param array  $params         Function parameters

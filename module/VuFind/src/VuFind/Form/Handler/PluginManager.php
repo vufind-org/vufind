@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Form handler plugin manager
+ * Form handler plugin manager.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Form\Handler;
 
 /**
- * Form handler plugin manager
+ * Form handler plugin manager.
  *
  * @category VuFind
  * @package  Form
@@ -51,17 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Database::class => DatabaseFactory::class,
-        Email::class => EmailFactory::class,
-    ];
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

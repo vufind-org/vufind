@@ -1,0 +1,3 @@
+"@parent_config_name": "local_parent"
+All: local-child
+ChildOnly: local-child

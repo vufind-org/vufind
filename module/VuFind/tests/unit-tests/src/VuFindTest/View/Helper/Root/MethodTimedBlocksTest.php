@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MethodTimedBlocks View Helper Test Class
+ * MethodTimedBlocks View Helper Test Class.
  *
  * PHP version 8
  *
@@ -33,13 +33,12 @@ use Laminas\View\Helper\EscapeHtml;
 use VuFind\Date\Converter;
 use VuFind\ILS\Connection;
 use VuFind\View\Helper\Root\DateTime;
-use VuFind\View\Helper\Root\Ils;
 use VuFind\View\Helper\Root\MethodTimedBlocks;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
 /**
- * TimedMethodBlocks View Helper Test Class
+ * TimedMethodBlocks View Helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,57 +48,54 @@ use VuFind\View\Helper\Root\Translate;
  */
 class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
-     * Data provider for testMethodTimedBlocks
+     * Data provider for testMethodTimedBlocks.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function methodTimedBlocksProvider()
+    public static function methodTimedBlocksProvider(): \Iterator
     {
-        return [
-            'end defined' => [
-                [
-                    'start' => new \DateTime(),
-                    'end' => new \DateTime('31-12-2025 23:59:59'),
-                    'recurring' => false,
-                ],
-                'This feature is unavailable until 12-31-2025',
+        yield 'end defined' => [
+            [
+                'start' => new \DateTime(),
+                'end' => new \DateTime('31-12-2025 23:59:59'),
+                'recurring' => false,
             ],
-            'service defined' => [
-                [
-                    'start' => new \DateTime(),
-                    'end' => new \DateTime('31-12-2025 23:59:59'),
-                    'recurring' => false,
-                ],
-                'TestFeature is unavailable until 12-31-2025',
-                'TestFeature',
+            'This feature is unavailable until 12-31-2025',
+        ];
+        yield 'service defined' => [
+            [
+                'start' => new \DateTime(),
+                'end' => new \DateTime('31-12-2025 23:59:59'),
+                'recurring' => false,
             ],
-            'only start' => [
-                [
-                    'start' => new \DateTime('now'),
-                    'end' => '',
-                    'recurring' => false,
-                ],
-                'This feature is unavailable',
+            'TestFeature is unavailable until 12-31-2025',
+            'TestFeature',
+        ];
+        yield 'only start' => [
+            [
+                'start' => new \DateTime('now'),
+                'end' => '',
+                'recurring' => false,
             ],
-            'not currently blocked' => [
-                [
-                    'start' => new \DateTime('01-01-2025'),
-                    'end' => new \DateTime('02-02-2025'),
-                    'recurring' => false,
-                ],
-                '',
-                'test',
-                false,
+            'This feature is unavailable',
+        ];
+        yield 'not currently blocked' => [
+            [
+                'start' => new \DateTime('01-01-2025'),
+                'end' => new \DateTime('02-02-2025'),
+                'recurring' => false,
             ],
+            '',
+            'test',
+            false,
         ];
     }
 
     /**
-     * Test methodTimedBlocks view helper
+     * Test methodTimedBlocks view helper.
      *
      * @param array  $timedBlocks Timed blocks
      * @param string $expected    Expected result
@@ -111,20 +107,24 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('methodTimedBlocksProvider')]
     public function testMethodTimedBlocks(array $timedBlocks, string $expected, string $service = '', $blocked = true)
     {
-        $helper = new MethodTimedBlocks();
-        $helper->setView($this->getPhpRenderer($this->getViewHelpers($timedBlocks, $blocked)));
-        $this->assertEquals($expected, $helper('Renewals', $service));
+        $helpers = $this->getDependencies($timedBlocks, $blocked);
+        $helper = new MethodTimedBlocks(
+            $helpers['connection'],
+            $helpers['transEsc'],
+            $helpers['dateTime']
+        );
+        $this->assertSame($expected, $helper('Renewals', $service));
     }
 
     /**
-     * Get view helpers needed by test.
+     * Get dependencies needed by test.
      *
      * @param array $timedBlocks Timed blocks
      * @param bool  $blocked     Is the method blocked
      *
      * @return array
      */
-    protected function getViewHelpers(array $timedBlocks, bool $blocked)
+    protected function getDependencies(array $timedBlocks, bool $blocked): array
     {
         $translations = [
             'default' => [
@@ -136,25 +136,13 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         $translator = $this->getMockTranslator($translations);
         $translate = new Translate();
         $translate->setTranslator($translator);
-        $transEsc = new TransEsc();
-        $transEsc->setView(
-            $this->getPhpRenderer(
-                [
-                    'escapeHtml' => new EscapeHtml(),
-                    'translate' => $translate,
-                ]
-            )
-        );
+        $transEsc = new TransEsc($translate, new EscapeHtml());
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->any())
-            ->method('getMethodTimedBlocks')
-            ->willReturn($timedBlocks);
-        $connection->expects($this->any())
-            ->method('getMethodBlock')
-            ->willReturn($blocked ? $timedBlocks : []);
-        $ils = new Ils($connection);
-        $dateTime = new DateTime(new Converter());
-        return compact('transEsc', 'translate', 'ils', 'dateTime');
+        $connection->method('getMethodBlock')->willReturn($blocked ? $timedBlocks : []);
+
+        $dateTime = new DateTime(new Converter(), $translate);
+
+        return compact('transEsc', 'connection', 'dateTime');
     }
 }

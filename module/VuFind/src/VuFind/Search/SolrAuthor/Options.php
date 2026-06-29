@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author aspect of the Search Multi-class (Options)
+ * Author aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrAuthor;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -43,7 +43,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -56,12 +56,12 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         return 'author-facetlist';
     }
@@ -71,7 +71,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'author-home';
     }
@@ -82,11 +82,11 @@ class Options extends \VuFind\Search\Solr\Options
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
@@ -113,7 +113,7 @@ class Options extends \VuFind\Search\Solr\Options
      * Get the search class ID for identifying search box options; this is normally
      * the same as the current search class ID, but some "special purpose" search
      * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
-     * generation
+     * generation.
      *
      * @return string
      */

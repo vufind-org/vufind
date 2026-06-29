@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Install Controller
+ * Install Controller.
  *
  * PHP version 8
  *
@@ -30,7 +30,6 @@
 namespace VuFind\Controller;
 
 use Laminas\Mvc\MvcEvent;
-use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\DbBuilder;
 use VuFind\Db\Service\TagServiceInterface;
@@ -79,7 +78,7 @@ class InstallController extends AbstractBase
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -112,10 +111,10 @@ class InstallController extends AbstractBase
      */
     protected function installBasicConfig()
     {
-        $config = $this->getForcedLocalConfigPath('config.ini');
+        $config = $this->getForcedLocalConfigPath('config');
         if (!file_exists($config)) {
             // Suppress errors so we don't cause a fatal error if copy is disallowed.
-            return @copy($this->getBaseConfigFilePath('config.ini'), $config);
+            return @copy($this->getBaseConfigFilePath('config'), $config);
         }
         return true;        // report success if file already exists
     }
@@ -177,26 +176,24 @@ class InstallController extends AbstractBase
     {
         $view = $this->createViewModel();
         $config = $this->getConfigArray();
-        $configPath = $this->getForcedLocalConfigPath('config.ini');
         try {
             if (!$this->installBasicConfig()) {
                 throw new \Exception('Cannot copy file into position.');
             }
-            $writer = new ConfigWriter($configPath);
             // Choose secure defaults when creating initial config.ini:
-            $this->fixSecurityConfiguration($config, $writer);
+            $fixedConfig = $this->getFixedSecurityConfiguration($config);
             // Set appropriate URLs:
             $serverUrl = $this->getViewRenderer()->plugin('serverurl');
             $path = $this->url()->fromRoute('home');
-            $writer->set('Site', 'url', rtrim($serverUrl($path), '/'));
+            $fixedConfig['Site']['url'] = rtrim($serverUrl($path), '/');
             if ($solrUrl = $this->getSolrUrlFromImportConfig()) {
-                $writer->set('Index', 'url', $solrUrl);
+                $fixedConfig['Index']['url'] = $solrUrl;
             }
-            if (!$writer->save()) {
-                throw new \Exception('Cannot write config to disk.');
-            }
+            $this->changeConfig('config', $fixedConfig);
+            return $this->redirect()->toRoute('install-home');
         } catch (\Exception $e) {
-            $view->configDir = dirname($configPath);
+            $view->configDir = dirname($this->getForcedLocalConfigPath('config'));
+            $view->errorMessage = $e->getMessage();
             if (
                 function_exists('posix_getpwuid')
                 && function_exists('posix_geteuid')
@@ -311,7 +308,7 @@ class InstallController extends AbstractBase
             $msg = 'VuFind requires PHP version ' . $this->getMinimalPhpVersion()
                 . ' or newer; you are running ' . phpversion()
                 . '. Please upgrade.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -323,7 +320,7 @@ class InstallController extends AbstractBase
                 . ' this. For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -335,7 +332,7 @@ class InstallController extends AbstractBase
                 . ' For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -347,7 +344,7 @@ class InstallController extends AbstractBase
                 . ' this. For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -358,7 +355,7 @@ class InstallController extends AbstractBase
                 . ' For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -369,7 +366,7 @@ class InstallController extends AbstractBase
                 . ' For details on how to do this, see '
                 . 'https://vufind.org/wiki/installation '
                 . 'and look at the PHP installation instructions for your platform.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
             $problems++;
         }
 
@@ -396,20 +393,20 @@ class InstallController extends AbstractBase
         $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
         if (!preg_match('/^\w*$/', $view->dbname)) {
-            $this->flashMessenger()
-                ->addMessage('Database name must be alphanumeric.', 'error');
+            $this->getFlashMessenger()
+                ->addErrorMessage('Database name must be alphanumeric.');
         } elseif (!preg_match('/^\w*$/', $view->dbuser)) {
-            $this->flashMessenger()
-                ->addMessage('Database user must be alphanumeric.', 'error');
+            $this->getFlashMessenger()
+                ->addErrorMessage('Database user must be alphanumeric.');
         } elseif ($skip || $this->formWasSubmitted()) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {
-                $this->flashMessenger()
-                    ->addMessage('Password fields must not be blank.', 'error');
+                $this->getFlashMessenger()
+                    ->addErrorMessage('Password fields must not be blank.');
             } elseif ($newpass != $newpassConf) {
-                $this->flashMessenger()
-                    ->addMessage('Password fields must match.', 'error');
+                $this->getFlashMessenger()
+                    ->addErrorMessage('Password fields must match.');
             } else {
                 // Connect to database:
                 try {
@@ -434,16 +431,18 @@ class InstallController extends AbstractBase
                         // forward back to the home action!
                         $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
-                        $config = $this->getForcedLocalConfigPath('config.ini');
-                        $writer = new ConfigWriter($config);
-                        $writer->set('Database', 'database', $string);
-                        if (!$writer->save()) {
+                        try {
+                            $this->changeConfig(
+                                'config',
+                                ['Database' => ['database' => $string]]
+                            );
+                        } catch (\Exception $e) {
                             return $this->forwardTo('Install', 'fixbasicconfig');
                         }
                     }
                     return $this->redirect()->toRoute('install-home');
                 } catch (\Exception $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->getFlashMessenger()->addErrorMessage($e->getMessage());
                 }
             }
         }
@@ -498,15 +497,17 @@ class InstallController extends AbstractBase
         // Process incoming parameter -- user may have selected a new driver:
         $newDriver = $this->params()->fromPost('driver');
         if (!empty($newDriver)) {
-            $configPath = $this->getForcedLocalConfigPath('config.ini');
-            $writer = new ConfigWriter($configPath);
-            $writer->set('Catalog', 'driver', $newDriver);
-            if (!$writer->save()) {
+            try {
+                $this->changeConfig(
+                    'config',
+                    ['Catalog' => ['driver' => $newDriver]]
+                );
+            } catch (\Exception $e) {
                 return $this->forwardTo('Install', 'fixbasicconfig');
             }
             // Copy configuration, if applicable:
-            $ilsIni = $this->getBaseConfigFilePath("{$newDriver}.ini");
-            $localIlsIni = $this->getForcedLocalConfigPath("{$newDriver}.ini");
+            $ilsIni = $this->getBaseConfigFilePath($newDriver);
+            $localIlsIni = $this->getForcedLocalConfigPath($newDriver);
             if (file_exists($ilsIni) && !file_exists($localIlsIni)) {
                 if (!copy($ilsIni, $localIlsIni)) {
                     return $this->forwardTo('Install', 'fixbasicconfig');
@@ -542,13 +543,13 @@ class InstallController extends AbstractBase
             sort($drivers);
             $view->drivers = $drivers;
         } else {
-            $view->configPath = $this->getForcedLocalConfigPath("{$config['Catalog']['driver']}.ini");
+            $view->configPath = $this->getForcedLocalConfigPath($config['Catalog']['driver']);
         }
         return $view;
     }
 
     /**
-     * Support method to test the search service
+     * Support method to test the search service.
      *
      * @return void
      * @throws \Exception
@@ -586,16 +587,16 @@ class InstallController extends AbstractBase
     {
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
         $config = $this->getConfigArray();
-        $configFile = $this->getForcedLocalConfigPath('config.ini');
         if (stristr($config['Index']['url'], 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config['Index']['url']);
             try {
                 $this->testSearchService();
-
-                // If we got this far, the fix worked. Let's write it to disk!
-                $writer = new ConfigWriter($configFile);
-                $writer->set('Index', 'url', $newUrl);
-                if (!$writer->save()) {
+                try {
+                    $this->changeConfig(
+                        'config',
+                        ['Index' => ['url' => $newUrl]]
+                    );
+                } catch (\Exception $e) {
                     return $this->forwardTo('Install', 'fixbasicconfig');
                 }
                 return $this->redirect()->toRoute('install-home');
@@ -614,7 +615,7 @@ class InstallController extends AbstractBase
             $config['Index']['url']
         );
         $view->core = $config['Index']['default_core'] ?? 'biblio';
-        $view->configFile = $configFile;
+        $view->configFile = $this->getForcedLocalConfigPath('config');
         return $view;
     }
 
@@ -641,32 +642,29 @@ class InstallController extends AbstractBase
      * Support method for fixsecurityAction(). Returns true if the configuration
      * was modified, false otherwise.
      *
-     * @param array        $config Existing VuFind configuration
-     * @param ConfigWriter $writer Config writer
+     * @param array $config Existing VuFind configuration
      *
-     * @return bool
+     * @return array
      */
-    protected function fixSecurityConfiguration(array $config, ConfigWriter $writer): bool
+    protected function getFixedSecurityConfiguration(array $config): array
     {
-        $changed = false;
+        $fixedConfig = [];
 
         if (
             !($config['Authentication']['hash_passwords'] ?? false)
             || !($config['Authentication']['encrypt_ils_password'] ?? false)
         ) {
-            $writer->set('Authentication', 'hash_passwords', true);
-            $writer->set('Authentication', 'encrypt_ils_password', true);
-            $changed = true;
+            $fixedConfig['Authentication']['hash_passwords'] = true;
+            $fixedConfig['Authentication']['encrypt_ils_password'] = true;
         }
         // Only rewrite encryption key if we don't already have one:
         if (empty($config['Authentication']['ils_encryption_key'])) {
             [$algorithm, $key] = $this->getSecureAlgorithmAndKey();
-            $writer->set('Authentication', 'ils_encryption_algo', $algorithm);
-            $writer->set('Authentication', 'ils_encryption_key', $key);
-            $changed = true;
+            $fixedConfig['Authentication']['ils_encryption_algo'] = $algorithm;
+            $fixedConfig['Authentication']['ils_encryption_key'] = $key;
         }
 
-        return $changed;
+        return $fixedConfig;
     }
 
     /**
@@ -680,7 +678,7 @@ class InstallController extends AbstractBase
         $userConfirmation = $this->params()->fromPost('fix-user-table', 'Unset');
         if ($userConfirmation == 'No') {
             $msg = 'Security upgrade aborted.';
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
             return $this->redirect()->toRoute('install-home');
         }
 
@@ -689,10 +687,8 @@ class InstallController extends AbstractBase
             $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
             $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
         } catch (\Throwable $e) {
-            $this->flashMessenger()->addMessage(
-                'Cannot connect to database; please configure database before fixing security.',
-                'error'
-            );
+            $this->getFlashMessenger()
+                ->addErrorMessage('Cannot connect to database; please configure database before fixing security.');
             return $this->redirect()->toRoute('install-home');
         }
         if (count($userRows) + count($cardRows) == 0 || $userConfirmation == 'Yes') {
@@ -717,11 +713,11 @@ class InstallController extends AbstractBase
 
         // First, set encryption/hashing to true, and set the key
         $config = $this->getConfigArray();
-        $configPath = $this->getForcedLocalConfigPath('config.ini');
-        $writer = new ConfigWriter($configPath);
-        if ($this->fixSecurityConfiguration($config, $writer)) {
-            // Problem writing? Show the user an error:
-            if (!$writer->save()) {
+        if ($fixedConfig = $this->getFixedSecurityConfiguration($config)) {
+            try {
+                $this->changeConfig('config', $fixedConfig);
+            } catch (\Exception $e) {
+                // Problem writing? Show the user an error:
                 return $this->forwardTo('Install', 'fixbasicconfig');
             }
 
@@ -748,7 +744,7 @@ class InstallController extends AbstractBase
                 }
             }
             $msg = count($userRows) . ' user row(s) encrypted.';
-            $this->flashMessenger()->addMessage($msg, 'info');
+            $this->getFlashMessenger()->addInfoMessage($msg);
         }
         $cardService = $this->getDbService(UserCardServiceInterface::class);
         $cardRows = $cardService->getInsecureRows();
@@ -759,7 +755,7 @@ class InstallController extends AbstractBase
                 $cardService->persistEntity($row);
             }
             $msg = count($cardRows) . ' user_card row(s) encrypted.';
-            $this->flashMessenger()->addMessage($msg, 'info');
+            $this->getFlashMessenger()->addInfoMessage($msg);
         }
         return $this->redirect()->toRoute('install-home');
     }
@@ -796,7 +792,7 @@ class InstallController extends AbstractBase
         // Bail out if we've fixed the problem:
         $result = $this->checkSslCerts();
         if ($result['status'] == true) {
-            $this->flashMessenger()->addMessage('SSL configuration fixed.', 'info');
+            $this->getFlashMessenger()->addInfoMessage('SSL configuration fixed.');
             return $this->redirect()->toRoute('install-home');
         }
 
@@ -829,18 +825,18 @@ class InstallController extends AbstractBase
      */
     protected function testSslCertConfig($config, $try)
     {
-        $file = $this->getForcedLocalConfigPath('config.ini');
-        $writer = new ConfigWriter($file);
         // Reset old settings
-        $writer->clear('Http', 'sslcapath');
-        $writer->clear('Http', 'sslcafile');
+        $fixedConfig = [
+            'Http' => [
+                'sslcapath' => null,
+                'sslcafile' => null,
+            ],
+        ];
         // Load new settings
         foreach ($config as $setting => $value) {
-            $writer->set('Http', $setting, $value);
+            $fixedConfig['Http'][$setting] = $value;
         }
-        if (!$writer->save()) {
-            throw new \Exception('Cannot write config to disk.');
-        }
+        $this->changeConfig('config', $fixedConfig);
 
         // Jump back to fix action so we can check if it worked (and attempt
         // the next config by incrementing the $try variable, if necessary):
@@ -858,17 +854,19 @@ class InstallController extends AbstractBase
      */
     public function doneAction()
     {
-        $config = $this->getForcedLocalConfigPath('config.ini');
-        $writer = new ConfigWriter($config);
-        $writer->set('System', 'autoConfigure', 0);
-        if (!$writer->save()) {
+        try {
+            $this->changeConfig(
+                'config',
+                ['System' => ['autoConfigure' => 0]]
+            );
+        } catch (\Exception $e) {
             return $this->forwardTo('Install', 'fixbasicconfig');
         }
-        return $this->createViewModel(['configDir' => dirname($config)]);
+        return $this->createViewModel(['configDir' => dirname($this->getForcedLocalConfigPath('config'))]);
     }
 
     /**
-     * Display summary of installation status
+     * Display summary of installation status.
      *
      * @return mixed
      */
@@ -920,7 +918,7 @@ class InstallController extends AbstractBase
     }
 
     /**
-     * Get composer.json data as array
+     * Get composer.json data as array.
      *
      * @return array
      */

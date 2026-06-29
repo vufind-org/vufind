@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for tags table
+ * Entity model for tags table.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Entity model for tags table
+ * Entity model for tags table.
  *
  * @category VuFind
  * @package  Database
@@ -73,7 +73,7 @@ class Tags implements TagsEntityInterface
     }
 
     /**
-     * Tag setter
+     * Tag setter.
      *
      * @param string $tag Tag
      *
@@ -86,7 +86,7 @@ class Tags implements TagsEntityInterface
     }
 
     /**
-     * Tag getter
+     * Tag getter.
      *
      * @return string
      */

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * RecordLinker view helper Test Class
+ * RecordLinker view helper Test Class.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,8 +29,10 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use Laminas\View\Helper\EscapeHtml;
 use VuFind\Config\Config;
 use VuFind\Record\Router;
+use VuFind\Search\Base\Results;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\View\Helper\Root\Translate;
 use VuFind\View\Helper\Root\Truncate;
@@ -38,7 +40,7 @@ use VuFind\View\Helper\Root\Url;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * RecordLinker view helper Test Class
+ * RecordLinker view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -65,7 +67,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Make sure any percent signs in record ID are properly URL-encoded
+     * Make sure any percent signs in record ID are properly URL-encoded.
      *
      * @return void
      */
@@ -83,7 +85,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test behavior when there are multiple GET parameters
+     * Test behavior when there are multiple GET parameters.
      *
      * @return void
      */
@@ -97,7 +99,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test record URL creation with a non-tab action
+     * Test record URL creation with a non-tab action.
      *
      * @return void
      */
@@ -125,15 +127,16 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetBreadcrumbParams().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getBreadcrumbParamsProvider(): array
+    public static function getBreadcrumbParamsProvider(): \Iterator
     {
-        return ['empty' => [''], 'non-empty' => ['foo']];
+        yield 'empty' => [''];
+        yield 'non-empty' => ['foo'];
     }
 
     /**
-     * Test getBreadcrumbParams
+     * Test getBreadcrumbParams.
      *
      * @param string $breadcrumb Breadcrumb text to test with
      *
@@ -160,6 +163,43 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test handling of Results in __invoke.
+     *
+     * @return void
+     */
+    public function testInvoke(): void
+    {
+        $recordLinker = $this->getRecordLinker();
+        $results = $this->createMock(Results::class);
+        $results->expects($this->exactly(2))
+            ->method('getSearchId')
+            ->willReturn(234);
+        $this->assertEquals(
+            '/Record/foo?sid=234',
+            $recordLinker($results)->getUrl('Solr|foo')
+        );
+        $recordLinker(null);
+        $this->assertEquals(
+            '/Record/foo?sid=234',
+            $recordLinker->getUrl('Solr|foo')
+        );
+        $recordLinker->resetStoredResults();
+        $this->assertEquals(
+            '/Record/foo?sid=-123',
+            $recordLinker->getUrl('Solr|foo')
+        );
+
+        $results2 = $this->createMock(Results::class);
+        $results2->expects($this->once())
+            ->method('getSearchId')
+            ->willReturn(345);
+        $this->assertEquals(
+            '/Record/foo?sid=345',
+            $recordLinker($results2)->getUrl('Solr|foo')
+        );
+    }
+
+    /**
      * Get a RecordLinker object ready for testing.
      *
      * @param array $extraHelpers Extra helpers to provide to the linker
@@ -168,15 +208,37 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getRecordLinker(array $extraHelpers = []): RecordLinker
     {
-        $view = $this->getPhpRenderer(
-            $extraHelpers + [
-                'searchMemory' => $this->getSearchMemoryViewHelper(),
-                'url' => $this->getUrl(),
-            ]
+        $url = $this->getUrl();
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
+        $memory->method('getLastSearchId')->willReturn(-123);
+
+        $translate = $extraHelpers['translate'] ?? $this->createMock(Translate::class);
+        if (!isset($extraHelpers['translate'])) {
+            $translate->method('__invoke')->willReturnArgument(0);
+        }
+
+        $truncate = $extraHelpers['truncate'] ?? $this->createMock(Truncate::class);
+        if (!isset($extraHelpers['truncate'])) {
+            $truncate->method('__invoke')->willReturnArgument(0);
+        }
+
+        $escapeHtml = $this->createMock(EscapeHtml::class);
+        $escapeHtml->method('__invoke')->willReturnCallback(function ($str) {
+            return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+        });
+
+        $searchOptionManager = $this->createMock(\VuFind\Search\Options\PluginManager::class);
+
+        $recordLinker = new RecordLinker(
+            new Router(new Config([])),
+            $memory,
+            $url,
+            $searchOptionManager,
+            $translate,
+            $truncate,
+            $escapeHtml
         );
 
-        $recordLinker = new RecordLinker(new Router(new Config([])));
-        $recordLinker->setView($view);
         return $recordLinker;
     }
 
@@ -189,8 +251,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     {
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->onlyMethods(['getQuery'])->getMock();
-        $request->expects($this->any())->method('getQuery')
-            ->willReturn(new \Laminas\Stdlib\Parameters());
+        $request->method('getQuery')->willReturn(new \Laminas\Stdlib\Parameters());
 
         $url = new \VuFind\View\Helper\Root\Url($request);
 

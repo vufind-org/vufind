@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ResultFeed Test Class
+ * ResultFeed Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Integration\View\Helper\Root;
 use VuFind\View\Helper\Root\ResultFeed;
 
 /**
- * ResultFeed Test Class
+ * ResultFeed Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -62,31 +62,42 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get plugins to register to support view helper being tested
+     * Get plugins to register to support view helper being tested.
      *
      * @return array
      */
     protected function getPlugins(): array
     {
         $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
-        $currentPath->expects($this->any())->method('__invoke')->willReturn('/test/path');
+        $currentPath->method('__invoke')->willReturn('/test/path');
 
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
         $record->method('getLinkDetails')->willReturn([['url' => 'http://driver-url']]);
+        $router = new \VuFind\Record\Router(new \VuFind\Config\Config([]));
+        $memory = $this->createMock(\VuFind\Search\Memory::class);
+        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
+        $url->method('__invoke')->willReturn('test/url');
+        $searchOptionsManager = $this->createMock(\VuFind\Search\Options\PluginManager::class);
+        $translate = $this->createMock(\VuFind\View\Helper\Root\Translate::class);
+        $truncate = $this->createMock(\VuFind\View\Helper\Root\Truncate::class);
+        $escapeHtml = $this->createMock(\Laminas\View\Helper\EscapeHtml::class);
 
         $recordLinker = $this->getMockBuilder(\VuFind\View\Helper\Root\RecordLinker::class)
-            ->setConstructorArgs(
-                [
-                    new \VuFind\Record\Router(
-                        new \VuFind\Config\Config([])
-                    ),
-                ]
-            )->getMock();
-        $recordLinker->expects($this->any())->method('getUrl')->willReturn('test/url');
+            ->setConstructorArgs([
+                $router,
+                $memory,
+                $url,
+                $searchOptionsManager,
+                $translate,
+                $truncate,
+                $escapeHtml,
+            ])
+            ->getMock();
+        $recordLinker->method('getUrl')->willReturn('test/url');
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $serverUrl->expects($this->any())->method('__invoke')->willReturn('http://server/url');
+        $serverUrl->method('__invoke')->willReturn('http://server/url');
 
         return compact('currentPath', 'record', 'recordLinker') + ['serverurl' => $serverUrl];
     }
@@ -94,21 +105,19 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testRSS.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function rssProvider(): array
+    public static function rssProvider(): \Iterator
     {
         $routeLink = 'http://server/url';
         $driverLink = 'http://driver-url';
-        return [
-            'default options' => [[], $routeLink],
-            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink],
-            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink],
-        ];
+        yield 'default options' => [[], $routeLink];
+        yield 'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink];
+        yield 'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink];
     }
 
     /**
-     * Test feed generation
+     * Test feed generation.
      *
      * @param array  $options      Options to pass to the ResultFeed object.
      * @param string $expectedLink The link URL we expect to find in the first result in the feed.
@@ -129,8 +138,14 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
 
         $results = $this->getResultsObject();
         $results->getParams()->initFromRequest($request);
-
-        $helper = new ResultFeed($options);
+        $plugins = $this->getPlugins();
+        $helper = new ResultFeed(
+            $plugins['serverurl'],
+            $plugins['currentPath'],
+            $plugins['recordLinker'],
+            $plugins['record'],
+            $options
+        );
         $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
         $translator = $this->getMockTranslator(
             [
@@ -142,19 +157,18 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $helper->setTranslator($translator);
-        $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper($results, '/test/path');
         $this->assertIsObject($feed);
         $rss = $feed->export('rss');
 
         // Make sure it's really an RSS feed:
-        $this->assertTrue(strstr($rss, '<rss') !== false);
+        $this->assertNotFalse(strstr($rss, '<rss'));
 
         // Make sure custom Dublin Core elements are present:
-        $this->assertTrue(strstr($rss, 'dc:format') !== false);
+        $this->assertNotFalse(strstr($rss, 'dc:format'));
 
         // Make sure custom Atom link elements are present:
-        $this->assertTrue(strstr($rss, 'atom:link') !== false);
+        $this->assertNotFalse(strstr($rss, 'atom:link'));
 
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);

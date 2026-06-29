@@ -12,7 +12,11 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('page-title', ['title' => $this->translate('Your Checked Out Items'), 'headTitle' => $this->translate('Checked Out Items')]);?>
+  <?= $this->component('page-title', [
+      'title' => $this->translate('Your Checked Out Items'),
+      'headTitle' => $this->translate('Checked Out Items'),
+      'level' => 1,
+  ]); ?>
   <?=$this->flashmessages()?>
   <?=$this->methodTimedBlocks('Renewals')?>
 
@@ -45,11 +49,7 @@
     <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut" data-disable-on-submit>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
       <input type="hidden" id="submitType" name="renewSelected" value="1">
-      <div class="bulk-action-toolbar">
-        <label class="select-all-label">
-          <input type="checkbox" name="selectAll" class="checkbox-select-all">
-          <?=$this->transEsc('select_all_on_page')?>
-        </label>
+      <div class="toolbar account-action-toolbar">
         <?=
           $this->component(
               'confirm-button',
@@ -80,6 +80,12 @@
             )
           ?>
         <?php endif; ?>
+      </div>
+      <div class="select-all-container">
+        <label class="select-all-label">
+          <input type="checkbox" name="selectAll" class="checkbox-select-all">
+          <?=$this->transEsc('select_all_on_page')?>
+        </label>
       </div>
     <?php endif; ?>
 
@@ -201,7 +207,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render('checkedout')?>
+  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'checkedout'])?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

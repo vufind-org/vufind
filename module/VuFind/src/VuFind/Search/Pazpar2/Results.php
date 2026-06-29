@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pazpar2 Search Results
+ * Pazpar2 Search Results.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Pazpar2;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * Pazpar2 Search Parameters
+ * Pazpar2 Search Parameters.
  *
  * @category VuFind
  * @package  Search_Pazpar2
@@ -47,7 +47,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @var string
      */
-    protected $backendId = 'Pazpar2';
+    protected string $backendId = 'Pazpar2';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -55,7 +55,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
@@ -76,14 +76,14 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // No facets in Pazpar2:
         return [];

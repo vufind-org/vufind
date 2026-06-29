@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get User Fines" AJAX handler
+ * "Get User Fines" AJAX handler.
  *
  * PHP version 8
  *
@@ -29,17 +29,17 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\PhpRenderer;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Account\AccountStatusLevelType;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
 use VuFind\Service\CurrencyFormatter;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * "Get User Fines" AJAX handler
+ * "Get User Fines" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -52,21 +52,21 @@ class GetUserFines extends AbstractIlsUserAndRendererAction
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param SessionSettings      $ss                Session settings
-     * @param Connection           $ils               ILS connection
-     * @param ILSAuthenticator     $ilsAuthenticator  ILS authenticator
-     * @param ?UserEntityInterface $user              Logged in user (or false)
-     * @param PhpRenderer          $renderer          Renderer
-     * @param CurrencyFormatter    $currencyFormatter Currency formatter
+     * @param SessionSettings           $ss                Session settings
+     * @param Connection                $ils               ILS connection
+     * @param ILSAuthenticator          $ilsAuthenticator  ILS authenticator
+     * @param ?UserEntityInterface      $user              Logged in user (or false)
+     * @param TemplateRendererInterface $renderer          Renderer
+     * @param CurrencyFormatter         $currencyFormatter Currency formatter
      */
     public function __construct(
         SessionSettings $ss,
         Connection $ils,
         ILSAuthenticator $ilsAuthenticator,
         ?UserEntityInterface $user,
-        PhpRenderer $renderer,
+        TemplateRendererInterface $renderer,
         protected CurrencyFormatter $currencyFormatter,
     ) {
         parent::__construct($ss, $ils, $ilsAuthenticator, $user, $renderer);
@@ -75,11 +75,11 @@ class GetUserFines extends AbstractIlsUserAndRendererAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
-     * @return array [response data, internal status code, HTTP status code]
+     * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
@@ -92,12 +92,12 @@ class GetUserFines extends AbstractIlsUserAndRendererAction
         $fines = $this->ils->getMyFines($patron);
         $result = $this->getFineSummary($fines, $this->currencyFormatter);
         $result['level'] = $this->getAccountStatusLevel($result);
-        $result['html'] = $this->renderer->render('ajax/account/fines.phtml', $result);
+        $result['html'] = $this->renderer->renderTemplateAsString($request, 'ajax/account/fines.phtml', $result);
         return $this->formatResponse($result);
     }
 
     /**
-     * Get account status level for notification icon
+     * Get account status level for notification icon.
      *
      * @param array $status Status information
      *

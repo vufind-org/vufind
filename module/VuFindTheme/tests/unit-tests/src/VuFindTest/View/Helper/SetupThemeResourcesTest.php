@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * PHP version 8
  *
@@ -34,10 +34,12 @@ use Laminas\View\Helper\HeadMeta;
 use Laminas\View\Helper\HeadScript;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTheme\ResourceContainer;
+use VuFindTheme\View\Helper\AssetManager;
+use VuFindTheme\View\Helper\ImageLink;
 use VuFindTheme\View\Helper\SetupThemeResources;
 
 /**
- * SetupThemeResources view helper Test Class
+ * SetupThemeResources view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -56,8 +58,13 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
      */
     public function testHelper()
     {
-        $helper = new SetupThemeResources($this->getResourceContainer());
-        $helper->setView($this->getMockView());
+        $helper = new SetupThemeResources(
+            $this->getResourceContainer(),
+            $this->getMockHeadMeta(),
+            $this->getMockAssetManager(),
+            $this->getMockHeadLink(),
+            $this->getMockImageLink(),
+        );
         $helper();
     }
 
@@ -120,7 +127,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['__invoke', '__call'])
             ->getMock();
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
+        $mock->method('__invoke')->willReturn($mock);
         $mock->expects($this->exactly(2))
             ->method('__call')
             ->willReturnCallback(function ($method, $args) use ($mock) {
@@ -147,7 +154,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     protected function getMockHeadLink(): MockObject&HeadLink
     {
         $mock = $this->createMock(HeadLink::class);
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
+        $mock->method('__invoke')->willReturn($mock);
         return $mock;
     }
 
@@ -159,7 +166,27 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     protected function getMockHeadScript(): MockObject&HeadScript
     {
         $mock = $this->createMock(HeadScript::class);
-        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
+        $mock->method('__invoke')->willReturn($mock);
         return $mock;
+    }
+
+    /**
+     * Get a fake AssetManager helper.
+     *
+     * @return MockObject&AssetManager
+     */
+    protected function getMockAssetManager(): MockObject&AssetManager
+    {
+        return $this->createMock(AssetManager::class);
+    }
+
+    /**
+     * Get a fake ImageLink helper.
+     *
+     * @return MockObject&ImageLink
+     */
+    protected function getMockImageLink(): MockObject&ImageLink
+    {
+        return $this->createMock(ImageLink::class);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EPF API Results
+ * EPF API Results.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ namespace VuFind\Search\EPF;
 use VuFindSearch\Command\SearchCommand;
 
 /**
- * EPF API Results
+ * EPF API Results.
  *
  * @category VuFind
  * @package  EBSCO
@@ -52,14 +52,14 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @var string
      */
-    protected $backendId = 'EPF';
+    protected string $backendId = 'EPF';
 
     /**
-     * Facet list
+     * Facet list.
      *
      * @var array
      */
-    protected $responseFacets;
+    protected array $responseFacets;
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -67,7 +67,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
@@ -92,14 +92,14 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         if (null === $this->responseFacets) {
             $this->performAndProcessSearch();

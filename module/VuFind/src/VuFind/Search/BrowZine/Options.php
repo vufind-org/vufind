@@ -1,7 +1,7 @@
 <?php
 
 /**
- * BrowZine aspect of the Search Multi-class (Options)
+ * BrowZine aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\BrowZine;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * BrowZine Search Options
+ * BrowZine Search Options.
  *
  * @category VuFind
  * @package  Search_BrowZine
@@ -45,7 +45,7 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -66,21 +66,21 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'browzine-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         // Not currently supported:
-        return false;
+        return null;
     }
 
     /**
@@ -88,7 +88,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Not currently supported
         return false;

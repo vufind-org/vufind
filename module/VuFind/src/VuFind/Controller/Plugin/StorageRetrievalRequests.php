@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Storage Retrieval Requests Support Methods
+ * VuFind Action Helper - Storage Retrieval Requests Support Methods.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ namespace VuFind\Controller\Plugin;
 use function in_array;
 
 /**
- * Action helper to perform storage retrieval request related actions
+ * Action helper to perform storage retrieval request related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -98,7 +98,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
     public function cancelStorageRetrievalRequests($catalog, $patron)
     {
         // Retrieve the flashMessenger helper:
-        $flashMsg = $this->getController()->flashMessenger();
+        $flashMsg = $this->getController()->getFlashMessenger();
         $params = $this->getController()->params();
 
         // Pick IDs to cancel based on which button was pressed:
@@ -147,8 +147,8 @@ class StorageRetrievalRequests extends AbstractRequestBase
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
-                if (!in_array($info, $this->getSession()->validIds)) {
-                    $flashMsg->addMessage('error_inconsistent_parameters', 'error');
+                if (!in_array($info, $this->getValidIds())) {
+                    $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
             }
@@ -159,7 +159,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
             );
             if ($cancelResults == false) {
                 $flashMsg
-                    ->addMessage('storage_retrieval_request_cancel_fail', 'error');
+                    ->addErrorMessage('storage_retrieval_request_cancel_fail');
             } else {
                 $failed = 0;
                 foreach ($cancelResults['items'] ?? [] as $item) {
@@ -184,7 +184,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
             }
         } else {
             $flashMsg
-                ->addMessage('storage_retrieval_request_empty_selection', 'error');
+                ->addErrorMessage('storage_retrieval_request_empty_selection');
         }
         return [];
     }

@@ -73,6 +73,18 @@ class AuthHashService extends AbstractDbService implements
     }
 
     /**
+     * Retrieve an object from the database based on id.
+     *
+     * @param string $id Hash ID
+     *
+     * @return ?AuthHashEntityInterface
+     */
+    public function getById(string $id): ?AuthHashEntityInterface
+    {
+        return $this->entityManager->find(AuthHashEntityInterface::class, $id);
+    }
+
+    /**
      * Retrieve an object from the database based on hash and type; possibly create a new
      * row if no existing match is found.
      *
@@ -117,8 +129,8 @@ class AuthHashService extends AbstractDbService implements
             . 'ORDER BY ah.created DESC';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('sessionId', $sessionId);
-        $result = $query->getOneOrNullResult();
-        return $result;
+        $query->setMaxResults(1);
+        return $query->getOneOrNullResult();
     }
 
     /**

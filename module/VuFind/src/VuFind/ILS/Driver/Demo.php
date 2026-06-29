@@ -72,21 +72,21 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
     /**
      * Catalog ID used to distinguish between multiple Demo driver instances with the
-     * MultiBackend driver
+     * MultiBackend driver.
      *
      * @var string
      */
     protected $catalogId = 'demo';
 
     /**
-     * Connection used when getting random bib ids from Solr
+     * Connection used when getting random bib ids from Solr.
      *
      * @var SearchService
      */
     protected $searchService;
 
     /**
-     * Total count of records in the Solr index (used for random bib lookup)
+     * Total count of records in the Solr index (used for random bib lookup).
      *
      * @var int
      */
@@ -135,14 +135,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $ILLRequests = true;
 
     /**
-     * Date converter object
+     * Date converter object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
 
     /**
-     * Failure probability settings
+     * Failure probability settings.
      *
      * @var array
      */
@@ -170,7 +170,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $instructors = ['Instructor A', 'Instructor B', 'Instructor C'];
 
     /**
-     * Item and pick up locations
+     * Item and pick up locations.
      *
      * @var array
      */
@@ -190,14 +190,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     ];
 
     /**
-     * Default pickup location
+     * Default pickup location.
      *
      * @var string
      */
     protected $defaultPickUpLocation;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
      * @param SearchService          $ss             Search service
@@ -482,7 +482,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Generates a random, fake holding array
+     * Generates a random, fake holding array.
      *
      * @param string $id     set id
      * @param string $number set number for multiple items
@@ -686,7 +686,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -717,7 +717,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get the session container (constructing it on demand if not already present)
+     * Get the session container (constructing it on demand if not already present).
      *
      * @param string $patron ID of current patron
      *
@@ -741,7 +741,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Simulated Status (support method for getStatus/getHolding)
+     * Get Simulated Status (support method for getStatus/getHolding).
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -793,7 +793,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Set Status
+     * Set Status.
      *
      * @param string $id      id for record
      * @param array  $holding associative array with options to specify
@@ -807,9 +807,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function setStatus(string $id, $holding = [], $append = true, $patron = null)
     {
         $session = $this->getSession($patron['id'] ?? null);
-        $i = isset($session->statuses[$id])
-            ? count($session->statuses[$id]) + 1 : 1;
-        $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+
+        if ($this->config['Holdings']['generateRandomHoldings'] ?? true) {
+            $i = isset($session->statuses[$id])
+                ? count($session->statuses[$id]) + 1 : 1;
+            $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+        }
 
         // if statuses is already stored
         if ($session->statuses) {
@@ -829,7 +832,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -897,7 +900,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -994,7 +997,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1015,7 +1018,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1023,7 +1026,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $password The patron password
      *
      * @throws ILSException
-     * @return mixed           Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $password)
@@ -1058,7 +1061,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -1089,7 +1092,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Generate random fines
+     * Generate random fines.
      *
      * @return array
      */
@@ -1154,7 +1157,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1236,7 +1239,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1257,7 +1260,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -1279,7 +1282,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron ILL Requests
+     * Get Patron ILL Requests.
      *
      * This is responsible for retrieving all ILL requests by a specific patron.
      *
@@ -1411,7 +1414,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1541,7 +1544,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Patron Loan History
+     * Get Patron Loan History.
      *
      * This is responsible for retrieving all historic transactions for a specific
      * patron.
@@ -1613,7 +1616,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Purge Patron Transaction History
+     * Purge Patron Transaction History.
      *
      * @param array  $patron The patron array from patronLogin
      * @param ?array $ids    IDs to purge, or null for all
@@ -1645,7 +1648,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Pick Up Locations
+     * Get Pick Up Locations.
      *
      * This is responsible get a list of valid library locations for holds / recall
      * retrieval
@@ -1691,7 +1694,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported.
      *
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Contains most of the same values passed to
@@ -1710,7 +1713,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Default Pick Up Location
+     * Get Default Pick Up Location.
      *
      * Returns the default pick up location set in HorizonXMLAPI.ini
      *
@@ -1733,13 +1736,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Default Request Group
+     * Get Default Request Group.
      *
      * Returns the default request group
      *
-     * @param array $patron      Patron information returned by the patronLogin
-     * method.
-     * @param array $holdDetails Optional array, only passed in when getting a list
+     * @param array  $patron      Patron information returned by the patronLogin method.
+     * @param ?array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
      * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
@@ -1748,7 +1750,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
         if ($this->isFailing(__METHOD__, 50)) {
@@ -1759,7 +1761,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get request groups
+     * Get request groups.
      *
      * @param int   $bibId       BIB ID
      * @param array $patron      Patron information returned by the patronLogin
@@ -1793,20 +1795,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Funds
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @return array An associative array with key = fund ID, value = fund name.
-     */
-    public function getFunds()
-    {
-        $this->checkIntermittentFailure();
-        return ['Fund A', 'Fund B', 'Fund C'];
-    }
-
-    /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -1819,7 +1808,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -1832,7 +1821,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -1845,7 +1834,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get a set of random bib IDs
+     * Get a set of random bib IDs.
      *
      * @param int $limit Maximum number of IDs to return (max 30)
      *
@@ -1864,39 +1853,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             }
         }
         return $results;
-    }
-
-    /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @return array       Associative array with 'count' and 'results' keys
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        $this->checkIntermittentFailure();
-        // Pick a random number of results to return -- don't exceed limit or 30,
-        // whichever is smaller (this can be pretty slow due to the random ID code).
-        $results = $this->config['Records']['new_items']
-            ?? $this->getRandomBibIds(30);
-        $retVal = ['count' => count($results), 'results' => []];
-        foreach ($results as $result) {
-            $retVal['results'][] = ['id' => $result];
-        }
-        return $retVal;
     }
 
     /**
@@ -1936,7 +1892,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -1976,7 +1932,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Cancel Holds
+     * Cancel Holds.
      *
      * Attempts to Cancel a hold or recall on a particular item.
      *
@@ -2021,7 +1977,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Update holds
+     * Update holds.
      *
      * This is responsible for changing the status of hold requests
      *
@@ -2075,7 +2031,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Cancel Storage Retrieval Request
+     * Cancel Storage Retrieval Request.
      *
      * Attempts to Cancel a Storage Retrieval Request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -2122,7 +2078,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Cancel Storage Retrieval Request Details
+     * Get Cancel Storage Retrieval Request Details.
      *
      * In order to cancel a hold, Voyager requires the patron details an item ID
      * and a recall ID. This function returns the item id and recall id as a string
@@ -2142,7 +2098,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Renew My Items
+     * Renew My Items.
      *
      * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
@@ -2215,7 +2171,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Renew Details
+     * Get Renew Details.
      *
      * In order to renew an item, Voyager requires the patron details and an item
      * id. This function returns the item id as a string which is then used
@@ -2232,7 +2188,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Check if hold or recall available
+     * Check if hold or recall available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2256,14 +2212,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'hold_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
     /**
-     * Place Hold
+     * Place Hold.
      *
      * Attempts to place a hold or recall on a particular item and returns
      * an array with result details.
@@ -2356,7 +2316,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Check if storage retrieval request available
+     * Check if storage retrieval request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2381,14 +2341,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'storage_retrieval_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
     /**
-     * Place a Storage Retrieval Request
+     * Place a Storage Retrieval Request.
      *
      * Attempts to place a request on a particular item and returns
      * an array with result details.
@@ -2487,7 +2451,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Check if ILL request available
+     * Check if ILL request available.
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2511,14 +2475,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'ill_request_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'ill_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
     /**
-     * Place ILL Request
+     * Place ILL Request.
      *
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details
@@ -2623,7 +2591,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get ILL Pickup Libraries
+     * Get ILL Pickup Libraries.
      *
      * This is responsible for getting information on the possible pickup libraries
      *
@@ -2659,7 +2627,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get ILL Pickup Locations
+     * Get ILL Pickup Locations.
      *
      * This is responsible for getting a list of possible pickup locations for a
      * library
@@ -2707,7 +2675,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Cancel ILL Request
+     * Cancel ILL Request.
      *
      * Attempts to Cancel an ILL request on a particular item. The
      * data in $cancelDetails['details'] is determined by
@@ -2754,7 +2722,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get Cancel ILL Request Details
+     * Get Cancel ILL Request Details.
      *
      * @param array $request An array of request data
      * @param array $patron  Patron information from patronLogin
@@ -2769,7 +2737,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Change Password
+     * Change Password.
      *
      * Attempts to change patron password (PIN code)
      *
@@ -2799,7 +2767,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
-     * Get password recovery data for a user
+     * Get password recovery data for a user.
      *
      * @param array $params Required params such as cat_username and email
      *
@@ -2886,7 +2854,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = [])
+    public function getConfig(string $function, array $params = []): array
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {
@@ -2931,7 +2899,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         if ($function == 'getMyTransactionHistory') {
             if (empty($this->config['TransactionHistory']['enabled'])) {
-                return false;
+                return [];
             }
             $config = [
                 'sort' => [
@@ -2974,7 +2942,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
-            return ($config['enabled'] ?? false) ? $config : false;
+            return ($config['enabled'] ?? false) ? $config : [];
         }
         if ($function == 'OnlinePayment') {
             return $this->config['OnlinePayment'] ?? [];

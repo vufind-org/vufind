@@ -41,13 +41,12 @@ namespace VuFind\Search\Factory;
 class SolrAuthBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        parent::__construct();
         $this->searchConfig = 'authority';
-        $this->searchYaml = 'authsearchspecs.yaml';
+        $this->searchSpecsConfig = 'authsearchspecs';
         $this->facetConfig = 'authority';
         $this->indexNameSetting = 'default_authority_core';
         $this->defaultIndexName = 'authority';
@@ -59,7 +58,7 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
      *
      * Returns a callable or null to use RecordCollectionFactory's default method.
      *
-     * @return callable|null
+     * @return ?callable
      */
     protected function getCreateRecordCallback(): ?callable
     {

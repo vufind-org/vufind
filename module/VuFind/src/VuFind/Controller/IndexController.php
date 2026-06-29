@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default Controller
+ * Default Controller.
  *
  * PHP version 8
  *
@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Config;
 
@@ -41,30 +42,32 @@ use VuFind\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
+class IndexController extends AbstractBase
 {
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * Auth manager
+     * Auth manager.
      *
      * @var AuthManager
      */
     protected $authManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param Config      $config      VuFind configuration
-     * @param AuthManager $authManager Auth manager
+     * @param ServiceLocatorInterface $sm          Service locator
+     * @param Config                  $config      VuFind configuration
+     * @param AuthManager             $authManager Auth manager
      */
-    public function __construct(Config $config, AuthManager $authManager)
+    public function __construct(ServiceLocatorInterface $sm, Config $config, AuthManager $authManager)
     {
+        parent::__construct($sm);
         $this->config = $config;
         $this->authManager = $authManager;
     }
@@ -88,6 +91,6 @@ class IndexController extends \Laminas\Mvc\Controller\AbstractActionController
         $action = $this->config->Site->$actionConfig ?? 'Home';
 
         // Forward to the appropriate controller and action:
-        return $this->forward()->dispatch($controller, compact('action'));
+        return $this->forwardTo($controller, $action);
     }
 }

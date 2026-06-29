@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mixed List aspect of the Search Multi-class (Params)
+ * Mixed List aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -29,10 +29,12 @@
 
 namespace VuFind\Search\MixedList;
 
+use Laminas\Stdlib\Parameters;
+
 use function count;
 
 /**
- * Search Mixed List Parameters
+ * Search Mixed List Parameters.
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -43,21 +45,21 @@ use function count;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
-     * Array of target record ids
+     * Array of target record ids.
      *
      * @var array
      */
-    protected $recordsToRequest;
+    protected array $recordsToRequest;
 
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch($request)
+    protected function initSearch(Parameters $request): void
     {
         // Convert special 'id' parameter into a standard hidden filter:
         $idParam = $request->get('id', []);
@@ -73,7 +75,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    protected function setRecordIdsFromFilter($filterValue)
+    protected function setRecordIdsFromFilter(string $filterValue): void
     {
         $this->recordsToRequest = explode("\t", $filterValue);
         $this->setLimit(count($this->recordsToRequest));
@@ -89,7 +91,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function addHiddenFilter($newFilter)
+    public function addHiddenFilter(string $newFilter): void
     {
         [$field, $value] = $this->parseFilter($newFilter);
         if ($field == 'ids') {
@@ -106,7 +108,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function deminify($minified)
+    public function deminify(\VuFind\Search\Minified $minified): void
     {
         parent::deminify($minified);
         if (isset($this->hiddenFilters['ids'][0])) {
@@ -120,7 +122,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-    public function getDisplayQuery()
+    public function getDisplayQuery(): string
     {
         return $this->translate(
             'result_count',
@@ -134,7 +136,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getHiddenFilters()
+    public function getHiddenFilters(): array
     {
         $filters = parent::getHiddenFilters();
         $filters['ids'] = [implode("\t", $this->recordsToRequest)];
@@ -146,7 +148,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getRecordsToRequest()
+    public function getRecordsToRequest(): array
     {
         return $this->recordsToRequest;
     }

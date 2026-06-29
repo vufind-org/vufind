@@ -44,15 +44,13 @@ use VuFindSearch\Backend\EDS\Command\GetInfoCommand;
 class GetInfoCommandTest extends TestCase
 {
     /**
-     * Test that the command works as expected
+     * Test that the command works as expected.
      *
      * @return void
      */
     public function testCommand(): void
     {
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('EDS');
         $backend->expects($this->once())->method('getInfo')

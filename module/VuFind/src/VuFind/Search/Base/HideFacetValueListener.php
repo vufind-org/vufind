@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hide values of facet for displaying
+ * Hide values of facet for displaying.
  *
  * PHP version 8
  *
@@ -48,44 +48,18 @@ use function is_callable;
 class HideFacetValueListener
 {
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
-     * List of facet values to show, indexed by facet field. All other facets are
-     * hidden.
-     *
-     * @var array
-     */
-    protected $showFacets = [];
-
-    /**
-     * List of facet values to hide, indexed by facet field.
-     *
-     * @var array
-     */
-    protected $hideFacets = [];
-
-    /**
      * Constructor.
      *
-     * @param BackendInterface $backend         Search backend
-     * @param array            $hideFacetValues Assoc. array of field
-     * name => values to exclude from display.
-     * @param array            $showFacetValues Assoc. array of field
-     * name => values to exclusively show in display.
+     * @param BackendInterface $backend    Search backend
+     * @param array            $hideFacets List of facet values to hide, indexed by facet field
+     * @param array            $showFacets List of facet values to show, indexed by facet field. All other facets are
+     * hidden
      */
     public function __construct(
-        BackendInterface $backend,
-        array $hideFacetValues,
-        array $showFacetValues = []
+        protected BackendInterface $backend,
+        protected array $hideFacets,
+        protected array $showFacets = []
     ) {
-        $this->backend = $backend;
-        $this->hideFacets = $hideFacetValues;
-        $this->showFacets = $showFacetValues;
     }
 
     /**
@@ -97,7 +71,7 @@ class HideFacetValueListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
+    ): void {
         $manager->attach(
             Service::class,
             Service::EVENT_POST,
@@ -106,13 +80,13 @@ class HideFacetValueListener
     }
 
     /**
-     * Hide facet values from display
+     * Hide facet values from display.
      *
      * @param EventInterface $event Event
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
 
@@ -127,13 +101,13 @@ class HideFacetValueListener
     }
 
     /**
-     * Process hide facet value
+     * Process hide facet value.
      *
      * @param EventInterface $event Event
      *
      * @return void
      */
-    protected function processHideFacetValue($event)
+    protected function processHideFacetValue(EventInterface $event): void
     {
         $result = $event->getParam('command')->getResult();
         if (!$result) {

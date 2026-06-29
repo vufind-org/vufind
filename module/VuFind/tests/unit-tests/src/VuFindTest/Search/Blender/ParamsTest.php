@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFindSearch\Query\Query;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Blender Params Test
+ * Blender Params Test.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Blender config
+     * Blender config.
      *
      * @var array
      */
@@ -76,7 +76,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mappings
+     * Mappings.
      *
      * @var array
      */
@@ -190,7 +190,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS API configuration
+     * EDS API configuration.
      *
      * @var array
      */
@@ -206,7 +206,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * EDS configuration
+     * EDS configuration.
      *
      * @var array
      */
@@ -218,7 +218,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Primo configuration
+     * Primo configuration.
      *
      * @var array
      */
@@ -230,7 +230,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Blender configuration
+     * Blender configuration.
      *
      * @var array
      */
@@ -243,7 +243,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Mock config manager
+     * Mock config manager.
      *
      * @var object
      */
@@ -256,7 +256,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSearchClassId(): void
     {
-        $this->assertEquals('Blender', $this->getParams()->getSearchClassId());
+        $this->assertSame('Blender', $this->getParams()->getSearchClassId());
     }
 
     /**
@@ -268,7 +268,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         // None by default:
         $params = $this->getParams();
-        $this->assertEquals([], $params->getCheckboxFacets());
+        $this->assertSame([], $params->getCheckboxFacets());
 
         // Adding one works:
         $params->addCheckboxFacet('format:bar', 'checkbox_label');
@@ -802,22 +802,22 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $params = $this->getParams();
         // If we haven't set up any facets yet, labels will be unrecognized:
-        $this->assertEquals('unrecognized_facet_label', $params->getFacetLabel('foo'));
+        $this->assertSame('unrecognized_facet_label', $params->getFacetLabel('foo'));
 
         // Now if we add a facet, we should get the label back:
         $params->addFacet('foo', 'foo_label');
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Make sure that a checkbox facet with correct value gets the label for the
         // checkbox:
         $params->addCheckboxFacet('foo:bar', 'checkbox_label');
-        $this->assertEquals('checkbox_label', $params->getFacetLabel('foo', 'bar'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo', 'baz'));
-        $this->assertEquals('foo_label', $params->getFacetLabel('foo'));
+        $this->assertSame('checkbox_label', $params->getFacetLabel('foo', 'bar'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo', 'baz'));
+        $this->assertSame('foo_label', $params->getFacetLabel('foo'));
 
         // Check that reset works:
         $params->resetFacetConfig();
-        $this->assertEquals([], $params->getFacetConfig());
+        $this->assertSame([], $params->getFacetConfig());
     }
 
     /**
@@ -883,6 +883,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ],
                 'filters' => [
                     'building:OR:main',
+                ],
+                'searchMode' => [
+                    'all',
                 ],
             ],
             $edsParams->getArrayCopy()
@@ -1059,7 +1062,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get params classes for an array of backends
+     * Get params classes for an array of backends.
      *
      * @return array
      */
@@ -1089,7 +1092,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get Params class
+     * Get Params class.
      *
      * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults

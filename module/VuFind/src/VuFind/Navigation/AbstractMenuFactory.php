@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Menu factory
+ * Menu factory.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use Psr\Container\ContainerInterface;
 use function array_slice;
 
 /**
- * Menu factory
+ * Menu factory.
  *
  * @category VuFind
  * @package  Navigation
@@ -49,7 +49,7 @@ use function array_slice;
 class AbstractMenuFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,11 +70,18 @@ class AbstractMenuFactory implements FactoryInterface
         if (empty($options)) {
             throw new \Exception('Expected options not sent to factory.');
         }
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        return new $requestedName(
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $menu = new $requestedName(
             // First array item should be the name of the menu configuration file.
-            $yamlReader->get(reset($options)),
+            $configManager->getConfigArray(reset($options)),
             ...array_slice($options, 1)
         );
+
+        // These will be added to the constructor in VuFind version 12.
+        $sectionService = $container->get(\VuFind\Section\SectionServiceInterface::class);
+        $menu->setSectionService($sectionService);
+        $menu->localizeSectionConfig();
+
+        return $menu;
     }
 }

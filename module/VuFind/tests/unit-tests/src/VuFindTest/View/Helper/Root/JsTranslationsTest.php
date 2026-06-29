@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JsTranslations view helper Test Class
+ * JsTranslations view helper Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTest\Feature\TranslatorTrait;
 use VuFindTest\Feature\ViewTrait;
 
 /**
- * JsTranslations view helper Test Class
+ * JsTranslations view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -57,10 +57,10 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
     public function testHelper()
     {
         $view = $this->getPhpRenderer($this->getViewHelpers());
-        $transEsc = new TransEsc();
-        $transEsc->setView($view);
-        $helper = new JsTranslations($view->plugin('translate'), $transEsc);
-        $helper->setView($view);
+        $translate = $view->plugin('translate');
+        $escapeHtml = new \Laminas\View\Helper\EscapeHtml();
+        $transEsc = new TransEsc($translate, $escapeHtml);
+        $helper = new JsTranslations($translate, $transEsc);
 
         // Normal addStrings:
         $helper->addStrings(['1key' => 'key1']);

@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for GetRecordDetails AJAX handler.
@@ -46,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class GetRecordDetailsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -71,10 +72,9 @@ class GetRecordDetailsFactory implements \Laminas\ServiceManager\Factory\Factory
         }
         return new $requestedName(
             $container->get('Config'),
-            $container->get('Request'),
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\RecordTab\TabManager::class),
-            $container->get('ViewRenderer')
+            $container->get(TemplateRendererInterface::class)
         );
     }
 }

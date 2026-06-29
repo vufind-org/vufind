@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ThemeInfo Test Class
+ * ThemeInfo Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use VuFindTheme\ThemeInfo;
 
 /**
- * ThemeInfo Test Class
+ * ThemeInfo Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,14 +47,14 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Path to theme fixtures
+     * Path to theme fixtures.
      *
      * @var string
      */
     protected $fixturePath;
 
     /**
-     * Generic setup function
+     * Generic setup function.
      *
      * @return void
      */
@@ -65,7 +65,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getBaseDir
+     * Test getBaseDir.
      *
      * @return void
      */
@@ -75,7 +75,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test get/setTheme
+     * Test get/setTheme.
      *
      * @return void
      */
@@ -88,7 +88,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test setting invalid theme
+     * Test setting invalid theme.
      *
      * @return void
      */
@@ -101,7 +101,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test theme info
+     * Test theme info.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test theme info with a mixin
+     * Test theme info with a mixin.
      *
      * @return void
      */
@@ -161,7 +161,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test findContainingTheme()
+     * Test findContainingTheme().
      *
      * @return void
      */
@@ -184,7 +184,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test findContainingTheme() with a mixin
+     * Test findContainingTheme() with a mixin.
      *
      * @return void
      */
@@ -197,7 +197,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test findInThemes()
+     * Test findInThemes().
      *
      * @return void
      */
@@ -231,7 +231,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() with a basic theme
+     * Test getMergedConfig() with a basic theme.
      *
      * @return void
      */
@@ -250,7 +250,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() using a child theme
+     * Test getMergedConfig() using a child theme.
      *
      * @return void
      */
@@ -270,7 +270,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() using a mixin
+     * Test getMergedConfig() using a mixin.
      *
      * @return void
      */
@@ -289,7 +289,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() on string value in config
+     * Test getMergedConfig() on string value in config.
      *
      * @return void
      */
@@ -301,7 +301,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getMergedConfig() with no key (return all)
+     * Test getMergedConfig() with no key (return all).
      *
      * @return void
      */
@@ -317,7 +317,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Stress-test our merging algorithm
+     * Stress-test our merging algorithm.
      *
      * @param array $test     Test data
      * @param array $expected Expected response
@@ -335,76 +335,68 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cases for mergeWithoutOverride
+     * Test cases for mergeWithoutOverride.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function mergeEdgeCasesProvider(): array
+    public static function mergeEdgeCasesProvider(): \Iterator
     {
-        return [
-            // string
+        // string
+        yield [
             [
-                [
-                    'override',
-                    'original',
-                ],
+                'override',
                 'original',
             ],
-
-            // array
+            'original',
+        ];
+        // array
+        yield [
             [
-                [
-                    ['override'],
-                    ['original'],
-                ],
-                ['override', 'original'],
+                ['override'],
+                ['original'],
             ],
-
-            // string-keyed arrays
+            ['override', 'original'],
+        ];
+        // string-keyed arrays
+        yield [
             [
-                [
-                    ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
-                    ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
-                ],
-                ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+                ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
+                ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
             ],
-
-            // string-keyed arrays: missing
+            ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+        ];
+        // string-keyed arrays: missing
+        yield [
             [
-                [
-                    ['shared' => [1], 'child' => 'only'],
-                    ['shared' => [1], 'parent' => 'only'],
-                ],
-                ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+                ['shared' => [1], 'child' => 'only'],
+                ['shared' => [1], 'parent' => 'only'],
             ],
-
-            // string-keyed string -> array
+            ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+        ];
+        // string-keyed string -> array
+        yield [
             [
-                [
-                    ['mixed' => 'string'],
-                    ['mixed' => ['array']],
-                ],
-                ['mixed' => ['string', 'array']],
+                ['mixed' => 'string'],
+                ['mixed' => ['array']],
             ],
-
-            // string-keyed array -> string
+            ['mixed' => ['string', 'array']],
+        ];
+        // string-keyed array -> string
+        yield [
             [
-                [
-                    ['mixed' => ['array']],
-                    ['mixed' => 'string'],
-                ],
-                ['mixed' => ['array', 'string']],
+                ['mixed' => ['array']],
+                ['mixed' => 'string'],
             ],
-
-            // arrays and strings
+            ['mixed' => ['array', 'string']],
+        ];
+        // arrays and strings
+        yield [
             [
-                [
-                    'not an array',
-                    ['mixed' => ['array']],
-                ],
-                [
-                    'mixed' => ['array'],
-                ],
+                'not an array',
+                ['mixed' => ['array']],
+            ],
+            [
+                'mixed' => ['array'],
             ],
         ];
     }
@@ -423,12 +415,12 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         // the first call to getItem returns null, then it expects a call
         // to setItem, and then the second call to getItem will return an
         // expected value.
-        $cache = $this->getMockBuilder(StorageInterface::class)->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
-            ->with($this->equalTo($key))
+            ->with($key)
             ->willReturnOnConsecutiveCalls(null, $expected);
         $cache->expects($this->once())->method('setItem')
-            ->with($this->equalTo($key), $this->equalTo($expected));
+            ->with($key, $expected);
 
         // Set cache
         $ti = $this->getThemeInfo();
@@ -440,7 +432,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a test object
+     * Get a test object.
      *
      * @return ThemeInfo
      */

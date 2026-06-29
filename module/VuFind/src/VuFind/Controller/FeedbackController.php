@@ -38,7 +38,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * Feedback form class
+     * Feedback form class.
      *
      * @var string
      */
@@ -89,8 +89,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         }
 
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->useCaptcha
-            = $this->captcha()->active('feedback') && $form->useCaptcha();
+        $view->useCaptcha = $form->useCaptcha() && $this->getCaptcha()->active('feedback');
 
         $params = $this->params();
         $form->setData($params->fromPost());
@@ -105,7 +104,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         }
 
         if ($this->senderIsBlocked($form)) {
-            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+            $this->getFlashMessenger()->addErrorMessage('could_not_process_feedback');
             return $view;
         }
         if ($this->senderIsIgnored($form)) {
@@ -120,7 +119,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             $view->setVariable('successMessage', $form->getSubmitResponse());
             $view->setTemplate('feedback/response');
         } else {
-            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+            $this->getFlashMessenger()->addErrorMessage('could_not_process_feedback');
         }
 
         $handlers = $form->getSecondaryHandlers();
@@ -157,7 +156,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check if sender email is blocked
+     * Check if sender email is blocked.
      *
      * @param Form $form Form
      *
@@ -170,7 +169,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check if sender email is ignored
+     * Check if sender email is ignored.
      *
      * @param Form $form Form
      *
@@ -183,7 +182,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     }
 
     /**
-     * Check if an email address matches any of the given patterns
+     * Check if an email address matches any of the given patterns.
      *
      * @param Form  $form     Form
      * @param array $patterns Patterns (substring or regexp)

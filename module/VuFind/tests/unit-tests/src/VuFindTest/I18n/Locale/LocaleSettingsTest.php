@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LocaleSettings Test Class
+ * LocaleSettings Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
- * LocaleSettings Test Class
+ * LocaleSettings Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -85,7 +85,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
             )
         );
         $this->assertTrue($settings->browserLanguageDetectionEnabled());
-        $this->assertEquals(['en'], $settings->getFallbackLocales());
+        $this->assertSame(['en'], $settings->getFallbackLocales());
     }
 
     /**
@@ -147,48 +147,46 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testFallbackLocalConfigs
+     * Data provider for testFallbackLocalConfigs.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function fallbackLocalConfigsProvider(): array
+    public static function fallbackLocalConfigsProvider(): \Iterator
     {
-        return [
-            [
-                ['en'],
-                'en',
-                null,
-            ],
-            [
-                ['en'],
-                'en',
-                '',
-            ],
-            [
-                ['fi', 'en'],
-                'fi',
-                null,
-            ],
-            [
-                ['fi', 'en'],
-                'en',
-                'fi',
-            ],
-            [
-                ['fi', 'en'],
-                'en',
-                'fi, en',
-            ],
-            [
-                ['de', 'fi', 'en'],
-                'en',
-                'de,fi',
-            ],
-            [
-                ['de', 'fi', 'sv', 'en'],
-                'sv',
-                'de,fi',
-            ],
+        yield [
+            ['en'],
+            'en',
+            null,
+        ];
+        yield [
+            ['en'],
+            'en',
+            '',
+        ];
+        yield [
+            ['fi', 'en'],
+            'fi',
+            null,
+        ];
+        yield [
+            ['fi', 'en'],
+            'en',
+            'fi',
+        ];
+        yield [
+            ['fi', 'en'],
+            'en',
+            'fi, en',
+        ];
+        yield [
+            ['de', 'fi', 'en'],
+            'en',
+            'de,fi',
+        ];
+        yield [
+            ['de', 'fi', 'sv', 'en'],
+            'sv',
+            'de,fi',
         ];
     }
 

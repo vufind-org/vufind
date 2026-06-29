@@ -41,13 +41,12 @@ namespace VuFind\Search\Factory;
 class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        parent::__construct();
         $this->searchConfig = 'searches';
-        $this->searchYaml = 'searchspecs.yaml';
+        $this->searchSpecsConfig = 'searchspecs';
         $this->facetConfig = 'facets';
         $this->defaultIndexName = 'biblio';
         $this->allowFallbackForIndexName = true;
@@ -58,7 +57,7 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
      *
      * Returns a callable or null to use RecordCollectionFactory's default method.
      *
-     * @return callable|null
+     * @return ?callable
      */
     protected function getCreateRecordCallback(): ?callable
     {

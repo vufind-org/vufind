@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Authority aspect of the Search Multi-class (Results)
+ * Solr Authority aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\SolrAuth;
 
 /**
- * Solr Authority Search Parameters
+ * Solr Authority Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrAuth
@@ -45,5 +45,5 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @var string
      */
-    protected $backendId = 'SolrAuth';
+    protected string $backendId = 'SolrAuth';
 }

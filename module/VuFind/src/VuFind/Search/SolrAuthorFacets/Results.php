@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorFacets aspect of the Search Multi-class (Results)
+ * AuthorFacets aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use function array_slice;
 use function count;
 
 /**
- * AuthorFacets Search Results
+ * AuthorFacets Search Results.
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -51,7 +51,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query = $this->getParams()->getQuery();
         $params = $this->getParams()->getBackendParameters();
@@ -81,7 +81,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return bool
      */
-    public function isSavedSearch()
+    public function isSavedSearch(): bool
     {
         // Author searches are never saved:
         return false;

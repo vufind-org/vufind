@@ -1,7 +1,7 @@
 <?php
 
 /**
- * File Access Exception
+ * File Access Exception.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Exception;
 
 /**
- * File Access Exception
+ * File Access Exception.
  *
  * @category VuFind
  * @package  Exceptions

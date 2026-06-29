@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author aspect of the Search Multi-class (Params)
+ * Author aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\Search\SolrAuthor;
 
+use Laminas\Stdlib\Parameters;
+
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -43,12 +45,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Support method for _initSearch() -- handle basic settings.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch($request)
+    protected function initBasicSearch(Parameters $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
@@ -72,7 +74,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return string user friendly version of 'query'
      */
-    public function getDisplayQuery()
+    public function getDisplayQuery(): string
     {
         // For display purposes, undo the query manipulation performed above
         // in initBasicSearch():

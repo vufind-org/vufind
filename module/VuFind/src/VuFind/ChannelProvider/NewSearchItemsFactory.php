@@ -34,7 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Controller\Plugin\NewItems;
+use VuFind\Search\NewItemsHelper;
 
 /**
  * Factory for NewSearchItems channel provider.
@@ -48,7 +48,7 @@ use VuFind\Controller\Plugin\NewItems;
 class NewSearchItemsFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,7 +72,7 @@ class NewSearchItemsFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
             $container->get(\VuFind\Search\Params\PluginManager::class),
-            $container->get('ControllerPluginManager')->get(NewItems::class)
+            $container->get(NewItemsHelper::class)
         );
     }
 }

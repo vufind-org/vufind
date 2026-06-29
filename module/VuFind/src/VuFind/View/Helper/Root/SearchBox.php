@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search box view helper
+ * Search box view helper.
  *
  * PHP version 8
  *
@@ -31,13 +31,14 @@ namespace VuFind\View\Helper\Root;
 
 use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function in_array;
 use function is_array;
 
 /**
- * Search box view helper
+ * Search box view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -45,33 +46,66 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
+class SearchBox implements \Psr\Log\LoggerAwareInterface, \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Cache for configurations
+     * Cache for configurations.
      *
      * @var array
      */
     protected $cachedConfigs = [];
 
     /**
-     * Constructor
+     * Array of placeholders keyed by backend.
      *
-     * @param OptionsManager $optionsManager    Search options plugin manager
-     * @param array          $config            Configuration for search box
-     * @param array          $placeholders      Array of placeholders keyed by
-     * backend
-     * @param array          $alphabrowseConfig source => label config for
-     * alphabrowse options to display in combined box (empty for none)
+     * @var array
+     */
+    protected array $placeholders;
+
+    /**
+     * Source => label config for alphabrowse options to display in combined box (empty for none).
+     *
+     * @var array
+     */
+    protected array $alphabrowseConfig;
+
+    /**
+     * Constructor.
+     *
+     * @param OptionsManager $optionsManager  Search options plugin manager
+     * @param array          $mainConfig      Main config.ini settings
+     * @param array          $searchboxConfig Settings from searchbox.ini
+     * @param array          $combinedConfig  Settings from combined.ini
+     * @param Url            $url             Url Helper
      */
     public function __construct(
         protected OptionsManager $optionsManager,
-        protected array $config = [],
-        protected array $placeholders = [],
-        protected array $alphabrowseConfig = []
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $mainConfig,
+        #[Autowire(config: 'searchbox', configType: 'array')]
+        protected array $searchboxConfig,
+        #[Autowire(config: 'combined', configType: 'array')]
+        protected array $combinedConfig,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected Url $url
     ) {
+        $this->placeholders = $mainConfig['SearchPlaceholder'] ?? [];
+        $includeAlphaOptions = $searchboxConfig['General']['includeAlphaBrowse'] ?? false;
+        $this->alphabrowseConfig = $includeAlphaOptions && isset($mainConfig['AlphaBrowse_Types'])
+            ? $mainConfig['AlphaBrowse_Types'] : [];
+    }
+
+    /**
+     * Make the helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 
     /**
@@ -120,7 +154,20 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Is autocomplete enabled for the current context?
+     * Is autocomplete configured to apply active filters for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters(string $activeSearchClass): bool
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return $options->autocompleteApplyActiveFilters();
+    }
+
+    /**
+     * Is autocomplete configured to autosubmit for the current context?
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -180,7 +227,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get limit of items in autocomplete list
+     * Get limit of items in autocomplete list.
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -210,11 +257,11 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
      */
     public function combinedHandlersActive()
     {
-        return $this->config['General']['combinedHandlers'] ?? false;
+        return $this->searchboxConfig['General']['combinedHandlers'] ?? false;
     }
 
     /**
-     * Helper method: get special character to represent operator in filter
+     * Helper method: get special character to represent operator in filter.
      *
      * @param string $operator Operator
      *
@@ -271,7 +318,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get placeholder text from config using the activeSearchClass as key
+     * Get placeholder text from config using the activeSearchClass as key.
      *
      * @param string $activeSearchClass Active search class ID
      *
@@ -289,13 +336,13 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get an array of the configured virtual keyboard layouts
+     * Get an array of the configured virtual keyboard layouts.
      *
      * @return array
      */
     public function getKeyboardLayouts()
     {
-        return $this->config['VirtualKeyboard']['layouts'] ?? [];
+        return $this->searchboxConfig['VirtualKeyboard']['layouts'] ?? [];
     }
 
     /**
@@ -317,7 +364,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Get number of active filters
+     * Get number of active filters.
      *
      * @param array $checkboxFilters Checkbox filters
      * @param array $filterList      Other filters
@@ -370,7 +417,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     {
         if (!isset($this->cachedConfigs[$activeSearchClass])) {
             // Load and validate configuration:
-            $settings = $this->config['CombinedHandlers'] ?? [];
+            $settings = $this->searchboxConfig['CombinedHandlers'] ?? [];
             if (empty($settings)) {
                 throw new \Exception('CombinedHandlers configuration missing.');
             }
@@ -393,8 +440,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                 $settings['type'][] = 'VuFind';
                 $settings['target'][] = $activeSearchClass;
                 $settings['label'][] = $activeSearchClass;
-                $settings['group'][]
-                    = $this->config['General']['defaultGroupLabel'] ?? false;
+                $settings['group'][] = $this->searchboxConfig['General']['defaultGroupLabel'] ?? false;
             }
 
             $this->cachedConfigs[$activeSearchClass] = $settings;
@@ -413,18 +459,18 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
      */
     protected function getAlphabrowseHandlers($activeHandler, $indent = true)
     {
-        $alphaBrowseBase = ($this->getView()->plugin('url'))('alphabrowse-home');
-        $labelPrefix = $this->getView()->translate('Browse Alphabetically') . ': ';
+        $alphaBrowseBase = ($this->url)('alphabrowse-home');
+        $labelPrefix = $this->translate('Browse Alphabetically') . ': ';
         $handlers = [];
         foreach ($this->alphabrowseConfig as $source => $label) {
             $alphaBrowseUrl = $alphaBrowseBase . '?source=' . urlencode($source)
                 . '&from=';
             $handlers[] = [
                 'value' => 'External:' . $alphaBrowseUrl,
-                'label' => $labelPrefix . $this->getView()->translate($label),
+                'label' => $labelPrefix . $this->translate($label),
                 'indent' => $indent,
                 'selected' => $activeHandler == 'AlphaBrowse:' . $source,
-                'group' => $this->config['General']['alphaBrowseGroup'] ?? false,
+                'group' => $this->searchboxConfig['General']['alphaBrowseGroup'] ?? false,
             ];
         }
         return $handlers;
@@ -445,15 +491,14 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
         string $activeSearchClass,
         array $hiddenFilters
     ): string {
-        $configHelper = $this->getView()->plugin('config');
 
         // If we have hidden filters, let's try to match them up with a configured option:
         if (!empty($hiddenFilters)) {
             foreach ($handlerConfig['type'] as $i => $type) {
                 $target = $handlerConfig['target'][$i] ?? '';
                 if ($type === 'VuFind' && str_starts_with($target, $activeSearchClass . ':')) {
-                    $rawHFConfig = $configHelper->get('config')->toArray()['SearchTabsFilters'][$target]
-                        ?? $configHelper->get('combined')->toArray()[$target]['filter']
+                    $rawHFConfig = $this->mainConfig['SearchTabsFilters'][$target]
+                        ?? $this->combinedConfig[$target]['filter']
                         ?? [];
                     // Account for all possible configuration formats -- an array or a string:
                     $hiddenFilterConfig = (array)($rawHFConfig);
@@ -527,6 +572,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                 if (empty($basic)) {
                     $basic = ['' => ''];
                 }
+                $collapseInactiveBackends = $this->searchboxConfig['General']['collapseInactiveBackendOptions']
+                    ?? false;
                 foreach ($basic as $searchVal => $searchDesc) {
                     $j++;
                     $selected = $target == $filteredActiveSearchClass
@@ -556,6 +603,11 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                         'selected' => $selected,
                         'group' => $settings['group'][$i],
                     ];
+                    // If collapsing inactive backends is turned on, we only want to show the
+                    // first value for non-active backends:
+                    if ($collapseInactiveBackends && $target !== $activeSearchClass) {
+                        break;
+                    }
                 }
 
                 // Should we add alphabrowse links?

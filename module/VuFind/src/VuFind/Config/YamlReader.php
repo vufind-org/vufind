@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind YAML Configuration Reader
+ * VuFind YAML Configuration Reader.
  *
  * PHP version 8
  *
@@ -31,14 +31,8 @@
 
 namespace VuFind\Config;
 
-use Symfony\Component\Yaml\Yaml;
-
-use function array_key_exists;
-use function dirname;
-use function is_array;
-
 /**
- * VuFind YAML Configuration Reader
+ * VuFind YAML Configuration Reader.
  *
  * @category VuFind
  * @package  Config
@@ -49,196 +43,31 @@ use function is_array;
  */
 class YamlReader
 {
-    use \VuFind\Feature\MergeRecursiveTrait;
-
     /**
-     * Cache directory name
+     * Constructor.
      *
-     * @var string
-     */
-    protected $cacheName = 'yaml';
-
-    /**
-     * Cache of loaded files.
-     *
-     * @var array
-     */
-    protected $files = [];
-
-    /**
-     * Constructor
-     *
-     * @param PathResolver           $pathResolver Config file path resolver
-     * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param ConfigManagerInterface $configManager Config manager
      */
     public function __construct(
-        protected PathResolver $pathResolver,
-        protected ?\VuFind\Cache\Manager $cacheManager = null,
+        protected ConfigManagerInterface $configManager,
     ) {
     }
 
     /**
-     * Return a configuration
+     * Return a configuration.
      *
-     * @param string  $filename       Config file name
-     * @param boolean $useLocalConfig Use local configuration if available
-     * @param boolean $forceReload    Reload even if config has been internally
-     * cached in the class.
+     * @param string $filename       Config file name
+     * @param bool   $useLocalConfig Use local configuration if available
+     * @param bool   $forceReload    Reload even if config has been internally cached in the class.
      *
      * @return array
      */
     public function get($filename, $useLocalConfig = true, $forceReload = false)
     {
-        // Load data if it is not already in the object's cache (note that, because
-        // the disk-based cache is keyed based on modification time, we don't need
-        // to pass $forceReload down another level to load an updated file if
-        // something has changed -- it's enough to force a cache recheck).
-        if ($forceReload || !isset($this->files[$filename])) {
-            $localConfigPath = $useLocalConfig
-                ? $this->pathResolver->getLocalConfigPath($filename)
-                : null;
-            $baseConfigPath = $this->pathResolver->getBaseConfigPath($filename);
-            $this->files[$filename] = $this->getFromPaths(
-                $baseConfigPath,
-                $localConfigPath
-            );
-        }
-
-        return $this->files[$filename];
-    }
-
-    /**
-     * Given core and local filenames, retrieve the configuration data.
-     *
-     * @param string $defaultFile Full path to file containing default YAML
-     * @param string $customFile  Full path to file containing local customizations
-     * (may be null if no local file exists).
-     *
-     * @return array
-     */
-    protected function getFromPaths($defaultFile, $customFile = null)
-    {
-        // Connect to the cache:
-        $cache = (null !== $this->cacheManager)
-            ? $this->cacheManager->getCache($this->cacheName) : false;
-
-        $cacheConfig = (null !== $this->cacheManager) ? $this->cacheManager->getConfig() : [];
-        $cacheOptions = array_merge(
-            $cacheConfig['ConfigCache'] ?? [],
-            $cacheConfig['CacheConfigName_' . $this->cacheName] ?? [],
+        return $this->configManager->getConfigArray(
+            $filename,
+            forceReload: $forceReload,
+            useLocalConfig: $useLocalConfig
         );
-        $reloadOnFileChange = $cacheOptions['reloadOnFileChange'] ?? true;
-
-        // Generate cache key:
-        $cacheKey = $defaultFile .
-            (($reloadOnFileChange && file_exists($defaultFile)) ? '-' . filemtime($defaultFile) : '');
-        if (!empty($customFile)) {
-            $cacheKey .= '-local-'
-                . (($reloadOnFileChange && file_exists($customFile)) ? '-' . filemtime($customFile) : '');
-        }
-        $cacheKey = md5($cacheKey);
-
-        // Generate data if not found in cache:
-        if ($cache === false || !($results = $cache->getItem($cacheKey))) {
-            $results = $this->parseYaml($customFile, $defaultFile);
-            if ($cache !== false) {
-                $cache->setItem($cacheKey, $results);
-            }
-        }
-
-        return $results;
-    }
-
-    /**
-     * Process a YAML file (and its parent, if necessary).
-     *
-     * @param string $file          YAML file to load (will evaluate to null
-     * if file does not exist).
-     * @param string $defaultParent Parent YAML file from which $file should
-     * inherit (unless overridden by a specific directive in $file). None by
-     * default.
-     *
-     * @return array
-     */
-    protected function parseYaml($file, $defaultParent = null)
-    {
-        // First load current file:
-        $results = (!empty($file) && file_exists($file))
-            ? Yaml::parse(file_get_contents($file)) : [];
-
-        // Override default parent with explicitly-defined parent, if present:
-        if (isset($results['@parent_yaml'])) {
-            // First try parent as absolute path, then as relative:
-            $defaultParent = file_exists($results['@parent_yaml'])
-                ? $results['@parent_yaml']
-                : dirname($file) . '/' . $results['@parent_yaml'];
-            if (!file_exists($defaultParent)) {
-                $defaultParent = null;
-                error_log('Cannot find parent file: ' . $results['@parent_yaml']);
-            }
-            // Swallow the directive after processing it:
-            unset($results['@parent_yaml']);
-        }
-        // Check for sections to merge instead of overriding:
-        $mergedSections = [];
-        if (isset($results['@merge_sections'])) {
-            $mergedSections = $results['@merge_sections'];
-            // Swallow the directive after processing it:
-            unset($results['@merge_sections']);
-        }
-
-        // Now load in merged or missing sections from parent, if applicable:
-        if (null !== $defaultParent) {
-            $parentSections = $this->parseYaml($defaultParent);
-            // Process merged sections:
-            foreach ($mergedSections as $path) {
-                $parentElem
-                    = $this->getArrayElemRefByPath($parentSections, $path);
-                if (is_array($parentElem)) {
-                    $resultElemRef
-                        = &$this->getArrayElemRefByPath($results, $path, true);
-                    $resultElemRef
-                        = $this->mergeRecursive($parentElem, $resultElemRef);
-                    unset($parentElem);
-                    unset($resultElemRef);
-                }
-            }
-            // Add missing sections:
-            foreach ($parentSections as $section => $contents) {
-                if (!isset($results[$section])) {
-                    $results[$section] = $contents;
-                }
-            }
-        }
-
-        return $results;
-    }
-
-    /**
-     * Return array element reference by path
-     *
-     * @param array $arr    Array to access
-     * @param array $path   Path to retrieve
-     * @param bool  $create Whether to create the path if it doesn't exist. Default
-     * is false.
-     *
-     * @return mixed
-     */
-    protected function &getArrayElemRefByPath(
-        array &$arr,
-        array $path,
-        bool $create = false
-    ) {
-        $result = &$arr;
-        foreach ($path as $pathPart) {
-            if (!array_key_exists($pathPart, $result)) {
-                if (!$create) {
-                    return null;
-                }
-                $result[$pathPart] = [];
-            }
-            $result = &$result[$pathPart];
-        }
-        return $result;
     }
 }

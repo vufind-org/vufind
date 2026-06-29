@@ -45,17 +45,17 @@ use VuFindSearch\Backend\BackendInterface;
 trait SharedListenersTrait
 {
     /**
-     * Get a hide facet value listener for the backend
+     * Get a hide facet value listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $facet   Configuration of facets
      *
-     * @return mixed null|HideFacetValueListener
+     * @return ?HideFacetValueListener
      */
     protected function getHideFacetValueListener(
         BackendInterface $backend,
         Config $facet
-    ) {
+    ): ?HideFacetValueListener {
         $hideFacetValue = isset($facet->HideFacetValue)
             ? $facet->HideFacetValue->toArray() : [];
         $showFacetValue = isset($facet->ShowFacetValue)

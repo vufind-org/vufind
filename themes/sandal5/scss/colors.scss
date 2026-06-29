@@ -14,7 +14,7 @@ $action-color: $primary;
 $action-hover-bg: $white;
 $action-hover-color: $black;
 $passive-icon-color: $gray;
-$highlighter-color: lighten(#FF0, 20%);
+$highlighter-color: color.adjust(#FF0, $lightness: 20%);
 
 $search-row-bg: $white;
 $search-row-bg-alt: $light-gray;
@@ -28,7 +28,7 @@ $sidebar-title-icon-color: $light-silver;
 $sidebar-item-bg: $white;
 $sidebar-item-color: $black;
 $sidebar-item-hover-bg: $lightest-blue;
-$sidebar-item-badge: darken($gray, 5%);
+$sidebar-item-badge: color.adjust($gray, $lightness: -5%);
 $sidebar-active-bg: $secondary;
 $sidebar-active-color: $white;
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Relais: Check item availability using a generic patron ID
+ * Relais: Check item availability using a generic patron ID.
  *
  * PHP version 8
  *
@@ -29,10 +29,10 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Relais: Check item availability using a generic patron ID
+ * Relais: Check item availability using a generic patron ID.
  *
  * @category VuFind
  * @package  AJAX
@@ -45,14 +45,14 @@ class RelaisAvailability extends AbstractRelaisAction
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $oclcNumber = $params->fromQuery('oclcNumber');
+        $oclcNumber = $this->getQueryParam($request, 'oclcNumber');
 
         // Authenticate
         $authorizationId = $this->relais->authenticatePatron();

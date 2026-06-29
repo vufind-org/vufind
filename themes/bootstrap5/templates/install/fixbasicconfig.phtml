@@ -8,6 +8,8 @@
 <?php if (isset($this->configDir)): ?>
   <p>VuFind® cannot write to <b><?=$this->escapeHtml($this->configDir)?></b>.</p>
 
+  <?php if ($this->errorMessage): ?><p>Error: <?=$this->errorMessage?></p><?php endif; ?>
+
   <p>Please make sure that write permissions are available on this directory.</p>
 
   <p>In Linux, try this command (note that you may need to prefix with "sudo" on some flavors):</p>

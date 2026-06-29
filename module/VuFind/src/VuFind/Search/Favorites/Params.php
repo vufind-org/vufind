@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Favorites aspect of the Search Multi-class (Params)
+ * Favorites aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -29,8 +29,10 @@
 
 namespace VuFind\Search\Favorites;
 
+use Laminas\Stdlib\Parameters;
+
 /**
- * Search Favorites Parameters
+ * Search Favorites Parameters.
  *
  * @category VuFind
  * @package  Search_Favorites
@@ -43,12 +45,12 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters($request)
+    protected function initFilters(Parameters $request): void
     {
         // Special filter -- if the "id" parameter is set, limit to a specific list:
         $id = $request->get('id');

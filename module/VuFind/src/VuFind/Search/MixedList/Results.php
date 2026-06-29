@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mixed List aspect of the Search Multi-class (Results)
+ * Mixed List aspect of the Search Multi-class (Results).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Search\Base\Results as BaseResults;
 use function count;
 
 /**
- * Search Mixed List Results
+ * Search Mixed List Results.
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -45,14 +45,14 @@ use function count;
 class Results extends BaseResults
 {
     /**
-     * Returns the stored list of facets for the last search
+     * Returns the stored list of facets for the last search.
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // Facets not supported here:
         return [];
@@ -64,7 +64,7 @@ class Results extends BaseResults
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $recordsToRequest = $this->getParams()->getRecordsToRequest();
         $this->results = $this->recordLoader->loadBatch($recordsToRequest);

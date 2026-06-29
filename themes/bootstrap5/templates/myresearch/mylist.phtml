@@ -2,9 +2,6 @@
   // Grab list object from search results (if applicable):
   $list = $this->results->getListObject();
 
-  // Set up page title:
-  $this->headTitle(isset($list) ? $list->getTitle() : $this->translate('saved_items'));
-
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'saved_items';
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
@@ -16,7 +13,13 @@
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != 'full') {
     $this->assetManager()->appendScriptLink('record.js');
+    $this->assetManager()->appendScriptLink('record_tabs.js');
     $this->assetManager()->appendScriptLink('embedded_record.js');
+
+    // Add any extra scripts the tabs require:
+    foreach ($this->recordTabs()->getExtraScripts() as $script) {
+      $this->assetManager()->appendScriptLink($script);
+    }
   }
 
   $recordTotal = $this->results->getResultTotal();
@@ -24,12 +27,19 @@
   // Convenience variable:
   $account = $this->auth()->getManager();
   $user = $this->auth()->getUserObject();
+  $title = isset($list) ? $list->getTitle() : $this->translate('saved_items');
 ?>
 
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$list ? $this->escapeHtml($list->getTitle()) : $this->transEsc('saved_items')?></h2>
+  <?=
+    // Set page title and heading.
+    $this->component('page-title', [
+      'title' => $title,
+      'level' => 1,
+    ])
+  ?>
 
   <?php if ($list && $user && $list->getUser()->getId() === $user->getId() && $list->isPublic()): ?>
     <strong>
@@ -105,7 +115,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render(isset($list) ? 'list' . $list->getId() : 'favorites')?>
+  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => isset($list) ? 'list' . $list->getId() : 'favorites'])?>
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MarkdownFactory Test Class
+ * MarkdownFactory Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use League\CommonMark\ConverterInterface;
 use VuFind\Service\MarkdownFactory;
 
 /**
- * MarkdownFactory Test Class
+ * MarkdownFactory Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test to ensure the markdown factory is using right config for markdown
-     * service
+     * service.
      *
      * @return void
      */
@@ -242,7 +242,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that extensions are added based on configuration
+     * Test that extensions are added based on configuration.
      *
      * @return void
      */
@@ -319,7 +319,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return config of created markdown service environment
+     * Return config of created markdown service environment.
      *
      * @param array $config Configuration settings
      *
@@ -332,7 +332,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Return config of created markdown service environment
+     * Return config of created markdown service environment.
      *
      * @param array $config Configuration settings
      *
@@ -345,7 +345,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create markdown converter
+     * Create markdown converter.
      *
      * @param array $config Configuration
      *

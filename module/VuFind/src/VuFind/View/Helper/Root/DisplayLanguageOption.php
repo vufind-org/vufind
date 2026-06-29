@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DisplayLanguageOption view helper
+ * DisplayLanguageOption view helper.
  *
  * PHP version 8
  *
@@ -30,9 +30,11 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Translator\TranslatorInterface;
+use Laminas\View\Helper\EscapeHtml;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * DisplayLanguageOption view helper
+ * DisplayLanguageOption view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,19 +42,23 @@ use Laminas\Translator\TranslatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
+class DisplayLanguageOption
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param TranslatorInterface $translator Translator
+     * @param EscapeHtml          $escapeHtml EscapeHtml view helper
      */
-    public function __construct(protected TranslatorInterface $translator)
-    {
+    public function __construct(
+        protected TranslatorInterface $translator,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected EscapeHtml $escapeHtml
+    ) {
     }
 
     /**
-     * Translate a string
+     * Translate a string.
      *
      * @param string $str String to escape and translate
      *
@@ -60,7 +66,7 @@ class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($str)
     {
-        return $this->view->escapeHtml(
+        return ($this->escapeHtml)(
             $this->translator->translate($str, 'default', 'native')
         );
     }

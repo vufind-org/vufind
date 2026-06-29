@@ -30,6 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Http\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
@@ -49,39 +50,32 @@ abstract class AbstractBackendFactory implements FactoryInterface
     use GetServiceTrait;
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     * Initialize the factory
+     * Initialize the factory.
      *
      * @param ContainerInterface $sm Service manager
      *
      * @return void
      */
-    public function setup(ContainerInterface $sm)
+    public function setup(ContainerInterface $sm): void
     {
         $this->serviceLocator = $sm;
     }
 
     /**
-     * Create HTTP Client
+     * Create HTTP Client.
      *
-     * @param int    $timeout Request timeout
-     * @param array  $options Other options
-     * @param string $url     Request URL (needed for proper local address check when
+     * @param ?int    $timeout Request timeout
+     * @param array   $options Other options
+     * @param ?string $url     Request URL (needed for proper local address check when
      * the client is being proxified)
      *
-     * @return \Laminas\Http\Client
+     * @return Client
      */
     protected function createHttpClient(
         ?int $timeout = null,
         array $options = [],
         ?string $url = null
-    ): \Laminas\Http\Client {
+    ): Client {
         $client = $this->getService(\VuFindHttp\HttpService::class)->createClient($url);
         if (null !== $timeout) {
             $options['timeout'] = $timeout;
@@ -91,7 +85,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create cache for the connector if enabled in configuration
+     * Create cache for the connector if enabled in configuration.
      *
      * @param Config $searchConfig Search configuration
      *

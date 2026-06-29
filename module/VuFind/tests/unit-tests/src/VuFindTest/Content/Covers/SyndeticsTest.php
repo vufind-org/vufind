@@ -65,12 +65,10 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
             'use_syndetics_cover_image_fallback' => $useSyndeticsCoverImageFallback,
         ]));
         if ($fixtureFile) {
-            $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $mockDownloader = $this->createMock(CachingDownloader::class);
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('download')
-                ->with($this->equalTo("https://secure.syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml"))
+                ->with("https://www.syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml")
                 ->willReturn($fixture);
             $loader->setCachingDownloader($mockDownloader);
         }
@@ -86,7 +84,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader('content/covers/syndetics-metadata_with_images.xml', '9780520080607', false);
         $this->assertEquals(
-            'https://secure.syndetics.com/index.aspx?client=test&isbn=9780520080607/SC.GIF',
+            'https://www.syndetics.com/index.aspx?client=test&isbn=9780520080607/SC.GIF',
             $loader->getUrl(
                 'test',
                 'small',
@@ -104,7 +102,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader(null, '9780709933847', true);
         $this->assertEquals(
-            'https://secure.syndetics.com/index.aspx?client=test&isbn=9780709933847/SC.GIF',
+            'https://www.syndetics.com/index.aspx?client=test&isbn=9780709933847/SC.GIF',
             $loader->getUrl(
                 'test',
                 'small',
@@ -131,7 +129,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */
@@ -146,7 +144,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unknown size without using metadata
+     * Test unknown size without using metadata.
      *
      * @return void
      */
@@ -161,7 +159,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unknown size when using metadata
+     * Test unknown size when using metadata.
      *
      * @return void
      */

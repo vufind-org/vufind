@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Common EDS & EPF API Params
+ * Common EDS & EPF API Params.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use function count;
 use function in_array;
 
 /**
- * Common EDS & EPF API Params
+ * Common EDS & EPF API Params.
  *
  * @category VuFind
  * @package  EBSCO
@@ -56,7 +56,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $forcedOrFields = [
+    protected array $forcedOrFields = [
     ];
 
     /**
@@ -66,32 +66,28 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function createBackendFilterParameters(ParamBag $params)
+    public function createBackendFilterParameters(ParamBag $params): void
     {
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
         $hiddenFilterList = $this->getHiddenFilters();
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    $fq = $filt['field']
-                        . ($this->filterRequiresFacetOperator($filt['field']) ?
-                            ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
-                        . ":{$filt['value']}";
-                    $params->add('filters', $fq);
-                }
+        // Loop through all filters and add appropriate values to request:
+        foreach ($filterList as $filterArray) {
+            foreach ($filterArray as $filt) {
+                $fq = $filt['field']
+                    . ($this->filterRequiresFacetOperator($filt['field']) ?
+                        ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
+                    . ":{$filt['value']}";
+                $params->add('filters', $fq);
             }
         }
-        if (!empty($hiddenFilterList)) {
-            foreach ($hiddenFilterList as $field => $hiddenFilters) {
-                foreach ($hiddenFilters as $value) {
-                    $hfq = $field
-                        . ($this->filterRequiresFacetOperator($field) ?
-                            ":{$this->getFacetOperator($field)}" : '')
-                        . ":{$value}";
-                    $params->add('filters', $hfq);
-                }
+        foreach ($hiddenFilterList as $field => $hiddenFilters) {
+            foreach ($hiddenFilters as $value) {
+                $hfq = $field
+                    . ($this->filterRequiresFacetOperator($field) ?
+                        ":{$this->getFacetOperator($field)}" : '')
+                    . ":{$value}";
+                $params->add('filters', $hfq);
             }
         }
     }
@@ -102,9 +98,9 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      *
      * @param string $field Filter field name
      *
-     * @return boolean
+     * @return bool
      */
-    protected function filterRequiresFacetOperator($field)
+    protected function filterRequiresFacetOperator(string $field): bool
     {
         return !(str_starts_with($field, 'LIMIT')
             || str_starts_with($field, 'EXPAND')
@@ -113,25 +109,25 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */
-    public function getView()
+    public function getView(): string
     {
         $viewArr = explode('_', $this->view ?? '');
         return $viewArr[0];
     }
 
     /**
-     * Get facet operator for the specified field
+     * Get facet operator for the specified field.
      *
-     * @param string $field             Field name
-     * @param string $specifiedOperator Operator specified on a config filter line
+     * @param string  $field             Field name
+     * @param ?string $specifiedOperator Operator specified on a config filter line
      *
      * @return string
      */
-    public function getFacetOperator($field, $specifiedOperator = null)
+    public function getFacetOperator(string $field, ?string $specifiedOperator = null): string
     {
         if ($specifiedOperator && $specifiedOperator != 'AND') {
             return $specifiedOperator;
@@ -143,11 +139,11 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Return the value for which search view we use
+     * Return the value for which search view we use.
      *
      * @return string
      */
-    public function getEbscoView()
+    public function getEbscoView(): string
     {
         $viewArr = explode('_', $this->view ?? '');
         return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEbscoView();
@@ -158,7 +154,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getViewList()
+    public function getViewList(): array
     {
         $list = [];
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {

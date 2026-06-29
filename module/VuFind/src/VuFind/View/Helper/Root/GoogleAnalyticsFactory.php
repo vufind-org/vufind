@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class GoogleAnalyticsFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -69,11 +69,15 @@ class GoogleAnalyticsFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
-        $key = $config->GoogleAnalytics->apiKey ?? false;
+        $key = $config->GoogleAnalytics->apiKey ?? null;
         $options = [
             'create_options_js' =>
                 $config->GoogleAnalytics->create_options_js ?? null,
         ];
-        return new $requestedName($key, $options);
+        return new $requestedName(
+            $key,
+            $container->get('ViewHelperManager')->get(\VuFindTheme\View\Helper\AssetManager::class),
+            $options
+        );
     }
 }

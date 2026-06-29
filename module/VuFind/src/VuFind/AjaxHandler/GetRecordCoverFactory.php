@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for GetRecordCover AJAX handler.
@@ -47,7 +48,7 @@ use Psr\Container\ContainerInterface;
 class GetRecordCoverFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -74,7 +75,7 @@ class GetRecordCoverFactory implements FactoryInterface
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Cover\Router::class),
             // We only need the view renderer if we're going to use fallbacks:
-            $useFallbacks ? $container->get('ViewRenderer') : null,
+            $useFallbacks ? $container->get(TemplateRendererInterface::class) : null,
             $useFallbacks
         );
     }

@@ -1,0 +1,97 @@
+<?php
+  $this->assetManager()->appendScriptLink('content_form.js');
+  $tabs = [];
+?>
+<?php foreach ($this->formData['translations'] as $language => $translation): ?>
+  <?php
+  ob_start();
+  $id = 'translations[' . $this->escapeHtmlAttr($language) . ']';
+  ?>
+  <div class="form-group">
+    <label for="<?=$id?>"><?=$this->transEsc('Content')?></label>
+    <textarea
+      name="<?=$id?>"
+      rows="6"
+      id="<?=$id?>"
+      class="form-control"
+    ><?=$this->escapeHtml($translation ?? '')?></textarea>
+    <a href="<?=$this->url('help-home', [], ['query' => ['topic' => 'markdown']])?>" data-lightbox class="help-link content_type_fieldset-markdown"><?=$this->transEsc('Markdown Help')?></a>
+  </div>
+  <?php
+    $content = ob_get_contents();
+    ob_end_clean();
+    $tabs[$language] = [
+      'description' => $this->displayLanguageOption($this->config()->get('config')->toArray()['Languages'][$language]),
+      'content' => $content,
+    ];
+  ?>
+<?php endforeach; ?>
+
+<form method="POST" class="content-form notice-form">
+  <?php if (count($this->formData['contexts'] ?? []) > 1): ?>
+    <?php
+      $valueMapping = [];
+      foreach ($this->formData['contexts'] as $context) {
+        $valueMapping[$context] = 'NoticeContext::' . $context;
+      }
+    ?>
+    <?=$this->component('radio-fieldset', [
+      'groupName' => 'context',
+      'displayName' => 'Context',
+      'values' => $valueMapping,
+      'checkedValue' => $this->formData['activeContext'] ?? null,
+    ])?>
+  <?php endif; ?>
+  <?php if (count($this->formData['contentTypes'] ?? []) > 1): ?>
+    <?=$this->component('radio-fieldset', [
+      'groupName' => 'content_type',
+      'displayName' => 'Content Type',
+      'values' => $this->formData['contentTypes'],
+      'checkedValue' => $this->formData['activeContentType'] ?? null,
+    ])?>
+  <?php endif; ?>
+  <div class="content-form-tabs">
+    <?php if (count($tabs) > 1): ?>
+      <?=$this->component(
+        'tabs',
+        [
+          'tabs' => $tabs,
+          'activeTab' => array_key_first($tabs),
+        ]
+      )?>
+    <?php else: ?>
+      <?=current($tabs)['content']?>
+    <?php endif; ?>
+  </div>
+
+  <?php if (count($this->formData['styles']) > 1): ?>
+    <fieldset name="style_fieldset">
+      <legend><?=$this->transEsc('Style')?></legend>
+      <div class="form-group form-check">
+        <?php
+          foreach ($this->formData['styles'] as $style => $styleConfig):
+            $labelAttributes = [
+              'class' => 'notice-form-style',
+              'aria-label' => $this->translate('Styles::' . $style),
+            ];
+            if ($classes = $this->notices()->getStyleClasses($style)) {
+              $labelAttributes['class'] .= ' ' . $classes;
+            }
+            ?><label<?=$this->htmlAttributes($labelAttributes)?>>
+            <input
+              type="radio"
+              name="style_fieldset[style]"
+              id="style_fieldset[<?=$this->escapeHtmlAttr($style)?>]"
+              class="form-check-input"
+              value="<?=$this->escapeHtmlAttr($style)?>"
+              <?=($styleConfig['active'] ?? false) ? 'checked' : ''?>
+            >
+          </label><?php endforeach; ?>
+      </div>
+    </fieldset>
+  <?php endif; ?>
+  <div class="form-group">
+    <button type="submit" name="submit" class="btn-primary btn"><?=$this->transEsc('Save')?></button>
+    <button type="submit" name="cancel" class="btn-secondary btn"><?=$this->transEsc('Cancel')?></button>
+  </div>
+</form>

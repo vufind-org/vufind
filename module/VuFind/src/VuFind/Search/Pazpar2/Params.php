@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pazpar2 Search Parameters
+ * Pazpar2 Search Parameters.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\Pazpar2;
 use VuFindSearch\ParamBag;
 
 /**
- * Pazpar2 Search Parameters
+ * Pazpar2 Search Parameters.
  *
  * @category VuFind
  * @package  Search_Pazpar2
@@ -47,7 +47,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 

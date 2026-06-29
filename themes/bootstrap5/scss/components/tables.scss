@@ -17,6 +17,10 @@
     border-left: 1px solid $table-border-color;
     border-right: 1px solid $table-border-color;
     border-bottom: 4px solid $table-border-color;
+    // Adjust margin to account for the border so that content doesn't shift and cause alignment issues e.g. with the
+    // select all checkbox:
+    margin-left: -1px;
+    margin-right: -1px;
 
     > :first-child {
       border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);

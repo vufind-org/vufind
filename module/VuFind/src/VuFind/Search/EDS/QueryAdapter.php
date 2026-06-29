@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS API Query Adapter: search query parameters to AbstractQuery object
+ * EDS API Query Adapter: search query parameters to AbstractQuery object.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function call_user_func;
 use function count;
 
 /**
- * EDS API Query Adapter: search query parameters to AbstractQuery object
+ * EDS API Query Adapter: search query parameters to AbstractQuery object.
  *
  * @category VuFind
  * @package  EBSCO
@@ -60,7 +60,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
         QueryGroup $query,
         callable $translate,
         callable $showName
-    ) {
+    ): string {
         // There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WorldCat v2 Search Options
+ * WorldCat v2 Search Options.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\WorldCat2;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * WorldCat v2 Search Options
+ * WorldCat v2 Search Options.
  *
  * @category VuFind
  * @package  Search_WorldCat2
@@ -50,7 +50,7 @@ class Options extends \VuFind\Search\Base\Options
     protected int $termsLimit;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -72,18 +72,18 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'worldcat2-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return 'worldcat2-advanced';
     }
