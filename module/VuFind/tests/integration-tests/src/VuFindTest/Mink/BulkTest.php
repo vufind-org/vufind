@@ -376,6 +376,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
                 'BulkActions' => [
                     'limits' => [
                         'default' => 1,
+                        'cite' => 1,
                         'email' => 1,
                         'export' => 2,
                         'print' => 1,

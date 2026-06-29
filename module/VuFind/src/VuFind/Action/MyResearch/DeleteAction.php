@@ -104,7 +104,7 @@ class DeleteAction extends AbstractTemplateRenderingAction
         $ids = $bulkActionHelper->getSelectedIds($request);
 
         $actionLimit = $bulkActionHelper->getBulkActionLimit('delete');
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
                 return $redirect;
             }

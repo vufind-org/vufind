@@ -1,0 +1,51 @@
+<?php
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
+  }
+  $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
+    ->add($this->translate('Cite this'), active: true);
+  $tabs = [];
+?>
+<?=$this->component('page-title', ['title' => $this->translate('Cite this')]);?>
+
+<?=$this->flashmessages()?>
+
+<?php foreach ($this->citations as $format => $formatCitations): ?>
+  <?php
+  ob_start();
+  $i = 0;
+  ?>
+  <?php foreach($formatCitations as $recordId => $citation): ?>
+    <?php
+      $elementId = 'citation-' . $this->escapeHtmlAttr($format) . '-' . $i++;
+    ?>
+    <strong><?=$this->escapeHtml($recordId)?></strong>
+    <div class="citation copy-to-clipboard-container">
+      <span id="<?=$elementId?>">
+        <?=$citation?>
+      </span>
+      <?=$this->copyToClipboardButton('#' . $elementId)?>
+    </div>
+  <?php endforeach; ?>
+  <?php
+  $content = ob_get_contents();
+  ob_end_clean();
+  $tabs[$format] = [
+    'description' => $this->translate($format . ' Edition Citation'),
+    'content' => $content,
+  ];
+  ?>
+<?php endforeach; ?>
+<?php if (count($tabs) > 1): ?>
+  <?=$this->component(
+    'tabs',
+    [
+      'tabs' => $tabs,
+      'activeTab' => array_key_first($tabs),
+    ]
+  )?>
+<?php else: ?>
+  <?=current($tabs)['content']?>
+<?php endif; ?>

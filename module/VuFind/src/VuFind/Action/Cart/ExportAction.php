@@ -104,7 +104,7 @@ class ExportAction extends AbstractCartAction
             ? $bulkActionHelper->getExportActionLimit($format)
             : $bulkActionHelper->getBulkActionLimit('export');
 
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
                 return $redirect;
             }
