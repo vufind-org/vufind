@@ -253,8 +253,8 @@ class SystemStatusTest extends AjaxHandlerTestCase
             config: ['System' => ['statusChecks' => ['database' => 'always_disabled']]]
         );
 
-        $handler->handleRequest($this->getRequest());
-        $handler->handleRequest($this->getRequest(['database' => '0']));
-        $handler->handleRequest($this->getRequest(['database' => '1']));
+        $handler->handleRequest($this->getRequest(['index' => '0']));
+        $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '0']));
+        $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '1']));
     }
 }
