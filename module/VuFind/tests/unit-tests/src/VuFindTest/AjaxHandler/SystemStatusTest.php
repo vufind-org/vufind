@@ -76,7 +76,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
         $handler = new SystemStatus(
             $sessionManager,
             $resultsManager,
-            new Config($config),
+            $config,
             $sessionService,
             $ilsConnection
         );

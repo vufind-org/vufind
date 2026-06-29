@@ -34,7 +34,6 @@ use Laminas\Session\SessionManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
 use VuFind\ILS\Connection;
@@ -72,14 +71,14 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
      *
      * @param SessionManager          $sessionManager Session manager
      * @param ResultsManager          $resultsManager Results manager
-     * @param Config                  $config         Top-level VuFind configuration (config.ini)
+     * @param array                   $config         Top-level VuFind configuration (config.ini)
      * @param SessionServiceInterface $sessionService Session database service
      * @param Connection              $ils            ILS connection
      */
     public function __construct(
         protected SessionManager $sessionManager,
         protected ResultsManager $resultsManager,
-        protected Config $config,
+        protected array $config,
         protected SessionServiceInterface $sessionService,
         protected Connection $ils
     ) {
@@ -103,9 +102,10 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         }
 
         // Check system status
+        $healthCheckFile = $this->config['System']['healthCheckFile'] ?? null;
         if (
-            !empty($this->config->System->healthCheckFile)
-            && file_exists($this->config->System->healthCheckFile)
+            ($healthCheckFile !== null)
+            && file_exists($healthCheckFile)
         ) {
             return $this->formatResponse(
                 'Health check file exists',
@@ -121,7 +121,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
                 continue;
             }
             $component = substr($checkMethod, 0, -5);
-            $setting = $this->config->System->statusChecks[$component]
+            $setting = $this->config['System']['statusChecks'][$component]
                 ?? $this->defaultStatusCheckConfig[$component]
                 ?? 'always_disabled';
             if (
