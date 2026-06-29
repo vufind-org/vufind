@@ -161,8 +161,7 @@ VuFind.register("channels", function Channels() {
    */
   function requestMoreItems(loadMoreBtn, channelEl) {
     const url = new URL(decodeURIComponent(loadMoreBtn.dataset.href), location.origin);
-    const promise = fetch(url.toString() + "&layout=lightbox");
-    promise
+    return fetch(url.toString() + "&layout=lightbox")
       .then((res) => res.text())
       .then((resHTML) => {
         // Extract channel items
@@ -205,8 +204,6 @@ VuFind.register("channels", function Channels() {
         url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
         loadMoreBtn.setAttribute("data-href", url.toString());
       });
-
-    return promise;
   }
 
   /**
@@ -247,7 +244,7 @@ VuFind.register("channels", function Channels() {
       : Promise.resolve(); // no load needed
 
     // Update button after load
-    promise.then(() => {
+    promise.finally(() => {
       if (channelEl.hiddenItems === 0 && !channelEl.ajaxAvailable) {
         hideLoadMoreBtn(loadMoreBtn);
       } else {
