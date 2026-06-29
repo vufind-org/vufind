@@ -47,7 +47,6 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
-use function is_array;
 
 /**
  * Delete favorites action.

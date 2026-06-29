@@ -37,7 +37,6 @@ use VuFind\ActionHelper\BulkActionHelper;
 use VuFind\ActionHelper\RedirectHelper;
 
 use function count;
-use function is_array;
 
 /**
  * Cart print action.

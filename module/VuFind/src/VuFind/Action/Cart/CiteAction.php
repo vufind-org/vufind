@@ -73,7 +73,6 @@ class CiteAction extends AbstractCartAction
         parent::__construct($export, $cart, $followupHelper);
     }
 
-
     /**
      * Cite cart.
      *
@@ -120,7 +119,8 @@ class CiteAction extends AbstractCartAction
         }
 
         if (!$citations) {
-            $this->getHelper(FlashMessagesHelper::class)->addErrorMessage('No citations are available for these records');
+            $this->getHelper(FlashMessagesHelper::class)
+                ->addErrorMessage('No citations are available for these records');
         }
 
         return $this->renderTemplate($request, $response, compact('citations'));

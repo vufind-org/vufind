@@ -45,7 +45,6 @@ use VuFind\Session\Helper\FollowupHelper;
 use VuFind\View\Helper\Root\Record;
 
 use function count;
-use function is_array;
 
 /**
  * Cart export form action.

@@ -17,7 +17,7 @@
   ob_start();
   $i = 0;
   ?>
-  <?php foreach($formatCitations as $recordId => $citation): ?>
+  <?php foreach ($formatCitations as $recordId => $citation): ?>
     <?php
       $elementId = 'citation-' . $this->escapeHtmlAttr($format) . '-' . $i++;
     ?>
@@ -40,11 +40,11 @@
 <?php endforeach; ?>
 <?php if (count($tabs) > 1): ?>
   <?=$this->component(
-    'tabs',
-    [
-      'tabs' => $tabs,
-      'activeTab' => array_key_first($tabs),
-    ]
+      'tabs',
+      [
+        'tabs' => $tabs,
+        'activeTab' => array_key_first($tabs),
+      ]
   )?>
 <?php else: ?>
   <?=current($tabs)['content']?>
