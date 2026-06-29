@@ -236,7 +236,9 @@ VuFind.register("channels", function Channels() {
     channelEl.shownItems += revealCount;
     channelEl.hiddenItems -= revealCount;
 
-    ariaAnnounceNewItems(hiddenItems[0], revealCount);
+    if (hiddenItems.length > 0) {
+      ariaAnnounceNewItems(hiddenItems[0], revealCount);
+    }
 
     // Do we need more items?
     // @TODO: replace with await when available
