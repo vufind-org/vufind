@@ -61,14 +61,16 @@ module.exports = function(grunt) {
       'dart-sass': {
         options: {
           outputStyle: 'compressed',
-          quietDeps: true
+          quietDeps: true,
+          silenceDeprecations: ['import']
         }
       }
     },
     'check:scss': {
       'dart-sass': {
         options: {
-          quietDeps: true
+          quietDeps: true,
+          silenceDeprecations: ['import']
         }
       }
     },

@@ -334,4 +334,16 @@ class LoginHelper implements HelperInterface
         // If we got this far, we want to store the referer:
         $this->followupHelper->store($extras, $referer);
     }
+
+    /**
+     * Unset the followup to trigger default behaviors.
+     *
+     * @return void
+     */
+    public function clearFollowupUrl(): void
+    {
+        $this->followupHelper->clear('isReferrer');
+        $this->followupHelper->clear('lightboxParent');
+        $this->followupHelper->clear('url');
+    }
 }

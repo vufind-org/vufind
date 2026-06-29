@@ -63,11 +63,12 @@ class PermissionHelper implements
     /**
      * Constructor.
      *
-     * @param PermissionManager       $permissionManager       Permission Manager
-     * @param PermissionDeniedManager $permissionDeniedManager Permission Denied Manager
-     * @param AuthManager             $authManager             Auth manager
-     * @param LoginHelper             $loginHelper             Login helper
-     * @param RedirectHelper          $redirectHelper          Redirect helper
+     * @param PermissionManager       $permissionManager        Permission Manager
+     * @param PermissionDeniedManager $permissionDeniedManager  Permission Denied Manager
+     * @param AuthManager             $authManager              Auth manager
+     * @param LoginHelper             $loginHelper              Login helper
+     * @param RedirectHelper          $redirectHelper           Redirect helper
+     * @param array                   $permissionBehaviorConfig Permission behavior configuration
      */
     public function __construct(
         protected PermissionManager $permissionManager,
@@ -77,6 +78,8 @@ class PermissionHelper implements
         protected LoginHelper $loginHelper,
         #[Autowire(container: PluginManager::class)]
         protected RedirectHelper $redirectHelper,
+        #[Autowire(config: 'permissionBehavior')]
+        protected array $permissionBehaviorConfig,
     ) {
     }
 
@@ -126,7 +129,7 @@ class PermissionHelper implements
 
         // Make sure the current user has permission:
         if ($this->permissionManager->isAuthorized($permission) !== true) {
-            $dl = $this->permissionDeniedManager->getDeniedControllerBehavior(
+            $dl = $this->permissionDeniedManager->getDeniedActionBehavior(
                 $permission,
                 $defaultBehavior
             );
@@ -181,5 +184,15 @@ class PermissionHelper implements
     public function getIdentity(): ?IdentityInterface
     {
         return $this->authManager->getIdentity();
+    }
+
+    /**
+     * Get permission behavior configuration.
+     *
+     * @return array
+     */
+    public function getPermissionBehaviorConfig(): array
+    {
+        return $this->permissionBehaviorConfig;
     }
 }

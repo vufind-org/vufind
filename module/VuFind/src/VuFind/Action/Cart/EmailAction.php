@@ -171,7 +171,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
                 $params[] = urlencode('id[]') . '=' . urlencode($current);
             }
             $url = $this->serverUrlHelper->getUrlForPath(
-                $this->getUrlFromRoute('records-home') . '?' . implode('&', $params)
+                $this->getRouteHelper()->getUrlFromRoute('records-home') . '?' . implode('&', $params)
             );
 
             // Attempt to send the email and show an appropriate flash message:
