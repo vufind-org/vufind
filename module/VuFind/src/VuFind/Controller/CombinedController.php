@@ -372,9 +372,16 @@ class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareI
         $noRecommend = [];
         $includeRecommendSetting = $settings['include_recommendations'] ?? false;
         if (is_array($includeRecommendSetting)) {
-            $recommendOverride['top'] = $settings['include_recommendations'];
+            $recommendOverride['top'] = $includeRecommendSetting;
         } elseif (!$includeRecommendSetting) {
             $noRecommend[] = 'top';
+        }
+
+        $includeRecommendBottomSetting = $settings['include_recommendations_bottom'] ?? false;
+        if (is_array($includeRecommendBottomSetting)) {
+            $recommendOverride['bottom'] = $includeRecommendBottomSetting;
+        } elseif (!$includeRecommendBottomSetting) {
+            $noRecommend[] = 'bottom';
         }
 
         // Display or hide side based on include_recommendations_side setting.
