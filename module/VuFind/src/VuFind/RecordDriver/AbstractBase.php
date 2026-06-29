@@ -305,11 +305,16 @@ abstract class AbstractBase implements
     /**
      * Get an array of supported, user-activated citation formats.
      *
+     * @param ?string $context Optinal context of citation action.
+     *
      * @return array Strings representing citation formats.
      */
-    public function getCitationFormats()
+    public function getCitationFormats(?string $context = null)
     {
-        $formatSetting = $this->mainConfig->Record->citation_formats ?? true;
+        if (($context !== null) && !($this->mainConfig->Citation->$context ?? false)) {
+            return [];
+        }
+        $formatSetting = $this->mainConfig->Citation->formats ?? true;
 
         // Default behavior: use all supported options.
         if ($formatSetting === true || $formatSetting === 'true') {
