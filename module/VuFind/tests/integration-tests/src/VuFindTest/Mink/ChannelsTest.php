@@ -403,9 +403,12 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test deep pagination of Facets channel.
      *
+     * @param int $itemsPerRow  Items per row setting to test
+     * @param int $maxBatchSize Max batch size setting to test
+     *
      * @return void
      */
-    public function testDeepPaginationOfFacetsChannel($itemsPerRow = 6, $maxBatchSize = 48): void
+    public function testDeepPaginationOfFacetsChannel(int $itemsPerRow = 6, int $maxBatchSize = 48): void
     {
         $this->changeConfigs(
             [
@@ -448,7 +451,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             $this->waitStatement($js);
             // When all results are loaded, "load more" button will be disabled:
             if ($i == $rowsToLoad - 1) {
-                $this->assertStringContainsString('disabled', $button->getAttribute('class'));
+                $this->assertStringContainsString('disabled', (string)$button->getAttribute('class'));
             } else {
                 $this->assertEquals('Load more items', $button->getText());
                 $this->assertEquals('Load more items into Format: Book', $button->getAttribute('aria-label'));
