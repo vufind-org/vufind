@@ -31,6 +31,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use Exception;
+use Generator;
 use PHPUnit\Framework\ExpectationFailedException;
 use VuFindTest\Feature\DemoDriverTestTrait;
 
@@ -401,6 +402,19 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testDeepPaginationOfFacetsChannel().
+     *
+     * @return Generator
+     */
+    public static function deepPaginationProvider(): Generator
+    {
+        yield 'defaults' => [6, 48];
+        yield 'big pages' => [27, 48];
+        yield 'remainder' => [5, 25];
+        yield 'small pages' => [2, 16];
+    }
+
+    /**
      * Test deep pagination of Facets channel.
      *
      * @param int $itemsPerRow  Items per row setting to test
@@ -408,6 +422,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('deepPaginationProvider')]
     public function testDeepPaginationOfFacetsChannel(int $itemsPerRow = 6, int $maxBatchSize = 48): void
     {
         $this->changeConfigs(
@@ -446,14 +461,16 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             $this->waitForPageLoad($page);
             // Confirm that the button's labels remain appropriate after clicks:
             $selector = "document.querySelector('#$channelId .channel-load-more-btn')";
-            $js = $selector .
-                " && (!$selector.textContent.startsWith('Loading') || $selector.classList.contains('disabled'))";
-            $this->waitStatement($js);
+            $lastRow = $i == $rowsToLoad - 1;
+            $secondarySelector = $lastRow
+                ? "$selector.classList.contains('disabled')"
+                : "!$selector.textContent.startsWith('Loading')";
+            $this->waitStatement("$selector && $secondarySelector");
             // When all results are loaded, "load more" button will be disabled:
-            if ($i == $rowsToLoad - 1) {
+            if ($lastRow) {
                 $this->assertStringContainsString('disabled', (string)$button->getAttribute('class'));
             } else {
-                $this->assertEquals('Load more items', $button->getText());
+                $this->assertEquals('Load more items', $button->getText(), "Unexpected button label on iteration $i");
                 $this->assertEquals('Load more items into Format: Book', $button->getAttribute('aria-label'));
             }
         }
