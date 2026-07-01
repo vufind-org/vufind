@@ -32,6 +32,7 @@ namespace VuFind\Action\GVIRecord;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Record\AbstractRecordAction;
+use VuFind\ActionHelper\RedirectHelper;
 
 /**
  * GVIRecord home action.
@@ -82,8 +83,9 @@ class HomeAction extends AbstractRecordAction
                     if ($sid = $this->searchMemory->getCurrentSearchId()) {
                         $queryParams = compact('sid');
                     }
-                    $collectionUrl = $this->getUrlFromRoute($collectionRoute, $routeParams, $queryParams);
-                    return $this->getRedirectResponse($response, $collectionUrl);
+                    $collectionUrl = $this->getRouteHelper()->getUrlFromRoute($collectionRoute, $routeParams, $queryParams);
+                    return $this->getHelper(RedirectHelper::class)
+                        ->redirectToUrl($response, $collectionUrl);
                 }
             }
         }
