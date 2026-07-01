@@ -454,7 +454,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame('Format: Book', $this->findCssAndGetText($channel, 'h2.channel-title'));
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
         $this->assertCount($itemsPerRow, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
-        $rowsToLoad = floor($expectedTotalResults / $itemsPerRow) - 1;
+        $rowsToLoad = ceil($expectedTotalResults / $itemsPerRow) - 1;
         for ($i = 0; $i < $rowsToLoad; $i++) {
             $button = $this->findCss($channel, '.channel-load-more-btn');
             $button->click();
