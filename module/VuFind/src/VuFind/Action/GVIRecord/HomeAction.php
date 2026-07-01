@@ -83,7 +83,11 @@ class HomeAction extends AbstractRecordAction
                     if ($sid = $this->searchMemory->getCurrentSearchId()) {
                         $queryParams = compact('sid');
                     }
-                    $collectionUrl = $this->getRouteHelper()->getUrlFromRoute($collectionRoute, $routeParams, $queryParams);
+                    $collectionUrl = $this->getRouteHelper()->getUrlFromRoute(
+                        $collectionRoute,
+                        $routeParams,
+                        $queryParams
+                    );
                     return $this->getHelper(RedirectHelper::class)
                         ->redirectToUrl($response, $collectionUrl);
                 }
