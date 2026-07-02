@@ -140,8 +140,8 @@ function compileTheme(themeName) {
   if (CLI_OPTIONS.checkOnly) {
     // Check if compiled.css is up-to-date
     if (fs.existsSync(outCSSPath)) {
-      console.log(`- writing ${CLI_OPTIONS.temp}/scss-check-${themeName}.css for comparison`);
       const tmpCSSPath = `${CLI_OPTIONS.temp}/scss-check-${themeName}.css`;
+      console.log(`- writing ${tmpCSSPath} for comparison`);
       fs.writeFileSync(tmpCSSPath, cssContent, "utf8");
 
       try {
