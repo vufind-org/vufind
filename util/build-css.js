@@ -23,7 +23,7 @@ program
   )
   .option(
     "-e, --entry <string>",
-    "target SCSS in {theme}/scss",
+    "source SCSS entry point in {theme}/scss",
     "compiled.scss"
   )
   .option(
