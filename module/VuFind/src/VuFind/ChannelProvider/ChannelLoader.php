@@ -90,7 +90,7 @@ class ChannelLoader
             $current = $context['channels'][$i];
             if (isset($current['contents'])) {
                 [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
-                $config = $this->config[$configSection] ?? [];
+                $config = $this->config[$configSection] ?? $this->config['provider.' . $configSection] ?? [];
 
                 // Calculate batch size
                 $itemsPerRow = $config['itemsPerRow'] ?? 6;
