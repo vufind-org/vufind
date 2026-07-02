@@ -1,7 +1,11 @@
 /*global process, require */
 /*eslint-disable no-console -- console needed for CLI output */
 
-if (!(process.env.VUFIND_HOME ?? false)) {
+if (
+  !process ||
+  !process.env ||
+  !process.env.VUFIND_HOME
+) {
   console.error(red("Set VUFIND_HOME before running."));
   process.exit(1);
 }
