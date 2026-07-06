@@ -561,6 +561,51 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetCleanISBNs
+     *
+     * @return array list of citation formats
+     */
+    public static function citationConfigs()
+    {
+        $driver = self->getDriver();
+        $supported = self->callMethod($driver, 'getSupportedCitationFormats');
+
+        return [
+            // No results:
+            [false, []],
+            ['false', []],
+            // All results:
+            [true, $supported],
+            ['true', $supported],
+            // Filtered results:
+            ['MLA,foo', ['MLA', 'foo']],
+            ['bar ,     APA,MLA', ['bar', 'APA', 'MLA']],
+        ];
+    }
+
+    /**
+     * Test citation configurations.
+     *
+     * @param string|boolean $input  citation formats from config
+     * @param array          $output list of valid citation formats
+     *
+     * @dataProvider citationConfigs
+     *
+     * @return void
+     */
+    public function testCitationConfigs($input, $output)
+    {
+        $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+
+        $this->assertEquals(
+            $output,
+            $this->newConfigToOld(
+                array_values($this->getDriver([], $cfg)->getCitationFormats())
+            )
+        );
+    }
+
+    /**
      * Data provider for testGetCleanISBNs.
      *
      * @return \Iterator
