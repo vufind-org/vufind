@@ -249,12 +249,15 @@ class SystemStatusTest extends AjaxHandlerTestCase
         $sessionService->expects($this->never())->method('getSessionById');
 
         $handler = $this->getHandler(
-            sessionService: $sessionService,
-            config: ['System' => ['statusChecks' => ['database' => 'always_disabled']]]
+            config: ['System' => ['statusChecks' => ['database' => 'always_disabled']]],
+            sessionService: $sessionService
         );
 
-        $handler->handleRequest($this->getRequest(['index' => '0']));
-        $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '0']));
-        $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '1']));
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '0']));
+        $this->assertSame([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '1']));
+        $this->assertSame([''], $response);
     }
 }
