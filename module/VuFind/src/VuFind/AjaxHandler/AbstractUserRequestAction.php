@@ -70,6 +70,9 @@ abstract class AbstractUserRequestAction extends AbstractIlsUserAndRendererActio
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $requests = $this->ils->{$this->lookupMethod}($patron);
+        if (isset($requests['records'])) {
+            $requests = $requests['records'];
+        }
         $result = $this->getRequestSummary($requests);
         $result['level'] = $this->getAccountStatusLevel($result);
         $result['html'] = $this->renderer->renderTemplateAsString($request, 'ajax/account/requests.phtml', $result);

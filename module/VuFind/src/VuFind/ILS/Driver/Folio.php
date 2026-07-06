@@ -794,6 +794,7 @@ class Folio extends AbstractAPI implements
     {
         $key = match ($function) {
             'getMyTransactions' => 'Loans',
+            'getMyHolds' => 'Holdings',
             default => $function
         };
         return $this->config[$key] ?? [];
@@ -2342,22 +2343,31 @@ class Folio extends AbstractAPI implements
      * This optional feature was introduced in release 3.1.
      *
      * @param array $patron Patron login information from $this->patronLogin
+     * @param array $params Parameters
      *
      * @return array Associative array of holds information
      */
-    public function getMyHolds($patron)
+    public function getMyHolds($patron, $params = [])
     {
         $userQuery = '(requesterId == "' . $patron['id'] . '" '
             . 'or proxyUserId == "' . $patron['id'] . '")';
         $query = ['query' => '(' . $userQuery . ' and status == Open*)'];
         $holds = [];
-        foreach (
-            $this->getPagedResults(
+
+        if ($limit = $params['limit'] ?? null) {
+            $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
+            $result = $this->getResultPage('/request-storage/requests', $query, $offset, $limit);
+            $rawHolds = $result->requests ?? [];
+            $count = $result->totalRecords ?? null;
+        } else {
+            $rawHolds = $this->getPagedResults(
                 'requests',
                 '/request-storage/requests',
                 $query
-            ) as $hold
-        ) {
+            );
+        }
+
+        foreach ($rawHolds as $hold) {
             $requestDate = $this->dateConverter->convertToDisplayDate(
                 'Y-m-d H:i',
                 $hold->requestDate
@@ -2422,7 +2432,10 @@ class Folio extends AbstractAPI implements
             }
             $holds[] = $currentHold;
         }
-        return $holds;
+
+        $count ??= count($holds);
+
+        return ['count' => $count, 'records' => $holds];
     }
 
     /**
