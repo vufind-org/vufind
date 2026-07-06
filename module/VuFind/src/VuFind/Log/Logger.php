@@ -268,13 +268,55 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             ? self::LEVEL_MAP[$level]
             : $level;
 
-        if (is_array($message)) {
-            $context['vufind_log_details'] = $message;
-            $mainMonologMessage = 'Exception/Detailed log. See context for levels.';
-        } else {
-            $mainMonologMessage = $message;
+        // If the details is set in context, fill in any missing parts
+        $context = $this->fillInMissingDetails($context);
+
+        $this->monologLogger->log($monologLevel, $message, $context);
+    }
+
+    /**
+     * If there are 'details' in the context that are missing any of the key keys
+     * (for each verbosity), use data from the next lower index, if that index is missing,
+     * instead use the next higher index. Leave blank as a last resort.
+     *
+     * @param mixed[]            $context Additional context data
+     *
+     * @return mixed[]
+     */
+    protected function fillInMissingDetails(array $context = []): array
+    {
+        if (!array_key_exists('details', $context) || !is_array($context['details'])){
+            return $context;
         }
-        $this->monologLogger->log($monologLevel, $mainMonologMessage, $context);
+        $details = $context['details'];
+        $levels = [1, 2, 3, 4, 5];
+        $filledDetails = [];
+
+        foreach ($levels as $level) {
+            // This level has data, no need to look further
+            if (isset($details[$level]) && $details[$level] !== '') {
+                $filledDetails[$level] = $details[$level];
+                continue;
+            }
+
+            // Try prior index (Backfill)
+            if (isset($details[$level - 1]) && $details[$level - 1] !== '') {
+                $filledDetails[$level] = $details[$level - 1];
+                continue;
+            }
+
+            // Try next index (Frontfill)
+            if (isset($details[$level + 1]) && $details[$level + 1] !== '') {
+                $filledDetails[$level] = $details[$level + 1];
+                continue;
+            }
+
+            // Leave blank as last resort
+            $filledDetails[$level] = '';
+        }
+
+        $context['details'] = $filledDetails;
+        return $context;
     }
 
     /**
@@ -299,10 +341,34 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      *
      * @param \Exception                 $error  Exception to log
      * @param \Laminas\Stdlib\Parameters $server Server metadata
+     * @param mixed                      $level  Optional log level. Will determine from the
+     * exception if not provided. (e.g., 'err', 'warn')
      *
      * @return void
      */
-    public function logException($error, $server)
+    public function logException($error, $server, $level = null)
+    {
+        $details = $this->getDetailsFromException($error, $server);
+        $this->log(
+            $level ?? $this->getSeverityFromException($error),
+            $details[1] ?? 'Exception/Detailed log. See context for levels.',
+            [
+                'details' => $details,
+            ]
+        );
+    }
+
+    /**
+     * Extract the error data from the exception object and server data,
+     * if provided, and convert it into an array with keys for each of
+     * the 5 verbosity levels.
+     *
+     * @param \Exception                 $error    Exception to log
+     * @param \Laminas\Stdlib\Parameters $server   Server metadata
+     *
+     * @return array
+     */
+    protected function getDetailsFromException($error, $server): array
     {
         // We need to build a variety of pieces so we can supply
         // information at five different verbosity levels:
@@ -353,21 +419,13 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
             }
         }
 
-        $errorDetails = [
+        return [
             1 => $baseError,
             2 => $baseError . $basicServer,
             3 => $baseError . $basicServer . $basicBacktrace,
             4 => $baseError . $detailedServer . $basicBacktrace,
             5 => $baseError . $detailedServer . $detailedBacktrace,
         ];
-
-        $this->log(
-            $this->getSeverityFromException($error),
-            $baseError,
-            [
-                'details' => $errorDetails,
-            ]
-        );
     }
 
     /**

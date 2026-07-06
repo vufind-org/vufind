@@ -136,4 +136,51 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
             $logger->logException($e, $fakeServer);
         }
     }
+
+    /**
+     * Test fillInMissingDetails().
+     *
+     * @return void
+     */
+    public function testFillInMissingDetails()
+    {
+        $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);
+        $logger = $this->getMockBuilder(\VuFind\Log\Logger::class)
+            ->setConstructorArgs([$mockIpReader, new \Monolog\Logger('test')])
+            ->onlyMethods(['log'])
+            ->getMock();
+
+        // Test 1: Gap in the middle (Index 3 missing)
+        $context = [
+            'details' => [
+                1 => 'low',
+                2 => 'med',
+                // 3 is missing
+                4 => 'high',
+                5 => 'ultra'
+            ]
+        ];
+
+        $method = new \ReflectionMethod($logger, 'fillInMissingDetails');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($logger, $context);
+
+        $this->assertEquals('med', $result['details'][3], 'Index 3 should backfill from Index 2');
+
+        // Test 2: Missing start (Index 1 missing)
+        $context2 = ['details' => [2 => 'value']];
+        $result2 = $method->invoke($logger, $context2);
+        $this->assertEquals('value', $result2['details'][1], 'Index 1 should frontfill from Index 2');
+
+        // Test 3: Empty string in index
+        $context3 = ['details' => [1 => 'data', 2 => '', 3 => 'more data']];
+        $result3 = $method->invoke($logger, $context3);
+        $this->assertEquals('data', $result3['details'][2], 'Empty string should be treated as missing');
+
+        // Test 4: No index to backfill or frontfill from
+        $context4 = ['details' => [1 => 'data']];
+        $result4 = $method->invoke($logger, $context4);
+        $this->assertEquals('', $result4['details'][3], 'Index 3-5 should be empty string since no near indexes to fill from');
+    }
 }

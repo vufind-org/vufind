@@ -165,6 +165,9 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                             $rules["VuFind:$target|$key"] = $val;
                         }
                     } catch (\Exception $e) {
+                        // TODO START
+                        $this->logException();
+                        // TODO END
                         // Log a warning and ignore when we can't add the autocomplete rules for
                         // any of the handlers
                         $baseMsg = "Could not determine autocomplete formatting rules for {$target}.";

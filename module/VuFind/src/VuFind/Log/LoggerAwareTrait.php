@@ -87,14 +87,17 @@ trait LoggerAwareTrait
     /**
      * Log an exception.
      *
-     * @param \Exception $exception Exception to log
+     * @param \Exception                 $exception Exception to log
+     * @param \Laminas\Stdlib\Parameters $server    Optional server metadata
+     * @param mixed                      $level     Optional log level. Will determine from the
+     * exception if not provided. (e.g., 'err', 'warn')
      *
      * @return void
      */
-    public function logException(\Exception $exception): void
+    public function logException(\Exception $exception, $server = null, $level = null): void
     {
         if ($this->logger instanceof ExtendedLoggerInterface) {
-            $this->logger->logException($exception, new \Laminas\Stdlib\Parameters());
+            $this->logger->logException($exception, $server ?? new \Laminas\Stdlib\Parameters(), $level);
         }
     }
 
