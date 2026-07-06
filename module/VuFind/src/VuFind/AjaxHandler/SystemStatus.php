@@ -125,8 +125,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
                 ?? $this->defaultStatusCheckConfig[$component]
                 ?? 'always_disabled';
             if (
-                method_exists($this, $checkMethod)
-                && ($setting !== 'always_disabled')
+                ($setting !== 'always_disabled')
                 && $this->getPostOrQueryParam($request, $component, ($setting === 'default_enabled'))
                 && $errorResponse = $this->$checkMethod()
             ) {
