@@ -105,12 +105,13 @@ class Results extends \VuFind\Search\Base\Results
         $allTerms = trim($query->getAllTerms());
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->getParams()->getBackendParameters();
+        $params = $this->getParams();
+        $backendParams = $params->getBackendParameters();
         if ($allTerms === '') {
             if (!$this->config['General']['limiter_only'] ?? false) {
                 $this->storeErrorResponse('empty_search_disallowed');
                 return;
-            } elseif (!$this->paramsIncludeLimiter($params)) {
+            } elseif (!$this->paramsIncludeLimiter($backendParams)) {
                 $this->storeErrorResponse('empty_search_no_filters_disallowed');
                 return;
             }
@@ -121,7 +122,7 @@ class Results extends \VuFind\Search\Base\Results
             $query,
             $offset,
             $limit,
-            $params
+            $backendParams
         );
         $collection = $this->getSearchService()->invoke($command)
             ->getResult();
@@ -141,6 +142,15 @@ class Results extends \VuFind\Search\Base\Results
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
             $this->restrictedView = $collection->isRestrictedView();
+
+            // For a page parameter being out of the results list, we do not want
+            // to return any results from another page.
+            $page = $params->getPage();
+            $limit = $params->getLimit();
+            $lastPage = $limit ? ceil($this->resultTotal / $limit) : 1;
+            if ($this->resultTotal > 0 && $page > $lastPage) {
+                $this->results = [];
+            }
         }
     }
 

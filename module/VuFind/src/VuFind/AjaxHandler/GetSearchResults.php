@@ -179,6 +179,17 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->initFromRequest(new Parameters($searchParams));
+        $results->performAndProcessSearch();
+
+        // For a page parameter being out of the results list,
+        // we want load the last page available
+        $totalResults = $results->getResultTotal();
+        $limit = $paramsObj->getLimit();
+        $lastPage = $limit ? ceil($totalResults / $limit) : 1;
+        if ($totalResults > 0 && $paramsObj->getPage() > $lastPage) {
+            $paramsObj->setPage($lastPage);
+            $results->performAndProcessSearch();
+        }
 
         if ($this->getQueryParam($request, 'history')) {
             $this->saveSearchToHistory($results);

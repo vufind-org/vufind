@@ -554,43 +554,39 @@ class ResultScroller
             if ($pos > 0 && $pos < $count - 1) {
                 // the current record is somewhere in the middle of the current
                 // page, ie: not first or last
-                return $this->scrollOnCurrentPage($retVal, $pos);
+                $retVal = $this->scrollOnCurrentPage($retVal, $pos);
             } elseif ($pos == 0) {
                 // this record is first record on the current page
-                return $this
-                    ->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
+                $retVal = $this->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
             } elseif ($pos == $count - 1) {
                 // this record is last record on the current page
-                return $this->fetchNextPage($retVal, $lastSearch, $pos);
+                $retVal = $this->fetchNextPage($retVal, $lastSearch, $pos);
             }
         } else {
             // the current record is not on the current page
-            // if there is something on the previous page
-            if (!empty($this->data->prevIds)) {
-                // check if current record is on the previous page
-                $pos = is_array($this->data->prevIds)
-                    ? array_search($id, $this->data->prevIds) : false;
-                if ($pos !== false) {
-                    return $this
-                        ->scrollToPreviousPage($retVal, $lastSearch, $pos);
-                }
-            }
-            // if there is something on the next page
-            if (!empty($this->data->nextIds)) {
-                // check if current record is on the next page
-                $pos = is_array($this->data->nextIds)
-                    ? array_search($id, $this->data->nextIds) : false;
-                if ($pos !== false) {
-                    return $this->scrollToNextPage($retVal, $lastSearch, $pos);
-                }
-            }
-            if ($this->data->firstlast) {
+            if (($pos = array_search($id, $this->data->prevIds ?? [])) !== false) {
+                // if there is something on the previous page
+                $retVal = $this->scrollToPreviousPage($retVal, $lastSearch, $pos);
+            } elseif (($pos = array_search($id, $this->data->nextIds ?? [])) !== false) {
+                // if there is something on the next page
+                $retVal = $this->scrollToNextPage($retVal, $lastSearch, $pos);
+            } elseif ($this->data->firstlast) {
                 if ($id == $retVal['firstRecord']) {
-                    return $this->scrollToFirstRecord($retVal, $lastSearch);
+                    $retVal = $this->scrollToFirstRecord($retVal, $lastSearch);
+                } elseif ($id == $retVal['lastRecord']) {
+                    $retVal = $this->scrollToLastRecord($retVal, $lastSearch);
                 }
-                if ($id == $retVal['lastRecord']) {
-                    return $this->scrollToLastRecord($retVal, $lastSearch);
-                }
+            }
+        }
+
+        // The results total of the initial search might have changed until we reach the end of the list.
+        // Therefore, we should update it here to avoid confusion.
+        if (!($retVal['nextRecord'] ?? null) && $currentPos = $retVal['currentPosition'] ?? null) {
+            $this->data->total = $currentPos;
+            $retVal['resultTotal'] = $this->data->total;
+            if ($this->data->firstlast) {
+                $this->data->lastId = end($this->data->currIds);
+                $retVal['lastRecord'] = $this->data->lastId;
             }
         }
 
