@@ -1,51 +1,51 @@
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>VuFind® - Search. Discover. Share.</title>
-    <link href="{{ site.baseurl }}/assets/images/vufind-favicon.ico" rel="shortcut icon" type="image/x-icon">
-    <link href="{{ site.baseurl }}/assets/css/style.css" rel="stylesheet" type="text/css">
-    <script src="{{ site.baseurl }}/assets/js/jquery.min.js" type="text/javascript"></script>
-    <script src="{{ site.baseurl }}/assets/js/bootstrap.min.js" type="text/javascript"></script>
-  </head>
-  <body>
-    <div class="header">
-      <a href="{{ site.baseurl }}/" class="logo"><img src="{{ site.baseurl }}/assets/images/vf-beta.png" alt="Home"/></a>
-      <br class="visible-xs visible-sm"/>
-      <!--<a href="{{ site.baseurl }}/ddoc.html">Design Doc</a>-->
-      <a href="{{ site.baseurl }}/about.html">About</a>
-      <a href="{{ site.baseurl }}/features.html">Features</a>
-      <a href="{{ site.baseurl }}/downloads.html">Downloads</a>
-      <a href="https://vufind.org/wiki/installation">Getting Started</a>
-      <a href="https://vufind.org/wiki">Documentation</a>
-      <a href="{{ site.baseurl }}/schedule.html">Events</a>
-      <a href="{{ site.baseurl }}/support.html">Support</a>
-      <a href="https://github.com/vufind-org/vufind">GitHub</a>
-    </div>
-    <div class="header-announcement">
-      <p>
-        Love VuFind®? Consider becoming a <a href="https://vufind.org/donate">financial supporter</a>. Your support helps build a better VuFind®!
-      </p>
-    </div>
-    <!--
-    <div class="header-announcement">
-      <p>
-        Join us August 22-24 at <a href="https://openlibraryfoundation.org/about/wolfcon/upcoming/">WOLFcon</a> for <a href="https://vufind.org/wiki/community:conferences:summit_2023">VuFind® Summit 2023!</a>
-        (<a href="https://wolfcon2023.sched.com/overview/type/VuFind">schedule</a>)
-      </p>
-    </div>
-    <script>
-      const startTime = new Date(Date.UTC(2023, 8-1, 22, 14, 0, 0));
-      const endTime = new Date(Date.UTC(2023, 8-1, 22, 17, 0, 0));
+<div class="header">
+	<div class="header_container">
+	  <a href="{{ site.baseurl }}/" class="header_logo"><img src="{{ site.baseurl }}/assets/images/vf-beta.png" alt="VuFind Home"></a>
+	  <a class="header_link" href="{{ site.baseurl }}/about.html">About</a>
+	  <a class="header_link" href="{{ site.baseurl }}/features.html">Features</a>
+	  <a class="header_link" href="{{ site.baseurl }}/downloads.html">Downloads</a>
+	  <a class="header_link" href="https://vufind.org/wiki/installation">Getting Started</a>
+	  <a class="header_link" href="https://vufind.org/wiki">Documentation</a>
+	  <a class="header_link" href="{{ site.baseurl }}/schedule.html">Events</a>
+	  <a class="header_link" href="{{ site.baseurl }}/support.html">Support</a>
+	  <a class="header_link" href="https://github.com/vufind-org/vufind">GitHub</a>
+		<button id="menu-toggle-btn" class="header_btn" aria-hidden="true">
+			<svg class="menu_open_icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" alt="Open Menu"><path d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z"></path></svg>
+			<svg class="menu_close_icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" alt="Close Menu"><path d="M10.5859 12L2.79297 4.20706L4.20718 2.79285L12.0001 10.5857L19.793 2.79285L21.2072 4.20706L13.4143 12L21.2072 19.7928L19.793 21.2071L12.0001 13.4142L4.20718 21.2071L2.79297 19.7928L10.5859 12Z"></path></svg>
+		</button>
+	</div>
+</div>
+<script>
+	(function headerController() {
+		const headerContainer = document.querySelector(".header_container");
+		document.getElementById("menu-toggle-btn").addEventListener("click", () => {
+			headerContainer.classList.toggle("js-menu-open");
+		});
+	})();
+</script>
 
-      const formatter = new Intl.DateTimeFormat('default', { dateStyle: 'short', timeStyle: 'short' });
-      const localStartTime = formatter.format(startTime);
-      const localEndTime = formatter.format(endTime);
+<div class="header-announcement">
+  <p>
+    Love VuFind®? Consider becoming a <a href="https://vufind.org/donate">financial supporter</a>. Your support helps build a better VuFind®!
+  </p>
+</div>
 
-      document.getElementById("gmt-time")
-        .setAttribute("title", `Local Time: ${localStartTime} to ${localEndTime}`);
-    </script>
-    -->
-    <div class="body">
-      <div class="container">
+<div class="header-announcement" hidden>
+  <p>
+    Join us August 22-24 at <a href="https://openlibraryfoundation.org/about/wolfcon/upcoming/">WOLFcon</a> for <a href="https://vufind.org/wiki/community:conferences:summit_2023">VuFind® Summit 2023!</a>
+    (<a href="https://wolfcon2023.sched.com/overview/type/VuFind">schedule</a>)
+  </p>
+</div>
+<script>
+	(function announcementController() {
+	  const startTime = new Date(Date.UTC(2023, 8-1, 22, 14, 0, 0));
+	  const endTime = new Date(Date.UTC(2023, 8-1, 22, 17, 0, 0));
+
+	  const formatter = new Intl.DateTimeFormat('default', { dateStyle: 'short', timeStyle: 'short' });
+	  const localStartTime = formatter.format(startTime);
+	  const localEndTime = formatter.format(endTime);
+
+	  document.getElementById("gmt-time")
+	    .setAttribute("title", `Local Time: ${localStartTime} to ${localEndTime}`);
+	})();
+</script>

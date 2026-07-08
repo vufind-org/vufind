@@ -1,43 +1,10 @@
-$blue: #336e99;
-$green: #8dc63f;
-$orange: #ff8800;
-$lgrey: #dddfdd;
-$grey: #666766;
-$dgrey: #333344;
+@use "radix";
 
-.t-black {
-  color: #000;
-}
-.t-white {
-  color: #fff;
-}
+// Core palette
 
-.blue {
-  background: $blue;
-  color: #fff;
-}
-
-.green {
-  background: $green;
-  color: #000;
-}
-
-.orange {
-  background: $orange;
-  color: #fff;
-}
-
-.lgrey {
-  background: $lgrey;
-  color: $grey;
-}
-
-.grey {
-  background: $grey;
-  color: #fff;
-}
-
-.dgrey {
-  background: $dgrey;
-  color: #fff;
-}
+$back: radix.$teal-01;
+$soft: light-dark(white, black);
+$edge: radix.$teal-07;
+$mute: radix.$olive-11;
+$text: radix.$olive-12;
+$bold: light-dark(black, white);
