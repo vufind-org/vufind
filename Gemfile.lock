@@ -13,8 +13,12 @@ GEM
       http_parser.rb (~> 0)
     eventmachine (1.2.7)
     ffi (1.17.4)
+    ffi (1.17.4-x64-mingw-ucrt)
     forwardable-extended (2.6.0)
     google-protobuf (4.35.1)
+      bigdecimal
+      rake (~> 13.3)
+    google-protobuf (4.35.1-x64-mingw-ucrt)
       bigdecimal
       rake (~> 13.3)
     http_parser.rb (0.8.1)
@@ -68,6 +72,8 @@ GEM
     sass-embedded (1.101.0)
       google-protobuf (~> 4.31)
       rake (>= 13)
+    sass-embedded (1.101.0-x64-mingw-ucrt)
+      google-protobuf (~> 4.31)
     terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
     unicode-display_width (2.6.0)
@@ -75,6 +81,7 @@ GEM
 
 PLATFORMS
   ruby
+  x64-mingw-ucrt
 
 DEPENDENCIES
   jekyll (~> 4.4)
