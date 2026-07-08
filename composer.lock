@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4eeb82516a2599bd39ba57ac5e0a449e",
+    "content-hash": "b922f1ac677508aa3ce2752917c6a265",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -13657,24 +13657,24 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.55",
+            "version": "11.5.56",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "adc7262fccc12de2b30f12a8aa0b33775d814f00"
+                "reference": "5f83edffa6967c3db468d48a695ec7bcb02e9256"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/adc7262fccc12de2b30f12a8aa0b33775d814f00",
-                "reference": "adc7262fccc12de2b30f12a8aa0b33775d814f00",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5f83edffa6967c3db468d48a695ec7bcb02e9256",
+                "reference": "5f83edffa6967c3db468d48a695ec7bcb02e9256",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
+                "ext-filter": "*",
                 "ext-json": "*",
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
-                "ext-xml": "*",
                 "ext-xmlwriter": "*",
                 "myclabs/deep-copy": "^1.13.4",
                 "phar-io/manifest": "^2.0.4",
@@ -13739,31 +13739,15 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.55"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.56"
             },
             "funding": [
                 {
-                    "url": "https://phpunit.de/sponsors.html",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/sebastianbergmann",
-                    "type": "github"
-                },
-                {
-                    "url": "https://liberapay.com/sebastianbergmann",
-                    "type": "liberapay"
-                },
-                {
-                    "url": "https://thanks.dev/u/gh/sebastianbergmann",
-                    "type": "thanks_dev"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpunit/phpunit",
-                    "type": "tidelift"
+                    "url": "https://phpunit.de/sponsoring.html",
+                    "type": "other"
                 }
             ],
-            "time": "2026-02-18T12:37:06+00:00"
+            "time": "2026-07-06T14:52:39+00:00"
         },
         {
             "name": "phrity/net-stream",
@@ -13995,25 +13979,27 @@
         },
         {
             "name": "pietercolpaert/hardf",
-            "version": "0.5.0",
+            "version": "0.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pietercolpaert/hardf.git",
-                "reference": "8dbfb3104ab70e7d43f36016b8ed35e3666ff18c"
+                "reference": "bc07d4dfd034c57bdbc50d20e86b36be19ec0ddb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pietercolpaert/hardf/zipball/8dbfb3104ab70e7d43f36016b8ed35e3666ff18c",
-                "reference": "8dbfb3104ab70e7d43f36016b8ed35e3666ff18c",
+                "url": "https://api.github.com/repos/pietercolpaert/hardf/zipball/bc07d4dfd034c57bdbc50d20e86b36be19ec0ddb",
+                "reference": "bc07d4dfd034c57bdbc50d20e86b36be19ec0ddb",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1|^8.0"
             },
             "require-dev": {
+                "easyrdf/easyrdf": "^1.1",
                 "friendsofphp/php-cs-fixer": "*",
-                "phpstan/phpstan": "^0.12.36",
-                "phpunit/phpunit": "^7 || ^8 || ^9"
+                "phpstan/phpstan": "^2.2",
+                "phpunit/phpunit": "^7 || ^8 || ^9",
+                "semsol/arc2": "^3.1"
             },
             "type": "library",
             "autoload": {
@@ -14031,12 +14017,6 @@
                     "email": "pieter.colpaert@ugent.be",
                     "homepage": "https://pietercolpaert.be",
                     "role": "developer"
-                },
-                {
-                    "name": "Ruben Verborgh",
-                    "email": "ruben.verborgh@ugent.be",
-                    "homepage": "https://ruben.verborgh.org",
-                    "role": "developer"
                 }
             ],
             "description": "A fast parser for RDF serializations such as turtle, n-triples, n-quads, trig and N3",
@@ -14052,6 +14032,7 @@
                 "open data",
                 "quads",
                 "rdf1.1",
+                "rdf1.2",
                 "streaming",
                 "trig"
             ],
@@ -14059,7 +14040,7 @@
                 "issues": "https://github.com/pietercolpaert/hardf/issues",
                 "source": "https://github.com/pietercolpaert/hardf"
             },
-            "time": "2024-02-28T12:25:10+00:00"
+            "time": "2026-06-03T18:57:18+00:00"
         },
         {
             "name": "react/cache",
@@ -14589,21 +14570,21 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.4.5",
+            "version": "2.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "cbd86024be5014d3c14d9f0b3f7aae8ecbffd62c"
+                "reference": "adaa18d7cd6b3c960967cfbc98c03efb3116ac0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/cbd86024be5014d3c14d9f0b3f7aae8ecbffd62c",
-                "reference": "cbd86024be5014d3c14d9f0b3f7aae8ecbffd62c",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/adaa18d7cd6b3c960967cfbc98c03efb3116ac0e",
+                "reference": "adaa18d7cd6b3c960967cfbc98c03efb3116ac0e",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4|^8.0",
-                "phpstan/phpstan": "^2.1.56"
+                "phpstan/phpstan": "^2.2.2"
             },
             "conflict": {
                 "rector/rector-doctrine": "*",
@@ -14637,7 +14618,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.4.5"
+                "source": "https://github.com/rectorphp/rector/tree/2.5.4"
             },
             "funding": [
                 {
@@ -14645,7 +14626,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-26T21:03:22+00:00"
+            "time": "2026-07-06T12:41:46+00:00"
         },
         {
             "name": "sebastian/cli-parser",
