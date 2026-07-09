@@ -182,11 +182,9 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $results->performAndProcessSearch();
 
         // For a page parameter being out of the results list,
-        // we want load the last page available
-        $totalResults = $results->getResultTotal();
-        $limit = $paramsObj->getLimit();
-        $lastPage = $limit ? ceil($totalResults / $limit) : 1;
-        if ($totalResults > 0 && $paramsObj->getPage() > $lastPage) {
+        // we want to load the last page available
+        $lastPage = $results->getLastAvailablePage();
+        if ($results->getResultTotal() > 0 && $paramsObj->getPage() > $lastPage) {
             $paramsObj->setPage($lastPage);
             $results->performAndProcessSearch();
         }

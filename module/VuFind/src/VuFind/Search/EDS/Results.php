@@ -145,10 +145,7 @@ class Results extends \VuFind\Search\Base\Results
 
             // For a page parameter being out of the results list, we do not want
             // to return any results from another page.
-            $page = $params->getPage();
-            $limit = $params->getLimit();
-            $lastPage = $limit ? ceil($this->resultTotal / $limit) : 1;
-            if ($this->resultTotal > 0 && $page > $lastPage) {
+            if ($this->getResultTotal() > 0 && $params->getPage() > $this->getLastAvailablePage()) {
                 $this->results = [];
             }
         }
