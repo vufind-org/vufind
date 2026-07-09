@@ -106,7 +106,7 @@
         "slm/locale": "1.2.0",
         "spomky-labs/otphp": "11.4.3",
         "steverhoades/oauth2-openid-connect-server": "3.0.1",
-        "stripe/stripe-php": "v18.2.0",
+        "stripe/stripe-php": "v20.3.0",
         "swagger-api/swagger-ui": "5.32.6",
         "symfony/console": "6.4.25",
         "symfony/mailer": "^7.4",
