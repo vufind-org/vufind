@@ -136,7 +136,7 @@
         "phpunit/phpcov": "^10",
         "phpunit/phpunit": "11.5.56",
         "pietercolpaert/hardf": "0.6.2",
-        "rector/rector": "2.5.4",
+        "rector/rector": "2.4.5",
         "squizlabs/php_codesniffer": "4.0.1"
     },
     "suggest": {
