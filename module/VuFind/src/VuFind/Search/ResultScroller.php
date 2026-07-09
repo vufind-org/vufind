@@ -579,7 +579,7 @@ class ResultScroller
             }
         }
 
-        // The results total of the initial search might have changed until we reach the end of the list.
+        // The results total of the initial search might have changed by the time we reach the end of the list.
         // Therefore, we should update it here to avoid confusion.
         if (!($retVal['nextRecord'] ?? null) && $currentPos = $retVal['currentPosition'] ?? null) {
             $this->data->total = $currentPos;
