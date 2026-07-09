@@ -35,6 +35,8 @@ use Generator;
 use PHPUnit\Framework\ExpectationFailedException;
 use VuFindTest\Feature\DemoDriverTestTrait;
 
+use function count;
+
 /**
  * Mink channels test class.
  *
@@ -455,6 +457,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
         $this->assertCount($itemsPerRow, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
         $rowsToLoad = ceil($expectedTotalResults / $itemsPerRow) - 1;
+        $allItems = [];
         for ($i = 0; $i < $rowsToLoad; $i++) {
             $button = $this->findCss($channel, '.channel-load-more-btn');
             $button->click();
@@ -473,10 +476,12 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 $this->assertEquals('Load more items', $button->getText(), "Unexpected button label on iteration $i");
                 $this->assertEquals('Load more items into Format: Book', $button->getAttribute('aria-label'));
             }
+            $previousCount = count($allItems);
+            $allItems = $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)');
+            $this->assertGreaterThan($previousCount, count($allItems));
         }
         // Make sure that we not only have the expected number of items but also that they all have different
         // IDs. (This prevents regression of a bug where the same page of results got loaded multiple times).
-        $allItems = $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)');
         $allIds = array_unique(array_map(fn ($item) => $item->getAttribute('data-record-id'), $allItems));
         $this->assertCount($expectedTotalResults, $allItems);
         $this->assertCount($expectedTotalResults, $allIds);
