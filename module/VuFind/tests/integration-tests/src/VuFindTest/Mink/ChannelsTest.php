@@ -455,11 +455,13 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $channelId = $channel->getAttribute('id');
         $this->assertSame('Format: Book', $this->findCssAndGetText($channel, 'h2.channel-title'));
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
-        $this->assertCount($itemsPerRow, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        $allItemsSelector = 'li.channel-item:not(.hidden-batch-item)';
+        $allItems = $channel->findAll('css', $allItemsSelector);
+        $this->assertCount($itemsPerRow, $allItems);
         $rowsToLoad = ceil($expectedTotalResults / $itemsPerRow) - 1;
-        $allItems = [];
+        $buttonSelector = '.channel-load-more-btn';
         for ($i = 0; $i < $rowsToLoad; $i++) {
-            $button = $this->findCss($channel, '.channel-load-more-btn');
+            $button = $this->findCss($channel, $buttonSelector);
             $button->click();
             $this->waitForPageLoad($page);
             // Confirm that the button's labels remain appropriate after clicks:
@@ -469,6 +471,11 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 ? "$selector.classList.contains('disabled')"
                 : "!$selector.textContent.startsWith('Loading')";
             $this->waitStatement("$selector && $secondarySelector");
+            // Make sure the button click actually registered and loaded more items:
+            $previousCount = count($allItems);
+            $allItems = $channel->findAll('css', $allItemsSelector);
+            $this->assertGreaterThan($previousCount, count($allItems));
+
             // When all results are loaded, "load more" button will be disabled:
             if ($lastRow) {
                 $this->assertStringContainsString('disabled', (string)$button->getAttribute('class'));
@@ -476,9 +483,6 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 $this->assertEquals('Load more items', $button->getText(), "Unexpected button label on iteration $i");
                 $this->assertEquals('Load more items into Format: Book', $button->getAttribute('aria-label'));
             }
-            $previousCount = count($allItems);
-            $allItems = $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)');
-            $this->assertGreaterThan($previousCount, count($allItems));
         }
         // Make sure that we not only have the expected number of items but also that they all have different
         // IDs. (This prevents regression of a bug where the same page of results got loaded multiple times).
