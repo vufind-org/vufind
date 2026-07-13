@@ -130,8 +130,8 @@ VuFind.register('embedded', function embedded() {
     if (!link.classList.contains('js-setup')) {
       mediaBody.insertBefore(link, mediaBody.firstChild);
       result.classList.add('embedded');
-      shortNode.classList.add('collapse');
-      linksNode.classList.add('collapse');
+      shortNode.classList.add('collapse', 'show');
+      linksNode.classList.add('collapse', 'show');
       longNode = document.createElement('div');
       longNode.classList.add('long-view', 'collapse');
 
