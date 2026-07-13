@@ -96,7 +96,7 @@ class Payment implements PaymentEntityInterface
      * @var User
      */
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\UserEntityInterface::class)]
     protected User $user;
 
     /**
