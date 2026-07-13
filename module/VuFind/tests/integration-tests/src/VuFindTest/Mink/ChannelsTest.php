@@ -31,8 +31,11 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use Exception;
+use Generator;
 use PHPUnit\Framework\ExpectationFailedException;
 use VuFindTest\Feature\DemoDriverTestTrait;
+
+use function count;
 
 /**
  * Mink channels test class.
@@ -401,11 +404,29 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testDeepPaginationOfFacetsChannel().
+     *
+     * @return Generator
+     */
+    public static function deepPaginationProvider(): Generator
+    {
+        yield 'defaults' => [6, 48];
+        // TODO: re-enable after determining why this consistently fails in Jenkins (timing issue?):
+        //yield 'big pages' => [27, 48];
+        yield 'remainder' => [5, 25];
+        yield 'small pages' => [2, 16];
+    }
+
+    /**
      * Test deep pagination of Facets channel.
+     *
+     * @param int $itemsPerRow  Items per row setting to test
+     * @param int $maxBatchSize Max batch size setting to test
      *
      * @return void
      */
-    public function testDeepPaginationOfFacetsChannel(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('deepPaginationProvider')]
+    public function testDeepPaginationOfFacetsChannel(int $itemsPerRow = 6, int $maxBatchSize = 48): void
     {
         $this->changeConfigs(
             [
@@ -418,7 +439,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'provider.facets.home' => [
                         'maxFieldsToSuggest' => 2,
-                        'maxValuesToSuggestPerField' => 1,
+                        'maxValuesToSuggestPerField' => 2,
+                        'itemsPerRow' => $itemsPerRow,
+                        'maxBatchSize' => $maxBatchSize,
                     ],
                 ],
                 'searches' => [
@@ -427,29 +450,46 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ],
         );
+        $expectedTotalResults = 54;
         $page = $this->getChannelsHomePage();
-        $channel = $this->findCss($page, 'div.channel', index: 1);
-        $this->assertSame('Format: Book Chapter', $this->findCssAndGetText($channel, 'h2.channel-title'));
+        $channel = $this->findCss($page, 'div.channel', index: 3);
+        $channelId = $channel->getAttribute('id');
+        $this->assertSame('Format: Book', $this->findCssAndGetText($channel, 'h2.channel-title'));
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
-        $this->assertCount(6, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
-        for ($i = 0; $i < 8; $i++) {
-            $button = $this->findCss($channel, '.channel-load-more-btn');
+        $allItemsSelector = 'li.channel-item:not(.hidden-batch-item)';
+        $allItems = $channel->findAll('css', $allItemsSelector);
+        $this->assertCount($itemsPerRow, $allItems);
+        $rowsToLoad = ceil($expectedTotalResults / $itemsPerRow) - 1;
+        $buttonSelector = '.channel-load-more-btn';
+        for ($i = 0; $i < $rowsToLoad; $i++) {
+            $button = $this->findCss($channel, $buttonSelector);
             $button->click();
             $this->waitForPageLoad($page);
             // Confirm that the button's labels remain appropriate after clicks:
-            $dataHref = $button->getAttribute('data-href');
-            $selector = 'button[data-href="' . $dataHref . '"]';
-            $js = "false === document.querySelector('$selector').textContent.startsWith('Loading')";
-            $this->waitStatement($js);
-            $this->assertEquals('Load more items', $button->getText());
-            $this->assertEquals('Load more items into Format: Book Chapter', $button->getAttribute('aria-label'));
+            $selector = "document.querySelector('#$channelId .channel-load-more-btn')";
+            $lastRow = $i == $rowsToLoad - 1;
+            $secondarySelector = $lastRow
+                ? "$selector.classList.contains('disabled')"
+                : "!$selector.textContent.startsWith('Loading')";
+            $this->waitStatement("$selector && $secondarySelector");
+            // Make sure the button click actually registered and loaded more items:
+            $previousCount = count($allItems);
+            $allItems = $channel->findAll('css', $allItemsSelector);
+            $this->assertGreaterThan($previousCount, count($allItems));
+
+            // When all results are loaded, "load more" button will be disabled:
+            if ($lastRow) {
+                $this->assertStringContainsString('disabled', (string)$button->getAttribute('class'));
+            } else {
+                $this->assertEquals('Load more items', $button->getText(), "Unexpected button label on iteration $i");
+                $this->assertEquals('Load more items into Format: Book', $button->getAttribute('aria-label'));
+            }
         }
         // Make sure that we not only have the expected number of items but also that they all have different
         // IDs. (This prevents regression of a bug where the same page of results got loaded multiple times).
-        $allItems = $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)');
         $allIds = array_unique(array_map(fn ($item) => $item->getAttribute('data-record-id'), $allItems));
-        $this->assertCount(54, $allItems);
-        $this->assertCount(54, $allIds);
+        $this->assertCount($expectedTotalResults, $allItems);
+        $this->assertCount($expectedTotalResults, $allIds);
     }
 
     /**

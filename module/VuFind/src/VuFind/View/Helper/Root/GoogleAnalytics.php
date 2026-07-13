@@ -50,7 +50,7 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     protected $key;
 
     /**
-     * Options to pass to the ga() create command.
+     * Options to pass to the gtag() config command.
      *
      * @var string
      */
@@ -74,7 +74,7 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
             $options = [];
         }
         $this->key = $key;
-        $this->createOptions = $options['create_options_js'] ?? "'auto'";
+        $this->createOptions = $options['create_options_js'] ?? '{}';
     }
 
     /**

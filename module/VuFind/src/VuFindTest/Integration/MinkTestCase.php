@@ -527,15 +527,21 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get base URL of running VuFind instance.
      *
-     * @param string $path Relative path to add to base URL.
+     * @param string $path     Relative or absolute path to add to base URL/hostname.
+     * @param bool   $relative Is $path relative to the base URL (true), or an absolute path on the hostname (false)?
      *
      * @return string
      */
-    protected function getVuFindUrl(string $path = ''): string
+    protected function getVuFindUrl(string $path = '', bool $relative = true): string
     {
         $base = getenv('VUFIND_URL');
         if (empty($base)) {
             $base = 'http://localhost/vufind';
+        }
+        if (!$relative) {
+            $urlParts = parse_url($base);
+            $port = empty($urlParts['port']) ? '' : ":{urlParts['port']}";
+            return "{$urlParts['scheme']}://{$urlParts['host']}{$port}{$path}";
         }
         return $base . $path;
     }

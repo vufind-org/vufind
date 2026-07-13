@@ -92,18 +92,14 @@ class ChannelLoader
                 [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
                 $config = $this->config[$configSection] ?? [];
 
-                // Calculate batch size
-                $itemsPerRow = $config['itemsPerRow'] ?? 6;
-                $rowsPerPage = $config['rowsPerPage'] ?? 1;
-                $pageSize = $itemsPerRow * $rowsPerPage;
-                $batchSize = self::calcBatchSize($itemsPerRow, $rowsPerPage);
-
-                // Pass to view
+                // Calculate batch size and pass to view
+                $batchOptions = $this->performBatchCalculations($config);
                 $current['config'] = [
-                    'batchSize' => $batchSize,
-                    'pageSize' => $pageSize,
-                    'rowSize' => $itemsPerRow,
+                    'batchSize' => $batchOptions['batchSize'],
+                    'pageSize' => $batchOptions['itemsPerRow'] * $batchOptions['rowsPerPage'],
+                    'rowSize' => $batchOptions['itemsPerRow'],
                 ];
+
                 $channels[] = $current;
             } elseif (isset($current['token'])) {
                 // Add token to related tokens map
