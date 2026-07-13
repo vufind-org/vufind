@@ -55,7 +55,14 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @var string
      */
-    protected $channelSelector = 'div.channel';
+    protected string $channelSelector = 'div.channel';
+
+    /**
+     * Selector for finding all visible items in a channel.
+     *
+     * @var string
+     */
+    protected string $visibleItemsSelector = 'li.channel-item:not(.hidden-batch-item)';
 
     /**
      * Get a reference to a standard channels home page.
@@ -100,12 +107,33 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testBasicRecord.
+     *
+     * @return Generator
+     */
+    public static function basicRecordProvider(): Generator
+    {
+        yield 'default config' => [6, []];
+        yield 'custom similaritems provider config' => [
+            5,
+            ['channels' => ['provider.similaritems' => ['itemsPerRow' => 5]]],
+        ];
+    }
+
+    /**
      * Make sure the record page works, channels exists, search.
+     *
+     * @param int   $expectedSimilarItems Expected count of visible items in first similar items channel
+     * @param array $extraConfigs         Extra configurations to apply during the test
      *
      * @return void
      */
-    public function testBasicRecord(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('basicRecordProvider')]
+    public function testBasicRecord(int $expectedSimilarItems, array $extraConfigs = []): void
     {
+        if ($extraConfigs) {
+            $this->changeConfigs($extraConfigs);
+        }
         $id = 'testsample1';
         $page = $this->getChannelsRecordPage($id);
         // Channels are here
@@ -116,8 +144,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure appropriate similar records are displayed:
         $this->assertSame(
             'Similar Items: Journal of rational emotive therapy :',
-            $this->findCssAndGetText($page, 'h2.channel-title')
+            $this->findCssAndGetText($channels[0], 'h2.channel-title')
         );
+        $this->assertCount($expectedSimilarItems, $channels[0]->findAll('css', $this->visibleItemsSelector));
         // Similar record drop-down menu contains appropriate view record link:
         $link = $this->findCss($page, '.channel-options a');
         $this->assertEquals('View Record', $link->getText());
@@ -456,8 +485,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $channelId = $channel->getAttribute('id');
         $this->assertSame('Format: Book', $this->findCssAndGetText($channel, 'h2.channel-title'));
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
-        $allItemsSelector = 'li.channel-item:not(.hidden-batch-item)';
-        $allItems = $channel->findAll('css', $allItemsSelector);
+        $allItems = $channel->findAll('css', $this->visibleItemsSelector);
         $this->assertCount($itemsPerRow, $allItems);
         $rowsToLoad = ceil($expectedTotalResults / $itemsPerRow) - 1;
         $buttonSelector = '.channel-load-more-btn';
@@ -474,7 +502,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             $this->waitStatement("$selector && $secondarySelector");
             // Make sure the button click actually registered and loaded more items:
             $previousCount = count($allItems);
-            $allItems = $channel->findAll('css', $allItemsSelector);
+            $allItems = $channel->findAll('css', $this->visibleItemsSelector);
             $this->assertGreaterThan($previousCount, count($allItems));
 
             // When all results are loaded, "load more" button will be disabled:
