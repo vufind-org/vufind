@@ -1,4 +1,4 @@
-/*global process, require */
+/*global Buffer, process, require */
 /*eslint-disable no-console -- console needed for CLI output */
 
 if (
@@ -317,7 +317,7 @@ function getLoadPaths(themeName) {
     }
 
     // Now move up to parent theme:
-    var matches = config.match(/["']extends["']\s*=>\s*['"]([\w\-]+)['"]/);
+    var matches = config.match(/["']extends["']\s*=>\s*['"]([\w-]+)['"]/);
 
     // "extends" set to "false" or missing entirely? We've hit the end of the line:
     if (matches === null || matches[1] === "false") {
@@ -327,7 +327,7 @@ function getLoadPaths(themeName) {
     currName = matches[1];
   }
 
-  return paths.map((path) => `${path}/`);
+  return paths.map((filePath) => `${filePath}/`);
 }
 
 /**
