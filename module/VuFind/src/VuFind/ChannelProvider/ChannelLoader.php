@@ -76,6 +76,26 @@ class ChannelLoader
     }
 
     /**
+     * Load the configuration settings for the specified channel provider.
+     *
+     * @param string $providerId Provider ID
+     *
+     * @return array
+     */
+    protected function getConfigByProviderId(string $providerId): array
+    {
+        // The provider ID consists of a service name and an optional config
+        // section -- break out the relevant parts:
+        [$serviceName, $configSection] = explode(':', $providerId . ':');
+
+        // Load configuration, using default value if necessary:
+        if (empty($configSection)) {
+            $configSection = "provider.$serviceName";
+        }
+        return $this->config[$configSection] ?? [];
+    }
+
+    /**
      * Add configuration values needed by the templates to the view context.
      *
      * @param array $context String-keyed map of values for the View
@@ -89,16 +109,8 @@ class ChannelLoader
         for ($i = 0; $i < count($context['channels'] ?? []); $i++) {
             $current = $context['channels'][$i];
             if (isset($current['contents'])) {
-                [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
-
-                // Load configuration, using default value if necessary:
-                if (empty($configSection)) {
-                    $configSection = "provider.$serviceName";
-                }
-
-                $config = $this->config[$configSection] ?? [];
-
                 // Calculate batch size and pass to view
+                $config = $this->getConfigByProviderId($context['channels'][$i]['providerId']);
                 $batchOptions = $this->performBatchCalculations($config);
                 $current['config'] = [
                     'batchSize' => $batchOptions['batchSize'],
@@ -197,20 +209,12 @@ class ChannelLoader
      */
     protected function getChannelProvider($providerId)
     {
-        // The provider ID consists of a service name and an optional config
-        // section -- break out the relevant parts:
-        [$serviceName, $configSection] = explode(':', $providerId . ':');
-
-        // Load configuration, using default value if necessary:
-        if (empty($configSection)) {
-            $configSection = "provider.$serviceName";
-        }
-        $options = $this->config[$configSection] ?? [];
-
+        // Extract service name from provider ID:
+        [$serviceName] = explode(':', $providerId);
         // Load the service, and configure appropriately:
         $provider = $this->channelManager->get($serviceName);
         $provider->setProviderId($providerId);
-        $provider->setOptions($options);
+        $provider->setOptions($this->getConfigByProviderId($providerId));
         return $provider;
     }
 
