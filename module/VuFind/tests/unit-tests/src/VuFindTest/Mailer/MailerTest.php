@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * PHP version 8
  *
@@ -31,14 +31,14 @@ namespace VuFindTest\Mailer;
 
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
+use VuFind\Mailer\MailerFactory;
 use VuFindTest\Container\MockContainer;
 
 use function count;
 
 /**
- * Mailer Test Class
+ * Mailer Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -224,7 +224,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject in the body
+     * Test sending an email with subject in the body.
      *
      * @return void
      */
@@ -250,7 +250,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sending an email with subject not allowed in the body
+     * Test sending an email with subject not allowed in the body.
      *
      * @return void
      */
@@ -334,7 +334,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test that we only accept one recipient by default
+     * Test that we only accept one recipient by default.
      *
      * @return void
      */
@@ -386,6 +386,11 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnknownException()
     {
+        // Behavior of getDisplayMessage() in VuFind\Exception\Mail depends on
+        // environment
+        if (APPLICATION_ENV !== 'testing') {
+            $this->markTestSkipped('Unexpected APPLICATION_ENV: ' . APPLICATION_ENV);
+        }
         $mailer = $this->createMock(Mailer::class);
         $mailer->expects($this->once())->method('send')->willThrowException(
             new \VuFind\Exception\Mail(
@@ -396,12 +401,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         try {
             $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
         } catch (\VuFind\Exception\Mail $e) {
-            $this->assertEquals('email_failure', $e->getDisplayMessage());
+            $this->assertSame('email_failure', $e->getDisplayMessage());
         }
     }
 
     /**
-     * Test sendLink
+     * Test sendLink.
      *
      * @return void
      */
@@ -447,7 +452,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test sendRecord
+     * Test sendRecord.
      *
      * @return void
      */
@@ -508,7 +513,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create mailer with a mock transport
+     * Create mailer with a mock transport.
      *
      * @param ?callable $callback Mock send method result callback
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Related record plugin factory
+ * Related record plugin factory.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Related record plugin factory
+ * Related record plugin factory.
  *
  * @category VuFind
  * @package  Related_Records
@@ -44,7 +44,7 @@ use Psr\Container\ContainerInterface;
 class BookplateFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

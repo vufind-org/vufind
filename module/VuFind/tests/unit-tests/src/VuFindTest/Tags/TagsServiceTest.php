@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tags Test Class
+ * Tags Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Record\ResourcePopulator;
 use VuFind\Tags\TagsService;
 
 /**
- * Tags Test Class
+ * Tags Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ use VuFind\Tags\TagsService;
 class TagsServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Get an object to test
+     * Get an object to test.
      *
      * @param int                $maxLength         Maximum tag length
      * @param ?ResourcePopulator $resourcePopulator Resource populator service (null for default mock)
@@ -66,7 +66,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test tag parsing
+     * Test tag parsing.
      *
      * @return void
      */
@@ -79,7 +79,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test empty tag parsing
+     * Test empty tag parsing.
      *
      * @return void
      */
@@ -89,7 +89,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deduplication
+     * Test deduplication.
      *
      * @return void
      */
@@ -99,7 +99,7 @@ class TagsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test truncation
+     * Test truncation.
      *
      * @return void
      */

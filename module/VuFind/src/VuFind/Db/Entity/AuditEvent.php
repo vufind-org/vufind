@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for audit_event table
+ * Entity model for audit_event table.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Db\Type\AuditEventType;
 use function is_string;
 
 /**
- * Entity model for audit_event table
+ * Entity model for audit_event table.
  *
  * @category VuFind
  * @package  Database
@@ -103,7 +103,7 @@ class AuditEvent implements AuditEventEntityInterface
      * @var ?Payment
      */
     #[ORM\JoinColumn(name: 'payment_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Payment::class)]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\PaymentEntityInterface::class)]
     protected ?PaymentEntityInterface $payment = null;
 
     /**
@@ -163,7 +163,7 @@ class AuditEvent implements AuditEventEntityInterface
     protected ?array $data = null;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -178,7 +178,8 @@ class AuditEvent implements AuditEventEntityInterface
      */
     public function getDate(): DateTime
     {
-        return $this->date;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->date);
     }
 
     /**

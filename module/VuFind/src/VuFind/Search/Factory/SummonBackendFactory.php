@@ -56,21 +56,21 @@ class SummonBackendFactory extends AbstractBackendFactory
     protected $logger;
 
     /**
-     * VuFind configuration
+     * VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Summon configuration
+     * Summon configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $summonConfig;
 
     /**
-     * Create service
+     * Create service.
      *
      * @param ContainerInterface $sm      Service manager
      * @param string             $name    Requested service name (unused)
@@ -119,6 +119,9 @@ class SummonBackendFactory extends AbstractBackendFactory
         // Load credentials:
         $id = $this->config->Summon->apiId ?? null;
         $key = $this->config->Summon->apiKey ?? null;
+        if (null === $id || null === $key) {
+            throw new \Exception('Credentials missing from [Summon] section of config.ini.');
+        }
 
         // Create connector:
         $options = ['authedUser' => $this->isAuthed()];
@@ -159,7 +162,7 @@ class SummonBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin Configuration Controller
+ * Admin Configuration Controller.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ namespace VuFindAdmin\Controller;
 class ConfigController extends AbstractAdmin
 {
     /**
-     * Configuration management
+     * Configuration management.
      *
      * @return \Laminas\View\Model\ViewModel
      */

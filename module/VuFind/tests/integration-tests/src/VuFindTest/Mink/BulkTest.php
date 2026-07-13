@@ -94,19 +94,20 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Assert that the "no items were selected" message is visible in the
-     * lightbox.
+     * Open a lightbox and assert that the "no items were selected" message is visible in the lightbox.
      *
-     * @param Element $page Page element
+     * @param Element $page           Page element
+     * @param string  $buttonSelector CSS selector for the element to click
      *
      * @return void
      */
-    protected function checkForNonSelectedMessage(Element $page): void
+    protected function openLightboxAndCheckForNonSelectedMessage(Element $page, string $buttonSelector): void
     {
-        $this->assertEquals(
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
+        $this->assertSame(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
-            $this->findCssAndGetText($page, '.modal-body .alert-danger')
+            $alert->getText()
         );
     }
 
@@ -122,7 +123,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForLimitExceededMessage(Element $page, $count, $limit): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'Selection of ' . $count . ' items exceeds the limit of '
             . $limit . ' for this action. Please select fewer items.',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
@@ -156,8 +157,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpGenericBulkTest();
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, '#ribbon-email');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, '#ribbon-email');
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
@@ -181,7 +181,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -198,8 +198,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpGenericBulkTest();
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, '#ribbon-save');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, '#ribbon-save');
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a login prompt.
@@ -215,7 +214,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -251,8 +250,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, 'button[name="delete"]');
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, 'button[name="delete"]');
         $this->closeLightbox($page, true);
 
         // Now do it for real:
@@ -261,7 +259,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm contents of confirmation box:
-        $this->assertEquals(
+        $this->assertSame(
             'Title: Journal of rational emotive therapy : Title: Rational living.',
             $this->findCssAndGetText($page, '#modal ul.record-list')
         );
@@ -271,7 +269,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // If all records were deleted, success message should be visible, and delete button should be gone after
         // lightbox is closed.
         $this->waitForLightboxHidden();
-        $this->assertEquals(
+        $this->assertSame(
             'Your saved item(s) were deleted.',
             $this->findCssAndGetText($page, '.alert-success')
         );
@@ -281,14 +279,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to allow testing of top or bottom controls.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function topOrBottomProvider(): array
+    public static function topOrBottomProvider(): \Iterator
     {
-        return [
-            'top button' => [''],
-            'bottom button' => ['bottom_'],
-        ];
+        yield 'top button' => [''];
+        yield 'bottom button' => ['bottom_'];
     }
 
     /**
@@ -306,8 +302,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $buttonSelector = '#' . $idPrefix . 'ribbon-export';
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, $buttonSelector);
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, $buttonSelector);
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
@@ -331,7 +326,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $this->clickCss($page, '.form-cart-export input[name=submitButton]');
         $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
-        $this->assertEquals('Download File', $buttonText);
+        $this->assertSame('Download File', $buttonText);
     }
 
     /**
@@ -349,8 +344,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $buttonSelector = '#' . $idPrefix . 'ribbon-print';
 
         // First try clicking without selecting anything:
-        $this->clickCss($page, $buttonSelector);
-        $this->checkForNonSelectedMessage($page);
+        $this->openLightboxAndCheckForNonSelectedMessage($page, $buttonSelector);
         $page->find('css', '.modal-body .btn')->click();
 
         // Now do it for real -- we should get redirected.
@@ -362,7 +356,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             [, $params] = explode('?', $session->getCurrentUrl());
         }
-        $this->assertEquals(
+        $this->assertSame(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
@@ -431,7 +425,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -454,7 +448,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('MARC');
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
-        $this->assertEquals(
+        $this->assertSame(
             'Download File',
             $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn')
         );

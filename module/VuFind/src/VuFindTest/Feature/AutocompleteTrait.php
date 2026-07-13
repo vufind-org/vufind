@@ -46,29 +46,27 @@ trait AutocompleteTrait
     /**
      * Get an autocomplete item, and assert its value.
      *
-     * @param Element $page Page element
-     * @param string  $text Expected text
+     * @param Element $page      Page element
+     * @param string  $text      Expected text
+     * @param ?string $highlight Expected highlighted text (null for none expected)
      *
      * @return NodeElement
      */
-    public function getAndAssertFirstAutocompleteValue(Element $page, string $text): NodeElement
-    {
-        $tries = 0;
-        $snoozeTime = 0;
-        $loadMsg = 'Loading…';
-        do {
-            $acItemText = $this->findCssAndGetText($page, '.autocomplete-results .ac-item');
-            if (strcasecmp($acItemText, $loadMsg) === 0) {
-                $this->snooze(0.5);
-                $snoozeTime += 0.5 * $this->getSnoozeMultiplier();
-            }
-            $tries++;
-        } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
-        $this->assertEquals(
+    public function getAndAssertFirstAutocompleteValue(
+        Element $page,
+        string $text,
+        ?string $highlight = null
+    ): NodeElement {
+        $this->assertEqualsWithTimeout(
             $text,
-            $acItemText,
-            "Failed after $tries tries, with $snoozeTime seconds snooze time."
+            fn () => $this->findCssAndGetText($page, '.autocomplete-results .ac-item')
         );
+        $acHighlight = $page->find('css', '.autocomplete-results .ac-item b');
+        if ($highlight) {
+            $this->assertEquals($highlight, $acHighlight->getText());
+        } else {
+            $this->assertNull($acHighlight);
+        }
         return $this->findCss($page, '.autocomplete-results .ac-item');
     }
 
@@ -76,24 +74,26 @@ trait AutocompleteTrait
      * For the provided search, assert the first autocomplete value and return the
      * associated page element.
      *
-     * @param Element $page     Page to use for searching
-     * @param string  $search   Search term(s)
-     * @param string  $expected First expected Autocomplete suggestion
-     * @param ?string $type     Search type (null for default)
+     * @param Element $page              Page to use for searching
+     * @param string  $search            Search term(s)
+     * @param string  $expectedText      First expected Autocomplete suggestion
+     * @param ?string $expectedHighlight Highlighted text expected in suggestion (null for none expected)
+     * @param ?string $type              Search type (null for default)
      *
      * @return NodeElement
      */
     protected function assertAutocompleteValueAndReturnItem(
         Element $page,
         string $search,
-        string $expected,
+        string $expectedText,
+        ?string $expectedHighlight = null,
         ?string $type = null,
     ): NodeElement {
         if ($type) {
             $this->findCssAndSetValue($page, '#searchForm_type', $type);
         }
         $this->findCssAndSetValue($page, '#searchForm_lookfor', $search, reFocus: true);
-        $acItem = $this->getAndAssertFirstAutocompleteValue($page, $expected);
+        $acItem = $this->getAndAssertFirstAutocompleteValue($page, $expectedText, $expectedHighlight);
         return $acItem;
     }
 }

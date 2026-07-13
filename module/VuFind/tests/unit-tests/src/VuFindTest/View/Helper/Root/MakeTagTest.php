@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MakeTag view helper Test Class
+ * MakeTag view helper Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\View\Helper\Root\MakeTag;
 use function call_user_func_array;
 
 /**
- * MakeTag view helper Test Class
+ * MakeTag view helper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ use function call_user_func_array;
 class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
 {
     /**
-     * Get makeTag helper with mock view
+     * Get makeTag helper with mock view.
      *
      * @return MakeTag
      */
@@ -59,111 +59,98 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test that responds to common inputs
+     * Test that responds to common inputs.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function htmlAttributesTests(): array
+    public static function htmlAttributesTests(): \Iterator
     {
-        return [
-            'Basic' => [
-                '<button class="btn" id="login">text</button>',
-                ['button', 'text', ['class' => 'btn', 'id' => 'login']],
-            ],
+        yield 'Basic' => [
+            '<button class="btn" id="login">text</button>',
+            ['button', 'text', ['class' => 'btn', 'id' => 'login']],
+        ];
+        yield 'String' => [
+            '<i class="btn">text</i>',
+            ['i', 'text', 'btn'],
+        ];
+        yield 'Empty text' => [
+            '<i class="fa&#x20;fa-awesome"></i>',
+            ['i', '', 'fa fa-awesome'],
+        ];
+        yield 'Truthy attribute' => [
+            '<a href="&#x2F;login" data-lightbox="1">Login</a>',
+            ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]],
+        ];
+    }
 
-            'String' => [
-                '<i class="btn">text</i>',
-                ['i', 'text', 'btn'],
+    /**
+     * Void elements for test below.
+     *
+     * @return \Iterator
+     */
+    public static function helperOptionTests(): \Iterator
+    {
+        yield 'escapes innerHTML' => [
+            '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
+            [
+                'button',
+                'This link is <strong>important</strong>',
             ],
-
-            'Empty text' => [
-                '<i class="fa&#x20;fa-awesome"></i>',
-                ['i', '', 'fa fa-awesome'],
+        ];
+        yield 'does not escape innerHTML with option' => [
+            '<button>This link is <strong>important</strong></button>',
+            [
+                'button',
+                'This link is <strong>important</strong>',
+                [],
+                ['escapeContent' => false],
             ],
-
-            'Truthy attribute' => [
-                '<a href="&#x2F;login" data-lightbox="1">Login</a>',
-                ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]],
+        ];
+        yield 'escape innerHTML with option' => [
+            '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
+            [
+                'button',
+                'This link is <strong>important</strong>',
+                [],
+                ['escapeContent' => true],
             ],
         ];
     }
 
     /**
-     * Void elements for test below
+     * Void elements for test below.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function helperOptionTests(): array
+    public static function voidTags(): \Iterator
     {
-        return [
-            'escapes innerHTML' => [
-                '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
-                [
-                    'button',
-                    'This link is <strong>important</strong>',
-                ],
+        yield 'self closing tag' => [
+            '<img src="book.gif">',
+            [
+                'img',
+                '',
+                ['src' => 'book.gif'],
             ],
-
-            'does not escape innerHTML with option' => [
-                '<button>This link is <strong>important</strong></button>',
-                [
-                    'button',
-                    'This link is <strong>important</strong>',
-                    [],
-                    ['escapeContent' => false],
-                ],
+        ];
+        yield 'class only' => [
+            '<br class="sm&#x3A;hidden">',
+            [
+                'br',
+                '',
+                'sm:hidden',
             ],
-
-            'escape innerHTML with option' => [
-                '<button>This link is &lt;strong&gt;important&lt;/strong&gt;</button>',
-                [
-                    'button',
-                    'This link is <strong>important</strong>',
-                    [],
-                    ['escapeContent' => true],
-                ],
+        ];
+        yield 'non-void tag' => [
+            '<span></span>',
+            [
+                'span',
+                '',
             ],
         ];
     }
 
     /**
-     * Void elements for test below
-     *
-     * @return array
-     */
-    public static function voidTags(): array
-    {
-        return [
-            'self closing tag' => [
-                '<img src="book.gif">',
-                [
-                    'img',
-                    '',
-                    ['src' => 'book.gif'],
-                ],
-            ],
-
-            'class only' => [
-                '<br class="sm&#x3A;hidden">',
-                [
-                    'br',
-                    '',
-                    'sm:hidden',
-                ],
-            ],
-
-            'non-void tag' => [
-                '<span></span>',
-                [
-                    'span',
-                    '',
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * Test all data providers above
+     * Test all data providers above.
      *
      * @param string $expected Expected value
      * @param array  $params   Parameters to test
@@ -184,25 +171,25 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Good tag names for test below
+     * Good tag names for test below.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function validTags(): array
+    public static function validTags(): \Iterator
     {
-        return [
-            ['SPAN'], // CAPITAL
-            ['sPaN'], // mIxEdCaSe
-            ['my-custom'],
-            ['my-long-custom'],
-            ['is---this---ok'],
-            ['with-4-number'],
-            ['unicode-·-test-〃'],
-        ];
+        yield ['SPAN'];
+        // CAPITAL
+        yield ['sPaN'];
+        // mIxEdCaSe
+        yield ['my-custom'];
+        yield ['my-long-custom'];
+        yield ['is---this---ok'];
+        yield ['with-4-number'];
+        yield ['unicode-·-test-〃'];
     }
 
     /**
-     * Test tag name edge cases
+     * Test tag name edge cases.
      *
      * @param string $tagName Tag name to use in test
      *
@@ -213,7 +200,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals(
+        $this->assertSame(
             $helper($tagName, ''),
             '<' . $tagName . '></' . $tagName . '>'
         );
@@ -222,25 +209,23 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Bad tag names for test below
+     * Bad tag names for test below.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function invalidTags(): array
+    public static function invalidTags(): \Iterator
     {
-        return [
-            ['nohyphencustom'],
-            ['n0numbers'],
-            ['0-numbers-at-the-start'],
-            ['-must-start-with-letter'],
-            ['em—dash'],
-            ['<double-angles>'],
-            ['?php'],
-        ];
+        yield ['nohyphencustom'];
+        yield ['n0numbers'];
+        yield ['0-numbers-at-the-start'];
+        yield ['-must-start-with-letter'];
+        yield ['em—dash'];
+        yield ['<double-angles>'];
+        yield ['?php'];
     }
 
     /**
-     * Test exception on bad tag names
+     * Test exception on bad tag names.
      *
      * @param string $tagName Tag name to use in test
      *
@@ -260,7 +245,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     }
 
     /**
-     * Test deprecated elements
+     * Test deprecated elements.
      *
      * @return void
      */

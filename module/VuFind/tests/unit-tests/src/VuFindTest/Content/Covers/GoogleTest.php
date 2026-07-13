@@ -80,7 +80,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading with a single ISBN
+     * Test cover loading with a single ISBN.
      *
      * @return void
      */
@@ -108,7 +108,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading with multiple IDs
+     * Test cover loading with multiple IDs.
      *
      * @return void
      */
@@ -136,7 +136,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test cover loading at a larger size
+     * Test cover loading at a larger size.
      *
      * @return void
      */
@@ -216,7 +216,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test invalid (empty) response
+     * Test invalid (empty) response.
      *
      * @return void
      */
@@ -237,7 +237,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test invalid (non-empty, non-parseable) response
+     * Test invalid (non-empty, non-parseable) response.
      *
      * @return void
      */
@@ -261,7 +261,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing downloader
+     * Test missing downloader.
      *
      * @return void
      */
@@ -277,7 +277,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test missing ISBN
+     * Test missing ISBN.
      *
      * @return void
      */

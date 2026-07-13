@@ -12,7 +12,11 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?=$this->component('page-title', ['title' => $this->translate('Your Checked Out Items'), 'headTitle' => $this->translate('Checked Out Items')]);?>
+  <?= $this->component('page-title', [
+      'title' => $this->translate('Your Checked Out Items'),
+      'headTitle' => $this->translate('Checked Out Items'),
+      'level' => 1,
+  ]); ?>
   <?=$this->flashmessages()?>
   <?=$this->methodTimedBlocks('Renewals')?>
 
@@ -203,7 +207,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->accountMenu()->render('checkedout')?>
+  <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'checkedout'])?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

@@ -45,14 +45,14 @@ use function in_array;
 trait FacetLimitTrait
 {
     /**
-     * Default facet result limit
+     * Default facet result limit.
      *
      * @var int
      */
     protected $facetLimit = 30;
 
     /**
-     * Per-field facet result limit
+     * Per-field facet result limit.
      *
      * @var array
      */
@@ -85,7 +85,7 @@ trait FacetLimitTrait
     }
 
     /**
-     * Set Facet Limit
+     * Set Facet Limit.
      *
      * @param int $l the new limit value
      *
@@ -97,7 +97,7 @@ trait FacetLimitTrait
     }
 
     /**
-     * Set Facet Limit by Field
+     * Set Facet Limit by Field.
      *
      * @param array $new Associative array of $field name => $limit
      *
@@ -109,7 +109,7 @@ trait FacetLimitTrait
     }
 
     /**
-     * Get current limit for hierarchical facets
+     * Get current limit for hierarchical facets.
      *
      * @return int
      */
@@ -119,7 +119,7 @@ trait FacetLimitTrait
     }
 
     /**
-     * Set limit for hierarchical facets
+     * Set limit for hierarchical facets.
      *
      * @param int $limit New limit
      *

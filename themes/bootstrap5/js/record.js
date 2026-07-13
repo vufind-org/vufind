@@ -303,7 +303,7 @@ function removeHashFromLocation() {
 
 ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
   // Request the tab via AJAX:
-  let url = '';
+  let url;
   // Needs to be passed to a const or it might be changed in the fetch.then block
   const setHash = _setHash;
   const postData = {};
@@ -441,19 +441,28 @@ function backgroundLoadTab(tabId) {
  * @param {boolean} scrollToTabs Whether to scroll to the tabs section.
  */
 function applyRecordTabHash(scrollToTabs) {
-  const activeLi = document.querySelector('.record-tabs li.active');
+  const recordTabs = document.querySelector('.record-tabs');
+  if (!recordTabs) {
+    return;
+  }
+  const activeLi = recordTabs.querySelector('li.active');
   const activeTab = activeLi ? activeLi.dataset.tab : undefined;
-  const initiallyActiveTab = document.querySelector('.record-tabs li.initiallyActive a');
-  const newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase() : '';
+  const initiallyActiveTab = recordTabs.querySelector('li.initiallyActive a');
+  let newTab = typeof window.location.hash !== 'undefined' ? window.location.hash.toLowerCase().substring(1) : '';
+  const prefix = 'record-tab-';
+
+  if (newTab.startsWith(prefix)) {
+    newTab = newTab.replace(prefix, '');
+  }
 
   // Open tab in url hash
-  if (initiallyActiveTab && (newTab.length <= 1 || newTab === '#tabnav')) {
+  if (initiallyActiveTab && (newTab === '' || newTab === 'tabnav')) {
     initiallyActiveTab.click();
-    if (newTab === '#tabnav') {
+    if (newTab === 'tabnav') {
       initiallyActiveTab.focus();
     }
-  } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
-    const tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
+  } else if (activeTab !== newTab && /^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(newTab)) {
+    const tabLink = recordTabs.querySelector('.' + newTab + ' a');
     if (tabLink) {
       tabLink.click();
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {

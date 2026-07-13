@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Action Helper - Renewals Support Methods
+ * VuFind Action Helper - Renewals Support Methods.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Validator\CsrfInterface;
 use function is_array;
 
 /**
- * Action helper to perform renewal-related actions
+ * Action helper to perform renewal-related actions.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -126,7 +126,7 @@ class Renewals extends AbstractPlugin
                 // Assign Blocks to the Template
                 if (is_array($renewResult['blocks'] ?? null)) {
                     foreach ($renewResult['blocks'] as $block) {
-                        $flashMsg->addMessage($block, 'info');
+                        $flashMsg->addInfoMessage($block);
                     }
                 } elseif (is_array($renewResult['details'] ?? null)) {
                     $bad = $good = 0;
@@ -138,15 +138,25 @@ class Renewals extends AbstractPlugin
                         }
                     }
                     if ($good > 0) {
-                        $flashMsg->addMessage(
-                            ['msg' => 'renew_success_summary', 'tokens' => ['count' => $good], 'icu' => true],
-                            'success'
+                        $flashMsg->addSuccessMessage(
+                            [
+                                'msg' => 'renew_success_summary',
+                                'tokens' => [
+                                    'count' => $good,
+                                ],
+                                'icu' => true,
+                            ]
                         );
                     }
                     if ($bad > 0) {
-                        $flashMsg->addMessage(
-                            ['msg' => 'renew_error_summary', 'tokens' => ['count' => $bad], 'icu' => true],
-                            'error'
+                        $flashMsg->addErrorMessage(
+                            [
+                                'msg' => 'renew_error_summary',
+                                'tokens' => [
+                                    'count' => $bad,
+                                ],
+                                'icu' => true,
+                            ]
                         );
                     }
                 }
@@ -155,11 +165,11 @@ class Renewals extends AbstractPlugin
                 return $renewResult['details'];
             } else {
                 // System failure:
-                $flashMsg->addMessage('renew_error', 'error');
+                $flashMsg->addErrorMessage('renew_error');
             }
         } elseif (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
-            $flashMsg->addMessage('renew_empty_selection', 'error');
+            $flashMsg->addErrorMessage('renew_empty_selection');
         }
 
         return [];

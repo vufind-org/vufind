@@ -29,16 +29,21 @@
 
 namespace VuFindTest\Integration;
 
+use Behat\Mink\Driver\CoreDriver;
 use Behat\Mink\Driver\Selenium2Driver;
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Element\TraversableElement;
 use DMore\ChromeDriver\ChromeDriver;
 use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+use WebSocket\ConnectionException;
 
 use function call_user_func;
-use function floatval;
+use function count;
 use function in_array;
 use function intval;
 use function is_callable;
@@ -60,38 +65,66 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\RemoteCoverageTrait;
 
+    /**
+     * Default timeout in milliseconds.
+     *
+     * @var int
+     */
     public const DEFAULT_TIMEOUT = 5000;
 
     /**
-     * Modified configurations
+     * Default retry delay in milliseconds.
+     *
+     * @var int
+     */
+    public const DEFAULT_RETRY_DELAY = 1000;
+
+    /**
+     * Default number of retries for retryable actions.
+     *
+     * Note: 5 means the initial try + 5 retries for a total of 6 tries.
+     *
+     * @var int
+     */
+    public const DEFAULT_RETRY_COUNT = 5;
+
+    /**
+     * Modified configurations.
      *
      * @var array
      */
     protected $modifiedConfigs = [];
 
     /**
-     * Modified yaml configurations
+     * Modified yaml configurations.
      *
      * @var array
      */
     protected $modifiedYamlConfigs = [];
 
     /**
-     * Mink session
+     * Mink session.
      *
-     * @var Session
+     * @var ?Session
      */
-    protected $session;
+    protected $session = null;
 
     /**
-     * Configuration file path resolver
+     * Shared Mink session.
+     *
+     * @var ?Session
+     */
+    protected static $sharedSession = null;
+
+    /**
+     * Configuration file path resolver.
      *
      * @var PathResolver
      */
     protected $pathResolver;
 
     /**
-     * Selector for an open button group dropdown menu
+     * Selector for an open button group dropdown menu.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -100,7 +133,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $btnGroupDropdownMenuSelector = '.btn-group.open .dropdown-menu, .btn-group .dropdown-menu.show';
 
     /**
-     * Selector for first item in a dropdown menu
+     * Selector for first item in a dropdown menu.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -110,7 +143,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         = '.mainbody .open .dropdown-menu li:nth-child(2) a, .mainbody .dropdown-menu.show li:nth-child(2) a';
 
     /**
-     * Selector for popover content
+     * Selector for popover content.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -119,7 +152,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $popoverContentSelector = '.popover-body, .popover-content';
 
     /**
-     * Selector for an open modal dialog
+     * Selector for an open modal dialog.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -128,7 +161,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $openModalSelector = '#modal.in, #modal.show';
 
     /**
-     * Selector for a button link in an open modal dialog
+     * Selector for a button link in an open modal dialog.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -137,7 +170,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $openModalButtonLinkSelector = '#modal.in a.btn, #modal.show a.btn';
 
     /**
-     * Selector for a username field in open modal dialog
+     * Selector for a username field in open modal dialog.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -146,7 +179,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $openModalUsernameFieldSelector = '#modal.in [name="username"], #modal.show [name="username"]';
 
     /**
-     * Selector for next page link
+     * Selector for next page link.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -155,7 +188,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $pageNextSelector = 'a.page-next, .page-next a';
 
     /**
-     * Selector for previous page link
+     * Selector for previous page link.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -164,7 +197,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $pagePrevSelector = 'a.page-prev, .page-prev a';
 
     /**
-     * Selector for active record tab
+     * Selector for active record tab.
      *
      * First for Bootstrap 3, second for Bootstrap 5
      *
@@ -173,7 +206,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
 
     /**
-     * Get name of the current test
+     * Get name of the current test.
      *
      * @return string
      */
@@ -196,7 +229,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeConfigs($configs, $replace = [])
+    protected function changeConfigs(array $configs, array $replace = []): void
     {
         foreach ($configs as $file => $settings) {
             $this->changeConfigFile($file, $settings, in_array($file, $replace));
@@ -216,7 +249,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeYamlConfigs($configs, $replace = [])
+    protected function changeYamlConfigs(array $configs, array $replace = []): void
     {
         foreach ($configs as $file => $settings) {
             $this->changeYamlConfigFile($file, $settings, in_array($file, $replace));
@@ -295,7 +328,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function changeYamlConfigFile($configName, $settings, $replace = false)
+    protected function changeYamlConfigFile(string $configName, array $settings, bool $replace = false): void
     {
         $file = $configName . '.yaml';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
@@ -318,7 +351,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get configuration from an ini file
+     * Get configuration from an ini file.
      *
      * Note: This is just a simple ini file reader and does not handle inheritance
      *
@@ -326,7 +359,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getConfig($configName = 'config'): array
+    protected function getConfig(string $configName = 'config'): array
     {
         $file = $configName . '.ini';
         $configPath = $this->pathResolver->getLocalConfigPath($file, null, true);
@@ -340,7 +373,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get current theme name
+     * Get current theme name.
      *
      * @return string
      */
@@ -351,33 +384,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Sleep if necessary.
-     *
-     * @param int $secs Seconds to sleep
-     *
-     * @return void
-     */
-    protected function snooze($secs = 1)
-    {
-        $snoozeMultiplier = $this->getSnoozeMultiplier();
-        if ($snoozeMultiplier <= 0) {
-            $snoozeMultiplier = 1;
-        }
-        usleep(1000000 * $secs * $snoozeMultiplier);
-    }
-
-    /**
-     * Get the snooze multiplier.
-     *
-     * @return float
-     */
-    protected function getSnoozeMultiplier(): float
-    {
-        return floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
-    }
-
-    /**
-     * Get the default timeout in milliseconds
+     * Get the default timeout in milliseconds.
      *
      * @return int
      */
@@ -389,13 +396,37 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get the default retry delay in milliseconds.
+     *
+     * @return int
+     */
+    protected function getDefaultRetryDelay(): int
+    {
+        return intval(
+            getenv('VUFIND_DEFAULT_TEST_RETRY_DELAY') ?: self::DEFAULT_RETRY_DELAY
+        );
+    }
+
+    /**
+     * Get the default retry count.
+     *
+     * @return int
+     */
+    protected function getDefaultRetryCount(): int
+    {
+        return intval(
+            getenv('VUFIND_DEFAULT_TEST_RETRY_COUNT') ?: self::DEFAULT_RETRY_COUNT
+        );
+    }
+
+    /**
      * Test an element for visibility.
      *
-     * @param Element $element Element to test
+     * @param NodeElement $element Element to test
      *
      * @return bool
      */
-    protected function checkVisibility(Element $element)
+    protected function checkVisibility(NodeElement $element): bool
     {
         return $element->isVisible();
     }
@@ -403,9 +434,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get the Mink driver, initializing it if necessary.
      *
-     * @return Selenium2Driver
+     * @return CoreDriver
      */
-    protected function getMinkDriver()
+    protected function getMinkDriver(): CoreDriver
     {
         $driver = getenv('VUFIND_MINK_DRIVER') ?? 'selenium';
         if ($driver === 'chrome') {
@@ -420,29 +451,74 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return Session
      */
-    protected function getMinkSession()
+    protected function getMinkSession(): Session
     {
-        if (empty($this->session)) {
-            $this->session = new Session($this->getMinkDriver());
+        if (!$this->session) {
+            if (!static::$sharedSession) {
+                static::$sharedSession = new Session($this->getMinkDriver());
+                static::$sharedSession->start();
+            }
+            $this->session = static::$sharedSession;
             if ($coverageDir = $this->getRemoteCoverageDirectory()) {
                 $this->session->setRemoteCoverageConfig(
                     $this->getTestName(),
                     $coverageDir
                 );
             }
-            $this->session->start();
         }
         return $this->session;
     }
 
     /**
-     * Shut down the Mink session.
+     * Reset the Mink session.
+     *
+     * @param bool $clearLocalStorage   Should we clear out local storage as part of reset?
+     * @param bool $clearSessionStorage Should we clear out session storage as part of reset?
      *
      * @return void
      */
-    protected function stopMinkSession()
+    protected function resetMinkSession(bool $clearLocalStorage = true, bool $clearSessionStorage = true): void
     {
-        if (!empty($this->session)) {
+        if ($this->session) {
+            // If requested, make sure we don't carry local storage forward to the next test:
+            if ($clearLocalStorage) {
+                $this->clearBrowserLocalStorage();
+            }
+            // If requested, make sure we don't carry session storage forward to the next test:
+            if ($clearSessionStorage) {
+                $this->clearBrowserSessionStorage();
+            }
+            // Navigate to about:blank to stop any AJAX requests:
+            $this->session->visit('about:blank');
+            try {
+                $this->session->reset();
+            } catch (ConnectionException $e) {
+                $this->logWarning('Session reset failed in ' . $this->getTestName() . '. Resetting connection.');
+                try {
+                    $this->session->stop();
+                } catch (ConnectionException $e) {
+                    // Do nothing
+                }
+                $this->session = null;
+                static::$sharedSession = null;
+            }
+        }
+    }
+
+    /**
+     * Shut down the Mink session.
+     *
+     * @param bool $clearLocalStorage Should we clear out local storage as part of shutdown?
+     *
+     * @return void
+     */
+    protected function stopMinkSession(bool $clearLocalStorage = true): void
+    {
+        if ($this->session) {
+            // If requested, make sure we don't carry local storage forward to the next test:
+            if ($clearLocalStorage) {
+                $this->clearBrowserLocalStorage();
+            }
             $this->session->stop();
             $this->session = null;
         }
@@ -451,15 +527,21 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get base URL of running VuFind instance.
      *
-     * @param string $path Relative path to add to base URL.
+     * @param string $path     Relative or absolute path to add to base URL/hostname.
+     * @param bool   $relative Is $path relative to the base URL (true), or an absolute path on the hostname (false)?
      *
      * @return string
      */
-    protected function getVuFindUrl($path = '')
+    protected function getVuFindUrl(string $path = '', bool $relative = true): string
     {
         $base = getenv('VUFIND_URL');
         if (empty($base)) {
             $base = 'http://localhost/vufind';
+        }
+        if (!$relative) {
+            $urlParts = parse_url($base);
+            $port = empty($urlParts['port']) ? '' : ":{urlParts['port']}";
+            return "{$urlParts['scheme']}://{$urlParts['host']}{$port}{$path}";
         }
         return $base . $path;
     }
@@ -479,7 +561,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get query string for the current page
+     * Get query string for the current page.
      *
      * @param bool $excludeSid Whether to remove any sid from the query string
      *
@@ -499,7 +581,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get current URL without any sid parameter in the query string
+     * Get current URL without any sid parameter in the query string.
      *
      * @return string
      */
@@ -518,7 +600,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function restoreConfigs()
+    protected function restoreConfigs(): void
     {
         $configs = [
             '.ini' => $this->modifiedConfigs,
@@ -547,17 +629,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param Element $page     Page element
      * @param string  $selector CSS selector
-     * @param int     $timeout  Wait timeout (in ms)
+     * @param ?int    $timeout  Wait timeout (in ms)
      * @param int     $index    Index of the element (0-based)
      *
-     * @return mixed
+     * @return NodeElement
      */
     protected function findCss(
         Element $page,
-        $selector,
-        $timeout = null,
-        $index = 0
-    ) {
+        string $selector,
+        ?int $timeout = null,
+        int $index = 0
+    ): NodeElement {
         $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
@@ -575,16 +657,46 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Open the lightbox and return the requested element; retry as needed.
+     *
+     * @param Element $page                 Page containing open lightbox selector
+     * @param string  $openLightboxSelector CSS selector for element to click for lightbox access
+     * @param string  $targetSelector       Element to select from open lightbox
+     * @param ?int    $maxRetries           Maximum number of retries to open lightbox (in case initial click fails),
+     * or null for default
+     *
+     * @return NodeElement
+     */
+    protected function openLightboxAndFindCss(
+        Element $page,
+        string $openLightboxSelector,
+        string $targetSelector,
+        ?int $maxRetries = null
+    ): NodeElement {
+        $maxRetries ??= $this->getDefaultRetryCount();
+        for ($try = 1; $try < $maxRetries + 1; $try++) {
+            $this->clickCss($page, $openLightboxSelector);
+            $this->waitForPageLoad($page);
+            try {
+                return $this->findCss($page, $targetSelector);
+            } catch (\Exception $e) {
+                $this->logWarning('Lightbox failed to open on attempt #' . $try);
+            }
+        }
+        throw new \Exception("Ran out of retries looking for $targetSelector in lightbox using $openLightboxSelector");
+    }
+
+    /**
      * Wait for a JavaScript statement to result in true.
      *
      * Includes a check for $ to be available to make sure jQuery has been loaded.
      *
      * @param string $statement JavaScript statement to evaluate
-     * @param int    $timeout   Wait timeout (in ms)
+     * @param ?int   $timeout   Wait timeout (in ms)
      *
-     * @return mixed
+     * @return void
      */
-    protected function waitStatement($statement, $timeout = null)
+    protected function waitStatement(string $statement, ?int $timeout = null): void
     {
         $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
@@ -602,17 +714,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param Element $page     Page element
      * @param string  $selector CSS selector
-     * @param int     $timeout  Wait timeout (in ms)
+     * @param ?int    $timeout  Wait timeout (in ms)
      * @param int     $index    Index of the element (0-based)
      *
      * @return void
      */
     protected function unFindCss(
         Element $page,
-        $selector,
-        $timeout = null,
-        $index = 0
-    ) {
+        string $selector,
+        ?int $timeout = null,
+        int $index = 0
+    ): void {
         $timeout ??= $this->getDefaultTimeout();
         $startTime = microtime(true);
         $exception = null;
@@ -647,18 +759,19 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param Element $page     Page element
      * @param string  $selector CSS selector
-     * @param int     $timeout  Wait timeout (in ms)
+     * @param ?int    $timeout  Wait timeout (in ms)
      * @param int     $index    Index of the element (0-based)
      *
-     * @return mixed
+     * @return NodeElement
+     * @throws \Exception
      */
     protected function clickCss(
         Element $page,
-        $selector,
-        $timeout = null,
-        $index = 0
-    ) {
-        $maxTries = 3;
+        string $selector,
+        ?int $timeout = null,
+        int $index = 0
+    ): NodeElement {
+        $maxTries = $this->getDefaultRetryCount() + 1;
         for ($tries = 1; $tries <= $maxTries; $tries++) {
             try {
                 $result = $this->findCss($page, $selector, $timeout, $index);
@@ -670,7 +783,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 if ($tries === $maxTries) {
                     throw $e;
                 }
-                $this->snooze();
+                usleep(1000 * $this->getDefaultRetryDelay());
             }
         }
         throw new \Exception('Unexpected state reached.');
@@ -683,27 +796,28 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param Element $page        Page element
      * @param string  $selector    CSS selector
      * @param string  $value       Value to set
-     * @param int     $timeout     Wait timeout for CSS selection (in ms)
-     * @param int     $retries     Retry count for set loop
+     * @param ?int    $timeout     Wait timeout for CSS selection (in ms)
+     * @param ?int    $maxRetries  Maximum number of retries for the set loop, or null for default
      * @param bool    $verifyValue Whether to verify that the value was written
      * @param bool    $reFocus     Whether to focus the element when done setting the value
      *
-     * @return mixed
+     * @return void
      */
     protected function findCssAndSetValue(
         Element $page,
-        $selector,
-        $value,
-        $timeout = null,
-        $retries = 6,
-        $verifyValue = true,
-        $reFocus = false
-    ) {
+        string $selector,
+        string $value,
+        ?int $timeout = null,
+        ?int $maxRetries = null,
+        bool $verifyValue = true,
+        bool $reFocus = false
+    ): void {
         $timeout ??= $this->getDefaultTimeout();
+        $maxRetries ??= $this->getDefaultRetryCount();
 
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
-        for ($i = 1; $i <= $retries; $i++) {
+        for ($i = 1; $i <= $maxRetries + 1; $i++) {
             try {
                 $field = $this->findCss($page, $selector, $timeout, 0);
                 $field->setValue($value);
@@ -729,98 +843,99 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 );
             }
 
-            $this->snooze();
+            usleep(1000 * $this->getDefaultRetryDelay());
         }
 
-        throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
+        throw new \Exception('Failed to set value using ' . $selector . ' after ' . ($maxRetries + 1) . ' attempts.');
     }
 
     /**
      * Get text of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page       Page element
+     * @param string  $selector   CSS selector
+     * @param ?int    $timeout    Wait timeout for CSS selection (in ms)
+     * @param int     $index      Index of the element (0-based)
+     * @param ?int    $maxRetries Maximum number of retries, or null for default
      *
      * @return string
      */
     protected function findCssAndGetText(
         Element $page,
-        $selector,
-        $timeout = null,
-        $index = 0,
-        $retries = 6
-    ) {
-        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $retries);
+        string $selector,
+        ?int $timeout = null,
+        int $index = 0,
+        ?int $maxRetries = null
+    ): string {
+        return $this->findCssAndCallMethod($page, $selector, 'getText', $timeout, $index, $maxRetries);
     }
 
     /**
      * Get value of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page       Page element
+     * @param string  $selector   CSS selector
+     * @param ?int    $timeout    Wait timeout for CSS selection (in ms)
+     * @param int     $index      Index of the element (0-based)
+     * @param ?int    $maxRetries Maximum number of retries, or null for default
      *
      * @return string
      */
     protected function findCssAndGetValue(
         Element $page,
-        $selector,
-        $timeout = null,
-        $index = 0,
-        $retries = 6
-    ) {
-        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $retries);
+        string $selector,
+        ?int $timeout = null,
+        int $index = 0,
+        ?int $maxRetries = null
+    ): string {
+        return $this->findCssAndCallMethod($page, $selector, 'getValue', $timeout, $index, $maxRetries);
     }
 
     /**
      * Get text of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element $page     Page element
-     * @param string  $selector CSS selector
-     * @param int     $timeout  Wait timeout for CSS selection (in ms)
-     * @param int     $index    Index of the element (0-based)
-     * @param int     $retries  Retry count for set loop
+     * @param Element $page       Page element
+     * @param string  $selector   CSS selector
+     * @param ?int    $timeout    Wait timeout for CSS selection (in ms)
+     * @param int     $index      Index of the element (0-based)
+     * @param ?int    $maxRetries Maximum number of retries, or null for default
      *
      * @return string
      */
     protected function findCssAndGetHtml(
         Element $page,
-        $selector,
-        $timeout = null,
-        $index = 0,
-        $retries = 6
-    ) {
-        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $retries);
+        string $selector,
+        ?int $timeout = null,
+        int $index = 0,
+        ?int $maxRetries = null
+    ): string {
+        return $this->findCssAndCallMethod($page, $selector, 'getHtml', $timeout, $index, $maxRetries);
     }
 
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element         $page     Page element
-     * @param string          $selector CSS selector
-     * @param string|callable $method   Node's method to call (string) or callable that gets the node as parameter
-     * @param int             $timeout  Wait timeout for CSS selection (in ms)
-     * @param int             $index    Index of the element (0-based)
-     * @param int             $retries  Retry count for set loop
+     * @param Element         $page       Page element
+     * @param string          $selector   CSS selector
+     * @param string|callable $method     Node's method to call (string) or callable that gets the node as parameter
+     * @param ?int            $timeout    Wait timeout for CSS selection (in ms)
+     * @param int             $index      Index of the element (0-based)
+     * @param ?int            $maxRetries Maximum number of retries, or null for default
      *
-     * @return string
+     * @return mixed
      */
     protected function findCssAndCallMethod(
         Element $page,
-        $selector,
-        $method,
-        $timeout = null,
-        $index = 0,
-        $retries = 6,
+        string $selector,
+        string|callable $method,
+        ?int $timeout = null,
+        int $index = 0,
+        ?int $maxRetries = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
+        $maxRetries ??= $this->getDefaultRetryCount();
 
-        for ($i = 1; $i <= $retries; $i++) {
+        for ($i = 1; $i <= $maxRetries + 1; $i++) {
             try {
                 $element = $this->findCss($page, $selector, $timeout, $index);
                 return is_string($method) ? call_user_func([$element, $method]) : $method($element);
@@ -831,21 +946,21 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 );
             }
 
-            $this->snooze();
+            usleep(1000 * $this->getDefaultRetryDelay());
         }
 
-        throw new \Exception("Failed to call $method on '$selector' after $retries attempts.");
+        throw new \Exception("Failed to call $method on '$selector' after " . ($maxRetries + 1) . ' attempts.');
     }
 
     /**
      * Retrieve a link and assert that it exists before returning it.
      *
-     * @param Element $page Page element
-     * @param string  $text Link text to match
+     * @param TraversableElement $page Page element
+     * @param string             $text Link text to match
      *
-     * @return mixed
+     * @return NodeElement
      */
-    protected function findAndAssertLink(Element $page, $text)
+    protected function findAndAssertLink(TraversableElement $page, string $text): NodeElement
     {
         $link = $page->findLink($text);
         $this->assertIsObject($link);
@@ -861,7 +976,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return bool
      */
-    protected function hasElementsMatchingText(Element $page, $selector, $text)
+    protected function hasElementsMatchingText(Element $page, string $selector, string $text): bool
     {
         foreach ($page->findAll('css', $selector) as $current) {
             if ($text === $current->getText()) {
@@ -910,7 +1025,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wait for a callback to return the expected value
+     * Wait for a callback to return the expected value.
      *
      * @param mixed    $expected    Expected value
      * @param callable $callback    Callback used to get the results
@@ -926,7 +1041,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $compareFunc,
         callable $assertion,
         ?int $timeout = null
-    ) {
+    ): void {
         $timeout ??= $this->getDefaultTimeout();
         $result = null;
         $startTime = microtime(true);
@@ -943,7 +1058,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 // Defer throwing the exception:
                 $exception = $e;
             }
-            usleep(100000);
+            usleep(50000);
         }
         if ($exception) {
             throw $exception;
@@ -952,7 +1067,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wait for a callback to return the expected value
+     * Wait for a callback to return the expected value.
      *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
@@ -964,7 +1079,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $expected,
         callable $callback,
         ?int $timeout = null
-    ) {
+    ): void {
         $this->assertWithTimeout(
             $expected,
             $callback,
@@ -977,7 +1092,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wait for a callback to return a string containing the expected value
+     * Wait for a callback to return a string containing the expected value.
      *
      * @param string   $expected Expected value
      * @param callable $callback Callback
@@ -989,7 +1104,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         string $expected,
         callable $callback,
         ?int $timeout = null
-    ) {
+    ): void {
         $this->assertWithTimeout(
             $expected,
             $callback,
@@ -1002,15 +1117,40 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Wait for a callback to return the expected number of elements.
+     *
+     * @param int      $expected Expected count
+     * @param callable $callback Callback
+     * @param ?int     $timeout  Wait timeout (in ms)
+     *
+     * @return void
+     */
+    protected function assertCountWithTimeout(
+        int $expected,
+        callable $callback,
+        ?int $timeout = null
+    ): void {
+        $this->assertWithTimeout(
+            $expected,
+            $callback,
+            function ($expected, $result): bool {
+                return $expected === count($result);
+            },
+            [$this, 'assertCount'],
+            $timeout
+        );
+    }
+
+    /**
      * Search for the specified query.
      *
-     * @param string $query   Search term(s)
-     * @param string $handler Search type (optional)
-     * @param string $path    Path to use as search starting point (optional)
+     * @param string  $query   Search term(s)
+     * @param ?string $handler Search type (optional)
+     * @param string  $path    Path to use as search starting point (optional)
      *
-     * @return Element
+     * @return DocumentElement
      */
-    protected function performSearch($query, $handler = null, $path = '/Search')
+    protected function performSearch(string $query, ?string $handler = null, string $path = '/Search'): DocumentElement
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . $path);
@@ -1044,7 +1184,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Wait for page load (full page or any element) to complete
+     * Wait for page load (full page or any element) to complete.
      *
      * @param Element $page    Page element
      * @param ?int    $timeout Wait timeout (in ms)
@@ -1054,49 +1194,63 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function waitForPageLoad(
         Element $page,
         ?int $timeout = null
-    ) {
+    ): void {
         $timeout ??= $this->getDefaultTimeout();
+        $maxRetries = $this->getDefaultRetryCount();
         $session = $this->getMinkSession();
-        // Wait for page load to complete:
-        $session->wait($timeout, "document.readyState === 'complete'");
-        // Wait for any AJAX requests to complete (and that jQuery is loaded):
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $.active === 0"
-        );
-        // Wait for modal load to complete:
-        $this->unFindCss($page, '.modal-loading-overlay', $timeout);
-        // Wait for page load to complete again in case it was triggered by
-        // lightbox refresh or similar:
-        $session->wait($timeout, "document.readyState === 'complete'");
-        // Make sure any loading spinners are not visible (and jQuery is still loaded):
-        $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
-        );
-        // Make sure nothing is being animated (and jQuery is still loaded):
-        $jqueryOk = $session->wait(
-            $timeout,
-            "typeof $ !== 'undefined' && $(':animated').length === 0"
-        );
-        if ($jqueryOk) {
-            // Finally, make sure all jQuery ready handlers are done:
-            $session->evaluateScript(
-                <<<EOS
-                    if (window.__documentIsReady !== true) {
-                        $(document).ready(function() { window.__documentIsReady = true; });
-                    }
-                    EOS
-            );
-            $session->wait(
-                $timeout,
-                'window.__documentIsReady === true'
-            );
+        $exception = null;
+
+        for ($i = 1; $i <= $maxRetries + 1; $i++) {
+            try {
+                // Wait for page load to complete:
+                $session->wait($timeout, "document.readyState === 'complete'");
+                // Wait for any AJAX requests to complete (and that jQuery is loaded):
+                $session->wait(
+                    $timeout,
+                    "typeof $ !== 'undefined' && $.active === 0"
+                );
+                // Wait for modal load to complete:
+                $this->unFindCss($page, '.modal-loading-overlay', $timeout);
+                // Wait for page load to complete again in case it was triggered by
+                // lightbox refresh or similar:
+                $session->wait($timeout, "document.readyState === 'complete'");
+                // Make sure any loading spinners are not visible (and jQuery is still loaded):
+                $session->wait(
+                    $timeout,
+                    "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
+                );
+                // Make sure nothing is being animated (and jQuery is still loaded):
+                $jqueryOk = $session->wait(
+                    $timeout,
+                    "typeof $ !== 'undefined' && $(':animated').length === 0"
+                );
+                if ($jqueryOk) {
+                    // Finally, make sure all jQuery ready handlers are done:
+                    $session->evaluateScript(
+                        <<<EOS
+                            if (window.__documentIsReady !== true) {
+                                $(document).ready(function() { window.__documentIsReady = true; });
+                            }
+                            EOS
+                    );
+                    $session->wait(
+                        $timeout,
+                        'window.__documentIsReady === true'
+                    );
+                }
+                return;
+            } catch (\Exception $e) {
+                if (null === $exception) {
+                    $exception = $e;
+                }
+                usleep(1000 * $this->getDefaultRetryDelay());
+            }
         }
+        throw $exception;
     }
 
     /**
-     * Verify that lightbox title contains the expected value
+     * Verify that lightbox title contains the expected value.
      *
      * @param Element $page        Page element
      * @param bool    $closeButton Whether there should be a close button in the
@@ -1104,7 +1258,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function closeLightbox(Element $page, $closeButton = false)
+    protected function closeLightbox(Element $page, bool $closeButton = false): void
     {
         if ($closeButton) {
             $button = $this->findCss($page, '#modal .modal-body .btn');
@@ -1127,7 +1281,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function waitForLightboxHidden()
+    protected function waitForLightboxHidden(): void
     {
         $this->waitStatement(
             '$("#modal:visible").length === 0'
@@ -1136,7 +1290,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Verify that lightbox title contains the expected value
+     * Verify that lightbox title contains the expected value.
      *
      * @param Element $page  Page element
      * @param string  $title Expected title
@@ -1159,7 +1313,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function assertLightboxWarning(Element $page, $message)
+    protected function assertLightboxWarning(Element $page, string $message): void
     {
         $warning = $page->find('css', '.modal-body .alert-danger .message');
         if (!$warning || strlen(trim($warning->getText())) == 0) {
@@ -1169,7 +1323,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Log a warning message
+     * Log a warning message.
      *
      * @param string $consoleMsg Message to output to console
      * @param string $logMsg     Message to output to PHP error log
@@ -1207,7 +1361,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Validate current page HTML if validation is enabled and a session exists
+     * Validate current page HTML if validation is enabled and a session exists.
      *
      * @param ?Element $page Page to check (optional; uses the page from session by
      * default)
@@ -1295,7 +1449,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Convert a NU HTML Validator message to a string
+     * Convert a NU HTML Validator message to a string.
      *
      * @param array $message Validation message
      *
@@ -1316,7 +1470,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Output HTML validation messages to log file and/or console
+     * Output HTML validation messages to log file and/or console.
      *
      * @param array  $messages Messages
      * @param string $level    Message level (info or error)
@@ -1349,6 +1503,32 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 . " for $logMessage"
             );
         }
+    }
+
+    /**
+     * Clear the browser's local storage.
+     *
+     * @return void
+     */
+    protected function clearBrowserLocalStorage(): void
+    {
+        $this->getMinkSession()->evaluateScript('window.localStorage.clear();');
+    }
+
+    /**
+     * Clear the browser's session storage.
+     *
+     * @return void
+     */
+    protected function clearBrowserSessionStorage(): void
+    {
+        $this->getMinkSession()->evaluateScript('window.sessionStorage.clear();');
+        // Also clear on unload to ensure we remove everything that could be added on unload (note: it would be nice
+        // to be able to trigger any page unload handlers here and then clear the storage, but loading another page
+        // would slow things down, and about:blank loaded in resetMinkSession won't allow access to VuFind's session
+        // storage).
+        $this->getMinkSession()
+            ->evaluateScript('window.addEventListener("beforeunload", () => window.sessionStorage.clear());');
     }
 
     /**
@@ -1430,7 +1610,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             }
         }
 
-        $this->stopMinkSession();
+        $this->resetMinkSession();
         $this->restoreConfigs();
 
         if (($this->hasLiveDatabaseTrait ?? false) && is_callable([$this, 'tearDownLiveDatabaseContainer'])) {

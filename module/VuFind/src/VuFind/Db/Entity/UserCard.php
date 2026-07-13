@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for user_card table
+ * Entity model for user_card table.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for user_card table
+ * Entity model for user_card table.
  *
  * @category VuFind
  * @package  Database
@@ -126,7 +126,7 @@ class UserCard implements UserCardEntityInterface
     protected UserEntityInterface $user;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -136,7 +136,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * ID getter (returns null if the entity has not been saved/populated yet)
+     * ID getter (returns null if the entity has not been saved/populated yet).
      *
      * @return ?int
      */
@@ -146,7 +146,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * Card name setter
+     * Card name setter.
      *
      * @param string $cardName User card name.
      *
@@ -169,7 +169,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * Catalog username setter
+     * Catalog username setter.
      *
      * @param string $catUsername Catalog username
      *
@@ -192,7 +192,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * Raw catalog password setter
+     * Raw catalog password setter.
      *
      * @param ?string $catPassword Cat password
      *
@@ -215,7 +215,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * Encrypted catalog password setter
+     * Encrypted catalog password setter.
      *
      * @param ?string $passEnc Encrypted password
      *
@@ -238,7 +238,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * Home library setter
+     * Home library setter.
      *
      * @param ?string $homeLibrary Home library
      *
@@ -280,7 +280,8 @@ class UserCard implements UserCardEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**
@@ -303,7 +304,8 @@ class UserCard implements UserCardEntityInterface
      */
     public function getSaved(): DateTime
     {
-        return $this->saved;
+        // Return a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->saved);
     }
 
     /**
@@ -320,7 +322,7 @@ class UserCard implements UserCardEntityInterface
     }
 
     /**
-     * User getter
+     * User getter.
      *
      * @return UserEntityInterface
      */

@@ -1,13 +1,17 @@
-@use "sass:map";
-@use "sass:math";
-
-$fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
+// Set Font Awesome font path
+@use "@fortawesome/fontawesome-free/scss/variables" with (
+  $font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts"
+);
 
 // Include Font Awesome
-@import "vendor/font-awesome/fontawesome";
-@import "vendor/font-awesome/regular";
-@import "vendor/font-awesome/solid";
-@import "vendor/font-awesome/v4-shims";
+@use "@fortawesome/fontawesome-free/scss/fontawesome";
+@use "@fortawesome/fontawesome-free/scss/regular";
+@use "@fortawesome/fontawesome-free/scss/solid";
+@use "@fortawesome/fontawesome-free/scss/v4-shims";
+
+@use "sass:color";
+@use "sass:map";
+@use "sass:math";
 
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
 @import "bootstrap/scss/functions";
@@ -73,14 +77,16 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/badges";
 @import "components/buttons";
 @import "components/channels";
-@import "components/cookie-consent/index";
+@import "components/cookie-consent";
 @import "components/copy-to-clipboard";
 @import "components/devtools";
 @import "components/explain";
 @import "components/form";
+@import "components/get-this";
 @import "components/icons";
 @import "components/keyboard";
 @import "components/lightbox";
+@import "components/notices";
 @import "components/offcanvas";
 @import "components/pager";
 @import "components/panel";
@@ -160,7 +166,7 @@ h3.popover-header {
 // Normalize highlighting
 .highlight,
 mark {
-  background: lighten(#FF0, 20%);
+  background: color.adjust(#FF0, $lightness: 20%);
   padding: .1em .2em;
 }
 
@@ -194,6 +200,7 @@ img { max-width: 100%; }
 }
 .tab-content { padding: 4px; }
 
+h1 { font-size: 28px; }
 h2 { font-size: 20px; }
 h3 { font-size: 16px; }
 
@@ -714,6 +721,9 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
 .callnumAndLocation .table, .table.holdings-table {
   td {
     word-wrap: break-word;
+    & > * {
+      vertical-align: middle;
+    }
   }
 }
 // No wrapping for fines or staff view table in wide windows

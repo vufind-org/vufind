@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  *
- * @VuFind.SkipBadStringCheck
+ * @VuFindSkipBadStringCheck
  */
 
 namespace VuFindTest\Files;
@@ -51,6 +51,7 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
      * @var array
      */
     protected array $badStrings = [
+        'non-standard boolean annotation (use bool)' => '/(@(param|return|var)\s+[^\s]*\|?boolean)/',
         'outdated license address' => '51 Franklin',
         'outdated PHP header comment' => '/\\* (PHP version [^8])\s*\n/',
         'outdated wiki link' => 'vufind.org/wiki/vufind2',
@@ -69,7 +70,10 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
         foreach ($filesToCheck as $fileToCheck) {
             $fileContents = file_get_contents($fileToCheck);
             // Use annotation to skip files:
-            if (str_contains($fileContents, '* @VuFind.SkipBadStringTest')) {
+            if (
+                str_contains($fileContents, '* @VuFind.SkipBadStringTest')
+                || str_contains($fileContents, '* @VuFindSkipBadStringTest')
+            ) {
                 continue;
             }
             $reasons = [];
@@ -91,7 +95,7 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
         // conveniently available. By imploding the list of bad files (with some extra spaces to separate
         // the diff markers from the filenames) we make it easier to read (and in some setups, click on)
         // the list of files that need attention.
-        $this->assertEquals('', implode(PHP_EOL . ' ', $failures), 'Found bad strings in files.');
+        $this->assertSame('', implode(PHP_EOL . ' ', $failures), 'Found bad strings in files.');
     }
 
     /**

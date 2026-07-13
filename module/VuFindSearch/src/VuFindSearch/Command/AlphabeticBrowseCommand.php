@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Fetch alphabrowse data from the backend (currently only supported by Solr)
+ * Fetch alphabrowse data from the backend (currently only supported by Solr).
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\ParamBag;
 
 /**
- * Fetch alphabrowse data from the backend (currently only supported by Solr)
+ * Fetch alphabrowse data from the backend (currently only supported by Solr).
  *
  * @category VuFind
  * @package  Search

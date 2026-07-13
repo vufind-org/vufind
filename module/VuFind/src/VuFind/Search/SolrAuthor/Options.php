@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Author aspect of the Search Multi-class (Options)
+ * Author aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrAuthor;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Author Search Options
+ * Author Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -43,7 +43,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
@@ -113,7 +113,7 @@ class Options extends \VuFind\Search\Solr\Options
      * Get the search class ID for identifying search box options; this is normally
      * the same as the current search class ID, but some "special purpose" search
      * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
-     * generation
+     * generation.
      *
      * @return string
      */

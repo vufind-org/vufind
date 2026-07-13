@@ -220,7 +220,7 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkTranslation(DocumentElement $page, string $expected, string $field): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             $this->findCssAndGetText($page, '#searchForm_type option[value="' . $field . '"]')
         );

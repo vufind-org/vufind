@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online payment manager
+ * Online payment manager.
  *
  * PHP version 8
  *
@@ -53,7 +53,7 @@ use VuFind\OnlinePayment\Handler\HandlerInterface;
 use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
 
 /**
- * Online payment manager
+ * Online payment manager.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -96,7 +96,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get online payment handler
+     * Get online payment handler.
      *
      * @param string $sourceIls Source ILS
      *
@@ -192,7 +192,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Process a response from a payment handler
+     * Process a response from a payment handler.
      *
      * @param PaymentEntityInterface $payment    Payment
      * @param RequestInterface       $request    Request
@@ -277,7 +277,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Find patron for a payment
+     * Find patron for a payment.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -325,7 +325,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Register the given payment with ILS
+     * Register the given payment with ILS.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -395,7 +395,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Register a payment with ILS for the given patron
+     * Register a payment with ILS for the given patron.
      *
      * @param PaymentEntityInterface $payment Payment
      * @param array                  $patron  Patron information
@@ -659,7 +659,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get stored payable amount from session
+     * Get stored payable amount from session.
      *
      * @param array $patron Patron
      *
@@ -683,7 +683,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get any successful payment flag from session and clear the session
+     * Get any successful payment flag from session and clear the session.
      *
      * @return bool
      */
@@ -724,7 +724,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get patron's source ILS
+     * Get patron's source ILS.
      *
      * @param array $patron Patron
      *
@@ -736,7 +736,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Store a flag for successful payment in the session
+     * Store a flag for successful payment in the session.
      *
      * @return void
      */

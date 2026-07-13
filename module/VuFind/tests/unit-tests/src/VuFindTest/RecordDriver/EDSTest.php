@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use function array_slice;
 use function count;
 
 /**
- * EDS Record Driver Test Class
+ * EDS Record Driver Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Default test configuration
+     * Default test configuration.
      *
      * @var array
      */
@@ -118,7 +118,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Default test configuration Patron Empowerment Framework (PEF)
+     * Default test configuration Patron Empowerment Framework (PEF).
      *
      * @var array
      */
@@ -144,7 +144,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Generate a new Eds driver to return responses set in a json fixture
+     * Generate a new Eds driver to return responses set in a json fixture.
      *
      * Overwrites $this->driver
      * Uses session cache
@@ -392,29 +392,27 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetItemsFilter.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function filterProvider(): array
+    public static function filterProvider(): \Iterator
     {
-        return [
-            'exclude' => [
-                ['exclude' => ['Label' => ['Title']]],
-                [self::$validAuthor, self::$validPublisher,],
-                10,
+        yield 'exclude' => [
+            ['exclude' => ['Label' => ['Title']]],
+            [self::$validAuthor, self::$validPublisher,],
+            10,
+        ];
+        yield 'include' => [
+            ['include' => ['Label' => ['Title']]],
+            [self::$validTitle],
+            1,
+        ];
+        yield 'exclude and include' => [
+            [
+                'include' => ['Label' => ['Title', 'Authors']],
+                'exclude' => ['Label' => ['Title']],
             ],
-            'include' => [
-                ['include' => ['Label' => ['Title']]],
-                [self::$validTitle],
-                1,
-            ],
-            'exclude and include' => [
-                [
-                    'include' => ['Label' => ['Title', 'Authors']],
-                    'exclude' => ['Label' => ['Title']],
-                ],
-                [self::$validAuthor],
-                1,
-            ],
+            [self::$validAuthor],
+            1,
         ];
     }
 
@@ -444,7 +442,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getItems when invalid data is returned from EDS (i.e. not in the structure
-     * VuFind expected)
+     * VuFind expected).
      *
      * @return void
      */
@@ -610,15 +608,13 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetThumbnail().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getThumbnailProvider(): array
+    public static function getThumbnailProvider(): \Iterator
     {
-        return [
-            'thumb is upscaled to small' => ['small', 'small thumbnail link'],
-            'medium is used as-is' => ['medium', 'medium thumbnail link'],
-            'medium is upscaled to large' => ['large', 'medium thumbnail link'],
-        ];
+        yield 'thumb is upscaled to small' => ['small', 'small thumbnail link'];
+        yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
+        yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
     }
 
     /**
@@ -711,21 +707,19 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCleanDOIFromUrl().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getCleanDOIFromUrlProvider(): array
+    public static function getCleanDOIFromUrlProvider(): \Iterator
     {
         $cleanDoi = '10.1016/j.jveb.2025.02.006';
-        return [
-            'plain DOI' => [$cleanDoi, $cleanDoi],
-            'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi],
-            'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi],
-            'link wrapper' => [
-                '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
-                . $cleanDoi
-                . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
-                $cleanDoi,
-            ],
+        yield 'plain DOI' => [$cleanDoi, $cleanDoi];
+        yield 'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'link wrapper' => [
+            '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
+            . $cleanDoi
+            . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
+            $cleanDoi,
         ];
     }
 
@@ -1038,7 +1032,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test HTML FT with tables & mathML will be parsed correctly
+     * Test HTML FT with tables & mathML will be parsed correctly.
      *
      * @return void
      */
@@ -1052,7 +1046,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getUniqueIDOverrideForRequest for a "normal" record
+     * Test getUniqueIDOverrideForRequest for a "normal" record.
      *
      * @return void
      */
@@ -1063,7 +1057,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getUniqueIDOverrideForRequest for a catalog record
+     * Test getUniqueIDOverrideForRequest for a catalog record.
      *
      * @return void
      */
@@ -1074,7 +1068,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hasCatalog true
+     * Test hasCatalog true.
      *
      * @return void
      */
@@ -1085,7 +1079,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test hasCatalog false
+     * Test hasCatalog false.
      *
      * @return void
      */
@@ -1096,7 +1090,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test pubTypeRtacEnabled for a catalog record (Book) [true]
+     * Test pubTypeRtacEnabled for a catalog record (Book) [true].
      *
      * @return void
      */
@@ -1107,7 +1101,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test pubTypeRtacEnabled for eBook record [false]
+     * Test pubTypeRtacEnabled for eBook record [false].
      *
      * @return void
      */
@@ -1118,18 +1112,18 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test relevancy score (present)
+     * Test relevancy score (present).
      *
      * @return void
      */
     public function testRelevancyScorePresent(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals(908.217102050781, $driver->getScore());
+        $this->assertEqualsWithDelta(908.217102050781, $driver->getScore(), PHP_FLOAT_EPSILON);
     }
 
     /**
-     * Test relevancy score (absent)
+     * Test relevancy score (absent).
      *
      * @return void
      */

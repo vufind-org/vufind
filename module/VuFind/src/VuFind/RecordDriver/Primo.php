@@ -229,10 +229,26 @@ class Primo extends DefaultRecord
      */
     public function getThumbnail($size = 'small')
     {
+        $params = ['size' => $size];
+
         if ($isbn = $this->getCleanISBN()) {
-            return ['size' => $size, 'isn' => $isbn];
+            $params['isn'] = $isbn;
         }
-        return ['size' => $size, 'contenttype' => 'JournalArticle'];
+
+        if ($issn = $this->getCleanISSN()) {
+            $params['issn'] = $issn;
+        }
+
+        $formats = $this->getFormats();
+        if (!empty($formats)) {
+            $params['contenttype'] = $formats[0];
+        }
+
+        if (empty($params['isn']) && empty($params['issn']) && empty($params['contenttype'])) {
+            $params['contenttype'] = 'JournalArticle';
+        }
+
+        return $params;
     }
 
     /**
@@ -279,7 +295,7 @@ class Primo extends DefaultRecord
     }
 
     /**
-     * Get citation references
+     * Get citation references.
      *
      * @return array
      */

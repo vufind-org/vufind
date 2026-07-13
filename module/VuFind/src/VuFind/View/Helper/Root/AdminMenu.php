@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Admin menu view helper
+ * Admin menu view helper.
  *
  * PHP version 8
  *
@@ -30,18 +30,20 @@
 namespace VuFind\View\Helper\Root;
 
 /**
- * Admin menu view helper
+ * Admin menu view helper.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
 class AdminMenu extends AbstractMenuHelper
 {
     /**
-     * Render menu
+     * Render menu.
      *
      * @param ?string $activeItem The name of current active item (optional)
      * @param string  $idPrefix   Element ID prefix

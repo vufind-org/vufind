@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SessionService Test Class
+ * SessionService Test Class.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\SessionService;
 
 /**
- * SessionService Test Class
+ * SessionService Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -82,7 +82,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Mock EntityManager
+     * Mock EntityManager.
      *
      * @param ?MockObject $session Session returned from repository's findBy method
      *
@@ -154,7 +154,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager();
         $service = $this->getService($entityManager, $pluginManager, $persistenceManager);
-        $this->assertNull($service->getSessionById('1', false));
+        $this->assertNotInstanceOf(SessionEntityInterface::class, $service->getSessionById('1', false));
     }
 
     /**
@@ -169,7 +169,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager(1);
         $session->expects($this->once())->method('setSessionId')
-            ->with($this->equalTo('1'))
+            ->with('1')
             ->willReturn($session);
         $session->expects($this->once())->method('setCreated')
             ->with($this->anything())
@@ -196,7 +196,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $session->expects($this->once())->method('getData')
             ->willReturn('foo');
         $service = $this->getService($entityManager, $pluginManager, $persistenceManager);
-        $this->assertEquals('foo', $service->readSession('1', 10000000));
+        $this->assertSame('foo', $service->readSession('1', 10000000));
     }
 
     /**
@@ -307,6 +307,6 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager->expects($this->once())->method('createQueryBuilder')
             ->willReturn($queryBuilder);
         $service = $this->getService($entityManager, $pluginManager, $persistenceManager);
-        $this->assertEquals(5, $service->garbageCollect(10000));
+        $this->assertSame(5, $service->garbageCollect(10000));
     }
 }

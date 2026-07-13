@@ -39,7 +39,7 @@
           );
       ?>
       <?php if ($removeLink): ?>
-        <a class="filter-value" href="<?=$removeLink?>">
+        <a class="filter-value" href="<?=$removeLink?>" data-filter="<?=$this->escapeHtmlAttr($filter['filter'])?>">
           <span class="visually-hidden">
             <?=$this->translate('Remove filter') ?>
           </span>
@@ -59,7 +59,7 @@
           <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $field); ?>
           <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
             <?=$this->transEsc('filter_toggle_entries', ['%%count%%' => count($data)])?>
-            <?=$this->icon('dropdown-caret')?>
+            <?=$this->icon('dropdown-open')?>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-toggle-<?=$safeId?>">
       <?php else: ?>
@@ -97,7 +97,13 @@
                 ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
                 : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
             ?>
-          <a class="<?=$dropdown ? 'dropdown-item ' : ''?>filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
+          <a
+            class="<?=$dropdown ? 'dropdown-item ' : ''?>filter-value filters-<?=$operatorClass?>"
+            href="<?=$removeLink?>"
+            <?php if (isset($urlQuery)): ?>
+              data-filter="<?=$this->escapeHtmlAttr($urlQuery->formatFilterString($value['field'], $value['value'], $value['operator']))?>"
+            <?php endif; ?>
+          >
             <span class="visually-hidden">
               <?=$this->translate('Remove filter') ?>
             </span>

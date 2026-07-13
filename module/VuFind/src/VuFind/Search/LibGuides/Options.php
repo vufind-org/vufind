@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides aspect of the Search Multi-class (Options)
+ * LibGuides aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\LibGuides;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * LibGuides Search Options
+ * LibGuides Search Options.
  *
  * @category VuFind
  * @package  Search_LibGuides
@@ -50,7 +50,7 @@ class Options extends \VuFind\Search\Base\Options
     protected string $iniName = 'LibGuides';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

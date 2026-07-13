@@ -50,7 +50,7 @@ class ErrorHandlingTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl('/Record/does_not_exist'));
         $page = $session->getPage();
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred An error occurred during execution; please try again later. Please contact the'
             . ' Library Reference Department for assistance support@myuniversity.edu',
             $this->findCssAndGetText($page, '.alert-danger')
@@ -77,7 +77,7 @@ class ErrorHandlingTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl('/Record/does_not_exist'));
         $page = $session->getPage();
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred An error occurred during execution; please try again later. Please contact the'
             . ' Library Reference Department for assistance',
             $this->findCssAndGetText($page, '.alert-danger')

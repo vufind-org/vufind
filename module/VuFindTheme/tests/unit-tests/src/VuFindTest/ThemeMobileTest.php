@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest;
 use VuFindTheme\Mobile;
 
 /**
- * Mobile Test Class
+ * Mobile Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,14 +45,12 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDetection.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function detectionProvider(): array
+    public static function detectionProvider(): \Iterator
     {
-        return [
-            'mobile detected' => [true],
-            'mobile not detected' => [false],
-        ];
+        yield 'mobile detected' => [true];
+        yield 'mobile not detected' => [false];
     }
 
     /**

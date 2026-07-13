@@ -45,7 +45,7 @@ use VuFind\Db\Service\ResourceServiceInterface;
 class Missing extends DefaultRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig   VuFind main configuration (omit
      * for built-in defaults)

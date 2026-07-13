@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait providing support for converting delimited settings to arrays
+ * Trait providing support for converting delimited settings to arrays.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Config\Feature;
 
 /**
- * Trait providing support for converting delimited settings to arrays
+ * Trait providing support for converting delimited settings to arrays.
  *
  * @category VuFind
  * @package  Config
@@ -41,7 +41,7 @@ namespace VuFind\Config\Feature;
 trait ExplodeSettingTrait
 {
     /**
-     * Explode a delimited setting to an array
+     * Explode a delimited setting to an array.
      *
      * @param string $value     Setting value
      * @param bool   $trim      Whether to trim the values (disabled by default to
@@ -67,7 +67,7 @@ trait ExplodeSettingTrait
     }
 
     /**
-     * Explode a comma-delimited setting to an array of trimmed values
+     * Explode a comma-delimited setting to an array of trimmed values.
      *
      * @param string $value Setting value
      *

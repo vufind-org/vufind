@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesResults Recommendations Module
+ * LibGuidesResults Recommendations Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Recommend;
 
 /**
- * LibGuidesResults Recommendations Module
+ * LibGuidesResults Recommendations Module.
  *
  * This class provides recommendations by doing a search of LibGuides research guides.
  *

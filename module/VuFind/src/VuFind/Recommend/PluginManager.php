@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recommendation module plugin manager
+ * Recommendation module plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
- * Recommendation module plugin manager
+ * Recommendation module plugin manager.
  *
  * @category VuFind
  * @package  Recommendations
@@ -167,7 +167,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

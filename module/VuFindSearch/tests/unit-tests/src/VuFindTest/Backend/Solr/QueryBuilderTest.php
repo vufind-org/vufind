@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR query builder
+ * Unit tests for SOLR query builder.
  *
  * PHP version 8
  *
@@ -29,13 +29,14 @@
 
 namespace VuFindTest\Backend\Solr;
 
+use Iterator;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
 /**
- * Unit tests for SOLR query builder
+ * Unit tests for SOLR query builder.
  *
  * @category VuFind
  * @package  Search
@@ -46,61 +47,66 @@ use VuFindSearch\Query\QueryGroup;
 class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Data provider for testNormalization().
+     *
+     * @return Iterator<string, array>
+     */
+    public static function normalizationProvider(): Iterator
+    {
+        yield 'empty query' => ['', '*:*'];
+        yield 'empty parens' => ['()', '*:*'];
+        yield 'nested empty parens' => ['((()))', '*:*'];
+        yield 'mismatched parens' => ['((())', '*:*'];
+        yield 'text mixed w/ empty parens' => ['this that ()', 'this that'];
+        yield 'empty parens in quotes' => ['"()"', '"()"'];
+        yield 'freestanding hyphen' => ['title - sub', 'title sub'];
+        yield 'freestanding hyphen in quotes' => ['"title - sub"', '"title - sub"'];
+        yield 'meaningless proximity' => ['test~1', 'test'];
+        yield 'meaningless proximity w/decimal' => ['test~1.', 'test'];
+        yield 'meaningless proximity w/decimal and zeroes' => ['test~1.000', 'test'];
+        yield 'meaningless proximity w/following keyword' => ['test~1 fish', 'test fish'];
+        yield 'meaningless proximity w/decimal and following keyword' => ['test~1. fish', 'test fish'];
+        yield 'meaningless proximity w/decimal and zeroes and following keyword' => ['test~1.000 fish', 'test fish'];
+        yield 'meaningless prox. in quotes' => ['"test~1"', '"test~1"'];
+        yield 'valid proximity' => ['test~0.9', 'test~0.9'];
+        yield 'illegal prox. (leave alone)' => ['test~10', 'test~10'];
+        yield 'illegal prox. (leave alone) w/ following keyword' => ['test~10 fish', 'test~10 fish'];
+        yield 'invalid boosts 1' => ['^10 test^10', '10 test10'];
+        yield 'invalid boosts 2' => ['^10', '10'];
+        yield 'invalid boosts 3' => ['test^ test^6', 'test test6'];
+        yield 'valid boosts' => ['test^1 test^2', 'test^1 test^2'];
+        yield 'freestanding slash' => ['this / that', 'this "/" that'];
+        yield 'leading slash' => ['/ this', 'this'];
+        yield 'trailing slash' => ['title /', 'title'];
+        yield 'leading hyphen' => ['- this', 'this'];
+        yield 'trailing hyphen' => ['title -', 'title'];
+        yield 'freestanding AND operator' => ['AND', 'and'];
+        yield 'freestanding OR operator' => ['OR', 'or'];
+        yield 'freestanding NOT operator' => ['NOT', 'not'];
+        yield 'leading * wildcard' => ['*bad', 'bad'];
+        yield 'leading ? wildcard' => ['?bad', 'bad'];
+        yield 'no fancy quotes normalization, see VUFIND-1808' =>
+            ["\xE2\x80\x9Ca\xE2\x80\x9D", "\xE2\x80\x9Ca\xE2\x80\x9D"];
+        yield 'improperly escaped floating braces/brackets' =>  ['a:{a TO b} [ }', 'a:{a TO b} \[ \}'];
+        yield 'properly escaped floating braces/brackets' => ['a:{a TO b} \[ \}', 'a:{a TO b} \[ \}'];
+    }
+
+    /**
      * Test normalization of unusual queries.
+     *
+     * @param string $input  Query input
+     * @param string $output Expected builder output
      *
      * @return void
      */
-    public function testNormalization()
+    #[\PHPUnit\Framework\Attributes\DataProvider('normalizationProvider')]
+    public function testNormalization(string $input, string $output): void
     {
-        // Set up an array of expected inputs and outputs:
-        $tests = [
-            ['', '*:*'],                         // empty query
-            ['()', '*:*'],                       // empty parens
-            ['((()))', '*:*'],                   // nested empty parens
-            ['((())', '*:*'],                    // mismatched parens
-            ['this that ()', 'this that'],       // text mixed w/ empty parens
-            ['"()"', '"()"'],                    // empty parens in quotes
-            ['title - sub', 'title sub'],        // freestanding hyphen
-            ['"title - sub"', '"title - sub"'],  // freestanding hyphen in quotes
-            ['test~1', 'test'],                  // meaningless proximity
-            ['test~1.', 'test'],                 // meaningless proximity w/dec.
-            ['test~1.000', 'test'],              // meaningless proximity w/dec.
-            ['test~1 fish', 'test fish'],        // meaningless proximity
-            ['test~1. fish', 'test fish'],       // meaningless proximity w/dec.
-            ['test~1.000 fish', 'test fish'],    // meaningless proximity w/dec.
-            ['"test~1"', '"test~1"'],            // meaningless prox. in quotes
-            ['test~0.9', 'test~0.9'],            // valid proximity
-            ['test~10', 'test~10'],              // illegal prox. (leave alone)
-            ['test~10 fish', 'test~10 fish'],    // illegal prox. (leave alone)
-            ['^10 test^10', '10 test10'],        // invalid boosts
-            ['^10', '10'],                       // invalid boosts
-            ['test^ test^6', 'test test6'],      // invalid boosts
-            ['test^1 test^2', 'test^1 test^2'],  // valid boosts
-            ['this / that', 'this "/" that'],    // freestanding slash
-            ['/ this', 'this'],                  // leading slash
-            ['title /', 'title'],                // trailing slash
-            ['- this', 'this'],                  // leading hyphen
-            ['title -', 'title'],                // trailing hyphen
-            ['AND', 'and'],                      // freestanding operator
-            ['OR', 'or'],                        // freestanding operator
-            ['NOT', 'not'],                      // freestanding operator
-            ['*bad', 'bad'],                     // leading wildcard
-            ['?bad', 'bad'],                     // leading wildcard
-            ["\xE2\x80\x9Ca\xE2\x80\x9D", '"a"'],// fancy quotes
-            // improperly escaped floating braces/brackets:
-            ['a:{a TO b} [ }', 'a:{a TO b} \[ \}'],
-            // properly escaped floating braces/brackets:
-            ['a:{a TO b} \[ \}', 'a:{a TO b} \[ \}'],
-        ];
-
         $qb = new QueryBuilder();
-        foreach ($tests as $test) {
-            [$input, $output] = $test;
-            $q = new Query($input);
-            $response = $qb->build($q);
-            $processedQ = $response->get('q');
-            $this->assertEquals($output, $processedQ[0]);
-        }
+        $q = new Query($input);
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals($output, $processedQ[0]);
     }
 
     /**
@@ -108,7 +114,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function getQuestionTests()
+    protected function getQuestionTests(): array
     {
         // Format: [input, expected output, flags array]
         return [
@@ -147,7 +153,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runBasicQuestionTest($qb, $handler, $test)
+    protected function runBasicQuestionTest(QueryBuilder $qb, string $handler, array $test): void
     {
         [$input, $output, $flags] = $test;
         if (
@@ -179,7 +185,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runAdvancedQuestionTest($qb, $handler, $test)
+    protected function runAdvancedQuestionTest(QueryBuilder $qb, string $handler, array $test): void
     {
         [$input, $output, $flags] = $test;
         if (
@@ -207,7 +213,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    protected function runQuestionTests($builderParams, $handler)
+    protected function runQuestionTests(array $builderParams, string $handler): void
     {
         // Set up an array of expected inputs and outputs:
         $tests = $this->getQuestionTests();
@@ -219,11 +225,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler
+     * Test generation with a query handler.
      *
      * @return void
      */
-    public function testQueryHandler()
+    public function testQueryHandler(): void
     {
         $this->runQuestionTests(
             [
@@ -234,11 +240,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with regular dismax
+     * Test generation with a query handler with regular dismax.
      *
      * @return void
      */
-    public function testQueryHandlerWithDismax()
+    public function testQueryHandlerWithDismax(): void
     {
         $this->runQuestionTests(
             [
@@ -249,11 +255,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with edismax
+     * Test generation with a query handler with edismax.
      *
      * @return void
      */
-    public function testQueryHandlerWithEdismax()
+    public function testQueryHandlerWithEdismax(): void
     {
         $this->runQuestionTests(
             [
@@ -269,7 +275,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testExactQueryHandler()
+    public function testExactQueryHandler(): void
     {
         $qb = new QueryBuilder(
             [
@@ -296,11 +302,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with a filter set and DisMax settings
+     * Test generation with a query handler with a filter set and DisMax settings.
      *
      * @return void
      */
-    public function testQueryHandlerWithFilterQueryAndDisMax()
+    public function testQueryHandlerWithFilterQueryAndDisMax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -314,11 +320,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with a query handler with a filter set and no DisMax settings
+     * Test generation with a query handler with a filter set and no DisMax settings.
      *
      * @return void
      */
-    public function testQueryHandlerWithFilterQueryAndNoDisMax()
+    public function testQueryHandlerWithFilterQueryAndNoDisMax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -333,11 +339,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test generation with a query handler with a filter set and no DisMax settings
-     * when the query is "all records"
+     * when the query is "all records".
      *
      * @return void
      */
-    public function testMatchAllQueryWithFilterQueryAndNoDisMax()
+    public function testMatchAllQueryWithFilterQueryAndNoDisMax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -358,7 +364,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHlQ()
+    public function testHlQ(): void
     {
         $qb = new QueryBuilder(
             [
@@ -385,7 +391,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetFieldsToHighlight()
+    public function testSetFieldsToHighlight(): void
     {
         $qb = new QueryBuilder(
             [
@@ -426,7 +432,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetCreateSpellingQuery()
+    public function testSetCreateSpellingQuery(): void
     {
         $qb = new QueryBuilder(
             [
@@ -453,11 +459,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation from a QueryGroup
+     * Test generation from a QueryGroup.
      *
      * @return void
      */
-    public function testQueryGroup()
+    public function testQueryGroup(): void
     {
         $qb = new QueryBuilder(
             [
@@ -484,11 +490,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation from a QueryGroup with advanced syntax
+     * Test generation from a QueryGroup with advanced syntax.
      *
      * @return void
      */
-    public function testQueryGroupWithAdvancedSyntax()
+    public function testQueryGroupWithAdvancedSyntax(): void
     {
         $qb = new QueryBuilder(
             [
@@ -523,7 +529,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMultipleQuotedPhrases()
+    public function testMultipleQuotedPhrases(): void
     {
         $qb = new QueryBuilder(
             [
@@ -543,11 +549,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with mix of quoted and unquoted phrases
+     * Test generation with mix of quoted and unquoted phrases.
      *
      * @return void
      */
-    public function testMixedQuotedPhrases()
+    public function testMixedQuotedPhrases(): void
     {
         $qb = new QueryBuilder(
             [
@@ -567,11 +573,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test generation with mix of quoted and unquoted phrases
+     * Test generation with mix of quoted and unquoted phrases.
      *
      * @return void
      */
-    public function testMixedQuotedPhrasesWithEscapedQuote()
+    public function testMixedQuotedPhrasesWithEscapedQuote(): void
     {
         $qb = new QueryBuilder(
             [
@@ -593,175 +599,173 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIndividualQueryHandlerWithGlobalExtraParams().
      *
-     * @return array
+     * @return Iterator
      */
-    public static function globalExtraParamsIndividualQueryDataProvider(): array
+    public static function globalExtraParamsIndividualQueryDataProvider(): Iterator
     {
-        return [
-            'Single value, no extra params' => [
-                'globalExtraParams' => null,
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => null,
+        yield 'Single value, no extra params' => [
+            'globalExtraParams' => null,
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => null,
+            ],
+        ];
+        yield 'Single value' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
                 ],
             ],
-            'Single value' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => ['a:foo'],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
-                ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => ['a:foo'],
             ],
-            'Two values' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => [
-                            'a:foo',
-                            'a:bar',
-                        ],
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => [
-                        'a:foo',
-                        'a:bar',
-                    ],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => [
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'Two values' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => [
                         'a:foo',
                         'a:bar',
                     ],
                 ],
             ],
-            'Value with SearchTypeIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SearchTypeIn' => [
-                                    'test',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => ['a:foo'],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => null,
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => [
+                    'a:foo',
+                    'a:bar',
                 ],
             ],
-            'Value with SearchTypeNotIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SearchTypeNotIn' => [
-                                    'test',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
+            'expected2' => [
+                'bf' => null,
+                'bq' => [
+                    'a:foo',
+                    'a:bar',
                 ],
             ],
-            'Value with NoDisMaxParams = [bf] condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'NoDismaxParams' => ['bf'],
+        ];
+        yield 'Value with SearchTypeIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SearchTypeIn' => [
+                                'test',
                             ],
                         ],
                     ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
                 ],
             ],
-            'Value with SortIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SortIn' => [
-                                    'score desc',
-                                ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => ['a:foo'],
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => null,
+            ],
+        ];
+        yield 'Value with SearchTypeNotIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SearchTypeNotIn' => [
+                                'test',
                             ],
                         ],
                     ],
-                ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => ['a:foo'],
-                ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => null,
                 ],
             ],
-            'Value with SortNotIn condition' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SortNotIn' => [
-                                    'score desc',
-                                ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'Value with NoDisMaxParams = [bf] condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'NoDismaxParams' => ['bf'],
+                        ],
+                    ],
+                ],
+            ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'Value with SortIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SortIn' => [
+                                'score desc',
                             ],
                         ],
                     ],
                 ],
-                'expected1' => [
-                    'bf' => ['a:filter'],
-                    'bq' => null,
+            ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => ['a:foo'],
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => null,
+            ],
+        ];
+        yield 'Value with SortNotIn condition' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SortNotIn' => [
+                                'score desc',
+                            ],
+                        ],
+                    ],
                 ],
-                'expected2' => [
-                    'bf' => null,
-                    'bq' => ['a:foo'],
-                ],
+            ],
+            'expected1' => [
+                'bf' => ['a:filter'],
+                'bq' => null,
+            ],
+            'expected2' => [
+                'bf' => null,
+                'bq' => ['a:foo'],
             ],
         ];
     }
@@ -769,18 +773,18 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
-     * @param array $globalExtraParams Global extra parameters
-     * @param array $expected1         First set of expected fields
-     * @param array $expected2         Second set of expected fields
+     * @param ?array $globalExtraParams Global extra parameters
+     * @param array  $expected1         First set of expected fields
+     * @param array  $expected2         Second set of expected fields
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsIndividualQueryDataProvider')]
     public function testIndividualQueryHandlerWithGlobalExtraParams(
-        $globalExtraParams,
-        $expected1,
-        $expected2
-    ) {
+        ?array $globalExtraParams,
+        array $expected1,
+        array $expected2
+    ): void {
         $q1 = new Query('q', 'test');
         $params1 = new ParamBag(['sort' => 'score desc']);
         $q2 = new Query('q', 'test2');
@@ -822,74 +826,72 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGroupedQueryHandlerWithGlobalExtraParams().
      *
-     * @return array
+     * @return Iterator
      */
-    public static function globalExtraParamsGroupedQueryDataProvider(): array
+    public static function globalExtraParamsGroupedQueryDataProvider(): Iterator
     {
-        return [
-            'Search type in [test]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'SearchTypeIn' => ['test'],
-                            ],
+        yield 'Search type in [test]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'SearchTypeIn' => ['test'],
                         ],
                     ],
-                ],
-                'expectedFields' => [
-                    'bq' => ['a:foo'],
                 ],
             ],
-            'All search types in [test, test2]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'AllSearchTypesIn' => ['test', 'test2'],
-                            ],
+            'expectedFields' => [
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'All search types in [test, test2]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'AllSearchTypesIn' => ['test', 'test2'],
                         ],
                     ],
-                ],
-                'expectedFields' => [
-                    'bq' => ['a:foo'],
                 ],
             ],
-            'All search types in [test, no]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'AllSearchTypesIn' => ['test', 'no'],
-                            ],
+            'expectedFields' => [
+                'bq' => ['a:foo'],
+            ],
+        ];
+        yield 'All search types in [test, no]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'AllSearchTypesIn' => ['test', 'no'],
                         ],
                     ],
-                ],
-                'expectedFields' => [
-                    'bq' => null,
                 ],
             ],
-            'All search types in [test, test2, no]' => [
-                'globalExtraParams' => [
-                    [
-                        'param' => 'bq',
-                        'value' => 'a:foo',
-                        'conditions' => [
-                            [
-                                'AllSearchTypesIn' => ['test', 'test2', 'no'],
-                            ],
+            'expectedFields' => [
+                'bq' => null,
+            ],
+        ];
+        yield 'All search types in [test, test2, no]' => [
+            'globalExtraParams' => [
+                [
+                    'param' => 'bq',
+                    'value' => 'a:foo',
+                    'conditions' => [
+                        [
+                            'AllSearchTypesIn' => ['test', 'test2', 'no'],
                         ],
                     ],
                 ],
-                'expectedFields' => [
-                    'bq' => ['a:foo'],
-                ],
+            ],
+            'expectedFields' => [
+                'bq' => ['a:foo'],
             ],
         ];
     }
@@ -904,9 +906,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsGroupedQueryDataProvider')]
     public function testGroupedQueryHandlerWithGlobalExtraParams(
-        $globalExtraParams,
-        $expectedFields
-    ) {
+        array $globalExtraParams,
+        array $expectedFields
+    ): void {
         $q1 = new Query('q', 'test');
         $q2 = new Query('q', 'test2');
         $group = new QueryGroup('AND', [$q1, $q2]);
@@ -938,7 +940,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegatedQuery()
+    public function testNegatedQuery(): void
     {
         $group = new QueryGroup('NOT', [new Query('q')]);
         $qb = new QueryBuilder([]);
@@ -951,7 +953,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegatedAndQuery()
+    public function testNegatedAndQuery(): void
     {
         $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
         $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
@@ -969,7 +971,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNegatedOrQuery()
+    public function testNegatedOrQuery(): void
     {
         $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
         $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
@@ -987,7 +989,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDismaxMunge()
+    public function testDismaxMunge(): void
     {
         // Set up an array of expected inputs and outputs:
         $tests = [
@@ -1024,7 +1026,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDismaxMungeQueryGroupOnlyOnce()
+    public function testDismaxMungeQueryGroupOnlyOnce(): void
     {
         $specs = [
             'test' => [
@@ -1041,7 +1043,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         );
         $response = $qb->build($query);
         $processedQ = $response->get('q');
-        $this->assertEquals(1, preg_match('/\}22@some-coded-value"/', $processedQ[0]));
-        $this->assertEquals(0, preg_match('/\}22@22@some-coded-value"/', $processedQ[0]));
+        $this->assertMatchesRegularExpression('/\}22@some-coded-value"/', $processedQ[0]);
+        $this->assertDoesNotMatchRegularExpression('/\}22@22@some-coded-value"/', $processedQ[0]);
     }
 }

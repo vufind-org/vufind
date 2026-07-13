@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFindHighlighter Test Class
+ * VuFindHighlighter Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\UrlHighlight\VuFindHighlighter;
 use VuFind\View\Helper\Root\ProxyUrl;
 
 /**
- * VuFindHighlighter Test Class
+ * VuFindHighlighter Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -46,21 +46,21 @@ use VuFind\View\Helper\Root\ProxyUrl;
 class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock proxy object
+     * Mock proxy object.
      *
      * @var ProxyUrl&MockObject
      */
     protected $proxyUrl;
 
     /**
-     * VuFind highlighter object
+     * VuFind highlighter object.
      *
      * @var VuFindHighlighter
      */
     protected $vuFindHighlighter;
 
     /**
-     * Generic setup method
+     * Generic setup method.
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Generic teardown method
+     * Generic teardown method.
      *
      * @return void
      */
@@ -81,7 +81,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test the highlight method
+     * Test the highlight method.
      *
      * @param string $url      URL
      * @param string $expected Expected result
@@ -92,43 +92,41 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     public function testGetHighlight(string $url, string $expected): void
     {
         $this->proxyUrl
-            ->expects(self::atLeastOnce())
+            ->expects($this->atLeastOnce())
             ->method('__invoke')
-            ->willReturnOnConsecutiveCalls('URL_WITH_PROXY');
+            ->willReturn('URL_WITH_PROXY');
 
         $replacer = ReplacerFactory::createReplacer();
         $actual = $this->vuFindHighlighter->highlight($url, $replacer);
-        self::assertSame($expected, $actual);
+        $this->assertSame($expected, $actual);
     }
 
     /**
-     * Data provider for testGetHighlight()
+     * Data provider for testGetHighlight().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getHighlightDataProvider(): array
+    public static function getHighlightDataProvider(): \Iterator
     {
-        return [
-            'http' => [
-                'https://vufind.org',
-                '<a href="URL_WITH_PROXY">https://vufind.org</a>',
-            ],
-            'complex link' => [
-                'https://vufind.org?foo=1&bar=2#xyzzy',
-                '<a href="URL_WITH_PROXY">https://vufind.org?foo=1&bar=2#xyzzy</a>',
-            ],
-            'quotes' => [
-                'https://vufind.org/path/with"quotes"/?q=search',
-                '<a href="URL_WITH_PROXY">https://vufind.org/path/with"quotes"/?q=search</a>',
-            ],
-            'no scheme' => [
-                'vufind.org',
-                '<a href="URL_WITH_PROXY">vufind.org</a>',
-            ],
-            'email' => [
-                'user@vufind.org',
-                '<a href="URL_WITH_PROXY">user@vufind.org</a>',
-            ],
+        yield 'http' => [
+            'https://vufind.org',
+            '<a href="URL_WITH_PROXY">https://vufind.org</a>',
+        ];
+        yield 'complex link' => [
+            'https://vufind.org?foo=1&bar=2#xyzzy',
+            '<a href="URL_WITH_PROXY">https://vufind.org?foo=1&bar=2#xyzzy</a>',
+        ];
+        yield 'quotes' => [
+            'https://vufind.org/path/with"quotes"/?q=search',
+            '<a href="URL_WITH_PROXY">https://vufind.org/path/with"quotes"/?q=search</a>',
+        ];
+        yield 'no scheme' => [
+            'vufind.org',
+            '<a href="URL_WITH_PROXY">vufind.org</a>',
+        ];
+        yield 'email' => [
+            'user@vufind.org',
+            '<a href="URL_WITH_PROXY">user@vufind.org</a>',
         ];
     }
 }

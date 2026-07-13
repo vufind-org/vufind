@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: configuration upgrader
+ * Console command: configuration upgrader.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
 
 /**
- * Console command: configuration upgrader
+ * Console command: configuration upgrader.
  *
  * @category VuFind
  * @package  Console
@@ -52,7 +52,7 @@ use VuFind\Config\Version;
 class ConfigCommand extends Command
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Upgrade $upgrader Configuration upgrader
      * @param ?string $name     The name of the command; passing null means it must be set in configure()

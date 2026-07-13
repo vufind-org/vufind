@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Databases Test Class
+ * Databases Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Recommend\Databases;
 use VuFind\Search\EDS\Results;
 
 /**
- * Databases Test Class
+ * Databases Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -200,7 +200,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
         string $queryString = 'History'
     ): MockObject&Databases {
         $configManager = $this->createMock(\VuFind\Config\ConfigManagerInterface::class);
-        $configManager->expects($this->any())->method('getConfigArray')
+        $configManager->method('getConfigArray')
             ->willReturn($configData);
 
         $libGuidesGetter = function () {

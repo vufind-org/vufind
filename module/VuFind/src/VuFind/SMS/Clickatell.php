@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class for text messaging via Clickatell's HTTP API
+ * Class for text messaging via Clickatell's HTTP API.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Exception\SMS as SMSException;
 use function function_exists;
 
 /**
- * Class for text messaging via Clickatell's HTTP API
+ * Class for text messaging via Clickatell's HTTP API.
  *
  * @category VuFind
  * @package  SMS
@@ -45,14 +45,14 @@ use function function_exists;
 class Clickatell extends AbstractBase
 {
     /**
-     * HTTP client
+     * HTTP client.
      *
      * @var \Laminas\Http\Client
      */
     protected $client;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $config  SMS configuration
      * @param array                 $options Additional options (client may be an

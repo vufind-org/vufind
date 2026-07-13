@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Summon Record Controller
+ * Summon Record Controller.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Summon Record Controller
+ * Summon Record Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -44,7 +44,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class SummonrecordController extends AbstractRecord
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -74,7 +74,7 @@ class SummonrecordController extends AbstractRecord
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */

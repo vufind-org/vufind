@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Channel loader
+ * Channel loader.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use function in_array;
 use function intval;
 
 /**
- * Channel loader
+ * Channel loader.
  *
  * @category VuFind
  * @package  Channels
@@ -54,7 +54,7 @@ class ChannelLoader
     use BatchTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array          $config         Channels configuration
      * @param CacheManager   $cacheManager   Cache manager
@@ -76,7 +76,7 @@ class ChannelLoader
     }
 
     /**
-     * Add configuration values needed by the templates to the view context
+     * Add configuration values needed by the templates to the view context.
      *
      * @param array $context String-keyed map of values for the View
      *
@@ -98,18 +98,14 @@ class ChannelLoader
 
                 $config = $this->config[$configSection] ?? [];
 
-                // Calculate batch size
-                $itemsPerRow = $config['itemsPerRow'] ?? 6;
-                $rowsPerPage = $config['rowsPerPage'] ?? 1;
-                $pageSize = $itemsPerRow * $rowsPerPage;
-                $batchSize = self::calcBatchSize($itemsPerRow, $rowsPerPage);
-
-                // Pass to view
+                // Calculate batch size and pass to view
+                $batchOptions = $this->performBatchCalculations($config);
                 $current['config'] = [
-                    'batchSize' => $batchSize,
-                    'pageSize' => $pageSize,
-                    'rowSize' => $itemsPerRow,
+                    'batchSize' => $batchOptions['batchSize'],
+                    'pageSize' => $batchOptions['itemsPerRow'] * $batchOptions['rowsPerPage'],
+                    'rowSize' => $batchOptions['itemsPerRow'],
                 ];
+
                 $channels[] = $current;
             } elseif (isset($current['token'])) {
                 // Add token to related tokens map

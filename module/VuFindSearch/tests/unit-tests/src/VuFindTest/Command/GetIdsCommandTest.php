@@ -46,7 +46,7 @@ use VuFindSearch\Query\Query;
 class GetIdsCommandTest extends TestCase
 {
     /**
-     * Test GetIds with GetIdsInterface
+     * Test GetIds with GetIdsInterface.
      *
      * @return void
      */
@@ -55,23 +55,22 @@ class GetIdsCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $command = new GetIdsCommand($backendId, $query, 0, 1, $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('getIds')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(1),
-                $this->equalTo($params)
+                $query,
+                0,
+                1,
+                $params
             )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 
     /**
-     * Test GetIds without GetIdsInterface
+     * Test GetIds without GetIdsInterface.
      *
      * @return void
      */
@@ -80,23 +79,22 @@ class GetIdsCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
         $command = new GetIdsCommand($backendId, $query, 0, 1, $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('search')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(1),
-                $this->equalTo($params)
+                $query,
+                0,
+                1,
+                $params
             )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 
     /**
-     * Test getArguments method
+     * Test getArguments method.
      *
      * @return void
      */

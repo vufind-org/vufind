@@ -60,7 +60,7 @@ class DefaultRecord extends AbstractBase
     protected array $authorOrder = ['primary' => 1, 'corporate' => 2, 'secondary' => 3];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array      $config          Config
      * @param ?SchemaOrg $schemaOrgHelper schema.org helper

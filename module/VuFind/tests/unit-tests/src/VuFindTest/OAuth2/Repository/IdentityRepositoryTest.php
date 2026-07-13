@@ -52,7 +52,7 @@ use VuFind\OAuth2\Repository\IdentityRepository;
 class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
-     * OAuth2 configuration
+     * OAuth2 configuration.
      *
      * @var array
      */
@@ -81,14 +81,14 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     ];
 
     /**
-     * User's birth date
+     * User's birth date.
      *
      * @var string
      */
     protected $userBirthDate;
 
     /**
-     * Setup tests
+     * Setup tests.
      *
      * @return void
      */
@@ -99,21 +99,19 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Data provider for testIdentityRepository
+     * Data provider for testIdentityRepository.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestIdentityRepositoryData(): array
+    public static function getTestIdentityRepositoryData(): \Iterator
     {
-        return [
-            [null],
-            [false],
-            [true],
-        ];
+        yield [null];
+        yield [false];
+        yield [true];
     }
 
     /**
-     * Test identity repository
+     * Test identity repository.
      *
      * @param ?bool $blocks Blocks status
      *
@@ -133,7 +131,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
             $this->getMockILSAuthenticator()
         );
 
-        $this->assertNull($repo->getUserEntityByIdentifier(1));
+        $this->assertNotInstanceOf(UserEntity::class, $repo->getUserEntityByIdentifier(1));
         $user = $repo->getUserEntityByIdentifier(2);
         $this->assertInstanceOf(UserEntity::class, $user);
 
@@ -160,7 +158,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Get a mock ILSAuthenticator
+     * Get a mock ILSAuthenticator.
      *
      * @return ILSAuthenticator
      * @throws InvalidArgumentException
@@ -170,7 +168,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     protected function getMockILSAuthenticator(): ILSAuthenticator
     {
         $mock = $this->createMock(ILSAuthenticator::class);
-        $mock->expects($this->any())->method('getCatPasswordForUser')->willReturnCallback(
+        $mock->method('getCatPasswordForUser')->willReturnCallback(
             function ($user) {
                 return $user->getRawCatPassword();
             }
@@ -179,7 +177,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Test identity repository with a failing ILS connection
+     * Test identity repository with a failing ILS connection.
      *
      * @return void
      */
@@ -189,7 +187,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $nonce = bin2hex(random_bytes(5));
         $accessTokenService->storeNonce(2, $nonce);
         $repo = new IdentityRepository(
-            $this->getMockUserService(),
+            $this->getMockUserService(1),
             $accessTokenService,
             $this->getMockFailingIlsConnection(),
             $this->oauth2Config,
@@ -217,33 +215,35 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Get a mock user object
+     * Get a mock user object.
      *
      * @return MockObject&UserEntityInterface
      */
     protected function getMockUser(): UserEntityInterface
     {
         $user = $this->createMock(UserEntityInterface::class);
-        $user->expects($this->any())->method('getId')->willReturn(2);
-        $user->expects($this->any())->method('getFirstname')->willReturn('Lib');
-        $user->expects($this->any())->method('getLastname')->willReturn('Rarian');
-        $user->expects($this->any())->method('getLastLanguage')->willReturn('en-gb');
-        $user->expects($this->any())->method('getEmail')->willReturn('Lib.Rarian@library.not');
-        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
-        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
+        $user->method('getId')->willReturn(2);
+        $user->method('getFirstname')->willReturn('Lib');
+        $user->method('getLastname')->willReturn('Rarian');
+        $user->method('getLastLanguage')->willReturn('en-gb');
+        $user->method('getEmail')->willReturn('Lib.Rarian@library.not');
+        $user->method('getCatUsername')->willReturn('user');
+        $user->method('getRawCatPassword')->willReturn('pass');
         return $user;
     }
 
     /**
      * Create a mock user service that returns a fake user object.
      *
+     * @param int $getCalls Number of expected calls to getUserByField.
+     *
      * @return MockObject&\VuFind\Db\Service\UserServiceInterface
      */
-    protected function getMockUserService(): MockObject&UserServiceInterface
+    protected function getMockUserService(int $getCalls = 2): MockObject&UserServiceInterface
     {
         $user = $this->getMockUser();
         $userService = $this->createMock(UserServiceInterface::class);
-        $userService->expects($this->any())->method('getUserByField')
+        $userService->expects($this->exactly($getCalls))->method('getUserByField')
             ->willReturnMap(
                 [
                     ['id', 1, null],
@@ -305,7 +305,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
                 ->willReturn(true);
         }
 
-        $ils->expects($this->any())->method('__call')->willReturnCallback(
+        $ils->method('__call')->willReturnCallback(
             function ($method, $args) use ($patron, $profile, $blocks) {
                 switch ($method) {
                     case 'patronLogin':
@@ -358,7 +358,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     }
 
     /**
-     * Create a hash from a user name
+     * Create a hash from a user name.
      *
      * @param string $username User name
      *

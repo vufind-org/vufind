@@ -1,7 +1,7 @@
 <?php
 
 /**
- * IpRegEx ServerParam Test Class
+ * IpRegEx ServerParam Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Role\PermissionProvider;
 use VuFind\Role\PermissionProvider\IpRegEx;
 
 /**
- * IpRegEx ServerParam Test Class
+ * IpRegEx ServerParam Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,12 +51,8 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
      */
     protected function getPermissionProvider($ipAddr)
     {
-        $mockRequest = $this->getMockBuilder(
-            \Laminas\Http\PhpEnvironment\Request::class
-        )->disableOriginalConstructor()->getMock();
-        $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
+        $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);
         $mockIpReader->expects($this->once())->method('getUserIp')
             ->willReturn($ipAddr);
         return new IpRegEx($mockRequest, $mockIpReader);

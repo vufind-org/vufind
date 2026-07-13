@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Prefix Autocomplete Module
+ * Solr Prefix Autocomplete Module.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Autocomplete;
 use function is_object;
 
 /**
- * Solr autocomplete module with prefix queries using edge N-gram filter
+ * Solr autocomplete module with prefix queries using edge N-gram filter.
  *
  * This class provides suggestions by using the local Solr index.
  *
@@ -45,56 +45,56 @@ use function is_object;
 class SolrPrefix implements AutocompleteInterface
 {
     /**
-     * Results manager
+     * Results manager.
      *
      * @var \VuFind\Search\Results\PluginManager
      */
     protected $resultsManager;
 
     /**
-     * Search object
+     * Search object.
      *
      * @var \VuFind\Search\Solr\Results
      */
     protected $searchObject;
 
     /**
-     * Search class id
+     * Search class id.
      *
      * @var string
      */
     protected $searchClassId = 'Solr';
 
     /**
-     * Autocomplete field
+     * Autocomplete field.
      *
      * @var string
      */
     protected $autocompleteField;
 
     /**
-     * Facet field
+     * Facet field.
      *
      * @var string
      */
     protected $facetField;
 
     /**
-     * Facet limit, can be overridden in subclasses
+     * Facet limit, can be overridden in subclasses.
      *
      * @var int
      */
     protected $limit = 10;
 
     /**
-     * Filters to apply to Solr search
+     * Filters to apply to Solr search.
      *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
@@ -104,7 +104,7 @@ class SolrPrefix implements AutocompleteInterface
     }
 
     /**
-     * Get suggestions
+     * Get suggestions.
      *
      * This method returns an array of strings matching the user's query for
      * display in the autocomplete box.
@@ -160,7 +160,7 @@ class SolrPrefix implements AutocompleteInterface
     }
 
     /**
-     * Set configuration
+     * Set configuration.
      *
      * Set parameters that affect the behavior of the autocomplete handler.
      * These values normally come from the search configuration file.
@@ -179,7 +179,7 @@ class SolrPrefix implements AutocompleteInterface
     }
 
     /**
-     * Add filters (in addition to the configured ones)
+     * Add filters (in addition to the configured ones).
      *
      * @param array $filters Filters to add
      *

@@ -1,0 +1,11 @@
+<?php
+  $notices = $this->notices()->getManager()->getActiveList($this->position ?? 'default');
+?>
+<?php if (!empty($notices)): ?>
+  <h2 class="visually-hidden"><?=$this->transEsc('Notices')?></h2>
+  <div class="notices">
+    <?php foreach ($notices as $notice): ?>
+      <?=$this->notices()->renderNotice($notice);?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>

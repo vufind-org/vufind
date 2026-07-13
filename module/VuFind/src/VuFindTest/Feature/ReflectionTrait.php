@@ -56,7 +56,6 @@ trait ReflectionTrait
     protected function callMethod($object, $method, array $arguments = [])
     {
         $reflectionMethod = new \ReflectionMethod($object, $method);
-        $reflectionMethod->setAccessible(true);
         return $reflectionMethod->invokeArgs($object, $arguments);
     }
 
@@ -75,7 +74,6 @@ trait ReflectionTrait
     protected function getProperty($object, $property)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($object);
     }
 
@@ -95,7 +93,6 @@ trait ReflectionTrait
     protected function setProperty($object, $property, $value)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
-        $reflectionProperty->setAccessible(true);
         return $reflectionProperty->setValue($object, $value);
     }
 }

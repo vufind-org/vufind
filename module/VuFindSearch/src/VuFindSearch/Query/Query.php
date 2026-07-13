@@ -48,14 +48,14 @@ class Query extends AbstractQuery
     protected $queryHandler;
 
     /**
-     * Query string
+     * Query string.
      *
      * @var string
      */
     protected $queryString;
 
     /**
-     * Operator to apply to query string (null if not applicable)
+     * Operator to apply to query string (null if not applicable).
      *
      * @var string
      */
@@ -76,7 +76,7 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Return search string (optionally applying a normalization callback)
+     * Return search string (optionally applying a normalization callback).
      *
      * @param callable $normalizer Function to normalize text strings (null for
      * no normalization)

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeoFeatures Abstract Configuration Factory Class
+ * GeoFeatures Abstract Configuration Factory Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * GeoFeatures Abstract Config Factory Class
+ * GeoFeatures Abstract Config Factory Class.
  *
  * @category VuFind
  * @package  GeoFeatures
@@ -49,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class AbstractConfigFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
