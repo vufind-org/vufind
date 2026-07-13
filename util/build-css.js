@@ -78,6 +78,11 @@ for (const theme of CLI_OPTIONS.themes) {
   }
 }
 
+/**
+ * Compile a theme.
+ * @param {string} themeName Name of theme to compile
+ * @returns {void}
+ */
 function compileTheme(themeName) {
   const start = performance.now();
   console.log(`\n${heading(themeName)}`);
@@ -117,7 +122,7 @@ function compileTheme(themeName) {
       sourceMapInlineSources: true,
     });
 
-    const output = compressor.minify(compiled.css, compiled.sourceMap ?? null);
+    const output = compressor.minify(compiled.css, compiled.sourceMap || null);
 
     cssContent = output.styles;
     sourceMapContent = DO_SOURCEMAPS ? output.sourceMap.toString() : null;
@@ -155,7 +160,7 @@ function compileTheme(themeName) {
           console.error(`  - ${red("SCSS needs to be recompiled")}`);
           process.exitCode = 1; // CI failure without exiting
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
         process.exit(1);
       }
@@ -170,22 +175,57 @@ function compileTheme(themeName) {
 
 // Functions
 
+/**
+ * Display a string as red text.
+ * @param {string} str Message to display
+ * @returns {string} Formatted string
+ */
 function red(str) {
   return `\x1b[31m${str}\x1b[0m`;
 }
+
+/**
+ * Display a string as green text.
+ * @param {string} str Message to display
+ * @returns {string} Formatted string
+ */
 function green(str) {
   return `\x1b[32m${str}\x1b[0m`;
 }
+
+/**
+ * Display a string as yellow text.
+ * @param {string} str Message to display
+ * @returns {string} Formatted string
+ */
 function yellow(str) {
   return `\x1b[33m${str}\x1b[0m`;
 }
+
+/**
+ * Display a string as underlined text.
+ * @param {string} str Message to display
+ * @returns {string} Formatted string
+ */
 function underline(str) {
   return `\x1b[4m${str}\x1b[0m`;
 }
+
+/**
+ * Display a string as heading text.
+ * @param {string} str Message to display
+ * @returns {string} Formatted string
+ */
 function heading(str) {
   return yellow(underline(str));
 }
 
+/**
+ * Get the path to a theme (or location within a theme).
+ * @param {string} name   Theme name
+ * @param {string} subdir Subdirectory within the theme (empty string for root of theme)
+ * @returns {string} Theme path
+ */
 function themePath(name, subdir = "") {
   const subpath = subdir.split("/").filter(Boolean);
 
@@ -196,6 +236,10 @@ function themePath(name, subdir = "") {
   return path.join(process.env.VUFIND_HOME, "themes", name, ...subpath);
 }
 
+/**
+ * Get a list of themes.
+ * @returns {Array<string>} Theme list
+ */
 function getThemeList() {
   const themes = [];
 
@@ -219,9 +263,19 @@ function getThemeList() {
   return themes;
 }
 
+/**
+ * Get a list of key include paths within the specified theme (including parents, mixins, etc.).
+ * @param {string} themeName Theme name
+ * @returns {Array<string>} Load path stack
+ */
 function getLoadPaths(themeName) {
   const paths = [];
 
+  /**
+   * Add paths to the path array for a single theme or mixin directory.
+   * @param {string} name Theme or mix-in name
+   * @returns {void}
+   */
   function addSubPaths(name) {
     // Add mixin base
     paths.push(themePath(name));
@@ -276,6 +330,12 @@ function getLoadPaths(themeName) {
   return paths.map((path) => `${path}/`);
 }
 
+/**
+ * Determine whether two files are identical
+ * @param {string} aPath First file to compare
+ * @param {string} bPath Second file to compare
+ * @returns {boolean} True if identical, false otherwise
+ */
 function filesAreIdentical(aPath, bPath) {
   // Check sizes first
   const aStats = fs.statSync(aPath);
