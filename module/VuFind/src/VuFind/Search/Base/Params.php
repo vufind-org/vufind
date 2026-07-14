@@ -1357,7 +1357,7 @@ class Params
                 // accept everything if the include list is null).
                 if (
                     ($include !== null && !in_array($facet['filter'], $include))
-                    && !($includeDynamic && $facet['dynamic'])
+                    && (!$includeDynamic || !$facet['dynamic'])
                 ) {
                     continue;
                 }
