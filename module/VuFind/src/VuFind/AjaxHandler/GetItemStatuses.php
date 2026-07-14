@@ -35,6 +35,8 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Log\LoggerAwareInterface;
+use Throwable;
 use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\GetThis\GetThisLoader;
@@ -43,6 +45,8 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\ILS\Logic\AvailabilityStatusManager;
 use VuFind\ILS\Logic\Holds;
+use VuFind\Log\LoggerAwareTrait;
+use VuFind\Search\Memory;
 use VuFind\Session\Settings as SessionSettings;
 
 use function array_map;
@@ -69,10 +73,12 @@ use function is_string;
  */
 class GetItemStatuses extends AbstractBase implements
     TranslatorAwareInterface,
-    \VuFind\I18n\HasSorterInterface
+    \VuFind\I18n\HasSorterInterface,
+    LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\HasSorterTrait;
+    use LoggerAwareTrait;
 
     /**
      * Constructor.
@@ -93,6 +99,7 @@ class GetItemStatuses extends AbstractBase implements
         protected Holds $holdLogic,
         protected AvailabilityStatusManager $availabilityStatusManager,
         protected ?GetThisLoader $getThisLoader,
+        protected Memory $searchMemory,
     ) {
         $this->sessionSettings = $ss;
     }
@@ -521,21 +528,61 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Sort statuses according to given config (by default it come from config.ini)
+     * A comparison function to be used in sortStatuses
+     * @param array $a      The first holding to compare
+     * @param array $b      The second holding to compare
+     * @param array $extras Extras parameters, filters are used in this function
+     *
+     * @return int -1,0,1
+     */
+    protected function compareLocationFilters(array $a, array $b, array $extras): int
+    {
+        foreach ($extras['filters']['Location'] as $locationFilter) {
+            $locations = explode('/', $locationFilter['displayText']);
+            $aLocation = true;
+            $bLocation = true;
+            foreach ($locations as $location) {
+                $aLocation = $aLocation && str_contains($a['location'], $location);
+                $bLocation = $bLocation && str_contains($b['location'], $location);
+            }
+            if ($aLocation && !$bLocation) {
+                return -1;
+            } elseif (!$aLocation && $bLocation) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Sort statuses according to given config (by default it come from config.ini).
      *
      * @param array[] $holdings      The holdings to sort
      * @param array[] $sortingFields Config on how to sort the fields (first values are prioritized for sorting)
+     * @param array   $filters       Filters from the user search
      *
      * @return void
      */
-    protected function sortStatuses(array &$holdings, array $sortingFields): void
+    protected function sortStatuses(array &$holdings, array $sortingFields, array $filters): void
     {
-        usort($holdings, function ($a, $b) use ($sortingFields) {
+        usort($holdings, function ($a, $b) use ($sortingFields, $filters) {
             foreach ($sortingFields as $field => $order) {
-                if (!isset($a[$field], $b[$field])) {
+                if (isset($a[$field], $b[$field])) {
+                    $result = $a[$field] <=> $b[$field];
+                } elseif (method_exists($this, $field)) {
+                    try {
+                        $result = call_user_func([$this, $field], $a, $b, ['filters' => $filters]);
+                    } catch (Throwable $e) {
+                        $this->logError(
+                            'An error happened during call to function "' . $field . '" : '
+                            . $e->getMessage() . ' line ' . $e->getLine() . ' of file ' . $e->getFile(),
+                            $e->getTrace()
+                        );
+                        continue;
+                    }
+                } else {
                     continue;
                 }
-                $result = $a[$field] <=> $b[$field];
                 if ($result === 0) {
                     continue;
                 }
@@ -599,8 +646,9 @@ class GetItemStatuses extends AbstractBase implements
 
             // Skip empty records:
             if (count($record)) {
-                if (($this->config->Record->getStatusesSorting ?? "false") !== "false") {
-                    $this->sortStatuses($record, current($this->config->Record->getStatusesSorting));
+                if (($this->config->Record->getStatusesSorting ?? 'false') !== 'false') {
+                    $filters = $this->searchMemory->getCurrentSearch()->getParams()->getFilterList() ?? [];
+                    $this->sortStatuses($record, current($this->config->Record->getStatusesSorting), $filters);
                 }
                 // Check for errors
                 if (!empty($record[0]['error'])) {
