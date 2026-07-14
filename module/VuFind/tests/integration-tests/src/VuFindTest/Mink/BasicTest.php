@@ -190,11 +190,14 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->getSearchHomePage();
         $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
-        $this->assertStringNotContainsString('Other Search', (string)$page->getContent());
         $this->assertStringNotContainsString('ServiceNotFoundException', (string)$page->getContent());
         $this->assertSame(
             'Catalog',
             $this->findCssAndGetHtml($page, '#searchForm .nav-link')
+        );
+        $this->assertSame(
+            'Other Search',
+            $this->findCssAndGetHtml($page, '#searchForm .nav-link.disabled')
         );
     }
 

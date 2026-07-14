@@ -103,6 +103,10 @@
   .nav-tabs a {
     color: $white;
     text-shadow: 0 1px 0 $black;
+
+    &.disabled {
+      color: $nav-link-disabled-color;
+    }
   }
   @include media-breakpoint-up(sm) {
     min-height: 300px;
