@@ -51,6 +51,7 @@ use VuFind\Session\Settings as SessionSettings;
 
 use function array_map;
 use function array_unique;
+use function call_user_func;
 use function count;
 use function in_array;
 use function is_array;
@@ -529,7 +530,7 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * A comparison function to be used in sortStatuses
+     * A comparison function to be used in sortStatuses.
      *
      * @param array $a      The first holding to compare
      * @param array $b      The second holding to compare
@@ -588,7 +589,7 @@ class GetItemStatuses extends AbstractBase implements
                 if ($result === 0) {
                     continue;
                 }
-                return $order !== "reversed" ? $result : -$result;
+                return $order !== 'reversed' ? $result : -$result;
             }
             return 0;
         });
