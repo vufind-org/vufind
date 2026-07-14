@@ -90,6 +90,7 @@ class GetItemStatuses extends AbstractBase implements
      * @param Holds                     $holdLogic                 Holds logic
      * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
      * @param ?GetThisLoader            $getThisLoader             Get This loader or null if not enabled
+     * @param Memory                    $searchMemory              Search memory to be able to get user selected filters
      */
     public function __construct(
         SessionSettings $ss,
@@ -529,6 +530,7 @@ class GetItemStatuses extends AbstractBase implements
 
     /**
      * A comparison function to be used in sortStatuses
+     *
      * @param array $a      The first holding to compare
      * @param array $b      The second holding to compare
      * @param array $extras Extras parameters, filters are used in this function
