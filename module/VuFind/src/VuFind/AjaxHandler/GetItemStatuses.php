@@ -37,6 +37,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\GetThis\GetThisLoader;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
@@ -82,6 +83,7 @@ class GetItemStatuses extends AbstractBase implements
      * @param RendererInterface         $renderer                  View renderer
      * @param Holds                     $holdLogic                 Holds logic
      * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
+     * @param ?GetThisLoader            $getThisLoader             Get This loader or null if not enabled
      */
     public function __construct(
         SessionSettings $ss,
@@ -89,7 +91,8 @@ class GetItemStatuses extends AbstractBase implements
         protected Connection $ils,
         protected RendererInterface $renderer,
         protected Holds $holdLogic,
-        protected AvailabilityStatusManager $availabilityStatusManager
+        protected AvailabilityStatusManager $availabilityStatusManager,
+        protected ?GetThisLoader $getThisLoader,
     ) {
         $this->sessionSettings = $ss;
     }
@@ -217,13 +220,16 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @param array $item Item's holding data.
      *
-     * @return array      Associative array with the keys 'prefix' and 'callnumber'
+     * @return array{
+     *     prefix: string,
+     *     callnumber: string,
+     * } Associative array with the keys 'prefix' and 'callnumber'
      */
     protected function getCallNumberArray(array $item): array
     {
         return [
             'prefix' => $item['callnumber_prefix'] ?? '',
-            'callnumber' => $item['callnumber'],
+            'callnumber' => $item['callnumber'] ?? '',
         ];
     }
 
@@ -272,13 +278,34 @@ class GetItemStatuses extends AbstractBase implements
      * @param string $callnumberSetting The callnumber mode setting used for
      *                                  pickValue()
      *
-     * @return array                    Summarized availability information
+     * @return array{
+     *     id: string,
+     *     availability: string,
+     *     availability_message: string,
+     *     location: string,
+     *     locationList: bool,
+     *     reserve: string,
+     *     reserve_message: string,
+     *     callnumberHtml: string,
+     *     getThisURL: string,
+     * } Summarized availability information
      */
     protected function getItemStatus(
         $record,
         $locationSetting,
         $callnumberSetting
     ) {
+        if (isset($this->getThisLoader)) {
+            $urlHelper = $this->renderer->plugin('url');
+            $itemIdParams = !empty($record[0]['item_id']) ? ['query' => ['item_id' => $record[0]['item_id']]] : null;
+            $getThisURL = $urlHelper(
+                'record-getthis',
+                ['id' => $record[0]['id'] ?? null],
+                $itemIdParams
+            );
+        } else {
+            $getThisURL = '';
+        }
         // Summarize call number, location and availability info across all items:
         $callNumbers = $locations = [];
         $services = [];
@@ -286,7 +313,9 @@ class GetItemStatuses extends AbstractBase implements
             // Store call number/location info:
             $callNumbers[] = $this->getCallNumberArray($info);
 
-            $locations[] = $info['location'];
+            if (!empty($info['location'])) {
+                $locations[] = $info['location'];
+            }
             // Store all available services
             if (isset($info['services'])) {
                 $services = array_merge($services, $info['services']);
@@ -322,7 +351,7 @@ class GetItemStatuses extends AbstractBase implements
 
         // Send back the collected details:
         return [
-            'id' => $record[0]['id'],
+            'id' => $record[0]['id'] ?? '',
             'availability' => $combinedAvailability->availabilityAsString(),
             'availability_message' => $availabilityMessage,
             'location' => implode(",\t", $location),
@@ -331,6 +360,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
             'callnumberHtml' => $this->renderCallnumbers($callnumberSetting, $callNumber),
+            'getThisURL' => $getThisURL,
         ];
     }
 
@@ -355,8 +385,12 @@ class GetItemStatuses extends AbstractBase implements
             $locations[$info['location']]['items'][] = $info;
         }
 
+        if (isset($this->getThisLoader)) {
+            $this->getThisLoader->setItems($record);
+        }
         // Build list split out by location:
         $locationList = [];
+        $urlHelper = $this->renderer->plugin('url');
         foreach ($locations as $location => $details) {
             // Determine call number string based on findings:
             $locationCallnumbers = $this->pickValue(
@@ -367,12 +401,27 @@ class GetItemStatuses extends AbstractBase implements
 
             // Get combined availability for location
             $locationStatus = $this->availabilityStatusManager->combine($details['items']);
+            if (
+                isset($this->getThisLoader)
+                && !$this->getThisLoader->isOnlineResource($locationStatus['item_id'] ?? null)
+            ) {
+                $itemIdParams = !empty($locationStatus['item_id'])
+                    ? ['query' => ['item_id' => $locationStatus['item_id']]] : null;
+                $getThisURL = $urlHelper(
+                    'record-getthis',
+                    ['id' => $record[0]['id'] ?? null],
+                    $itemIdParams
+                );
+            } else {
+                $getThisURL = '';
+            }
 
             $locationInfo = [
                 'availability' => $locationStatus['availability'],
                 'location' => $this->translateWithPrefix('location_', $location),
                 'callnumberHtml' =>
                     $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
+                'getThisURL' => $getThisURL,
             ];
             $locationList[] = $locationInfo;
         }
@@ -459,6 +508,7 @@ class GetItemStatuses extends AbstractBase implements
 
         $values = array_merge(
             [
+                'getThisLoader' => $this->getThisLoader,
                 'statusItems' => $record,
                 'simpleStatus' => $simpleStatus,
                 'callnumberHandler' => $this->getCallnumberHandler(),

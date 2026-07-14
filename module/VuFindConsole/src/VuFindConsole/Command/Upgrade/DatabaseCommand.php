@@ -208,7 +208,7 @@ class DatabaseCommand extends Command
             return self::FAILURE;
         }
         // Display a final message if we're in non-interactive/non-SQL mode, or had nothing to do in interactive mode.
-        if (!$sqlOnly && !($interactive && !empty($migrations))) {
+        if (!$sqlOnly && (!$interactive || empty($migrations))) {
             $output->writeln(empty($migrations) ? 'Nothing to do.' : 'Successfully upgraded database.');
         }
         if (!empty($migrations)) {

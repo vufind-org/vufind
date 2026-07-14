@@ -29,8 +29,11 @@
 
 namespace VuFind\RecordTab;
 
+use Closure;
+use VuFind\GetThis\GetThisLoader;
 use VuFind\ILS\Connection;
 
+use function call_user_func;
 use function strlen;
 
 /**
@@ -45,13 +48,6 @@ use function strlen;
 class HoldingsILS extends AbstractBase
 {
     /**
-     * ILS connection (or null if not applicable).
-     *
-     * @var Connection
-     */
-    protected $catalog;
-
-    /**
      * Name of template to use for rendering holdings.
      *
      * @var string
@@ -59,28 +55,31 @@ class HoldingsILS extends AbstractBase
     protected $template;
 
     /**
-     * Whether the holdings tab should be hidden when empty or not.
+     * GetThis if enabled in the config.
      *
-     * @var bool
+     * @var ?GetThisLoader
      */
-    protected $hideWhenEmpty;
+    protected $getThisLoader;
 
     /**
      * Constructor.
      *
-     * @param ?Connection $catalog       ILS connection to use to check for holdings before displaying the tab;
-     * may be set to null if no check is needed.
-     * @param ?string     $template      Holdings template to use
-     * @param bool        $hideWhenEmpty Whether the holdings tab should be hidden when empty or not
+     * @param ?Connection $catalog                      ILS connection to use to check for holdings before
+     *                                                  displaying the tab; may be set to null if no check
+     *                                                  is needed.
+     * @param ?string     $template                     Holdings template to use
+     * @param bool        $hideWhenEmpty                Whether the holdings tab should be hidden when
+     *                                                  empty or not
+     * @param ?Closure    $getThisLoaderFactoryCallback Closure to get the getThisLoader if enabled in the
+     *                                                  config And prevent loading it if not necessary
      */
     public function __construct(
-        ?Connection $catalog = null,
-        $template = null,
-        $hideWhenEmpty = false
+        protected ?Connection $catalog = null,
+        ?string $template = null,
+        protected bool $hideWhenEmpty = false,
+        protected ?Closure $getThisLoaderFactoryCallback = null
     ) {
-        $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
-        $this->hideWhenEmpty = $hideWhenEmpty;
     }
 
     /**
@@ -196,13 +195,13 @@ class HoldingsILS extends AbstractBase
      * @param int $page           Currently selected page of the items paginator
      * @param int $itemLimit      Max. no of items per page
      *
-     * @return \Laminas\Paginator\Paginator
+     * @return ?\Laminas\Paginator\Paginator (or null, if paginator is not needed/unsupported)
      */
     public function getPaginator($totalItemCount, $page, $itemLimit)
     {
         // Return if a paginator is not needed or not supported ($itemLimit = null)
         if (!$itemLimit || $totalItemCount <= $itemLimit) {
-            return;
+            return null;
         }
 
         // Create the paginator
@@ -216,5 +215,19 @@ class HoldingsILS extends AbstractBase
             ->setPageRange(10);
 
         return $paginator;
+    }
+
+    /**
+     * Getter for GetThisLoader.
+     *
+     * @return ?GetThisLoader
+     */
+    public function getGetThisLoader(): ?GetThisLoader
+    {
+        if (!isset($this->getThisLoader)) {
+            $this->getThisLoader = isset($this->getThisLoaderFactoryCallback)
+                ? call_user_func($this->getThisLoaderFactoryCallback) : null;
+        }
+        return $this->getThisLoader;
     }
 }

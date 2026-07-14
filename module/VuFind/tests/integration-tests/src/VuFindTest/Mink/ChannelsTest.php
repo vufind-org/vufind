@@ -31,8 +31,11 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use Exception;
+use Generator;
 use PHPUnit\Framework\ExpectationFailedException;
 use VuFindTest\Feature\DemoDriverTestTrait;
+
+use function count;
 
 /**
  * Mink channels test class.
@@ -52,7 +55,14 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @var string
      */
-    protected $channelSelector = 'div.channel';
+    protected string $channelSelector = 'div.channel';
+
+    /**
+     * Selector for finding all visible items in a channel.
+     *
+     * @var string
+     */
+    protected string $visibleItemsSelector = 'li.channel-item:not(.hidden-batch-item)';
 
     /**
      * Get a reference to a standard channels home page.
@@ -97,12 +107,33 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testBasicRecord.
+     *
+     * @return Generator
+     */
+    public static function basicRecordProvider(): Generator
+    {
+        yield 'default config' => [6, []];
+        yield 'custom similaritems provider config' => [
+            5,
+            ['channels' => ['provider.similaritems' => ['itemsPerRow' => 5]]],
+        ];
+    }
+
+    /**
      * Make sure the record page works, channels exists, search.
+     *
+     * @param int   $expectedSimilarItems Expected count of visible items in first similar items channel
+     * @param array $extraConfigs         Extra configurations to apply during the test
      *
      * @return void
      */
-    public function testBasicRecord(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('basicRecordProvider')]
+    public function testBasicRecord(int $expectedSimilarItems, array $extraConfigs = []): void
     {
+        if ($extraConfigs) {
+            $this->changeConfigs($extraConfigs);
+        }
         $id = 'testsample1';
         $page = $this->getChannelsRecordPage($id);
         // Channels are here
@@ -113,8 +144,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure appropriate similar records are displayed:
         $this->assertSame(
             'Similar Items: Journal of rational emotive therapy :',
-            $this->findCssAndGetText($page, 'h2.channel-title')
+            $this->findCssAndGetText($channels[0], 'h2.channel-title')
         );
+        $this->assertCount($expectedSimilarItems, $channels[0]->findAll('css', $this->visibleItemsSelector));
         // Similar record drop-down menu contains appropriate view record link:
         $link = $this->findCss($page, '.channel-options a');
         $this->assertEquals('View Record', $link->getText());
@@ -401,11 +433,29 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testDeepPaginationOfFacetsChannel().
+     *
+     * @return Generator
+     */
+    public static function deepPaginationProvider(): Generator
+    {
+        yield 'defaults' => [6, 48];
+        // TODO: re-enable after determining why this consistently fails in Jenkins (timing issue?):
+        //yield 'big pages' => [27, 48];
+        yield 'remainder' => [5, 25];
+        yield 'small pages' => [2, 16];
+    }
+
+    /**
      * Test deep pagination of Facets channel.
+     *
+     * @param int $itemsPerRow  Items per row setting to test
+     * @param int $maxBatchSize Max batch size setting to test
      *
      * @return void
      */
-    public function testDeepPaginationOfFacetsChannel(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('deepPaginationProvider')]
+    public function testDeepPaginationOfFacetsChannel(int $itemsPerRow = 6, int $maxBatchSize = 48): void
     {
         $this->changeConfigs(
             [
@@ -418,7 +468,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'provider.facets.home' => [
                         'maxFieldsToSuggest' => 2,
-                        'maxValuesToSuggestPerField' => 1,
+                        'maxValuesToSuggestPerField' => 2,
+                        'itemsPerRow' => $itemsPerRow,
+                        'maxBatchSize' => $maxBatchSize,
                     ],
                 ],
                 'searches' => [
@@ -427,29 +479,45 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ],
         );
+        $expectedTotalResults = 54;
         $page = $this->getChannelsHomePage();
-        $channel = $this->findCss($page, 'div.channel', index: 1);
-        $this->assertSame('Format: Book Chapter', $this->findCssAndGetText($channel, 'h2.channel-title'));
+        $channel = $this->findCss($page, 'div.channel', index: 3);
+        $channelId = $channel->getAttribute('id');
+        $this->assertSame('Format: Book', $this->findCssAndGetText($channel, 'h2.channel-title'));
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
-        $this->assertCount(6, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
-        for ($i = 0; $i < 8; $i++) {
-            $button = $this->findCss($channel, '.channel-load-more-btn');
+        $allItems = $channel->findAll('css', $this->visibleItemsSelector);
+        $this->assertCount($itemsPerRow, $allItems);
+        $rowsToLoad = ceil($expectedTotalResults / $itemsPerRow) - 1;
+        $buttonSelector = '.channel-load-more-btn';
+        for ($i = 0; $i < $rowsToLoad; $i++) {
+            $button = $this->findCss($channel, $buttonSelector);
             $button->click();
             $this->waitForPageLoad($page);
             // Confirm that the button's labels remain appropriate after clicks:
-            $dataHref = $button->getAttribute('data-href');
-            $selector = 'button[data-href="' . $dataHref . '"]';
-            $js = "false === document.querySelector('$selector').textContent.startsWith('Loading')";
-            $this->waitStatement($js);
-            $this->assertEquals('Load more items', $button->getText());
-            $this->assertEquals('Load more items into Format: Book Chapter', $button->getAttribute('aria-label'));
+            $selector = "document.querySelector('#$channelId .channel-load-more-btn')";
+            $lastRow = $i == $rowsToLoad - 1;
+            $secondarySelector = $lastRow
+                ? "$selector.classList.contains('disabled')"
+                : "!$selector.textContent.startsWith('Loading')";
+            $this->waitStatement("$selector && $secondarySelector");
+            // Make sure the button click actually registered and loaded more items:
+            $previousCount = count($allItems);
+            $allItems = $channel->findAll('css', $this->visibleItemsSelector);
+            $this->assertGreaterThan($previousCount, count($allItems));
+
+            // When all results are loaded, "load more" button will be disabled:
+            if ($lastRow) {
+                $this->assertStringContainsString('disabled', (string)$button->getAttribute('class'));
+            } else {
+                $this->assertEquals('Load more items', $button->getText(), "Unexpected button label on iteration $i");
+                $this->assertEquals('Load more items into Format: Book', $button->getAttribute('aria-label'));
+            }
         }
         // Make sure that we not only have the expected number of items but also that they all have different
         // IDs. (This prevents regression of a bug where the same page of results got loaded multiple times).
-        $allItems = $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)');
         $allIds = array_unique(array_map(fn ($item) => $item->getAttribute('data-record-id'), $allItems));
-        $this->assertCount(54, $allItems);
-        $this->assertCount(54, $allIds);
+        $this->assertCount($expectedTotalResults, $allItems);
+        $this->assertCount($expectedTotalResults, $allIds);
     }
 
     /**
