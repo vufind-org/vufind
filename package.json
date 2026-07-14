@@ -10,22 +10,29 @@
     "url": "https://vufind.org/jira"
   },
   "scripts": {
+    "postinstall": "npm run installBuildDeps",
+    "installBuildDeps": "npm run installBuildDeps --workspaces --if-present --ignore-scripts",
+    "updateDeps": "npm run updateDeps --workspaces --if-present --ignore-scripts",
+
     "build": "npm run build:css",
     "watch": "npm run watch:css",
 
     "build:css": "npm run build:scss",
     "watch:css": "npm run watch:scss",
 
-    "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
-    "build:scss": "npm run install:scss-dependencies && grunt scss",
-    "check:scss": "npm run install:scss-dependencies && grunt check:scss",
-    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss",
-    "check:jsTranslations": "cd themes/bootstrap5 && npm run check:jsTranslations"
+    "build:scss": "npm run installBuildDeps && node util/build-css.js",
+    "check:scss": "npm run installBuildDeps && node util/build-css.js --check-only",
+    "watch:scss": "npm run installBuildDeps && nodemon --watch util/ --watch themes/ --ext scss,js --exec \"node util/build-css.js\"",
+
+    "check:jsTranslations": "npm run check:jsTranslations --workspaces --if-present --ignore-scripts"
   },
+  "workspaces": [
+    "themes/bootstrap5"
+  ],
   "dependencies": {
-    "grunt": "^1.0.4",
-    "grunt-dart-sass": "^2.0.1",
-    "jit-grunt": "^0.10.0",
+    "clean-css": "^5.3.3",
+    "commander": "^14.0.0",
+    "nodemon": "^3.1.10",
     "sass": "^1.99.0"
   },
   "devDependencies": {
@@ -34,7 +41,6 @@
     "eslint": "^10.0.0",
     "eslint-plugin-jsdoc": "^62.0.0",
     "eslint-plugin-no-jquery": "^3.0.0",
-    "globals": "^16.0.0",
-    "grunt-contrib-watch": "^1.1.0"
+    "globals": "^16.0.0"
   }
 }
