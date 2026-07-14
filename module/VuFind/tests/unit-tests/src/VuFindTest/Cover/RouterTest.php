@@ -119,7 +119,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a loader object to test (may be a mock).
+     * Get a working cover loader object.
      *
      * @param array                                 $config      Configuration
      * @param ?\VuFind\Content\Covers\PluginManager $manager     Plugin manager (null to create mock)
