@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e86b497200b1b582f857e133f5dbab8f",
+    "content-hash": "d5c36ea6e9e7a0a99b000a134f953cb1",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -6570,16 +6570,16 @@
         },
         {
             "name": "lm-commons/lmc-rbac-mvc",
-            "version": "4.1.1",
+            "version": "4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LM-Commons/LmcRbacMvc.git",
-                "reference": "75ba3600cb6c8d34155e9e8fc7c62c9217879d76"
+                "reference": "6118182191536a6ff3d0ac2d02ca4e7429ef546a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcRbacMvc/zipball/75ba3600cb6c8d34155e9e8fc7c62c9217879d76",
-                "reference": "75ba3600cb6c8d34155e9e8fc7c62c9217879d76",
+                "url": "https://api.github.com/repos/LM-Commons/LmcRbacMvc/zipball/6118182191536a6ff3d0ac2d02ca4e7429ef546a",
+                "reference": "6118182191536a6ff3d0ac2d02ca4e7429ef546a",
                 "shasum": ""
             },
             "require": {
@@ -6587,15 +6587,15 @@
                 "laminas/laminas-mvc": "^3.2",
                 "laminas/laminas-servicemanager": "^3.15",
                 "lm-commons/lmc-rbac": "^2.1",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
             },
             "require-dev": {
                 "laminas/laminas-authentication": "^2.2",
                 "laminas/laminas-coding-standard": "^3.0",
                 "phpspec/prophecy-phpunit": "^2.0",
-                "phpunit/phpunit": "^10.5.38",
+                "phpunit/phpunit": "^11.5.44",
                 "psalm/plugin-phpunit": "^0.19.0",
-                "vimeo/psalm": "^5.26"
+                "vimeo/psalm": "^6.13.1"
             },
             "suggest": {
                 "lm-commons/lmc-rbac-mvc-devtools": "if you want to collect and show information about roles and guards in Laminas Developer Tools"
@@ -6646,9 +6646,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcRbacMvc/issues",
-                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/4.1.1"
+                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/4.2.0"
             },
-            "time": "2025-01-27T22:42:12+00:00"
+            "time": "2025-11-25T00:00:42+00:00"
         },
         {
             "name": "matthiasmullie/minify",
