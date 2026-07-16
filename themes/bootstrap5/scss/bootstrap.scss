@@ -702,41 +702,6 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
   stroke: $primary;         // color
 }
 
-/* ------ Table wrapping to prevent horizontal overflow ------ */
-.table {
-  th {
-    word-wrap: break-word;
-  }
-  &.staff-view th {
-    min-width: 30%;
-    word-wrap: anywhere;
-  }
-  td {
-    word-wrap: anywhere;
-  }
-  td.fullAvailability, td.holdings-table, td.date {
-    word-wrap: break-word;
-  }
-}
-.callnumAndLocation .table, .table.holdings-table {
-  td {
-    word-wrap: break-word;
-    & > * {
-      vertical-align: middle;
-    }
-  }
-}
-// No wrapping for fines or staff view table in wide windows
-@include media-breakpoint-up(md) {
-  .table {
-    &.fines-table, &.staff-view {
-      td, th {
-        word-wrap: normal;
-      }
-    }
-  }
-}
-
 /* ------ Responsive table for small screen size ------ */
 @include media-breakpoint-down(sm) {
   @media screen {

@@ -910,20 +910,8 @@ header .container.navbar {
   @extend .table-striped;
   @extend .table-responsive;
 
-  td.history_results, td.history_actions {
-    word-wrap: normal;
-  }
-}
-table.search-history-table {
-  table-layout: auto;
-
-  @include media-breakpoint-up(sm) {
-    @media screen {
-      tbody > tr > td { vertical-align: middle; }
-      .history_time {
-        width: 20%;
-      }
-    }
+  .history_time {
+    white-space: nowrap;
   }
 }
 
