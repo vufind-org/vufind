@@ -24,6 +24,7 @@
     "check:scss": "npm run installBuildDeps && node util/build-css.js --check-only",
     "watch:scss": "npm run installBuildDeps && nodemon --watch util/ --watch themes/ --ext scss,js --exec \"node util/build-css.js\"",
 
+    "check:dependencySync": "npm run check:dependencySync --workspaces --if-present --ignore-scripts",
     "check:jsTranslations": "npm run check:jsTranslations --workspaces --if-present --ignore-scripts"
   },
   "workspaces": [
