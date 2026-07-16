@@ -29,6 +29,9 @@
   "workspaces": [
     "themes/bootstrap5"
   ],
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "dependencies": {
     "clean-css": "^5.3.3",
     "commander": "^14.0.0",
