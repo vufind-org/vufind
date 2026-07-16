@@ -61,7 +61,9 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getFacetListAction(): ?string
     {
-        return 'gvi-facetlist';
+        return $this->facetListAction;
+        //return null;
+        //return 'gvi-facetlist';
     }
 
     /**
