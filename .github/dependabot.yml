@@ -7,3 +7,15 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "themes/bootstrap5"
+    schedule:
+      interval: "weekly"
