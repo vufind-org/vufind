@@ -2,6 +2,7 @@
   "name": "vufind-bootstrap5",
   "description": "Dependencies for the bootstrap5 theme",
   "scripts": {
+    "check:dependencySync": "node tools/copyDependencies.js && git diff --quiet HEAD || (echo Changed dependencies must be committed && false)",
     "check:jsTranslations": "node tools/jsTranslationsCheck.js",
     "installBuildDeps": "npm install --ignore-scripts --no-audit",
     "updateDeps": "npm update --ignore-scripts && node tools/copyDependencies.js"
