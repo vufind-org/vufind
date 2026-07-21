@@ -1,5 +1,11 @@
+/* copied from vendor/bootstrap/_tables */
+@mixin overflow-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 // Responsive table mixin
-@mixin table-responsive {
+@mixin mobile-table-view {
   border: none;
   thead, tfoot > tr > th {
     position: absolute;
@@ -38,10 +44,17 @@
       content: attr(data-label);
     }
   }
+
   tbody > tr {
     & > td:nth-child(even),
     & > th:nth-child(even) {
       background-color: var(--bs-table-striped-bg);
+    }
+
+    /* remove table-striped background */
+    & > td,
+    & > th {
+      box-shadow: none;
     }
   }
   tfoot > tr > td {

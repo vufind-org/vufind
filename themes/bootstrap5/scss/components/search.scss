@@ -908,14 +908,10 @@ header .container.navbar {
 .search-history-table {
   @extend .table;
   @extend .table-striped;
-  @extend .table-responsive;
 
   td.history_results, td.history_actions {
     word-wrap: normal;
   }
-}
-table.search-history-table {
-  table-layout: auto;
 
   @include media-breakpoint-up(sm) {
     @media screen {
@@ -926,8 +922,13 @@ table.search-history-table {
     }
   }
 }
+@include media-breakpoint-down(sm) {
+  .search-history-table-wrapper {
+    @include mobile-table-view;
+  }
+}
 
-.nav.searchbox{
+.nav.searchbox {
   width: 100%;
 }
 

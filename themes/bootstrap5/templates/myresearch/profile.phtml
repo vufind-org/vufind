@@ -19,7 +19,7 @@
   ?>
   <?=$this->flashmessages();?>
 
-  <table class="table table-striped">
+  <table class="profile-table">
     <?=
       $this->renderArray(
           $arrTemplate,
@@ -96,7 +96,8 @@
     <?php if (!$tokens): ?>
       <div class="my-profile-col"><?=$this->transEsc('No saved logins')?></div>
     <?php else: ?>
-      <table class="login-tokens-table table table-responsive table-striped">
+      <div class="login-tokens-table-wrapper">
+        <table class="login-tokens-table">
         <thead>
           <tr>
             <th scope="col" class="login_token_browser"> <?=$this->transEsc('saved_login_platform_and_browser')?></th>
@@ -119,7 +120,8 @@
             </tr>
           <?php endforeach; ?>
         </tbody>
-      </table>
+        </table>
+      </div>
       <form id="delete-user-login-tokens" method="post" action="<?=$this->url('myresearch-deleteuserlogintokens')?>">
         <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
         <input id="delete-user-login-tokens-submit" class="btn btn-danger" type="submit" name="submitButton" value="<?=$this->transEscAttr('Forget All')?>">
@@ -130,7 +132,7 @@
   <?php if (is_array($this->profile)): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
-    <table class="table table-striped catalog-profile">
+    <table class="catalog-profile-table">
       <?=
         $this->renderArray(
             $arrTemplate,

@@ -63,39 +63,41 @@
           </label>
         </div>
       </div>
-      <table class="usercontent-table table-striped table table-responsive">
-        <thead>
-          <tr>
-            <th></th>
-            <th><?=$this->transEsc('Created')?></th>
-            <th><?=$this->transEsc('Title')?></th>
-            <th><?=$this->transEsc('Tag')?></th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($this->tags as $tag):?>
+      <div class="usercontent-table-wrapper">
+        <table class="usercontent-table">
+          <thead>
             <tr>
-              <td class="checkbox-col unlabeled-column">
-                <div class="checkbox-container result">
-                  <div class="checkbox">
-                    <label>
-                      <span class="sr-only"><?=$this->transEsc('Select');?></span>
-                      <input class="checkbox-select-item" type="checkbox" name="deleteSelectedtag[]" value="<?=$this->escapeHtmlAttr(($tag['id']))?>" id="checkbox_tag_<?=$tag['id']?>">
-                    </label>
-                  </div>
-                </div>
-              </td>
-              <td class="date" data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $tag['posted']->getTimestamp())?></td>
-              <td data-label="<?=$this->transEscAttr('Title')?>">
-                <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$this->escapeHtml($tag['recordTitle'])?></a>
-              </td>
-              <td class="user-tag" data-label="<?=$this->transEscAttr('Tag')?>">
-                <div><?=$this->escapeHtml($tag['tag'])?></div>
-              </td>
+              <th></th>
+              <th><?=$this->transEsc('Created')?></th>
+              <th><?=$this->transEsc('Title')?></th>
+              <th><?=$this->transEsc('Tag')?></th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php foreach ($this->tags as $tag):?>
+              <tr>
+                <td class="checkbox-col unlabeled-column">
+                  <div class="checkbox-container result">
+                    <div class="checkbox">
+                      <label>
+                        <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                        <input class="checkbox-select-item" type="checkbox" name="deleteSelectedtag[]" value="<?=$this->escapeHtmlAttr(($tag['id']))?>" id="checkbox_tag_<?=$tag['id']?>">
+                      </label>
+                    </div>
+                  </div>
+                </td>
+                <td class="date" data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $tag['posted']->getTimestamp())?></td>
+                <td data-label="<?=$this->transEscAttr('Title')?>">
+                  <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$this->escapeHtml($tag['recordTitle'])?></a>
+                </td>
+                <td class="user-tag" data-label="<?=$this->transEscAttr('Tag')?>">
+                  <div><?=$this->escapeHtml($tag['tag'])?></div>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
     </form>
   <?php else: ?>
     <?=$this->transEsc('No Tags')?>
