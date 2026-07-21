@@ -737,20 +737,20 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
   }
 }
 
-/* ------ Responsive table for small screen size ------ */
-@include media-breakpoint-down(sm) {
-  @media screen {
-    .table-responsive {
-      @include table-responsive;
-    }
+/* --- mobile table view --- */
+@include media-breakpoint-down(md) {
+  .cookieconsent-table-wrapper,
+  .fines-table-wrapper {
+    @include mobile-table-view;
   }
 }
-/* ------ Responsive table for non-ultrawide screen size ------ */
-@include media-breakpoint-down(xl) {
-  @media screen {
-    .table-responsive.table-responsive__lg {
-      @include table-responsive;
-    }
+
+/* --- table overflow scrolling --- */
+@media screen {
+  .login-tokens-table-wrapper,
+  .staffview-table-wrapper,
+  .usercontent-table-wrapper {
+    @include overflow-table;
   }
 }
 
