@@ -31,7 +31,7 @@
     <?php if (!is_numeric($uptime)): ?>
       <p><i><?=$this->transEsc('System Unavailable')?></i></p>
     <?php else: ?>
-      <table class="table table-striped">
+      <table class="table">
         <tr>
           <th><?=$this->transEsc('Record Count')?>: </th>
           <?php $recordCount = $core->xpath('//lst[@name="' . $coreName . '"]/lst/int[@name="numDocs"]') ?>

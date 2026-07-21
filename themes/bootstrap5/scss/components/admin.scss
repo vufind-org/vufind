@@ -1,3 +1,5 @@
+@import "components/tables";
+
 .form-admin-maintenance {
   .form-control, .form-select {
     display: inline-block;
@@ -59,32 +61,6 @@
     }
   }
 
-  .payment-table {
-    @extend .table;
-    @extend .table-striped;
-    @extend .table-responsive;
-
-    margin-top: 1rem;
-
-    td {
-      min-width: 4rem;
-
-      &.actions {
-        min-width: 8rem;
-
-        .action-buttons {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          word-wrap: break-word;
-        }
-      }
-      &.date-time {
-        word-wrap: break-word;
-      }
-    }
-  }
-
   .no-hits {
     margin-top: 1rem;
   }
@@ -121,3 +97,37 @@
 }
 
 
+.admin-tags-table,
+.payment-table {
+  @extend .table;
+  @extend .table-striped;
+}
+
+.payment-table {
+  margin-top: 1rem;
+
+  td {
+    min-width: 4rem;
+
+    &.actions {
+      min-width: 8rem;
+
+      .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        word-wrap: break-word;
+      }
+    }
+    &.date-time {
+      word-wrap: break-word;
+    }
+  }
+}
+@include media-breakpoint-down(xl) {
+  @media screen {
+    .payment-table-wrapper {
+      @include overflow-table;
+    }
+  }
+}
