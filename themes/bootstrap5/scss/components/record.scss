@@ -280,12 +280,8 @@ $tag-remove-badge-color:          #a94442 !default;
 .tab-pane .result {
   margin-left: 0;
 }
-.holdings-tab .holdings-table {
-  table-layout: auto;
-
-  th, td {
-    min-width: 10vw;
-  }
+.holdings-table {
+  @extend .table;
 
   .bound-with-records .direct-item {
     font-weight: bold;

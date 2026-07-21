@@ -104,7 +104,7 @@
     'rows' => $this->config()->getHoldingsItemLimit(),
   ];
 ?>
-<table class="table table-striped truncate-field holdings-table" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
+<table class="holdings-table truncate-field" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
   <caption class="visually-hidden"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); ?>
   <?php if (!empty($callNos)): ?>
@@ -166,7 +166,7 @@
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>
   <h2><?=$this->transEsc('Most Recent Received Issues')?></h2>
-  <table class="table table-striped">
+  <table class="table">
     <?php foreach ($history as $row): ?>
       <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
     <?php endforeach; ?>

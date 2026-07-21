@@ -11,22 +11,21 @@
 
   <div>
     <h3><?= $this->transEsc('Developer::api_keys') ?></h3>
-    <table class="table table-striped">
+    <table class="api-keys-table">
       <?php foreach ($this->apiKeys as $apiKey): ?>
-        <tr class="d-flex flex-row">
-          <th class="d-flex align-items-center justify-content-center"><?= $this->escapeHtml($apiKey->getTitle()); ?></th>
-          <td class="d-flex flex-fill align-items-center justify-content-end">
+        <tr>
+          <th><?= $this->escapeHtml($apiKey->getTitle()); ?></th>
+          <td>
             <div>
               <?php if ($apiKey->isRevoked()): ?>
                 <span><?= $this->transEsc('Developer::api_key_locked'); ?></span>
               <?php else: ?>
                 <?=$this->component('confirm-button', [
-                      'buttonLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId()]]),
-                      'buttonLabel' => 'Delete',
-                      'confirmLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId(), 'confirm' => 1]]),
-                      'header' => 'confirm_delete',
-                    ]
-                  );?>
+                  'buttonLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId()]]),
+                  'buttonLabel' => 'Delete',
+                  'confirmLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId(), 'confirm' => 1]]),
+                  'header' => 'confirm_delete',
+                ]); ?>
               <?php endif; ?>
             </div>
           </td>
