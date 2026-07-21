@@ -389,7 +389,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToTagAdmin();
         $this->assertEquals(
             'Total Users Total Resources Total Tags Unique Tags Anonymous Tags 1 3 8 6 0',
-            $this->findCss($page, 'table.table-striped')->getText()
+            $this->findCss($page, '.admin-tags-table')->getText()
         );
     }
 

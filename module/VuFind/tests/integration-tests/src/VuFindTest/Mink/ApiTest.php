@@ -264,7 +264,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertSame(
             'test title',
-            $this->findCssAndGetText($page, '.table.table-striped th', index: 0)
+            $this->findCssAndGetText($page, '.api-keys-table th', index: 0)
         );
     }
 

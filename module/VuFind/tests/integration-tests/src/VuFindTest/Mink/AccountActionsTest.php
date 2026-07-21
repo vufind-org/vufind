@@ -276,7 +276,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
         $this->assertSame(
             'First Name: Tester Last Name: McTestenson Email: new@email.com',
-            $this->findCssAndGetText($page, '.table-striped')
+            $this->findCssAndGetText($page, '.profile-table')
         );
     }
 
