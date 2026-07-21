@@ -60,7 +60,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
         QueryGroup $query,
         callable $translate,
         callable $showName
-    ) {
+    ): string {
         // There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {

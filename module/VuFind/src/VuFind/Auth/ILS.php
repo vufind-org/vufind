@@ -140,10 +140,9 @@ class ILS extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
-        $recoveryConfig = $this->getCatalog()->checkFunction('resetPassword');
-        return (bool)$recoveryConfig;
+        return !empty($this->getCatalog()->checkFunction('resetPassword'));
     }
 
     /**
@@ -151,13 +150,13 @@ class ILS extends AbstractBase
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         try {
-            return false !== $this->getCatalog()->checkFunction(
+            return !empty($this->getCatalog()->checkFunction(
                 'changePassword',
                 ['patron' => $this->authenticator->getStoredCatalogCredentials()]
-            );
+            ));
         } catch (ILSException $e) {
             return false;
         }
@@ -174,8 +173,8 @@ class ILS extends AbstractBase
     {
         // If a target is specified, use an arbitrary cat_username with the current target prefix:
         $patron = $target ? ['cat_username' => "$target.123"] : $this->getLoggedInPatron();
-        $policy = $this->getCatalog()->getPasswordPolicy($patron);
-        if ($policy === false) {
+        $policy = $this->getCatalog()->getPasswordPolicy($patron ?? []);
+        if (!$policy) {
             return parent::getPasswordPolicy();
         }
         if (isset($policy['pattern']) && empty($policy['hint'])) {

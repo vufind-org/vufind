@@ -142,17 +142,17 @@ class MaintenanceController extends AbstractAdmin
         $scripts = $this->getScripts();
         $details = $scripts[$script] ?? null;
         if (empty($details['command'])) {
-            $this->flashMessenger()->addErrorMessage('Unknown command: ' . $script);
+            $this->getFlashMessenger()->addErrorMessage('Unknown command: ' . $script);
         } else {
             $code = $output = null;
             exec($details['command'], $output, $code);
             $successCode = intval($details['successCode'] ?? 0);
             if ($code !== $successCode) {
-                $this->flashMessenger()->addErrorMessage(
+                $this->getFlashMessenger()->addErrorMessage(
                     "Command failed; expected $successCode but received $code"
                 );
             } else {
-                $this->flashMessenger()->addSuccessMessage(
+                $this->getFlashMessenger()->addSuccessMessage(
                     "Success ($script)! Output = " . implode("\n", $output)
                 );
             }
@@ -175,7 +175,7 @@ class MaintenanceController extends AbstractAdmin
         // If cache is unset, we didn't go through the loop above, so no message
         // needs to be displayed.
         if (isset($cache)) {
-            $this->flashMessenger()->addSuccessMessage('Cache(s) cleared.');
+            $this->getFlashMessenger()->addSuccessMessage('Cache(s) cleared.');
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }
@@ -242,7 +242,7 @@ class MaintenanceController extends AbstractAdmin
     {
         $daysOld = intval($this->params()->fromQuery('daysOld', $minAge));
         if ($daysOld < $minAge) {
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 str_replace(
                     '%%age%%',
                     $minAge,
@@ -258,7 +258,7 @@ class MaintenanceController extends AbstractAdmin
             $msg = $count == 0
                 ? $failString
                 : str_replace('%%count%%', $count, $successString);
-            $this->flashMessenger()->addSuccessMessage($msg);
+            $this->getFlashMessenger()->addSuccessMessage($msg);
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }
@@ -285,7 +285,7 @@ class MaintenanceController extends AbstractAdmin
                 $type = \BrowscapPHP\Helper\IniLoaderInterface::PHP_INI;
                 break;
             default:
-                $this->flashMessenger()->addErrorMessage('Invalid browscap file-type specified');
+                $this->getFlashMessenger()->addErrorMessage('Invalid browscap file-type specified');
                 return;
         }
 
@@ -296,26 +296,26 @@ class MaintenanceController extends AbstractAdmin
         try {
             $bc->checkUpdate();
         } catch (\BrowscapPHP\Exception\NoNewVersionException $e) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addSuccessMessage('No newer browscap version available. Clear the cache to force update.');
             return;
         } catch (\BrowscapPHP\Exception\FetcherException $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $this->getFlashMessenger()->addErrorMessage($e->getMessage());
             $this->logger->err((string)$e);
             return;
         } catch (\BrowscapPHP\Exception\NoCachedVersionException $e) {
             // Fall through...
         } catch (\Exception $e) {
             // Output the exception and continue (assume we don't have a current version):
-            $this->flashMessenger()->addWarningMessage($e->getMessage());
+            $this->getFlashMessenger()->addWarningMessage($e->getMessage());
             $this->logger->warn((string)$e);
         }
         try {
             $bc->update($type);
             $this->logger->info('Browscap cache updated');
-            $this->flashMessenger()->addSuccessMessage('Browscap cache successfully updated.');
+            $this->getFlashMessenger()->addSuccessMessage('Browscap cache successfully updated.');
         } catch (\Exception $e) {
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $this->getFlashMessenger()->addErrorMessage($e->getMessage());
             $this->logger->warn((string)$e);
         }
     }

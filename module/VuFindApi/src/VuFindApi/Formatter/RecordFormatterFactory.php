@@ -51,7 +51,7 @@ class RecordFormatterFactory implements FactoryInterface
      *
      * @var string
      */
-    protected $configFile = 'SearchApiRecordFields.yaml';
+    protected $configFile = 'SearchApiRecordFields';
 
     /**
      * Create an object.
@@ -76,9 +76,10 @@ class RecordFormatterFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $recordFields = $container->get(\VuFind\Config\YamlReader::class)
-            ->get($this->configFile);
+        $recordFields = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->configFile);
         $helperManager = $container->get('ViewHelperManager');
-        return new $requestedName($recordFields, $helperManager);
+        $serverUrlHelper = $container->get(\VuFind\Http\ServerUrlHelper::class);
+        return new $requestedName($recordFields, $helperManager, $serverUrlHelper);
     }
 }

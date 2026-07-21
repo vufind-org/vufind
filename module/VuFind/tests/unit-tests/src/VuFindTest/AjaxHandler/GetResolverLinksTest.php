@@ -34,6 +34,7 @@ use VuFind\AjaxHandler\GetResolverLinksFactory;
 use VuFind\Resolver\Driver\DriverInterface;
 use VuFind\Resolver\Driver\PluginManager;
 use VuFind\Session\Settings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * GetResolverLinks test class.
@@ -100,9 +101,16 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $rm->expects($this->once())->method('get')->with('generic')->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
+        $request = $this->getRequest(
+            [
+                'openurl' => 'foo',
+                'searchClassId' => 'scl',
+            ]
+        );
+
         // Set up view helper and renderer:
-        $view = $this->container->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $expectedViewParams = [
+        $renderer = $this->container->createMock(TemplateRendererInterface::class);
+        $expectedTemplateParams = [
             'openUrlBase' => false,
             'openUrl' => 'foo',
             'print' => [
@@ -131,12 +139,13 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             'searchClassId' => 'scl',
             'moreOptionsLink' => '',
         ];
-        $view->expects($this->once())->method('render')
+        $renderer->expects($this->once())->method('renderTemplateAsString')
             ->with(
+                $request,
                 'ajax/resolverLinks.phtml',
-                $expectedViewParams
+                $expectedTemplateParams
             )->willReturn('html');
-        $this->container->set('ViewRenderer', $view);
+        $this->container->set(TemplateRendererInterface::class, $renderer);
 
         // Set up configuration:
         $this->setupConfig();
@@ -144,19 +153,13 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // Build and test the ajax handler:
         $factory = new GetResolverLinksFactory();
         $handler = $factory($this->container, GetResolverLinks::class);
-        $params = $this->getParamsHelper(
-            [
-                'openurl' => 'foo',
-                'searchClassId' => 'scl',
-            ]
-        );
         $this->assertEquals(
             [
                 [
                     'html' => 'html',
                 ],
             ],
-            $handler->handleRequest($params)
+            $handler->handleRequest($request)
         );
     }
 }

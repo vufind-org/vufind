@@ -53,25 +53,11 @@ class InjectSpellingListener
     use LoggerAwareTrait;
 
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
      * Is spelling active?
      *
      * @var bool
      */
-    protected $active = false;
-
-    /**
-     * Dictionaries for spellcheck.
-     *
-     * @var array
-     */
-    protected $dictionaries;
+    protected bool $active = false;
 
     /**
      * Constructor.
@@ -83,12 +69,10 @@ class InjectSpellingListener
      * @return void
      */
     public function __construct(
-        BackendInterface $backend,
-        array $dictionaries,
+        protected BackendInterface $backend,
+        protected array $dictionaries,
         ?LoggerInterface $logger = null
     ) {
-        $this->backend = $backend;
-        $this->dictionaries = $dictionaries;
         $this->setLogger($logger);
     }
 
@@ -99,7 +83,7 @@ class InjectSpellingListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
             Service::class,
@@ -120,7 +104,7 @@ class InjectSpellingListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
         if ($command->getContext() !== 'search') {
@@ -163,7 +147,7 @@ class InjectSpellingListener
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         // Do nothing if spelling is disabled or context is wrong
         $command = $event->getParam('command');
@@ -194,7 +178,7 @@ class InjectSpellingListener
      *
      * @return void
      */
-    protected function aggregateSpellcheck(Spellcheck $spellcheck, $query)
+    protected function aggregateSpellcheck(Spellcheck $spellcheck, string $query): void
     {
         while (next($this->dictionaries) !== false) {
             $params = new ParamBag();

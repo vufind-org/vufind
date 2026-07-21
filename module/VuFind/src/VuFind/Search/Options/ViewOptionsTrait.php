@@ -49,7 +49,7 @@ trait ViewOptionsTrait
      *
      * @return void
      */
-    public function initViewOptions(?array $searchSettings)
+    public function initViewOptions(?array $searchSettings): void
     {
         if (null !== ($defaultView = $searchSettings['General']['default_view'] ?? null)) {
             $this->setConfiguredDefaultView($defaultView);

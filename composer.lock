@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fcd23a0f35ce808b65dd7c141db51d83",
+    "content-hash": "9d62aef81b529bfc710808f7a25c6bad",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -2037,6 +2037,44 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "elgigi/commonmark-emoji",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ElGigi/CommonMarkEmoji.git",
+                "reference": "8e7bf0ecbb719ca7ecc2ecbd27e4a4422ed9ef50"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ElGigi/CommonMarkEmoji/zipball/8e7bf0ecbb719ca7ecc2ecbd27e4a4422ed9ef50",
+                "reference": "8e7bf0ecbb719ca7ecc2ecbd27e4a4422ed9ef50",
+                "shasum": ""
+            },
+            "require": {
+                "league/commonmark": "^2.0",
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "commonmark-extension",
+            "autoload": {
+                "psr-4": {
+                    "ElGigi\\CommonMarkEmoji\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "CommonMark extension adds UTF-8 emoji with Github tag for the `league/commonmark` PHP Markdown parsing engine, based on the CommonMark spec.",
+            "support": {
+                "issues": "https://github.com/ElGigi/CommonMarkEmoji/issues",
+                "source": "https://github.com/ElGigi/CommonMarkEmoji/tree/v2.0.0"
+            },
+            "time": "2021-08-23T11:27:20+00:00"
         },
         {
             "name": "endroid/qr-code",
@@ -4477,75 +4515,6 @@
             "time": "2024-10-11T09:36:44+00:00"
         },
         {
-            "name": "laminas/laminas-mvc-plugin-flashmessenger",
-            "version": "1.11.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger.git",
-                "reference": "664822d8d9f259d880ae25b686848421235f96ec"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-plugin-flashmessenger/zipball/664822d8d9f259d880ae25b686848421235f96ec",
-                "reference": "664822d8d9f259d880ae25b686848421235f96ec",
-                "shasum": ""
-            },
-            "require": {
-                "laminas/laminas-mvc": "^3.3",
-                "laminas/laminas-session": "^2.12.0",
-                "laminas/laminas-stdlib": "^3.6.4",
-                "laminas/laminas-view": "^2.13.1",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "conflict": {
-                "laminas/laminas-mvc": "<3.0.0",
-                "zendframework/zend-mvc-plugin-flashmessenger": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~3.0.1",
-                "laminas/laminas-i18n": "^2.29.0",
-                "phpunit/phpunit": "^9.6.21",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "vimeo/psalm": "^5.26.1"
-            },
-            "type": "library",
-            "extra": {
-                "laminas": {
-                    "component": "Laminas\\Mvc\\Plugin\\FlashMessenger"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Mvc\\Plugin\\FlashMessenger\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Plugin for creating and exposing flash messages via laminas-mvc controllers",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "laminas",
-                "mvc"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-mvc-plugin-flashmessenger/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger/issues",
-                "rss": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger/releases.atom",
-                "source": "https://github.com/laminas/laminas-mvc-plugin-flashmessenger"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2024-11-29T08:28:58+00:00"
-        },
-        {
             "name": "laminas/laminas-paginator",
             "version": "2.22.0",
             "source": {
@@ -6478,34 +6447,32 @@
         },
         {
             "name": "lm-commons/lmc-rbac",
-            "version": "2.1.1",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LM-Commons/LmcRbac.git",
-                "reference": "2110f500b6316e24fcf916dedd8bd64b74aeff44"
+                "reference": "0a4f1525aea28c4cea4e14728dc0174af42c0274"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcRbac/zipball/2110f500b6316e24fcf916dedd8bd64b74aeff44",
-                "reference": "2110f500b6316e24fcf916dedd8bd64b74aeff44",
+                "url": "https://api.github.com/repos/LM-Commons/LmcRbac/zipball/0a4f1525aea28c4cea4e14728dc0174af42c0274",
+                "reference": "0a4f1525aea28c4cea4e14728dc0174af42c0274",
                 "shasum": ""
             },
             "require": {
-                "doctrine/persistence": "^2.0 || ^3.0",
-                "laminas/laminas-permissions-rbac": "^3.1",
-                "laminas/laminas-servicemanager": "^3.15",
+                "doctrine/persistence": "^3.0 || ^4.0",
+                "laminas/laminas-permissions-rbac": "^3.4",
+                "laminas/laminas-servicemanager": "^3.18 || ^4.0",
                 "laminas/laminas-stdlib": "^3.1",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
             },
             "require-dev": {
-                "doctrine/orm": "^3.0",
-                "laminas/laminas-coding-standard": "^3.0",
-                "phpspec/prophecy": "^1.10",
-                "phpspec/prophecy-phpunit": "^2.0",
-                "phpunit/phpunit": "^10.0 || ^11.0",
+                "doctrine/orm": "^3.5",
+                "laminas/laminas-coding-standard": "^3.1",
+                "phpunit/phpunit": "^11.5",
                 "psalm/plugin-phpunit": "^0.19.0",
-                "symfony/cache": "^6.3",
-                "vimeo/psalm": "^5.26"
+                "symfony/cache": "^6.4 || ^7.0 || ^8.0",
+                "vimeo/psalm": "^6.13"
             },
             "type": "library",
             "extra": {
@@ -6524,37 +6491,15 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-3-Clause"
             ],
             "authors": [
-                {
-                    "name": "Kyle Spraggs",
-                    "email": "theman@spiffyjr.me",
-                    "homepage": "http://www.spiffyjr.me/"
-                },
-                {
-                    "name": "Michaël Gallego",
-                    "email": "mic.gallego@gmail.com",
-                    "homepage": "http://www.michaelgallego.fr"
-                },
-                {
-                    "name": "Jean-Marie Leroux",
-                    "email": "jmleroux.pro@gmail.com"
-                },
-                {
-                    "name": "Florent Blaison",
-                    "email": "florent.blaison@gmail.com"
-                },
-                {
-                    "name": "Bas Kamer",
-                    "email": "baskamer@gmail.com"
-                },
                 {
                     "name": "Eric Richer",
                     "email": "eric.richer@vistoconsulting.com"
                 }
             ],
-            "description": "Laminas Module that provides a layer of features of Laminas\\Permissions\\Rbac",
+            "description": "Authorization services to implement Role-based Access Control based on Laminas\\Permissions\\Rbac",
             "homepage": "http://www.github.com/LM-Commons/lmc-rbac",
             "keywords": [
                 "laminas",
@@ -6564,9 +6509,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcRbac/issues",
-                "source": "https://github.com/LM-Commons/LmcRbac/tree/2.1.1"
+                "source": "https://github.com/LM-Commons/LmcRbac/tree/2.3.0"
             },
-            "time": "2025-01-04T16:25:38+00:00"
+            "time": "2025-12-10T21:48:51+00:00"
         },
         {
             "name": "lm-commons/lmc-rbac-mvc",
