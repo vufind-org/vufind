@@ -911,7 +911,6 @@ header .container.navbar {
 }
 
 .search-history-table {
-  @extend .table;
   @extend .table-striped;
 
   @include media-breakpoint-up(sm) {

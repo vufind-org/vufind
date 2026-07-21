@@ -280,12 +280,8 @@ $tag-remove-badge-color:          #a94442 !default;
 .tab-pane .result {
   margin-left: 0;
 }
-.holdings-table {
-  @extend .table;
-
-  .bound-with-records .direct-item {
-    font-weight: bold;
-  }
+.holdings-table .bound-with-records .direct-item {
+  font-weight: bold;
 }
 
 /* ------ OpenURL Links ------ */

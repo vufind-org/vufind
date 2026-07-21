@@ -2,7 +2,7 @@
   // Set page title.
   $this->headTitle('Formats' . ': ' . $this->driver->getBreadcrumb());
 ?>
-<table class="table">
+<table>
   <?php foreach ($this->driver->getFormattedDigitalFormats() as $formatkey => $format): ?>
     <tr>
       <th colspan="2"><?=  $this->translate($formatkey)?></th>

@@ -10,7 +10,7 @@
 <h2>Configured Permissions</h2>
 <p>This section shows all permissions currently configured in permissions.ini and whether they are granted to the current
 active user (or logged-out guest).</p>
-<table class="table">
+<table>
   <tr><th scope="col">Permission</th><th scope="col">Granted?</th></tr>
   <?php foreach ($permissions as $permission => $status): ?>
     <tr><td><?=$this->escapeHtml($permission)?></td><td><?=$status ? 'yes' : 'no'?></td></tr>

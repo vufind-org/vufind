@@ -104,6 +104,7 @@
 }
 
 .payment-table {
+  @extend .table-striped;
   margin-top: 1rem;
 
   td {

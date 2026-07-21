@@ -702,19 +702,14 @@ form .toolbar.account-action-toolbar { margin-block-end: 0; }
   stroke: $primary;         // color
 }
 
-/* ------ Named tables ------ */
-.catalog-profile-table,
-.cookieconsent-table,
-.fines-table,
-.login-tokens-table,
-.profile-table,
-.status-full-table,
-.usercontent-table {
+/* ------ Apply Bootstrap to all tables ------ */
+table {
   @extend .table;
 }
 
+/* ------ Striped tables ------ */
+.fines-table,
 .staff-view--marc {
-  @extend .table;
   @extend .table-striped;
 }
 

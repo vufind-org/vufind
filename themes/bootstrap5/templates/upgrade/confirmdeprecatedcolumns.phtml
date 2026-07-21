@@ -6,7 +6,7 @@
     Your database contains one or more columns that are no longer used, and which should not contain any useful information.
 </div>
 
-<table class="table">
+<table>
     <tr><th scope="col">Table</th><th scope="col">Column(s)</th></tr>
     <?php foreach ($deprecated as $table => $columns): ?>
         <tr><td><?=$this->escapeHtml($table)?></td><td><?=$this->escapeHtml(implode(', ', $columns))?></td></tr>
