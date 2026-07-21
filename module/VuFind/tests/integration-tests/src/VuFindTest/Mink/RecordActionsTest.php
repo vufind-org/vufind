@@ -384,8 +384,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tagManagementTagDisplayProvider(): Generator
     {
-        yield 'case sensitive' => [true, ['ONE', 'new tag', 'THREE 4', 'one', 'three 4', 'five']];
-        yield 'case insensitive' => [false, ['one', 'new tag', 'three 4', 'one', 'three 4', 'five']];
+        yield 'case sensitive' => [true, ['ONE', 'THREE 4', 'five', 'five', 'five', 'new tag', 'one', 'three 4']];
+        yield 'case insensitive' => [false, ['five', 'five', 'five', 'new tag', 'one', 'one', 'three 4', 'three 4']];
     }
 
     /**
@@ -415,6 +415,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username2', 'test', false);
         $this->submitLoginForm($page, false);
         $tags = array_map(fn ($tag) => $tag->getText(), $page->findAll('css', 'td.user-tag div'));
+        // Sort tags to account for database platform and timing differences:
+        sort($tags);
         $this->assertEquals($expected, $tags);
     }
 
