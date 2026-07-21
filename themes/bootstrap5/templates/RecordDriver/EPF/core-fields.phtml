@@ -7,7 +7,7 @@
   <?=$this->render('error/restrictedViewWarning.phtml')?>
 <?php endif; ?>
 <?php if (!empty($coreFields)): ?>
-  <table <?php if (!empty($this->tableId)): ?>id="<?=$this->tableId ?>" <?php endif; ?>class="table">
+  <table<?php if (!empty($this->tableId)): ?> id="<?=$this->tableId ?>"<?php endif; ?>>
     <caption class="visually-hidden"><?=$this->transEsc($this->caption ?? 'Bibliographic Details')?></caption>
     <?php foreach ($coreFields as $current): ?>
       <tr class="record__biblio-value"><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>

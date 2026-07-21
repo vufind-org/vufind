@@ -5,8 +5,11 @@
 }
 
 // Responsive table mixin
+// needs to be placed in a media query
+// SCSS won't let us put one here
 @mixin mobile-table-view {
   border: none;
+
   thead, tfoot > tr > th {
     position: absolute;
     width: 1px;
@@ -17,6 +20,7 @@
     clip: rect(0, 0, 0, 0);
     border: 0;
   }
+
   tbody > tr {
     display: block;
     margin-bottom: #{$line-height-base * $font-size-base};
@@ -32,6 +36,7 @@
       border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
     }
   }
+
   td, tbody > tr > th {
     display: flex;
     align-items: first baseline;
@@ -57,9 +62,11 @@
       box-shadow: none;
     }
   }
+
   tfoot > tr > td {
     border-top: none;
   }
+
   > :not(caption) > * > * {
     box-shadow: none;
   }

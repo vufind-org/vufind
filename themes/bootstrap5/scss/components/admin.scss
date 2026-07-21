@@ -66,13 +66,12 @@
   }
 }
 
-.admin-tags-table,
-.payment-table {
-  @extend .table;
+.admin-tags-table {
   @extend .table-striped;
 }
 
 .payment-table {
+  @extend .table-striped;
   margin-top: 1rem;
 
   td {
