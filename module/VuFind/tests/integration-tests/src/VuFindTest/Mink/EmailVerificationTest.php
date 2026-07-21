@@ -176,7 +176,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
         $this->assertStringContainsString(
             'username1@ignore.com',
-            $this->findCssAndGetText($page, 'table.table-striped')
+            $this->findCssAndGetText($page, '.profile-table')
         );
 
         // Go back to verification page:
@@ -214,7 +214,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
         $this->assertStringContainsString(
             'changed@example.com',
-            $this->findCssAndGetText($page, 'table.table-striped')
+            $this->findCssAndGetText($page, '.profile-table')
         );
 
         // Clean up the email log:
