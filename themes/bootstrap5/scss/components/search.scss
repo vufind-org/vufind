@@ -909,10 +909,6 @@ header .container.navbar {
   @extend .table;
   @extend .table-striped;
 
-  td.history_results, td.history_actions {
-    word-wrap: normal;
-  }
-
   @include media-breakpoint-up(sm) {
     @media screen {
       tbody > tr > td { vertical-align: middle; }
