@@ -64,7 +64,7 @@
     )
   ?>
 <?php endif; ?>
-<form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
+<form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
 </form>
 <?php
