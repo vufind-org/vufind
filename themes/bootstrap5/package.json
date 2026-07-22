@@ -17,7 +17,7 @@
     "js-cookie": "^3.0.7",
     "libphonenumber-js": "^1.12.10",
     "nouislider": "^15.8.1",
-    "simple-keyboard": "^3.6.0",
-    "simple-keyboard-layouts": "^3.0.0"
+    "simple-keyboard": "^3.8.165",
+    "simple-keyboard-layouts": "^3.4.239"
   }
 }
