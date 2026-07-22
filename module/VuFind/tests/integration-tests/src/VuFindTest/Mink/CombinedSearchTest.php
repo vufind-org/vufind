@@ -170,7 +170,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             // double form submission.
             $select = $this->findCss($page, '#format', 1500);
         } catch (\Exception $e) {
-            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            $this->retryClickWithResizedWindow($this->getMinkSession(), $page, $buttonSelector);
             $select = $this->findCss($page, '#format');
         }
         $select->selectOption('EndNote');
