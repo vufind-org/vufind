@@ -34,6 +34,7 @@ use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
+use VuFind\ServiceManager\FactoryDetector;
 
 use function count;
 use function in_array;
@@ -56,20 +57,13 @@ class GeneratorTools
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Laminas configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Constructor.
      *
-     * @param array $config Laminas configuration
+     * @param array           $config          Laminas configuration
+     * @param FactoryDetector $factoryDetector Factory detector
      */
-    public function __construct(array $config)
+    public function __construct(protected array $config, protected FactoryDetector $factoryDetector)
     {
-        $this->config = $config;
     }
 
     /**
@@ -402,7 +396,11 @@ class GeneratorTools
             $delegators = $this->getDelegatorsFromContainer($pm, $class);
         }
 
-        // No factory found? Throw an error!
+        // No factory found? Try to detect one!
+        if (empty($factory)) {
+            $factory = $this->factoryDetector->detectFactoryForClass($class);
+        }
+        // Still no factory found? Throw an error!
         if (empty($factory)) {
             throw new \Exception('Could not find factory for ' . $class);
         }
@@ -458,9 +456,9 @@ class GeneratorTools
      * @param ContainerInterface $container Container to inspect
      * @param string             $class     Class whose factory we want
      *
-     * @return string
+     * @return ?string
      */
-    protected function getFactoryFromContainer(ContainerInterface $container, $class)
+    protected function getFactoryFromContainer(ContainerInterface $container, string $class): ?string
     {
         $factories = $this->getAllFactoriesFromContainer($container);
         return $factories[$class] ?? null;
