@@ -129,12 +129,12 @@
         "dmore/chrome-mink-driver": "2.10.0",
         "friendsofphp/php-cs-fixer": "3.95.15",
         "phpmd/phpmd": "2.15.0",
-        "phpstan/phpstan": "2.2.5",
+        "phpstan/phpstan": "2.2.6",
         "phpunit/php-code-coverage": "^11",
         "phpunit/phpcov": "^10",
         "phpunit/phpunit": "11.5.56",
         "pietercolpaert/hardf": "0.6.2",
-        "rector/rector": "2.5.7",
+        "rector/rector": "2.5.8",
         "squizlabs/php_codesniffer": "4.0.1"
     },
     "suggest": {
