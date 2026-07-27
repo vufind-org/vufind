@@ -154,6 +154,18 @@ class GVIDefault extends SolrMarc
     }
 
     /**
+     * Get the places of publication.
+     *
+     * Reads from MARC 260 subfield a and 264 subfield a.
+     *
+     * @return array
+     */
+    public function getPublicationPlaces()
+    {
+        return $this->getPublicationInfo('a');
+    }
+
+    /**
      * Get the publishers of the record.
      *
      * Reads from MARC 264 (indicator2=1) and falls back to 260, subfield b.
@@ -349,6 +361,61 @@ class GVIDefault extends SolrMarc
     public function getLocalHoldingsMessage(): ?string
     {
         return $this->hasLocalHoldings() ? 'ill_local_holdings' : null;
+    }
+
+    /**
+     * Get the PPN (field 001) of the record.
+     *
+     * @return string
+     */
+    public function getPPN(): string
+    {
+        $f001 = $this->getMarcReader()->getField('001');
+        return is_string($f001) ? $f001 : '';
+    }
+
+    /**
+     * Get the first ISIL from MARC 924 subfield b.
+     *
+     * @return string
+     */
+    public function getFirstIsil(): string
+    {
+        foreach ($this->getField924() as $field) {
+            if (isset($field['isil']) && !empty($field['isil'])) {
+                return $field['isil'];
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Construct the ILL form URL.
+     *
+     * @param string $baseUrl The base URL for the ILL form
+     *
+     * @return string
+     */
+    public function getIllUrl(string $baseUrl): string
+    {
+        $title = $this->getShortTitle();
+        $publishers = $this->getPublishers();
+        $publisher = $publishers[0] ?? '';
+        $places = $this->getPublicationPlaces();
+        $place = $places[0] ?? '';
+        $isil = $this->getFirstIsil();
+        $ppn = $this->getPPN();
+        $remark = 'Via VuFind/GVI';
+        if (!empty($isil) && !empty($ppn)) {
+            $remark .= ' (' . $isil . ')' . $ppn;
+        }
+
+        return $baseUrl . '?' . http_build_query([
+            'EOrt' => $place,
+            'Verlag' => $publisher,
+            'Titel' => $title,
+            'Bemerkung' => $remark,
+        ]);
     }
 
     /**

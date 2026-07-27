@@ -68,9 +68,16 @@ class InterlibraryLoan extends AbstractBase
     public function getContent(): array
     {
         $hasLocal = $this->driver->hasLocalHoldings();
+        $auth = $this->getAuthorizationService();
+        $user = $auth?->getIdentity();
+        $baseUrl = $this->driver->mainConfig->ILL->ill_base_url ?? '';
+        $illUrl = ($user && !empty($baseUrl))
+            ? $this->driver->getIllUrl($baseUrl) : '';
         return [
             'hasLocalHoldings' => $hasLocal,
             'localMessage' => $hasLocal ? 'ill_local_holdings' : null,
+            'isLoggedIn' => $user !== null,
+            'illUrl' => $illUrl,
         ];
     }
 }

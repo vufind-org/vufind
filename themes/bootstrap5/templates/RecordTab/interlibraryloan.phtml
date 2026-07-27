@@ -1,6 +1,8 @@
 <?php
   $content = $this->tab->getContent();
   $hasLocal = $content['hasLocalHoldings'];
+  $isLoggedIn = $content['isLoggedIn'];
+  $illUrl = $content['illUrl'];
 ?>
 <?php if ($hasLocal): ?>
   <div class="alert alert-info">
@@ -9,4 +11,12 @@
   </div>
 <?php else: ?>
   <p><?=$this->translate('GVI::ill_available')?></p>
+  <?php if (!$isLoggedIn): ?>
+    <div class="alert alert-danger">
+      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+      <?=$this->translate('GVI::ill_login_required')?>
+    </div>
+  <?php else: ?>
+    <p><a href="<?=$this->escapeHtmlAttr($illUrl)?>" target="_blank" rel="noopener"><?=$this->translate('GVI::ill_order')?></a></p>
+  <?php endif; ?>
 <?php endif; ?>
