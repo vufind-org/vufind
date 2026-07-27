@@ -30,7 +30,12 @@
 
 namespace VuFind\RecordDriver;
 
+use function array_map;
+use function explode;
+use function in_array;
+use function str_replace;
 use function strlen;
+use function trim;
 
 /**
  * Default model for GVI records -- used when a more specific model based on
@@ -269,5 +274,94 @@ class GVIDefault extends SolrMarc
             }
         }
         return false;
+    }
+
+    /**
+     * Get content of MARC 924 as an array of associative arrays.
+     *
+     * Subfield codes are mapped to descriptive keys:
+     *   a => local_idn, b => isil, c => region, d => ill_indicator,
+     *   g => call_number, k => url, l => url_label, z => issue.
+     *
+     * @return array
+     */
+    public function getField924(): array
+    {
+        $f924 = $this->getMarcReader()->getFields('924');
+        $mappings = [
+            'a' => 'local_idn',
+            'b' => 'isil',
+            'c' => 'region',
+            'd' => 'ill_indicator',
+            'g' => 'call_number',
+            'k' => 'url',
+            'l' => 'url_label',
+            'z' => 'issue',
+        ];
+        $result = [];
+        foreach ($f924 as $field) {
+            $entry = [];
+            foreach ($field['subfields'] ?? [] as $subfield) {
+                $code = $subfield['code'];
+                $data = $subfield['data'];
+                if (isset($mappings[$code])) {
+                    $key = $mappings[$code];
+                    $entry[$key] = isset($entry[$key])
+                        ? $entry[$key] . ' | ' . $data : $data;
+                }
+            }
+            $result[] = $entry;
+        }
+        return $result;
+    }
+
+    /**
+     * Check whether the record has holdings at the local institution.
+     *
+     * Compares the ISIL in MARC 924 subfield b against the list of
+     * local ISILs configured in [ILL] local_isils in GVI.ini.
+     *
+     * @return bool
+     */
+    public function hasLocalHoldings(): bool
+    {
+        $localIsils = $this->getLocalIsilsFromConfig();
+        if (empty($localIsils)) {
+            return false;
+        }
+        foreach ($this->getField924() as $field) {
+            if (
+                isset($field['isil'])
+                && in_array($field['isil'], $localIsils, true)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get the translation key for the local holdings message, or null
+     * if the record is not locally held.
+     *
+     * @return ?string
+     */
+    public function getLocalHoldingsMessage(): ?string
+    {
+        return $this->hasLocalHoldings() ? 'ill_local_holdings' : null;
+    }
+
+    /**
+     * Read the list of local ISILs from the [ILL] section of GVI.ini.
+     *
+     * @return array
+     */
+    private function getLocalIsilsFromConfig(): array
+    {
+        $raw = $this->mainConfig->ILL->local_isils ?? '';
+        if (empty($raw)) {
+            return [];
+        }
+        return array_map('trim', explode(',', $raw));
     }
 }
