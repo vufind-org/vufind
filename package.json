@@ -12,6 +12,7 @@
   "scripts": {
     "postinstall": "npm run installBuildDeps",
     "installBuildDeps": "npm run installBuildDeps --workspaces --if-present --ignore-scripts",
+    "copyUpdatedDeps": "npm run copyUpdatedDeps --workspaces --if-present --ignore-scripts",
     "updateDeps": "npm run updateDeps --workspaces --if-present --ignore-scripts",
 
     "build": "npm run build:css",
