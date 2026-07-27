@@ -1,0 +1,12 @@
+<?php
+  $content = $this->tab->getContent();
+  $hasLocal = $content['hasLocalHoldings'];
+?>
+<?php if ($hasLocal): ?>
+  <div class="alert alert-info">
+    <i class="fa fa-info-circle" aria-hidden="true"></i>
+    <?=$this->translate('GVI::' . $content['localMessage'])?>
+  </div>
+<?php else: ?>
+  <p><?=$this->translate('GVI::ill_available')?></p>
+<?php endif; ?>
