@@ -27,7 +27,7 @@ jobs:
       - run: npm ci
 
       - name: Update vendor files
-        run: VUFIND_HOME=$PWD npm run updateDeps
+        run: VUFIND_HOME=$PWD npm run check:dependencySync
 
       - name: Commit updated vendor files
         run: |
