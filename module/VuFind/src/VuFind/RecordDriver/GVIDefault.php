@@ -422,8 +422,12 @@ class GVIDefault extends SolrMarc
             $parts[] = 'isbn:"' . addcslashes($isxn, '"') . '"';
         }
         $query = new Query(implode(' OR ', $parts));
-        $params = new ParamBag(['hl' => ['false']]);
-        $command = new SearchCommand($this->sourceIdentifier, $query, 0, 50, $params);
+        $params = ['hl' => ['false']];
+        $consortium = $this->getGviConfig()->ILL->consortium ?? '';
+        if (!empty($consortium)) {
+            $params['filter'] = ['consortium:' . $consortium];
+        }
+        $command = new SearchCommand($this->sourceIdentifier, $query, 0, 50, new ParamBag($params));
         $results = $this->searchService->invoke($command)->getResult();
 
         foreach ($results->getRecords() as $rec) {
