@@ -421,11 +421,6 @@ class GVIDefault extends SolrMarc
      */
     public function getIllUrl(string $baseUrl): string
     {
-        $title = $this->getShortTitle();
-        $publishers = $this->getPublishers();
-        $publisher = $publishers[0] ?? '';
-        $places = $this->getPublicationPlaces();
-        $place = $places[0] ?? '';
         $isil = $this->getFirstIsil();
         $ppn = $this->getPPN();
         $remark = 'Via VuFind/GVI';
@@ -433,12 +428,22 @@ class GVIDefault extends SolrMarc
             $remark .= ' (' . $isil . ')' . $ppn;
         }
 
-        return $baseUrl . '?' . http_build_query([
-            'EOrt' => $place,
-            'Verlag' => $publisher,
-            'Titel' => $title,
+        $params = [
+            'Bestellart' => 'Leihe',
+            'Titel' => $this->getShortTitle(),
+            'Verfasser' => implode('; ', $this->getPrimaryAuthors()),
+            'EOrt' => ($this->getPublicationPlaces())[0] ?? '',
+            'Verlag' => ($this->getPublishers())[0] ?? '',
+            'EJahr' => ($this->getPublicationDates())[0] ?? '',
+            'Auflage' => $this->getEdition(),
+            'Isbn' => ($this->getISBNs())[0] ?? '',
+            'Issn' => ($this->getISSNs())[0] ?? '',
             'Bemerkung' => $remark,
-        ]);
+        ];
+
+        return $baseUrl . '?' . http_build_query(
+            array_filter($params)
+        );
     }
 
     /**
