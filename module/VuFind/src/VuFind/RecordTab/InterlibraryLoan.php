@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordTab;
 
+use VuFind\Config\Config;
+
 /**
  * Interlibrary Loan tab.
  *
@@ -40,6 +42,23 @@ namespace VuFind\RecordTab;
  */
 class InterlibraryLoan extends AbstractBase
 {
+    /**
+     * GVI configuration.
+     *
+     * @var Config
+     */
+    protected $gviConfig;
+
+    /**
+     * Constructor.
+     *
+     * @param Config $gviConfig GVI configuration
+     */
+    public function __construct(Config $gviConfig)
+    {
+        $this->gviConfig = $gviConfig;
+    }
+
     /**
      * Get the on-screen description for this tab.
      *
@@ -70,7 +89,7 @@ class InterlibraryLoan extends AbstractBase
         $hasLocal = $this->driver->hasLocalHoldings();
         $auth = $this->getAuthorizationService();
         $user = $auth?->getIdentity();
-        $baseUrl = $this->driver->mainConfig->ILL->ill_base_url ?? '';
+        $baseUrl = $this->gviConfig->ILL->ill_base_url ?? '';
         $illUrl = ($user && !empty($baseUrl))
             ? $this->driver->getIllUrl($baseUrl) : '';
         return [

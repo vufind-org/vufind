@@ -65,6 +65,29 @@ class GVIDefault extends SolrMarc
     protected $sourceIdentifier = 'GVI';
 
     /**
+     * GVI configuration (from GVI.ini, passed as $searchSettings).
+     *
+     * @var object
+     */
+    protected $gviConfig;
+
+    /**
+     * Constructor.
+     *
+     * @param object $mainConfig     VuFind main configuration
+     * @param object $recordConfig   Record-specific configuration
+     * @param object $searchSettings GVI search configuration (GVI.ini)
+     */
+    public function __construct(
+        $mainConfig = null,
+        $recordConfig = null,
+        $searchSettings = null
+    ) {
+        $this->gviConfig = $searchSettings;
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
+    }
+
+    /**
      * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
@@ -425,7 +448,7 @@ class GVIDefault extends SolrMarc
      */
     private function getLocalIsilsFromConfig(): array
     {
-        $raw = $this->mainConfig->ILL->local_isils ?? '';
+        $raw = $this->gviConfig->ILL->local_isils ?? '';
         if (empty($raw)) {
             return [];
         }
