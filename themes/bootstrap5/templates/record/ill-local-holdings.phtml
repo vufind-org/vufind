@@ -1,6 +1,7 @@
 <?php
   // Display a notice when the record is held locally and cannot be ordered via ILL.
-  $msg = $this->driver->getLocalHoldingsMessage();
+  $msg = method_exists($this->driver, 'getLocalHoldingsMessage')
+      ? $this->driver->getLocalHoldingsMessage() : null;
   if ($msg !== null): ?>
     <div class="alert alert-info">
       <i class="fa fa-info-circle" aria-hidden="true"></i>
