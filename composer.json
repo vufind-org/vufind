@@ -105,7 +105,7 @@
         "spomky-labs/otphp": "11.5.0",
         "steverhoades/oauth2-openid-connect-server": "3.0.1",
         "stripe/stripe-php": "v21.0.0",
-        "swagger-api/swagger-ui": "5.32.9",
+        "swagger-api/swagger-ui": "5.32.11",
         "symfony/console": "6.4.25",
         "symfony/mailer": "^7.4",
         "symfony/rate-limiter": "^7.4",
