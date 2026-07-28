@@ -30,9 +30,14 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBag;
+use VuFindSearch\Query\Query;
+
 use function array_map;
 use function explode;
 use function in_array;
+use function is_string;
 use function str_replace;
 use function strlen;
 use function trim;
@@ -353,8 +358,9 @@ class GVIDefault extends SolrMarc
     /**
      * Check whether the record has holdings at the local institution.
      *
-     * Compares the ISIL in MARC 924 subfield b against the list of
-     * local ISILs configured in [ILL] local_isils in GVI.ini.
+     * First checks the current record's MARC 924 against local ISILs.
+     * If not found, searches the GVI index for other records with the same
+     * ISBN/ISSN that have local ISILs.
      *
      * @return bool
      */
@@ -364,12 +370,75 @@ class GVIDefault extends SolrMarc
         if (empty($localIsils)) {
             return false;
         }
+        if ($this->hasLocalIsilInField924($localIsils)) {
+            return true;
+        }
+        return $this->searchLocalHoldingsByIsxn($localIsils);
+    }
+
+    /**
+     * Check whether MARC 924 of the current record contains a local ISIL.
+     *
+     * @param array $localIsils List of local ISILs
+     *
+     * @return bool
+     */
+    private function hasLocalIsilInField924(array $localIsils): bool
+    {
         foreach ($this->getField924() as $field) {
             if (
                 isset($field['isil'])
                 && in_array($field['isil'], $localIsils, true)
             ) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Search the GVI index for other records with the same ISBN/ISSN
+     * that have local ISILs in their MARC 924 field.
+     *
+     * @param array $localIsils List of local ISILs
+     *
+     * @return bool
+     */
+    private function searchLocalHoldingsByIsxn(array $localIsils): bool
+    {
+        if (null === $this->searchService) {
+            return false;
+        }
+
+        $isbns = $this->getISBNs();
+        $issns = $this->getISSNs();
+        $isxns = array_merge($isbns, $issns);
+        if (empty($isxns)) {
+            return false;
+        }
+
+        $parts = [];
+        foreach ($isxns as $isxn) {
+            $parts[] = 'isbn:"' . addcslashes($isxn, '"') . '"';
+        }
+        $query = new Query(implode(' OR ', $parts));
+        $params = new ParamBag(['hl' => ['false']]);
+        $command = new SearchCommand($this->sourceIdentifier, $query, 0, 50, $params);
+        $results = $this->searchService->invoke($command)->getResult();
+
+        foreach ($results->getRecords() as $rec) {
+            $f924 = $rec->getMarcReader()->getFields('924');
+            foreach ($f924 as $field) {
+                if (isset($field['subfields'])) {
+                    foreach ($field['subfields'] as $sf) {
+                        if (
+                            $sf['code'] === 'b'
+                            && in_array($sf['data'], $localIsils, true)
+                        ) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         return false;
