@@ -93,6 +93,16 @@ class GVIDefault extends SolrMarc
     }
 
     /**
+     * Get GVI configuration.
+     *
+     * @return object
+     */
+    public function getGviConfig()
+    {
+        return $this->gviConfig;
+    }
+
+    /**
      * Get the Hierarchy Type (false if none).
      *
      * @return string|bool
