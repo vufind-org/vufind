@@ -196,4 +196,17 @@ class PubDateVisAjax implements RecommendInterface
         // Get search parameters and return them minus the leading ?:
         return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
     }
+
+    /**
+     * Get search results object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getSearchResults(): \VuFind\Search\Base\Results
+    {
+        if (!$this->searchObject) {
+            throw new \Exception('getSearchResults called before initialization.');
+        }
+        return $this->searchObject;
+    }
 }
