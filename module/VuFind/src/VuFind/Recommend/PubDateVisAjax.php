@@ -145,13 +145,14 @@ class PubDateVisAjax implements RecommendInterface
      */
     public function getVisFacets(): array
     {
+        $results = $this->getSearchResults();
         // Don't bother processing if the result set is empty:
-        if ($this->searchObject->getResultTotal() <= 0) {
+        if ($results->getResultTotal() <= 0) {
             return [];
         }
         return $this->processDateFacets(
-            $this->searchObject,
-            $this->searchObject->getParams()->getRawFilters(),
+            $results,
+            $results->getParams()->getRawFilters(),
             $this->dateFacets
         );
     }
@@ -194,7 +195,7 @@ class PubDateVisAjax implements RecommendInterface
     public function getSearchParams(): string
     {
         // Get search parameters and return them minus the leading ?:
-        return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
+        return substr($this->getSearchResults()->getUrlQuery()->getParams(false), 1);
     }
 
     /**
