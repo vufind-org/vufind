@@ -1833,6 +1833,7 @@ class Alma extends AbstractBase implements
                     if ($note = $marc->getSubfield($field, 'n')) {
                         $item['item_notes'] = [$note];
                     }
+                    $item['locationhref'] = $marc->getSubfield($field, 'u');
                     $status[] = $item;
                 }
                 // Digital
