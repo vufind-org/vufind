@@ -17,6 +17,32 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/locales",
+                "version":"0.0.999",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/locales.git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/styles",
+                "version":"0.0.999",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/styles.git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
     "autoload": {
         "psr-4": {
             "VuFind\\": ["module/VuFind/src/VuFind", "module/VuFind"],
@@ -48,6 +74,9 @@
         "ahand/mobileesp": "dev-master",
         "browscap/browscap-php": "^7.2",
         "cap60552/php-sip2": "1.0.0",
+        "citation-style-language/locales":"^0.0",
+        "citation-style-language/styles":"^0.0",
+        "seboettg/citeproc-php":"^2",
         "colinmollenhour/credis": "1.17.1",
         "composer/semver": "3.4.4",
         "doctrine/doctrine-orm-module": "^6.3",

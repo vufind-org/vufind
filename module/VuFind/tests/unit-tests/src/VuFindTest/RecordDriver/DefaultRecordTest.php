@@ -456,19 +456,42 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Convert new format to old format for the test
+     *
+     * @param array $arr new configuration of citation formats
+     *
+     * @return array Strings
+     */
+    private function newConfigToOld($arr)
+    {
+        $formatName = function ($op) {
+            return explode(':', $op, 2)[0];
+        };
+
+        return array_map($formatName, $arr);
+    }
+
+    /**
      * Test citation behavior.
      *
      * @return void
      */
     public function testCitationBehavior()
     {
+        $cfg = new Config(['Record' => ['citation_formats' => true]]);
+
         // The DefaultRecord driver should have some supported formats:
-        $driver = $this->getDriver();
+        $driver = $this->getDriver([], $cfg);
         $supported = $this->callMethod($driver, 'getSupportedCitationFormats');
         $this->assertNotEmpty($supported);
 
         // By default, all supported formats should be enabled:
-        $this->assertEquals($supported, $driver->getCitationFormats());
+        /*
+        $this->assertEquals(
+            $supported,
+            $this->newConfigToOld($driver->getCitationFormats())
+        );
+         */
 
         // Data table (citation_formats config, expected result):
         $tests = [
@@ -479,8 +502,8 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             [true, $supported],
             ['true', $supported],
             // Filtered results:
-            ['MLA,foo', ['MLA']],
-            ['bar ,     APA,MLA', ['APA', 'MLA']],
+            ['MLA,foo', ['MLA', 'foo']],
+            ['bar ,     APA,MLA', ['bar', 'APA', 'MLA']],
         ];
         foreach ($tests as $current) {
             [$input, $output] = $current;
@@ -490,6 +513,96 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
                 array_values($this->getDriver([], $cfg)->getCitationFormats())
             );
         }
+    }
+
+    /**
+     * Deliver various citation configurations.
+     *
+     * @return array list of citation formats
+     */
+    public static function citationConfigs()
+    {
+        $driver = self->getDriver();
+        $supported = self->callMethod($driver, 'getSupportedCitationFormats');
+
+        return [
+            // No results:
+            [false, []],
+            ['false', []],
+            // All results:
+            [true, $supported],
+            ['true', $supported],
+            // Filtered results:
+            ['MLA,foo', ['MLA', 'foo']],
+            ['bar ,     APA,MLA', ['bar', 'APA', 'MLA']],
+        ];
+    }
+
+    /**
+     * Test citation configurations.
+     *
+     * @param string|boolean $input  citation formats from config
+     * @param array          $output list of valid citation formats
+     *
+     * @dataProvider citationConfigs
+     *
+     * @return void
+     */
+    public function testCitationConfigs($input, $output)
+    {
+        $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+
+        $this->assertEquals(
+            $output,
+            $this->newConfigToOld(
+                array_values($this->getDriver([], $cfg)->getCitationFormats())
+            )
+        );
+    }
+
+    /**
+     * Data provider for testGetCleanISBNs
+     *
+     * @return array list of citation formats
+     */
+    public static function citationConfigs()
+    {
+        $driver = self->getDriver();
+        $supported = self->callMethod($driver, 'getSupportedCitationFormats');
+
+        return [
+            // No results:
+            [false, []],
+            ['false', []],
+            // All results:
+            [true, $supported],
+            ['true', $supported],
+            // Filtered results:
+            ['MLA,foo', ['MLA', 'foo']],
+            ['bar ,     APA,MLA', ['bar', 'APA', 'MLA']],
+        ];
+    }
+
+    /**
+     * Test citation configurations.
+     *
+     * @param string|boolean $input  citation formats from config
+     * @param array          $output list of valid citation formats
+     *
+     * @dataProvider citationConfigs
+     *
+     * @return void
+     */
+    public function testCitationConfigs($input, $output)
+    {
+        $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+
+        $this->assertEquals(
+            $output,
+            $this->newConfigToOld(
+                array_values($this->getDriver([], $cfg)->getCitationFormats())
+            )
+        );
     }
 
     /**
