@@ -71,11 +71,6 @@ CookieConsent:
           Description: CookieConsent::cookie_description_consent_html
           Expiration: '{{consent_cookie_expiration}}'
           ExpirationUnit: days
-        - Name: 'cc_*'
-          Domain: '{{vufind_cookie_domain}}'
-          Description: CookieConsent::cookie_description_consent_html
-          Expiration: '{{consent_cookie_expiration}}'
-          ExpirationUnit: days
         - Name: language
           Domain: '{{vufind_cookie_domain}}'
           Description: CookieConsent::cookie_description_language_html

@@ -199,6 +199,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
+                    'autocomplete' => 'email',
                 ],
                 [
                     'type' => 'submit',
@@ -246,6 +247,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'name' => 'email',
                 'group' => '__sender__',
                 'label' => 'feedback_email',
+                'autocomplete' => 'email',
             ],
         ];
         $postParams = [
@@ -323,6 +325,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
+                    'autocomplete' => 'email',
                 ],
                 [
                     'type' => 'submit',
@@ -355,6 +358,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
+                    'autocomplete' => 'email',
                     'settings' => [],
                 ],
                 [
@@ -405,6 +409,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
+                    'autocomplete' => 'email',
                     'settings' => [
                         'aria-label' => 'Test label',
                     ],
@@ -889,6 +894,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'type' => 'email',
                     'label' => 'feedback_email',
                     'group' => '__sender__',
+                    'autocomplete' => 'email',
                     'settings' => [],
                 ],
                 [
@@ -953,6 +959,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'type' => 'email',
                     'label' => 'feedback_email',
                     'group' => '__sender__',
+                    'autocomplete' => 'email',
                     'settings' => [],
                 ],
                 [
