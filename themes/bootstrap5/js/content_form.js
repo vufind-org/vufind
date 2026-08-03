@@ -7,9 +7,10 @@ VuFind.register('contentForm', function contentForm() {
   function _setVisibility(fieldset) {
     if (fieldset.name) {
       fieldset.querySelectorAll('input').forEach(
-        (input) => document.querySelectorAll('.content-form [class*="' + fieldset.name + '-' + input.value + '"]').forEach(
+        (input) => document.querySelectorAll('.content-form .' + fieldset.name + '-' + input.value).forEach(
           (element) => {
-            if (input.checked) {
+            const invertedVisibility = 'inverted' in element.dataset;
+            if (input.checked !== invertedVisibility) {
               element.classList.remove('hidden');
             } else {
               element.classList.add('hidden');
