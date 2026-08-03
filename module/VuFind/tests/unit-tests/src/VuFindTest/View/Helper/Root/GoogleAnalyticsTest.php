@@ -59,7 +59,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'myfakekey', 'auto');
+            gtag('config', 'myfakekey', {});
                 //-->
             </script>
             JS;

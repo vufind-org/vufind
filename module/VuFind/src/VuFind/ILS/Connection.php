@@ -792,6 +792,28 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check Current Holds.
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports current
+     * holds.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodgetMyHolds(array $functionConfig, array $params): array
+    {
+        if ($this->checkCapability('getMyHolds', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return [];
+    }
+
+    /**
      * Check Patron login.
      *
      * A support method for checkFunction(). This is responsible for checking
@@ -1136,6 +1158,31 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function getMyTransactions($patron, $params = [])
     {
         $result = $this->__call('getMyTransactions', [$patron, $params]);
+
+        // Support also older driver return value:
+        if (!isset($result['count'])) {
+            $result = [
+                'count' => count($result),
+                'records' => $result,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get Patron Holds.
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
+     *
+     * @return mixed        Array of the patron's holds on success.
+     */
+    public function getMyHolds($patron, $params = [])
+    {
+        $result = $this->__call('getMyHolds', [$patron, $params]);
 
         // Support also older driver return value:
         if (!isset($result['count'])) {

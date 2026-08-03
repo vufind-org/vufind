@@ -2,9 +2,11 @@
   "name": "vufind-bootstrap5",
   "description": "Dependencies for the bootstrap5 theme",
   "scripts": {
+    "check:dependencySync": "npm run copyUpdatedDeps && git diff --quiet HEAD $VUFIND_HOME/themes/**/**/vendor || (echo Changed dependencies must be committed && false)",
     "check:jsTranslations": "node tools/jsTranslationsCheck.js",
     "installBuildDeps": "npm install --ignore-scripts --no-audit",
-    "updateDeps": "npm update --ignore-scripts && node tools/copyDependencies.mjs"
+    "copyUpdatedDeps": "node tools/copyDependencies.js",
+    "updateDeps": "npm update --ignore-scripts && npm run copyUpdatedDeps"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.2.0",
@@ -13,10 +15,10 @@
     "bootstrap": "5.3.8",
     "chart.js": "^4.4.0",
     "jquery": "^3.7.1",
-    "js-cookie": "3.0.7",
+    "js-cookie": "^3.0.7",
     "libphonenumber-js": "^1.12.10",
     "nouislider": "^15.8.1",
-    "simple-keyboard": "^3.6.0",
-    "simple-keyboard-layouts": "^3.0.0"
+    "simple-keyboard": "^3.8.165",
+    "simple-keyboard-layouts": "^3.4.239"
   }
 }

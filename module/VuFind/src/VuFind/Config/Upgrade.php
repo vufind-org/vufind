@@ -271,6 +271,9 @@ class Upgrade implements LoggerAwareInterface
             $this->pathResolver->getBaseConfigDirPath()
         );
         $localConfigDir = $this->pathResolver->getLocalConfigDirPath();
+        if (null === $localConfigDir) {
+            throw new \Exception('Cannot find local configuration directory; is VUFIND_LOCAL_DIR unset?');
+        }
         foreach ($baseConfigLocations as $configLocation) {
             $configName = $configLocation->getConfigName();
             if ($configLocation instanceof ConfigDirectory) {
