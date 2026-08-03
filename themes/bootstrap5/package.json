@@ -9,7 +9,7 @@
     "updateDeps": "npm update --ignore-scripts && npm run copyUpdatedDeps"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^7.2.0",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "@popperjs/core": "2.11.8",
     "autocomplete.js": "vufind-org/autocomplete.js#v2.1.10",
     "bootstrap": "5.3.8",
