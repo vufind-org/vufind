@@ -184,6 +184,7 @@ return [
             'cites' => 'Unicode:275D',
             'cited-by' => 'Unicode:275E',
             'clone' => 'FontAwesome:clone',
+            'color-scheme-toggle' => 'FontAwesome:palette',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
