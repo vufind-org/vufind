@@ -31,7 +31,10 @@ namespace VuFind\Navigation;
 
 use Laminas\View\Renderer\RendererInterface;
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\BadConfig;
+use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function count;
@@ -52,12 +55,19 @@ class SiteMap extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param array             $sectionConfig Site map configuration
-     * @param RendererInterface $renderer      View renderer
+     * @param SectionServiceInterface $sectionService Section service
+     * @param ConfigManagerInterface  $configManager  Configuration manager
+     * @param array                   $config         Main configuration
+     * @param RendererInterface       $renderer       View renderer
      */
+    #[Autowire]
     public function __construct(
-        array $sectionConfig,
-        protected RendererInterface $renderer,
+        SectionServiceInterface $sectionService,
+        ConfigManagerInterface $configManager,
+        #[Autowire(config: 'config')]
+        array $config,
+        #[Autowire(service: 'ViewRenderer')]
+        protected RendererInterface $renderer
     ) {
         $this->addRequiredSettings(
             [
@@ -80,7 +90,11 @@ class SiteMap extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct(
+            $sectionService,
+            $configManager->getConfigArray('SiteMap'),
+            $config
+        );
     }
 
     /**

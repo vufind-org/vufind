@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,6 +30,9 @@
 namespace VuFind\Navigation;
 
 use Symfony\Component\Yaml\Yaml;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Admin menu.
@@ -43,14 +46,25 @@ use Symfony\Component\Yaml\Yaml;
 class AdminMenu extends AbstractMenu
 {
     /**
+     * Show Overdrive admin menu item?
+     *
+     * @var bool
+     */
+    protected bool $showOverdriveAdminMenu;
+
+    /**
      * Constructor.
      *
-     * @param array $sectionConfig          Menu configuration
-     * @param bool  $showOverdriveAdminMenu Show Overdrive admin menu item?
+     * @param SectionServiceInterface $sectionService Section service
+     * @param ConfigManagerInterface  $configManager  Configuration manager
+     * @param array                   $config         Main configuration
      */
+    #[Autowire]
     public function __construct(
-        array $sectionConfig,
-        protected bool $showOverdriveAdminMenu
+        SectionServiceInterface $sectionService,
+        ConfigManagerInterface $configManager,
+        #[Autowire(config: 'config')]
+        array $config
     ) {
         $this->addRequiredSettings(
             [
@@ -59,7 +73,14 @@ class AdminMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig);
+        parent::__construct(
+            $sectionService,
+            $configManager->getConfigArray('AdminMenu'),
+            $config
+        );
+        $overdriveConfig = $configManager->getConfigArray('Overdrive');
+        $this->showOverdriveAdminMenu
+            = $overdriveConfig['Overdrive']['showOverdriveAdminMenu'] ?? false;
     }
 
     /**

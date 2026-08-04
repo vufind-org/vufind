@@ -34,10 +34,12 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Config\AccountCapabilities;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
+use VuFind\Section\SectionServiceInterface;
 
 use function array_key_exists;
 use function count;
@@ -58,23 +60,26 @@ class AccountMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param array               $sectionConfig       Menu configuration
-     * @param AccountCapabilities $accountCapabilities Account capabilities
-     * @param Manager             $authManager         Authentication manager
-     * @param Connection          $ilsConnection       ILS connection
-     * @param ILSAuthenticator    $ilsAuthenticator    ILS authenticator
-     * @param ?OverdriveConnector $overdriveConnector  Overdrive connector
-     * @param array               $config              Main configuration
+     * @param SectionServiceInterface $sectionService      Section service
+     * @param ConfigManagerInterface  $configManager       Configuration manager
+     * @param array                   $config              Main configuration
+     * @param AccountCapabilities     $accountCapabilities Account capabilities
+     * @param Manager                 $authManager         Authentication manager
+     * @param Connection              $ilsConnection       ILS connection
+     * @param ILSAuthenticator        $ilsAuthenticator    ILS authenticator
+     * @param ?OverdriveConnector     $overdriveConnector  Overdrive connector
      */
     public function __construct(
-        array $sectionConfig,
+        SectionServiceInterface $sectionService,
+        ConfigManagerInterface $configManager,
+        array $config,
         protected AccountCapabilities $accountCapabilities,
         protected Manager $authManager,
         protected Connection $ilsConnection,
         protected ILSAuthenticator $ilsAuthenticator,
-        protected ?OverdriveConnector $overdriveConnector,
-        array $config = []
+        protected ?OverdriveConnector $overdriveConnector
     ) {
+        $sectionConfig = $configManager->getConfigArray('AccountMenu');
         if (isset($sectionConfig['MenuItems'])) {
             // backward compatibility for outdated legacy AccountMenu configurations
             $default = static::getDefaultMenuConfig();
@@ -103,7 +108,7 @@ class AccountMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config);
     }
 
     /**

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2025.
+ * Copyright (C) The National Library of Finland 2025-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,13 +45,9 @@ use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AccountMenuFactory;
 use VuFind\Navigation\AdminMenu;
-use VuFind\Navigation\AdminMenuFactory;
 use VuFind\Navigation\FooterMenu;
-use VuFind\Navigation\FooterMenuFactory;
 use VuFind\Navigation\HeaderBar;
-use VuFind\Navigation\HeaderBarFactory;
 use VuFind\Navigation\SiteMap;
-use VuFind\Navigation\SiteMapFactory;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
@@ -295,7 +291,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             'showOverdriveAdminMenu' => $checkMethods['checkCookieSettings'] ?? true,
         ];
 
-        $adminMenu = (new AdminMenuFactory())($container, AdminMenu::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+        $adminMenu = new AdminMenu(
+            $container->get(SectionServiceInterface::class),
+            $configManager,
+            $configManager->getConfigArray('config')
+        );
         $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
     }
@@ -331,7 +332,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $config ??= $this->getDefaultConfig('FooterMenu');
         $this->mockConfigFiles['FooterMenu'] = $config;
         $this->mockConfigFiles['config'] = ['Cookies' => ['consent' => $checkMethods['checkCookieSettings'] ?? true]];
-        $footer = (new FooterMenuFactory())($container, FooterMenu::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+        $footer = new FooterMenu(
+            $container->get(SectionServiceInterface::class),
+            $configManager,
+            $configManager->getConfigArray('config')
+        );
         $this->setSectionPlugin($container, $footer, 'footer');
         return $footer;
     }
@@ -396,7 +402,17 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockRequest = $this->createMock(Request::class);
         $container->set('Request', $mockRequest);
 
-        $header = (new HeaderBarFactory())($container, HeaderBar::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+        $header = new HeaderBar(
+            $container->get(SectionServiceInterface::class),
+            $configManager,
+            $configManager->getConfigArray('config'),
+            $container->get(Cart::class),
+            $container->get(Manager::class),
+            $container->get('ViewManager'),
+            $container->get(LocaleSettings::class),
+            $container->get('Request')
+        );
         $this->setSectionPlugin($container, $header, 'header');
         return $header;
     }
@@ -440,7 +456,13 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockViewRenderer->method('render')->willReturn('<li></li>');
         $container->set('ViewRenderer', $mockViewRenderer);
 
-        $siteMap = (new SiteMapFactory())($container, SiteMap::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+        $siteMap = new SiteMap(
+            $container->get(SectionServiceInterface::class),
+            $configManager,
+            $configManager->getConfigArray('config'),
+            $container->get('ViewRenderer')
+        );
         $this->setSectionPlugin($container, $siteMap, 'siteMap');
         return $siteMap;
     }
