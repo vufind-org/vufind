@@ -294,8 +294,9 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $configManager = $container->get(ConfigManagerInterface::class);
         $adminMenu = new AdminMenu(
             $container->get(SectionServiceInterface::class),
-            $configManager,
-            $configManager->getConfigArray('config')
+            $configManager->getConfigArray('AdminMenu'),
+            $configManager->getConfigArray('config'),
+            $configManager->getConfigArray('Overdrive'),
         );
         $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
@@ -335,7 +336,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $configManager = $container->get(ConfigManagerInterface::class);
         $footer = new FooterMenu(
             $container->get(SectionServiceInterface::class),
-            $configManager,
+            $configManager->getConfigArray('FooterMenu'),
             $configManager->getConfigArray('config')
         );
         $this->setSectionPlugin($container, $footer, 'footer');
@@ -405,7 +406,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $configManager = $container->get(ConfigManagerInterface::class);
         $header = new HeaderBar(
             $container->get(SectionServiceInterface::class),
-            $configManager,
+            $configManager->getConfigArray('HeaderBar'),
             $configManager->getConfigArray('config'),
             $container->get(Cart::class),
             $container->get(Manager::class),
@@ -459,7 +460,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $configManager = $container->get(ConfigManagerInterface::class);
         $siteMap = new SiteMap(
             $container->get(SectionServiceInterface::class),
-            $configManager,
+            $configManager->getConfigArray('SiteMap'),
             $configManager->getConfigArray('config'),
             $container->get('ViewRenderer')
         );

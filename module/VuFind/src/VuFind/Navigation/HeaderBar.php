@@ -35,7 +35,6 @@ use Laminas\View\Model\ModelInterface;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -65,7 +64,7 @@ class HeaderBar extends AbstractMenu
      * Constructor.
      *
      * @param SectionServiceInterface $sectionService Section service
-     * @param ConfigManagerInterface  $configManager  Configuration manager
+     * @param array                   $sectionConfig  Section configuration
      * @param array                   $config         Main configuration
      * @param Cart                    $cart           Cart
      * @param Manager                 $authManager    Authentication manager
@@ -76,7 +75,8 @@ class HeaderBar extends AbstractMenu
     #[Autowire]
     public function __construct(
         SectionServiceInterface $sectionService,
-        ConfigManagerInterface $configManager,
+        #[Autowire(config: 'HeaderBar')]
+        array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
         protected Cart $cart,
@@ -108,11 +108,7 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct(
-            $sectionService,
-            $configManager->getConfigArray('HeaderBar'),
-            $config
-        );
+        parent::__construct($sectionService, $sectionConfig, $config);
         $this->viewModel = $viewManager->getViewModel();
     }
 

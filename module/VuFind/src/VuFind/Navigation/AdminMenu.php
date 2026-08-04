@@ -30,7 +30,6 @@
 namespace VuFind\Navigation;
 
 use Symfony\Component\Yaml\Yaml;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -55,16 +54,20 @@ class AdminMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param SectionServiceInterface $sectionService Section service
-     * @param ConfigManagerInterface  $configManager  Configuration manager
-     * @param array                   $config         Main configuration
+     * @param SectionServiceInterface $sectionService  Section service
+     * @param array                   $sectionConfig   Section configuration
+     * @param array                   $config          Main configuration
+     * @param array                   $overdriveConfig Overdrive configuration
      */
     #[Autowire]
     public function __construct(
         SectionServiceInterface $sectionService,
-        ConfigManagerInterface $configManager,
+        #[Autowire(config: 'AdminMenu')]
+        array $sectionConfig,
         #[Autowire(config: 'config')]
-        array $config
+        array $config,
+        #[Autowire(config: 'Overdrive')]
+        array $overdriveConfig
     ) {
         $this->addRequiredSettings(
             [
@@ -73,12 +76,7 @@ class AdminMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct(
-            $sectionService,
-            $configManager->getConfigArray('AdminMenu'),
-            $config
-        );
-        $overdriveConfig = $configManager->getConfigArray('Overdrive');
+        parent::__construct($sectionService, $sectionConfig, $config);
         $this->showOverdriveAdminMenu
             = $overdriveConfig['Overdrive']['showOverdriveAdminMenu'] ?? false;
     }

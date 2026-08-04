@@ -30,7 +30,6 @@
 namespace VuFind\Navigation;
 
 use Symfony\Component\Yaml\Yaml;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\Section\SectionServiceInterface;
 use VuFind\ServiceManager\Factory\Autowire;
 
@@ -51,13 +50,14 @@ class FooterMenu extends AbstractMenu
      * Constructor.
      *
      * @param SectionServiceInterface $sectionService Section service
-     * @param ConfigManagerInterface  $configManager  Configuration manager
+     * @param array                   $sectionConfig  Section configuration
      * @param array                   $config         Main configuration
      */
     #[Autowire]
     public function __construct(
         SectionServiceInterface $sectionService,
-        ConfigManagerInterface $configManager,
+        #[Autowire(config: 'FooterMenu')]
+        array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config
     ) {
@@ -82,11 +82,7 @@ class FooterMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct(
-            $sectionService,
-            $configManager->getConfigArray('FooterMenu'),
-            $config
-        );
+        parent::__construct($sectionService, $sectionConfig, $config);
     }
 
     /**

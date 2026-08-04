@@ -34,7 +34,6 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Config\AccountCapabilities;
-use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Exception\ILS as ILSException;
@@ -61,7 +60,7 @@ class AccountMenu extends AbstractMenu
      * Constructor.
      *
      * @param SectionServiceInterface $sectionService      Section service
-     * @param ConfigManagerInterface  $configManager       Configuration manager
+     * @param array                   $sectionConfig       Section configuration
      * @param array                   $config              Main configuration
      * @param AccountCapabilities     $accountCapabilities Account capabilities
      * @param Manager                 $authManager         Authentication manager
@@ -71,7 +70,7 @@ class AccountMenu extends AbstractMenu
      */
     public function __construct(
         SectionServiceInterface $sectionService,
-        ConfigManagerInterface $configManager,
+        array $sectionConfig,
         array $config,
         protected AccountCapabilities $accountCapabilities,
         protected Manager $authManager,
@@ -79,7 +78,6 @@ class AccountMenu extends AbstractMenu
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?OverdriveConnector $overdriveConnector
     ) {
-        $sectionConfig = $configManager->getConfigArray('AccountMenu');
         if (isset($sectionConfig['MenuItems'])) {
             // backward compatibility for outdated legacy AccountMenu configurations
             $default = static::getDefaultMenuConfig();

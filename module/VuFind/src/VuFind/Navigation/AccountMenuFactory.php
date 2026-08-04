@@ -77,7 +77,7 @@ class AccountMenuFactory
 
         return new $requestedName(
             $container->get(\VuFind\Section\SectionServiceInterface::class),
-            $container->get(\VuFind\Config\ConfigManagerInterface::class),
+            $configManager->getConfigArray('AccountMenu'),
             $configManager->getConfigArray('config'),
             $container->get(\VuFind\Config\AccountCapabilities::class),
             $container->get(\VuFind\Auth\Manager::class),
