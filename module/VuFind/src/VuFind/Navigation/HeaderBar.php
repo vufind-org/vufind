@@ -249,12 +249,8 @@ class HeaderBar extends AbstractMenu
      */
     public function checkColorSchemeOptions(): bool
     {
-        // // TODO actual lookup with something like
-        // return count($this->layout->colorSchemeOptions ?? []) > 1;
-
-        $currentTheme = 'bootstrap5';
-        $supportedColorSchemesString = $this->config['Site']['supported_color_schemes'][$currentTheme] ?? '';
-        return count(explode(',', $supportedColorSchemesString)) > 1;
+        return ($options = $this->viewModel->getVariable('colorSchemeOptions'))
+            && (count($options) > 1);
     }
 
     /**
