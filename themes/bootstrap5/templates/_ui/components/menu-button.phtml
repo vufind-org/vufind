@@ -48,7 +48,7 @@
 
   $toggleLabel = $this->transEsc($this->toggleLabel);
   if ($this->toggleLabelIconOnly) {
-    $toggleLabel = '<span class="sr-only">' . $toggleLabel . '</span>';
+    $toggleLabel = '<span class="visually-hidden">' . $toggleLabel . '</span>';
   }
   if ($this->toggleLabelIcon) {
     $toggleLabel = $this->icon($this->toggleLabelIcon) . $toggleLabel;
