@@ -127,14 +127,14 @@
         "behat/mink": "1.13.0",
         "behat/mink-selenium2-driver": "1.7.0",
         "dmore/chrome-mink-driver": "2.10.0",
-        "friendsofphp/php-cs-fixer": "3.95.17",
+        "friendsofphp/php-cs-fixer": "3.95.18",
         "phpmd/phpmd": "2.15.0",
         "phpstan/phpstan": "2.2.7",
         "phpunit/php-code-coverage": "^11",
         "phpunit/phpcov": "^10",
         "phpunit/phpunit": "11.5.56",
         "pietercolpaert/hardf": "0.6.2",
-        "rector/rector": "2.5.8",
+        "rector/rector": "2.5.9",
         "squizlabs/php_codesniffer": "4.0.1"
     },
     "suggest": {
