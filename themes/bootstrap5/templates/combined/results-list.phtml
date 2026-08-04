@@ -1,6 +1,4 @@
 <?php
-  // Initialize theme resources:
-  $this->setupThemeResources();
   $templateParams = $this->currentSearch['templateParams'];
   $results = $templateParams['results'];
   $params = $results->getParams();
@@ -77,9 +75,8 @@
       }
       JS;
 ?>
-<?=$this->headLink()?>
 <?=$this->assetManager()->outputInlineScriptString($countsJs)?>
-
+<?php ob_start(); // buffer output so we can collect header resources before main content is rendered ?>
 <?php if ($this->currentSearch['more_link'] ?? false): ?>
   <div class="float-end">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
@@ -195,3 +192,9 @@
     </p>
   <?php endif; ?>
 <?php endif; ?>
+<?php
+  $content = ob_get_contents();
+  ob_end_clean();
+  // If we're in AJAX mode, output header assets now; otherwise, they will be rendered as part of the main page header.
+  echo $this->ajax ? $this->assetManager()->outputHeaderAssets() : false;
+  echo $content;
