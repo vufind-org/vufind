@@ -81,7 +81,7 @@ class TagsService
      *
      * @return array
      */
-    public function parse($tags)
+    public function parse(string $tags): array
     {
         preg_match_all('/"[^"]*"|[^ ]+/', trim($tags), $words);
         $result = [];

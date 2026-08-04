@@ -68,7 +68,7 @@ class HeaderBarFactory extends AbstractMenuFactory
             $container,
             $requestedName,
             [
-                'HeaderBar.yaml',
+                'HeaderBar',
                 $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
                 $container->get(\VuFind\Cart::class),
                 $container->get(\VuFind\Auth\Manager::class),

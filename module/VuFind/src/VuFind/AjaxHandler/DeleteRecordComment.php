@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -59,16 +59,17 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
         protected ?UserEntityInterface $user,
         protected bool $enabled = true
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         // Make sure comments are enabled:
         if (!$this->enabled) {
@@ -85,7 +86,7 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
             );
         }
 
-        $id = $params->fromQuery('id');
+        $id = $this->getQueryParam($request, 'id');
         if (empty($id)) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),

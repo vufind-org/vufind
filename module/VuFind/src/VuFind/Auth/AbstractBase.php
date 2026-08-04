@@ -370,7 +370,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         // By default, password changing is not supported.
         return false;
@@ -383,7 +383,7 @@ abstract class AbstractBase implements
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         // By default, password recovery is not supported.
         return false;

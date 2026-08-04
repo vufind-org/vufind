@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\UserListServiceInterface;
+use VuFind\Http\RouteHelper;
 
 /**
  * Factory for ListItems channel provider.
@@ -71,7 +72,7 @@ class ListItemsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class),
-            $container->get('ControllerPluginManager')->get('url'),
+            $container->get(RouteHelper::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get(\VuFind\Tags\TagsService::class)
         );

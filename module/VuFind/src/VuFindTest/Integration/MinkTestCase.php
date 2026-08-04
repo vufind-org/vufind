@@ -199,11 +199,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Selector for active record tab.
      *
-     * First for Bootstrap 3, second for Bootstrap 5
-     *
      * @var string
      */
-    protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
+    protected $activeRecordTabSelector = '.record-tabs .nav-link.active';
 
     /**
      * Get name of the current test.
@@ -231,6 +229,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function changeConfigs(array $configs, array $replace = []): void
     {
+        // Always disable caching when changing configs, because we can't rely on
+        // reloadOnFileChange in situations where configs change more than once
+        // per second (which IS possible):
+        $configs['config']['ConfigCache']['disabled'] = true;
         foreach ($configs as $file => $settings) {
             $this->changeConfigFile($file, $settings, in_array($file, $replace));
         }

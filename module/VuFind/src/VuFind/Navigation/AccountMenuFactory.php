@@ -79,7 +79,7 @@ class AccountMenuFactory extends AbstractMenuFactory
             $container,
             $requestedName,
             [
-                'AccountMenu.yaml',
+                'AccountMenu',
                 $container->get(\VuFind\Config\AccountCapabilities::class),
                 $container->get(\VuFind\Auth\Manager::class),
                 $container->get(\VuFind\ILS\Connection::class),

@@ -29,6 +29,8 @@
 
 namespace VuFind\Record\FallbackLoader;
 
+use VuFind\ServiceManager\AbstractPluginFactory;
+
 /**
  * Record fallback loader plugin manager.
  *
@@ -51,14 +53,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        Solr::class => SolrFactory::class,
-        Summon::class => AbstractFallbackLoaderFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

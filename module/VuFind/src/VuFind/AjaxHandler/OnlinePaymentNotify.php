@@ -31,12 +31,10 @@ declare(strict_types=1);
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use VuFind\Controller\AjaxController;
+use GuzzleHttp\Psr7\Message;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Type\AuditEventSubtype;
-use VuFind\Http\PhpEnvironment\Request;
-
-use function assert;
 
 /**
  * External payment notification handler for online payment.
@@ -55,24 +53,19 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
      * Note: This handler does not register the payment with the ILS since that happens in the response handler or
      * online payment monitor.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
-        $controller = $params->getController();
-        assert($controller instanceof AjaxController);
-        $request = $controller->getRequest();
-        assert($request instanceof Request);
+        $this->logger->debug('Online payment notify handler called. Request: ' . Message::toString($request));
 
-        $this->logger->debug('Online payment notify handler called. Request: ' . (string)$request);
-
-        if (null === ($localIdentifier = $request->getQuery('local_payment_id'))) {
+        if (null === ($localIdentifier = $this->getQueryParam($request, 'local_payment_id'))) {
             $this->logError(
                 'Error processing payment: local_payment_id not provided. Query: '
-                . $request->getQuery()->toString()
-                . ', post parameters: ' . $request->getPost()->toString()
+                . var_export($request->getQueryParams(), true)
+                . ', post parameters: ' . var_export($request->getParsedBody(), true)
             );
             return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
         }
@@ -92,7 +85,8 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
         }
 
         try {
-            $this->onlinePaymentManager->processPaymentHandlerResponse($payment, $request, true);
+            $this->onlinePaymentManager
+                ->processPaymentHandlerResponse($payment, Psr7ServerRequest::toLaminas($request), true);
         } catch (\Exception $e) {
             $this->logError(
                 'Error processing payment notification for ' . $payment->getSourceIls() . ", payment $localIdentifier"

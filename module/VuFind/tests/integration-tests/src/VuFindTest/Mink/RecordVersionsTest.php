@@ -68,6 +68,22 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, $this->activeRecordTabSelector)
         );
 
+        // Confirm "other versions" link on top of page works:
+        $this->clickCss($page, '.record-tabs #tab-button-holdings');
+        // wait for scrolling to tab
+        sleep(1);
+        $this->assertSame(
+            'Holdings',
+            $this->findCssAndGetText($page, $this->activeRecordTabSelector)
+        );
+        $this->clickCss($page, '.media-body .record-versions a');
+        // wait for scrolling to tab
+        sleep(1);
+        $this->assertSame(
+            'Other Versions (3)',
+            $this->findCssAndGetText($page, $this->activeRecordTabSelector)
+        );
+
         // Click the "see all versions" link:
         $this->clickCss($page, 'div.search-controls a.more-link');
 
@@ -123,7 +139,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Record/0001732009-0');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '#record-tab-versions a');
+        $this->clickCss($page, '#tab-button-versions');
         $this->waitForPageLoad($page);
         // Click the QR code link and verify that the image gets added dynamically:
         $this->clickCss($page, '.result-links .qrcodeLink');

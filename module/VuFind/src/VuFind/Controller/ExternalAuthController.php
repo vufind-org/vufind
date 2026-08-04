@@ -97,7 +97,7 @@ class ExternalAuthController extends AbstractBase implements LoggerAwareInterfac
             // allow access.
             $view = $this->createViewModel();
             $view->unauthorized = true;
-            $this->flashMessenger()->addErrorMessage(
+            $this->getFlashMessenger()->addErrorMessage(
                 'external_auth_unauthorized'
             );
             return $view;

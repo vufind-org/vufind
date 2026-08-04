@@ -29,13 +29,14 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Helper\Root\Recommend as RecommendHelper;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Load a recommendation module via AJAX.
@@ -51,69 +52,47 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Recommendation plugin manager.
-     *
-     * @var RecommendManager
-     */
-    protected $pluginManager;
-
-    /**
-     * Solr search results object.
-     *
-     * @var Results
-     */
-    protected $results;
-
-    /**
-     * View renderer.
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
      * Constructor.
      *
-     * @param SessionSettings   $ss       Session settings
-     * @param RecommendManager  $pm       Recommendation plugin manager
-     * @param Results           $results  Solr results object
-     * @param RendererInterface $renderer View renderer
+     * @param SessionSettings           $sessionSettings        Session settings
+     * @param RecommendManager          $recommendPluginManager Recommendation plugin manager
+     * @param Results                   $results                Solr results object
+     * @param TemplateRendererInterface $renderer               Template renderer,
+     * @param RecommendHelper           $recommendHelper        Recommend view helper
      */
     public function __construct(
-        SessionSettings $ss,
-        RecommendManager $pm,
-        Results $results,
-        RendererInterface $renderer
+        SessionSettings $sessionSettings,
+        protected RecommendManager $recommendPluginManager,
+        protected Results $results,
+        protected TemplateRendererInterface $renderer,
+        protected RecommendHelper $recommendHelper,
     ) {
-        $this->sessionSettings = $ss;
-        $this->pluginManager = $pm;
-        $this->results = $results;
-        $this->renderer = $renderer;
+        parent::__construct($sessionSettings);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        if (!($moduleName = $params->fromQuery('mod'))) {
+        if (!($moduleName = $this->getQueryParam($request, 'mod'))) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
-        $module = $this->pluginManager->get($moduleName);
-        $module->setConfig($params->fromQuery('params', ''));
+        $module = $this->recommendPluginManager->get($moduleName);
+        $module->setConfig($this->getQueryParam($request, 'params', ''));
         $paramsObj = $this->results->getParams();
-        $request = new Parameters($params->fromQuery());
+        $request = new Parameters($request->getQueryParams());
         // Initialize search parameters from Ajax request parameters in case the
         // original request parameters were passed to the Ajax request.
         $paramsObj->initFromRequest($request);
@@ -121,7 +100,6 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
         $module->process($this->results);
 
         // Render recommendations:
-        $recommend = $this->renderer->plugin('recommend');
-        return $this->formatResponse($recommend($module));
+        return $this->formatResponse(($this->recommendHelper)($module));
     }
 }

@@ -360,7 +360,7 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    public function supportsPasswordChange()
+    public function supportsPasswordChange(): bool
     {
         return true;
     }
@@ -374,7 +374,7 @@ class Database extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function supportsPasswordRecovery(?string $target = null)
+    public function supportsPasswordRecovery(?string $target = null): bool
     {
         return true;
     }

@@ -78,7 +78,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="11.0.4" />
+  <property name="version" value="11.1.0" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport}" />
   <!-- Add user if not empty -->
@@ -173,6 +173,7 @@
   <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
     <phingcall target="checkSassBuild"/>
+    <phingcall target="jsDependencyCheck" />
     <phingcall target="jsTranslationsCheck" />
   </target>
 
@@ -311,6 +312,13 @@
   <target name="checkSassBuild">
     <exec executable="npm" checkreturn="true" passthru="true">
       <arg line="run check:scss" />
+    </exec>
+  </target>
+
+  <!-- Check for Node.js dependency synchronization errors -->
+  <target name="jsDependencyCheck">
+    <exec executable="npm" checkreturn="true" passthru="true">
+      <arg line="run check:dependencySync" />
     </exec>
   </target>
 
