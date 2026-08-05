@@ -61,7 +61,7 @@ class SiteMap extends AbstractMenu
      */
     public function __construct(
         SectionServiceInterface $sectionService,
-        #[Autowire(config: 'SiteMap')]
+        #[Autowire(config: 'SiteMap.yaml')]
         array $sectionConfig,
         #[Autowire(config: 'config')]
         array $config,
