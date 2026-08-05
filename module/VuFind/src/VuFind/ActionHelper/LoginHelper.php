@@ -76,7 +76,6 @@ class LoginHelper implements HelperInterface
      * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
      * @param UrlHelper                       $urlHelper          URL helper
      */
-    #[Autowire()]
     public function __construct(
         protected RouteHelper $routeHelper,
         protected FollowupHelper $followupHelper,

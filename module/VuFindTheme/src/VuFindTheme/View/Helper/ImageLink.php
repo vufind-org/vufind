@@ -52,7 +52,6 @@ class ImageLink
      * @param Url                    $urlHelper Url view helper
      */
     public function __construct(
-        #[Autowire]
         protected \VuFindTheme\ThemeInfo $themeInfo,
         #[Autowire(container: 'ViewHelperManager')]
         protected Url $urlHelper

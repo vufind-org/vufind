@@ -52,7 +52,7 @@ class UserContentHelper implements HelperInterface
      * @param RecordLoader        $recordLoader        Record loader
      * @param AccountCapabilities $accountCapabilities Account capabilities helper
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected RecordLoader $recordLoader,
         protected AccountCapabilities $accountCapabilities,
