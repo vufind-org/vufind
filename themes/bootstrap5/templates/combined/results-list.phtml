@@ -196,5 +196,5 @@
   $content = ob_get_contents();
   ob_end_clean();
   // If we're in AJAX mode, output header assets now; otherwise, they will be rendered as part of the main page header.
-  echo $this->ajax ? $this->assetManager()->outputHeaderAssets() : false;
+  echo $this->ajax ? $this->assetManager()->outputHeaderAssets() : '';
   echo $content;
