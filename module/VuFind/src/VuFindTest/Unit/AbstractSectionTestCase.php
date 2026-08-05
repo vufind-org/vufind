@@ -395,16 +395,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set('Request', $mockRequest);
 
         $configManager = $container->get(ConfigManagerInterface::class);
-        $header = new HeaderBar(
-            $container->get(SectionServiceInterface::class),
-            $configManager->getConfigArray('HeaderBar'),
-            $configManager->getConfigArray('config'),
-            $container->get(Cart::class),
-            $container->get(Manager::class),
-            $container->get('ViewManager'),
-            $container->get(LocaleSettings::class),
-            $container->get('Request')
-        );
+        $header = $this->getAutowiredObject(HeaderBar::class, $container);
         $this->setSectionPlugin($container, $header, 'header');
         return $header;
     }
