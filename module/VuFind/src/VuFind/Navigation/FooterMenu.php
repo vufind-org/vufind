@@ -53,7 +53,6 @@ class FooterMenu extends AbstractMenu
      * @param array                   $sectionConfig  Section configuration
      * @param array                   $config         Main configuration
      */
-    #[Autowire]
     public function __construct(
         SectionServiceInterface $sectionService,
         #[Autowire(config: 'FooterMenu')]

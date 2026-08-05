@@ -53,6 +53,7 @@ use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
 use VuFind\Section\SectionServiceInterface;
 use VuFindTest\Container\MockContainer;
+use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
@@ -66,6 +67,7 @@ use VuFindTest\Feature\ConfigRelatedServicesTrait;
  */
 abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
 {
+    use AutowireTrait;
     use ConfigRelatedServicesTrait;
 
     /**
@@ -291,13 +293,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             'showOverdriveAdminMenu' => $checkMethods['checkCookieSettings'] ?? true,
         ];
 
-        $configManager = $container->get(ConfigManagerInterface::class);
-        $adminMenu = new AdminMenu(
-            $container->get(SectionServiceInterface::class),
-            $configManager->getConfigArray('AdminMenu'),
-            $configManager->getConfigArray('config'),
-            $configManager->getConfigArray('Overdrive'),
-        );
+        $adminMenu = $this->getAutowiredObject(AdminMenu::class, $container);
         $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
     }
@@ -333,12 +329,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $config ??= $this->getDefaultConfig('FooterMenu');
         $this->mockConfigFiles['FooterMenu'] = $config;
         $this->mockConfigFiles['config'] = ['Cookies' => ['consent' => $checkMethods['checkCookieSettings'] ?? true]];
-        $configManager = $container->get(ConfigManagerInterface::class);
-        $footer = new FooterMenu(
-            $container->get(SectionServiceInterface::class),
-            $configManager->getConfigArray('FooterMenu'),
-            $configManager->getConfigArray('config')
-        );
+        $footer = $this->getAutowiredObject(FooterMenu::class, $container);
         $this->setSectionPlugin($container, $footer, 'footer');
         return $footer;
     }
@@ -457,13 +448,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockViewRenderer->method('render')->willReturn('<li></li>');
         $container->set('ViewRenderer', $mockViewRenderer);
 
-        $configManager = $container->get(ConfigManagerInterface::class);
-        $siteMap = new SiteMap(
-            $container->get(SectionServiceInterface::class),
-            $configManager->getConfigArray('SiteMap'),
-            $configManager->getConfigArray('config'),
-            $container->get('ViewRenderer')
-        );
+        $siteMap = $this->getAutowiredObject(SiteMap::class, $container);
         $this->setSectionPlugin($container, $siteMap, 'siteMap');
         return $siteMap;
     }

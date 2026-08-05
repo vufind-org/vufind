@@ -59,7 +59,6 @@ class AdminMenu extends AbstractMenu
      * @param array                   $config          Main configuration
      * @param array                   $overdriveConfig Overdrive configuration
      */
-    #[Autowire]
     public function __construct(
         SectionServiceInterface $sectionService,
         #[Autowire(config: 'AdminMenu')]

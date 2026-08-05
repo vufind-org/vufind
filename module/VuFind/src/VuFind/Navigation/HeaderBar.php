@@ -72,7 +72,6 @@ class HeaderBar extends AbstractMenu
      * @param LocaleSettings          $localeSettings Locale settings
      * @param Request                 $request        Request
      */
-    #[Autowire]
     public function __construct(
         SectionServiceInterface $sectionService,
         #[Autowire(config: 'HeaderBar')]

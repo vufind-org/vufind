@@ -59,7 +59,6 @@ class SiteMap extends AbstractMenu
      * @param array                   $config         Main configuration
      * @param RendererInterface       $renderer       View renderer
      */
-    #[Autowire]
     public function __construct(
         SectionServiceInterface $sectionService,
         #[Autowire(config: 'SiteMap')]
