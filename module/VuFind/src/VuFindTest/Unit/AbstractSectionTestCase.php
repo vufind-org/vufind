@@ -430,7 +430,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         MockContainer $container,
         ?array $config = null
     ): SiteMap {
-        $config ??= $this->getDefaultConfig('SiteMap');
+        $config ??= $this->getDefaultConfig('SiteMap.yaml');
         $this->mockConfigFiles['SiteMap.yaml'] = $config;
 
         $mockViewRenderer = $this->createMock(PhpRenderer::class);
