@@ -50,7 +50,7 @@ class ForwardHelper implements HelperInterface
      *
      * @param ActionPluginManager $actionPluginManager Action plugin manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected ActionPluginManager $actionPluginManager,
     ) {

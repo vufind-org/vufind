@@ -65,7 +65,6 @@ class LaminasTemplateRenderer implements TemplateRendererInterface
      * @param string                 $notFoundTemplate       Template for 404 errors
      * @param string                 $errorTemplate          Template for errors
      */
-    #[Autowire()]
     public function __construct(
         protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(service: 'ViewRenderer')]
