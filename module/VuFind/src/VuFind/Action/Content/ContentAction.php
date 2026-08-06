@@ -57,7 +57,7 @@ class ContentAction extends AbstractTemplateRenderingAction
      *
      * @param PageLocator $pageLocator Page locator
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected PageLocator $pageLocator,
     ) {

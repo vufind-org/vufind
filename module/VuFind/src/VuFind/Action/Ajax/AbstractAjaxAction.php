@@ -56,7 +56,7 @@ abstract class AbstractAjaxAction extends AbstractAction implements TranslatorAw
      *
      * @param AjaxPluginManager $ajaxManager AJAX Handler Plugin Manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         AjaxPluginManager $ajaxManager
     ) {

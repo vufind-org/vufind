@@ -62,7 +62,7 @@ class UserTags
      *
      * @param AccountCapabilities $capabilities Account capabilities service
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(AccountCapabilities $capabilities)
     {
         $this->mode = $capabilities->getTagSetting();

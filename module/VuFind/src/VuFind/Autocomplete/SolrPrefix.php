@@ -100,7 +100,7 @@ class SolrPrefix implements AutocompleteInterface
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(\VuFind\Search\Results\PluginManager $results)
     {
         $this->resultsManager = $results;

@@ -42,6 +42,7 @@ use VuFind\I18n\Locale\LocaleSettingsAwareTrait;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
+use function in_array;
 
 /**
  * Abstract notices action.
@@ -115,6 +116,27 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
         $formData['contexts'] = array_keys($contexts);
         if ($notice && $activeContext = $this->getBestMatchingContext($notice, $contexts)) {
             $formData['activeContext'] = $activeContext;
+        }
+
+        // check which contexts have date or time related conditions. The respective restrictions
+        // will be disabled for those.
+        $formData['dateTimeContexts'] = $this->getDateTimeContexts();
+
+        $formData['date_time_types'] = $noticeFormConfig['dateTimeTypes'] ?? [];
+        if ($notice) {
+            $dateTimeRestrictions = $this->getDateTimeRestrictions($notice);
+            if (array_intersect(['start_date_time', 'end_date_time'], array_keys($dateTimeRestrictions))) {
+                $formData['activeDateTimeType'] = 'date_time';
+            } elseif (array_intersect(['start_date', 'end_date'], array_keys($dateTimeRestrictions))) {
+                $formData['activeDateTimeType'] = 'date';
+            } elseif (array_intersect(['start_time', 'end_time'], array_keys($dateTimeRestrictions))) {
+                $formData['activeDateTimeType'] = 'time';
+            }
+            foreach ($dateTimeRestrictions as $name => $value) {
+                $dateTimeType = str_replace(['start_', 'end_'], '', $name);
+                $dateTimeRestrictions[$name] = $this->dateTimeToInput($value, $dateTimeType);
+            }
+            $formData = array_merge($formData, $dateTimeRestrictions);
         }
 
         $formData['contentTypes'] = $noticeFormConfig['contentTypes'] ?? [];
@@ -201,6 +223,53 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
     }
 
     /**
+     * Get contexts with date or time related conditions.
+     *
+     * @return array
+     */
+    protected function getDateTimeContexts(): array
+    {
+        $dateTimeContexts = [];
+        foreach ($this->noticeManager->getNoticeConfig()['adminForm']['contexts'] ?? [] as $name => $context) {
+            foreach ($context['conditions'] ?? [] as $condition) {
+                if (str_contains($condition['type'], 'date') || str_contains($condition['type'], 'time')) {
+                    $dateTimeContexts[] = $name;
+                    break;
+                }
+            }
+        }
+        return $dateTimeContexts;
+    }
+
+    /**
+     * Get date and time related restrictions.
+     *
+     * @param array $notice Notice data
+     *
+     * @return array
+     */
+    protected function getDateTimeRestrictions(array $notice): array
+    {
+        $restrictions = [];
+        $dateTimeTypes = $this->noticeManager->getNoticeConfig()['adminForm']['dateTimeTypes'] ?? [];
+        foreach ($notice['conditions'] as $condition) {
+            if (
+                in_array($condition['type'], $dateTimeTypes)
+                && $date = $condition['checkedValues'][0] ?? null
+            ) {
+                switch ($condition['comparator']) {
+                    case '>=':
+                        $restrictions['start_' . $condition['type']] = $date;
+                        break;
+                    case '<=':
+                        $restrictions['end_' . $condition['type']] = $date;
+                }
+            }
+        }
+        return $restrictions;
+    }
+
+    /**
      * Map form data to notice array format.
      *
      * @return array
@@ -208,11 +277,45 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
     protected function formDataToNotice(): array
     {
         $notice = $this->noticeManager->getDefaults();
-
+        $noticeFormConfig = $this->noticeManager->getNoticeConfig()['adminForm'] ?? [];
+        $useDateTimeInput = true;
         if ($context = $this->getPostParam('context_fieldset')['context'] ?? null) {
-            $contextConfig = $this->noticeManager->getNoticeConfig()['adminForm']['contexts'][$context] ?? [];
+            if (in_array($context, $this->getDateTimeContexts())) {
+                $useDateTimeInput = false;
+            }
+            $contextConfig = $noticeFormConfig['contexts'][$context] ?? [];
             $notice['position'] = $contextConfig['position'] ?? 'default';
             $notice['conditions'] = $contextConfig['conditions'] ?? [];
+        }
+
+        $dateTimeType = $this->getPostParam('date_time_type_fieldset')['date_time_type']
+            ?? $noticeFormConfig['dateTimeTypes'][0]
+            ?? null;
+        if ($useDateTimeInput && $dateTimeType) {
+            if (
+                $start = $this->inputToDateTime(
+                    $this->getPostParam('start_' . $dateTimeType),
+                    $dateTimeType
+                )
+            ) {
+                $notice['conditions'][] =  [
+                    'type' => $dateTimeType,
+                    'comparator' => '>=',
+                    'checkedValues' => [$start],
+                ];
+            }
+            if (
+                $end = $this->inputToDateTime(
+                    $this->getPostParam('end_' . $dateTimeType),
+                    $dateTimeType
+                )
+            ) {
+                $notice['conditions'][] =  [
+                    'type' => $dateTimeType,
+                    'comparator' => '<=',
+                    'checkedValues' => [$end],
+                ];
+            }
         }
 
         if ($contentType = $this->getPostParam('content_type_fieldset')['content_type'] ?? null) {
@@ -226,6 +329,55 @@ abstract class AbstractNoticeAction extends AbstractTemplateRenderingAction impl
         }
 
         return $notice;
+    }
+
+    /**
+     * Parse date and time input to standard format.
+     *
+     * @param ?string $input        Input
+     * @param string  $dateTimeType Date and time type
+     *
+     * @return ?string
+     */
+    protected function inputToDateTime(?string $input, string $dateTimeType): ?string
+    {
+        if (!$input) {
+            return null;
+        }
+        switch ($dateTimeType) {
+            case 'date_time':
+                $dateTime = \DateTime::createFromFormat('Y-m-d\TH:i', $input);
+                return $dateTime->format('Y-m-d H:i:s');
+            case 'time':
+                if (substr_count(':', $input) === 1) {
+                    $input .= ':00';
+                }
+                return $input;
+        }
+        return $input;
+    }
+
+    /**
+     * Parse date and time to input format.
+     *
+     * @param ?string $value        Value
+     * @param string  $dateTimeType Date and time type
+     *
+     * @return ?string
+     */
+    protected function dateTimeToInput(?string $value, string $dateTimeType): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+        switch ($dateTimeType) {
+            case 'date_time':
+                $dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
+                return $dateTime->format('Y-m-d\TH:i');
+            case 'time':
+                return preg_replace('/^(\d+:\d+).*/', '$1', $value);
+        }
+        return $value;
     }
 
     /**

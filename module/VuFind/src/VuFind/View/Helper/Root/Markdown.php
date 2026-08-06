@@ -45,21 +45,13 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Markdown
 {
     /**
-     * Markdown converter.
-     *
-     * @var ConverterInterface
-     */
-    protected $converter;
-
-    /**
      * Markdown constructor.
      *
      * @param ConverterInterface $converter Markdown converter
      */
     #[Autowire]
-    public function __construct(ConverterInterface $converter)
+    public function __construct(protected ConverterInterface $converter)
     {
-        $this->converter = $converter;
     }
 
     /**

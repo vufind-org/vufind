@@ -1,6 +1,20 @@
 /*global grecaptcha, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, addRecordRatingFromUserList */
 
+/**
+ * HTML-encode a string.
+ * @param {string} value The string to encode.
+ * @returns {string} The encoded string.
+ */
+function htmlEncode(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 var VuFind = (function VuFindModule() {
   var defaultSearchBackend = null;
   var path = null;
@@ -219,6 +233,9 @@ var VuFind = (function VuFindModule() {
     }
     return translation;
   };
+  var transEsc = function(op, _replacements) {
+    return htmlEncode(translate(op, _replacements));
+  }
 
   var addIcons = function addIcons(s) {
     for (var i in s) {
@@ -686,6 +703,7 @@ var VuFind = (function VuFindModule() {
     loading: loading,
     loadingElement: loadingElement,
     loadingOverlay,
+    transEsc: transEsc,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
@@ -707,20 +725,6 @@ var VuFind = (function VuFindModule() {
 })();
 
 /* --- GLOBAL FUNCTIONS --- */
-
-/**
- * HTML-encode a string.
- * @param {string} value The string to encode.
- * @returns {string} The encoded string.
- */
-function htmlEncode(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 /**
  * Keyboard and focus controllers
