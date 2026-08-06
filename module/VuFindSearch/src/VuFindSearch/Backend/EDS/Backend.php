@@ -523,6 +523,22 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Are the provided credentials valid for use with the API?
+     *
+     * @param string $username Username to check
+     * @param string $password Password to check
+     *
+     * @return bool
+     */
+    protected function credentialsAreValid(string $username, string $password): bool
+    {
+        if ($username === 'USERNAME' && $password === 'PASSWORD') {
+            throw new \Exception('Default EDS credentials detected; service not configured correctly.');
+        }
+        return !empty($username) && !empty($password);
+    }
+
+    /**
      * Obtain the authentication to use with the EDS API from cache if it exists. If
      * not, then generate a new one.
      *
@@ -559,7 +575,7 @@ class Backend extends AbstractBackend
         $username = $this->userName;
         $password = $this->password;
         $orgId = $this->orgId;
-        if (!empty($username) && !empty($password)) {
+        if ($this->credentialsAreValid($username, $password)) {
             $this->debug(
                 'Calling Authenticate with username: '
                 . "$username, password: XXXXXXXX, orgid: $orgId "
@@ -606,7 +622,7 @@ class Backend extends AbstractBackend
 
         $username = $this->userName;
         $password = $this->password;
-        if (!empty($username) && !empty($password)) {
+        if ($this->credentialsAreValid($username, $password)) {
             $results = $this->client
                 ->authenticate($username, $password, $this->orgId, ['autocomplete']);
             $autoresult = $results['Autocomplete'] ?? [];
