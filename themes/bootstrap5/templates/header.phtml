@@ -1,1 +1,8 @@
 <?=$this->section('HeaderBar')->render()?>
+<?php if ($this->layout()->searchbox !== false): ?>
+  <div class="search container navbar">
+    <div class="nav searchbox hidden-print" role="search">
+      <?=$this->layout()->searchbox ?>
+    </div>
+  </div>
+<?php endif; ?>
