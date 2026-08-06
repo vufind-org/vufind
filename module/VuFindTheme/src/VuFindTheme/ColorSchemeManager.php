@@ -85,11 +85,10 @@ class ColorSchemeManager
         // Find out if the user has a saved preference in the POST, URL or cookies:
         $selectedColorScheme = null;
         $saveColorScheme = false;
-        $themeColorSchemeKey = $this->currentTheme . '_color_scheme';
         if (isset($request)) {
             $selectedColorScheme = $request->getPost()->get('color_scheme')
                 ?? $request->getQuery()->get('color_scheme')
-                ?? $request->getCookie()->$themeColorSchemeKey
+                ?? $this->cookieManager->get('color_scheme')
                 ?? 'normal';
             $saveColorScheme = true;
         }
@@ -103,7 +102,7 @@ class ColorSchemeManager
 
         // Save the current setting to a cookie so it persists.
         if ($saveColorScheme) {
-            $this->cookieManager->set($themeColorSchemeKey, $selectedColorScheme);
+            $this->cookieManager->set('color_scheme', $selectedColorScheme);
         }
 
         return $selectedColorScheme;
