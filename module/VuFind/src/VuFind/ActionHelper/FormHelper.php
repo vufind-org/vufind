@@ -56,7 +56,7 @@ class FormHelper implements HelperInterface
      *
      * @param CaptchaService $captchaService Captcha service
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected CaptchaService $captchaService,
     ) {

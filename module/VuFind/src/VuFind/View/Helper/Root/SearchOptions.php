@@ -48,7 +48,7 @@ class SearchOptions
      *
      * @param PluginManager $manager Search manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(protected PluginManager $manager)
     {
     }

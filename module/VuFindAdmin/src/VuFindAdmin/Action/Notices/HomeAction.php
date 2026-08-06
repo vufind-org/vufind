@@ -59,6 +59,28 @@ class HomeAction extends AbstractNoticeAction
         ResponseInterface $response,
     ): ResponseInterface {
         $noticeList = $this->noticeManager->getAdminList();
+        foreach ($noticeList as &$notice) {
+            $restrictions = $this->getDateTimeRestrictions($notice);
+            if (isset($restrictions['start_date_time']) || isset($restrictions['end_date_time'])) {
+                $notice['start'] = $restrictions['start_date_time'] ?? null;
+                $notice['end'] = $restrictions['end_date_time'] ?? null;
+                $notice['dateTimeType'] = 'date_time';
+                $notice['dateTimeFormat'] = 'Y-m-d H:i:s';
+                $notice['dateTimeDisplayFunction'] = 'convertToDisplayDateAndTime';
+            } elseif (isset($restrictions['start_date']) || isset($restrictions['end_date'])) {
+                $notice['start'] = $restrictions['start_date'] ?? null;
+                $notice['end'] = $restrictions['end_date'] ?? null;
+                $notice['dateTimeType'] = 'date';
+                $notice['dateTimeFormat'] = 'Y-m-d';
+                $notice['dateTimeDisplayFunction'] = 'convertToDisplayDate';
+            } elseif (isset($restrictions['start_time']) || isset($restrictions['end_time'])) {
+                $notice['start'] = $restrictions['start_time'] ?? null;
+                $notice['end'] = $restrictions['end_time'] ?? null;
+                $notice['dateTimeType'] = 'time';
+                $notice['dateTimeFormat'] = 'H:i:s';
+                $notice['dateTimeDisplayFunction'] = 'convertToDisplayTime';
+            }
+        }
         return $this->renderTemplate($request, $response, compact('noticeList'), 'admin/notices/home');
     }
 }

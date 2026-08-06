@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2025.
+ * Copyright (C) The National Library of Finland 2025-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,18 +45,15 @@ use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AccountMenuFactory;
 use VuFind\Navigation\AdminMenu;
-use VuFind\Navigation\AdminMenuFactory;
 use VuFind\Navigation\FooterMenu;
-use VuFind\Navigation\FooterMenuFactory;
 use VuFind\Navigation\HeaderBar;
-use VuFind\Navigation\HeaderBarFactory;
 use VuFind\Navigation\SiteMap;
-use VuFind\Navigation\SiteMapFactory;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
 use VuFind\Section\SectionServiceInterface;
 use VuFindTest\Container\MockContainer;
+use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
@@ -70,6 +67,7 @@ use VuFindTest\Feature\ConfigRelatedServicesTrait;
  */
 abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
 {
+    use AutowireTrait;
     use ConfigRelatedServicesTrait;
 
     /**
@@ -295,7 +293,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             'showOverdriveAdminMenu' => $checkMethods['checkCookieSettings'] ?? true,
         ];
 
-        $adminMenu = (new AdminMenuFactory())($container, AdminMenu::class);
+        $adminMenu = $this->getAutowiredObject(AdminMenu::class, $container);
         $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
     }
@@ -331,7 +329,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $config ??= $this->getDefaultConfig('FooterMenu');
         $this->mockConfigFiles['FooterMenu'] = $config;
         $this->mockConfigFiles['config'] = ['Cookies' => ['consent' => $checkMethods['checkCookieSettings'] ?? true]];
-        $footer = (new FooterMenuFactory())($container, FooterMenu::class);
+        $footer = $this->getAutowiredObject(FooterMenu::class, $container);
         $this->setSectionPlugin($container, $footer, 'footer');
         return $footer;
     }
@@ -396,7 +394,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockRequest = $this->createMock(Request::class);
         $container->set('Request', $mockRequest);
 
-        $header = (new HeaderBarFactory())($container, HeaderBar::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+        $header = $this->getAutowiredObject(HeaderBar::class, $container);
         $this->setSectionPlugin($container, $header, 'header');
         return $header;
     }
@@ -431,8 +430,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         MockContainer $container,
         ?array $config = null
     ): SiteMap {
-        $config ??= $this->getDefaultConfig('SiteMap');
-        $this->mockConfigFiles['SiteMap'] = $config;
+        $config ??= $this->getDefaultConfig('SiteMap.yaml');
+        $this->mockConfigFiles['SiteMap.yaml'] = $config;
 
         $mockViewRenderer = $this->createMock(PhpRenderer::class);
         // We are only testing that the templates are getting rendered, not the
@@ -440,7 +439,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockViewRenderer->method('render')->willReturn('<li></li>');
         $container->set('ViewRenderer', $mockViewRenderer);
 
-        $siteMap = (new SiteMapFactory())($container, SiteMap::class);
+        $siteMap = $this->getAutowiredObject(SiteMap::class, $container);
         $this->setSectionPlugin($container, $siteMap, 'siteMap');
         return $siteMap;
     }

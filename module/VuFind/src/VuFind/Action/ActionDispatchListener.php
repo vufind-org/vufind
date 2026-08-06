@@ -58,7 +58,7 @@ class ActionDispatchListener
      * @param PluginManager $actionPluginManager Action plugin manager
      * @param RouteHelper   $routeHelper         Route helper
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected PluginManager $actionPluginManager,
         protected RouteHelper $routeHelper,

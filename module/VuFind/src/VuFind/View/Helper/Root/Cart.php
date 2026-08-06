@@ -47,7 +47,7 @@ class Cart
      *
      * @param \VuFind\Cart $cart Cart model
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(protected \VuFind\Cart $cart)
     {
     }

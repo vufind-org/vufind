@@ -54,7 +54,7 @@ abstract class AbstractDeveloperSettingsAction extends AbstractTemplateRendering
      * @param DeveloperSettingsService $developerSettingsService Developer settings service
      * @param AuthManager              $authManager              Authentication manager
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected DeveloperSettingsService $developerSettingsService,
         protected AuthManager $authManager,
