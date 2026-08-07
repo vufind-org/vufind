@@ -33,7 +33,15 @@ use Mcp\Capability\Registry\Container;
 use Mcp\Server;
 use Mcp\Server\Builder;
 use Mcp\Server\Session\FileSessionStore;
+use Psr\Log\LoggerInterface;
 use VuFind\Config\Config;
+use VuFind\Config\YamlReader;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\Record\Loader;
+use VuFind\Search\SearchRunner;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * ServerProvider for Model Context Protocol (MCP).
@@ -54,19 +62,43 @@ class ServerProvider
     /**
      * Constructor.
      *
-     * @param array  $mcpConfig MCP configuration
-     * @param Config $topConfig config.ini
-     * @param array  $services  Services to register with the MCP container
+     * @param array           $mcpConfig       MCP configuration
+     * @param Config          $topConfig       config.ini
+     * @param YamlReader      $yamlReader      YAML configuration reader
+     * @param Loader          $recordLoader    Record loader
+     * @param RecordFormatter $recordFormatter Record formatter
+     * @param SearchRunner    $searchRunner    Search runner
+     * @param RouteHelper     $routeHelper     Route helper
+     * @param ServerUrlHelper $serverUrlHelper Server URL helper
+     * @param LoggerInterface $logger          Logger
      */
+    #[Autowire]
     public function __construct(
+        #[Autowire(config: 'ModelContextProtocol', configType: 'yaml')]
         protected array $mcpConfig,
+        #[Autowire(config: 'config', configType: 'object')]
         protected Config $topConfig,
-        array $services
+        YamlReader $yamlReader,
+        Loader $recordLoader,
+        RecordFormatter $recordFormatter,
+        SearchRunner $searchRunner,
+        RouteHelper $routeHelper,
+        ServerUrlHelper $serverUrlHelper,
+        #[Autowire(service: 'VuFind\Logger')]
+        protected LoggerInterface $logger,
     ) {
         if (!($this->mcpConfig['General']['enabled'] ?? false)) {
             return;
         }
 
+        $services = [
+            $yamlReader,
+            $recordLoader,
+            $recordFormatter,
+            $searchRunner,
+            $routeHelper,
+            $serverUrlHelper,
+        ];
         $container = new Container();
         foreach ($services as $service) {
             // Provide these services to each capability class constructor
@@ -75,7 +107,8 @@ class ServerProvider
 
         $builder = Server::builder()
             ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
-            ->setContainer($container);
+            ->setContainer($container)
+            ->setLogger($this->logger);
         $this->setServerInfo($builder);
         $this->addResourceTemplates($builder);
         $this->addTools($builder);

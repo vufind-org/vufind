@@ -28,7 +28,6 @@ $config = [
             'VuFindApi\Formatter\Search2RecordFormatter' => 'VuFindApi\Formatter\Search2RecordFormatterFactory',
             'VuFindApi\Formatter\AuthorityRecordFormatter' => 'VuFindApi\Formatter\AuthorityRecordFormatterFactory',
             'VuFindApi\Formatter\WebRecordFormatter' => 'VuFindApi\Formatter\WebRecordFormatterFactory',
-            'VuFindApi\Mcp\ServerProvider' => 'VuFindApi\Mcp\ServerProviderFactory',
         ],
     ],
     'vufind_api' => [
