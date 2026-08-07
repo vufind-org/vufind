@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Controller for Model Context Protocol (MCP).
+ * Action for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -27,22 +27,21 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindApi\Controller;
+namespace VuFindApi\Action\Mcp;
 
-use Laminas\Diactoros\ServerRequestFactory;
-use Laminas\Http\Header\ContentType;
-use Laminas\Http\Response;
-use Laminas\Psr7Bridge\Psr7Response;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Mcp\Exception\ServiceNotFoundException;
 use Mcp\Schema\JsonRpc\Error;
 use Mcp\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use Psr\Http\Message\ResponseInterface;
-use VuFind\Controller\AbstractBase;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractAction;
+use VuFind\ActionHelper\PermissionHelper;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindApi\Mcp\ServerProvider;
 
 /**
- * Controller for Model Context Protocol (MCP).
+ * Action for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Controller
@@ -50,7 +49,7 @@ use VuFind\Controller\AbstractBase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class McpController extends AbstractBase
+class McpAction extends AbstractAction
 {
     /**
      * Permission required for all MCP endpoints.
@@ -67,24 +66,33 @@ class McpController extends AbstractBase
      */
     protected int $AUTH_ERROR = -32003;
 
+    protected ?Server $server;
+
     /**
      * Constructor.
      *
-     * @param ServiceLocatorInterface $sm     Service manager
-     * @param ?Server                 $server MCP Server
+     * @param ServerProvider $serverProvider MCP server provider
      */
-    public function __construct(ServiceLocatorInterface $sm, protected ?Server $server)
-    {
-        parent::__construct($sm);
+    #[Autowire]
+    public function __construct(
+        ServerProvider $serverProvider
+    ) {
+        parent::__construct();
+        $this->server = $serverProvider->getServer();
     }
 
     /**
-     * MCP action.
+     * Process an MCP request.
      *
-     * @return \Laminas\Http\Response
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function mcpAction()
-    {
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
         if (!$this->server) {
             throw new ServiceNotFoundException('This MCP server is not enabled.');
         }
@@ -98,24 +106,12 @@ class McpController extends AbstractBase
             return $this->outputAuthError($messageId);
         }
 
-        // Adapting: https://github.com/modelcontextprotocol/php-sdk/blob/main/docs/transports.md
-        // and https://github.com/vufind-org/vufind/pull/4672/files#diff-89cf777c1454a4e7f97e51f800ca68001e874a555cb19ec27135779b76ccd8f4
-
-        // Convert to PSR-7 request
-        $psrRequest = ServerRequestFactory::fromGlobals();
-        foreach ($this->params()->fromRoute() as $routeParam => $value) {
-            $psrRequest = $psrRequest->withAttribute($routeParam, $value);
-        }
-
-        // Process with MCP
-        $transport = new StreamableHttpTransport($psrRequest);
-        $psrResponse = $this->server->run($transport);
-
-        // Convert back to Laminas response
-        if ($psrResponse instanceof ResponseInterface) {
-            return Psr7Response::toLaminas($psrResponse);
-        }
-        throw new \Exception('Unexpected state reached.');
+        // laminas-psr7bridge's Psr7ServerRequest::fromLaminas() writes the body into the stream without
+        // rewinding it afterward, leaving the pointer at EOF; rewind so the transport can read it.
+        $request->getBody()->rewind();
+        $transport = new StreamableHttpTransport($request);
+        $response = $this->server->run($transport);
+        return $response;
     }
 
     /**
@@ -127,10 +123,10 @@ class McpController extends AbstractBase
      */
     protected function isAccessDenied($mcpMethod): bool
     {
-        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        $permissions = $this->getHelper(PermissionHelper::class);
         return $mcpMethod
-            ? !$auth->isGranted($this->baseAccessPermission . '.' . $mcpMethod)
-            : !$auth->isGranted($this->baseAccessPermission);
+            ? !$permissions->isAuthorized($this->baseAccessPermission . '.' . $mcpMethod)
+            : !$permissions->isAuthorized($this->baseAccessPermission);
     }
 
     /**
@@ -138,18 +134,14 @@ class McpController extends AbstractBase
      *
      * @param string $messageId The MCP message Id.
      *
-     * @return Response
+     * @return ResponseInterface
      */
-    protected function outputAuthError(string $messageId): Response
+    protected function outputAuthError(string $messageId): ResponseInterface
     {
         $error = new Error($messageId, $this->AUTH_ERROR, 'Access denied');
-        $response = $this->getResponse();
-        $response->setStatusCode(403);
-        $contentTypeHeader = new ContentType();
-        $contentTypeHeader->setMediaType('application/json');
-        $headers = $response->getHeaders();
-        $headers->addHeader($contentTypeHeader);
-        $response->setContent(json_encode($error->jsonSerialize()));
+        $response = $this->response
+            ->withStatus(403)
+            ->withHeader('Content-Type', 'application/json');
         return $response;
     }
 }

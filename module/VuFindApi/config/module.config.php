@@ -7,7 +7,6 @@ $config = [
         'factories' => [
             'VuFindApi\Controller\AdminApiController' => 'VuFindApi\Controller\AdminApiControllerFactory',
             'VuFindApi\Controller\ApiController' => 'VuFindApi\Controller\ApiControllerFactory',
-            'VuFindApi\Controller\McpController' => 'VuFindApi\Controller\McpControllerFactory',
             'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
             'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\Search2ApiControllerFactory',
             'VuFindApi\Controller\AuthorityApiController' => 'VuFindApi\Controller\AuthorityApiControllerFactory',
@@ -16,7 +15,6 @@ $config = [
         'aliases' => [
             'AdminApi' => 'VuFindApi\Controller\AdminApiController',
             'Api' => 'VuFindApi\Controller\ApiController',
-            'Mcp' => 'VuFindApi\Controller\McpController',
             'SearchApi' => 'VuFindApi\Controller\SearchApiController',
             'Search2Api' => 'VuFindApi\Controller\Search2ApiController',
             'AuthorityApi' => 'VuFindApi\Controller\AuthorityApiController',
@@ -36,7 +34,6 @@ $config = [
     'vufind_api' => [
         'register_controllers' => [
             \VuFindApi\Controller\AdminApiController::class,
-            // \VuFindApi\Controller\McpController::class,
             \VuFindApi\Controller\SearchApiController::class,
             \VuFindApi\Controller\Search2ApiController::class,
             \VuFindApi\Controller\AuthorityApiController::class,
@@ -164,6 +161,15 @@ $config = [
                         'controller' => 'WebApi',
                         'action'     => 'record',
                     ],
+                ],
+            ],
+        ],
+    ],
+    'vufind' => [
+        'plugin_managers' => [
+            'action' => [
+                'autodiscovery_namespaces' => [
+                    'VuFindApi\Action' => true,
                 ],
             ],
         ],
