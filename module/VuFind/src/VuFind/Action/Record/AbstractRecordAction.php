@@ -33,11 +33,15 @@ namespace VuFind\Action\Record;
 
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractTemplateRenderingAction;
+use VuFind\Action\BackendIdInterface;
+use VuFind\Action\DefaultTabInterface;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\RedirectHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Exception\ConfigException;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
@@ -60,7 +64,9 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
+abstract class AbstractRecordAction extends AbstractTemplateRenderingAction implements
+    BackendIdInterface,
+    DefaultTabInterface
 {
     /**
      * Array of available tab options.
@@ -72,16 +78,16 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     /**
      * Default tab to display (configured at record driver level).
      *
-     * @var ?string
+     * @var string|null|false
      */
-    protected ?string $defaultTab = null;
+    protected string|null|false $defaultTab = null;
 
     /**
      * Default tab to display (fallback used if no record driver configuration).
      *
-     * @var string
+     * @var ?string
      */
-    protected string $fallbackDefaultTab = 'Holdings';
+    protected ?string $fallbackDefaultTab = null;
 
     /**
      * Array of background tabs.
@@ -100,9 +106,9 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     /**
      * Type of record to display.
      *
-     * @var string
+     * @var ?string
      */
-    protected string $sourceId = 'Solr';
+    protected ?string $sourceId = null;
 
     /**
      * Record driver.
@@ -136,13 +142,112 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
     }
 
     /**
+     * Get backend identifier.
+     *
+     * @return string
+     */
+    public function getBackendId(): string
+    {
+        return $this->sourceId;
+    }
+
+    /**
+     * Set backend identifier.
+     *
+     * @param string $id Backend identifier
+     *
+     * @return static
+     */
+    public function setBackendId(string $id): static
+    {
+        $this->sourceId = $id;
+        return $this;
+    }
+
+    /**
+     * Get default tab.
+     *
+     * @return ?string
+     */
+    public function getDefaultTab(): ?string
+    {
+        // Load default tab if not already retrieved:
+        if (null === $this->defaultTab) {
+            $this->loadTabDetails();
+        }
+        return $this->defaultTab ?: null;
+    }
+
+    /**
+     * Set default tab.
+     *
+     * @param ?string $tab Default tab
+     *
+     * @return static
+     */
+    public function setDefaultTab(?string $tab): static
+    {
+        $this->defaultTab = $tab;
+        return $this;
+    }
+
+    /**
+     * Get fallback default tab.
+     *
+     * @return ?string
+     */
+    public function getFallbackDefaultTab(): ?string
+    {
+        return $this->fallbackDefaultTab;
+    }
+
+    /**
+     * Set fallback default tab.
+     *
+     * @param ?string $tab Fallback default tab
+     *
+     * @return static
+     */
+    public function setFallbackDefaultTab(?string $tab): static
+    {
+        $this->fallbackDefaultTab = $tab;
+        return $this;
+    }
+
+    /**
+     * Check that everything is in order for the action to be executed.
+     *
+     * May return a response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     */
+    protected function checkPrerequisites(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        if ($result = parent::checkPrerequisites($request, $response)) {
+            return $result;
+        }
+
+        if (null === $this->sourceId) {
+            $routeName = $request->getAttribute('route-match')?->getMatchedRouteName() ?? '<unknown>';
+            throw new ConfigException("sourceId not properly configured for route '$routeName'");
+        }
+
+        return null;
+    }
+
+    /**
      * Create view params array.
      *
      * @param array $params Parameters
      *
      * @return array
      */
-    protected function getViewParams(array $params = []): array
+    protected function getTemplateParams(array $params = []): array
     {
         $params['driver'] = $this->loadRecord();
         $params['searchClassId'] = $params['driver']->getSearchBackendIdentifier();
@@ -193,23 +298,9 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
         $details = $manager
             ->getTabDetailsForRecord($driver, Psr7ServerRequest::toLaminas($this->request), $this->fallbackDefaultTab);
         $this->allTabs = $details['tabs'];
-        $this->defaultTab = $details['default'] ? $details['default'] : false;
+        $this->defaultTab = $details['default'] ? $details['default'] : null;
         $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
         $this->tabsExtraScripts = $manager->getExtraScripts();
-    }
-
-    /**
-     * Get default tab for a given driver.
-     *
-     * @return string
-     */
-    protected function getDefaultTab(): string
-    {
-        // Load default tab if not already retrieved:
-        if (null === $this->defaultTab) {
-            $this->loadTabDetails();
-        }
-        return $this->defaultTab;
     }
 
     /**
@@ -287,7 +378,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
         }
 
         $tabs = $this->getAllTabs();
-        $viewParams = $this->getViewParams([
+        $viewParams = $this->getTemplateParams([
             'tabs' => $tabs,
             'activeTab' => strtolower($tab),
             'defaultTab' => strtolower($this->getDefaultTab()),

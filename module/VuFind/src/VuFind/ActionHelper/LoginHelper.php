@@ -75,6 +75,7 @@ class LoginHelper implements HelperInterface
      * @param UserSessionPersistenceInterface $userSession        User session persistence service
      * @param ServerUrlHelper                 $serverUrlHelper    Server URL helper
      * @param UrlHelper                       $urlHelper          URL helper
+     * @param ContextHelper                   $contextHelper      Context helper
      */
     public function __construct(
         protected RouteHelper $routeHelper,
@@ -95,6 +96,8 @@ class LoginHelper implements HelperInterface
         protected ServerUrlHelper $serverUrlHelper,
         #[Autowire(container: HelperPluginManager::class)]
         protected UrlHelper $urlHelper,
+        #[Autowire(container: HelperPluginManager::class)]
+        protected ContextHelper $contextHelper,
     ) {
     }
 
@@ -332,6 +335,38 @@ class LoginHelper implements HelperInterface
 
         // If we got this far, we want to store the referer:
         $this->followupHelper->store($extras, $referer);
+    }
+
+    /**
+     * Retrieve a referer to keep post-login redirect pointing to an appropriate location. Unset the followup before
+     * returning.
+     *
+     * @param ServerRequestInterface $request       Request
+     * @param bool                   $checkRedirect Whether the query should be checked for param 'redirect'
+     *
+     * @return ?string
+     */
+    public function getAndClearFollowupUrl(
+        ServerRequestInterface $request,
+        $checkRedirect = false
+    ): ?string {
+        if ($url = $this->followupHelper->retrieveAndClear('url')) {
+            $lightboxParent = $this->followupHelper->retrieveAndClear('lightboxParent');
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if (!$checkRedirect || $request->getQueryParams()['redirect'] ?? true) {
+                if (null !== $lightboxParent && !$this->contextHelper->inLightbox($request)) {
+                    $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $parentUrl->getQueryAsArray();
+                    $params['lightboxChild'] = $url;
+                    $parentUrl->setQuery($params);
+                    return (string)$parentUrl;
+                }
+                return $url;
+            }
+        }
+        return null;
     }
 
     /**

@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * Record home action.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2010-2024.
+ * Copyright (C) The National Library of Finland 2026.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+
+namespace VuFind\Action\Record;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\ActionHelper\RedirectHelper;
+
+/**
+ * Record home action.
+ *
+ * @category VuFind
+ * @package  Action
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org Main Site
+ */
+class HomeAction extends AbstractRecordAction
+{
+    /**
+     * Display a record.
+     *
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
+     */
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        // If collections are active, we may need to check if the driver is actually
+        // a collection; if so, we should redirect to the collection controller.
+        $checkRoute = $this->getPostOrQueryParam('checkRoute') ?? false;
+        if ($checkRoute && ($this->config['Collections']['collections'] ?? false)) {
+            $routeConfig = $this->config['Collections']['route'] ?? [];
+            $collectionRoutes = array_merge(['record' => 'collection'], $routeConfig);
+            $routeMatch = $this->request->getAttribute('route-match');
+            $routeName = $routeMatch?->getMatchedRouteName() ?? '';
+            if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
+                $driver = $this->loadRecord();
+                if (true === $driver->tryMethod('isCollection')) {
+                    $params = $request->getQueryParams() + $routeMatch->getParams();
+                    $queryParams = [];
+                    if ($sid = $this->searchMemory->getCurrentSearchId()) {
+                        $queryParams = compact('sid');
+                    }
+                    return $this->getHelper(RedirectHelper::class)->redirectToRoute(
+                        $response,
+                        $collectionRoute,
+                        $params,
+                        $queryParams
+                    );
+                }
+            }
+        }
+
+        return $this->showTab($this->getRouteParam('tab') ?? $this->getDefaultTab());
+    }
+}
