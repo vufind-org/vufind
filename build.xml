@@ -312,6 +312,7 @@
   <target name="checkSassBuild">
     <exec executable="npm" checkreturn="true" passthru="true">
       <arg line="run check:scss" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
     </exec>
   </target>
 
@@ -319,6 +320,7 @@
   <target name="jsDependencyCheck">
     <exec executable="npm" checkreturn="true" passthru="true">
       <arg line="run check:dependencySync" />
+      <env key="VUFIND_HOME" value="${srcdir}" />
     </exec>
   </target>
 
