@@ -30,18 +30,24 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Router\RouteMatch;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
+use VuFind\Action\ActionDispatchListener;
+use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Controller\Feature\RequestHelperTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -49,6 +55,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Service\GetServiceTrait;
 use VuFind\Session\Helper\FollowupHelper;
+use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
 use function intval;
 use function is_object;
@@ -63,12 +70,9 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  *
- * @method Plugin\Captcha captcha() Captcha plugin
- * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
  * @method Plugin\Permission permission() Permission plugin
- * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
  *
@@ -93,7 +97,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     /**
      * Behavior when access is denied (used unless overridden through
      * permissionBehavior.ini). Valid values are 'promptLogin' and 'exception'.
-     * Leave at null to use the defaultDeniedControllerBehavior set in
+     * Leave at null to use the defaultDeniedActionBehavior set in
      * permissionBehavior.ini (normally 'promptLogin' unless changed).
      *
      * @var string
@@ -101,14 +105,14 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     protected $accessDeniedBehavior = null;
 
     /**
-     * Audit event service
+     * Audit event service.
      *
      * @var ?AuditEventServiceInterface
      */
     protected ?AuditEventServiceInterface $auditEventService = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -134,6 +138,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                 ->check($this->accessPermission, $this->accessDeniedBehavior);
             if (is_object($response)) {
                 $e->setResponse($response);
+                $e->stopPropagation(true);
             }
         }
     }
@@ -163,7 +168,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get request object
+     * Get request object.
      *
      * @return HttpRequest
      */
@@ -177,7 +182,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Register the default events for this controller
+     * Register the default events for this controller.
      *
      * @return void
      */
@@ -324,7 +329,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the view renderer
+     * Get the view renderer.
      *
      * @return \Laminas\View\Renderer\RendererInterface
      */
@@ -355,7 +360,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         // Store the current URL as a login followup action
         $this->getService(FollowupHelper::class)->store($extras);
         if (!empty($msg)) {
-            $this->flashMessenger()->addMessage($msg, 'error');
+            $this->getFlashMessenger()->addErrorMessage($msg);
         }
 
         // Set a flag indicating that we are forcing login:
@@ -368,14 +373,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Does the user have catalog credentials available?  Returns associative array
-     * of patron data if so, otherwise forwards to appropriate login prompt and
-     * returns false. If there is an ILS exception, a flash message is added and
-     * a newly created ViewModel is returned.
+     * Does the user have catalog credentials available? Returns associative array of patron data if so, or a response
+     * if redirect is needed. Otherwise returns null (only when forwardToCatalogLogin is false).
+     * If there is an ILS exception, a flash message is added.
      *
-     * @return bool|array|ViewModel
+     * @param bool $forwardToCatalogLogin Forward to catalog login if not logged in?
+     *
+     * @return null|array|Response
      */
-    protected function catalogLogin()
+    protected function catalogLogin(bool $forwardToCatalogLogin = true): null|array|Response
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
@@ -395,6 +401,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             if (!$account->allowsUserIlsLogin()) {
                 throw new \Exception('Unexpected ILS credential submission.');
             }
+            $rawUsername = $username;
             // Check for multiple ILS target selection
             $target = $this->params()->fromPost('target', false);
             if ($target) {
@@ -402,23 +409,39 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             }
             try {
                 if ('email' === $this->getILSLoginMethod($target)) {
-                    $routeMatch = $this->getEvent()->getRouteMatch();
-                    $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
-                        : 'myresearch-profile';
-                    $routeParams = $routeMatch ? $routeMatch->getParams() : [];
-                    $ilsAuth
-                        ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
-                    $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
+                    // Use raw (non-prefixed) username as email to display so that we don't accidentally reveal if a
+                    // patron was found:
+                    $authData = [
+                        'email' => $rawUsername,
+                        'authId' => null,
+                    ];
+                    // Since we're using the email login method, no password is required here.
+                    if ($patron = $this->getILS()->patronLogin($username, '')) {
+                        $data = compact('username', 'patron');
+                        $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
+                        $authData['authId'] = $emailAuthenticator->sendAuthenticationCode($patron['email'], $data);
+                        $this->getAuditEventService()->addEvent(
+                            AuditEventType::User,
+                            AuditEventSubtype::SendCardAuthEmail,
+                            $user,
+                            data: $data
+                        );
+                    }
+                    // Don't reveal the result
+                    $this->getDbService(UserSessionPersistenceInterface::class)
+                        ->setLibraryCardAuthenticationData($authData);
+                    $this->setFollowupUrlToReferer();
+                    return $this->redirect()->toRoute('myresearch-verifyotp');
                 } else {
                     $patron = $ilsAuth->newCatalogLogin($username, $password, $user);
 
                     // If login failed, store a warning message:
                     if (!$patron) {
-                        $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
+                        $this->getFlashMessenger()->addErrorMessage('Invalid Patron Login');
                     }
                 }
             } catch (ILSException $e) {
-                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
+                $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
             }
         } elseif (
             'ILS' === $this->params()->fromQuery('auth_method', false)
@@ -427,25 +450,24 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             try {
                 $patron = $ilsAuth->processEmailLoginHash($hash);
             } catch (AuthException $e) {
-                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                $this->getFlashMessenger()->addErrorMessage($e->getMessage());
             }
         } else {
             try {
                 // If no credentials were provided, try the stored values:
                 $patron = $ilsAuth->storedCatalogLogin();
             } catch (ILSException $e) {
-                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
-                return $this->createViewModel();
+                $this->getFlashMessenger()->addErrorMessage('ils_connection_failed');
             }
         }
 
         // If catalog login failed, send the user to the right page:
-        if (!$patron) {
+        if (!$patron && $forwardToCatalogLogin) {
             return $this->forwardTo('MyResearch', 'CatalogLogin');
         }
 
-        // Send value (either false or patron array) back to caller:
-        return $patron;
+        // Send either null or patron array back to caller:
+        return $patron ?: null;
     }
 
     /**
@@ -485,7 +507,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the record loader
+     * Get the record loader.
      *
      * @return \VuFind\Record\Loader
      */
@@ -495,7 +517,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the record cache
+     * Get the record cache.
      *
      * @return \VuFind\Record\Cache
      */
@@ -556,6 +578,22 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function forwardTo($controller, $action, $params = [])
     {
+        // Check for action first before forwarding to a controller:
+        $event = clone $this->getEvent();
+        $routeMatch = new RouteMatch($params);
+        $routeMatch->setParam('controller', $controller);
+        $routeMatch->setParam('action', $action);
+        // Keep original matched route:
+        $routeMatch->setMatchedRouteName($event->getRouteMatch()->getMatchedRouteName());
+        $event->setRouteMatch($routeMatch);
+
+        $actionDispatchListener = $this->getService(ActionDispatchListener::class);
+        if ($result = $actionDispatchListener->onDispatch($event)) {
+            return $result;
+        }
+
+        // No action found, forward to controller:
+
         // Inject action into the RouteMatch parameters
         $params['action'] = $action;
 
@@ -565,7 +603,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
 
     /**
      * Check to see if a form was submitted from its post value
-     * Also validate the Captcha, if it's activated
+     * Also validate the Captcha, if it's activated.
      *
      * @param string|string[]|null $submitElements Name of the post field(s) to check
      * to indicate a form submission (or null for default)
@@ -589,7 +627,27 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
         // Fail if all expected submission elements were missing from the POST or
         // if the form was submitted but expected CAPTCHA does not validate.
-        return $buttonFound && (!$useCaptcha || $this->captcha()->verify());
+        return $buttonFound && (!$useCaptcha || $this->verifyCaptcha());
+    }
+
+    /**
+     * Get the captcha service.
+     *
+     * @return CaptchaService
+     */
+    protected function getCaptcha(): CaptchaService
+    {
+        return $this->getService(CaptchaService::class);
+    }
+
+    /**
+     * Verify submitted captcha.
+     *
+     * @return bool
+     */
+    protected function verifyCaptcha(): bool
+    {
+        return $this->getCaptcha()->verify($this->params()->fromPost(), $this->params()->fromQuery());
     }
 
     /**
@@ -639,7 +697,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get the search memory
+     * Get the search memory.
      *
      * @return \VuFind\Search\Memory
      */
@@ -765,7 +823,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Checks if a followup url is set
+     * Checks if a followup url is set.
      *
      * @return bool
      */
@@ -805,7 +863,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Sometimes we need to unset the followup to trigger default behaviors
+     * Sometimes we need to unset the followup to trigger default behaviors.
      *
      * @return void
      */
@@ -843,7 +901,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * What login method does the ILS use (password, email, vufind)
+     * What login method does the ILS use (password, email, vufind).
      *
      * @param string $target Login target (MultiILS only)
      *
@@ -859,7 +917,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     }
 
     /**
-     * Get settings required for displaying the catalog login form
+     * Get settings required for displaying the catalog login form.
      *
      * @return array
      */
@@ -928,5 +986,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             $this->auditEventService = $dbServiceManager->get(AuditEventServiceInterface::class);
         }
         return $this->auditEventService;
+    }
+
+    /**
+     * Get flash messenger.
+     *
+     * @return FlashMessengerInterface
+     */
+    public function getFlashMessenger(): FlashMessengerInterface
+    {
+        return $this->serviceLocator->get(FlashMessengerInterface::class);
     }
 }

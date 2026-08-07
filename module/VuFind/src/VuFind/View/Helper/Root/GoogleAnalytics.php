@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * PHP version 8
  *
@@ -29,8 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFindTheme\View\Helper\AssetManager;
+
 /**
- * GoogleAnalytics view helper
+ * GoogleAnalytics view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -38,24 +41,29 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
+class GoogleAnalytics
 {
     /**
-     * Options to pass to the ga() create command.
+     * Options to pass to the gtag() config command.
      *
      * @var string
      */
     protected string $createOptions;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ?string $key     API key (null if disabled)
-     * @param array   $options Configuration options (supported option: 'create_options_js').
+     * @param ?string      $key          API key (null if disabled)
+     * @param AssetManager $assetManager AssetManager Helper
+     * @param array        $options      Configuration options (supported option: 'create_options_js').
      */
-    public function __construct(protected ?string $key, array $options = [])
-    {
-        $this->createOptions = $options['create_options_js'] ?? "'auto'";
+    public function __construct(
+        protected ?string $key,
+        #[Autowire(container: 'ViewHelperManager')]
+        protected AssetManager $assetManager,
+        array $options = []
+    ) {
+        $this->createOptions = $options['create_options_js'] ?? '{}';
     }
 
     /**
@@ -85,11 +93,11 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
         if (!$this->key) {
             return '';
         }
-        $assetManager = $this->getView()->plugin('assetManager');
+
         $url = 'https://www.googletagmanager.com/gtag/js?id=' . urlencode($this->key);
         $code = $this->getRawJavascript();
         return
-            $assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
-            . $assetManager->outputInlineScriptString($code);
+            $this->assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
+            . $this->assetManager->outputInlineScriptString($code);
     }
 }

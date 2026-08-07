@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Add ellipsis" view helper
+ * "Add ellipsis" view helper.
  *
  * PHP version 8
  *
@@ -29,12 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
-
 use function strlen;
 
 /**
- * "Add ellipsis" view helper
+ * "Add ellipsis" view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,7 +40,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AddEllipsis extends AbstractHelper
+class AddEllipsis
 {
     /**
      * Adds "..." to the beginning and/or end of a highlighted phrase when

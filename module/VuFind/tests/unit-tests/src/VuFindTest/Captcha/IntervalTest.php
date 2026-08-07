@@ -44,7 +44,7 @@ namespace VuFindTest\Captcha;
 class IntervalTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test Interval captchas
+     * Test Interval captchas.
      *
      * @return void
      */
@@ -60,11 +60,10 @@ class IntervalTest extends \PHPUnit\Framework\TestCase
         );
 
         $interval = new \VuFind\Captcha\Interval($session, $config);
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
 
         // Check that first check passes if session data has not been initialized:
-        $this->assertTrue($interval->verify($params));
-        $this->assertFalse($interval->verify($params));
+        $this->assertTrue($interval->verify([], []));
+        $this->assertFalse($interval->verify([], []));
         $this->assertSame(
             'interval_captcha_not_passed',
             $interval->getErrorMessage()
@@ -73,14 +72,14 @@ class IntervalTest extends \PHPUnit\Framework\TestCase
         // Check pass with session start time:
         $session->sessionStartTime = time() - 20;
         $session->lastProtectedActionTime = null;
-        $this->assertTrue($interval->verify($params));
+        $this->assertTrue($interval->verify([], []));
 
         // Check fail with session start time but new action too soon:
         $session->lastProtectedActionTime = time() - 20;
-        $this->assertFalse($interval->verify($params));
+        $this->assertFalse($interval->verify([], []));
 
         // Check pass with long enough interval:
         $session->lastProtectedActionTime = time() - 60;
-        $this->assertTrue($interval->verify($params));
+        $this->assertTrue($interval->verify([], []));
     }
 }

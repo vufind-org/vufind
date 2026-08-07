@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class IndexControllerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,6 +70,6 @@ class IndexControllerFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $authManager = $container->get(\VuFind\Auth\Manager::class);
-        return new $requestedName($config, $authManager);
+        return new $requestedName($container, $config, $authManager);
     }
 }

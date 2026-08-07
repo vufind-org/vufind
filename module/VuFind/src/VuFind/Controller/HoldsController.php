@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Holds Controller
+ * Holds Controller.
  *
  * PHP version 8
  *
@@ -37,6 +37,7 @@ use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\RecordsHelper;
+use VuFind\ILS\PaginationHelper;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -59,14 +60,21 @@ class HoldsController extends AbstractBase
     use \VuFind\Cache\CacheTrait;
 
     /**
-     * CSRF validator
+     * CSRF validator.
      *
      * @var CsrfInterface
      */
     protected $csrf;
 
     /**
-     * Constructor
+     * ILS Pagination Helper.
+     *
+     * @var ?PaginationHelper
+     */
+    protected ?PaginationHelper $paginationHelper = null;
+
+    /**
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm    Service locator
      * @param CsrfInterface           $csrf  CSRF validator
@@ -85,7 +93,7 @@ class HoldsController extends AbstractBase
     }
 
     /**
-     * Send list of holds to view
+     * Send list of holds to view.
      *
      * @return mixed
      */
@@ -131,7 +139,7 @@ class HoldsController extends AbstractBase
         if ($this->params()->fromPost('updateSelected')) {
             $selectedIds = $this->params()->fromPost('selectedIDS');
             if (empty($selectedIds)) {
-                $this->flashMessenger()->addErrorMessage('hold_empty_selection');
+                $this->getFlashMessenger()->addErrorMessage('hold_empty_selection');
                 if ($this->inLightbox()) {
                     return $this->getRefreshResponse();
                 }
@@ -144,12 +152,43 @@ class HoldsController extends AbstractBase
         $view->cancelForm = false;
         $view->updateForm = false;
 
+        // Get paging setup:
+        $pageOptions = $this->getPageOptions($patron);
+
         // Get held item details:
-        $result = $catalog->getMyHolds($patron);
-        $driversNeeded = [];
+        $result = $catalog->getMyHolds($patron, $pageOptions['ilsParams']);
+
+        if (!$pageOptions['ilsPaging']) {
+            // Cache the current list of requests for editing:
+            $this->putCachedData(
+                $this->getCacheId($patron, 'holds'),
+                $result
+            );
+        } else {
+            $this->removeCachedData($this->getCacheId($patron, 'holds'));
+        }
+
+        // Build paginator if needed:
+        $paginator = $this->getPaginationHelper()->getPaginator(
+            $pageOptions,
+            $result['count'],
+            $result['records']
+        );
+        if ($paginator) {
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
+        } else {
+            $pageStart = 0;
+            $pageEnd = $result['count'];
+        }
+        $view->paginator = $paginator;
+        $view->ilsPaging = $pageOptions['ilsPaging'];
+        $view->params = $pageOptions['ilsParams'];
+
+        $driversNeeded = $hiddenHolds = [];
         $this->holds()->resetValidation();
         $holdConfig = $catalog->checkFunction('Holds', compact('patron'));
-        foreach ($result as $current) {
+        foreach ($result['records'] as $i => $current) {
             // Add cancel details if appropriate:
             $current = $this->holds()->addCancelDetails(
                 $catalog,
@@ -178,13 +217,14 @@ class HoldsController extends AbstractBase
                 }
             }
 
-            $driversNeeded[] = $current;
+            // Build record drivers (only for the current visible page):
+            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
+                $driversNeeded[] = $current;
+            } else {
+                $hiddenHolds[] = $current;
+            }
         }
-        // Cache the current list of requests for editing:
-        $this->putCachedData(
-            $this->getCacheId($patron, 'holds'),
-            $driversNeeded
-        );
+        $view->hiddenHolds = $hiddenHolds;
 
         // Get List of PickUp Libraries based on patron's home library
         try {
@@ -201,12 +241,19 @@ class HoldsController extends AbstractBase
 
         $recordsHelper = $this->getService(RecordsHelper::class);
         $view->recordList = $recordsHelper->getDrivers($driversNeeded);
-        $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
+
+        // If the results are not paged in the ILS, collect up-to-date stats for ajax
+        // account notifications:
+        if (!$pageOptions['ilsPaging'] || !$paginator || $result['count'] === count($result['records'])) {
+            $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
+        } else {
+            $view->accountStatus = null;
+        }
         return $view;
     }
 
     /**
-     * Edit holds
+     * Edit holds.
      *
      * @return mixed
      */
@@ -239,7 +286,7 @@ class HoldsController extends AbstractBase
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
         if (!$this->holds()->validateIds($selectedIds)) {
-            $this->flashMessenger()
+            $this->getFlashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
             return $this->inLightbox()
                 ? $this->getRefreshResponse()
@@ -285,14 +332,14 @@ class HoldsController extends AbstractBase
                         'hold_edit_success_items',
                         ['%%count%%' => $successful]
                     );
-                    $this->flashMessenger()->addSuccessMessage($msg);
+                    $this->getFlashMessenger()->addSuccessMessage($msg);
                 }
                 if ($failed) {
                     $msg = $this->translate(
                         'hold_edit_failed_items',
                         ['%%count%%' => $failed]
                     );
-                    $this->flashMessenger()->addErrorMessage($msg);
+                    $this->getFlashMessenger()->addErrorMessage($msg);
                 }
 
                 $this->getAuditEventService()->addEvent(
@@ -345,11 +392,11 @@ class HoldsController extends AbstractBase
         $catalog = $this->getILS();
         // Get holds from cache if available:
         $holds = $this->getCachedData($this->getCacheId($patron, 'holds'))
-            ?? $catalog->getMyHolds($patron);
+            ?? $catalog->getMyHolds($patron, $this->getPageOptions($patron)['ilsParams']);
         $checks = 0;
         $pickupLocations = [];
         $differences = false;
-        foreach ($holds as $hold) {
+        foreach ($holds['records'] as $hold) {
             if (in_array((string)($hold['updateDetails'] ?? ''), $selectedIds)) {
                 try {
                     $locations = $catalog->getPickUpLocations($patron, $hold);
@@ -384,7 +431,7 @@ class HoldsController extends AbstractBase
                         break;
                     }
                 } catch (ILSException $e) {
-                    $this->flashMessenger()
+                    $this->getFlashMessenger()
                         ->addErrorMessage('ils_connection_failed');
                 }
             }
@@ -394,7 +441,7 @@ class HoldsController extends AbstractBase
     }
 
     /**
-     * Get fields to update from details gathered from the user
+     * Get fields to update from details gathered from the user.
      *
      * @param array $holdConfig      Hold configuration from the driver
      * @param array $gatheredDetails Details gathered from the user
@@ -447,10 +494,10 @@ class HoldsController extends AbstractBase
             );
         }
         if (!$validPickup) {
-            $this->flashMessenger()->addErrorMessage('hold_invalid_pickup');
+            $this->getFlashMessenger()->addErrorMessage('hold_invalid_pickup');
         }
         foreach ($dateValidationResults['errors'] as $msg) {
-            $this->flashMessenger()->addErrorMessage($msg);
+            $this->getFlashMessenger()->addErrorMessage($msg);
         }
         if (!$validPickup || $dateValidationResults['errors']) {
             return null;
@@ -497,7 +544,7 @@ class HoldsController extends AbstractBase
     }
 
     /**
-     * Get a unique cache id for a patron
+     * Get a unique cache id for a patron.
      *
      * @param array  $patron Patron
      * @param string $type   Type of cached data
@@ -508,5 +555,38 @@ class HoldsController extends AbstractBase
     {
         return "$type::" . $patron['id'] . '::'
             . ($patron['cat_id'] ?? $patron['cat_username'] ?? '');
+    }
+
+    /**
+     * Get page options.
+     *
+     * @param array $patron Patron
+     *
+     * @return array
+     */
+    protected function getPageOptions($patron)
+    {
+        // Get paging setup:
+        $config = $this->getConfigArray();
+        $pageSize = $config['Catalog']['holds_page_size'] ?? 50;
+        return $this->getPaginationHelper()->getOptions(
+            (int)$this->params()->fromQuery('page', 1),
+            null,
+            $pageSize,
+            $this->getILS()->checkFunction('getMyHolds', $patron)
+        );
+    }
+
+    /**
+     * Get the ILS pagination helper.
+     *
+     * @return PaginationHelper
+     */
+    protected function getPaginationHelper()
+    {
+        if (null === $this->paginationHelper) {
+            $this->paginationHelper = new PaginationHelper();
+        }
+        return $this->paginationHelper;
     }
 }

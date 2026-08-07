@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AuthorFacets aspect of the Search Multi-class (Params)
+ * AuthorFacets aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrAuthorFacets;
 use Laminas\Stdlib\Parameters;
 
 /**
- * AuthorFacets Search Parameters
+ * AuthorFacets Search Parameters.
  *
  * @category VuFind
  * @package  Search_SolrAuthorFacets
@@ -43,7 +43,7 @@ use Laminas\Stdlib\Parameters;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
-     * Set parameters based on a search object
+     * Set parameters based on a search object.
      *
      * @param Parameters $request Parameter object representing user
      * request.
@@ -90,7 +90,7 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Initialize view
+     * Initialize view.
      *
      * @param Parameters $request Parameter object representing user
      * request.

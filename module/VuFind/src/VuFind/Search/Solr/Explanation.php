@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Explanation
+ * Solr Explanation.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function floatval;
 use function strlen;
 
 /**
- * Solr Explanation
+ * Solr Explanation.
  *
  * @category VuFind
  * @package  Search_Solr

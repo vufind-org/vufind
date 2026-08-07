@@ -41,7 +41,7 @@ namespace VuFind\RecordDriver;
 class SolrWeb extends SolrDefault
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
@@ -68,6 +68,16 @@ class SolrWeb extends SolrDefault
     public function getBreadcrumb()
     {
         return $this->getTitle();
+    }
+
+    /**
+     * Get the fulltext for the current record.
+     *
+     * @return string
+     */
+    public function getFulltext(): string
+    {
+        return $this->fields['fulltext'] ?? '';
     }
 
     /**

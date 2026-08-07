@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\View\Helper\Root\Url;
 
 /**
  * Route Helper factory.
@@ -48,7 +49,7 @@ use Psr\Container\ContainerInterface;
 class RouteHelperFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -70,9 +71,10 @@ class RouteHelperFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $viewRenderer = $container->get('ViewRenderer');
         return new $requestedName(
-            Closure::fromCallable($viewRenderer->plugin('url'))
+            // Defer fetching of the plugin until it's actually needed to allow for Laminas MvcEvent to be dispatched
+            // first:
+            Closure::fromCallable(fn () => $container->get('ViewHelperManager')->get(Url::class))
         );
     }
 }

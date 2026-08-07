@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Call Number Autocomplete Module
+ * Solr Call Number Autocomplete Module.
  *
  * PHP version 8
  *
@@ -31,7 +31,7 @@
 namespace VuFind\Autocomplete;
 
 /**
- * Solr Call Number Autocomplete Module
+ * Solr Call Number Autocomplete Module.
  *
  * This class provides smart call number suggestions by using the local Solr index.
  *

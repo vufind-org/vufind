@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search2 Collection aspect of the Search Multi-class (Params)
+ * Search2 Collection aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Search2Collection;
 
 /**
- * Search2 Collection Search Options
+ * Search2 Collection Search Options.
  *
  * @category VuFind
  * @package  Search_SolrAuthor

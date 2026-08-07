@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WebResults Test Class
+ * WebResults Test Class.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use VuFind\Recommend\WebResults;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * WebResults Test Class
+ * WebResults Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +54,6 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
     {
         $class = new \ReflectionClass(WebResults::class);
         $method = $class->getMethod('getSearchClassId');
-        $method->setAccessible(true);
         $runner = $this->createMock(\VuFind\Search\SearchRunner::class);
         $obj = new WebResults($runner, $this->getMockConfigManager());
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait for ChannelProviders to configure and calculate batch sizes
+ * Trait for ChannelProviders to configure and calculate batch sizes.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\ChannelProvider;
 
 /**
- * Trait for ChannelProviders to configure and calculate batch sizes
+ * Trait for ChannelProviders to configure and calculate batch sizes.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -57,6 +57,30 @@ trait BatchTrait
     protected $maxBatchSize = 48;
 
     /**
+     * Apply appropriate defaults and calculations in order to return an array of batch-related settings.
+     *
+     * @param array $options Options
+     *
+     * @return array{
+     *     itemsPerRow: int,
+     *     rowsPerPage: int,
+     *     maxBatchSize: int,
+     *     batchSize: int,
+     * }
+     */
+    public function performBatchCalculations(array $options): array
+    {
+        $itemsPerRow = $options['itemsPerRow'] ?? 6;
+        $rowsPerPage = $options['rowsPerPage'] ?? 1;
+        $maxBatchSize = $options['maxBatchSize'] ?? 48;
+        $batchSize = min(
+            self::calcBatchSize($itemsPerRow, $rowsPerPage),
+            $maxBatchSize,
+        );
+        return compact('itemsPerRow', 'rowsPerPage', 'maxBatchSize', 'batchSize');
+    }
+
+    /**
      * Calculate and set the provider's batch-related properties from the provided options array.
      *
      * @param array $options Options
@@ -66,13 +90,10 @@ trait BatchTrait
     public function setBatchSizeFromOptions(array $options): void
     {
         // Calculate batch size
-        $itemsPerRow = $options['itemsPerRow'] ?? 6;
-        $rowsPerPage = $options['rowsPerPage'] ?? 1;
-        $this->maxBatchSize = $options['maxBatchSize'] ?? 48;
-        $this->batchSize = min(
-            self::calcBatchSize($itemsPerRow, $rowsPerPage),
-            $this->maxBatchSize,
-        );
+        $batchOptions = $this->performBatchCalculations($options);
+        // Apply to class
+        $this->maxBatchSize = $batchOptions['maxBatchSize'];
+        $this->batchSize = $batchOptions['batchSize'];
     }
 
     /**

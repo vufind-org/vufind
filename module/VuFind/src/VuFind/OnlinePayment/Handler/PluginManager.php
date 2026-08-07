@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Online payment handler plugin manager
+ * Online payment handler plugin manager.
  *
  * PHP version 8
  *
@@ -31,8 +31,10 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment\Handler;
 
+use VuFind\ServiceManager\AbstractPluginFactory;
+
 /**
- * Online payment handler plugin manager
+ * Online payment handler plugin manager.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -54,15 +56,21 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
+     * Constructor.
      *
-     * @var array
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
      */
-    protected $factories = [
-        Paytrail::class => AbstractBaseFactory::class,
-        Stripe::class => AbstractBaseFactory::class,
-        Test::class => AbstractBaseFactory::class,
-    ];
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

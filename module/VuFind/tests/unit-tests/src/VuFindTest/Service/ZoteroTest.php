@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Zotero Service Test Class
+ * Zotero Service Test Class.
  *
  * PHP version 8
  *
@@ -47,7 +47,7 @@ use VuFind\Http\GuzzleService;
 use VuFindTest\Feature\FixtureTrait;
 
 /**
- * Zotero Service Test Class
+ * Zotero Service Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -60,7 +60,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     use FixtureTrait;
 
     /**
-     * OAuth params
+     * OAuth params.
      *
      * @var array
      */
@@ -70,21 +70,21 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
-     * Zotero export URL
+     * Zotero export URL.
      *
      * @var string
      */
     protected string $zoteroExportUrl = 'https://api.zotero.org/users/zotero_user_id/items';
 
     /**
-     * Cached access token
+     * Cached access token.
      *
      * @var ?AccessToken
      */
     protected ?AccessToken $storedAccessToken = null;
 
     /**
-     * Container id for session storage
+     * Container id for session storage.
      *
      * @var int
      */
@@ -181,7 +181,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $accessTokenService = $this->createMock(AccessTokenService::class);
         $accessTokenService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('getByIdAndType')
-            ->willReturnCallback(function ($id, $type, $create = true) {
+            ->willReturnCallback(function (string $id, string $type, bool $create = true) {
                 if (null === $this->storedAccessToken && $create) {
                     $this->storedAccessToken = new AccessToken();
                     $this->storedAccessToken->setId($id)
@@ -217,7 +217,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $guzzleService = $this->createMock(GuzzleService::class);
         $guzzleService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('createClient')
-            ->willReturnCallback(fn ($url) => match ($url) {
+            ->willReturnCallback(fn (?string $url) => match ($url) {
                 'https://localhost/callback' => $callbackClient,
                 $this->zoteroExportUrl => $exportClient,
             });

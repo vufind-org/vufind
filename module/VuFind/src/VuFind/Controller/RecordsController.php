@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Records Controller
+ * Records Controller.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use function count;
 
 /**
- * Records Controller
+ * Records Controller.
  *
  * @category VuFind
  * @package  Controller
@@ -45,7 +45,7 @@ use function count;
 class RecordsController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm Service locator
      */
@@ -56,7 +56,7 @@ class RecordsController extends AbstractSearch
     }
 
     /**
-     * Home action -- call standard results action
+     * Home action -- call standard results action.
      *
      * @return mixed
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PrintArrayHtml Test Class
+ * PrintArrayHtml Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFindTest\Unit\AbstractMakeTagTestCase;
 use function call_user_func;
 
 /**
- * PrintArrayHtml Test Class
+ * PrintArrayHtml Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -54,14 +54,11 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
      */
     protected function getHelper()
     {
-        $helper = new PrintArrayHtml();
-        $helper->setView($this->getViewWithHelpers());
-
-        return $helper;
+        return new PrintArrayHtml($this->getMakeTagHelper());
     }
 
     /**
-     * Data provider for test
+     * Data provider for test.
      *
      * @return \Iterator
      */

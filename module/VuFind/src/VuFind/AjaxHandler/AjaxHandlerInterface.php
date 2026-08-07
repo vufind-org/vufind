@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX handler interface
+ * AJAX handler interface.
  *
  * PHP version 8
  *
@@ -29,10 +29,10 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * AJAX handler interface
+ * AJAX handler interface.
  *
  * @category VuFind
  * @package  AJAX
@@ -52,9 +52,9 @@ interface AjaxHandlerInterface
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params);
+    public function handleRequest(ServerRequestInterface $request): array;
 }

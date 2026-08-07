@@ -101,4 +101,7 @@ return [
         'factories'    => [
         ],
     ],
+    'listeners' => [
+        \VuFind\Action\ActionDispatchListener::class,
+    ],
 ];

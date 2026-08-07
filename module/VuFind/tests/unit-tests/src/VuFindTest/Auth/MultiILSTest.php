@@ -217,7 +217,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock ILS authenticator
+     * Get mock ILS authenticator.
      *
      * @param ?array $patron Logged in patron to simulate (null for none).
      *
@@ -259,7 +259,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $driver->method('getLoginDrivers')->willReturn(['ils1']);
         $driver->method('supportsMethod')->willReturn(true);
-        $driver->method('getConfig')->willReturn(new \VuFind\Config\Config([]));
+        $driver->method('getConfig')->willReturn([]);
 
         return $driver;
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * GeniePlus ILS driver test
+ * GeniePlus ILS driver test.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\Session\Container;
 use VuFind\ILS\Driver\GeniePlus;
 
 /**
- * GeniePlus ILS driver test
+ * GeniePlus ILS driver test.
  *
  * @category VuFind
  * @package  Tests
@@ -48,14 +48,14 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
-     * Default driver configuration
+     * Default driver configuration.
      *
      * @var array
      */
     protected $config;
 
     /**
-     * Default expected patron login response
+     * Default expected patron login response.
      *
      * @var array
      */
@@ -71,7 +71,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Expected parameters to patron login request
+     * Expected parameters to patron login request.
      *
      * @var array
      */
@@ -91,7 +91,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     ];
 
     /**
-     * Expected parameters to token generation request
+     * Expected parameters to token generation request.
      *
      * @var array
      */
@@ -145,7 +145,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test API failure
+     * Test API failure.
      *
      * @return void
      */
@@ -167,7 +167,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test token auto-renewal
+     * Test token auto-renewal.
      *
      * @return void
      */
@@ -216,7 +216,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test patron login
+     * Test patron login.
      *
      * @return void
      */
@@ -290,7 +290,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test holdings lookup with default sort
+     * Test holdings lookup with default sort.
      *
      * @return void
      */
@@ -340,7 +340,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test holdings lookup with custom ascending sort
+     * Test holdings lookup with custom ascending sort.
      *
      * @return void
      */
@@ -391,7 +391,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test holdings lookup with custom descending sort
+     * Test holdings lookup with custom descending sort.
      *
      * @return void
      */
@@ -442,7 +442,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test profile retrieval
+     * Test profile retrieval.
      *
      * @return void
      */
@@ -503,7 +503,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
-     * Test transaction retrieval
+     * Test transaction retrieval.
      *
      * @return void
      */

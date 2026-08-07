@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Writing Integration Test Class
+ * Config Writing Integration Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use VuFind\Config\PathResolver;
 use VuFindTest\Integration\ConfigTestCase;
 
 /**
- * Config Writing Integration Test Class
+ * Config Writing Integration Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,11 +45,78 @@ use VuFindTest\Integration\ConfigTestCase;
 class ConfigWritingTest extends ConfigTestCase
 {
     /**
-     * Upgrade test provider.
+     * Write with inheritance fails test provider.
      *
      * @return \Iterator
      */
-    public static function upgradeTestProvider(): \Iterator
+    public static function writeWithInheritanceFailsTestProvider(): \Iterator
+    {
+        yield 'ini Parent_Config' => [
+            'inheritance',
+            'unit-test-child',
+            'Can not write INI configuration with inheritance.',
+        ];
+        yield 'ini include::' => [
+            'include',
+            'parent',
+            'Can not write INI configuration with include:: statement.',
+        ];
+        yield 'ini include:: section' => [
+            'include',
+            'child-section',
+            'Can not write INI configuration with include:: statement.',
+        ];
+        yield 'ini @include' => [
+            'ini-file-with-include',
+            'test',
+            'Can not write INI configuration with @include statement.',
+        ];
+        yield 'ini @include section' => [
+            'ini-file-with-include',
+            'test-section',
+            'Can not write INI configuration with @include statement.',
+        ];
+    }
+
+    /**
+     * Test writing with inheritance fails.
+     *
+     * @param string $fixture          Fixture
+     * @param string $configName       Config name
+     * @param string $exceptionMessage Expected exception message
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('writeWithInheritanceFailsTestProvider')]
+    public function testWritingWithInheritanceFails(string $fixture, string $configName, string $exceptionMessage): void
+    {
+        $this->setUpLocalConfigDir($fixture);
+        $container = $this->getContainerWithConfigRelatedServices(
+            baseDir: $this->getFixtureDir() . 'configs/' . $fixture,
+            baseSubDir: ''
+        );
+        $pathResolver = $container->get(PathResolver::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+
+        $baseDirPath = $pathResolver->getBaseConfigDirPath();
+        $baseConfigLocation = $pathResolver->getMatchingConfigLocation($baseDirPath, $configName);
+
+        $destinationLocation = clone $baseConfigLocation;
+        $destinationLocation->setBasePath($this->localDirPath);
+
+        $config = $configManager->loadConfigFromLocation($baseConfigLocation);
+
+        $this->expectException(\VuFind\Exception\ConfigException::class);
+        $this->expectExceptionMessage($exceptionMessage);
+        $configManager->writeConfig($destinationLocation, $config, $baseConfigLocation);
+    }
+
+    /**
+     * Write test provider.
+     *
+     * @return \Iterator
+     */
+    public static function writeTestProvider(): \Iterator
     {
         yield 'generic file handler' => [
             'generic-file',
@@ -73,7 +140,7 @@ class ConfigWritingTest extends ConfigTestCase
      *
      * @return void
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('upgradeTestProvider')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('writeTestProvider')]
     public function testWriting(string $fixture, string $configName): void
     {
         $container = $this->getContainerWithConfigRelatedServices(

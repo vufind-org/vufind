@@ -241,7 +241,6 @@ VuFind.register('lightbox', function Lightbox() {
     _xhr = $.ajax(obj);
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
       .done(function lbAjaxDone(content, status, jq_xhr) {
-        var errorMsgs = [];
         var flashMessages = [];
         if (jq_xhr.status === 204) {
           // No content, close lightbox
@@ -249,7 +248,7 @@ VuFind.register('lightbox', function Lightbox() {
           return;
         } else if (jq_xhr.status !== 205) {
           var testDiv = $('<div/>').html(content);
-          errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
+          const errorMsgs = testDiv.find('.flash-message.alert-danger:not([data-lightbox-ignore])');
           flashMessages = testDiv.find('.flash-message:not([data-lightbox-ignore])');
           // Place Hold error isolation
           if (obj.url.match(/\/Record\/.*(Hold|Request)\?/)) {

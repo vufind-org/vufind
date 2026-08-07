@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class YamlReaderFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -68,9 +68,6 @@ class YamlReaderFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(PathResolver::class),
-            $container->get(\VuFind\Cache\Manager::class),
-        );
+        return new $requestedName($container->get(ConfigManagerInterface::class));
     }
 }

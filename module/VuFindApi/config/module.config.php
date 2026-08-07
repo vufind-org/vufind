@@ -10,6 +10,7 @@ $config = [
             'VuFindApi\Controller\McpController' => 'VuFindApi\Controller\McpControllerFactory',
             'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
             'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\Search2ApiControllerFactory',
+            'VuFindApi\Controller\AuthorityApiController' => 'VuFindApi\Controller\AuthorityApiControllerFactory',
             'VuFindApi\Controller\WebApiController' => 'VuFindApi\Controller\WebApiControllerFactory',
         ],
         'aliases' => [
@@ -18,6 +19,7 @@ $config = [
             'Mcp' => 'VuFindApi\Controller\McpController',
             'SearchApi' => 'VuFindApi\Controller\SearchApiController',
             'Search2Api' => 'VuFindApi\Controller\Search2ApiController',
+            'AuthorityApi' => 'VuFindApi\Controller\AuthorityApiController',
             'WebApi' => 'VuFindApi\Controller\WebApiController',
         ],
     ],
@@ -26,6 +28,7 @@ $config = [
             'VuFindApi\Formatter\FacetFormatter' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
             'VuFindApi\Formatter\Search2RecordFormatter' => 'VuFindApi\Formatter\Search2RecordFormatterFactory',
+            'VuFindApi\Formatter\AuthorityRecordFormatter' => 'VuFindApi\Formatter\AuthorityRecordFormatterFactory',
             'VuFindApi\Formatter\WebRecordFormatter' => 'VuFindApi\Formatter\WebRecordFormatterFactory',
             'VuFindApi\Mcp\ServerProvider' => 'VuFindApi\Mcp\ServerProviderFactory',
         ],
@@ -36,6 +39,7 @@ $config = [
             // \VuFindApi\Controller\McpController::class,
             \VuFindApi\Controller\SearchApiController::class,
             \VuFindApi\Controller\Search2ApiController::class,
+            \VuFindApi\Controller\AuthorityApiController::class,
             \VuFindApi\Controller\WebApiController::class,
         ],
     ],
@@ -114,6 +118,28 @@ $config = [
                     'route'    => '/api/v1/index2/record',
                     'defaults' => [
                         'controller' => 'Search2Api',
+                        'action'     => 'record',
+                    ],
+                ],
+            ],
+            'authoritysearchApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/authority/search',
+                    'defaults' => [
+                        'controller' => 'AuthorityApi',
+                        'action'     => 'search',
+                    ],
+                ],
+            ],
+            'authorityrecordApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/authority/record',
+                    'defaults' => [
+                        'controller' => 'AuthorityApi',
                         'action'     => 'record',
                     ],
                 ],

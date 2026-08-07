@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Mixed List aspect of the Search Multi-class (Params)
+ * Mixed List aspect of the Search Multi-class (Params).
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\Stdlib\Parameters;
 use function count;
 
 /**
- * Search Mixed List Parameters
+ * Search Mixed List Parameters.
  *
  * @category VuFind
  * @package  Search_MixedList
@@ -45,7 +45,7 @@ use function count;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
-     * Array of target record ids
+     * Array of target record ids.
      *
      * @var array
      */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * PHP version 8
  *
@@ -29,10 +29,13 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ActionHelper\LoginHelper;
+use VuFind\ActionHelper\PluginManager as ActionHelperPluginManager;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
- * Config view helper
+ * Config view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,17 +43,17 @@ use VuFind\Config\ConfigManagerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Config extends \Laminas\View\Helper\AbstractHelper
+class Config
 {
     /**
-     * Display date format
+     * Display date format.
      *
      * @var ?string
      */
     protected $displayDateFormat = null;
 
     /**
-     * Display time format
+     * Display time format.
      *
      * @var ?string
      */
@@ -60,9 +63,13 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      * Config constructor.
      *
      * @param ConfigManagerInterface $configManager Configuration manager
+     * @param LoginHelper            $loginHelper   Login helper
      */
-    public function __construct(protected ConfigManagerInterface $configManager)
-    {
+    public function __construct(
+        protected ConfigManagerInterface $configManager,
+        #[Autowire(container: ActionHelperPluginManager::class)]
+        protected LoginHelper $loginHelper,
+    ) {
     }
 
     /**
@@ -121,7 +128,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Check if index record should always be displayed (i.e. also when a
-     * format-specific template is available)
+     * format-specific template is available).
      *
      * @return bool
      */
@@ -132,7 +139,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get offcanvas sidebar side
+     * Get offcanvas sidebar side.
      *
      * @return ?string 'left', 'right' or null for no offcanvas
      */
@@ -148,7 +155,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get date display format
+     * Get date display format.
      *
      * @return string
      */
@@ -162,7 +169,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get time display format
+     * Get time display format.
      *
      * @return string
      */
@@ -176,7 +183,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get date+time display format
+     * Get date+time display format.
      *
      * @param string $separator String between date and time
      *
@@ -188,7 +195,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if the loan type should be displayed in holdings
+     * Check if the loan type should be displayed in holdings.
      *
      * @return bool
      */
@@ -196,5 +203,25 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return (bool)($this->get('config')->Catalog
             ->display_loan_type_in_holdings ?? false);
+    }
+
+    /**
+     * Get settings required for displaying the catalog login form.
+     *
+     * @return array
+     */
+    public function getILSLoginSettings(): array
+    {
+        return $this->loginHelper->getILSLoginSettings();
+    }
+
+    /**
+     * Return this helper instance (for method chaining).
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }

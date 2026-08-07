@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Search2RecordFormatterFactory
+ * Class Search2RecordFormatterFactory.
  *
  * PHP version 8
  *
@@ -41,9 +41,9 @@ namespace VuFindApi\Formatter;
 class Search2RecordFormatterFactory extends RecordFormatterFactory
 {
     /**
-     * Record fields configuration file name
+     * Record fields configuration file name.
      *
      * @var string
      */
-    protected $configFile = 'Search2ApiRecordFields.yaml';
+    protected $configFile = 'Search2ApiRecordFields';
 }

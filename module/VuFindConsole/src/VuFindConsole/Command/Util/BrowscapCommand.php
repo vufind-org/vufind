@@ -60,21 +60,21 @@ use VuFind\Http\GuzzleService;
 class BrowscapCommand extends Command
 {
     /**
-     * Cache manager
+     * Cache manager.
      *
      * @var CacheManager
      */
     protected $cacheManager;
 
     /**
-     * Guzzle service
+     * Guzzle service.
      *
      * @var GuzzleService
      */
     protected $guzzleService;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param CacheManager  $cacheManager  Cache manager
      * @param GuzzleService $guzzleService Guzzle service

@@ -29,13 +29,15 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\View\Renderer\PhpRenderer;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\AjaxHandler\IdentifierLinksLookup;
 use VuFind\AjaxHandler\IdentifierLinksLookupFactory;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\IdentifierLinker\IdentifierLinkerInterface;
 use VuFind\IdentifierLinker\PluginManager;
-
-use function func_get_args;
+use VuFind\View\Helper\Root\Icon;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * IdentifierLinksLookup test class.
@@ -126,44 +128,57 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      */
     protected function getHandlerResults($requested = [['doi' => 'bar']])
     {
-        $plugins = [
-            'serverurl' => function ($path) {
+        $serverUrlHelper = $this->createMock(ServerUrlHelper::class);
+        $serverUrlHelper->method('getUrlForPath')
+            ->willReturnCallback(function (string $path): string {
                 return "http://localhost/$path";
-            },
-            'url' => function ($route, $options, $params) {
-                return "$route?" . http_build_query($params['query'] ?? []);
-            },
-            'icon' => function ($icon) {
-                return "($icon)";
-            },
-        ];
+            });
+        $this->container->set(ServerUrlHelper::class, $serverUrlHelper);
 
-        $mockRenderer = $this->container->createMock(PhpRenderer::class);
-        $mockRenderer->method('plugin')
-            ->willReturnCallback(
-                function ($plugin) use ($plugins) {
-                    return $plugins[$plugin] ?? null;
-                }
-            );
+        $routeHelper = $this->createMock(RouteHelper::class);
+        $routeHelper->method('getUrlFromRoute')
+            ->willReturnCallback(function (string $route, array $options, array $query): string {
+                return "$route?" . http_build_query($query);
+            });
+        $this->container->set(RouteHelper::class, $routeHelper);
+
+        $iconHelper = $this->createMock(Icon::class);
+        $iconHelper->method('__invoke')
+            ->willReturnCallback(function (string $icon): string {
+                return "($icon)";
+            });
+
+        $viewHelperManager = $this->container->get('ViewHelperManager');
+        $viewHelperManager->method('get')
+            ->with(Icon::class)
+            ->willReturn($iconHelper);
+
+        $mockRenderer = $this->container->createMock(TemplateRendererInterface::class);
         // JSON encode parameters to the render method so that it returns a string
         // that we can make assertions about in our tests.
-        $mockRenderer->method('render')
+        $mockRenderer->method('renderTemplateAsString')
             ->willReturnCallback(
-                function () {
-                    return json_encode(func_get_args());
+                function (
+                    ServerRequestInterface $request,
+                    ?string $template = null,
+                    array $params = [],
+                    array $childTemplates = [],
+                    bool $useLayout = false,
+                ) {
+                    return json_encode([$template, $params]);
                 }
             );
 
-        $this->container->set('ViewRenderer', $mockRenderer);
+        $this->container->set(TemplateRendererInterface::class, $mockRenderer);
 
         $factory = new IdentifierLinksLookupFactory();
         $handler = $factory($this->container, IdentifierLinksLookup::class);
-        $params = $this->getParamsHelper(content: json_encode($requested));
-        return $handler->handleRequest($params);
+        $request = $this->getRequest(content: json_encode($requested));
+        return $handler->handleRequest($request);
     }
 
     /**
-     * Data provider for testSingleLookup
+     * Data provider for testSingleLookup.
      *
      * @return array
      */

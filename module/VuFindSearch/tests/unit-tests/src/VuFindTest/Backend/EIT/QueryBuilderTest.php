@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for EIT query builder
+ * Unit tests for EIT query builder.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\EIT\QueryBuilder;
 
 /**
- * Unit tests for EIT query builder
+ * Unit tests for EIT query builder.
  *
  * @category VuFind
  * @package  Search

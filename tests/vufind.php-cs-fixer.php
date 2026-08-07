@@ -11,6 +11,7 @@ $rules = [
     '@PHPUnit10x0Migration:risky' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
+    'attribute_empty_parentheses' => ['use_parentheses' => false],
     'binary_operator_spaces' => [
         'default' => 'single_space',
         'operators' => ['=' => null, '=>' => null],
@@ -60,6 +61,7 @@ $rules = [
         'sort_algorithm' => 'alpha',
     ],
     'phpdoc_no_access' => true,
+    'phpdoc_summary' => true,
     'php_unit_method_casing' => true,
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,

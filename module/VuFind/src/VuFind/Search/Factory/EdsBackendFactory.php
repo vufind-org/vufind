@@ -61,7 +61,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected ?LoggerInterface $logger = null;
 
     /**
-     * EDS configuration
+     * EDS configuration.
      *
      * @var Config
      */
@@ -86,7 +86,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -227,7 +227,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Create the record collection factory
+     * Create the record collection factory.
      *
      * @return RecordCollectionFactory
      */

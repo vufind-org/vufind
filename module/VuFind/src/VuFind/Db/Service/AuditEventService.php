@@ -56,7 +56,7 @@ class AuditEventService extends AbstractDbService implements
     Feature\DeleteExpiredInterface
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager Database entity plugin manager
@@ -330,7 +330,7 @@ class AuditEventService extends AbstractDbService implements
      *
      * @param array $details Details
      *
-     * @return @rray
+     * @return array
      */
     protected function scrubSecrets(array $details): array
     {

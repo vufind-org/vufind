@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\GetThis\GetThisLoader;
 
 /**
  * Factory for building the HoldingsILS tab.
@@ -46,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -74,10 +75,13 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         // object:
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $catalog = $container->get(\VuFind\ILS\Connection::class);
+        $getThisEnabled = (bool)($config['Record']['getThisEnabled'] ?? false);
+        $getThisLoaderFactoryCallback = $getThisEnabled ? (fn () => $container->get(GetThisLoader::class))(...) : null;
         return new $requestedName(
             $catalog,
             (string)($config['Site']['holdingsTemplate'] ?? 'standard'),
-            (string)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false)
+            (bool)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false),
+            $getThisLoaderFactoryCallback
         );
     }
 }

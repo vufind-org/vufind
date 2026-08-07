@@ -29,10 +29,9 @@
 
 namespace VuFindTest\Unit;
 
-use Laminas\Http\Request;
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\Stdlib\Parameters;
+use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -48,7 +47,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock container
+     * Mock container.
      *
      * @var \VuFindTest\Container\MockContainer
      */
@@ -93,27 +92,22 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a Params helper for testing.
+     * Build a request for testing.
      *
-     * @param array  $get     GET parameters
-     * @param array  $post    POST parameters
-     * @param string $content Body content
+     * @param array   $get     GET parameters
+     * @param array   $post    POST parameters
+     * @param ?string $content Body content
      *
-     * @return Params
+     * @return ServerRequestInterface
      */
-    protected function getParamsHelper(array $get = [], array $post = [], string $content = ''): Params
+    protected function getRequest(array $get = [], array $post = [], ?string $content = null): ServerRequestInterface
     {
-        $params = new Params();
-        $request = new Request();
-        $request->setQuery(new Parameters($get));
-        $request->setPost(new Parameters($post));
-        $request->setContent($content);
-        $controller = $this->container->createMock(
-            \Laminas\Mvc\Controller\AbstractActionController::class,
-            ['getRequest']
-        );
-        $controller->method('getRequest')->willReturn($request);
-        $params->setController($controller);
-        return $params;
+        $request = (new ServerRequest($post ? 'POST' : 'GET', 'http://localhost'))
+            ->withQueryParams($get)
+            ->withParsedBody($post);
+        if (null !== $content) {
+            $request->getBody()->write($content);
+        }
+        return $request;
     }
 }

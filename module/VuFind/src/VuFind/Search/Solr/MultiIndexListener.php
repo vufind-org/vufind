@@ -83,7 +83,7 @@ class MultiIndexListener
     }
 
     /**
-     * VuFindSearch.pre()
+     * VuFindSearch.pre().
      *
      * @param EventInterface $event Event
      *

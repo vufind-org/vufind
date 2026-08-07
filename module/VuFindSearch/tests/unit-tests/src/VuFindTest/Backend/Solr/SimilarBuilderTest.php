@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * PHP version 8
  *
@@ -32,9 +32,10 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\SimilarBuilder;
+use VuFindSearch\ParamBag;
 
 /**
- * Unit tests for SOLR similar records query builder
+ * Unit tests for SOLR similar records query builder.
  *
  * @category VuFind
  * @package  Search
@@ -59,7 +60,20 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
         $q = $response->get('q');
         $this->assertEquals('id:"testrecord"', $q[0]);
         $qt = $response->get('qt');
-        $this->assertEquals('morelikethis', $qt[0]);
+        $this->assertNull($qt);
+    }
+
+    /**
+     * Test builder with an existing limit.
+     *
+     * @return void
+     */
+    public function testExistingLimit()
+    {
+        $sb = new SimilarBuilder();
+        $response = $sb->build('testrecord', new ParamBag(['rows' => 42]));
+        $rows = $response->get('rows');
+        $this->assertEquals(42, $rows[0]);
     }
 
     /**

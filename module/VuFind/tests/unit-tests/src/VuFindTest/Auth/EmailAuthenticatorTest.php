@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Email Authenticator Test Class
+ * Email Authenticator Test Class.
  *
  * PHP version 8
  *
@@ -46,7 +46,7 @@ use VuFind\Validator\CsrfInterface;
 use VuFindTest\Feature\TranslatorTrait;
 
 /**
- * Email Authenticator Manager Test Class
+ * Email Authenticator Manager Test Class.
  *
  * @category VuFind
  * @package  Tests

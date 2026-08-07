@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AlphaBrowse Test Class
+ * AlphaBrowse Test Class.
  *
  * PHP version 8
  *
@@ -30,11 +30,12 @@
 namespace VuFindTest\ChannelProvider;
 
 use VuFind\ChannelProvider\AlphaBrowse;
+use VuFind\Http\RouteHelper;
 use VuFindSearch\ParamBag;
 use VuFindTest\RecordDriver\TestHarness;
 
 /**
- * AlphaBrowse Test Class
+ * AlphaBrowse Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -150,7 +151,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $objects = $this->getAlphaBrowse($options);
         $alpha = $objects['alpha'];
         $search = $objects['search'];
-        $url = $objects['url'];
+        $routeHelper = $objects['routeHelper'];
         $router = $objects['router'];
         $alpha->setProviderId('foo_ProviderId');
         $driver = $this->getDriver(['solrField' => 'foo']);
@@ -231,14 +232,18 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ->with($driver)
             ->willReturn($routeDetails);
         $this->expectConsecutiveCalls(
-            $url,
-            'fromRoute',
+            $routeHelper,
+            'getUrlFromRoute',
             [
                 [$routeDetails['route'], $routeDetails['params']],
-                ['channels-record'],
-                ['alphabrowse-home'],
+                ['channels-record', [], ['id' => 'foo_Id', 'source' => 'foo_Identifier']],
+                ['alphabrowse-home', [], ['source' => 'lcc', 'from' => 'foo']],
             ],
-            ['url_test', 'channels-record', 'alphabrowse-home']
+            [
+                'url_test',
+                'channels-record?id=foo_Id&source=foo_Identifier',
+                'alphabrowse-home?source=lcc&from=foo',
+            ]
         );
         $expectedResult = [[
             'title' => 'nearby_items',
@@ -297,7 +302,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a fake record driver
+     * Get a fake record driver.
      *
      * @param array $data Test data (solrField is only supported field)
      *
@@ -318,7 +323,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get AlphaBrowse object
+     * Get AlphaBrowse object.
      *
      * @param array $options options for the provider
      *
@@ -327,10 +332,11 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     protected function getAlphaBrowse($options = [])
     {
         $search = $this->createMock(\VuFindSearch\Service::class);
-        $url = $this->createMock(\Laminas\Mvc\Controller\Plugin\Url::class);
+        $routeHelper = $this->createMock(RouteHelper::class);
         $router = $this->createMock(\VuFind\Record\Router::class);
-        $alpha = new AlphaBrowse($search, $url, $router, $options);
+        $alpha = new AlphaBrowse($search, $routeHelper, $options);
+        $alpha->setRecordRouter($router);
 
-        return compact('search', 'url', 'router', 'alpha');
+        return compact('search', 'routeHelper', 'router', 'alpha');
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for payment table
+ * Entity model for payment table.
  *
  * PHP version 8
  *
@@ -39,7 +39,7 @@ use VuFind\Db\Type\PaymentStatus;
 use function in_array;
 
 /**
- * Entity model for payment table
+ * Entity model for payment table.
  *
  * @category VuFind
  * @package  Database
@@ -96,7 +96,7 @@ class Payment implements PaymentEntityInterface
      * @var User
      */
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\User::class)]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\UserEntityInterface::class)]
     protected User $user;
 
     /**

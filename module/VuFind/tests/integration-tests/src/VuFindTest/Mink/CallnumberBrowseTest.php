@@ -49,7 +49,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Set config for callnumber tests
-     * Sets callnumber_handler to false
+     * Sets callnumber_handler to false.
      *
      * @param string $nos  multiple_call_nos setting
      * @param string $locs multiple_locations setting
@@ -75,7 +75,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Checks if a link has the correct callnumber and setting
+     * Checks if a link has the correct callnumber and setting.
      *
      * @param \Behat\Mink\Element\Element $link link element
      * @param string                      $type dewey or lcc
@@ -121,7 +121,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Sets callnumber_handler to true
+     * Sets callnumber_handler to true.
      *
      * @param string                      $type        dewey or lcc
      * @param \Behat\Mink\Element\Element $page        page element
@@ -160,7 +160,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Sets callnumber_handler to true
+     * Sets callnumber_handler to true.
      *
      * @param string $nos         multiple_call_nos setting
      * @param string $locs        multiple_locations setting
@@ -183,7 +183,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test with multiple_call_nos set to first
-     * and multiple_locations set to msg
+     * and multiple_locations set to msg.
      *
      * @return void
      */
@@ -194,7 +194,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test with multiple_call_nos set to first
-     * and multiple_locations set to msg
+     * and multiple_locations set to msg.
      *
      * @return void
      */
@@ -205,7 +205,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test with multiple_call_nos set to first
-     * and multiple_locations set to msg
+     * and multiple_locations set to msg.
      *
      * @return void
      */
@@ -216,7 +216,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test with multiple_call_nos set to first
-     * and multiple_locations set to group
+     * and multiple_locations set to group.
      *
      * @return void
      */
@@ -227,7 +227,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test with multiple_call_nos set to all
-     * and multiple_locations set to msg
+     * and multiple_locations set to msg.
      *
      * @return void
      */
@@ -238,7 +238,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test with multiple_call_nos set to msg
-     * and multiple_locations set to group
+     * and multiple_locations set to group.
      *
      * @return void
      */
@@ -248,7 +248,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test with show_full_status set to true
+     * Test with show_full_status set to true.
      *
      * @return void
      */

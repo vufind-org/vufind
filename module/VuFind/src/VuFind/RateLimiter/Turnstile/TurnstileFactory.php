@@ -52,7 +52,7 @@ class TurnstileFactory implements FactoryInterface
     use GetServiceTrait;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -76,8 +76,9 @@ class TurnstileFactory implements FactoryInterface
 
         $this->serviceLocator = $container;
 
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $config = $yamlReader->get('RateLimiter.yaml');
+        $config = $container
+            ->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('RateLimiter');
 
         return new $requestedName(
             $config,

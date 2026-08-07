@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Upgrade Test Class
+ * Config Upgrade Test Class.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Config\Upgrade;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Config Upgrade Test Class
+ * Config Upgrade Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -51,11 +51,28 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Target upgrade version
+     * Target upgrade version.
      *
      * @var string
      */
-    protected string $targetVersion = '11.0';
+    protected string $targetVersion = '11.1';
+
+    /**
+     * Assert that the upgrader produced the expected warning(s).
+     *
+     * @param Upgrade         $upgrader Upgrade object
+     * @param string|string[] $expected Warning or warnings expected
+     * @param string          $message  Custom error message (empty by default)
+     *
+     * @return void
+     */
+    protected function assertContainsWarnings(Upgrade $upgrader, string|array $expected, string $message = ''): void
+    {
+        $actualWarnings = $upgrader->getWarnings();
+        foreach ((array)$expected as $expectedWarning) {
+            $this->assertContains($expectedWarning, $actualWarnings, $message);
+        }
+    }
 
     /**
      * Get an upgrade object for the specified source version:
@@ -149,7 +166,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test database upgrade in config.ini
+     * Test database upgrade in config.ini.
      *
      * @param string $fixture  Fixture file
      * @param array  $expected Expected result
@@ -203,7 +220,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('search-cache-enabled');
         $results = $upgrader->getNewConfigs();
         $this->assertNull($results['searches']['Cache'] ?? null);
-        $this->assertFalse((bool)$results['config']['CacheConfigName_searchspecs']['disabled']);
+        $this->assertNull($results['config']['CacheConfigName_searchspecs']['disabled'] ?? null);
     }
 
     /**
@@ -219,6 +236,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // Make sure spellcheck 'simple' is replaced by 'dictionaries'
         $this->assertFalse(isset($results['config']['Spelling']['simple']));
         $this->assertTrue(isset($results['config']['Spelling']['dictionaries']));
+    }
+
+    /**
+     * Test new items ILS method removal.
+     *
+     * @return void
+     */
+    public function testIlsNewItems(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('ilsnewitems');
+        $results = $upgrader->getNewConfigs();
+
+        // Make sure the ILS method is switched to disabled and the deprecated setting is removed:
+        $expectedNewItemDeprecationWarning = 'The searches.ini [NewItem] method setting of "ils" has been '
+        . 'removed; you should enable change tracking (if not already done) and switch to "solr". For now, new '
+        . 'item search has been disabled.';
+        $this->assertSame([$expectedNewItemDeprecationWarning], $upgrader->getWarnings());
+        $this->assertSame('disabled', $results['searches']['NewItem']['method']);
+        $this->assertFalse(isset($results['searches']['NewItem']['result_pages']));
     }
 
     /**
@@ -252,7 +288,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test Google preview setting upgrade
+     * Test Google preview setting upgrade.
      *
      * @return void
      */
@@ -267,7 +303,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test permission upgrade
+     * Test permission upgrade.
      *
      * @return void
      */
@@ -301,11 +337,25 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $results['permissions']['access.SummonExtendedResults']
         );
 
+        // EDS assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EDSModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EDSModuleAccess']
+        );
+
         // EIT assertions:
         $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
         $this->assertEquals(
             $eitConfig,
             $results['permissions']['default.EITModule']
+        );
+
+        // EPF assertions:
+        $eitConfig = ['role' => ['guest', 'loggedin'], 'permission' => 'access.EPFModule'];
+        $this->assertEquals(
+            $eitConfig,
+            $results['permissions']['default.EPFModule']
         );
 
         // Primo assertions:
@@ -331,6 +381,35 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             ];
             $this->assertEquals($permDetails, $results['permissions'][$perm]);
         }
+
+        $this->assertEquals(
+            [
+                'defaultDeniedActionBehavior' => 'message:Unavailable',
+                'defaultDeniedTemplateBehavior' => '',
+                'controllerAccess' => [
+                    'VuFind\Controller\SearchController' => 'Default.search',
+                    '*' => 'Default.all',
+                ],
+                'actionAccess' => [
+                    '*' => 'Default.all',
+                ],
+            ],
+            $results['permissionBehavior']['global']
+        );
+        $this->assertEquals(
+            [
+                'deniedActionBehavior' => 'promptLogin',
+            ],
+            $results['permissionBehavior']['Foo']
+        );
+        $this->assertSame(
+            [
+                'WARNING: You have at least one controllerAccess setting in permissionBehavior.ini that VuFind no'
+                . ' longer supports. You should replace any controllerAccess setting with a corresponding'
+                . ' actionAccess setting.',
+            ],
+            $upgrader->getWarnings()
+        );
     }
 
     /**
@@ -357,7 +436,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test upgrades that are expected to trigger a single warning
+     * Test upgrades that are expected to trigger a single warning.
      *
      * @param string $fixture         Fixture to load
      * @param string $expectedWarning Expected warning
@@ -372,6 +451,41 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test [Piwik] / [Matomo] section conflict handling.
+     *
+     * @return void
+     */
+    public function testPiwikAndMatomoConflict(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik-and-matomo');
+        $configs = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['url' => 'bar', 'site_id' => 2],
+            $configs['config']['Matomo']
+        );
+        $this->assertContainsWarnings(
+            $upgrader,
+            'You are using the deprecated [Piwik] section for analytics but also have [Matomo] settings.'
+            . ' The [Piwik] settings have been removed.'
+        );
+    }
+
+    /**
+     * Test [Piwik] getting upgraded to [Matomo].
+     *
+     * @return void
+     */
+    public function testPiwikUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('piwik');
+        $configs = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            ['url' => 'foo', 'site_id' => 1],
+            $configs['config']['Matomo']
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
@@ -379,14 +493,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testGoogleWarnings(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('googlewarnings');
-        $warnings = $upgrader->getWarnings();
-        $this->assertContains(
-            'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
-            $warnings
-        );
-        $this->assertContains(
-            'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
-            $warnings
+        $this->assertContainsWarnings(
+            $upgrader,
+            [
+                'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
+                'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
+            ]
         );
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Content']['recordMap']));
@@ -396,7 +508,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testEbscoUpgrades
+     * Data provider for testEbscoUpgrades.
      *
      * @return \Iterator
      */
@@ -549,7 +661,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
             . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
             . 'You may need to reimplement your custom theme.';
-        $this->assertSame([$expectedWarning], $upgrader->getWarnings());
+        $this->assertContainsWarnings($upgrader, $expectedWarning);
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'sandal5',
@@ -568,12 +680,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testObsoleteCoverWarning(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
-        $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertContains(
+            $this->assertContainsWarnings(
+                $upgrader,
                 "WARNING: You have $service content enabled, but VuFind no longer sup"
                 . "ports it. You should remove $service references from config.ini.",
-                $warnings,
                 "Missing $service warning"
             );
         }
@@ -587,12 +698,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testObsoleteReviewWarnings(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
-        $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertContains(
+            $this->assertContainsWarnings(
+                $upgrader,
                 "WARNING: You have $service content enabled, but VuFind no longer sup"
                 . "ports it. You should remove $service references from config.ini.",
-                $warnings,
                 "Missing $service warning"
             );
         }

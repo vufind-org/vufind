@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * PHP version 8
  *
@@ -29,16 +29,18 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function call_user_func_array;
 use function is_callable;
 use function is_string;
 
 /**
- * Section view helper
+ * Section view helper.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,9 +48,14 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Section extends AbstractHelper
+class Section
 {
     use ClassBasedTemplateRendererTrait;
+
+    /**
+     * Section context key.
+     */
+    public const SECTION_PLUGIN_KEY = '__sectionPlugin';
 
     /**
      * Section context key.
@@ -85,9 +92,18 @@ class Section extends AbstractHelper
      * Constructor.
      *
      * @param SectionServiceInterface $sectionService Section service
+     * @param Context                 $contextHelper  Context helper
+     * @param RendererInterface       $viewRenderer   View renderer
+     * @param ResolverInterface       $viewResolver   View resolver
      */
-    public function __construct(protected SectionServiceInterface $sectionService)
-    {
+    public function __construct(
+        protected SectionServiceInterface $sectionService,
+        #[Autowire(container: 'ViewHelperManager')]
+        Context $contextHelper,
+        RendererInterface $viewRenderer,
+        ResolverInterface $viewResolver
+    ) {
+        $this->setClassBasedTemplateRendererDependencies($viewRenderer, $viewResolver, $contextHelper);
     }
 
     /**
@@ -101,7 +117,7 @@ class Section extends AbstractHelper
      */
     public function __invoke(
         string $key,
-        array|string $config = SectionServiceInterface::DEFAULT_CONFIG_PATH,
+        array|string $config = SectionServiceInterface::DEFAULT_CONFIG_NAME,
         ?string $template = null
     ): static {
         // Always call section service as the configuration might be different.
@@ -146,14 +162,15 @@ class Section extends AbstractHelper
     {
         $sectionContext = $this->section->getSectionContext();
         $mergedContext = array_merge($sectionContext, $context);
+        $mergedContext[self::SECTION_PLUGIN_KEY] = $this->section;
         $mergedContext[self::SECTION_CONTEXT_KEY] = $sectionContext;
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
-        if ($this->getView()->resolver()->resolve($this->template)) {
-            return $this->getView()->render($this->template, $mergedContext);
+        if ($this->viewResolver->resolve($this->template)) {
+            return $this->viewRenderer->render($this->template, $mergedContext);
         } else {
             // Default to class-based template.
             $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = strtolower($this->section::class);
+            $className = $this->section::class;
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
     }

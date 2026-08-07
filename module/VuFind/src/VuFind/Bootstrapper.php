@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind Bootstrapper
+ * VuFind Bootstrapper.
  *
  * PHP version 8
  *
@@ -29,6 +29,8 @@
 
 namespace VuFind;
 
+use Laminas\Http\Header\Location;
+use Laminas\Http\Response;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
@@ -36,7 +38,7 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RateLimiter\RateLimiterManager;
 
 /**
- * VuFind Bootstrapper
+ * VuFind Bootstrapper.
  *
  * @category VuFind
  * @package  Bootstrap
@@ -47,35 +49,35 @@ use VuFind\RateLimiter\RateLimiterManager;
 class Bootstrapper
 {
     /**
-     * Main VuFind configuration
+     * Main VuFind configuration.
      *
      * @var \VuFind\Config\Config
      */
     protected $config;
 
     /**
-     * Service manager
+     * Service manager.
      *
      * @var ContainerInterface
      */
     protected $container;
 
     /**
-     * Current MVC event
+     * Current MVC event.
      *
      * @var MvcEvent
      */
     protected $event;
 
     /**
-     * Event manager
+     * Event manager.
      *
      * @var \Laminas\EventManager\EventManagerInterface
      */
     protected $events;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param MvcEvent $event Laminas MVC Event object
      */
@@ -158,7 +160,7 @@ class Bootstrapper
     }
 
     /**
-     * Initializes timezone value
+     * Initializes timezone value.
      *
      * @return void
      */
@@ -366,7 +368,30 @@ class Bootstrapper
     }
 
     /**
-     * Set up content security policy
+     * Set up handling for rendering redirects.
+     *
+     * @return void
+     */
+    protected function initRenderRedirects(): void
+    {
+        // When a render is triggered, check the response status code and switch to a simple redirect template for
+        // 302 redirects.
+        $callback = function ($event): void {
+            $response = $event->getResponse();
+            if ($response instanceof Response && $response->getStatusCode() === 302) {
+                $viewModel = $this->container->get('ViewManager')->getViewModel();
+                if ($viewModel->getTemplate() === 'layout/layout') {
+                    $viewModel->setTemplate('layout/redirect');
+                    $location = $response->getHeaders()->get('Location');
+                    $viewModel->setVariable('redirectUrl', $location instanceof Location ? $location->getUri() : null);
+                }
+            }
+        };
+        $this->events->attach('render', $callback, 10000);
+    }
+
+    /**
+     * Set up content security policy.
      *
      * @return void
      */
@@ -384,7 +409,7 @@ class Bootstrapper
     }
 
     /**
-     * Set up rate limiter
+     * Set up rate limiter.
      *
      * @return void
      */
@@ -416,7 +441,7 @@ class Bootstrapper
     }
 
     /**
-     * Present a Cloudflare Turnstile challenge to the user
+     * Present a Cloudflare Turnstile challenge to the user.
      *
      * @param RateLimiterManager               $rateLimiterManager The RateLimiterManager
      * @param MvcEvent                         $event              The current Laminas event
@@ -437,7 +462,7 @@ class Bootstrapper
         // base64_encoding the destination URL is just further obfuscation
         $context = base64_encode(json_encode([
             'policyId' => $policyId,
-            'destination' => $event->getRequest()->getUri()->getPath(),
+            'destination' => $event->getRequest()->getRequestUri(),
         ]));
         $response->getHeaders()->addHeaderLine(
             'Location',

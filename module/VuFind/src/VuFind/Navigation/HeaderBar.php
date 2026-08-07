@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * PHP version 8
  *
@@ -29,17 +29,21 @@
 
 namespace VuFind\Navigation;
 
-use Laminas\Http\Request;
-use Laminas\View\Model\ViewModel;
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\View\Http\ViewManager;
+use Laminas\View\Model\ModelInterface;
+use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function count;
 
 /**
- * HeaderBar section plugin
+ * HeaderBar section plugin.
  *
  * @category VuFind
  * @package  Navigation
@@ -50,23 +54,36 @@ use function count;
 class HeaderBar extends AbstractMenu
 {
     /**
-     * Constructor
+     * View model.
      *
-     * @param array          $sectionConfig  Menu configuration
-     * @param array          $config         Main configuration
-     * @param Cart           $cart           Cart
-     * @param Manager        $authManager    Authentication manager
-     * @param ViewModel      $viewModel      View model
-     * @param LocaleSettings $localeSettings Locale settings
-     * @param Request        $request        Request
+     * @var ModelInterface
+     */
+    protected ModelInterface $viewModel;
+
+    /**
+     * Constructor.
+     *
+     * @param SectionServiceInterface $sectionService Section service
+     * @param array                   $sectionConfig  Section configuration
+     * @param array                   $config         Main configuration
+     * @param Cart                    $cart           Cart
+     * @param Manager                 $authManager    Authentication manager
+     * @param ViewManager             $viewManager    View manager
+     * @param LocaleSettings          $localeSettings Locale settings
+     * @param Request                 $request        Request
      */
     public function __construct(
+        SectionServiceInterface $sectionService,
+        #[Autowire(config: 'HeaderBar')]
         array $sectionConfig,
+        #[Autowire(config: 'config')]
         array $config,
         protected Cart $cart,
         protected Manager $authManager,
-        protected ViewModel $viewModel,
+        #[Autowire(service: 'ViewManager')]
+        ViewManager $viewManager,
         protected LocaleSettings $localeSettings,
+        #[Autowire(service: 'Request')]
         protected Request $request
     ) {
         $this->addRequiredSettings(
@@ -90,7 +107,8 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config);
+        $this->viewModel = $viewManager->getViewModel();
     }
 
     /**
@@ -113,9 +131,9 @@ class HeaderBar extends AbstractMenu
     ): bool {
         if ($contextKey === self::ITEM_CONTEXT) {
             // Conditional requirement checks.
-            $diff = array_diff(['route', 'url', 'template'], [$setting]);
-            if (count($diff) === 2) {
-                // Setting is one of the three. If one of the two other settings
+            $diff = array_diff(['route', 'url', 'template', 'submenuItems'], [$setting]);
+            if (count($diff) === 3) {
+                // Setting is one of the four. If one of the three other settings
                 // exists then this setting is optional.
                 return count(array_intersect($diff, array_keys($context))) === 0;
             }
@@ -142,48 +160,45 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Get default menu configuration
+     * Get default menu configuration.
      *
      * @return array
      */
     public static function getDefaultMenuConfig(): array
     {
-        return [
-            'Header' => [
-                'MenuItems' => [
-                    [
-                        'label' => 'Feedback',
-                        'route' => 'feedback-home',
-                        'icon' => 'feedback',
-                        'checkMethod' => 'checkFeedback',
-                        'attributes' => [
-                            'id' => 'feedbackLink',
-                            'data-lightbox' => 'data-lightbox',
-                        ],
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-cart.phtml',
-                        'checkMethod' => 'checkCart',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-account.phtml',
-                        'checkMethod' => 'checkAccount',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-themeOptions.phtml',
-                        'checkMethod' => 'checkThemeOptions',
-                    ],
-                    [
-                        'template' => 'Section/HeaderBar/HeaderBar-allLangs.phtml',
-                        'checkMethod' => 'checkAllLangs',
-                    ],
-                ],
-            ],
-        ];
+        $yaml = <<<YAML
+            Header:
+              MenuItems:
+                - label: 'Feedback'
+                  route: feedback-home
+                  icon: feedback
+                  checkMethod: checkFeedback
+                  attributes:
+                    id: feedbackLink
+                    data-lightbox: data-lightbox
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-feedback.phtml
+            
+                - template: Section/HeaderBar/HeaderBar-cart.phtml
+                  checkMethod: checkCart
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-cart.phtml
+            
+                - template: Section/HeaderBar/HeaderBar-account.phtml
+                  checkMethod: checkAccount
+                  siteMapPageTemplate: Section/SiteMap/SiteMap-account.phtml
+            
+                - template: Section/HeaderBar/HeaderBar-themeOptions.phtml
+                  checkMethod: checkThemeOptions
+                  excludeFromSiteMapPage: true
+            
+                - template: Section/HeaderBar/HeaderBar-allLangs.phtml
+                  checkMethod: checkAllLangs
+                  excludeFromSiteMapPage: true
+            YAML;
+        return Yaml::parse($yaml);
     }
 
     /**
-     * Check whether to show feedback item
+     * Check whether to show feedback item.
      *
      * @return bool
      */
@@ -193,7 +208,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show cart item
+     * Check whether to show cart item.
      *
      * @return bool
      */
@@ -203,7 +218,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show account item
+     * Check whether to show account item.
      *
      * @return bool
      */
@@ -213,7 +228,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show theme options item
+     * Check whether to show theme options item.
      *
      * @return bool
      */
@@ -224,7 +239,7 @@ class HeaderBar extends AbstractMenu
     }
 
     /**
-     * Check whether to show all languages item
+     * Check whether to show all languages item.
      *
      * @return bool
      */

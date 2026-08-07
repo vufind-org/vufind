@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Password Access authentication class
+ * Password Access authentication class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFind\Exception\Auth as AuthException;
 use function in_array;
 
 /**
- * Password Access authentication class
+ * Password Access authentication class.
  *
  * @category VuFind
  * @package  Authentication

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Resolver driver plugin manager
+ * Resolver driver plugin manager.
  *
  * PHP version 8
  *
@@ -29,10 +29,8 @@
 
 namespace VuFind\Resolver\Driver;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
- * Resolver driver plugin manager
+ * Resolver driver plugin manager.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -67,18 +65,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Alma::class => AlmaFactory::class,
         Threesixtylink::class => DriverWithHttpClientFactory::class,
-        Demo::class => InvokableFactory::class,
-        Jop::class => JopFactory::class,
-        LinkIq::class => LinkIqFactory::class,
         Sfx::class => DriverWithHttpClientFactory::class,
         Redi::class => DriverWithHttpClientFactory::class,
-        Generic::class => AbstractBaseFactory::class,
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

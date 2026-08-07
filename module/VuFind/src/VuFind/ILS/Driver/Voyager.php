@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * PHP version 8
  *
@@ -48,7 +48,7 @@ use function intval;
 use function is_array;
 
 /**
- * Voyager ILS Driver
+ * Voyager ILS Driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -73,7 +73,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     protected $lazyDb;
 
     /**
-     * Name of database
+     * Name of database.
      *
      * @var string
      */
@@ -88,28 +88,28 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     protected $statusRankings = false;
 
     /**
-     * Date formatting object
+     * Date formatting object.
      *
      * @var \VuFind\Date\Converter
      */
     protected $dateFormat;
 
     /**
-     * Whether to use holdings sort groups to sort holdings records
+     * Whether to use holdings sort groups to sort holdings records.
      *
      * @var bool
      */
     protected $useHoldingsSortGroups;
 
     /**
-     * Loan interval types for which to display the due time (empty = all)
+     * Loan interval types for which to display the due time (empty = all).
      *
      * @var array
      */
     protected $displayDueTimeIntervals;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
@@ -343,7 +343,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Helper function that returns SQL for getting a sort sequence for a location
+     * Helper function that returns SQL for getting a sort sequence for a location.
      *
      * @param string $locationColumn Column in the full where clause containing
      * the column id
@@ -556,7 +556,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Status
+     * Get Status.
      *
      * This is responsible for retrieving the status information of a certain
      * record.
@@ -601,7 +601,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Statuses
+     * Get Statuses.
      *
      * This is responsible for retrieving the status information for a
      * collection of records.
@@ -810,7 +810,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Purchase History Data
+     * Get Purchase History Data.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial). It is used
@@ -857,7 +857,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get specified fields from an MFHD MARC Record
+     * Get specified fields from an MFHD MARC Record.
      *
      * @param MarcReader   $record     Marc reader
      * @param array|string $fieldSpecs Array or colon-separated list of
@@ -1146,7 +1146,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Holding
+     * Get Holding.
      *
      * This is responsible for retrieving the holding information of a certain
      * record.
@@ -1199,7 +1199,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Purchase History
+     * Get Purchase History.
      *
      * This is responsible for retrieving the acquisitions history data for the
      * specific record (usually recently received issues of a serial).
@@ -1219,7 +1219,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly)
+     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly).
      *
      * @param string $pin PIN code to sanitize
      *
@@ -1232,7 +1232,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Patron Login
+     * Patron Login.
      *
      * This is responsible for authenticating a patron against the catalog.
      *
@@ -1241,7 +1241,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      * @param string $login    The patron's last name or PIN (depending on config)
      *
      * @throws ILSException
-     * @return mixed          Associative array of patron info on successful login,
+     * @return ?array          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
     public function patronLogin($username, $login)
@@ -1499,7 +1499,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Transactions
+     * Get Patron Transactions.
      *
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
@@ -1625,7 +1625,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Fines
+     * Get Patron Fines.
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
@@ -1770,7 +1770,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Process Holds List
+     * Process Holds List.
      *
      * This is responsible for processing holds to ensure only one record is shown
      * for each hold.
@@ -1799,7 +1799,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Holds
+     * Get Patron Holds.
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
@@ -1978,7 +1978,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Storage Retrieval Requests
+     * Get Patron Storage Retrieval Requests.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
@@ -2005,7 +2005,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Patron Profile
+     * Get Patron Profile.
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
@@ -2097,7 +2097,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Hold Link
+     * Get Hold Link.
      *
      * The goal for this method is to return a URL to a "place hold" web page on
      * the ILS OPAC. This is used for ILSs that do not support an API or method
@@ -2119,169 +2119,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get New Items
-     *
-     * Retrieve the IDs of items recently added to the catalog.
-     *
-     * @param int     $page    Page number of results to retrieve (counting starts at 1)
-     * @param int     $limit   The size of each page of results to retrieve
-     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that "fund" may be a
-     * misnomer - if funds are not an appropriate way to limit your new item
-     * results, you can return a different set of values from getFunds. The
-     * important thing is that this parameter supports an ID returned by getFunds,
-     * whatever that may mean.
-     *
-     * @throws ILSException
-     * @return array       Associative array with 'count' and 'results' keys
-     */
-    public function getNewItems($page, $limit, $daysOld, $fundId = null)
-    {
-        $items = [];
-
-        $bindParams = [
-            ':enddate' => date('d-m-Y', strtotime('now')),
-            ':startdate' => date('d-m-Y', strtotime("-$daysOld day")),
-        ];
-
-        $sql = 'select count(distinct LINE_ITEM.BIB_ID) as count ' .
-               "from $this->dbName.LINE_ITEM, " .
-               "$this->dbName.LINE_ITEM_COPY_STATUS, " .
-               "$this->dbName.LINE_ITEM_FUNDS, $this->dbName.FUND " .
-               'where LINE_ITEM.LINE_ITEM_ID = LINE_ITEM_COPY_STATUS.LINE_ITEM_ID ' .
-               'and LINE_ITEM_COPY_STATUS.COPY_ID = LINE_ITEM_FUNDS.COPY_ID ' .
-               'and LINE_ITEM_FUNDS.FUND_ID = FUND.FUND_ID ';
-        if ($fundId) {
-            // Although we're getting an ID value from getFunds() passed in here,
-            // it's not actually an ID -- we use names as IDs (see note in getFunds
-            // itself for more details).
-            $sql .= 'and lower(FUND.FUND_NAME) = :fund ';
-            $bindParams[':fund'] = strtolower($fundId);
-        }
-        $sql .= "and LINE_ITEM.CREATE_DATE >= to_date(:startdate, 'dd-mm-yyyy') " .
-               "and LINE_ITEM.CREATE_DATE < to_date(:enddate, 'dd-mm-yyyy')";
-        try {
-            $sqlStmt = $this->executeSQL($sql, $bindParams);
-            $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            $items['count'] = $row['COUNT'];
-        } catch (PDOException $e) {
-            $this->throwAsIlsException($e);
-        }
-
-        $page = ($page) ? $page : 1;
-        $limit = ($limit) ? $limit : 20;
-        $bindParams[':startRow'] = (($page - 1) * $limit) + 1;
-        $bindParams[':endRow'] = ($page * $limit);
-        $sql = 'select * from ' .
-               '(select a.*, rownum rnum from ' .
-               '(select LINE_ITEM.BIB_ID, LINE_ITEM.CREATE_DATE ' .
-               "from $this->dbName.LINE_ITEM, " .
-               "$this->dbName.LINE_ITEM_COPY_STATUS, " .
-               "$this->dbName.LINE_ITEM_STATUS, $this->dbName.LINE_ITEM_FUNDS, " .
-               "$this->dbName.FUND " .
-               'where LINE_ITEM.LINE_ITEM_ID = LINE_ITEM_COPY_STATUS.LINE_ITEM_ID ' .
-               'and LINE_ITEM_COPY_STATUS.COPY_ID = LINE_ITEM_FUNDS.COPY_ID ' .
-               'and LINE_ITEM_STATUS.LINE_ITEM_STATUS = ' .
-               'LINE_ITEM_COPY_STATUS.LINE_ITEM_STATUS ' .
-               'and LINE_ITEM_FUNDS.FUND_ID = FUND.FUND_ID ';
-        if ($fundId) {
-            $sql .= 'and lower(FUND.FUND_NAME) = :fund ';
-        }
-        $sql .= "and LINE_ITEM.CREATE_DATE >= to_date(:startdate, 'dd-mm-yyyy') " .
-               "and LINE_ITEM.CREATE_DATE < to_date(:enddate, 'dd-mm-yyyy') " .
-               'group by LINE_ITEM.BIB_ID, LINE_ITEM.CREATE_DATE ' .
-               'order by LINE_ITEM.CREATE_DATE desc) a ' .
-               'where rownum <= :endRow) ' .
-               'where rnum >= :startRow';
-        try {
-            $sqlStmt = $this->executeSQL($sql, $bindParams);
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $items['results'][]['id'] = $row['BIB_ID'];
-            }
-            return $items;
-        } catch (PDOException $e) {
-            $this->throwAsIlsException($e);
-        }
-    }
-
-    /**
-     * Get Funds
-     *
-     * Return a list of funds which may be used to limit the getNewItems list.
-     *
-     * @throws ILSException
-     * @return array An associative array with key = fund ID, value = fund name.
-     */
-    public function getFunds()
-    {
-        $list = [];
-
-        // Are funds disabled?  If so, do no work!
-        if ($this->config['Funds']['disabled'] ?? false) {
-            return $list;
-        }
-
-        // Load and normalize inclusion/exclusion lists if necessary:
-        $rawIncludeList = $this->config['Funds']['include_list']
-            ?? $this->config['Funds']['whitelist'] // deprecated terminology
-            ?? null;
-        $include = is_array($rawIncludeList)
-            ? array_map('strtolower', $rawIncludeList) : false;
-        $rawExcludeList = $this->config['Funds']['exclude_list']
-            ?? $this->config['Funds']['blacklist'] // deprecated terminology
-            ?? null;
-        $exclude = is_array($rawExcludeList)
-            ? array_map('strtolower', $rawExcludeList) : false;
-
-        // Retrieve the data from Voyager; if we're limiting to a parent fund, we
-        // need to apply a special WHERE clause and bind parameter.
-        if (isset($this->config['Funds']['parent_fund'])) {
-            $bindParams = [':parent' => $this->config['Funds']['parent_fund']];
-            $whereClause = 'WHERE FUND.PARENT_FUND = :parent';
-        } else {
-            $bindParams = [];
-            $whereClause = '';
-        }
-        $sql = 'select distinct lower(FUND.FUND_NAME) as name ' .
-            "from $this->dbName.FUND {$whereClause} order by name";
-        try {
-            $sqlStmt = $this->executeSQL($sql, $bindParams);
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                // Process inclusion/exclusion lists to skip illegal values:
-                if (
-                    (is_array($exclude) && in_array($row['NAME'], $exclude))
-                    || (is_array($include) && !in_array($row['NAME'], $include))
-                ) {
-                    continue;
-                }
-
-                // Normalize the capitalization of the name:
-                $name = ucwords($row['NAME']);
-
-                // Set the array key to the lookup ID used by getNewItems and the
-                // array value to the on-screen display name.
-                //
-                // We actually want to use the NAME of the fund to do lookups, not
-                // its ID. This is because multiple funds may share the same name,
-                // and it is useful to collate all these results together. To
-                // achieve the effect, we just fill the same value in as the name
-                // and the ID in the return array.
-                //
-                // If you want to change this code to use numeric IDs instead,
-                // you can adjust the SQL above, change the array key used in the
-                // line below, and adjust the lookups done in getNewItems().
-                $list[$name] = $name;
-            }
-        } catch (PDOException $e) {
-            $this->throwAsIlsException($e);
-        }
-
-        return $list;
-    }
-
-    /**
-     * Get Departments
+     * Get Departments.
      *
      * Obtain a list of departments for use in limiting the reserves list.
      *
@@ -2314,7 +2152,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Instructors
+     * Get Instructors.
      *
      * Obtain a list of instructors for use in limiting the reserves list.
      *
@@ -2347,7 +2185,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Get Courses
+     * Get Courses.
      *
      * Obtain a list of courses for use in limiting the reserves list.
      *
@@ -2380,7 +2218,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Find Reserves
+     * Find Reserves.
      *
      * Obtain information on course reserves.
      *
@@ -2626,7 +2464,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Execute an SQL query
+     * Execute an SQL query.
      *
      * @param string|array $sql  SQL statement (string or array that includes
      * bind params)
@@ -2651,7 +2489,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
     }
 
     /**
-     * Convert string from ISO 8859-1 into UTF-8
+     * Convert string from ISO 8859-1 into UTF-8.
      *
      * @param string $iso88591 String to convert
      *

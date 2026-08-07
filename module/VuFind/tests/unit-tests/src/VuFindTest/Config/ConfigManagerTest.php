@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFindTest\Feature\FixtureTrait;
 use function count;
 
 /**
- * Config Manager Test Class
+ * Config Manager Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -55,6 +55,13 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
     use ConfigRelatedServicesTrait;
+
+    /**
+     * Test config environment variable.
+     *
+     * @var string
+     */
+    protected string $testEnvVar = 'VUFIND_TEST_CONFIG_ENV_VAR';
 
     /**
      * Get config manager.
@@ -87,9 +94,14 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             'unit-test-child2'
                 => new ConfigFile($this->getFixturePath('configs/inheritance/unit-test-child2.ini')),
             'generic-file' => new ConfigFile($this->getFixturePath('configs/generic-file/test')),
+            'ini-file-with-include' => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test.ini')),
+            'ini-file-with-include-section'
+                => new ConfigFile($this->getFixturePath('configs/ini-file-with-include/test-section.ini')),
             'dir-config' => new ConfigDirectory($this->getFixtureDir() . 'configs/dir-config'),
             'dir-config-with-inheritance'
                 => new ConfigDirectory($this->getFixtureDir() . 'configs/inheritance/dir-config'),
+            'env-var' => new ConfigFile($this->getFixtureDir() . 'configs/env-var/test.env_var'),
+            'including' => new ConfigFile($this->getFixtureDir() . 'configs/include/child.ini'),
         ];
         $realResolver = $this->getPathResolver();
         $configLocation = $fileMap[$name]
@@ -420,6 +432,32 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test loading of configs from environment variable.
+     *
+     * @return void
+     */
+    public function testEnvVarConfig(): void
+    {
+        putenv($this->testEnvVar . '=testValue');
+        $config = $this->getConfig('env-var');
+        $this->assertEquals(
+            'testValue',
+            $config
+        );
+    }
+
+    /**
+     * Test loading of configs from environment variable.
+     *
+     * @return void
+     */
+    public function testMissingEnvVarConfig(): void
+    {
+        $this->expectExceptionMessage('Environment variable VUFIND_TEST_CONFIG_ENV_VAR does not exist.');
+        $this->getConfig('env-var');
+    }
+
+    /**
      * Test loading of INI config with handling of parent configuration disabled.
      *
      * @return void
@@ -436,6 +474,68 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(10, $config['Section1']['j']);
         $this->assertArrayNotHasKey('Section3', $config);
+    }
+
+    /**
+     * Test loading of INI config with include statements.
+     *
+     * @return void
+     */
+    public function testIniConfigWithIncludeStatement(): void
+    {
+        $config = $this->getConfig('ini-file-with-include');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    'a' => 1,
+                    'b' => 2,
+                ],
+                'Section2' => [
+                    'c' => 3,
+                    'd' => 4,
+                    'e' => 5,
+                ],
+                'Section3' => [
+                    'f' => 6,
+                    'g' => 7,
+                    'h' => 8,
+                    'i' => 9,
+                    'j' => 10,
+                ],
+            ],
+            $config
+        );
+    }
+
+    /**
+     * Test loading of INI config with include statements on section level.
+     *
+     * @return void
+     */
+    public function testIniConfigWithIncludeStatementOnSectionLevel(): void
+    {
+        $config = $this->getConfig('ini-file-with-include-section');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    'a' => 1,
+                    'b' => 2,
+                ],
+                'Section2' => [
+                    'c' => 3,
+                    'd' => 4,
+                    'e' => 5,
+                ],
+                'Section3' => [
+                    'f' => 6,
+                    'g' => 7,
+                    'h' => 8,
+                    'i' => 9,
+                    'j' => 10,
+                ],
+            ],
+            $config
+        );
     }
 
     /**
@@ -456,6 +556,34 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(10, $subdirConfig['Section1']['j']);
         $this->assertArrayNotHasKey('Section3', $subdirConfig);
+    }
+
+    /**
+     * Test including configuration.
+     *
+     * @return void
+     */
+    public function testIncludingConfig(): void
+    {
+        putenv($this->testEnvVar . '=EnvVarValue');
+        $config = $this->getConfig('including');
+        $this->assertEquals(
+            [
+                'Section1' => [
+                    's1k1' => 'ChildValue1',
+                    's1k2' => 'Include1Value',
+                    's1k3' => 'EnvVarValue',
+                    's1k4' => 'ParentValue1',
+                ],
+                'Section2' => [
+                    's2k1' => 'include2Value1',
+                    's2k2' => 'include2Value2',
+                    's2k3' => 'ParentValue2',
+                    's2k4' => 'Include3Value',
+                ],
+            ],
+            $config
+        );
     }
 
     /**
@@ -526,6 +654,31 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                         'value2' => 'base',
                     ],
                 ],
+                'subdir-all' => [
+                    'all-sub-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'primary-sub-sub' => [
+                        'Section' => [
+                            'value' => 'primary',
+                        ],
+                    ],
+                    'base-secondary-sub-sub' => [
+                        'Section' => [
+                            'value' => 'secondary',
+                            'value2' => 'secondary',
+                        ],
+                    ],
+                    'base-sub-sub' => [
+                        'Section' => [
+                            'value' => 'base',
+                            'value2' => 'base',
+                        ],
+                    ],
+                ],
             ],
         ];
         yield 'all-sub' => [
@@ -563,19 +716,82 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+        yield 'subdir-all' => [
+            'dir_config/subdir-all',
+            [
+                'all-sub-sub' => [
+                    'Section' => [
+                        'value' => 'primary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+                'primary-sub-sub' => [
+                    'Section' => [
+                        'value' => 'primary',
+                    ],
+                ],
+                'base-secondary-sub-sub' => [
+                    'Section' => [
+                        'value' => 'secondary',
+                        'value2' => 'secondary',
+                    ],
+                ],
+                'base-sub-sub' => [
+                    'Section' => [
+                        'value' => 'base',
+                        'value2' => 'base',
+                    ],
+                ],
+            ],
+        ];
+        yield 'all-sub-sub' => [
+            'dir_config/subdir-all/all-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'primary-sub-sub' => [
+            'dir_config/subdir-all/primary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                ],
+            ],
+        ];
+        yield 'base-secondary-sub-sub' => [
+            'dir_config/subdir-all/base-secondary-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'base-sub-sub' => [
+            'dir_config/subdir-all/base-sub-sub',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
+                ],
+            ],
+        ];
     }
 
     /**
      * Test loading of configs with inheritance and a local dir stack.
      *
-     * @param string $configPath     Config path
+     * @param string $configName     Config name
      * @param array  $expectedConfig Expected config
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('localDirStackTestProvider')]
     public function testConfigsInLocalDirStack(
-        $configPath,
+        $configName,
         $expectedConfig
     ): void {
         $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
@@ -584,10 +800,21 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
             localDir: $fixtureDir . 'primary'
         )->get(ConfigManagerInterface::class);
 
-        $config = $configManager->getConfigArray($configPath);
+        $config = $configManager->getConfigArray($configName);
         $this->assertEquals(
             $expectedConfig,
             $config
         );
+    }
+
+    /**
+     * Clean up test environment.
+     *
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        putenv($this->testEnvVar);
     }
 }

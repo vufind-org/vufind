@@ -33,6 +33,10 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\View\Helper\Root\Icon;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
  * Factory for IdentifierLinksLookup AJAX handler.
@@ -46,7 +50,7 @@ use Psr\Container\ContainerInterface;
 class IdentifierLinksLookupFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,7 +76,10 @@ class IdentifierLinksLookupFactory implements \Laminas\ServiceManager\Factory\Fa
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $container->get(\VuFind\IdentifierLinker\PluginManager::class),
-            $container->get('ViewRenderer'),
+            $container->get(TemplateRendererInterface::class),
+            $container->get(ServerUrlHelper::class),
+            $container->get(RouteHelper::class),
+            $container->get('ViewHelperManager')->get(Icon::class),
             $config
         );
     }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for Summon record collection
+ * Unit tests for Summon record collection.
  *
  * PHP version 8
  *
@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Summon\Response\RecordCollection;
 
 /**
- * Unit tests for Summon record collection
+ * Unit tests for Summon record collection.
  *
  * @category VuFind
  * @package  Search
@@ -55,8 +55,8 @@ class RecordCollectionTest extends TestCase
         $this->assertEquals(0, $rc->getOffset());
         $this->assertEquals([], $rc->getFacets());
         $this->assertEquals([], $rc->getSpellcheck());
-        $this->assertEquals(false, $rc->getBestBets());
-        $this->assertEquals(false, $rc->getDatabaseRecommendations());
-        $this->assertEquals(false, $rc->getTopicRecommendations());
+        $this->assertEquals([], $rc->getBestBets());
+        $this->assertEquals([], $rc->getDatabaseRecommendations());
+        $this->assertEquals([], $rc->getTopicRecommendations());
     }
 }

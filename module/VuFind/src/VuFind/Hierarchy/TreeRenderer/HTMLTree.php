@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hierarchy Tree HTML Renderer
+ * Hierarchy Tree HTML Renderer.
  *
  * PHP version 8
  *
@@ -31,13 +31,13 @@
 
 namespace VuFind\Hierarchy\TreeRenderer;
 
-use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
 use Laminas\View\Renderer\RendererInterface;
+use VuFind\Http\RouteHelper;
 
 use function in_array;
 
 /**
- * Hierarchy Tree HTML Renderer
+ * Hierarchy Tree HTML Renderer.
  *
  * This is a helper class for producing hierarchy trees.
  *
@@ -53,38 +53,17 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Router plugin
+     * Constructor.
      *
-     * @var UrlPlugin
-     */
-    protected $router = null;
-
-    /**
-     * Whether the collections functionality is enabled
-     *
-     * @var bool
-     */
-    protected $collectionsEnabled;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $viewRenderer;
-
-    /**
-     * Constructor
-     *
-     * @param UrlPlugin         $router             Router plugin for urls
+     * @param RouteHelper       $routeHelper        Router plugin for urls
      * @param bool              $collectionsEnabled Whether the collections functionality is enabled
-     * @param RendererInterface $renderer           View renderer
+     * @param RendererInterface $viewRenderer       View renderer
      */
-    public function __construct(UrlPlugin $router, bool $collectionsEnabled, RendererInterface $renderer)
-    {
-        $this->router = $router;
-        $this->collectionsEnabled = $collectionsEnabled;
-        $this->viewRenderer = $renderer;
+    public function __construct(
+        protected RouteHelper $routeHelper,
+        protected bool $collectionsEnabled,
+        protected RendererInterface $viewRenderer,
+    ) {
     }
 
     /**
@@ -134,7 +113,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     }
 
     /**
-     * Render the Hierarchy Tree
+     * Render the Hierarchy Tree.
      *
      * @param string  $context     The context from which the call has been made
      * @param string  $mode        The mode in which the tree should be generated
@@ -193,7 +172,7 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
     }
 
     /**
-     * Use the router to build the appropriate URL based on context
+     * Use the router to build the appropriate URL based on context.
      *
      * @param object $node    JSON object of a node/top node
      * @param string $context Record or Collection
@@ -231,15 +210,13 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
                 'id' => '__record_id__',
                 'tab' => 'HierarchyTree',
             ];
-            $options = [
-                'query' => [
-                    'recordID' => '__record_id__',
-                ],
+            $query = [
+                'recordID' => '__record_id__',
             ];
-            $cache[$route] = $this->router->fromRoute(
+            $cache[$route] = $this->routeHelper->getUrlFromRoute(
                 $this->getRouteNameFromDataSource($route),
                 $params,
-                $options
+                $query
             );
         }
         return str_replace('__record_id__', urlencode($id), $cache[$route]);

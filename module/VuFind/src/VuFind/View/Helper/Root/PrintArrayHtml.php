@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
 use function is_array;
@@ -43,8 +43,19 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PrintArrayHtml extends AbstractHelper
+class PrintArrayHtml
 {
+    /**
+     * Constructor.
+     *
+     * @param MakeTag $makeTag MakeTag helper
+     */
+    public function __construct(
+        #[Autowire(container: 'ViewHelperManager')]
+        protected MakeTag $makeTag,
+    ) {
+    }
+
     /**
      * Print an array formatted for HTML display.
      * Function uses recursion to achieve desired results, so entry can be
@@ -58,7 +69,6 @@ class PrintArrayHtml extends AbstractHelper
      */
     public function __invoke($entry, $indentLevel = 0, $indentFirst = true)
     {
-        $makeTag = $this->getView()->plugin('makeTag');
         $html = '';
         if (is_array($entry)) {
             $isList = $this->isArrayList($entry);
@@ -81,7 +91,7 @@ class PrintArrayHtml extends AbstractHelper
                     // Integer keyed arrays use a hyphen list unless they're flat
                     $html .= '&ndash;&ensp;';
                 } elseif (!$isList) {
-                    $html .= $makeTag('span', $key . ':', ['class' => 'term'])
+                    $html .= ($this->makeTag)('span', $key . ':', ['class' => 'term'])
                              . (
                                  (is_array($value) && !$valueIsSingleKeyList)
                                  ? "<br>\n" : ' '
@@ -91,7 +101,7 @@ class PrintArrayHtml extends AbstractHelper
                 $html .= $this->__invoke($value, $nextIndentLevel, $nextIndentFirst);
             }
         } else {
-            $html = $makeTag('span', $entry, ['class' => 'detail']) . "<br>\n";
+            $html = ($this->makeTag)('span', $entry, ['class' => 'detail']) . "<br>\n";
         }
         return $html;
     }
@@ -99,7 +109,7 @@ class PrintArrayHtml extends AbstractHelper
     /**
      * Check is a variable is and array and all keys are sequential
      * integers starting from index 0.
-     * TODO This function can be replaced by array_is_list() in PHP8
+     * TODO This function can be replaced by array_is_list() in PHP8.
      *
      * @param mixed $var A variable to perform the check on.
      *

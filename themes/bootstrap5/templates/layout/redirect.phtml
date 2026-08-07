@@ -1,0 +1,20 @@
+<?php
+  // Note: this page is only displayed for 302 redirects and normally not displayed to the user, so translation is not
+  // necessary.
+
+  if (($children = $this->layout()->getChildren()) && $children[0]?->getTemplate() === 'laminas_whoops/simple_error') {
+    // Whoops error is a complete page, so just output it and nothing else:
+    echo $this->layout()->content;
+    return;
+  }
+  echo $this->doctype();
+?>
+
+<html>
+  <head>
+    <title>Redirect</title>
+  </head>
+  <body>
+    302 Redirect to <?=$this->escapeHtml($this->redirectUrl ?? '[unavailable]')?>
+  </body>
+</html>

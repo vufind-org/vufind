@@ -110,14 +110,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected string $facetConfig;
 
     /**
-     * YAML searchspecs filename.
+     * Search specs config name.
      *
      * @var string
      */
-    protected string $searchYaml;
+    protected string $searchSpecsConfig;
 
     /**
-     * VuFind configuration reader
+     * VuFind configuration reader.
      *
      * @var ConfigManagerInterface
      */
@@ -149,49 +149,49 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected bool $allowFallbackForIndexName = false;
 
     /**
-     * Solr field used to store unique identifiers
+     * Solr field used to store unique identifiers.
      *
      * @var string
      */
     protected string $uniqueKey = 'id';
 
     /**
-     * Solr connector class
+     * Solr connector class.
      *
      * @var string
      */
     protected string $connectorClass = Connector::class;
 
     /**
-     * Solr backend class
+     * Solr backend class.
      *
      * @var string
      */
     protected string $backendClass = Backend::class;
 
     /**
-     * Record collection class for RecordCollectionFactory
+     * Record collection class for RecordCollectionFactory.
      *
      * @var string
      */
     protected string $recordCollectionClass = RecordCollection::class;
 
     /**
-     * Record collection factory class
+     * Record collection factory class.
      *
      * @var string
      */
     protected string $recordCollectionFactoryClass = RecordCollectionFactory::class;
 
     /**
-     * Merged index configuration
+     * Merged index configuration.
      *
      * @var ?array
      */
     protected ?array $mergedIndexConfig = null;
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -430,7 +430,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get the Solr base URL(s) (without the path to the specific index)
+     * Get the Solr base URL(s) (without the path to the specific index).
      *
      * @return string[]
      */
@@ -504,6 +504,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             'terms' => [
                 'functions' => ['terms'],
             ],
+            'morelikethis' => [
+                'functions' => ['similar'],
+            ],
         ];
 
         foreach ($this->getHiddenFilters() as $filter) {
@@ -535,7 +538,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get HTTP options for the client
+     * Get HTTP options for the client.
      *
      * @param string $url URL being requested
      *
@@ -623,11 +626,12 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function loadSpecs(): array
     {
-        return $this->getService(\VuFind\Config\SearchSpecsReader::class)->get($this->searchYaml);
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray($this->searchSpecsConfig);
     }
 
     /**
-     * Get a deduplication listener for the backend
+     * Get a deduplication listener for the backend.
      *
      * @param Backend $backend Search backend
      * @param bool    $enabled Whether deduplication is enabled
@@ -672,7 +676,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a hierarchical facet listener for the backend
+     * Get a hierarchical facet listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      *
@@ -688,7 +692,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a highlighting listener for the backend
+     * Get a highlighting listener for the backend.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
@@ -705,7 +709,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a Conditional Filter Listener
+     * Get a Conditional Filter Listener.
      *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
@@ -727,7 +731,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get a default parameters listener for the backend
+     * Get a default parameters listener for the backend.
      *
      * @param Backend $backend Search backend
      * @param array   $params  Default parameters

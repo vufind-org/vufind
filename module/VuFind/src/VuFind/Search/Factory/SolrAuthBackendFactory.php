@@ -41,12 +41,12 @@ namespace VuFind\Search\Factory;
 class SolrAuthBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
         $this->searchConfig = 'authority';
-        $this->searchYaml = 'authsearchspecs.yaml';
+        $this->searchSpecsConfig = 'authsearchspecs';
         $this->facetConfig = 'authority';
         $this->indexNameSetting = 'default_authority_core';
         $this->defaultIndexName = 'authority';

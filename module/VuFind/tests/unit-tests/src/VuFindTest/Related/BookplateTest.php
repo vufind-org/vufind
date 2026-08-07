@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Bookplate Related Items Test Class
+ * Bookplate Related Items Test Class.
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use VuFindTest\Container\MockContainer;
 use VuFindTest\RecordDriver\TestHarness as RecordDriver;
 
 /**
- * Bookplate Related Items Test Class
+ * Bookplate Related Items Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +49,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
-     * Test default behavior (no bookplates)
+     * Test default behavior (no bookplates).
      *
      * @return void
      */

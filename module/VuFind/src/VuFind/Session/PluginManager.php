@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session handler plugin manager
+ * Session handler plugin manager.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@
 namespace VuFind\Session;
 
 /**
- * Session handler plugin manager
+ * Session handler plugin manager.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -60,18 +60,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        Database::class => AbstractBaseFactory::class,
-        File::class => AbstractBaseFactory::class,
-        Memcache::class => AbstractBaseFactory::class,
-        Redis::class => RedisFactory::class,
-    ];
-
-    /**
      * Default delegator factories.
      *
      * @var string[][]|\Laminas\ServiceManager\Factory\DelegatorFactoryInterface[][]
@@ -84,7 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * Make sure plugins are properly initialized.
      *

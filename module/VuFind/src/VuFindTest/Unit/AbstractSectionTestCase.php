@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2025.
+ * Copyright (C) The National Library of Finland 2025-2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,14 +29,14 @@
 
 namespace VuFindTest\Unit;
 
-use Laminas\Http\Request;
+use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Mvc\View\Http\ViewManager;
 use Laminas\View\Model\ViewModel;
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Config\ConfigManagerInterface;
-use VuFind\Config\YamlReader;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\I18n\Locale\LocaleSettings;
@@ -45,18 +45,15 @@ use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AccountMenuFactory;
 use VuFind\Navigation\AdminMenu;
-use VuFind\Navigation\AdminMenuFactory;
 use VuFind\Navigation\FooterMenu;
-use VuFind\Navigation\FooterMenuFactory;
 use VuFind\Navigation\HeaderBar;
-use VuFind\Navigation\HeaderBarFactory;
 use VuFind\Navigation\SiteMap;
-use VuFind\Navigation\SiteMapFactory;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
 use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
 use VuFind\Section\SectionServiceInterface;
 use VuFindTest\Container\MockContainer;
+use VuFindTest\Feature\AutowireTrait;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
@@ -70,45 +67,28 @@ use VuFindTest\Feature\ConfigRelatedServicesTrait;
  */
 abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
 {
+    use AutowireTrait;
     use ConfigRelatedServicesTrait;
 
     /**
-     * YamlReader for the default configuration.
-     *
-     * @var YamlReader
-     */
-    protected YamlReader $defaultConfigYamlReader;
-
-    /**
-     * Contents of "files" returned by the mock YamlReader, keyed by file name.
+     * Contents of configs returned by the config manager, keyed by config name.
      *
      * @var array<string, array>
      */
-    protected array $mockYamlReaderFiles = [];
+    protected array $mockConfigFiles = [];
 
     /**
-     * Get YamlReader for the default configuration.
+     * Get default configuration.
      *
-     * @return YamlReader
-     */
-    protected function getDefaultConfigYamlReader(): YamlReader
-    {
-        if (!isset($this->defaultConfigYamlReader)) {
-            $this->defaultConfigYamlReader = new YamlReader($this->getPathResolver());
-        }
-        return $this->defaultConfigYamlReader;
-    }
-
-    /**
-     * Get default YAML configuration file.
-     *
-     * @param string $filename Filename
+     * @param string $configName Config name
      *
      * @return array
      */
-    protected function getDefaultYamlConfig(string $filename): array
+    protected function getDefaultConfig(string $configName): array
     {
-        return $this->getDefaultConfigYamlReader()->get($filename);
+        return $this->getContainerWithConfigRelatedServices()
+            ->get(ConfigManagerInterface::class)
+            ->getConfigArray($configName);
     }
 
     /**
@@ -142,19 +122,14 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         string $userLocale = 'en',
         array $fallbackLocales = ['en', 'fi']
     ): void {
-        $this->mockYamlReaderFiles['Sections.yaml']
-            = $this->getDefaultYamlConfig('Sections.yaml');
-        $mockYamlReader = $this->createMock(YamlReader::class);
-        $mockYamlReader->method('get')->willReturnCallback(
-            function (string $filename) {
-                return $this->mockYamlReaderFiles[$filename] ?? [];
-            }
-        );
-        $container->set(YamlReader::class, $mockYamlReader);
+        $this->mockConfigFiles['Sections'] = $this->getDefaultConfig('Sections');
+        $container->set(ConfigManagerInterface::class, $this->getMockConfigManager(
+            fn () => $this->mockConfigFiles
+        ));
         $sectionManager = new SectionManager($container);
         $container->set(SectionManager::class, $sectionManager);
         $service = new SectionService(
-            $container->get(YamlReader::class),
+            $container->get(ConfigManagerInterface::class),
             $container->get(SectionManager::class),
             $userLocale,
             $fallbackLocales,
@@ -222,8 +197,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = [],
     ): AccountMenu {
-        $config ??= $this->getDefaultYamlConfig('AccountMenu.yaml');
-        $this->mockYamlReaderFiles['AccountMenu.yaml'] = $config;
+        $config ??= $this->getDefaultConfig('AccountMenu');
+        $this->mockConfigFiles['AccountMenu'] = $config;
 
         $mockAccountCapabilities = $this->createMock(AccountCapabilities::class);
         $mockAccountCapabilities->method('getListSetting')
@@ -253,12 +228,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
                 };
             });
         $mockConnection->method('checkFunction')
-            ->willReturnCallback(function (string $function) use ($checkMethods) {
+            ->willReturnCallback(function (string $function) use ($checkMethods): array {
                 return match ($function) {
                     'getMyTransactionHistory' => $checkMethods['checkHistoricloans'] ?? true,
                     'StorageRetrievalRequests' => $checkMethods['checkStorageRetrievalRequests'] ?? true,
                     'ILLRequests' => $checkMethods['checkILLRequests'] ?? true,
-                };
+                } ? ['test' => true] : [];
             });
         $container->set(Connection::class, $mockConnection);
 
@@ -312,15 +287,13 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = [],
     ): AdminMenu {
-        $config ??= $this->getDefaultYamlConfig('AdminMenu.yaml');
-        $this->mockYamlReaderFiles['AdminMenu.yaml'] = $config;
+        $config ??= $this->getDefaultConfig('AdminMenu');
+        $this->mockConfigFiles['AdminMenu'] = $config;
+        $this->mockConfigFiles['Overdrive'] = [
+            'showOverdriveAdminMenu' => $checkMethods['checkCookieSettings'] ?? true,
+        ];
 
-        $configManager = $this->getMockConfigManager(
-            ['Overdrive' => ['showOverdriveAdminMenu' => $checkMethods['checkCookieSettings'] ?? true]]
-        );
-        $container->set(ConfigManagerInterface::class, $configManager);
-
-        $adminMenu = (new AdminMenuFactory())($container, AdminMenu::class);
+        $adminMenu = $this->getAutowiredObject(AdminMenu::class, $container);
         $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
     }
@@ -353,15 +326,10 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = []
     ): FooterMenu {
-        $config ??= $this->getDefaultYamlConfig('FooterMenu.yaml');
-        $this->mockYamlReaderFiles['FooterMenu.yaml'] = $config;
-
-        $configManager = $this->getMockConfigManager(
-            ['config' => ['Cookies' => ['consent' => $checkMethods['checkCookieSettings'] ?? true]]]
-        );
-        $container->set(ConfigManagerInterface::class, $configManager);
-
-        $footer = (new FooterMenuFactory())($container, FooterMenu::class);
+        $config ??= $this->getDefaultConfig('FooterMenu');
+        $this->mockConfigFiles['FooterMenu'] = $config;
+        $this->mockConfigFiles['config'] = ['Cookies' => ['consent' => $checkMethods['checkCookieSettings'] ?? true]];
+        $footer = $this->getAutowiredObject(FooterMenu::class, $container);
         $this->setSectionPlugin($container, $footer, 'footer');
         return $footer;
     }
@@ -394,13 +362,9 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         ?array $config = null,
         array $checkMethods = []
     ): HeaderBar {
-        $config ??= $this->getDefaultYamlConfig('HeaderBar.yaml');
-        $this->mockYamlReaderFiles['HeaderBar.yaml'] = $config;
-
-        $configManager = $this->getMockConfigManager(
-            ['config' => ['Feedback' => ['tab_enabled' => $checkMethods['checkFeedback'] ?? true]]]
-        );
-        $container->set(ConfigManagerInterface::class, $configManager);
+        $config ??= $this->getDefaultConfig('HeaderBar');
+        $this->mockConfigFiles['HeaderBar'] = $config;
+        $this->mockConfigFiles['config'] = ['Feedback' => ['tab_enabled' => $checkMethods['checkFeedback'] ?? true]];
 
         $mockCart = $this->createMock(Cart::class);
         $mockCart->method('isActive')
@@ -430,7 +394,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $mockRequest = $this->createMock(Request::class);
         $container->set('Request', $mockRequest);
 
-        $header = (new HeaderBarFactory())($container, HeaderBar::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+        $header = $this->getAutowiredObject(HeaderBar::class, $container);
         $this->setSectionPlugin($container, $header, 'header');
         return $header;
     }
@@ -465,10 +430,16 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         MockContainer $container,
         ?array $config = null
     ): SiteMap {
-        $config ??= $this->getDefaultYamlConfig('SiteMap.yaml');
-        $this->mockYamlReaderFiles['SiteMap.yaml'] = $config;
+        $config ??= $this->getDefaultConfig('SiteMap.yaml');
+        $this->mockConfigFiles['SiteMap.yaml'] = $config;
 
-        $siteMap = (new SiteMapFactory())($container, SiteMap::class);
+        $mockViewRenderer = $this->createMock(PhpRenderer::class);
+        // We are only testing that the templates are getting rendered, not the
+        // actual templates themselves.
+        $mockViewRenderer->method('render')->willReturn('<li></li>');
+        $container->set('ViewRenderer', $mockViewRenderer);
+
+        $siteMap = $this->getAutowiredObject(SiteMap::class, $container);
         $this->setSectionPlugin($container, $siteMap, 'siteMap');
         return $siteMap;
     }

@@ -43,14 +43,14 @@ use VuFindConsole\Command\Util\ExpireExternalSessionsCommand;
 class ExpireExternalSessionsCommandTest extends AbstractExpireCommandTestCase
 {
     /**
-     * Name of class being tested
+     * Name of class being tested.
      *
      * @var string
      */
     protected $targetClass = ExpireExternalSessionsCommand::class;
 
     /**
-     * Name of a valid service class (or interface) to test with
+     * Name of a valid service class (or interface) to test with.
      *
      * @var string
      */

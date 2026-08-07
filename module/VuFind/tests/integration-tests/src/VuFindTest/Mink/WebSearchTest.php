@@ -30,6 +30,7 @@
 
 namespace VuFindTest\Mink;
 
+use function count;
 use function intval;
 
 /**
@@ -45,33 +46,47 @@ use function intval;
 class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Data provider for testWebSearch()
+     * Data provider for testWebSearch().
      *
      * @return \Iterator
      */
     public static function webSearchProvider(): \Iterator
     {
-        yield 'blank search' => ['', 3, '', ['Fact', 'Fantasy', 'Fiction']];
-        yield 'search in full text' => ['"second record"', 1, 'second record', ['Fact']];
-        yield 'search in description' => ['three', 1, 'three', ['Fantasy']];
+        yield 'blank search' => [
+            '',
+            ['First Web Page', 'Second Web Page', 'Third Web Page', 'The Fourth Web Page'],
+            '',
+            ['Fantasy', 'Fact', 'Fiction'],
+        ];
+        yield 'blank search with title sort' => [
+            '',
+            ['First Web Page', 'The Fourth Web Page', 'Second Web Page', 'Third Web Page'],
+            '',
+            ['Fantasy', 'Fact', 'Fiction'],
+            'title',
+        ];
+        yield 'search in full text' => ['"second record"', ['Second Web Page'], 'second record', ['Fact']];
+        yield 'search in description' => ['three', ['Third Web Page'], 'three', ['Fantasy']];
     }
 
     /**
-     * Test performing a Web search
+     * Test performing a Web search.
      *
      * @param string   $query                  Search query
-     * @param int      $expectedCount          Expected search result count
+     * @param string[] $expectedTitles         Expected titles in search results
      * @param string   $expectedFirstHighlight Expected first highlighted text on page
      * @param string[] $expectedSubjectFacets  Expected subject facet values
+     * @param ?string  $sort                   Sort to apply (null for default)
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('webSearchProvider')]
     public function testWebSearch(
         string $query,
-        int $expectedCount,
+        array $expectedTitles,
         string $expectedFirstHighlight,
-        array $expectedSubjectFacets
+        array $expectedSubjectFacets,
+        ?string $sort = null
     ): void {
         // Perform the search:
         $session = $this->getMinkSession();
@@ -81,11 +96,24 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.btn-primary')->click();
         $this->waitForPageLoad($page);
 
-        // Confirm the result count:
+        // Apply sort if applicable:
+        if ($sort) {
+            $this->findCssAndSetValue($page, '#sort_options_1', $sort, verifyValue: false);
+            $this->waitForPageLoad($page);
+        }
+
+        // Confirm the result count is displayed:
         $this->assertSame(
-            $expectedCount,
+            count($expectedTitles),
             intval($this->findCssAndGetText($page, '.js-search-stats strong', index: 1))
         );
+
+        // Confirm that we got the titles we wanted:
+        $foundTitles = [];
+        foreach ($page->findAll('css', '.record-list a.title') as $title) {
+            $foundTitles[] = $title->getText();
+        }
+        $this->assertSame($expectedTitles, $foundTitles);
 
         // Confirm highlighting:
         if ($expectedFirstHighlight) {

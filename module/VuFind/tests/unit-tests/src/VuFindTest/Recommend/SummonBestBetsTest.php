@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonBestBets Test Class
+ * SummonBestBets Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\SummonBestBets;
 
 /**
- * SummonBestBets Test Class
+ * SummonBestBets Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -59,7 +59,7 @@ class SummonBestBetsTest extends \PHPUnit\Framework\TestCase
             ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getBestBets')
-            ->willReturn(false);
-        $this->assertFalse($obj->getResults());
+            ->willReturn([]);
+        $this->assertEquals([], $obj->getResults());
     }
 }

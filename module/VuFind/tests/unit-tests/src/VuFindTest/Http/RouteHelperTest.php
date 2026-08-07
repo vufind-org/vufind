@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RouteHelper Test Class
+ * RouteHelper Test Class.
  *
  * PHP version 8
  *
@@ -34,7 +34,7 @@ use Laminas\View\Helper\Url as UrlHelper;
 use VuFind\Http\RouteHelper;
 
 /**
- * RouteHelper Test Class
+ * RouteHelper Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ use VuFind\Http\RouteHelper;
 class RouteHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Shallowly test helper's getUrlFromRoute method
+     * Shallowly test helper's getUrlFromRoute method.
      *
      * @return void
      */
@@ -62,7 +62,7 @@ class RouteHelperTest extends \PHPUnit\Framework\TestCase
             ->with($routeName, $routeParams, ['query' => $queryParams, 'normalize_path' => false])
             ->willReturn($routeResult);
         $routeHelper = new RouteHelper(
-            Closure::fromCallable($urlHelper)
+            Closure::fromCallable(fn () => $urlHelper)
         );
 
         $url = $routeHelper->getUrlFromRoute($routeName, $routeParams, $queryParams);

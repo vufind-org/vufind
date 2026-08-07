@@ -96,6 +96,25 @@ interface AuthInterface
     public function getDelegateAuthMethod(Request $request);
 
     /**
+     * Attempt to pre-authenticate the current user. Throws exception if pre-authentication fails.
+     *
+     * @param Request $request Request object containing account credentials.
+     *
+     * @throws AuthException
+     * @return ?array Pre-authentication data if pre-authentication was performed.
+     */
+    public function preAuthenticate(Request $request): ?array;
+
+    /**
+     * Set pre-authentication data.
+     *
+     * @param ?array $data Pre-authentication data
+     *
+     * @return void
+     */
+    public function setPreAuthenticationData(?array $data): void;
+
+    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
@@ -179,20 +198,20 @@ interface AuthInterface
     public function supportsCreation();
 
     /**
-     * Does this authentication method support password changing
+     * Does this authentication method support password changing.
      *
      * @return bool
      */
-    public function supportsPasswordChange();
+    public function supportsPasswordChange(): bool;
 
     /**
-     * Does this authentication method support password recovery
+     * Does this authentication method support password recovery.
      *
      * @param ?string $target Authentication target for methods that support target selection
      *
      * @return bool
      */
-    public function supportsPasswordRecovery(?string $target = null);
+    public function supportsPasswordRecovery(?string $target = null): bool;
 
     /**
      * Does this authentication method support connecting library card of
@@ -203,14 +222,14 @@ interface AuthInterface
     public function supportsConnectingLibraryCard();
 
     /**
-     * Get username policy for a new account (e.g. minLength, maxLength)
+     * Get username policy for a new account (e.g. minLength, maxLength).
      *
      * @return array
      */
     public function getUsernamePolicy();
 
     /**
-     * Get password policy for a new password (e.g. minLength, maxLength)
+     * Get password policy for a new password (e.g. minLength, maxLength).
      *
      * @param ?string $target Authentication target for methods that support target selection
      *

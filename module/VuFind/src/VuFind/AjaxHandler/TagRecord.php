@@ -29,7 +29,7 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
@@ -51,7 +51,7 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Loader               $loader      Record loader
      * @param TagsService          $tagsService Tags service
@@ -62,16 +62,17 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         protected TagsService $tagsService,
         protected ?UserEntityInterface $user
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         if (!$this->user) {
             return $this->formatResponse(
@@ -80,13 +81,13 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-        $id = $params->fromPost('id');
-        $source = $params->fromPost('source', DEFAULT_SEARCH_BACKEND);
-        $tag = $params->fromPost('tag', '');
+        $id = $this->getPostParam($request, 'id');
+        $source = $this->getPostParam($request, 'source', DEFAULT_SEARCH_BACKEND);
+        $tag = $this->getPostParam($request, 'tag', '');
 
         if (strlen($tag) > 0) { // don't add empty tags
             $driver = $this->loader->load($id, $source);
-            $serviceMethod = ('false' === $params->fromPost('remove', 'false'))
+            $serviceMethod = ('false' === $this->getPostParam($request, 'remove', 'false'))
                 ? 'linkTagsToRecord'
                 : 'unlinkTagsFromRecord';
             $this->tagsService->$serviceMethod(

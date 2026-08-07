@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SummonDatabases Test Class
+ * SummonDatabases Test Class.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindTest\Recommend;
 use VuFind\Recommend\SummonDatabases;
 
 /**
- * SummonDatabases Test Class
+ * SummonDatabases Test Class.
  *
  * @category VuFind
  * @package  Tests
@@ -59,7 +59,7 @@ class SummonDatabasesTest extends \PHPUnit\Framework\TestCase
             ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getDatabaseRecommendations')
-            ->willReturn(false);
-        $this->assertFalse($obj->getResults());
+            ->willReturn([]);
+        $this->assertEquals([], $obj->getResults());
     }
 }

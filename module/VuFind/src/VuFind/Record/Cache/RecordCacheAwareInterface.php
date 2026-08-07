@@ -30,7 +30,7 @@
 namespace VuFind\Record\Cache;
 
 /**
- * RecordCacheAwareInterface
+ * RecordCacheAwareInterface.
  *
  * @category VuFind
  * @package  Record
@@ -41,7 +41,7 @@ namespace VuFind\Record\Cache;
 interface RecordCacheAwareInterface
 {
     /**
-     * Set record cache
+     * Set record cache.
      *
      * @param \VuFind\Record\Cache $recordCache record cache
      *
@@ -50,7 +50,7 @@ interface RecordCacheAwareInterface
     public function setRecordCache(\VuFind\Record\Cache $recordCache);
 
     /**
-     * Get record cache
+     * Get record cache.
      *
      * @return \VuFind\Record\Cache
      */

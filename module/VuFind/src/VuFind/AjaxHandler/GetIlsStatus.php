@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get ILS Status" AJAX handler
+ * "Get ILS Status" AJAX handler.
  *
  * PHP version 8
  *
@@ -30,13 +30,13 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\ILS\Connection;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 /**
- * "Get ILS Status" AJAX handler
+ * "Get ILS Status" AJAX handler.
  *
  * This will check the ILS for being online and will return the ils-offline
  * template upon failure.
@@ -51,54 +51,35 @@ use VuFind\Session\Settings as SessionSettings;
 class GetIlsStatus extends AbstractBase
 {
     /**
-     * ILS connection
+     * Constructor.
      *
-     * @var Connection
-     */
-    protected $ils;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings   $ss       Session settings
-     * @param Connection        $ils      ILS connection
-     * @param RendererInterface $renderer View renderer
+     * @param SessionSettings           $ss       Session settings
+     * @param Connection                $ils      ILS connection
+     * @param TemplateRendererInterface $renderer Template renderer
      */
     public function __construct(
         SessionSettings $ss,
-        Connection $ils,
-        RendererInterface $renderer
+        protected Connection $ils,
+        protected TemplateRendererInterface $renderer
     ) {
-        $this->sessionSettings = $ss;
-        $this->ils = $ils;
-        $this->renderer = $renderer;
+        parent::__construct($ss);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $html = null;
         $this->disableSessionWrites();
         if ($this->ils->getOfflineMode(true) == 'ils-offline') {
-            $offlineModeMsg = $params->fromPost(
-                'offlineModeMsg',
-                $params->fromQuery('offlineModeMsg')
-            );
+            $offlineModeMsg = $this->getPostOrQueryParam($request, 'offlineModeMsg');
             $html = $this->renderer
-                ->render('Helpers/ils-offline.phtml', compact('offlineModeMsg'));
+                ->renderTemplateAsString($request, 'Helpers/ils-offline.phtml', compact('offlineModeMsg'));
         }
         return $this->formatResponse(['html' => $html ?? '']);
     }

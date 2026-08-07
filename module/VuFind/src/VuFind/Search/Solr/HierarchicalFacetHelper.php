@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Facet Helper
+ * Facet Helper.
  *
  * PHP version 8
  *
@@ -33,6 +33,8 @@ namespace VuFind\Search\Solr;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\HasSorterTrait;
+use VuFind\I18n\Sorter;
+use VuFind\I18n\SorterInterface;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\TranslatableStringInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -40,13 +42,14 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\Base\HierarchicalFacetHelperInterface;
 use VuFind\Search\Base\Options;
 use VuFind\Search\UrlQueryHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_slice;
 use function count;
 use function strlen;
 
 /**
- * Functions for manipulating facets
+ * Functions for manipulating facets.
  *
  * @category VuFind
  * @package  Search
@@ -64,49 +67,69 @@ class HierarchicalFacetHelper implements
     use HasSorterTrait;
 
     /**
-     * Internal constant for sorting by count
+     * Internal constant for sorting by count.
      *
      * @var int
      */
     protected const SORT_COUNT = 0;
 
     /**
-     * Internal constant for sorting top level alphabetically and the rest by count
+     * Internal constant for sorting top level alphabetically and the rest by count.
      *
      * @var int
      */
     protected const SORT_TOP = 1;
 
     /**
-     * Internal constant for sorting all levels alphabetically
+     * Internal constant for sorting all levels alphabetically.
      *
      * @var int
      */
     protected const SORT_ALL = 2;
 
     /**
-     * Internal constant for sorting top level alphabetically by field value and the rest by count
+     * Internal constant for sorting top level alphabetically by field value and the rest by count.
      *
      * @var int
      */
     protected const SORT_TOP_VALUE = 3;
 
     /**
-     * Internal constant for sorting all levels alphabetically by field value
+     * Internal constant for sorting all levels alphabetically by field value.
      *
      * @var int
      */
     protected const SORT_ALL_VALUE = 4;
 
     /**
-     * View renderer
+     * View renderer.
      *
      * @var ?RendererInterface
      */
     protected ?RendererInterface $viewRenderer = null;
 
     /**
-     * Set view renderer
+     * Constructor.
+     *
+     * @param ?SorterInterface   $sorter   Sort helper (optional)
+     * @param ?RendererInterface $renderer Renderer (optional)
+     */
+    public function __construct(
+        #[Autowire(service: Sorter::class)]
+        ?SorterInterface $sorter = null,
+        #[Autowire(service: 'ViewRenderer')]
+        ?RendererInterface $renderer = null
+    ) {
+        if ($sorter) {
+            $this->setSorter($sorter);
+        }
+        if ($renderer) {
+            $this->setViewRenderer($renderer);
+        }
+    }
+
+    /**
+     * Set view renderer.
      *
      * @param RendererInterface $renderer View renderer
      *
@@ -239,7 +262,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Flatten a hierarchical facet list to a simple array
+     * Flatten a hierarchical facet list to a simple array.
      *
      * @param array $facetList Facet list
      *
@@ -265,7 +288,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Format a facet display text for displaying
+     * Format a facet display text for displaying.
      *
      * @param string       $displayText Display text
      * @param bool         $allLevels   Whether to display all levels or only the
@@ -309,7 +332,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Format a filter string in parts suitable for displaying or translation
+     * Format a filter string in parts suitable for displaying or translation.
      *
      * @param string $filter Filter value
      *
@@ -363,7 +386,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Create an item for the hierarchical facet array
+     * Create an item for the hierarchical facet array.
      *
      * @param string          $facet     Facet name
      * @param array           $item      Facet item received from Solr
@@ -437,7 +460,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Update 'opened' of all facet items
+     * Update 'opened' of all facet items.
      *
      * @param array $list Facet list
      *
@@ -457,7 +480,7 @@ class HierarchicalFacetHelper implements
     }
 
     /**
-     * Filter hierarchical facets
+     * Filter hierarchical facets.
      *
      * @param string  $name    Facet name
      * @param array   $facets  Facet list

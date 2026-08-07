@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Solr Web aspect of the Search Multi-class (Options)
+ * Solr Web aspect of the Search Multi-class (Options).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Search\SolrWeb;
 use VuFind\Config\ConfigManagerInterface;
 
 /**
- * Solr Web Search Options
+ * Solr Web Search Options.
  *
  * @category VuFind
  * @package  Search_SolrWeb
@@ -43,7 +43,7 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ConfigManagerInterface $configManager Config manager
      */

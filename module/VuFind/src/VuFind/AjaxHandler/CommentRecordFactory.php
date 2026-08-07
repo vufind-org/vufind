@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Captcha\Service\CaptchaService;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 
@@ -48,7 +49,7 @@ use VuFind\Record\ResourcePopulator;
 class CommentRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
@@ -72,12 +73,11 @@ class CommentRecordFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             throw new \Exception('Unexpected options passed to factory.');
         }
         $servicePluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        $controllerPluginManager = $container->get('ControllerPluginManager');
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
             $container->get(ResourcePopulator::class),
             $servicePluginManager->get(\VuFind\Db\Service\CommentsServiceInterface::class),
-            $controllerPluginManager->get(\VuFind\Controller\Plugin\Captcha::class),
+            $container->get(CaptchaService::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $capabilities->getCommentSetting() !== 'disabled',
             $container->get(\VuFind\Record\Loader::class),

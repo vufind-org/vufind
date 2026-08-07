@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database entity plugin manager
+ * Database entity plugin manager.
  *
  * PHP version 8
  *
@@ -29,10 +29,10 @@
 
 namespace VuFind\Db\Entity;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
+use VuFind\ServiceManager\AbstractPluginFactory;
 
 /**
- * Database entity plugin manager
+ * Database entity plugin manager.
  *
  * @category VuFind
  * @package  Database
@@ -57,6 +57,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ExternalSessionEntityInterface::class => ExternalSession::class,
         FeedbackEntityInterface::class => Feedback::class,
         LoginTokenEntityInterface::class => LoginToken::class,
+        NoticeEntityInterface::class => Notice::class,
+        NoticeTranslationEntityInterface::class => NoticeTranslation::class,
         OaiResumptionEntityInterface::class => OaiResumption::class,
         PaymentEntityInterface::class => Payment::class,
         PaymentFeeEntityInterface::class => PaymentFee::class,
@@ -75,44 +77,29 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ];
 
     /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        AccessToken::class => InvokableFactory::class,
-        ApiKey::class => InvokableFactory::class,
-        AuthHash::class => InvokableFactory::class,
-        ChangeTracker::class => InvokableFactory::class,
-        Comments::class => InvokableFactory::class,
-        AuditEvent::class => InvokableFactory::class,
-        ExternalSession::class => InvokableFactory::class,
-        Feedback::class => InvokableFactory::class,
-        LoginToken::class => InvokableFactory::class,
-        OaiResumption::class => InvokableFactory::class,
-        Payment::class => InvokableFactory::class,
-        PaymentFee::class => InvokableFactory::class,
-        Ratings::class => InvokableFactory::class,
-        Record::class => InvokableFactory::class,
-        Resource::class => InvokableFactory::class,
-        ResourceTags::class => InvokableFactory::class,
-        Search::class => InvokableFactory::class,
-        Session::class => InvokableFactory::class,
-        Shortlinks::class => InvokableFactory::class,
-        Tags::class => InvokableFactory::class,
-        User::class => InvokableFactory::class,
-        UserCard::class => InvokableFactory::class,
-        UserList::class => InvokableFactory::class,
-        UserResource::class => InvokableFactory::class,
-    ];
-
-    /**
      * We do not want to create shared instances of database entities; build a new
      * one every time!
      *
      * @var bool
      */
     protected $sharedByDefault = false;
+
+    /**
+     * Constructor.
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        $this->addAbstractFactory(AbstractPluginFactory::class);
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform

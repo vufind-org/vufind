@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
  * PHP version 8
  *
@@ -30,20 +30,20 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\SideFacets;
 use VuFind\Search\Base\Results;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function in_array;
 use function is_callable;
 
 /**
- * "Get Side Facets" AJAX handler
+ * "Get Side Facets" AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
@@ -57,62 +57,35 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Recommend plugin manager
+     * Constructor.
      *
-     * @var RecommendPluginManager
-     */
-    protected $recommendPluginManager;
-
-    /**
-     * Search runner
-     *
-     * @var SearchRunner
-     */
-    protected $searchRunner;
-
-    /**
-     * View renderer
-     *
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * Constructor
-     *
-     * @param SessionSettings        $ss       Session settings
-     * @param RecommendPluginManager $rpm      Recommend plugin manager
-     * @param SearchRunner           $sr       Search runner
-     * @param RendererInterface      $renderer View renderer
+     * @param SessionSettings           $ss                     Session settings
+     * @param RecommendPluginManager    $recommendPluginManager Recommend plugin manager
+     * @param SearchRunner              $searchRunner           Search runner
+     * @param TemplateRendererInterface $renderer               Template renderer
      */
     public function __construct(
         SessionSettings $ss,
-        \VuFind\Recommend\PluginManager $rpm,
-        SearchRunner $sr,
-        RendererInterface $renderer
+        protected \VuFind\Recommend\PluginManager $recommendPluginManager,
+        protected SearchRunner $searchRunner,
+        protected TemplateRendererInterface $renderer
     ) {
-        $this->sessionSettings = $ss;
-        $this->recommendPluginManager = $rpm;
-        $this->searchRunner = $sr;
-        $this->renderer = $renderer;
+        parent::__construct($ss);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $this->disableSessionWrites();  // avoid session write timing bug
 
-        // Allow both GET and POST variables:
-        $request = $params->fromQuery() + $params->fromPost();
-
-        $configIndex = $request['configIndex'] ?? 0;
-        $configLocation = $request['location'] ?? 'side';
+        $configIndex = $this->getPostOrQueryParam($request, 'configIndex', 0);
+        $configLocation = $this->getPostOrQueryParam($request, 'location', 'side');
         $results = $this->getFacetResults($request, $configIndex, $configLocation);
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $this->logError('Faceting request failed');
@@ -121,11 +94,11 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
 
         // Set appropriate query suppression / extra field behavior:
         $queryHelper = $results->getUrlQuery();
-        $queryHelper->setSuppressQuery((bool)($request['querySuppressed'] ?? false));
-        $extraFields = array_filter(explode(',', $request['extraFields'] ?? ''));
+        $queryHelper->setSuppressQuery((bool)($this->getPostOrQueryParam($request, 'querySuppressed', false)));
+        $extraFields = array_filter(explode(',', $this->getPostOrQueryParam($request, 'extraFields', '')));
         foreach ($extraFields as $field) {
-            if (isset($request[$field])) {
-                $queryHelper->setDefaultParameter($field, $request[$field]);
+            if (null !== ($value = $this->getPostOrQueryParam($request, $field))) {
+                $queryHelper->setDefaultParameter($field, $value);
             }
         }
 
@@ -140,21 +113,23 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
         $context = [
             'recommend' => $recommend,
             'params' => $results->getParams(),
-            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
+            'searchClassId' => $this->getPostOrQueryParam($request, 'searchClassId', DEFAULT_SEARCH_BACKEND),
         ];
-        if (isset($request['enabledFacets'])) {
+        if ($enabledFacets = $this->getPostOrQueryParam($request, 'enabledFacets')) {
             // Render requested facets separately
             $facets = $this->formatFacets(
+                $request,
                 $context,
                 $recommend,
-                $request['enabledFacets'],
+                (array)$enabledFacets,
                 $results
             );
             return $this->formatResponse(compact('facets'));
         }
 
         // Render full sidefacets
-        $html = $this->renderer->render(
+        $html = $this->renderer->renderTemplateAsString(
+            $request,
             'Recommend/SideFacets.phtml',
             $context
         );
@@ -162,15 +137,15 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
     }
 
     /**
-     * Perform search and return the results
+     * Perform search and return the results.
      *
-     * @param array  $request Request params
-     * @param string $index   Index of SideFacetsDeferred in configuration
-     * @param string $loc     Location where SideFacetsDeferred is configured
+     * @param ServerRequestInterface $request Request
+     * @param string                 $index   Index of SideFacetsDeferred in configuration
+     * @param string                 $loc     Location where SideFacetsDeferred is configured
      *
      * @return Results
      */
-    protected function getFacetResults(array $request, $index, $loc)
+    protected function getFacetResults(ServerRequestInterface $request, $index, $loc)
     {
         $setupCallback = function ($runner, $params, $searchId) use ($index, $loc): void {
             $listener = new RecommendListener(
@@ -199,28 +174,30 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
 
         $runner = $this->searchRunner;
         $results = $runner->run(
-            $request,
-            $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
+            $request->getParsedBody() + $request->getQueryParams(),
+            $this->getPostOrQueryParam($request, 'searchClassId', DEFAULT_SEARCH_BACKEND),
             $setupCallback
         );
         // Restore limit overridden by the setup callback above:
-        if ($limit = $request['limit'] ?? null) {
+        if ($limit = $this->getPostOrQueryParam($request, 'limit')) {
             $results->getParams()->setLimit($limit);
         }
         return $results;
     }
 
     /**
-     * Format facets according to their type
+     * Format facets according to their type.
      *
-     * @param array      $context   View rendering context
-     * @param SideFacets $recommend Recommendation module
-     * @param array      $facets    Facets to process
-     * @param Results    $results   Search results
+     * @param ServerRequestInterface $request   Request
+     * @param array                  $context   View rendering context
+     * @param SideFacets             $recommend Recommendation module
+     * @param array                  $facets    Facets to process
+     * @param Results                $results   Search results
      *
      * @return array
      */
     protected function formatFacets(
+        ServerRequestInterface $request,
         $context,
         SideFacets $recommend,
         $facets,
@@ -239,7 +216,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
                     'list' => [],
                 ];
                 $context['collapsedFacets'] = [];
-                $response[$facet]['html'] = $this->renderer->render(
+                $response[$facet]['html'] = $this->renderer->renderTemplateAsString(
+                    $request,
                     'Recommend/SideFacets/facet.phtml',
                     $context
                 );
