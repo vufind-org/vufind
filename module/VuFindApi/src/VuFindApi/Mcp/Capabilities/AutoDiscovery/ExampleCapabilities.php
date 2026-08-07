@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Example capabilities provider for Model Context Protocol (MCP)
+ * Example capabilities provider for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindApi\Mcp\Capabilities\AutoDiscovery;
 use Mcp\Capability\Attribute\McpTool;
 
 /**
- * Example capabilities provider for Model Context Protocol (MCP)
+ * Example capabilities provider for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Mcp

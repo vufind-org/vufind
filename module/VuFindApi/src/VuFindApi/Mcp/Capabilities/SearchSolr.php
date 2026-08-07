@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Capabilities (stub) for Model Context Protocol (MCP)
+ * Capabilities (stub) for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFindApi\Mcp\Capabilities;
 
 /**
- * Capabilities (stub) for Model Context Protocol (MCP)
+ * Capabilities (stub) for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Mcp

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract capability provider for Model Context Protocol (MCP)
+ * Abstract capability provider for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use VuFind\Search\SearchRunner;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
- * Abstract capability provider for Model Context Protocol (MCP)
+ * Abstract capability provider for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Mcp
@@ -46,17 +46,17 @@ use VuFindApi\Formatter\RecordFormatter;
 abstract class AbstractCapabilities
 {
     /**
-     * Config filename
+     * Config filename.
      */
     protected string $configName = 'ModelContextProtocol';
 
     /**
-     * Config for MCP
+     * Config for MCP.
      */
     protected array $config;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param YamlReader      $yamlReader      YAML reader
      * @param Loader          $recordLoader    Record loader

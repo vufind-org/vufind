@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Controller for Model Context Protocol (MCP)
+ * Controller for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -42,7 +42,7 @@ use Psr\Http\Message\ResponseInterface;
 use VuFind\Controller\AbstractBase;
 
 /**
- * Controller for Model Context Protocol (MCP)
+ * Controller for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Controller
@@ -53,7 +53,7 @@ use VuFind\Controller\AbstractBase;
 class McpController extends AbstractBase
 {
     /**
-     * Permission required for all MCP endpoints
+     * Permission required for all MCP endpoints.
      *
      * @var string
      */
@@ -68,7 +68,7 @@ class McpController extends AbstractBase
     protected int $AUTH_ERROR = -32003;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param ServiceLocatorInterface $sm     Service manager
      * @param ?Server                 $server MCP Server
@@ -79,7 +79,7 @@ class McpController extends AbstractBase
     }
 
     /**
-     * MCP action
+     * MCP action.
      *
      * @return \Laminas\Http\Response
      */

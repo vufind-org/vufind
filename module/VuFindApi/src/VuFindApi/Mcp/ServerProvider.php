@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ServerProvider for Model Context Protocol (MCP)
+ * ServerProvider for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Mcp\Server\Session\FileSessionStore;
 use VuFind\Config\Config;
 
 /**
- * ServerProvider for Model Context Protocol (MCP)
+ * ServerProvider for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Mcp
@@ -47,12 +47,12 @@ use VuFind\Config\Config;
 class ServerProvider
 {
     /**
-     * MCP Server
+     * MCP Server.
      */
     protected Server $server;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array  $mcpConfig MCP configuration
      * @param Config $topConfig config.ini

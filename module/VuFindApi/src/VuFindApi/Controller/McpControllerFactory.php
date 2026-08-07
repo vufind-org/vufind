@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Controller Factory for Model Context Protocol (MCP)
+ * Controller Factory for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -36,7 +36,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Controller Factory for Model Context Protocol (MCP)
+ * Controller Factory for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Controller
@@ -47,7 +47,7 @@ use Psr\Container\ContainerInterface;
 class McpControllerFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

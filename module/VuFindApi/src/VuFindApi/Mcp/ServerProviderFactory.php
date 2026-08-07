@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ServerProviderFactory for Model Context Protocol (MCP)
+ * ServerProviderFactory for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerInterface;
 use VuFind\Config\YamlReader;
 
 /**
- * ServerProviderFactory for Model Context Protocol (MCP)
+ * ServerProviderFactory for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Mcp
@@ -48,12 +48,12 @@ use VuFind\Config\YamlReader;
 class ServerProviderFactory implements FactoryInterface
 {
     /**
-     * MCP Config name
+     * MCP Config name.
      */
     protected string $mcpConfigName = 'ModelContextProtocol';
 
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract search capability provider for Model Context Protocol (MCP)
+ * Abstract search capability provider for Model Context Protocol (MCP).
  *
  * PHP version 8
  *
@@ -41,7 +41,7 @@ use VuFind\Search\SearchRunner;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
- * Abstract search capability provider for Model Context Protocol (MCP)
+ * Abstract search capability provider for Model Context Protocol (MCP).
  *
  * @category VuFind
  * @package  Mcp
@@ -52,17 +52,17 @@ use VuFindApi\Formatter\RecordFormatter;
 abstract class AbstractSearch extends AbstractCapabilities
 {
     /**
-     * Record fields to return
+     * Record fields to return.
      */
     protected array $responseFields = ['recordPageAbsoluteLink', 'title', 'authors'];
 
     /**
-     * Limit for searches
+     * Limit for searches.
      */
     protected int $limit = 20;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param YamlReader      $yamlReader      YAML reader
      * @param Loader          $recordLoader    Record loader
