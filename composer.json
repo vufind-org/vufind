@@ -135,7 +135,7 @@
         "phpunit/phpunit": "11.5.56",
         "pietercolpaert/hardf": "0.6.2",
         "rector/rector": "2.5.9",
-        "squizlabs/php_codesniffer": "4.0.1"
+        "squizlabs/php_codesniffer": "4.0.2"
     },
     "suggest": {
         "apereo/phpcas": "Allows CAS authentication to be used. Note that this functionality is deprecated."
