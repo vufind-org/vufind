@@ -166,13 +166,15 @@ class ServerProvider
     protected function addTools(Builder $builder): void
     {
         foreach (($this->mcpConfig['Tools'] ?? []) as $name => $tool) {
-            $description = $tool['description'];
             $className = $tool['class'];
             $functionName = $tool['function'];
-            $inputSchema = $tool['inputSchema'];
+            $title = $tool['title'] ?? null;
+            $description = $tool['description'] ?? null;
+            $inputSchema = $tool['inputSchema'] ?? null;
             $builder->addTool(
                 [$className, $functionName],
                 name: $name,
+                title: $title,
                 description: $description,
                 inputSchema: $inputSchema
             );

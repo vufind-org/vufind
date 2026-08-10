@@ -41,14 +41,18 @@ ResourceTemplates:
   #   uriTemplate: 'catalog://record/{recordId}'
 
 # Tools to register with the MCP server.
-# - description will be sent back to the LLM, and may be relevant to discovery
+# The heading (i.e. 'searchRecordsAnyType') is used as the tool's name.
 # - class and function identify the implementation
-# - inputSchema is a JSON Schema definition of the input requested from the LLM.
+# - title (optional) is a human-readable title for display.
+# - description (optional) is a human-readable description. Both title and description
+#   may also be used by the LLM and relevant for tool discovery.
+# - inputSchema (optional) is a JSON Schema definition of the input requested from the LLM.
 # Note that multiple tools may be defined using the same implementing function
 # but different input schema, via default parameter values.
 Tools:
 
   # searchRecordsAnyType:
+  #   title: Search Records
   #   description: Search library catalog records of all content types by keywords.
   #   class: VuFindApi\Mcp\Capabilities\SearchSolr
   #   function: searchRecords
@@ -62,6 +66,7 @@ Tools:
   #       - keywords
 
   # searchRecordsByContentType:
+  #   title: Search Records by Content Type
   #   description: Search library catalog records for a specific content type by keywords.
   #   class: VuFindApi\Mcp\Capabilities\SearchSolr
   #   function: searchRecords
