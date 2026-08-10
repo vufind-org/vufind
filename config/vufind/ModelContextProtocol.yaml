@@ -31,11 +31,17 @@ General:
 #   excludeDirs:
 
 # Resource Templates to register with the MCP server. Define / uncomment to enable.
+# The heading (i.e. 'getRecord') is used as the resourcde tempalte's name.
 # - class and function identify the implementation
 # - uriTemplate must match the implementing function's annotation
+# - title (optional) is a human-readable title for display.
+# - description (optional) is a human-readable description. Both title and description
+#   may also be used by the LLM and relevant for template discovery.
 ResourceTemplates:
 
   # getRecord:
+  #   title: Get Record by ID
+  #   description: Retrieve a single record by its bibliographic id.
   #   class: VuFindApi\Mcp\Capabilities\SearchSolr
   #   function: getRecord
   #   uriTemplate: 'catalog://record/{recordId}'

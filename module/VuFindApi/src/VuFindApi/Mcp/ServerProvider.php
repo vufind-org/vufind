@@ -149,9 +149,13 @@ class ServerProvider
             $className = $resourceTemplate['class'];
             $functionName = $resourceTemplate['function'];
             $uriTemplate = $resourceTemplate['uriTemplate'];
+            $title = $resourceTemplate['title'] ?? null;
+            $description = $resourceTemplate['description'] ?? null;
             $builder->addResourceTemplate(
                 [$className, $functionName],
                 uriTemplate: $uriTemplate,
+                title: $title,
+                description: $description,
             );
         }
     }
