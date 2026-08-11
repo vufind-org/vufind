@@ -61,6 +61,11 @@ class ServerProvider
     protected ?Server $server = null;
 
     /**
+     * Directory to store MCP session files in.
+     */
+    protected string $sessionDir = LOCAL_CACHE_DIR . '/mcp/session';
+
+    /**
      * Constructor.
      *
      * @param array           $mcpConfig       MCP configuration
@@ -107,7 +112,7 @@ class ServerProvider
         }
 
         $builder = Server::builder()
-            ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
+            ->setSession(new FileSessionStore($this->sessionDir))
             ->setContainer($container)
             ->setLogger($this->logger);
         $this->setServerInfo($builder);
