@@ -152,7 +152,7 @@ abstract class AbstractSearch extends AbstractCapabilities
             $this->routeHelper->getUrlFromRoute(
                 $this->getSearchActionRoute(),
                 [],
-                [$this->getRequestParam() => urlencode($keywords)]
+                [$this->getRequestParam() => $keywords]
             );
         return [
             'search_results' => $records,
