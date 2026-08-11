@@ -56,9 +56,9 @@ use VuFindApi\Formatter\RecordFormatter;
 class ServerProvider
 {
     /**
-     * MCP Server.
+     * MCP Server, or null if the server is not enabled.
      */
-    protected Server $server;
+    protected ?Server $server = null;
 
     /**
      * Constructor.
@@ -238,6 +238,6 @@ class ServerProvider
      */
     public function getServer(): ?Server
     {
-        return $this->server ?? null;
+        return $this->server;
     }
 }
