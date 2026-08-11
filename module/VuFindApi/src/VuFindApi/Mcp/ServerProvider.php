@@ -36,6 +36,7 @@ use Mcp\Server\Session\FileSessionStore;
 use Psr\Log\LoggerInterface;
 use VuFind\Config\Config;
 use VuFind\Config\YamlReader;
+use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\Record\Loader;
@@ -145,15 +146,16 @@ class ServerProvider
      */
     protected function addResourceTemplates(Builder $builder): void
     {
-        foreach (($this->mcpConfig['ResourceTemplates'] ?? []) as $resourceTemplate) {
-            $className = $resourceTemplate['class'];
-            $functionName = $resourceTemplate['function'];
-            $uriTemplate = $resourceTemplate['uriTemplate'];
+        foreach (($this->mcpConfig['ResourceTemplates'] ?? []) as $name => $resourceTemplate) {
+            $className = $this->getRequiredSetting($resourceTemplate, 'class', $name);
+            $functionName = $this->getRequiredSetting($resourceTemplate, 'function', $name);
+            $uriTemplate = $this->getRequiredSetting($resourceTemplate, 'uriTemplate', $name);
             $title = $resourceTemplate['title'] ?? null;
             $description = $resourceTemplate['description'] ?? null;
             $builder->addResourceTemplate(
                 [$className, $functionName],
                 uriTemplate: $uriTemplate,
+                name: $name,
                 title: $title,
                 description: $description,
             );
@@ -170,8 +172,8 @@ class ServerProvider
     protected function addTools(Builder $builder): void
     {
         foreach (($this->mcpConfig['Tools'] ?? []) as $name => $tool) {
-            $className = $tool['class'];
-            $functionName = $tool['function'];
+            $className = $this->getRequiredSetting($tool, 'class', $name);
+            $functionName = $this->getRequiredSetting($tool, 'function', $name);
             $title = $tool['title'] ?? null;
             $description = $tool['description'] ?? null;
             $inputSchema = $tool['inputSchema'] ?? null;
@@ -183,6 +185,29 @@ class ServerProvider
                 inputSchema: $inputSchema
             );
         }
+    }
+
+    /**
+     * Get a required setting from an MCP capability config entry (a Tool or ResourceTemplate
+     * definition), or throw a clear configuration error if it is missing.
+     *
+     * @param array  $entry     Config entry
+     * @param string $key       Required setting name
+     * @param string $entryName Name of the entry (its heading in ModelContextProtocol.yaml), for the
+     * error message
+     *
+     * @return mixed
+     *
+     * @throws ConfigException
+     */
+    protected function getRequiredSetting(array $entry, string $key, string $entryName): mixed
+    {
+        if (!($entry[$key] ?? null)) {
+            throw new ConfigException(
+                "ModelContextProtocol.yaml: '$entryName' is missing required setting '$key'."
+            );
+        }
+        return $entry[$key];
     }
 
     /**
