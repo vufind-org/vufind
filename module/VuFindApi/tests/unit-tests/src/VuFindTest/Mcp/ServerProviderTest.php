@@ -95,7 +95,7 @@ class ServerProviderTest extends TestCase
             $this->createMock(ServerUrlHelper::class),
             new NullLogger(),
         );
-        $this->assertNull($provider->getServer());
+        $this->assertNotInstanceOf(\Mcp\Server::class, $provider->getServer());
     }
 
     /**

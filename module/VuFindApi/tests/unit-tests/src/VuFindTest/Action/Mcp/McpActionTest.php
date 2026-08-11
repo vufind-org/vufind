@@ -39,6 +39,8 @@ use VuFindApi\Action\Mcp\McpAction;
 use VuFindApi\Mcp\ServerProvider;
 use VuFindTest\Feature\ReflectionTrait;
 
+use function strlen;
+
 /**
  * Unit tests for the MCP action.
  *
