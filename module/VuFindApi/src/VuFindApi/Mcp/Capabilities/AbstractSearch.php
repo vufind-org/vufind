@@ -31,9 +31,11 @@ namespace VuFindApi\Mcp\Capabilities;
 
 use Exception;
 use Mcp\Exception\InvalidArgumentException;
+use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
 use Mcp\Exception\ToolCallException;
 use VuFind\Config\YamlReader;
+use VuFind\Exception\RecordMissing;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\Record\Loader;
@@ -180,8 +182,11 @@ abstract class AbstractSearch extends AbstractCapabilities
 
         try {
             $record = $this->recordLoader->load($recordId, $this->getSearchClassId());
+        } catch (RecordMissing $e) {
+            // The record genuinely does not exist -- a "not found" error, not a read failure.
+            throw new ResourceNotFoundException($recordId);
         } catch (Exception $e) {
-            throw new ResourceReadException(message: "Record not found for ID: {$recordId}", previous: $e);
+            throw new ResourceReadException(message: "Failed to load record for ID: {$recordId}", previous: $e);
         }
 
         $formattedRecord = $this->recordFormatter->format([$record], $this->responseFields)[0];
