@@ -61,8 +61,6 @@ class McpAction extends AbstractAction
         ServerProvider $serverProvider
     ) {
         parent::__construct();
-        // TODO: this is a single permission for all MCP tools/resources; when OAuth support is added, consider
-        // granting scopes per tool/resource instead, so different capabilities can require different access.
         $this->accessPermission = 'access.mcp';
         // permissionBehavior.ini's default of 'promptLogin' would redirect an MCP client to an HTML login
         // form; MCP clients need an HTTP-level denial instead.
