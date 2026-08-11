@@ -31,8 +31,8 @@ namespace VuFindApi\Mcp\Capabilities;
 
 use Exception;
 use Mcp\Exception\InvalidArgumentException;
-use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
+use Mcp\Exception\ToolCallException;
 use VuFind\Config\YamlReader;
 use VuFind\Http\RouteHelper;
 use VuFind\Http\ServerUrlHelper;
@@ -123,7 +123,7 @@ abstract class AbstractSearch extends AbstractCapabilities
             if ($filter = $this->config['ContentTypes'][$contentType]['filter'] ?? null) {
                 $rawRequest['filter'] = $filter;
             } else {
-                throw new ResourceNotFoundException('Unknown content type: ' . $contentType);
+                throw new ToolCallException('Unknown content type: ' . $contentType);
             }
         }
 
@@ -141,7 +141,12 @@ abstract class AbstractSearch extends AbstractCapabilities
             }
         );
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
-            throw new ResourceNotFoundException('No records found');
+            // EmptySet\Results is only substituted by SearchRunner when the backend could not even
+            // parse the query (see SearchRunner::run()) -- not for a well-formed search that simply
+            // matched nothing, which is a normal, non-error outcome handled below.
+            throw new ToolCallException(
+                'Search could not be performed; check for invalid search syntax in the keywords.'
+            );
         }
 
         $records = $this->recordFormatter->format(
