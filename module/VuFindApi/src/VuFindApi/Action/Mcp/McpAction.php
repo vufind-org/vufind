@@ -30,13 +30,11 @@
 namespace VuFindApi\Action\Mcp;
 
 use Mcp\Exception\ServiceNotFoundException;
-use Mcp\Schema\JsonRpc\Error;
 use Mcp\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\AbstractAction;
-use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFindApi\Mcp\ServerProvider;
 
@@ -51,21 +49,6 @@ use VuFindApi\Mcp\ServerProvider;
  */
 class McpAction extends AbstractAction
 {
-    /**
-     * Permission required for all MCP endpoints.
-     *
-     * @var string
-     */
-    protected $baseAccessPermission = 'access.mcp';
-
-    /**
-     * JSON schema response code to represent an authorization error. This
-     * is not defined by any standard, except that the 32xxx range is app-specific.
-     *
-     * @var int
-     */
-    protected int $AUTH_ERROR = -32003;
-
     protected ?Server $server;
 
     /**
@@ -78,6 +61,12 @@ class McpAction extends AbstractAction
         ServerProvider $serverProvider
     ) {
         parent::__construct();
+        // TODO: this is a single permission for all MCP tools/resources; when OAuth support is added, consider
+        // granting scopes per tool/resource instead, so different capabilities can require different access.
+        $this->accessPermission = 'access.mcp';
+        // permissionBehavior.ini's default of 'promptLogin' would redirect an MCP client to an HTML login
+        // form; MCP clients need an HTTP-level denial instead.
+        $this->accessDeniedBehavior = 'exception';
         $this->server = $serverProvider->getServer();
     }
 
@@ -97,51 +86,11 @@ class McpAction extends AbstractAction
             throw new ServiceNotFoundException('This MCP server is not enabled.');
         }
 
-        // $content = json_decode($this->params()->getController()->getRequest()->getContent(), true);
-        // $mcpMethod = $content['method'] ?? '';
-        $mcpMethod = null;
-        if ($this->isAccessDenied($mcpMethod)) {
-            // $messageId = $content['messageId'] ?? '';
-            $messageId = '';
-            return $this->outputAuthError($messageId);
-        }
-
         // laminas-psr7bridge's Psr7ServerRequest::fromLaminas() writes the body into the stream without
         // rewinding it afterward, leaving the pointer at EOF; rewind so the transport can read it.
         $request->getBody()->rewind();
         $transport = new StreamableHttpTransport($request);
         $response = $this->server->run($transport);
-        return $response;
-    }
-
-    /**
-     * Check whether access is denied based on the MCP method.
-     *
-     * @param string $mcpMethod MCP method
-     *
-     * @return bool
-     */
-    protected function isAccessDenied($mcpMethod): bool
-    {
-        $permissions = $this->getHelper(PermissionHelper::class);
-        return $mcpMethod
-            ? !$permissions->isAuthorized($this->baseAccessPermission . '.' . $mcpMethod)
-            : !$permissions->isAuthorized($this->baseAccessPermission);
-    }
-
-    /**
-     * Output an authorization error.
-     *
-     * @param string $messageId The MCP message Id.
-     *
-     * @return ResponseInterface
-     */
-    protected function outputAuthError(string $messageId): ResponseInterface
-    {
-        $error = new Error($messageId, $this->AUTH_ERROR, 'Access denied');
-        $response = $this->response
-            ->withStatus(403)
-            ->withHeader('Content-Type', 'application/json');
         return $response;
     }
 }
