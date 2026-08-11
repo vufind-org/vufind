@@ -36,15 +36,10 @@ use Mcp\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use VuFind\Config\Config;
-use VuFind\Config\YamlReader;
 use VuFind\Exception\ConfigException;
-use VuFind\Http\RouteHelper;
-use VuFind\Http\ServerUrlHelper;
-use VuFind\Record\Loader;
-use VuFind\Search\SearchRunner;
-use VuFindApi\Formatter\RecordFormatter;
 use VuFindApi\Mcp\Capabilities\SearchSolr;
 use VuFindApi\Mcp\ServerProvider;
 use VuFindTest\Feature\ReflectionTrait;
@@ -87,12 +82,7 @@ class ServerProviderTest extends TestCase
         $provider = new ServerProvider(
             $mcpConfig,
             new Config([]),
-            $this->createMock(YamlReader::class),
-            $this->createMock(Loader::class),
-            $this->createMock(RecordFormatter::class),
-            $this->createMock(SearchRunner::class),
-            $this->createMock(RouteHelper::class),
-            $this->createMock(ServerUrlHelper::class),
+            $this->createMock(ContainerInterface::class),
             new NullLogger(),
         );
         $this->assertNotInstanceOf(\Mcp\Server::class, $provider->getServer());
