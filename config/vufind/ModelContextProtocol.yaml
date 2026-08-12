@@ -106,3 +106,18 @@ ContentTypes:
 #   - recordPageAbsoluteLink
 #   - title
 #   - authors
+
+# FQCNs of additional services a custom capability class's constructor may depend on, beyond the
+# services core capabilities already use. Capability code (Tools, ResourceTemplates, and
+# AutoDiscovery classes alike) can only ever be built from this list -- deliberately expand it
+# here if you add a custom capability class that needs some other VuFind service. Default is none.
+# AllowedServices:
+#   - VuFind\SomeNamespace\SomeService
+
+# Namespace prefixes (each ending in a backslash) that a capability class may live under, beyond
+# VuFindApi\Mcp\Capabilities\ (always allowed). Only classes under an allowed namespace can ever
+# be built as capability code -- deliberately expand this if your Tools, ResourceTemplates, or
+# AutoDiscovery config above points at a custom capability class in its own package. Default is
+# none.
+# CapabilityNamespaces:
+#   - MySite\Mcp\Capabilities\

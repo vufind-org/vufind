@@ -39,7 +39,13 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use VuFind\Config\Config;
+use VuFind\Config\YamlReader;
 use VuFind\Exception\ConfigException;
+use VuFind\Http\RouteHelper;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\Record\Loader;
+use VuFind\Search\SearchRunner;
+use VuFindApi\Formatter\RecordFormatter;
 use VuFindApi\Mcp\Capabilities\SearchSolr;
 use VuFindApi\Mcp\ServerProvider;
 use VuFindTest\Feature\ReflectionTrait;
@@ -86,6 +92,81 @@ class ServerProviderTest extends TestCase
             new NullLogger(),
         );
         $this->assertNotInstanceOf(\Mcp\Server::class, $provider->getServer());
+    }
+
+    /**
+     * Test that buildContainer() returns a container from which the MCP SDK can auto-wire an
+     * actual capability class's constructor -- not just look up the allowed services
+     * individually. This is how tool/resource execution builds each capability instance
+     * (Mcp\Capability\Registry\ReferenceHandler::getClassInstance()), and previously threw an
+     * ArgumentCountError because the container's has() did not recognize capability classes as
+     * buildable, only the allowed services themselves.
+     *
+     * @return void
+     */
+    public function testBuildContainerAllowsCapabilityClassToBeAutowired(): void
+    {
+        $services = [
+            YamlReader::class => $this->createConfiguredMock(YamlReader::class, ['get' => []]),
+            Loader::class => $this->createMock(Loader::class),
+            RecordFormatter::class => $this->createMock(RecordFormatter::class),
+            SearchRunner::class => $this->createMock(SearchRunner::class),
+            RouteHelper::class => $this->createMock(RouteHelper::class),
+            ServerUrlHelper::class => $this->createMock(ServerUrlHelper::class),
+        ];
+        $serviceManager = $this->createMock(ContainerInterface::class);
+        $serviceManager->method('has')->willReturn(true);
+        $serviceManager->method('get')->willReturnCallback(fn (string $id) => $services[$id]);
+
+        $provider = $this->getProviderWithoutConstructor([], []);
+        $container = $this->callMethod($provider, 'buildContainer', [$serviceManager]);
+
+        $this->assertInstanceOf(SearchSolr::class, $container->get(SearchSolr::class));
+    }
+
+    /**
+     * Test that buildContainer() merges ModelContextProtocol.yaml's AllowedServices setting into
+     * the core list of services capability classes may depend on -- so a site can deliberately
+     * expand what a custom capability class is allowed to use, without forking this class, while
+     * the core services remain allowed regardless of what (if anything) is configured.
+     *
+     * @return void
+     */
+    public function testBuildContainerMergesConfiguredAllowedServices(): void
+    {
+        $serviceManager = $this->createMock(ContainerInterface::class);
+        $serviceManager->method('has')->willReturn(true);
+
+        $provider = $this->getProviderWithoutConstructor(['AllowedServices' => ['Extra\Service']], []);
+        $container = $this->callMethod($provider, 'buildContainer', [$serviceManager]);
+
+        $this->assertTrue($container->has('Extra\Service'));
+        $this->assertTrue($container->has(SearchRunner::class));
+    }
+
+    /**
+     * Test that buildContainer() merges ModelContextProtocol.yaml's CapabilityNamespaces setting
+     * into the core capability namespace -- so a site can deliberately register a custom
+     * capability class living in its own package, without forking this class, while core
+     * capabilities remain buildable regardless of what (if anything) is configured.
+     *
+     * @return void
+     */
+    public function testBuildContainerMergesConfiguredCapabilityNamespaces(): void
+    {
+        $serviceManager = $this->createMock(ContainerInterface::class);
+        $serviceManager->method('has')->willReturn(true);
+
+        $provider = $this->getProviderWithoutConstructor(
+            ['CapabilityNamespaces' => ['VuFindTest\Mcp\\']],
+            []
+        );
+        $container = $this->callMethod($provider, 'buildContainer', [$serviceManager]);
+
+        // self::class stands in for a real capability class from a site's own package: any real
+        // class under the configured namespace works, and this test needs no fixture for one.
+        $this->assertTrue($container->has(self::class));
+        $this->assertTrue($container->has(SearchSolr::class));
     }
 
     /**

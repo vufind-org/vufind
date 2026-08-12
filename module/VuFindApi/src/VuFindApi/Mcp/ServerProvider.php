@@ -66,6 +66,27 @@ class ServerProvider
     protected string $sessionDir = LOCAL_CACHE_DIR . '/mcp/session';
 
     /**
+     * FQCNs of services core capability classes need. Always allowed, regardless of config; see
+     * buildContainer().
+     */
+    protected array $coreAllowedServices = [
+        YamlReader::class,
+        Loader::class,
+        RecordFormatter::class,
+        SearchRunner::class,
+        RouteHelper::class,
+        ServerUrlHelper::class,
+    ];
+
+    /**
+     * Namespace prefixes (each including a trailing backslash) that core capability classes live
+     * under. Always allowed, regardless of config; see buildContainer().
+     */
+    protected array $coreCapabilityNamespaces = [
+        __NAMESPACE__ . '\Capabilities\\',
+    ];
+
+    /**
      * Constructor.
      *
      * @param array              $mcpConfig      MCP configuration
@@ -83,8 +104,9 @@ class ServerProvider
         protected Config $topConfig,
         // Unlike anywhere else in VuFind, this autowires the raw application service container
         // itself ('ServiceManager' is a self-referencing alias Laminas MVC registers for it). That
-        // is safe here only because it is immediately wrapped in a FirewallContainer below and never
-        // otherwise exposed -- capability code never sees this unfiltered reference.
+        // is safe here only because it is immediately passed to buildContainer(), which firewalls
+        // it down to an allowlist and never otherwise exposes it -- capability code never sees
+        // this unfiltered reference.
         #[Autowire(service: 'ServiceManager')]
         ContainerInterface $serviceManager,
         #[Autowire(service: 'VuFind\Logger')]
@@ -94,26 +116,43 @@ class ServerProvider
             return;
         }
 
-        // Firewall MCP capability code away from the rest of the application: capability
-        // constructors can only ever obtain one of these services, nothing else.
-        $container = new FirewallContainer($serviceManager, [
-            YamlReader::class,
-            Loader::class,
-            RecordFormatter::class,
-            SearchRunner::class,
-            RouteHelper::class,
-            ServerUrlHelper::class,
-        ]);
-
         $builder = Server::builder()
             ->setSession(new FileSessionStore($this->sessionDir))
-            ->setContainer($container)
+            ->setContainer($this->buildContainer($serviceManager))
             ->setLogger($logger);
         $this->setServerInfo($builder);
         $this->addResourceTemplates($builder);
         $this->addTools($builder);
         $this->addAutoDiscovery($builder);
         $this->server = $builder->build();
+    }
+
+    /**
+     * Build the container the MCP SDK will use to auto-wire capability class constructors.
+     *
+     * Firewalls capability code away from the rest of the application: only classes under an
+     * allowed capability namespace are ever built at all, and even those may only be built from
+     * an allowed list of services -- so nothing else in the application is ever reachable, no
+     * matter how trivially reflectable it might otherwise be. coreAllowedServices and
+     * coreCapabilityNamespaces are always allowed; ModelContextProtocol.yaml's AllowedServices and
+     * CapabilityNamespaces settings can deliberately add more, e.g. for a site's own custom
+     * capability class (in its own package/namespace) that needs a service beyond these.
+     *
+     * @param ContainerInterface $serviceManager Application service container
+     *
+     * @return ContainerInterface
+     */
+    protected function buildContainer(ContainerInterface $serviceManager): ContainerInterface
+    {
+        $allowedServices = array_unique([
+            ...$this->coreAllowedServices,
+            ...($this->mcpConfig['AllowedServices'] ?? []),
+        ]);
+        $capabilityNamespaces = array_unique([
+            ...$this->coreCapabilityNamespaces,
+            ...($this->mcpConfig['CapabilityNamespaces'] ?? []),
+        ]);
+        return new FirewallContainer($serviceManager, $allowedServices, $capabilityNamespaces);
     }
 
     /**
