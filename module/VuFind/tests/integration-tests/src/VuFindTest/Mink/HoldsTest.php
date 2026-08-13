@@ -192,6 +192,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndSetValue($page, $selector, $value);
         }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
+        // Ensure that the page has loaded and the "place hold" dialog is no longer present:
+        $this->waitForPageLoad($page);
     }
 
     /**
