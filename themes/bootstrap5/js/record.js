@@ -241,7 +241,7 @@ function handleAjaxTabLinkClick(event){
 function handleAjaxTabLinks() {
   document.querySelectorAll('a').forEach((a) => {
     const href = a.href;
-    if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
+    if (typeof href === 'string' && href.match(/\/AjaxTab[/?]/)) {
       a.addEventListener('click', handleAjaxTabLinkClick);
     }
   });
