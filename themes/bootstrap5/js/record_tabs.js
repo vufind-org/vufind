@@ -43,7 +43,7 @@ VuFind.register('recordTabs', function RecordTabs() {
           let tabPane = document.querySelector(tabButton.dataset.bsTarget);
           if (!tabPane) return;
           let tabUrl = tabPane.dataset.tabUrl;
-          if (window.history.replaceState && tabUrl) {
+          if (window.history.replaceState && tabUrl && !tabPane.closest('.result')) {
             window.history.replaceState({}, document.title, tabUrl);
           }
           _ajaxLoadTab(tabPane);
