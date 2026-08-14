@@ -29,10 +29,12 @@
 
 namespace VuFindTest\Mailer;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use VuFind\Mailer\Mailer;
 use VuFind\Mailer\MailerFactory;
+use VuFind\View\Renderer\LaminasTemplateRenderer;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Container\MockContainer;
 
@@ -458,21 +460,24 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())->method('getBreadcrumb')->willReturn('breadcrumb');
 
-        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
-        $view->expects($this->once())->method('__call')
+        $templateRenderer = $this->createMock(LaminasTemplateRenderer::class);
+        $templateRenderer->expects($this->once())->method('renderTemplateAsString')
             ->willReturnCallback(
-                function ($method, $args) use ($driver) {
-                    if ($method === 'partial') {
-                        $this->assertSame('Email/record.phtml', $args[0]);
-                        $in = $args[1];
-                        $this->assertSame($driver, $in['driver']);
-                        $this->assertSame('to@example.com', $in['to']);
-                        $this->assertSame('from@example.com', $in['from']);
-                        $this->assertSame('message', $in['message']);
+                function (
+                    ?ServerRequestInterface $request = null,
+                    ?string $template = null,
+                    array $params = [],
+                    array $childTemplates = []
+                ) use ($driver): string {
+                    $this->assertNotInstanceOf(ServerRequestInterface::class, $request);
+                    $this->assertSame('Email/record.phtml', $template);
+                    $this->assertSame($driver, $params['driver']);
+                    $this->assertSame('to@example.com', $params['to']);
+                    $this->assertSame('from@example.com', $params['from']);
+                    $this->assertSame('message', $params['message']);
+                    $this->assertEmpty($childTemplates);
 
-                        return 'body';
-                    }
-                    return null;
+                    return 'body';
                 }
             );
 
@@ -482,8 +487,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && 'body' == $message->getBody()->getBody()
                 && 'Library Catalog Record: breadcrumb' == $message->getSubject();
         };
-        $mailer = $this->getMailer($callback);
-        $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
+        $mailer = $this->getMailer($callback, $templateRenderer);
+        $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver);
     }
 
     /**
