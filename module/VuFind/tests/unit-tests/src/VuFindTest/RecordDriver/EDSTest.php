@@ -904,6 +904,17 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getPageCount for a record.
+     *
+     * @return void
+     */
+    public function testGetPageCount(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals('217', $driver->getPageCount());
+    }
+
+    /**
      * Test getFormats for an ebook record.
      *
      * @return void
