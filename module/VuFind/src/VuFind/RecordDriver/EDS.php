@@ -1104,12 +1104,13 @@ class EDS extends DefaultRecord
      *
      * @return string
      */
-    public function getPageCount() {
+    public function getPageCount()
+    {
         if ($pageCount = $this->extractEbscoDataFromRecordInfo(
-                'BibRecord/BibEntity/PhysicalDescription/Pagination/PageCount')[0] ?? null) {
+            'BibRecord/BibEntity/PhysicalDescription/Pagination/PageCount'
+        )[0] ?? null) {
             return $pageCount;
-        }
-        elseif ($pageCount = $this->getItem('Name', 'Pages')) {
+        } elseif ($pageCount = $this->getItem('Name', 'Pages')) {
             return $pageCount;
         }
         return '';
