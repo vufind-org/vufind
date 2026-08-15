@@ -91,6 +91,13 @@ class Alma extends AbstractBase implements
     protected $locationTypeToItemStatus = [];
 
     /**
+     * Allowed languages for the Alma API 'lang' parameter.
+     *
+     * @var array
+     */
+    protected $allowedApiLanguages = [];
+
+    /**
      * Constructor.
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -120,6 +127,10 @@ class Alma extends AbstractBase implements
         if (!empty($this->config['Holdings']['locationTypeItemStatus'])) {
             $this->locationTypeToItemStatus
                 = $this->config['Holdings']['locationTypeItemStatus'];
+        }
+
+        if (!empty($this->config['Catalog']['languages'])) {
+            $this->allowedApiLanguages = (array)$this->config['Catalog']['languages'];
         }
     }
 
@@ -162,6 +173,17 @@ class Alma extends AbstractBase implements
             // Set API key if it is not already available in the GET params
             if (!isset($paramsGet['apikey'])) {
                 $paramsGet['apikey'] = $this->apiKey;
+            }
+
+            // Set language if it is not already set and the current locale is
+            // allowed in the driver configuration
+            if (
+                !isset($paramsGet['lang']) && !empty($this->allowedApiLanguages)
+            ) {
+                $locale = $this->getTranslatorLocale();
+                if (in_array($locale, $this->allowedApiLanguages)) {
+                    $paramsGet['lang'] = $locale;
+                }
             }
 
             // Create the API URL
