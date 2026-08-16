@@ -85,6 +85,17 @@ $config = [
                     ],
                 ],
             ],
+            'mcpApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'verb' => 'get,post,options',
+                'options' => [
+                    'route'    => '/api/v1/mcp',
+                    'defaults' => [
+                        'controller' => 'Mcp',
+                        'action'     => 'mcp',
+                    ],
+                ],
+            ],
             'search2Apiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'verb' => 'get,post,options',
@@ -149,6 +160,15 @@ $config = [
                         'controller' => 'WebApi',
                         'action'     => 'record',
                     ],
+                ],
+            ],
+        ],
+    ],
+    'vufind' => [
+        'plugin_managers' => [
+            'action' => [
+                'autodiscovery_namespaces' => [
+                    'VuFindApi\Action' => true,
                 ],
             ],
         ],

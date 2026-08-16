@@ -95,4 +95,24 @@ trait ReflectionTrait
         $reflectionProperty = new \ReflectionProperty($object, $property);
         return $reflectionProperty->setValue($object, $value);
     }
+
+    /**
+     * Get a new instance of a class without running its constructor.
+     *
+     * Useful for testing methods in isolation when the real constructor has side effects (e.g.
+     * connecting to a service) that are irrelevant to, or would interfere with, the test.
+     *
+     * @param class-string<T> $class Class name
+     *
+     * @template T
+     *
+     * @throws \ReflectionException Class does not exist
+     *
+     * @return T
+     */
+    protected function getInstanceWithoutConstructor(string $class)
+    {
+        $reflectionClass = new \ReflectionClass($class);
+        return $reflectionClass->newInstanceWithoutConstructor();
+    }
 }

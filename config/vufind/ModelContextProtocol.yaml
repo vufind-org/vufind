@@ -1,0 +1,123 @@
+# Model Context Protocol (MCP) server configuration.
+#
+# See https://vufind.org/wiki/configuration:model_context_protocol
+
+General:
+  # Enable the MCP Server and register all capabilities defined below. Disabled by default.
+  # See also "Model Context Protocol permissions" in permissions.ini.
+  #enabled: false
+  # name: Default is "VuFind® Server"
+  #name: MyLibrary VuFind® Server
+  # versionSuffix: Appended to the VuFind release string. If used, start with punctuation.
+  #versionSuffix: -a
+  # description: Default is config.ini -> Site -> title.
+  #description: The library catalog, offering search capabilities
+
+# Capabilities may be auto-discovered in the defined directories, if they are properly
+# defined with the appropriate PHP attributes #[McpTool], #[McpResource], etc.
+# Alternately, capabilities can be manually configured below.
+# Auto-discovery may be useful for custom-defined capabilities, and is less verbose.
+# But manual configuration here makes it easier to reuse shared config (i.e. ContentTypes)
+# and to internationalize. So auto-discovery is not recommended for anything that will be
+# shared back upstream.
+# AutoDiscovery:
+#   # basePath: Leave blank for the VuFindApi/Mcp base path
+#   basePath:
+#   # scanDirs: Default is ['.', 'src']
+#   scanDirs:
+#     # There is an example capability in this folder.
+#     # - Capabilities/AutoDiscovery
+#   # excludeDirs: default is []
+#   excludeDirs:
+
+# Resource Templates to register with the MCP server. Define / uncomment to enable.
+# The heading (i.e. 'getRecord') is used as the resourcde tempalte's name.
+# - class and function identify the implementation
+# - uriTemplate must match the implementing function's annotation
+# - title (optional) is a human-readable title for display.
+# - description (optional) is a human-readable description. Both title and description
+#   may also be used by the LLM and relevant for template discovery.
+ResourceTemplates:
+
+  # getRecord:
+  #   title: Get Record by ID
+  #   description: Retrieve a single record by its bibliographic id.
+  #   class: VuFindApi\Mcp\Capabilities\SearchSolr
+  #   function: getRecord
+  #   uriTemplate: 'catalog://record/{recordId}'
+
+# Tools to register with the MCP server.
+# The heading (i.e. 'searchRecordsAnyType') is used as the tool's name.
+# - class and function identify the implementation
+# - title (optional) is a human-readable title for display.
+# - description (optional) is a human-readable description. Both title and description
+#   may also be used by the LLM and relevant for tool discovery.
+# - inputSchema (optional) is a JSON Schema definition of the input requested from the LLM.
+# Note that multiple tools may be defined using the same implementing function
+# but different input schema, via default parameter values.
+Tools:
+
+  # searchRecordsAnyType:
+  #   title: Search Records
+  #   description: Search library catalog records of all content types by keywords.
+  #   class: VuFindApi\Mcp\Capabilities\SearchSolr
+  #   function: searchRecords
+  #   inputSchema: 
+  #     type: object
+  #     properties:
+  #       keywords:
+  #         type: string
+  #         description: Keywords to search for
+  #     required:
+  #       - keywords
+
+  # searchRecordsByContentType:
+  #   title: Search Records by Content Type
+  #   description: Search library catalog records for a specific content type by keywords.
+  #   class: VuFindApi\Mcp\Capabilities\SearchSolr
+  #   function: searchRecords
+  #   inputSchema: 
+  #     type: object
+  #     properties:
+  #       keywords:
+  #         type: string
+  #         description: Keywords to search for
+  #       contentType:
+  #         type: string
+  #         description: A type of library content
+  #         # At least one enum value is required and must be defined below in ContentTypes.
+  #         enum:
+  #           - books
+  #           - videos
+  #     required:
+  #       - keywords
+  #       - contentType
+
+# Content Type filters supporting capabilities above that use them
+ContentTypes:
+  # books:
+  #   filter: (format:Book OR format:eBook OR format:"Streaming Audio" OR format:Serial)
+  # videos:
+  #   filter: (format:DVD OR format:VHS OR format:"Blu-ray Disc" OR format:Filmstrip OR format:"Streaming Video")
+
+# Response fields for capabilities that return records. For valid field names and format functions,
+# see SearchApiRecordFields.yaml. Default is below.
+# ResponseFields:
+#   - recordPageAbsoluteLink
+#   - title
+#   - authors
+
+# FQCNs of additional services a custom capability class's constructor may depend on, beyond the
+# services core capabilities already use. Capability code (Tools, ResourceTemplates, and
+# AutoDiscovery classes alike) can only ever be built from this list -- deliberately expand it
+# here if you add a custom capability class that needs some other VuFind service. Default is none.
+# AllowedServices:
+#   - VuFind\SomeNamespace\SomeService
+
+# Namespace prefixes (each ending in a backslash) that a capability class may live under, beyond
+# VuFindApi\Mcp\Capabilities\ (always allowed). Only classes under an allowed namespace can ever
+# be built as capability code -- deliberately expand this if your Tools, ResourceTemplates, or
+# AutoDiscovery config above points at a custom capability class in its own package. Default is
+# none.
+# CapabilityNamespaces:
+#   - MySite\Mcp\Capabilities\
