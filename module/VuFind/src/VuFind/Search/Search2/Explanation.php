@@ -47,5 +47,5 @@ class Explanation extends \VuFind\Search\Solr\Explanation
      *
      * @var string
      */
-    protected $searchIni = 'Search2';
+    protected string $searchIni = 'Search2';
 }

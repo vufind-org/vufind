@@ -122,7 +122,7 @@
                     </select>
                     <a href="#" class="adv-term-remove hidden">
                       <?=$this->icon('ui-remove') ?>
-                      <span class="visually-hidden"><?=$this->transEsc('remove') ?></span>
+                      <span class="visually-hidden"><?=$this->transEsc('del_search_field') ?></span>
                     </a>
                   </div>
                   <?php if ($group == 0 && $search == 0): ?>
@@ -131,7 +131,7 @@
                       <span class="search_place_holder hidden"></span>
                       <a href="#" class="add_search_link icon-link hidden" role="button">
                         <?=$this->icon('ui-add', 'icon-link__icon') ?>
-                        <span class="icon-link__label"><?=$this->transEsc('add_search')?></span>
+                        <span class="icon-link__label"><?=$this->transEsc('add_search_field')?></span>
                       </a>
                     </div>
                   <?php endif; ?>
@@ -147,7 +147,7 @@
               </div>
               <a href="#" class="adv-group-close icon-link hidden" role="button">
                 <?=$this->icon('ui-remove', 'icon-link__icon') ?>
-                <span class="icon-link__label"><?=$this->transEsc('del_search') ?></span>
+                <span class="icon-link__label"><?=$this->transEsc('del_search_group') ?></span>
               </a>
             </div>
             <?php if ($group == 0): ?>

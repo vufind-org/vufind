@@ -29,7 +29,12 @@
 
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\Element;
+use Throwable;
+use VuFind\Db\Service\NoticeService;
 use VuFindTest\Feature\CacheManagementTrait;
+use VuFindTest\Feature\LiveDatabaseTrait;
+use VuFindTest\Feature\UserCreationTrait;
 
 /**
  * Notices test class.
@@ -40,9 +45,21 @@ use VuFindTest\Feature\CacheManagementTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NoticesTest extends \VuFindTest\Integration\MinkTestCase
+final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
 {
     use CacheManagementTrait;
+    use LiveDatabaseTrait;
+    use UserCreationTrait;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public static function setUpBeforeClass(): void
+    {
+        static::failIfDataExists();
+    }
 
     /**
      * Test that no messages are displayed by default.
@@ -244,11 +261,11 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test notices with conditions.
+     * Test configured notices with conditions.
      *
      * @return void
      */
-    public function testNoticesWithConditions(): void
+    public function testConfiguredNoticesWithConditions(): void
     {
         $this->changeConfigs($this->getCacheClearPermissionConfig());
         $this->clearCache('yaml');
@@ -314,5 +331,526 @@ class NoticesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test that notice with invalid conditions is hidden
         $this->unFindCss($page, '#content > .notices .alert-danger');
+    }
+
+    /**
+     * Test adding notices in admin module.
+     *
+     * @return void
+     */
+    public function testAddingNoticesInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // test canceling
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '<strong>Test Content1</strong>'
+        );
+
+        $this->clickCss($page, 'button[name="cancel"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '#content > .notices .alert-success');
+
+        // add notices
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '<strong>Test Content1</strong>'
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        // change context to global_header
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global_header"]');
+
+        // change content type to markdown and check that markdown hint link becomes visible
+        $this->findCss($page, '.content_type_fieldset-markdown.hidden');
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="markdown"]');
+        $this->unFindCss($page, '.content_type_fieldset-markdown.hidden');
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '**Test Content2**'
+        );
+
+        $this->clickCss($page, '#tab-button-de');
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[de]"]',
+            'German Test Content'
+        );
+
+        $this->clickCss($page, 'fieldset[name="style_fieldset"] input[value="warning"]');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        // test notices exist
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.banner .notices .alert-warning strong');
+        $this->assertSame('Test Content2', $notice2);
+
+        // test switching language
+        $session->visit($this->getVuFindUrl() . '?lng=de');
+        $this->waitForPageLoad($page);
+
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-success');
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.banner .notices .alert-warning');
+        $this->assertSame('German Test Content', $notice2);
+    }
+
+    /**
+     * Test editing notices in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddingNoticesInAdminModule')]
+    public function testEditingNoticesInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // verify notices exist
+        $notice1 = $this->findCssAndGetText($page, '.notice-list .alert-success');
+        $this->assertSame('<strong>Test Content1</strong>', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning strong');
+        $this->assertSame('Test Content2', $notice2);
+
+        // test cancel
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            'Changed Content'
+        );
+        $this->clickCss($page, 'fieldset[name="style_fieldset"] input[value="danger"]');
+
+        $this->clickCss($page, 'button[name="cancel"]');
+        $this->waitForPageLoad($page);
+
+        // edit notices
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        // change context to logged_in
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="logged_in"]');
+
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="clean_html"]');
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            '<strong>Changed Content</strong>'
+        );
+        $this->clickCss($page, 'fieldset[name="style_fieldset"] input[value="danger"]');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '.notice-list a[title="Edit"]', index: 1);
+        $this->waitForPageLoad($page);
+
+        // check context global_header is preselected and change context to global
+        $this->findCss($page, 'fieldset[name="context_fieldset"] input[value="global_header"]:checked');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global"]');
+
+        // change content type to text and check that markdown hint link becomes hidden
+        $this->unFindCss($page, '.content_type_fieldset-markdown.hidden');
+        $this->clickCss($page, 'fieldset[name="content_type_fieldset"] input[value="text"]');
+        $this->findCss($page, '.content_type_fieldset-markdown.hidden');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        // test notice changed
+        $this->unFindCss($page, '#content > .notices .alert-success');
+        $this->unFindCss($page, '#content > .notices .alert-danger strong');
+
+        $notice2 = $this->findCssAndGetText($page, '#content > .notices .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // check after login
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        $notice1 = $this->findCssAndGetText($page, '#content > .notices .alert-danger strong');
+        $this->assertSame('Changed Content', $notice1);
+    }
+
+    /**
+     * Test deleting notices in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testEditingNoticesInAdminModule')]
+    public function testDeletingNoticesInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // verify notices exist
+        $notice1 = $this->findCssAndGetText($page, '.notice-list .alert-danger');
+        $this->assertSame('Changed Content', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // test cancel
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'button[name="cancel"]');
+        $this->waitForPageLoad($page);
+
+        // verify notices exist
+        $notice1 = $this->findCssAndGetText($page, '.notice-list .alert-danger');
+        $this->assertSame('Changed Content', $notice1);
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // test delete first
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '#content > .notices .alert-danger');
+
+        $notice2 = $this->findCssAndGetText($page, '.notice-list .alert-warning');
+        $this->assertSame('**Test Content2**', $notice2);
+
+        // test delete second
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '#content > .notices');
+    }
+
+    /**
+     * Test notices with date or time restriction in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testDeletingNoticesInAdminModule')]
+    public function testNoticesWithDateOrTimeRestrictionsInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // add notices without time restriction
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            'Test'
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->assertSame(
+            'Test',
+            $this->findCssAndGetText($page, '#content > .notices .alert-success')
+        );
+        $this->unFindCss($page, '.notice-row .text-danger');
+        $this->unFindCss($page, '.notice-row .text-success');
+
+        // Add date time start restriction
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date_time',
+            '2000-01-01T00:00',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'Start Date and Time: 01-01-2000 00:00');
+
+        // Add date time end restriction
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#end_date_time',
+            '2000-01-01T00:00',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction(
+            $page,
+            'Start Date and Time: 01-01-2000 00:00 End Date and Time: 01-01-2000 00:00',
+            false
+        );
+
+        // Remove date time start restriction
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date_time',
+            '',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction(
+            $page,
+            'End Date and Time: 01-01-2000 00:00',
+            false
+        );
+
+        // Change date time type to date
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'fieldset[name="date_time_type_fieldset"] input[value="date"]');
+
+        $this->findCssAndSetValue(
+            $page,
+            '#end_date',
+            '2000-01-01',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'End Date: 01-01-2000', false);
+
+        // Change date time type to time
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'fieldset[name="date_time_type_fieldset"] input[value="time"]');
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_time',
+            '00:00',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'Start Time: 00:00');
+
+        // Delete notice
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notice-row');
+    }
+
+    /**
+     * Test notices date or time restriction are disabled for contexts with date or time conditions in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testNoticesWithDateOrTimeRestrictionsInAdminModule')]
+    public function testNoticesWithDateOrTimeContextsInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'styles' => ['success' => []],
+                    'adminForm' => [
+                        'contexts' => [
+                            'global' => [],
+                            'timed' => [
+                                'conditions' => [
+                                    [
+                                        'type' => 'time',
+                                        'comparator' => '>=',
+                                        'checkedValues' => '00:00:00',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'dateTimeTypes' => [
+                            'date',
+                        ],
+                    ],
+                ],
+            ],
+            ['Notices']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // check date input does not work with time related context
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date',
+            '2000-01-01',
+        );
+
+        $this->unFindCss($page, '.context_fieldset-timed.hidden');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="timed"]');
+        $this->findCss($page, '.context_fieldset-timed.hidden');
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            'Test'
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->assertSame(
+            'Test',
+            $this->findCssAndGetText($page, '#content > .notices .alert-success')
+        );
+        $this->unFindCss($page, '.notice-row .text-danger');
+        $this->unFindCss($page, '.notice-row .text-success');
+
+        // create date restriction with global context
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCss($page, '.context_fieldset-timed.hidden');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global"]');
+        $this->unFindCss($page, '.context_fieldset-timed.hidden');
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date',
+            '2000-01-01',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'Start Date: 01-01-2000');
+
+        // switch to date related context
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '.context_fieldset-timed.hidden');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="timed"]');
+        $this->findCss($page, '.context_fieldset-timed.hidden');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '.notice-row .text-danger');
+        $this->unFindCss($page, '.notice-row .text-success');
+
+        // Delete notice
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notice-row');
+    }
+
+    /**
+     * Check if time restriction hint matches text and activity status.
+     *
+     * @param Element $page   Page element
+     * @param string  $text   Text of restriction hint
+     * @param bool    $active If time window should be shown active
+     *
+     * @return void
+     */
+    protected function checkTimeRestriction(Element $page, string $text, bool $active = true): void
+    {
+        $inactiveStatus = $active ? 'danger' : 'success';
+        $activeStatus = $active ? 'success' : 'danger';
+        $this->unFindCss($page, '.notice-row .text-' . $inactiveStatus);
+        $this->assertSame(
+            $text,
+            $this->findCssAndGetText($page, '.notice-row .text-' . $activeStatus)
+        );
+        if ($active) {
+            $this->assertSame(
+                'Test',
+                $this->findCssAndGetText($page, '#content > .notices .alert-success')
+            );
+        } else {
+            $this->unfindCss($page, '#content > .notices .alert-success');
+        }
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public static function tearDownAfterClass(): void
+    {
+        static::removeUsers(['username1', 'catuser']);
+
+        // Delete all notices
+        try {
+            $test = new static('');   // create instance of current class
+            // If CI is not running, all tests were skipped, so no work is necessary:
+            if (!$test->continuousIntegrationRunning()) {
+                return;
+            }
+            // Delete notices
+            $noticeService = $test->getDbService(NoticeService::class);
+            $notices = $noticeService->getNotices();
+            foreach ($notices as $notice) {
+                $noticeService->delete($notice->getId());
+            }
+            $test->tearDownLiveDatabaseContainer();
+        } catch (Throwable $t) {
+            echo "\n\nError in removing notices: " . (string)$t . "\n";
+        }
     }
 }

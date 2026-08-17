@@ -30,14 +30,12 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Http\Request;
-use Laminas\View\Helper\Url;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\Search\SearchTabsHelper;
 use VuFind\Search\Solr\Params;
 use VuFind\Search\Solr\Results;
-use VuFind\View\Helper\Root\SearchMemory;
 use VuFind\View\Helper\Root\SearchTabs;
 use VuFindSearch\Service as SearchService;
 
@@ -283,23 +281,22 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
             $request->getQuery()->hiddenFilters = $queryFilters;
         }
 
-        $url = $this->createMock(Url::class);
+        $url = $this->createMock(\VuFind\View\Helper\Root\Url::class);
+
         $searchTabsHelper = new SearchTabsHelper(
             $resultsPM,
             $tabConfig,
             $tabFilterConfig,
             $request,
-            [
-                'Solr:filtered' => 'logged-in',
-            ]
+            ['Solr:filtered' => 'logged-in']
         );
-        $searchMemory = $this->createMock(SearchMemory::class);
+
+        $searchMemory = $this->createMock(\VuFind\View\Helper\Root\SearchMemory::class);
         $searchMemory->expects($this->exactly($lastFiltersCalls))
             ->method('getLastHiddenFilters')
             ->willReturn($lastFilters);
-        $plugins = compact('searchMemory');
-        $helper = new SearchTabs($resultsPM, $url, $searchTabsHelper);
-        $helper->setView($this->getPhpRenderer($plugins));
+
+        $helper = new SearchTabs($resultsPM, $url, $searchTabsHelper, $searchMemory);
         return $helper;
     }
 

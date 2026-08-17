@@ -29,11 +29,11 @@
 
 namespace VuFind\ChannelProvider;
 
-use VuFind\Controller\Plugin\NewItems;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
+use VuFind\Search\NewItemsHelper;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
@@ -71,13 +71,13 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
      *
      * @param \VuFindSearch\Service               $searchService Search service
      * @param \VuFind\Search\Params\PluginManager $paramManager  Params manager
-     * @param NewItems                            $newItems      New items helper
+     * @param NewItemsHelper                      $newItems      New items helper
      * @param array                               $options       Settings (optional)
      */
     public function __construct(
         protected \VuFindSearch\Service $searchService,
         protected \VuFind\Search\Params\PluginManager $paramManager,
-        protected NewItems $newItems,
+        protected NewItemsHelper $newItems,
         array $options = []
     ) {
         $this->setOptions($options);

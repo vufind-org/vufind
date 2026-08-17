@@ -89,8 +89,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         }
 
         $view = $this->createViewModel(compact('form', 'formId', 'user'));
-        $view->useCaptcha
-            = $this->captcha()->active('feedback') && $form->useCaptcha();
+        $view->useCaptcha = $form->useCaptcha() && $this->getCaptcha()->active('feedback');
 
         $params = $this->params();
         $form->setData($params->fromPost());
@@ -105,7 +104,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         }
 
         if ($this->senderIsBlocked($form)) {
-            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+            $this->getFlashMessenger()->addErrorMessage('could_not_process_feedback');
             return $view;
         }
         if ($this->senderIsIgnored($form)) {
@@ -120,7 +119,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             $view->setVariable('successMessage', $form->getSubmitResponse());
             $view->setTemplate('feedback/response');
         } else {
-            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+            $this->getFlashMessenger()->addErrorMessage('could_not_process_feedback');
         }
 
         $handlers = $form->getSecondaryHandlers();

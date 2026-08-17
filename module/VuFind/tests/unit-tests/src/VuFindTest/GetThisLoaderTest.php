@@ -22,6 +22,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use ReflectionException;
 use Throwable;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\YamlReader;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\GetThis\GetThisLoaderFactory;
@@ -76,9 +77,9 @@ class GetThisLoaderTest extends TestCase
      */
     public function setUp(): void
     {
-        $yamlReader = new YamlReader($this->getPathResolver());
-        $this->baseConfig = $yamlReader->get('GetThis.yaml');
-        $this->regexConfig = $yamlReader->get('Regex.yaml');
+        $configManager = $this->getContainerWithConfigRelatedServices()->get(ConfigManagerInterface::class);
+        $this->baseConfig = $configManager->getConfigArray('GetThis');
+        $this->regexConfig = $configManager->getConfigArray('Regex');
         $this->regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
     }
 
@@ -98,11 +99,11 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Create a mock driver for solr.
+     * Create a mock record driver for Solr.
      *
-     * @return SolrDefault|MockObject
+     * @return SolrDefault&MockObject
      */
-    public function getMockRecordDriver(): SolrDefault|MockObject
+    public function getMockRecordDriver(): SolrDefault&MockObject
     {
         return $this->createMock(SolrDefault::class);
     }
@@ -940,15 +941,15 @@ class GetThisLoaderTest extends TestCase
      */
     public function testFactory(): void
     {
-        $yaml = $this->createMock(YamlReader::class);
-        $yaml->expects($this->once())->method('get')->willReturn([]);
+        $cm = $this->createMock(ConfigManagerInterface::class);
+        $cm->expects($this->once())->method('getConfigArray')->willReturn([]);
 
         $regex = $this->createMock(Regex::class);
 
         $container = $this->createMock(MockContainer::class);
         $container->expects($this->exactly(2))->method('get')->willReturnMap([
             [Regex::class, $regex],
-            [YamlReader::class, $yaml],
+            [ConfigManagerInterface::class, $cm],
         ]);
 
         $factory = new GetThisLoaderFactory();

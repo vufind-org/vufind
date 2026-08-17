@@ -30,10 +30,10 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
@@ -68,18 +68,19 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         protected Config $config,
         protected SessionServiceInterface $sessionService
     ) {
+        parent::__construct(null);
     }
 
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
 
         if (!$this->getAuthorizationService()->isGranted('access.SystemStatus')) {
@@ -101,7 +102,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         $this->log('info', 'SystemStatus log check', [], true);
 
         // Test search index
-        if ($params->fromPost('index') ?? $params->fromQuery('index', 1)) {
+        if ($this->getPostOrQueryParam($request, 'index', 1)) {
             try {
                 $results = $this->resultsManager->get(DEFAULT_SEARCH_BACKEND);
                 $paramsObj = $results->getParams();
@@ -116,7 +117,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         }
 
         // Test database connection
-        if ($params->fromPost('database') ?? $params->fromQuery('database', 1)) {
+        if ($this->getPostOrQueryParam($request, 'database', 1)) {
             try {
                 $this->sessionService->getSessionById('healthcheck', false);
             } catch (\Exception $e) {

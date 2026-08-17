@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper;
 
-use Laminas\View\Helper\AbstractHelper;
-
 /**
  * Helper class for displaying search-related HTML chunks.
  *
@@ -40,7 +38,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractSearch extends AbstractHelper
+abstract class AbstractSearch
 {
     /**
      * Get the CSS classes for the container holding the suggestions.
@@ -105,5 +103,15 @@ abstract class AbstractSearch extends AbstractHelper
         }
         $html .= '</ul></div>';
         return $html;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 }
