@@ -305,7 +305,7 @@ abstract class AbstractBase implements
     /**
      * Get an array of supported, user-activated citation formats.
      *
-     * @param ?string $context Optinal context of citation action.
+     * @param ?string $context Optional context of citation action.
      *
      * @return array Strings representing citation formats.
      */
