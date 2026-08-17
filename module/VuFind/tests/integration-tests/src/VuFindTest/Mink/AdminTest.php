@@ -58,7 +58,7 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testAdminTheme().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator<string, array<bool>>
      */
     public static function adminThemeProvider(): \Iterator
     {
