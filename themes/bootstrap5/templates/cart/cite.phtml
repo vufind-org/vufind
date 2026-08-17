@@ -17,18 +17,21 @@
   ob_start();
   $i = 0;
   ?>
-  <?php foreach ($formatCitations as $recordId => $citation): ?>
-    <?php
-      $elementId = 'citation-' . $this->escapeHtmlAttr($format) . '-' . $i++;
-    ?>
-    <strong><?=$this->escapeHtml($recordId)?></strong>
-    <div class="citation copy-to-clipboard-container">
-      <span id="<?=$elementId?>">
-        <?=$citation?>
-      </span>
-      <?=$this->copyToClipboardButton('#' . $elementId)?>
-    </div>
-  <?php endforeach; ?>
+  <ul>
+    <?php foreach ($formatCitations as $citation): ?>
+      <?php
+        $elementId = 'citation-' . $this->escapeHtmlAttr($format) . '-' . $i++;
+      ?>
+      <li>
+        <div class="citation copy-to-clipboard-container">
+          <span id="<?=$elementId?>">
+            <?=$citation?>
+          </span>
+          <?=$this->copyToClipboardButton('#' . $elementId)?>
+        </div>
+      </li>
+    <?php endforeach; ?>
+  </ul>
   <?php
   $content = ob_get_contents();
   ob_end_clean();

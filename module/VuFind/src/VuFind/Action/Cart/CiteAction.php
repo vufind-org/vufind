@@ -114,7 +114,7 @@ class CiteAction extends AbstractCartAction
         foreach ($records as $record) {
             $citationHelper = ($this->citationViewHelper)($record);
             foreach ($record->getCitationFormats() as $format) {
-                $citations[$format][$record->getUniqueId()] = $citationHelper->getCitation($format);
+                $citations[$format][] = $citationHelper->getCitation($format);
             }
         }
 
