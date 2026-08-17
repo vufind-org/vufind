@@ -54,7 +54,6 @@ use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\Session\Helper\FollowupHelper;
 
 use function count;
-use function is_array;
 
 /**
  * Cart save action.
@@ -117,11 +116,11 @@ class SaveAction extends AbstractCartAction implements TranslatorAwareInterface
         // need to display a "no records" error message):
         $bulkActionHelper = $this->getHelper(BulkActionHelper::class);
         $ids = $bulkActionHelper->getSelectedIds($request);
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             $ids = $this->followupHelper->retrieveAndClear('cartIds') ?? [];
         }
         $actionLimit = $bulkActionHelper->getBulkActionLimit('saveCart');
-        if (!is_array($ids) || empty($ids)) {
+        if (!$ids) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
                 return $redirect;
             }
