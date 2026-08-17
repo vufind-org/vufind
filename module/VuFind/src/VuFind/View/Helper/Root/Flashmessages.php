@@ -30,7 +30,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
-use Laminas\View\Helper\Layout;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\FlashMessenger\FlashMessengerInterface;
 
@@ -65,7 +64,7 @@ class Flashmessages
      * Constructor.
      *
      * @param FlashMessengerInterface $flashMessenger Flash messenger controller helper
-     * @param Layout                  $layout         Layout helper
+     * @param Globals                 $globals        Globals view helper
      * @param Translate               $translate      Translate helper
      * @param EscapeHtml              $escapeHtml     EscapeHtml helper
      * @param TransEsc                $transEsc       TransEsc helper
@@ -73,7 +72,7 @@ class Flashmessages
     public function __construct(
         protected FlashMessengerInterface $flashMessenger,
         #[Autowire(container: 'ViewHelperManager')]
-        protected Layout $layout,
+        protected Globals $globals,
         #[Autowire(container: 'ViewHelperManager')]
         protected Translate $translate,
         #[Autowire(container: 'ViewHelperManager')]
@@ -102,7 +101,7 @@ class Flashmessages
      */
     public function __invoke()
     {
-        if (!empty(($this->layout)()->lightboxChild)) {
+        if (!empty(($this->globals)()['lightboxChild'])) {
             return '';
         }
         $html = '';

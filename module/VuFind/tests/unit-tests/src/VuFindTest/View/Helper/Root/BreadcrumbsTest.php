@@ -29,10 +29,11 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\View\Helper\Layout;
-use Laminas\View\Model\ViewModel;
+use Laminas\View\Renderer\RendererInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\Breadcrumbs;
+use VuFind\View\Helper\Root\Globals;
 
 /**
  * Breadcrumbs view helper Test Class.
@@ -50,15 +51,17 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a breadcrumb helper with the formatBreadcrumb method mocked.
      *
-     * @param \Laminas\View\Renderer\RendererInterface $view   View renderer
-     * @param \Laminas\View\Helper\Layout              $layout Layout helper
+     * @param \Laminas\View\Renderer\RendererInterface $view             View renderer
+     * @param GlobalsContainer                         $globalsContainer Global data container
      *
      * @return Breadcrumbs&MockObject
      */
-    protected function getHelperWithFormatMocked($view, $layout): Breadcrumbs&MockObject
-    {
+    protected function getHelperWithFormatMocked(
+        RendererInterface $view,
+        GlobalsContainer $globalsContainer
+    ): Breadcrumbs&MockObject {
         $builder = $this->getMockBuilder(Breadcrumbs::class)
-            ->setConstructorArgs([$view, $layout])
+            ->setConstructorArgs([$view, $globalsContainer])
             ->onlyMethods(['formatBreadcrumb'])
             ->getMock();
         $builder->method('formatBreadcrumb')->willReturnCallback(
@@ -76,20 +79,20 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
      */
     public function testChainBuilding(): void
     {
-        $layoutModel = new ViewModel();
-        $layout = $this->createMock(Layout::class);
-        $layout->method('__invoke')->willReturn($layoutModel);
-        $view = $this->getPhpRenderer(compact('layout'));
-        $helper = $this->getHelperWithFormatMocked($view, $layout);
+        $globalsContainer = new GlobalsContainer();
+        $globals = new Globals($globalsContainer);
+
+        $view = $this->getPhpRenderer(compact('globals'));
+        $helper = $this->getHelperWithFormatMocked($view, $globalsContainer);
         $helper->disable();
-        $this->assertFalse($layoutModel->breadcrumbs);
+        $this->assertFalse($globalsContainer['breadcrumbs']);
         $helper->add('a', 'b');
         $helper->add('c', active: true);
         $helper->prepend('d');
-        $this->assertSame('d|-|F>a|b|F>c|-|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('d|-|F>a|b|F>c|-|T>', $globalsContainer['breadcrumbs']);
         $helper->set('z', 'y', true);
-        $this->assertSame('z|y|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('z|y|T>', $globalsContainer['breadcrumbs']);
         $helper->reset();
-        $this->assertSame('', $layoutModel->breadcrumbs);
+        $this->assertSame('', $globalsContainer['breadcrumbs']);
     }
 }

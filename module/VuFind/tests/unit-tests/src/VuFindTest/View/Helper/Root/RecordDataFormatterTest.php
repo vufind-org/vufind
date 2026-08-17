@@ -41,6 +41,7 @@ use VuFind\Escaper\Escaper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
+use VuFind\View\Helper\Root\Globals;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\SchemaOrg;
 use VuFind\View\Helper\Root\Url;
@@ -141,7 +142,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
 
-        $layout = $this->createMock(\Laminas\View\Helper\Layout::class);
+        $globals = $this->createMock(Globals::class);
 
         $highlight = new \VuFind\View\Helper\Root\Highlight();
         $addEllipsis = new \VuFind\View\Helper\Root\AddEllipsis();
@@ -162,7 +163,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $auth,
             $url,
             $serverUrl,
-            $layout,
+            $globals,
             $configEntity
         );
 

@@ -29,7 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Layout;
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Resolver\ResolverInterface;
 use VuFind\Config\Config;
@@ -91,7 +90,7 @@ class Record implements DbServiceAwareInterface
      * @param Auth              $auth              Auth helper
      * @param Url               $url               Url helper
      * @param ServerUrl         $serverUrl         ServerUrl helper
-     * @param Layout            $layout            Layout helper
+     * @param Globals           $globals           Globals helper
      * @param ?Config           $config            Configuration from config.ini
      */
     public function __construct(
@@ -121,7 +120,7 @@ class Record implements DbServiceAwareInterface
         #[Autowire(container: 'ViewHelperManager')]
         protected \Laminas\View\Helper\ServerUrl $serverUrl,
         #[Autowire(container: 'ViewHelperManager')]
-        protected Layout $layout,
+        protected Globals $globals,
         #[Autowire(config: 'config', configType: 'object')]
         protected ?Config $config = null
     ) {
@@ -690,7 +689,7 @@ class Record implements DbServiceAwareInterface
             ? true : $this->config->Site->$configField;
         $mirror = !isset($this->config->Site->mirrorThumbnailsRTL)
             ? true : $this->config->Site->mirrorThumbnailsRTL;
-        if (($this->layout)()->rtl && !$mirror) {
+        if (($this->globals)()['rtl'] && !$mirror) {
             $left = !$left;
         }
         return $left ? 'left' : 'right';

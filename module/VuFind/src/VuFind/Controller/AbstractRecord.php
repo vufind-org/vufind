@@ -40,6 +40,7 @@ use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFind\Search\ResultScroller;
 use VuFind\Session\Helper\FollowupHelper;
 use VuFind\Tags\TagsService;
+use VuFind\View\GlobalsContainer;
 use VuFindSearch\ParamBag;
 
 use function in_array;
@@ -111,7 +112,7 @@ class AbstractRecord extends AbstractBase
     {
         $view = parent::createViewModel($params);
         $view->driver = $this->loadRecord();
-        $this->layout()->searchClassId = $view->searchClassId
+        $this->getService(GlobalsContainer::class)['searchClassId'] = $view->searchClassId
             = $view->driver->getSearchBackendIdentifier();
         return $view;
     }
@@ -383,7 +384,7 @@ class AbstractRecord extends AbstractBase
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
-        $this->layout()->setVariable('layoutContext', 'tabs');
+        $this->getService(GlobalsContainer::class)['layoutContext'] = 'tabs';
         return $this->showTab(
             $this->params()->fromPost('tab', $this->getDefaultTab()),
             true

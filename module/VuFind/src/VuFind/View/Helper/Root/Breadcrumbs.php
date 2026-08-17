@@ -29,10 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\Layout;
-use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Breadcrumb trail view helper.
@@ -48,13 +47,13 @@ class Breadcrumbs
     /**
      * Constructor.
      *
-     * @param RendererInterface $view   View renderer
-     * @param Layout            $layout Layout view helper
+     * @param RendererInterface $view             View renderer
+     * @param GlobalsContainer  $globalsContainer Global data container
      */
     public function __construct(
         protected RendererInterface $view,
-        #[Autowire(container: 'ViewHelperManager')]
-        protected Layout $layout
+        #[Autowire]
+        protected GlobalsContainer $globalsContainer
     ) {
     }
 
@@ -73,13 +72,13 @@ class Breadcrumbs
     }
 
     /**
-     * Get the layout object containing breadcrumb variables.
+     * Get the object containing breadcrumb variables.
      *
-     * @return ViewModel
+     * @return GlobalsContainer
      */
-    protected function getLayout(): ViewModel
+    protected function getContainer(): GlobalsContainer
     {
-        return ($this->layout)();
+        return $this->globalsContainer;
     }
 
     /**
@@ -93,7 +92,7 @@ class Breadcrumbs
      */
     public function add(string $text, ?string $href = null, bool $active = false): static
     {
-        $this->getLayout()->breadcrumbs .= $this->formatBreadcrumb($text, $href, $active);
+        $this->getContainer()['breadcrumbs'] .= $this->formatBreadcrumb($text, $href, $active);
         return $this;
     }
 
@@ -104,7 +103,7 @@ class Breadcrumbs
      */
     public function disable(): static
     {
-        $this->getLayout()->breadcrumbs = false;
+        $this->getContainer()['breadcrumbs'] = false;
         return $this;
     }
 
@@ -119,8 +118,8 @@ class Breadcrumbs
      */
     public function prepend(string $text, ?string $href = null, bool $active = false): static
     {
-        $this->getLayout()->breadcrumbs = $this->formatBreadcrumb($text, $href, $active)
-            . $this->getLayout()->breadcrumbs;
+        $this->getContainer()['breadcrumbs'] = $this->formatBreadcrumb($text, $href, $active)
+            . $this->getContainer()['breadcrumbs'];
         return $this;
     }
 
@@ -131,9 +130,9 @@ class Breadcrumbs
      */
     public function render(): string
     {
-        $layout = $this->getLayout();
-        $active = ($layout->showBreadcrumbs ?? true) && $layout->breadcrumbs !== false;
-        $breadcrumbs = $active ? $layout->breadcrumbs : '';
+        $container = $this->getContainer();
+        $active = ($container['showBreadcrumbs'] ?? true) && $container['breadcrumbs'] !== false;
+        $breadcrumbs = $active ? $container['breadcrumbs'] : '';
         return $this->view->render('Helpers/breadcrumbs/all', compact('active', 'breadcrumbs'));
     }
 
@@ -144,7 +143,7 @@ class Breadcrumbs
      */
     public function reset(): static
     {
-        $this->getLayout()->breadcrumbs = '';
+        $this->getContainer()['breadcrumbs'] = '';
         return $this;
     }
 
@@ -159,7 +158,7 @@ class Breadcrumbs
      */
     public function set(string $text, ?string $href = null, bool $active = false): static
     {
-        $this->getLayout()->breadcrumbs = $this->formatBreadcrumb($text, $href, $active);
+        $this->getContainer()['breadcrumbs'] = $this->formatBreadcrumb($text, $href, $active);
         return $this;
     }
 

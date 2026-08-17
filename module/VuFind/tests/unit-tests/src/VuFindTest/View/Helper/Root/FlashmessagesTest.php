@@ -30,10 +30,9 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtml;
-use Laminas\View\Helper\Layout;
-use Laminas\View\Model\ViewModel;
 use VuFind\View\FlashMessenger\FlashMessenger;
 use VuFind\View\Helper\Root\Flashmessages;
+use VuFind\View\Helper\Root\Globals;
 use VuFind\View\Helper\Root\TransEsc;
 use VuFind\View\Helper\Root\Translate;
 
@@ -229,15 +228,13 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $mockMessenger->method('getSuccessMessages')->willReturnCallback(fn (): array => $getMessages('success'));
         $mockMessenger->method('getWarningMessages')->willReturnCallback(fn (): array => $getMessages('warning'));
 
-        $layoutModel = new ViewModel();
-        $mockLayout = $this->createMock(Layout::class);
-        $mockLayout->method('__invoke')->willReturn($layoutModel);
+        $mockGlobals = $this->createMock(Globals::class);
 
         $dependencies = $this->getViewHelpers();
 
         return new Flashmessages(
             $mockMessenger,
-            $mockLayout,
+            $mockGlobals,
             $dependencies['translate'],
             $dependencies['escapeHtml'],
             $dependencies['transEsc']

@@ -42,6 +42,7 @@ use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Tags\TagsService;
 use VuFind\View\Helper\Root\Context;
+use VuFind\View\Helper\Root\Globals;
 use VuFind\View\Helper\Root\Record;
 use VuFind\View\Helper\Root\SearchTabs;
 use VuFind\View\Helper\Root\Url;
@@ -802,7 +803,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $resolver,
             $context
         );
-        $layout = $this->createMock(\Laminas\View\Helper\Layout::class);
+        $globals = $this->createMock(Globals::class);
 
         $record = new Record(
             $this->createMock(TagsService::class),
@@ -820,7 +821,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             $auth,
             $urlHelper,
             $serverUrlHelper,
-            $layout,
+            $globals,
             $config,
         );
 
