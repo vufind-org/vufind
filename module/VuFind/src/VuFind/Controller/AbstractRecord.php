@@ -558,7 +558,6 @@ class AbstractRecord extends AbstractBase
                     $view->from,
                     $view->message,
                     $driver,
-                    $this->getViewRenderer(),
                     $view->subject,
                     $cc
                 );
