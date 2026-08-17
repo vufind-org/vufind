@@ -532,7 +532,7 @@ class Backend extends AbstractBackend
      */
     protected function credentialsAreValid(string $username, string $password): bool
     {
-        if ($username === 'USERNAME' && $password === 'PASSWORD') {
+        if ($username === 'USERNAME' || $password === 'PASSWORD') {
             throw new \Exception('Default EDS credentials detected; service not configured correctly.');
         }
         return !empty($username) && !empty($password);
