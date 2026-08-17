@@ -910,8 +910,26 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPageCount(): void
     {
+        // Find page count in PhysicalDescription
         $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals('217', $driver->getPageCount());
+
+        // Fail to find it
+        $json = $this->getJsonFixture('eds/valid-eds-record.json');
+        unset($json['RecordInfo']['BibRecord']['BibEntity']['PhysicalDescription']['Pagination']);
+        $driver->setRawData($json);
+        $this->assertEquals('', $driver->getPageCount());
+
+        // Find it in Items
+        $json['Items'][] =
+        [
+            'Name' => 'Pages',
+            'Label' => 'Page Count',
+            'Group' => 'Src',
+            'Data' => '42',
+        ];
+        $driver->setRawData($json);
+        $this->assertEquals('42', $driver->getPageCount());
     }
 
     /**
