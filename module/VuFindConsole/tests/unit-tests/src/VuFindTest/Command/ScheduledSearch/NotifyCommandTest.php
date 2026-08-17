@@ -337,7 +337,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockSearchResultsSet(?\VuFind\RecordDriver\AbstractBase $record = null): array
     {
         return [
-            $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class),
+            $record ?? $this->container->createStub(\VuFind\RecordDriver\SolrDefault::class),
         ];
     }
 
@@ -503,12 +503,12 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                     ],
                 ]
             ),
-            $options['mailer'] ?? $this->container->createMock(\VuFind\Mailer\Mailer::class),
-            $options['searchService'] ?? $this->container->createMock(SearchServiceInterface::class),
-            $options['localeSettings'] ?? $this->container->createMock(\VuFind\I18n\Locale\LocaleSettings::class)
+            $options['mailer'] ?? $this->container->createStub(\VuFind\Mailer\Mailer::class),
+            $options['searchService'] ?? $this->container->createStub(SearchServiceInterface::class),
+            $options['localeSettings'] ?? $this->container->createStub(\VuFind\I18n\Locale\LocaleSettings::class)
         );
         $command->setTranslator(
-            $options['translator'] ?? $this->container->createMock(\Laminas\Mvc\I18n\Translator::class)
+            $options['translator'] ?? $this->container->createStub(\Laminas\Mvc\I18n\Translator::class)
         );
         $command->setPathResolver($this->getPathResolver());
         return $command;

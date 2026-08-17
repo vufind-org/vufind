@@ -362,7 +362,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $contextSpec = $specs->getDefaults($context);
             $specs->setDefaults($context, array_merge($additionalContextSpec, $contextSpec));
         }
-        $specManager->method('get')->with($this->isType('string'))->willReturn($specs);
+        $specManager->method('get')->with($this->isString())->willReturn($specs);
         $container->set(
             \VuFind\RecordDataFormatter\Specs\PluginManager::class,
             $specManager
