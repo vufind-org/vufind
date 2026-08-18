@@ -12,6 +12,7 @@
   "scripts": {
     "postinstall": "npm run installBuildDeps",
     "installBuildDeps": "npm run installBuildDeps --workspaces --if-present --ignore-scripts",
+    "copyUpdatedDeps": "npm run copyUpdatedDeps --workspaces --if-present --ignore-scripts",
     "updateDeps": "npm run updateDeps --workspaces --if-present --ignore-scripts",
 
     "build": "npm run build:css",
@@ -24,23 +25,27 @@
     "check:scss": "npm run installBuildDeps && node util/build-css.js --check-only",
     "watch:scss": "npm run installBuildDeps && nodemon --watch util/ --watch themes/ --ext scss,js --exec \"node util/build-css.js\"",
 
+    "check:dependencySync": "npm run check:dependencySync --workspaces --if-present --ignore-scripts",
     "check:jsTranslations": "npm run check:jsTranslations --workspaces --if-present --ignore-scripts"
   },
   "workspaces": [
     "themes/bootstrap5"
   ],
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "dependencies": {
     "clean-css": "^5.3.3",
-    "commander": "^14.0.0",
+    "commander": "^15.0.0",
     "nodemon": "^3.1.10",
-    "sass": "^1.99.0"
+    "sass": "^1.102.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "all-iso-language-codes": "^1.0.13",
-    "eslint": "^10.0.0",
-    "eslint-plugin-jsdoc": "^62.0.0",
-    "eslint-plugin-no-jquery": "^3.0.0",
-    "globals": "^16.0.0"
+    "eslint": "^10.8.1",
+    "eslint-plugin-jsdoc": "^63.3.3",
+    "eslint-plugin-no-jquery": "^6.0.0",
+    "globals": "^17.11.0"
   }
 }

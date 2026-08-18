@@ -110,7 +110,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getResults();
         $results->setCursorMark('foo');
-        $this->assertEquals('foo', $results->getCursorMark());
+        $this->assertSame('foo', $results->getCursorMark());
     }
 
     /**
@@ -204,7 +204,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $results = $this->getResults(null, $searchService);
-        $this->assertEquals(5, $results->getResultTotal());
+        $this->assertSame(5, $results->getResultTotal());
     }
 
     /**
@@ -465,8 +465,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): Results {
         return new Results(
             $params ?? $this->getParams(),
-            $searchService ?? $this->createMock(SearchService::class),
-            $loader ?? $this->createMock(Loader::class)
+            $searchService ?? $this->createStub(SearchService::class),
+            $loader ?? $this->createStub(Loader::class)
         );
     }
 

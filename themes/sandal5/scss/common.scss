@@ -72,6 +72,10 @@ mark { background-color: $highlighter-color; }
   a { color: $washed-red; }
 }
 
+.notice {
+  margin: 0 0 .5rem 0;
+}
+
 .label { font-weight: 400; }
 
 $pagination-border: transparent;

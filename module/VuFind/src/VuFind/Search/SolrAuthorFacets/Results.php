@@ -51,7 +51,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query = $this->getParams()->getQuery();
         $params = $this->getParams()->getBackendParameters();
@@ -81,7 +81,7 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return bool
      */
-    public function isSavedSearch()
+    public function isSavedSearch(): bool
     {
         // Author searches are never saved:
         return false;

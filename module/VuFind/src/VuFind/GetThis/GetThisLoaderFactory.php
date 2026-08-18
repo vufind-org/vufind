@@ -32,7 +32,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\YamlReader;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Regex\Regex;
 
 /**
@@ -70,7 +70,7 @@ class GetThisLoaderFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         ?array $options = null
     ) {
         return new $requestedName(
-            $container->get(YamlReader::class)->get('GetThis.yaml'),
+            $container->get(ConfigManagerInterface::class)->getConfigArray('GetThis'),
             $container->get(Regex::class)
         );
     }

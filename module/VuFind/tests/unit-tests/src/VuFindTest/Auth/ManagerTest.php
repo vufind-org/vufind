@@ -576,7 +576,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         return new Manager(
             $config,
             $this->createMock(UserServiceInterface::class),
-            $userSession ?? $this->createMock(UserSessionPersistenceInterface::class),
+            $userSession ?? $this->createStub(UserSessionPersistenceInterface::class),
             $sessionManager ?? new SessionManager(),
             $pm ?? $this->getMockPluginManager(),
             $cookies,

@@ -68,20 +68,20 @@ class Options extends AbstractEDSOptions
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'epf-search';
     }
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
-        return false;
+        return null;
     }
 
     /**
@@ -89,7 +89,7 @@ class Options extends AbstractEDSOptions
      *
      * @return void
      */
-    protected function setOptionsFromConfig()
+    protected function setOptionsFromConfig(): void
     {
         // View preferences
         $this->initViewOptions($this->searchSettings);

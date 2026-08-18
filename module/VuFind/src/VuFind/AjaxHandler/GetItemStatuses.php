@@ -33,13 +33,11 @@
 
 namespace VuFind\AjaxHandler;
 
-use Laminas\Mvc\Controller\Plugin\Params;
-use Laminas\View\Renderer\RendererInterface;
-use Psr\Log\LoggerAwareInterface;
-use Throwable;
+use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\GetThis\GetThisLoader;
+use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
@@ -48,6 +46,7 @@ use VuFind\ILS\Logic\Holds;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Search\Memory;
 use VuFind\Session\Settings as SessionSettings;
+use VuFind\View\Renderer\TemplateRendererInterface;
 
 use function array_map;
 use function array_unique;
@@ -87,23 +86,25 @@ class GetItemStatuses extends AbstractBase implements
      * @param SessionSettings           $ss                        Session settings
      * @param Config                    $config                    Top-level configuration
      * @param Connection                $ils                       ILS connection
-     * @param RendererInterface         $renderer                  View renderer
+     * @param TemplateRendererInterface $renderer                  Template renderer
      * @param Holds                     $holdLogic                 Holds logic
      * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
      * @param ?GetThisLoader            $getThisLoader             Get This loader or null if not enabled
+     * @param RouteHelper               $routeHelper               Route helper
      * @param Memory                    $searchMemory              Search memory to be able to get user selected filters
      */
     public function __construct(
         SessionSettings $ss,
         protected Config $config,
         protected Connection $ils,
-        protected RendererInterface $renderer,
+        protected TemplateRendererInterface $renderer,
         protected Holds $holdLogic,
         protected AvailabilityStatusManager $availabilityStatusManager,
         protected ?GetThisLoader $getThisLoader,
+        protected RouteHelper $routeHelper,
         protected Memory $searchMemory,
     ) {
-        $this->sessionSettings = $ss;
+        parent::__construct($ss);
     }
 
     /**
@@ -198,11 +199,12 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Reduce an array of service names to a human-readable string.
      *
-     * @param array $rawServices Names of available services.
+     * @param ServerRequestInterface $request     Request
+     * @param array                  $rawServices Names of available services
      *
      * @return string
      */
-    protected function reduceServices(array $rawServices)
+    protected function reduceServices(ServerRequestInterface $request, array $rawServices)
     {
         // Normalize, dedup and sort available services
         $normalize = function ($in) {
@@ -218,7 +220,8 @@ class GetItemStatuses extends AbstractBase implements
             $services = [$preferred];
         }
 
-        return $this->renderer->render(
+        return $this->renderer->renderTemplateAsString(
+            $request,
             'ajax/status-available-services.phtml',
             ['services' => $services]
         );
@@ -245,13 +248,17 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Render the callnumber HTML.
      *
-     * @param string $callnumberSetting The callnumber mode setting
-     * @param array  $callnumbers       Callnumbers to render
+     * @param ServerRequestInterface $request           Request
+     * @param string                 $callnumberSetting The callnumber mode setting
+     * @param array                  $callnumbers       Callnumbers to render
      *
      * @return string
      */
-    protected function renderCallnumbers(string $callnumberSetting, array $callnumbers): string
-    {
+    protected function renderCallnumbers(
+        ServerRequestInterface $request,
+        string $callnumberSetting,
+        array $callnumbers
+    ): string {
         $html = [];
 
         $callnumberHandler = $this->getCallnumberHandler($callnumbers, $callnumberSetting);
@@ -267,7 +274,8 @@ class GetItemStatuses extends AbstractBase implements
                 $displayCallnumber = $actualCallnumber = $number;
             }
 
-            $html[] = $this->renderer->render(
+            $html[] = $this->renderer->renderTemplateAsString(
+                $request,
                 'ajax/itemCallnumber',
                 compact('actualCallnumber', 'displayCallnumber', 'callnumberHandler')
             );
@@ -280,12 +288,10 @@ class GetItemStatuses extends AbstractBase implements
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
-     * @param array  $record            Information on items linked to a single bib
-     *                                  record
-     * @param string $locationSetting   The location mode setting used for
-     *                                  pickValue()
-     * @param string $callnumberSetting The callnumber mode setting used for
-     *                                  pickValue()
+     * @param ServerRequestInterface $request           Request
+     * @param array                  $record            Information on items linked to a single bib record
+     * @param string                 $locationSetting   The location mode setting used for pickValue()
+     * @param string                 $callnumberSetting The callnumber mode setting used for pickValue()
      *
      * @return array{
      *     id: string,
@@ -300,14 +306,14 @@ class GetItemStatuses extends AbstractBase implements
      * } Summarized availability information
      */
     protected function getItemStatus(
+        ServerRequestInterface $request,
         $record,
         $locationSetting,
         $callnumberSetting
     ) {
         if (isset($this->getThisLoader)) {
-            $urlHelper = $this->renderer->plugin('url');
-            $itemIdParams = !empty($record[0]['item_id']) ? ['query' => ['item_id' => $record[0]['item_id']]] : null;
-            $getThisURL = $urlHelper(
+            $itemIdParams = empty($record[0]['item_id']) ? [] : ['item_id' => $record[0]['item_id']];
+            $getThisURL = $this->routeHelper->getUrlFromRoute(
                 'record-getthis',
                 ['id' => $record[0]['id'] ?? null],
                 $itemIdParams
@@ -351,9 +357,9 @@ class GetItemStatuses extends AbstractBase implements
         $combinedAvailability = $combinedInfo['availability'];
 
         if (!empty($services)) {
-            $availabilityMessage = $this->reduceServices($services);
+            $availabilityMessage = $this->reduceServices($request, $services);
         } else {
-            $availabilityMessage = $this->getAvailabilityMessage($combinedAvailability);
+            $availabilityMessage = $this->getAvailabilityMessage($request, $combinedAvailability);
         }
 
         $reserve = ($record[0]['reserve'] ?? 'N') === 'Y';
@@ -368,7 +374,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
-            'callnumberHtml' => $this->renderCallnumbers($callnumberSetting, $callNumber),
+            'callnumberHtml' => $this->renderCallnumbers($request, $callnumberSetting, $callNumber),
             'getThisURL' => $getThisURL,
         ];
     }
@@ -377,14 +383,13 @@ class GetItemStatuses extends AbstractBase implements
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for "group" location setting.
      *
-     * @param array  $record            Information on items linked to a single
-     *                                  bib record
-     * @param string $callnumberSetting The callnumber mode setting used for
-     *                                  pickValue()
+     * @param ServerRequestInterface $request           Request,
+     * @param array                  $record            Information on items linked to a single bib record
+     * @param string                 $callnumberSetting The callnumber mode setting used for pickValue()
      *
      * @return array                    Summarized availability information
      */
-    protected function getItemStatusGroup($record, $callnumberSetting)
+    protected function getItemStatusGroup(ServerRequestInterface $request, $record, $callnumberSetting)
     {
         // Summarize call number, location and availability info across all items:
         $locations = [];
@@ -399,7 +404,6 @@ class GetItemStatuses extends AbstractBase implements
         }
         // Build list split out by location:
         $locationList = [];
-        $urlHelper = $this->renderer->plugin('url');
         foreach ($locations as $location => $details) {
             // Determine call number string based on findings:
             $locationCallnumbers = $this->pickValue(
@@ -414,9 +418,8 @@ class GetItemStatuses extends AbstractBase implements
                 isset($this->getThisLoader)
                 && !$this->getThisLoader->isOnlineResource($locationStatus['item_id'] ?? null)
             ) {
-                $itemIdParams = !empty($locationStatus['item_id'])
-                    ? ['query' => ['item_id' => $locationStatus['item_id']]] : null;
-                $getThisURL = $urlHelper(
+                $itemIdParams = empty($locationStatus['item_id']) ? [] : ['item_id' => $locationStatus['item_id']];
+                $getThisURL = $this->routeHelper->getUrlFromRoute(
                     'record-getthis',
                     ['id' => $record[0]['id'] ?? null],
                     $itemIdParams
@@ -429,7 +432,7 @@ class GetItemStatuses extends AbstractBase implements
                 'availability' => $locationStatus['availability'],
                 'location' => $this->translateWithPrefix('location_', $location),
                 'callnumberHtml' =>
-                    $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
+                    $this->renderCallnumbers($request, $callnumberSetting, $locationCallnumbers),
                 'getThisURL' => $getThisURL,
             ];
             $locationList[] = $locationInfo;
@@ -445,9 +448,10 @@ class GetItemStatuses extends AbstractBase implements
         return [
             'id' => $record[0]['id'],
             'availability' => $combinedAvailability->availabilityAsString(),
-            'availability_message' => $this->getAvailabilityMessage($combinedAvailability),
+            'availability_message' => $this->getAvailabilityMessage($request, $combinedAvailability),
             'location' => false,
-            'locationList' => $this->renderer->render('ajax/itemLocationList', ['locationList' => $locationList]),
+            'locationList' => $this->renderer
+                ->renderTemplateAsString($request, 'ajax/itemLocationList', ['locationList' => $locationList]),
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
@@ -481,13 +485,17 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Get a message for availability status.
      *
+     * @param ServerRequestInterface      $request      Request
      * @param AvailabilityStatusInterface $availability Availability Status
      *
      * @return string
      */
-    protected function getAvailabilityMessage(AvailabilityStatusInterface $availability): string
-    {
-        return $this->renderer->render(
+    protected function getAvailabilityMessage(
+        ServerRequestInterface $request,
+        AvailabilityStatusInterface $availability
+    ): string {
+        return $this->renderer->renderTemplateAsString(
+            $request,
             'ajax/status.phtml',
             ['availabilityStatus' => $availability]
         );
@@ -496,13 +504,14 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Render full item status.
      *
-     * @param array $record       Record
-     * @param array $simpleStatus Simple status result
-     * @param array $values       Additional values for the template
+     * @param ServerRequestInterface $request      Request
+     * @param array                  $record       Record
+     * @param array                  $simpleStatus Simple status result
+     * @param array                  $values       Additional values for the template
      *
      * @return string
      */
-    protected function renderFullStatus($record, $simpleStatus, array $values = [])
+    protected function renderFullStatus(ServerRequestInterface $request, $record, $simpleStatus, array $values = [])
     {
         // Default case: no extra holdings fields are shown
         $holdingsTextFieldsToShow = [];
@@ -526,7 +535,7 @@ class GetItemStatuses extends AbstractBase implements
             $values
         );
 
-        return $this->renderer->render('ajax/status-full.phtml', $values);
+        return $this->renderer->renderTemplateAsString($request, 'ajax/status-full.phtml', $values);
     }
 
     /**
@@ -598,16 +607,16 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Handle a request.
      *
-     * @param Params $params Parameter helper from controller
+     * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
      */
-    public function handleRequest(Params $params)
+    public function handleRequest(ServerRequestInterface $request): array
     {
         $results = [];
         $this->disableSessionWrites();  // avoid session write timing bug
-        $ids = $params->fromPost('id') ?? $params->fromQuery('id', []);
-        $searchId = $params->fromPost('sid') ?? $params->fromQuery('sid');
+        $ids = $this->getPostOrQueryParam($request, 'id', []);
+        $searchId = $this->getPostOrQueryParam($request, 'sid');
         try {
             $results = $this->ils->getStatuses($ids);
         } catch (ILSException $e) {
@@ -661,15 +670,17 @@ class GetItemStatuses extends AbstractBase implements
                     $current = $this
                         ->getItemStatusError(
                             $record,
-                            $this->getAvailabilityMessage($unknownStatus)
+                            $this->getAvailabilityMessage($request, $unknownStatus)
                         );
                 } elseif ($locationSetting === 'group') {
                     $current = $this->getItemStatusGroup(
+                        $request,
                         $record,
                         $callnumberSetting
                     );
                 } else {
                     $current = $this->getItemStatus(
+                        $request,
                         $record,
                         $locationSetting,
                         $callnumberSetting
@@ -679,6 +690,7 @@ class GetItemStatuses extends AbstractBase implements
                 // encountered, append the HTML:
                 if ($showFullStatus && empty($record[0]['error'])) {
                     $current['full_status'] = $this->renderFullStatus(
+                        $request,
                         $record,
                         $current,
                         compact('searchId', 'current'),
@@ -698,7 +710,7 @@ class GetItemStatuses extends AbstractBase implements
             $statuses[] = [
                 'id'                   => (string)$missingId, // array_flip may have converted to int
                 'availability'         => 'false',
-                'availability_message' => $this->getAvailabilityMessage($availabilityStatus),
+                'availability_message' => $this->getAvailabilityMessage($request, $availabilityStatus),
                 'location'             => $this->translate('Unknown'),
                 'locationList'         => false,
                 'reserve'              => 'false',

@@ -29,12 +29,15 @@
 
 namespace VuFind\Navigation;
 
-use Laminas\Http\Request;
-use Laminas\View\Model\ViewModel;
+use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Mvc\View\Http\ViewManager;
+use Laminas\View\Model\ModelInterface;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\Section\SectionServiceInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 use function array_key_exists;
 use function count;
@@ -51,23 +54,36 @@ use function count;
 class HeaderBar extends AbstractMenu
 {
     /**
+     * View model.
+     *
+     * @var ModelInterface
+     */
+    protected ModelInterface $viewModel;
+
+    /**
      * Constructor.
      *
-     * @param array          $sectionConfig  Menu configuration
-     * @param array          $config         Main configuration
-     * @param Cart           $cart           Cart
-     * @param Manager        $authManager    Authentication manager
-     * @param ViewModel      $viewModel      View model
-     * @param LocaleSettings $localeSettings Locale settings
-     * @param Request        $request        Request
+     * @param SectionServiceInterface $sectionService Section service
+     * @param array                   $sectionConfig  Section configuration
+     * @param array                   $config         Main configuration
+     * @param Cart                    $cart           Cart
+     * @param Manager                 $authManager    Authentication manager
+     * @param ViewManager             $viewManager    View manager
+     * @param LocaleSettings          $localeSettings Locale settings
+     * @param Request                 $request        Request
      */
     public function __construct(
+        SectionServiceInterface $sectionService,
+        #[Autowire(config: 'HeaderBar')]
         array $sectionConfig,
+        #[Autowire(config: 'config')]
         array $config,
         protected Cart $cart,
         protected Manager $authManager,
-        protected ViewModel $viewModel,
+        #[Autowire(service: 'ViewManager')]
+        ViewManager $viewManager,
         protected LocaleSettings $localeSettings,
+        #[Autowire(service: 'Request')]
         protected Request $request
     ) {
         $this->addRequiredSettings(
@@ -91,7 +107,8 @@ class HeaderBar extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($sectionConfig, $config);
+        parent::__construct($sectionService, $sectionConfig, $config);
+        $this->viewModel = $viewManager->getViewModel();
     }
 
     /**

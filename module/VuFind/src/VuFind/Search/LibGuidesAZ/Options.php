@@ -54,7 +54,7 @@ class Options extends \VuFind\Search\LibGuides\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'libguidesaz-results';
     }

@@ -47,7 +47,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 
