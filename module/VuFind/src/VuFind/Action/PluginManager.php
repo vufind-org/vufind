@@ -202,6 +202,23 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summonrecord/save' => Record\SaveAction::class,
         'summonrecord/sms' => Record\SmsAction::class,
 
+        // Legacy WorldcatRecord actions:
+        'worldcatrecord/addcomment' => Record\AddComentAction::class,
+        'worldcatrecord/addtag' => Record\AddTagAction::class,
+        'worldcatrecord/ajaxtab' => Record\AjaxTabAction::class,
+        'worldcatrecord/cite' => Record\CiteAction::class,
+        'worldcatrecord/deletecomment' => Record\DeleteComentAction::class,
+        'worldcatrecord/deletetag' => Record\DeleteTagAction::class,
+        'worldcatrecord/email' => Record\EmailAction::class,
+        'worldcatrecord/export' => Record\ExportAction::class,
+        'worldcatrecord/hold' => Record\HoldAction::class,
+        'worldcatrecord/home' => Record\HomeAction::class,
+        'worldcatrecord/permalink' => Record\PermalinkAction::class,
+        'worldcatrecord/rating' => Record\RatingAction::class,
+        'worldcatrecord/rdf' => Record\RdfAction::class,
+        'worldcatrecord/save' => Record\SaveAction::class,
+        'worldcatrecord/sms' => Record\SmsAction::class,
+
         'worldcat2record/addcomment' => Record\AddComentAction::class,
         'worldcat2record/addtag' => Record\AddTagAction::class,
         'worldcat2record/ajaxtab' => Record\AjaxTabAction::class,

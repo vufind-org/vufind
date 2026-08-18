@@ -189,6 +189,13 @@ class ActionDispatchListener
         ],
         [
             'routes' => [
+                // Legacy WorldCat routes:
+                'worldcatrecord',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'worldcatrecord-',
+                ],
+                // Current WorldCat2 routes:
                 'worldcat2record',
                 [
                     'type' => 'prefix',
