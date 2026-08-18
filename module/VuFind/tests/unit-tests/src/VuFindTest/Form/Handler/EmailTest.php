@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Form\Handler;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Email;
 
@@ -84,7 +85,7 @@ class EmailTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test user object handling.
+     * Test extracting user data from the user object.
      *
      * @return void
      */
@@ -97,20 +98,29 @@ class EmailTest extends \PHPUnit\Framework\TestCase
         $user->expects($this->once())->method('getFirstname')->willReturn('First');
         $user->expects($this->once())->method('getLastname')->willReturn('Last');
         $user->expects($this->once())->method('getEmail')->willReturn('foo@example.com');
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $this->expectConsecutiveCalls(
-            $params,
-            'fromPost',
-            [
-                [null],
-                ['name', 'First Last'],
-                ['email', 'foo@example.com'],
-            ],
-            [
-                [], 'First Last', 'foo@example.com',
-            ]
-        );
-        $this->assertTrue($handler->handle($form, $params, $user));
+        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([]);
+        $this->assertTrue($handler->handle($form, $request, $user));
+    }
+
+    /**
+     * Test extracting user data from the request.
+     *
+     * @return void
+     */
+    public function testExtractDataFromRequest(): void
+    {
+        $handler = $this->getHandler();
+        $form = $this->createMock(Form::class);
+        $form->expects($this->once())->method('getRecipient')->willReturn([]);
+        $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+        $user->expects($this->never())->method('getFirstname');
+        $user->expects($this->never())->method('getLastname');
+        $user->expects($this->never())->method('getEmail');
+        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([
+            'name' => 'First Last',
+            'email' => 'foo@example.com',
+        ]);
+        $this->assertTrue($handler->handle($form, $request, $user));
     }
 
     /**
@@ -124,20 +134,8 @@ class EmailTest extends \PHPUnit\Framework\TestCase
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('getRecipient')->willReturn([]);
         $user = null;
-        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
-        $this->expectConsecutiveCalls(
-            $params,
-            'fromPost',
-            [
-                [null],
-                ['name', null],
-                ['email', null],
-            ],
-            [
-                [], null, null,
-            ]
-        );
-        $this->assertTrue($handler->handle($form, $params, $user));
+        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([]);
+        $this->assertTrue($handler->handle($form, $request, $user));
     }
 
     /**
