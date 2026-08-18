@@ -158,13 +158,13 @@ class ActionDispatchListener
             ],
             'backendId' => 'ProQuestFSG',
         ],
-        // Search2, Search2CollectionRecord:
+        // Search2, Search2Collection:
         [
             'routes' => [
-                'search2collectionrecord',
+                'search2collection',
                 [
                     'type' => 'prefix',
-                    'prefix' => 'search2collectionrecord-',
+                    'prefix' => 'search2collection-',
                 ],
                 'search2record',
                 [

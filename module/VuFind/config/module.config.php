@@ -597,7 +597,6 @@ $recordRoutes = [
     'worldcat2record' => 'Worldcat2Record',
     'search2record' => 'Search2Record',
     'search2collection' => 'Search2Collection',
-    'search2collectionrecord' => 'Search2Record',
     // For backward compatibility with pre-9.0 versions:
     'legacy-solrauthrecord' => 'Authority',
 ];

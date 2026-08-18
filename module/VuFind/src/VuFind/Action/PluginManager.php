@@ -70,6 +70,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'checkouts/purgehistory' => Checkouts\PurgeHistoryAction::class,
 
+        // At least hierarchy tree links use the collection AjaxTab route:
+        'collection/ajaxtab' => Record\AjaxTabAction::class,
+
         'collections/bytitle' => Collections\ByTitleAction::class,
 
         'comments/deletecomments' => Comments\DeleteCommentsAction::class,
@@ -163,6 +166,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'record/getthis' => Record\GetThisAction::class,
         'record/illrequest' => Record\IllRequestAction::class,
         'record/storageretrievalrequest' => Record\StorageRetrievalRequestAction::class,
+
+        // At least hierarchy tree links use the collection AjaxTab route:
+        'search2collection/ajaxtab' => Record\AjaxTabAction::class,
 
         'search2record/addcomment' => Record\AddComentAction::class,
         'search2record/addtag' => Record\AddTagAction::class,
