@@ -50,9 +50,9 @@ class Breadcrumbs
      * @param RendererInterface $view             View renderer
      * @param GlobalsContainer  $globalsContainer Global data container
      */
+    #[Autowire]
     public function __construct(
         protected RendererInterface $view,
-        #[Autowire]
         protected GlobalsContainer $globalsContainer
     ) {
     }

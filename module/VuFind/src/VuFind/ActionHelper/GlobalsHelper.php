@@ -59,7 +59,7 @@ class GlobalsHelper implements HelperInterface
      *
      * @return GlobalsContainer
      */
-    public function __invoke(): GlobalsContainer
+    public function getContainer(): GlobalsContainer
     {
         return $this->globalsContainer;
     }

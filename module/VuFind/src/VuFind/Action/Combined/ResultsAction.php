@@ -132,7 +132,7 @@ class ResultsAction extends AbstractCombinedSearchAndResultsAction implements Lo
 
             // Special case: include appropriate "powered by" message:
             if (strtolower($searchClassId) == 'summon') {
-                ($this->getHelper(GlobalsHelper::class))()['poweredBy']
+                $this->getHelper(GlobalsHelper::class)->getContainer()['poweredBy']
                     = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
             }
         }

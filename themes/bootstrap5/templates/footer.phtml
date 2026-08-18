@@ -2,7 +2,8 @@
   <?=$this->section('FooterMenu')->render()?>
   <?php if ($poweredBy = $this->globals()['poweredBy']): ?>
     <div class="poweredby">
-      <?=$poweredBy ?>
+      <?php // HTML intentionally allowed in the message! ?>
+      <?=$this->translate($poweredBy) ?>
     </div>
   <?php endif; ?>
 </footer>
