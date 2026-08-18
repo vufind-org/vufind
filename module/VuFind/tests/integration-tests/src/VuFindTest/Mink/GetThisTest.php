@@ -486,7 +486,7 @@ class GetThisTest extends MinkTestCase
     }
 
     /**
-     * Test the record page with standard and extended template
+     * Test the record page with standard and extended template.
      *
      * @return void
      */
@@ -514,7 +514,7 @@ class GetThisTest extends MinkTestCase
     }
 
     /**
-     * For a given record id, load and wait for the page
+     * For a given record id, load and wait for the page.
      *
      * @param string $record Record id
      *
