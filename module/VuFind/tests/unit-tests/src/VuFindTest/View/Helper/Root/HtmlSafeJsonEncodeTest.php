@@ -55,7 +55,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      */
     protected function getHelper(?HelperPluginManager $viewHelperManager = null): HtmlSafeJsonEncode
     {
-        return new HtmlSafeJsonEncode($viewHelperManager ?? $this->createMock(HelperPluginManager::class));
+        return new HtmlSafeJsonEncode($viewHelperManager ?? $this->createStub(HelperPluginManager::class));
     }
 
     /**

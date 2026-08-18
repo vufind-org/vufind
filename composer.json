@@ -85,7 +85,7 @@
         "laminas/laminas-translator": "^1",
         "laminas/laminas-validator": "2.64.4",
         "laminas/laminas-view": "2.36.0",
-        "league/commonmark": "2.9.0",
+        "league/commonmark": "2.10.0",
         "league/oauth1-client": "1.11.0",
         "league/oauth2-client": "^2.7",
         "league/oauth2-server": "^9.2",
@@ -129,12 +129,12 @@
         "dmore/chrome-mink-driver": "2.10.0",
         "friendsofphp/php-cs-fixer": "3.95.18",
         "phpmd/phpmd": "2.15.0",
-        "phpstan/phpstan": "2.2.7",
+        "phpstan/phpstan": "2.2.8",
         "phpunit/php-code-coverage": "^11",
         "phpunit/phpcov": "^10",
         "phpunit/phpunit": "11.5.56",
         "pietercolpaert/hardf": "0.6.2",
-        "rector/rector": "2.5.9",
+        "rector/rector": "2.6.2",
         "squizlabs/php_codesniffer": "4.0.4"
     },
     "suggest": {

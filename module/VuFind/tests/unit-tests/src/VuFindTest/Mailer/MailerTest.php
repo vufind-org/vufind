@@ -528,6 +528,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         if ($callback) {
             $transport->expects($this->once())->method('send')->with($this->callback($callback));
         }
-        return new Mailer($transport, $renderer ?? $this->createMock(TemplateRendererInterface::class));
+        return new Mailer($transport, $renderer ?? $this->createStub(TemplateRendererInterface::class));
     }
 }
