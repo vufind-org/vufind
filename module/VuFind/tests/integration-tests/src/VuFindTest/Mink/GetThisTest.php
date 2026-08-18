@@ -499,7 +499,7 @@ class GetThisTest extends MinkTestCase
         ];
         $this->changeConfigs($config);
 
-        $page = $this->loadRecordPage( '0000183626-0');
+        $page = $this->loadRecordPage('0000183626-0');
         $this->findAndAssertLink($page, 'Get This');
 
         $config = [
@@ -509,21 +509,22 @@ class GetThisTest extends MinkTestCase
         ];
         $this->changeConfigs($config);
 
-        $page = $this->loadRecordPage( '0000183626-0');
+        $page = $this->loadRecordPage('0000183626-0');
         $this->findAndAssertLink($page, 'Get This');
     }
 
     /**
      * For a given record id, load and wait for the page
      *
-     * @param string $record
+     * @param string $record Record id
      *
      * @return DocumentElement
      * @throws Exception
      */
-    public function loadRecordPage(string $record): DocumentElement {
+    public function loadRecordPage(string $record): DocumentElement
+    {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Record/'. $record);
+        $session->visit($this->getVuFindUrl() . '/Record/' . $record);
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         return $page;
