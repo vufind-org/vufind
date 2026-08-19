@@ -129,15 +129,13 @@ class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareI
             if (!empty($settings['view']->extraErrors)) {
                 $viewParams['extraErrors'] = $settings['view']->extraErrors;
             }
-            // Initialize theme resources:
-            ($this->getViewRenderer()->plugin('setupThemeResources'))(true);
             // Render content:
             $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
                 $viewParams
             );
             // Prepend CSS in case of custom files added by templates:
-            $html = ($this->getViewRenderer()->plugin('headLink'))() . $html;
+            $html = ($this->getViewRenderer()->plugin('assetManager'))->outputHeaderAssets() . $html;
         }
         return $this->getAjaxResponse('text/html', $html);
     }
