@@ -56,7 +56,7 @@ class EzproxyLoginAction extends AbstractTemplateRenderingAction
      *
      * @var string
      */
-    protected $ezproxyRequiredPermission = 'ezproxy.authorized';
+    protected string $ezproxyRequiredPermission = 'ezproxy.authorized';
 
     /**
      * Constructor.
