@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Tags\TagsService;
 use VuFind\Validator\CsrfInterface;
 
 /**
@@ -105,6 +106,7 @@ class TagController extends AbstractSearch
                 $paging['sort'],
                 $paging['page'],
                 $paging['limit'],
+                $this->getService(TagsService::class)->hasCaseSensitiveTags()
             )
         );
         return $this->createViewModel(
