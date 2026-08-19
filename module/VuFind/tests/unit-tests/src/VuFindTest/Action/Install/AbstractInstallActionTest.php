@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Class InstallControllerTest.
+ * Class AbstractInstallActionTest.
  *
  * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,41 +24,68 @@
  * @category VuFind
  * @package  Tests
  * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
 declare(strict_types=1);
 
-namespace VuFindTest\Controller;
+namespace VuFindTest\Action\Install;
 
-use VuFind\Controller\InstallController;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Action\Install\AbstractInstallAction;
+use VuFind\Action\Install\HomeAction;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\PathResolver;
+use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Http\ServerUrlHelper;
+use VuFind\ILS\Connection;
+use VuFindHttp\HttpService;
+use VuFindSearch\Service as SearchService;
+use VuFindTest\Feature\ReflectionTrait;
 
 /**
- * Class InstallControllerTest.
+ * Class AbstractInstallActionTest.
  *
  * @category VuFind
  * @package  Tests
  * @author   Josef Moravec <moravec@mzk.cz>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class InstallControllerTest extends \PHPUnit\Framework\TestCase
+class AbstractInstallActionTest extends \PHPUnit\Framework\TestCase
 {
+    use ReflectionTrait;
+
     /**
      * Test getMinimalPhpVersion with actual composer.json file.
      *
      * @return void
      */
-    public function testGetMinimalPhpVersionWithActualData()
+    public function testGetMinimalPhpVersionWithActualData(): void
     {
-        $controller = new InstallController(
-            new \VuFindTest\Container\MockContainer($this)
+        // Test the method in the abstract base class by instantiating a concrete class extending it:
+        $action = new HomeAction(
+            $this->createMock(CacheManager::class),
+            $this->createMock(Connection::class),
+            $this->createMock(SearchService::class),
+            $this->createMock(PathResolver::class),
+            $this->createMock(ConfigManagerInterface::class),
+            $this->createMock(ServerUrlHelper::class),
+            $this->createMock(HttpService::class),
+            $this->createMock(TagServiceInterface::class),
+            $this->createMock(UserServiceInterface::class),
+            $this->createMock(UserCardServiceInterface::class),
+            []
         );
-        $method = $this->getMinimalPhpVersionMethod();
         $this->assertEquals(
             '8.2.0',
-            $method->invokeArgs($controller, [])
+            $this->callMethod($action, 'getMinimalPhpVersion')
         );
     }
 
@@ -66,13 +94,12 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMinimalPhpVersionWithMissingFile()
+    public function testGetMinimalPhpVersionWithMissingFile(): void
     {
-        $controller = $this->mockControllerWithComposerJson([]);
-        $method = $this->getMinimalPhpVersionMethod();
+        $action = $this->getMockActionWithComposerJson([]);
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot find composer.json');
-        $method->invokeArgs($controller, []);
+        $this->callMethod($action, 'getMinimalPhpVersion');
     }
 
     /**
@@ -80,13 +107,12 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetMinimalPhpVersionWithMissingPhpVersion()
+    public function testGetMinimalPhpVersionWithMissingPhpVersion(): void
     {
-        $controller = $this->mockControllerWithComposerJson(['name' => 'vufind/vufind']);
-        $method = $this->getMinimalPhpVersionMethod();
+        $action = $this->getMockActionWithComposerJson(['name' => 'vufind/vufind']);
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot parse PHP version from composer.json');
-        $method->invokeArgs($controller, []);
+        $this->callMethod($action, 'getMinimalPhpVersion');
     }
 
     /**
@@ -188,13 +214,12 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getMinimalPhpVersionProvider')]
-    public function testGetMinimalPhpVersion($json, $expected)
+    public function testGetMinimalPhpVersion($json, $expected): void
     {
-        $controller = $this->mockControllerWithComposerJson($json);
-        $method = $this->getMinimalPhpVersionMethod();
+        $action = $this->getMockActionWithComposerJson($json);
         $this->assertEquals(
             $expected,
-            $method->invokeArgs($controller, [])
+            $this->callMethod($action, 'getMinimalPhpVersion')
         );
     }
 
@@ -203,32 +228,20 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $json JSON data
      *
-     * @return InstallController
+     * @return MockObject&AbstractInstallAction
      */
-    protected function mockControllerWithComposerJson(
+    protected function getMockActionWithComposerJson(
         array $json
-    ): InstallController {
-        $controller = $this->getMockBuilder(InstallController::class)
+    ): AbstractInstallAction {
+        // Test the abstract base class by instantiating a concrete class extending it:
+        $action = $this->getMockBuilder(HomeAction::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getComposerJson'])
             ->getMock();
 
-        $controller->expects($this->once())->method('getComposerJson')
+        $action->expects($this->once())->method('getComposerJson')
             ->willReturn($json);
 
-        return $controller;
-    }
-
-    /**
-     * Return method InstallController::getMinimalPhpVersion.
-     *
-     * @return \ReflectionMethod
-     */
-    protected function getMinimalPhpVersionMethod(): \ReflectionMethod
-    {
-        return new \ReflectionMethod(
-            InstallController::class,
-            'getMinimalPhpVersion'
-        );
+        return $action;
     }
 }
