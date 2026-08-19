@@ -142,7 +142,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(
             [
-                'combined' => $this->getCombinedIniOverrides(), 
+                'combined' => $this->getCombinedIniOverrides(),
                 'config' => ['Site' => ['showBulkOptions' => true]],
             ],
             ['combined']
