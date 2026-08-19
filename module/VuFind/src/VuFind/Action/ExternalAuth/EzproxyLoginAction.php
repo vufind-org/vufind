@@ -131,7 +131,7 @@ class EzproxyLoginAction extends AbstractTemplateRenderingAction
      * @see    https://www.oclc.org/support/services/ezproxy/documentation/usr
      * /ticket/php.en.html
      */
-    protected function createEzproxyTicketUrl($user, $url)
+    protected function createEzproxyTicketUrl(string $user, string $url): string
     {
         $ezproxyConfig = $this->config['EZproxy'] ?? [];
         if (!($secret = $ezproxyConfig['secret'] ?? null)) {
