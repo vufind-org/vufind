@@ -128,8 +128,7 @@ class EzproxyLoginAction extends AbstractTemplateRenderingAction
      * @return string EZproxy URL
      *
      * @throws \Exception
-     * @see    https://www.oclc.org/support/services/ezproxy/documentation/usr
-     * /ticket/php.en.html
+     * @see    https://www.oclc.org/support/services/ezproxy/documentation/usr/ticket/php.en.html
      */
     protected function createEzproxyTicketUrl(string $user, string $url): string
     {
