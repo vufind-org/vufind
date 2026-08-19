@@ -141,7 +141,10 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testCombinedSearchBulkExportLightbox(): void
     {
         $this->changeConfigs(
-            ['combined' => $this->getCombinedIniOverrides(), 'config' => ['Site' => ['showBulkOptions' => true]]],
+            [
+                'combined' => $this->getCombinedIniOverrides(), 
+                'config' => ['Site' => ['showBulkOptions' => true]],
+            ],
             ['combined']
         );
         $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
