@@ -164,7 +164,12 @@ abstract class AbstractAction implements ActionInterface
     ): ResponseInterface {
         $this->request = $request;
         $this->response = $response;
+
         try {
+            if ($preResponse = $this->checkPrerequisites($request, $response)) {
+                return $preResponse;
+            }
+
             if ($accessDeniedResponse = $this->validateAccessPermission()) {
                 return $accessDeniedResponse;
             }
@@ -182,6 +187,25 @@ abstract class AbstractAction implements ActionInterface
     protected function init(): void
     {
         // This function is called after constructor for any initialization required.
+    }
+
+    /**
+     * Check that everything is in order for the action to be executed.
+     *
+     * May return a response or throw an exception if there are issues.
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ?ResponseInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkPrerequisites(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ?ResponseInterface {
+        return null;
     }
 
     /**
