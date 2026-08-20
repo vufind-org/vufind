@@ -15,11 +15,12 @@
   // this covers case 1.  Cases 2 and 3 are then covered by logic below.
   // Note: The searchbox needs to be rendered before the HTML header is build.
   // Otherwise, the Javascript will not be loaded correctly.
-  if (!isset($this->layout()->searchbox)) {
-    $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', []);
+  $globals = $this->globals();
+  if (!isset($globals['searchbox'])) {
+    $globals['searchbox'] = $this->context($this)->renderInContext('search/searchbox.phtml', []);
   }
 ?>
-<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+<html lang="<?=$globals['userLang']?>"<?php if ($globals['rtl']): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php $this->setupThemeResources(); ?>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -56,9 +57,9 @@
       // if we render them after calling AssetManager's outputHeaderAssets method,
       // some dependencies may not load correctly. Thus, we render early, but use
       // this later.
-      $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
+      $icons = !isset($globals['renderingError']) ? $this->render('js-icons.phtml') : '{}';
     ?>
-    <?php if ($this->layout()->rtl) {
+    <?php if ($globals['rtl']) {
       // RTL styling
       $this->assetManager()->appendStyleLink('vendor/bootstrap-rtl.min.css');
     } ?>
@@ -106,7 +107,7 @@
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->csp()->getNonce();
-      $searchId = json_encode($this->layout()->searchId);
+      $searchId = json_encode($globals['searchId']);
       $theme = json_encode($themeConfig['themeName']);
 
       $appendScripts[] = <<<JS
@@ -130,12 +131,12 @@
         $appendScripts[] = 'VuFind.cookie.setCookieSameSite(' . json_encode($cookieSameSite) . ');';
       }
 
-      if (!empty($lightboxParent)) {
+      if ($lightboxParent = $globals['lightboxParent'] ?? null) {
         $lightboxParent = json_encode((string)$lightboxParent);
         $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent . ';';
       }
 
-      if (!empty($lightboxChild)) {
+      if ($lightboxChild = $globals['lightboxChild'] ?? null) {
         $lightboxChild = json_encode((string)$lightboxChild);
         $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild . ';';
       }
@@ -144,11 +145,11 @@
     ?>
     <?=$this->assetManager()->outputHeaderAssets()?>
   </head>
-  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+  <body class="template-dir-<?=$globals['templateDir']?> template-name-<?=$globals['templateName']?> <?=$this->layoutClass('offcanvas-row')?><?php if ($globals['rtl']): ?> rtl<?php endif; ?>">
     <?=$this->cookieConsent()->render('bottom')?>
     <header class="hidden-print">
-      <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
-        <span class="visually-hidden" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+      <?php if (isset($globals['srmessage'])): // message for benefit of screen-reader users ?>
+        <span class="visually-hidden" role="heading" aria-level="1"><?=$globals['srmessage'] ?></span>
       <?php endif; ?>
       <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
       <?=$this->render('header.phtml')?>
@@ -156,7 +157,7 @@
     <?=$this->breadcrumbs()->render()?>
     <div role="main" class="main">
       <div id="content" class="container">
-        <?php if (!($this->layout()->disableDefaultNotices ?? false)): ?>
+        <?php if (!($globals['disableDefaultNotices'] ?? false)): ?>
           <?=$this->notices()->renderNoticesForPosition('default')?>
         <?php endif; ?>
         <?=$this->layout()->content ?>
