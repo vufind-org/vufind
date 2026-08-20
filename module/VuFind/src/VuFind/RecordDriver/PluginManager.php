@@ -91,7 +91,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        EDS::class => NameBasedConfigFactory::class,
+        EDS::class => EDSFactory::class,
         EIT::class => NameBasedConfigFactory::class,
         EPF::class => NameBasedConfigFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
