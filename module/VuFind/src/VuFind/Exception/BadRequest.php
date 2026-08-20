@@ -57,6 +57,9 @@ class BadRequest extends \Exception implements HttpStatusInterface, SeverityLeve
      */
     public function getSeverityLevel()
     {
+        // A BadRequest exception means that we caught malformed user input; this reflects bad external
+        // behavior but does not generally indicate a critical flaw in the system. Reducing the severity
+        // level of these exceptions prevents distracting noise in critical system logs.
         return \Psr\Log\LogLevel::DEBUG;
     }
 }
