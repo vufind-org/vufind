@@ -37,7 +37,6 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Router\RouteMatch;
-use Laminas\View\Model\ModelInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 use VuFind\Exception\ConfigException;
@@ -210,10 +209,10 @@ class ActionDispatchListener
     /**
      * Constructor.
      *
-     * @param PluginManager $actionPluginManager Action plugin manager
-     * @param RouteHelper   $routeHelper         Route helper
-     * @param GlobalsContainer $globalsContainer Global data container
-     * @param array         $config              VuFind configuration
+     * @param PluginManager    $actionPluginManager Action plugin manager
+     * @param RouteHelper      $routeHelper         Route helper
+     * @param GlobalsContainer $globalsContainer    Global data container
+     * @param array            $config              VuFind configuration
      */
     public function __construct(
         protected PluginManager $actionPluginManager,
@@ -260,14 +259,13 @@ class ActionDispatchListener
         $action = $this->actionPluginManager->get($id);
 
         $routeMatch = $e->getRouteMatch();
-        $viewModel = $e->getViewModel();
-        $this->applyRouteBasedConfig($routeMatch, $action, $viewModel);
+        $this->applyRouteBasedConfig($routeMatch, $action);
 
         $request = Psr7ServerRequest::fromLaminas($e->getRequest())
             ->withAttribute('action-id', $id)
             ->withAttribute('route-helper', $this->routeHelper)
             ->withAttribute('route-match', $routeMatch)
-            ->withAttribute('view-model', $viewModel);
+            ->withAttribute('view-model', $e->getViewModel());
         $laminasResponse = $e->getApplication()->getResponse();
         $response = Psr7Response::fromLaminas($laminasResponse);
         try {
