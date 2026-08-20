@@ -42,6 +42,8 @@ use Behat\Mink\Element\Element;
  */
 class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\RetryClickTrait;
+
     /**
      * Go to a collection page.
      *
@@ -192,5 +194,55 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->getVuFindUrl() . '/Collection/subcollection1/HierarchyTree',
             $this->getMinkSession()->getCurrentUrl()
         );
+    }
+
+    /**
+     * Test that bulk actions open in a lightbox when enabled.
+     *
+     * @return void
+     */
+    public function testBulkExportLightbox(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => ['showBulkOptions' => true],
+                    'Collections' => ['collections' => true],
+                ],
+            ]
+        );
+        $page = $this->goToCollection();
+
+        // Confirm that an appropriate message appears if no items are checked:
+        $buttonSelector = '#ribbon-export';
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
+        $this->assertSame(
+            'No items were selected. '
+            . 'Please click on a checkbox next to an item and try again.',
+            $alert->getText()
+        );
+
+        // Now do it for real -- we should get a lightbox prompt.
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 7');
+        $this->clickCss($page, $buttonSelector);
+
+        // Select EndNote option
+        try {
+            // We don't want to wait the full default timeout here since that wastes a lot
+            // of time if a click failed to register; however, we shouldn't wait for too
+            // short of a time, or else a slow response can break the test by causing a
+            // double form submission.
+            $select = $this->findCss($page, '#format', 1500);
+        } catch (\Exception $e) {
+            $this->retryClickWithResizedWindow($this->getMinkSession(), $page, $buttonSelector);
+            $select = $this->findCss($page, '#format');
+        }
+        $select->selectOption('EndNote');
+
+        // Do the export:
+        $this->clickCss($page, '.form-cart-export input[name=submitButton]');
+        $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
+        $this->assertSame('Download File', $buttonText);
     }
 }
