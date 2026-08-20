@@ -190,6 +190,10 @@ class HeaderBar extends AbstractMenu
                   checkMethod: checkThemeOptions
                   excludeFromSiteMapPage: true
             
+                - template: Section/HeaderBar/HeaderBar-colorSchemeOptions.phtml
+                  checkMethod: checkColorSchemeOptions
+                  excludeFromSiteMapPage: true
+            
                 - template: Section/HeaderBar/HeaderBar-allLangs.phtml
                   checkMethod: checkAllLangs
                   excludeFromSiteMapPage: true
@@ -235,6 +239,17 @@ class HeaderBar extends AbstractMenu
     public function checkThemeOptions(): bool
     {
         return ($options = $this->viewModel->getVariable('themeOptions'))
+            && (count($options) > 1);
+    }
+
+    /**
+     * Check whether to show color scheme options item.
+     *
+     * @return bool
+     */
+    public function checkColorSchemeOptions(): bool
+    {
+        return ($options = $this->viewModel->getVariable('colorSchemeOptions'))
             && (count($options) > 1);
     }
 

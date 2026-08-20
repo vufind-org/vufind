@@ -377,9 +377,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(Manager::class, $mockAuthManager);
 
         $checkThemeOptions = $checkMethods['checkThemeOptions'] ?? true;
+        $checkColorSchemeOptions = $checkMethods['checkColorSchemeOptions'] ?? true;
         $mockViewModel = $this->createMock(ViewModel::class);
-        $mockViewModel->method('getVariable')->with('themeOptions')
-            ->willReturn($checkThemeOptions ? [[], []] : []);
+        $mockViewModel->method('getVariable')->willReturnMap([
+            ['themeOptions', null, $checkThemeOptions ? [[], []] : []],
+            ['colorSchemeOptions', null, $checkColorSchemeOptions ? [[], []] : []],
+        ]);
         $mockViewManager = $this->createMock(ViewManager::class);
         $mockViewManager->method('getViewModel')
             ->willReturn($mockViewModel);
@@ -414,6 +417,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             'checkCart' => $value,
             'checkAccount' => $value,
             'checkThemeOptions' => $value,
+            'checkColorSchemeOptions' => $value,
             'checkAllLangs' => $value,
         ];
     }
