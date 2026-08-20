@@ -29,7 +29,7 @@
     $this->breadcrumbs()->add($this->translate('search_results_breadcrumb'), $url);
   }
   $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
-  $this->layout()->title = $this->driver->getShortTitle();
+  $this->globals()['title'] = $this->driver->getShortTitle();
 ?>
 
 <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>

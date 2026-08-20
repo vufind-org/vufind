@@ -117,6 +117,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eitrecord/save' => Record\SaveAction::class,
         'eitrecord/sms' => Record\SmsAction::class,
 
+        'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
+
         'missingrecord/home' => MissingRecord\HomeAction::class,
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,

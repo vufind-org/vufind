@@ -31,6 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Summon Controller.
@@ -65,7 +66,7 @@ class SummonController extends AbstractSearch
      */
     public function injectSummonMessage(MvcEvent $e)
     {
-        $this->layout()->poweredBy
+        $this->getService(GlobalsContainer::class)['poweredBy']
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
     }
 
