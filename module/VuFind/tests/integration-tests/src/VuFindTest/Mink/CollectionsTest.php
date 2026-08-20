@@ -119,6 +119,10 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $results = $page->findAll('css', '.result');
         $this->assertCount(7, $results);
+        $this->waitStatement(
+            'document.querySelector(".datevis-input-from") '
+            . '&& document.querySelector(".datevis-input-from").value === "1957"'
+        );
         $this->assertEquals('1957', $this->findCssAndGetValue($page, '.datevis-input-from'));
         $this->assertEquals('1985', $this->findCssAndGetValue($page, '.datevis-input-to'));
     }
