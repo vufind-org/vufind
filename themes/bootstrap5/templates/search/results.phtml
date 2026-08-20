@@ -1,11 +1,9 @@
 <?php
-  // Set up page title:
-  $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
-  $headTitle = $this->slot('head-title')
-        ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
-  $this->headTitle($headTitle);
+  // Normally we would assign the title to its slot and set $this->headTitle here
+  // Instead we will do so at the end of the file so we can capture errors and no result messages
 
   // Set up search box:
+  $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
   $this->layout()->searchbox = $this->context($this)->renderInContext(
       'search/searchbox.phtml',
       [
@@ -23,7 +21,8 @@
   );
 
   // Set up breadcrumbs:
-  $this->breadcrumbs()->add($headTitle, active: true);
+  $breadcrumb = $this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}");
+  $this->breadcrumbs()->add($breadcrumb, active: true);
 
   // Set up search controls (avoiding unnecessary rendering):
   if (!$this->slot('search-controls')->isset()) {
@@ -50,7 +49,7 @@
   $this->assetManager()->appendScriptString('var multiFacetsSelection = "' . $this->multiFacetsSelection . '";');
 ?>
 
-<h1 class="visually-hidden"><?=$this->escapeHtml($headTitle)?></h1>
+<h1 class="visually-hidden"><?=$this->escapeHtml($breadcrumb)?></h1>
 
 <div class="<?=$this->layoutClass('mainbody', (bool)$recommendations)?>">
   <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
@@ -132,3 +131,13 @@
   </div>
 <?php endif; ?>
 <?php /* End Refine Search Options */ ?>
+<?php
+  // Set up the page title now that we know the number of results
+
+  // $this->layout()->srmessage was initialized when showing.phtml was rendered,
+  // and it might have been altered if results were empty. However, it contains
+  // HTML tags like <strong> as well as encoded entities that we need to tidy.
+  $headTitle = html_entity_decode(strip_tags($this->layout()->srmessage), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+  $headTitle = $this->slot('head-title')->get($headTitle);
+  $this->headTitle($headTitle);
+?>
