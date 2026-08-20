@@ -33,7 +33,6 @@ use Laminas\View\Renderer\RendererInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\Breadcrumbs;
-use VuFind\View\Helper\Root\Globals;
 
 /**
  * Breadcrumbs view helper Test Class.
@@ -80,9 +79,7 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
     public function testChainBuilding(): void
     {
         $globalsContainer = new GlobalsContainer();
-        $globals = new Globals($globalsContainer);
-
-        $view = $this->getPhpRenderer(compact('globals'));
+        $view = $this->getPhpRenderer();
         $helper = $this->getHelperWithFormatMocked($view, $globalsContainer);
         $helper->disable();
         $this->assertFalse($globalsContainer['breadcrumbs']);
