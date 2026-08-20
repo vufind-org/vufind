@@ -49,7 +49,7 @@ class EDS extends \VuFind\Content\AbstractCover implements
     use \VuFind\Cache\CacheTrait;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param StorageInterface $cache Cache
      */
@@ -60,7 +60,7 @@ class EDS extends \VuFind\Content\AbstractCover implements
     }
 
     /**
-     * Set the key to store in the cache to share between EDS cover loader and record driver
+     * Set the key to store in the cache to share between EDS cover loader and record driver.
      *
      * @param string $key Key to put in the cache
      *

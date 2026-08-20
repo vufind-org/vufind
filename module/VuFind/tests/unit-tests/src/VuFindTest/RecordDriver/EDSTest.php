@@ -31,6 +31,7 @@
 
 namespace VuFindTest\RecordDriver;
 
+use Laminas\Cache\Storage\StorageInterface;
 use VuFind\RecordDriver\EDS;
 
 use function array_slice;
@@ -156,7 +157,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     protected function getDriver(?string $test = null, ?array $config = null): EDS
     {
-        $record = new EDS(null, new \VuFind\Config\Config($config ?? $this->defaultDriverConfig));
+        $cache = $this->createMock(StorageInterface::class);
+        $record = new EDS(new \VuFind\Config\Config($config ?? $this->defaultDriverConfig), $cache);
         if (null !== $test) {
             $json = $this->getJsonFixture('eds/' . $test . '.json');
             $record->setRawData($json);
@@ -612,24 +614,28 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      */
     public static function getThumbnailProvider(): \Iterator
     {
-        yield 'thumb is upscaled to small' => ['small', 'small thumbnail link'];
-        yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
-        yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
+        yield 'thumb is upscaled to small' => ['small'];
+        yield 'medium is used as-is' => ['medium'];
+        yield 'medium is upscaled to large' => ['large'];
     }
 
     /**
      * Test getThumbnail for a record.
      *
-     * @param string $size     Size to request
-     * @param string $expected Expected result
+     * @param string $size Size to request
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
-    public function testGetThumbnail(string $size, string $expected): void
+    public function testGetThumbnail(string $size): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals($expected, $driver->getThumbnail($size));
+        $results = [
+            'recordid' => 'edsgob,edsgob.14707011',
+            'size' => $size,
+            'source' => 'EDS',
+        ];
+        $this->assertEquals($results, $driver->getThumbnail($size));
     }
 
     /**

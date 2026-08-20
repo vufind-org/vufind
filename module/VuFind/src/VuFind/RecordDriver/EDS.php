@@ -29,7 +29,6 @@
 
 namespace VuFind\RecordDriver;
 
-
 use Laminas\Cache\Storage\StorageInterface;
 
 use function count;
@@ -69,7 +68,7 @@ class EDS extends DefaultRecord
     protected $pdfTypes = ['ebook-pdf', 'pdflink'];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \VuFind\Config\Config $mainConfig VuFind main configuration (omit
      * for built-in defaults)
@@ -79,14 +78,12 @@ class EDS extends DefaultRecord
         $mainConfig = null,
         StorageInterface $cache = null,
     ) {
-
         $this->setCacheStorage($cache);
         parent::__construct($mainConfig);
     }
 
-
     /**
-     * Set the key to store in the cache to share between EDS cover loader and record driver
+     * Set the key to store in the cache to share between EDS cover loader and record driver.
      *
      * @param string $key Key to put in the cache
      *
@@ -705,7 +702,7 @@ class EDS extends DefaultRecord
             return [
                 'recordid' => $this->getUniqueID(),
                 'size' => $size,
-                'source' => 'EDS'
+                'source' => 'EDS',
             ];
         }
 

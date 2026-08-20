@@ -46,7 +46,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 class EDSFactory implements FactoryInterface
 {
     /**
-     * Create an object
+     * Create an object.
      *
      * @param ContainerInterface $container     Service manager
      * @param string             $requestedName Service being created
