@@ -490,7 +490,7 @@ class GetThisTest extends MinkTestCase
      *
      * @return void
      */
-    public function testRecordPage()
+    public function testRecordPage(): void
     {
         $config = [
             'config' => [
