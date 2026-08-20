@@ -1,5 +1,8 @@
 <?=$this->doctype()?>
-<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+<?php
+  $globals = $this->globals();
+?>
+<html lang="<?=$globals['userLang']?>"<?php if ($globals['rtl']): ?> dir="rtl"<?php endif; ?>>
   <head>
     <?php
       $this->setupThemeResources();
