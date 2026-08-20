@@ -43,6 +43,7 @@ use Throwable;
 use VuFind\Exception\ConfigException;
 use VuFind\Http\RouteHelper;
 use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 
 use function is_string;
 
@@ -211,11 +212,13 @@ class ActionDispatchListener
      *
      * @param PluginManager $actionPluginManager Action plugin manager
      * @param RouteHelper   $routeHelper         Route helper
+     * @param GlobalsContainer $globalsContainer Global data container
      * @param array         $config              VuFind configuration
      */
     public function __construct(
         protected PluginManager $actionPluginManager,
         protected RouteHelper $routeHelper,
+        protected GlobalsContainer $globalsContainer,
         #[Autowire(config: 'config')]
         protected array $config,
     ) {
@@ -326,14 +329,12 @@ class ActionDispatchListener
      *
      * @param ?RouteMatch     $routeMatch Route match
      * @param ActionInterface $action     Action
-     * @param ModelInterface  $layout     Layout view model
      *
      * @return void
      */
     protected function applyRouteBasedConfig(
         ?RouteMatch $routeMatch,
-        ActionInterface $action,
-        ModelInterface $layout
+        ActionInterface $action
     ): void {
         if (!$routeMatch) {
             return;
@@ -391,7 +392,7 @@ class ActionDispatchListener
                             }
                             break;
                         case 'poweredBy':
-                            $layout->poweredBy = $value;
+                            $this->globalsContainer['poweredBy'] = $value;
                             break;
                         default:
                             throw new ConfigException(
