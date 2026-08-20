@@ -33,6 +33,14 @@ namespace VuFind\Action\Record;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\Router as RecordRouter;
+use VuFind\RecordTab\TabManager;
+use VuFind\Search\Memory as SearchMemory;
+use VuFind\Search\ResultScroller;
+use VuFind\ServiceManager\Factory\Autowire;
+use VuFind\View\GlobalsContainer;
 
 /**
  * Record AJAX tab action.
@@ -46,6 +54,40 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AjaxTabAction extends AbstractRecordAction
 {
+    /**
+     * Constructor.
+     *
+     * @param SearchMemory     $searchMemory     Search memory
+     * @param TabManager       $tabManager       Tab manager
+     * @param AuthManager      $authManager      Authentication manager
+     * @param RecordLoader     $recordLoader     Record loader
+     * @param RecordRouter     $recordRouter     Record router
+     * @param ResultScroller   $resultScroller   Result scroller
+     * @param array            $config           VuFind configuration
+     * @param GlobalsContainer $globalsContainer Global data container
+     */
+    public function __construct(
+        SearchMemory $searchMemory,
+        TabManager $tabManager,
+        AuthManager $authManager,
+        RecordLoader $recordLoader,
+        RecordRouter $recordRouter,
+        ResultScroller $resultScroller,
+        #[Autowire(config: 'config')]
+        array $config,
+        protected GlobalsContainer $globalsContainer,
+    ) {
+        parent::__construct(
+            $searchMemory,
+            $tabManager,
+            $authManager,
+            $recordLoader,
+            $recordRouter,
+            $resultScroller,
+            $config
+        );
+    }
+
     /**
      * Get the contents for a tab.
      *
@@ -63,20 +105,7 @@ class AjaxTabAction extends AbstractRecordAction
         // Set layout to render content only:
         $this->request = $request = $request->withParsedBody($request->getParsedBody() + ['layout' => 'lightbox']);
         // Set context for analytics tracking code:
-        $this->request->getAttribute('view-model')?->setVariable('layoutContext', 'tabs');
+        $this->globalsContainer['layoutContext'] = 'tabs';
         return $this->showTab($this->getPostParam('tab') ?? $this->getDefaultTab(), true);
-    }
-
-    /**
-     * Create view params array.
-     *
-     * @param array $params Parameters
-     *
-     * @return array
-     */
-    protected function getTemplateParams(array $params = []): array
-    {
-        $params['layoutContext'] = 'tabs';
-        return parent::getTemplateParams($params);
     }
 }
