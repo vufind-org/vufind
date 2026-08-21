@@ -53,6 +53,7 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Helper\FollowupHelper;
 
 use function count;
+use function is_array;
 
 /**
  * Cart email action.
@@ -116,7 +117,7 @@ class EmailAction extends AbstractCartAction implements TranslatorAwareInterface
             $ids = $this->followupHelper->retrieveAndClear('cartIds') ?? [];
         }
         $actionLimit = $bulkActionHelper->getBulkActionLimit('email');
-        if (!$ids) {
+        if (!is_array($ids) || empty($ids)) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
                 return $redirect;
             }
