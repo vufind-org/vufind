@@ -582,8 +582,7 @@ class ResultScroller
         // The results total of the initial search might have changed by the time we reach the end of the list.
         // Therefore, we should update it here to avoid confusion.
         if (!($retVal['nextRecord'] ?? null) && $currentPos = $retVal['currentPosition'] ?? null) {
-            $this->data->total = $currentPos;
-            $retVal['resultTotal'] = $this->data->total;
+            $retVal['resultTotal'] = $this->data->total = $currentPos;
             if ($this->data->firstlast) {
                 $this->data->lastId = end($this->data->currIds);
                 $retVal['lastRecord'] = $this->data->lastId;
