@@ -393,6 +393,100 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test scrolling at end of middle page.
+     *
+     * @return void
+     */
+    public function testReducingTotalResults()
+    {
+        $results = $this->getMockResults(1, 2, 6);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|6',
+            'previousRecord' => 'Solr|1', 'nextRecord' => 'Solr|3',
+            'currentPosition' => 2, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('2'))
+        );
+
+        // Reduce search result count
+        $plugin->setResults($this->getMockResults(1, 2, 4));
+
+        // At the start of the next page, the values are not updated
+        // yet and show the old status.
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|6',
+            'previousRecord' => 'Solr|2', 'nextRecord' => 'Solr|4',
+            'currentPosition' => 3, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('3'))
+        );
+
+        // Check that result total and last record are updated when reaching end of page
+        $expected = [
+            'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|4',
+            'previousRecord' => 'Solr|3', 'nextRecord' => null,
+            'currentPosition' => 4, 'resultTotal' => 4,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('4'))
+        );
+    }
+
+    /**
+     * Test scrolling at end of middle page.
+     *
+     * @return void
+     */
+    public function testReducingTotalResultsWithDisabledFirstLast()
+    {
+        $results = $this->getMockResults(1, 2, 6, false);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => 'Solr|1', 'nextRecord' => 'Solr|3',
+            'currentPosition' => 2, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('2'))
+        );
+
+        // Reduce search result count
+        $plugin->setResults($this->getMockResults(1, 2, 4, false));
+
+        // At the start of the next page, the values are not updated
+        // yet and show the old status.
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => 'Solr|2', 'nextRecord' => 'Solr|4',
+            'currentPosition' => 3, 'resultTotal' => 6,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('3'))
+        );
+
+        // Check that result total is updated when reaching end of page
+        $expected = [
+            'firstRecord' => null, 'lastRecord' => null,
+            'previousRecord' => 'Solr|3', 'nextRecord' => null,
+            'currentPosition' => 4, 'resultTotal' => 4,
+        ];
+        $this->assertEquals(
+            $expected,
+            $plugin->getScrollData($results->getMockRecordDriver('4'))
+        );
+    }
+
+    /**
      * Get mock search results.
      *
      * @param int    $page      Current page number
