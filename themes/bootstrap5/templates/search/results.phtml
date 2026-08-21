@@ -6,7 +6,8 @@
   $this->headTitle($headTitle);
 
   // Set up search box:
-  $this->layout()->searchbox = $this->context($this)->renderInContext(
+  $globals = $this->globals();
+  $globals['searchbox'] = $this->context($this)->renderInContext(
       'search/searchbox.phtml',
       [
         'lookfor' => $lookfor,
@@ -35,7 +36,7 @@
   }
 
   // Store search id:
-  $this->layout()->searchId = $this->results->getSearchId();
+  $globals['searchId'] = $this->results->getSearchId();
 
   $options = $this->params->getOptions();
   $this->render(
@@ -96,7 +97,7 @@
       <?php
         $default = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]);
         $emptyMessage = $this->slot('empty-message')->get($default);
-        $this->layout()->srmessage = $emptyMessage;
+        $this->globals()['srmessage'] = $emptyMessage;
         echo $emptyMessage;
       ?>
     </p>
