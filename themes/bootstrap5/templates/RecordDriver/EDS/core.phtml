@@ -20,7 +20,7 @@
           </a>
         </span>
       <?php endif; ?>
-      <?php if (!$this->driver->isPlaceholder()): ?>
+      <?php if (!$this->driver->isPlaceholder()): // don't show full text links on placeholders; they won't work ?>
         <?php if ($this->permission()->isAuthorized('access.EDSExtendedResults')): ?>
           <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
             <span>
