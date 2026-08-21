@@ -206,7 +206,7 @@ class Ini extends AbstractBase
         $outfile = $destinationLocation->getPath();
         $this->backupFile($outfile);
 
-        if ($baseLocation !== null && file_exists($baseLocation->getPath())) {
+        if ($baseLocation !== null && file_exists($baseLocation->getPath()) && $baseLocation->getPath() !== $outfile) {
             // Copy from base to provide structure
             if (!copy($baseLocation->getPath(), $outfile)) {
                 throw new FileAccessException(
