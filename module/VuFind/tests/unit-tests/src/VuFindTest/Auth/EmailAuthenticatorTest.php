@@ -84,13 +84,13 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         ?AuthHashServiceInterface $authHashService = null
     ): EmailAuthenticator {
         $authenticator = new EmailAuthenticator(
-            $sessionManager ?? $this->createMock(SessionManager::class),
-            $csrf ?? $this->createMock(CsrfInterface::class),
-            $mailer ?? $this->createMock(Mailer::class),
-            $renderer ?? $this->createMock(PhpRenderer::class),
-            $userIpReader ?? $this->createMock(UserIpReader::class),
+            $sessionManager ?? $this->createStub(SessionManager::class),
+            $csrf ?? $this->createStub(CsrfInterface::class),
+            $mailer ?? $this->createStub(Mailer::class),
+            $renderer ?? $this->createStub(PhpRenderer::class),
+            $userIpReader ?? $this->createStub(UserIpReader::class),
             new Config($config),
-            $authHashService ?? $this->createMock(AuthHashServiceInterface::class)
+            $authHashService ?? $this->createStub(AuthHashServiceInterface::class)
         );
         $authenticator->setTranslator($this->getMockTranslator([]));
         return $authenticator;

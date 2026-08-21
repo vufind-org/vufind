@@ -1,6 +1,6 @@
 <?php
 # Usually this is displayed in a modal, but if it is not (coming back from login), we don't want the search box.
-$this->layout()->searchbox = false;
+$this->globals()['searchbox'] = false;
 $templates = $this->getThisLoader->getSubTemplates();
 $commentTemplateName = $this->getThisLoader->commentTemplateName();
 

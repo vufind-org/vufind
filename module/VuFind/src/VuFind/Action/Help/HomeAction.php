@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Home action for Help module.
+ * Help action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,48 +22,55 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Help;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Action\AbstractTemplateRenderingAction;
 
 /**
- * Home action for Help module.
+ * Help action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HelpController extends AbstractBase
+class HomeAction extends AbstractTemplateRenderingAction
 {
     /**
-     * Uses the user language to determine which Help template to use
-     * Uses the English template as a back-up.
+     * Display help.
      *
-     * @return mixed
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function homeAction()
-    {
-        $topic = $this->params()->fromRoute('topic');
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        $topic = $this->getRouteParam('topic');
         // The 'Home' check is for backward compatibility in case the legacy
         // Help/Home route is eventually removed from the configuration. Old
         // URLs were of the form /Help/Home?topic=x; new URLs are /Help/x.
         if (empty($topic) || $topic === 'Home') {
-            $topic = $this->params()->fromQuery('topic');
+            $topic = $this->getQueryParam('topic');
         }
 
-        $this->layout()->setTemplate('layout/help');
-        return $this->createViewModel(
-            ['topic' => $topic]
-        );
+        return $this->renderTemplate($request, $response, compact('topic'));
     }
 }

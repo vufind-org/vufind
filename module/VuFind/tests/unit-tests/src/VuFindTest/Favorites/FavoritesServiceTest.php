@@ -66,7 +66,7 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
         return new FavoritesService(
             $this->createMock(ResourceServiceInterface::class),
             $this->createMock(ResourceTagsService::class),
-            $listService ?? $this->createMock(UserListServiceInterface::class),
+            $listService ?? $this->createStub(UserListServiceInterface::class),
             $this->createMock(UserResourceServiceInterface::class),
             $this->createMock(UserServiceInterface::class),
             $this->createMock(ResourcePopulator::class),
