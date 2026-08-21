@@ -584,8 +584,7 @@ class ResultScroller
         if (!($retVal['nextRecord'] ?? null) && $currentPos = $retVal['currentPosition'] ?? null) {
             $retVal['resultTotal'] = $this->data->total = $currentPos;
             if ($this->data->firstlast) {
-                $this->data->lastId = end($this->data->currIds);
-                $retVal['lastRecord'] = $this->data->lastId;
+                $retVal['lastRecord'] = $this->data->lastId = end($this->data->currIds);
             }
         }
 
