@@ -14,13 +14,11 @@
 </head>
 
 <body>
-	{% include header.html %}
-	<div class="body">
-	  <div class="container">
-		  {{ content }}
-	  </div>
-	</div>
-	{% include footer.html %}
+  {% include header.html %}
+  <div class="container page--{{ page.slug | default: "index" }}">
+    {{ content }}
+  </div>
+  {% include footer.html %}
 </body>
 
 </html>
