@@ -155,7 +155,7 @@ class EmailTest extends \PHPUnit\Framework\TestCase
                 'Subject',
                 'message body',
                 null,
-                null,
+                new Address('sender@example.com', 'Sender'),
                 false,
             ]
         );
@@ -167,7 +167,10 @@ class EmailTest extends \PHPUnit\Framework\TestCase
         $form->expects($this->once())->method('getEmailSubject')
             ->willReturn('Subject');
         $user = $this->createMock(UserEntityInterface::class);
-        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([]);
+        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([
+            'name' => 'Sender',
+            'email' => 'sender@example.com',
+        ]);
         $this->assertTrue($handler->handle($form, $request, $user));
     }
 
