@@ -58,13 +58,161 @@ use function is_string;
 class ActionDispatchListener
 {
     /**
+     * Route-specific action configuration.
+     *
+     * The configuration is an array of associative arrays of configuration entries.
+     *
+     * Valid keys for each configuration entry:
+     *  - routes                An array of route names the configuration applies to
+     *  - accessPermission      Set access permission (string|false|null, see AccessPermissionInterface)
+     *  - accessDeniedBehavior  Set behavior when access is denied (string|null, see AccessPermissionInterface)
+     *  - backendId             Set search backend identifier (string)
+     *  - defaultTab            Set default tab (string|null)
+     *  - fallbackDefaultTab    Set fallback default tab (string; empty string to use Site/defaultRecordTab from config)
+     *  - poweredBy             Set "Powered by" displayed in page footer
+     *
+     * @var array
+     */
+    protected array $actionConfig = [
+        // EDS:
+        [
+            'routes' => [
+                'edsrecord',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'edsrecord-',
+                ],
+            ],
+            'accessPermission' => 'access.EDSModule',
+            'backendId' => 'EDS',
+            'fallbackDefaultTab' => 'Description',
+        ],
+        // EIT:
+        [
+            'routes' => [
+                'eitrecord',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'eitrecord-',
+                ],
+            ],
+            'accessPermission' => 'access.EITModule',
+            'backendId' => 'EIT',
+            'fallbackDefaultTab' => 'Description',
+        ],
+        [
+            'routes' => [
+                'epfrecord',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'epfrecord-',
+                ],
+            ],
+            'accessPermission' => 'access.EPFModule',
+            'backendId' => 'EPF',
+        ],
+        // Record, Collection (Default backend):
+        [
+            'routes' => [
+                'collection',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'collection-',
+                ],
+                'missingrecord',
+                'missingrecord-home',
+                'record',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'record-',
+                ],
+            ],
+            'backendId' => DEFAULT_SEARCH_BACKEND,
+            'fallbackDefaultTab' => '',
+        ],
+        // Pazpar2:
+        [
+            'routes' => [
+                'pazpar2record',
+                'pazpar2record-home',
+            ],
+            'backendId' => 'Pazpar2',
+        ],
+        [
+            'routes' => [
+                'primorecord',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'primorecord-',
+                ],
+            ],
+            'accessPermission' => 'access.PrimoModule',
+            'backendId' => 'Primo',
+            'fallbackDefaultTab' => 'Description',
+        ],
+        // ProquestFSG:
+        [
+            'routes' => [
+                'proquestfsgrecord',
+                'proquestfsgrecord-home',
+            ],
+            'backendId' => 'ProQuestFSG',
+        ],
+        // Search2, Search2Collection:
+        [
+            'routes' => [
+                'search2collection',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'search2collection-',
+                ],
+                'search2record',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'search2record-',
+                ],
+            ],
+            'backendId' => 'Search2',
+            'fallbackDefaultTab' => 'Description',
+        ],
+        [
+            'routes' => [
+                'summonrecord',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'summonrecord-',
+                ],
+            ],
+            'backendId' => 'Summon',
+            'fallbackDefaultTab' => 'Description',
+            'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
+        ],
+        [
+            'routes' => [
+                // Legacy WorldCat routes:
+                'worldcatrecord',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'worldcatrecord-',
+                ],
+                // Current WorldCat2 routes:
+                'worldcat2record',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'worldcat2record-',
+                ],
+            ],
+            'backendId' => 'WorldCat2',
+        ],
+    ];
+
+    /**
      * Constructor.
      *
      * @param PluginManager    $actionPluginManager Action plugin manager
      * @param RouteHelper      $routeHelper         Route helper
      * @param GlobalsContainer $globalsContainer    Global data container
      * @param array            $config              VuFind configuration
-     * @param array            $appConfig           Application configuration
      */
     public function __construct(
         protected PluginManager $actionPluginManager,
@@ -72,8 +220,6 @@ class ActionDispatchListener
         protected GlobalsContainer $globalsContainer,
         #[Autowire(config: 'config')]
         protected array $config,
-        #[Autowire(service: 'AppConfig')]
-        protected array $appConfig,
     ) {
     }
 
@@ -193,7 +339,7 @@ class ActionDispatchListener
         }
 
         $routeName = $routeMatch->getMatchedRouteName();
-        foreach ($this->appConfig['vufind']['actions']['route_config'] ?? [] as $currentConfig) {
+        foreach ($this->actionConfig as $currentConfig) {
             if ($this->routeNameMatchesConfig($routeName, $currentConfig)) {
                 // Apply configuration:
                 foreach ($currentConfig as $key => $value) {
