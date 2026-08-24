@@ -78,6 +78,9 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
     /**
      * Default tab to display (configured at record driver level).
      *
+     * Note that false is only used internally to indicate that the defaults were loaded but a default tab was not
+     * specified.
+     *
      * @var string|null|false
      */
     protected string|null|false $defaultTab = null;
@@ -298,7 +301,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
         $details = $manager
             ->getTabDetailsForRecord($driver, Psr7ServerRequest::toLaminas($this->request), $this->fallbackDefaultTab);
         $this->allTabs = $details['tabs'];
-        $this->defaultTab = $details['default'] ? $details['default'] : null;
+        $this->defaultTab = $details['default'] ? $details['default'] : false;
         $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
         $this->tabsExtraScripts = $manager->getExtraScripts();
     }
