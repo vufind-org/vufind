@@ -564,12 +564,9 @@ $recordRoutes = [
 
 // Define non tab record actions
 $nonTabRecordActions = [
-    'AddComment',
     'AddTag',
     'AjaxTab',
     'Cite',
-    'DeleteComment',
-    'DeleteTag',
     'Email',
     'Epub',
     'Explain',
