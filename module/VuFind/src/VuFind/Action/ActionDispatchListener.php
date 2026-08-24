@@ -138,6 +138,7 @@ class ActionDispatchListener
             ],
             'backendId' => 'Pazpar2',
         ],
+        // Primo:
         [
             'routes' => [
                 'primorecord',
@@ -175,6 +176,7 @@ class ActionDispatchListener
             'backendId' => 'Search2',
             'fallbackDefaultTab' => 'Description',
         ],
+        // Summon:
         [
             'routes' => [
                 'summonrecord',
@@ -187,6 +189,7 @@ class ActionDispatchListener
             'fallbackDefaultTab' => 'Description',
             'poweredBy' => 'Powered by Summon™ from Serials Solutions, a division of ProQuest.',
         ],
+        // WorldCat2 and legacy WorldCat routes:
         [
             'routes' => [
                 // Legacy WorldCat routes:
