@@ -57,7 +57,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class DeleteComentAction extends AbstractRecordAction
+class DeleteCommentAction extends AbstractRecordAction
 {
     /**
      * Constructor.
