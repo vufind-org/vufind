@@ -2,9 +2,17 @@
 
 // Core palette
 
-$back: radix.$teal-01;
+$back: radix.$sage-02;
 $soft: light-dark(white, black);
-$edge: radix.$teal-07;
-$mute: radix.$olive-11;
-$text: radix.$olive-12;
+$edge: radix.$grass-07;
+$mute: radix.$sage-11;
+$text: radix.$sage-12;
 $bold: light-dark(black, white);
+
+$ui: radix.$grass-04;
+$ui-hover: radix.$grass-05;
+
+$vibrant-bg: radix.$grass-02;
+$vibrant-edge: radix.$grass-07;
+$vibrant-mute: radix.$grass-11;
+$vibrant-text: radix.$grass-12;

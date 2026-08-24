@@ -24,6 +24,10 @@
 }
 
 @layer global {
+	* {
+		outline-offset: 0.2em;
+	}
+
 	html {
 		font-size: 16px;
 	}
@@ -33,55 +37,61 @@
 		font-size: 1rem;
 		color: colors.$text;
 		background-color: colors.$back;
+
+		@media (min-width: 1200px) {
+			font-size: 19px;
+		}
 	}
 
 	h1,
 	h2,
 	h3,
 	h4 {
+		margin-block: 1lh 1rem;
 		font-family: variables.$heading-font;
 		line-height: 1.1;
 		text-wrap: balance;
-		color: radix.$lime-11;
+		color: colors.$vibrant-mute;
 
-		& + & {
+		&+& {
 			margin-block-start: 0;
 		}
 	}
 
-	h2,
-	h3,
-	h4 {
-		margin-block: 1lh 1rem;
-	}
-
 	h1 {
-		margin-block: 1rem;
 		font-size: variables.$heading-size-1;
 	}
+
 	h2 {
 		font-size: variables.$heading-size-2;
 	}
+
 	h3 {
 		font-size: variables.$heading-size-3;
 	}
+
 	h4 {
 		font-size: variables.$heading-size-4;
 	}
+
 	h5 {
 		font-size: variables.$heading-size-5;
 	}
+
 	h6 {
 		font-size: variables.$heading-size-6;
 	}
 
 	a,
 	abbr[title] {
-		text-underline-offset: 0.1em;
+		text-decoration-thickness: from-font;
+		text-underline-offset: 0.15em;
 
 		&:hover,
 		&:focus {
-			color: inherit;
+			color: colors.$bold;
+			background-color: colors.$ui-hover;
+			text-decoration-thickness: 0.1em;
 		}
 	}
 
@@ -94,10 +104,11 @@
 		line-height: normal;
 		background-color: colors.$soft;
 	}
+
 	th,
 	td {
 		padding: 0.5em;
-		border-color: radix.$olive-07;
+		border-color: colors.$vibrant-edge;
 	}
 
 	blockquote {
@@ -113,10 +124,28 @@
 }
 
 @layer layout {
+	.body {
+		padding: 1em;
+		container-type: inline-size;
+	}
+
+	.container {
+		width: 100%;
+		max-width: 1170px;
+		margin-inline: auto;
+		padding-inline: 1em;
+	}
+
+	.page--index {
+		max-width: 75ch;
+		margin-inline: auto;
+	}
+
 	.header {
-		border-block-start: 0.5em solid radix.$lime-07;
-		background-color: colors.$soft;
+		font-size: 1rem;
 		text-align: center;
+		border-block-start: 0.5em solid colors.$ui-hover;
+		background-color: colors.$soft;
 	}
 
 	.header_container {
@@ -133,7 +162,7 @@
 			padding-block: 1em;
 
 			// first two .header_link
-			&.js-menu-open > :not(.header_logo):nth-child(-n + 3) {
+			&.js-menu-open> :not(.header_logo):nth-child(-n + 3) {
 				margin-block-start: 1em;
 			}
 
@@ -150,17 +179,20 @@
 				"logo logo logo logo"
 				". . . ."
 				". . . .";
-			padding-block: 1em;
+			align-items: center;
+			padding: 0.5em;
 		}
 
 		// logo beside two rows
 		@media (min-width: breakpoints.$md) and (max-width: (breakpoints.$xl - 1)) {
-			grid-template-columns: repeat(5, auto);
+			grid-template-columns: 1fr repeat(4, auto);
 			grid-template-areas:
 				"logo . . . ."
 				"logo . . . .";
 			align-items: center;
-			padding-block: 0.5em;
+			max-width: 1000px;
+			margin-inline: auto;
+			padding: 0.5em;
 		}
 
 		// logo beside all links
@@ -186,6 +218,7 @@
 		height: 100%;
 		max-height: 65px;
 		margin: 0;
+		background-color: colors.$soft;
 
 		img {
 			height: 100%;
@@ -198,7 +231,7 @@
 
 		// vertical spacing when above header links
 		@media (min-width: breakpoints.$sm) and (max-width: (breakpoints.$md - 1)) {
-			margin-block-end: 1em;
+			margin-block-end: 0.5em;
 		}
 
 		// center except for mobile and wide
@@ -216,11 +249,15 @@
 		display: block;
 		height: fit-content;
 		line-height: normal;
-		color: black;
+		color: colors.$bold;
+		border: 1px solid transparent;
+		text-decoration-color: colors.$vibrant-edge;
 
 		&:hover,
 		&:focus {
-			background-color: radix.$lime-04;
+			background-color: colors.$ui;
+			border-color: colors.$vibrant-edge;
+			text-decoration-color: inherit;
 		}
 
 		// mobile menu
@@ -230,7 +267,8 @@
 
 		// tablet half-height
 		@media (min-width: breakpoints.$sm) and (max-width: (breakpoints.$xl - 1)) {
-			padding-block: 0.25em;
+			padding-inline: 1em;
+			padding-block: 0.5em;
 		}
 
 		// full-width
@@ -246,14 +284,14 @@
 		justify-self: end;
 		margin-inline: 1em;
 		padding: 1em;
-		color: radix.$teal-11;
+		color: colors.$vibrant-mute;
 		background-color: colors.$soft;
 		border: 1px solid colors.$edge;
 		border-radius: 0.5em;
 
 		.js-menu-open & {
 			color: colors.$bold;
-			background-color: radix.$teal-05;
+			background-color: colors.$ui-hover;
 		}
 
 		@media (min-width: breakpoints.$sm) {
@@ -269,25 +307,19 @@
 		text-align: center;
 		text-wrap: balance;
 		letter-spacing: 0.025em;
-		color: radix.$lime-12;
-		background-color: radix.$lime-04;
-		border: 1px solid radix.$lime-07;
+		color: colors.$vibrant-text;
+		background-color: colors.$ui;
+		border: 1px solid colors.$vibrant-edge;
 		border-width: 1px 0;
 
 		a {
-			color: inherit;
+			color: colors.$bold;
+
+			&:hover,
+			&:focus {
+				background-color: colors.$soft;
+			}
 		}
-	}
-
-	.body {
-		padding: 1em;
-		container-type: inline-size;
-	}
-
-	.container {
-		width: 100%;
-		max-width: 1170px;
-		margin-inline: auto;
 	}
 
 	.footer {
@@ -297,7 +329,8 @@
 		text-align: center;
 		border-top: 1px solid colors.$edge;
 		color: colors.$mute;
-		background-color: radix.$olive-02;
+		background-color: radix.$sage-03;
+		color-scheme: light;
 	}
 
 	.footer__statement {
@@ -307,6 +340,7 @@
 	.footer__sponsors {
 		margin-block: 2rem;
 	}
+
 	.footer__sponsor-link {
 		display: block;
 		padding: 1rem;
@@ -315,6 +349,7 @@
 			background-color: white;
 		}
 	}
+
 	.footer__sponsor-img {
 		max-height: 4rem;
 		margin-inline: auto;
@@ -329,18 +364,83 @@
 }
 
 @layer components {
-	.demo-button {
+	.home-featured-links {
+		display: grid;
+		grid-template-columns: auto auto;
+		gap: max(2rem, 2vw);
+		width: fit-content;
+		margin-block: max(2rem, 2vw);
+
+		@media (max-width: breakpoints.$md - 1) {
+			margin-inline: auto;
+		}
+	}
+
+	.home-featured__link {
 		display: table;
 		margin: auto;
-		padding: 9px 20px;
-		border: 3px solid #fff;
-		font-size: 20pt;
-		border-radius: 3px;
+		padding: 0.5em 1.5em;
+		font-size: 16pt;
 		text-decoration: none;
+		color: black;
+		background-color: radix.$amber-09;
+		background-image: linear-gradient(radix.$amber-09, radix.$amber-10);
+		border: 0.1em solid radix.$amber-11;
+		border-radius: 0.2em;
+		box-shadow: 0 4px 16px -2px #0003, inset 0 1px 1px white;
+		cursor: pointer;
 
-		&:hover {
-			color: #fff;
+		&:hover,
+		&:focus {
 			text-decoration: underline;
+			text-decoration-thickness: 1px;
+			background: linear-gradient(radix.$amber-10, radix.$amber-09);
+			border-color: radix.$amber-12;
+		}
+	}
+
+	.home-features {
+		margin-block: max(2rem, 2vw);
+
+		@media (min-width: breakpoints.$sm) {
+			columns: 2;
+		}
+	}
+
+	.feature {
+		margin-inline: 0;
+		background-color: colors.$soft;
+		border: 1px solid colors.$vibrant-edge;
+		border-radius: 0.25rem;
+		box-shadow: 0 2px 4px -1px #0003;
+		overflow: hidden;
+		break-inside: avoid;
+
+		img {
+			width: 100%;
+			margin-inline: auto;
+		}
+
+		figcaption {
+			padding-inline: 1em;
+			padding-block: 0.5em;
+			font-size: 12pt;
+			font-style: italic;
+			line-height: 1.1;
+			text-align: center;
+			text-wrap: balance;
+			color: colors.$vibrant-text;
+			background-color: colors.$ui;
+			border-block-start: 1px solid colors.$vibrant-edge;
+
+			a {
+				color: inherit;
+
+				&:hover,
+				&:focus {
+					background-color: colors.$soft;
+				}
+			}
 		}
 	}
 
@@ -362,13 +462,13 @@
 		font-style: italic;
 		font-weight: 500;
 		text-wrap: pretty;
-		color: radix.$teal-12;
+		color: colors.$vibrant-text;
 	}
 
 	.quote_by {
 		display: block;
 		text-align: right;
-		color: radix.$teal-11;
+		color: colors.$vibrant-mute;
 	}
 
 	.service-provider-list {
