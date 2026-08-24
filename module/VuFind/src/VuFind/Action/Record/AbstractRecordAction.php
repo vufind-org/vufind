@@ -151,6 +151,9 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
      */
     public function getBackendId(): string
     {
+        if (null === $this->sourceId) {
+            throw new ConfigException('Backend ID not properly configured.');
+        }
         return $this->sourceId;
     }
 
