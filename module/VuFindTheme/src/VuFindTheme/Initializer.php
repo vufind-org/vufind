@@ -51,7 +51,7 @@ class Initializer
     /**
      * Theme configuration object.
      *
-     * @var Config
+     * @var array
      */
     protected $config;
 
@@ -107,7 +107,7 @@ class Initializer
     /**
      * Constructor.
      *
-     * @param Config                      $config           Configuration object
+     * @param array                       $config           Configuration array
      * containing these keys:
      * <ul>
      *   <li>theme - the name of the default theme for non-mobile devices</li>
@@ -210,16 +210,16 @@ class Initializer
     {
         if ($this->themeMap === null) {
             // Set up special-case 'standard', 'mobile' and 'admin' aliases:
-            $this->themeMap = ['standard' => $this->config->theme];
-            if (isset($this->config->mobile_theme)) {
-                $this->themeMap['mobile'] = $this->config->mobile_theme;
+            $this->themeMap = ['standard' => $this->config['theme']];
+            if (isset($this->config['mobile_theme'])) {
+                $this->themeMap['mobile'] = $this->config['mobile_theme'];
             }
-            if (isset($this->config->admin_theme)) {
-                $this->themeMap['admin'] = $this->config->admin_theme;
+            if (isset($this->config['admin_theme'])) {
+                $this->themeMap['admin'] = $this->config['admin_theme'];
             }
 
             // Parse the alternate theme settings for additional options:
-            $parts = explode(',', $this->config->alternate_themes ?? '');
+            $parts = explode(',', $this->config['alternate_themes'] ?? '');
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
                 if (!empty($subparts[1])) {
@@ -311,8 +311,8 @@ class Initializer
     protected function getThemeOptions(string $selectedUI, string $currentTheme): array
     {
         $options = [];
-        if (isset($this->config->selectable_themes)) {
-            $parts = explode(',', $this->config->selectable_themes);
+        if (isset($this->config['selectable_themes'])) {
+            $parts = explode(',', $this->config['selectable_themes']);
             $foundSelected = false;
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
@@ -374,8 +374,8 @@ class Initializer
         $resources = $this->serviceManager->get(ResourceContainer::class);
 
         // Set generator if necessary:
-        if (isset($this->config->generator)) {
-            $resources->setGenerator($this->config->generator);
+        if (isset($this->config['generator'])) {
+            $resources->setGenerator($this->config['generator']);
         }
 
         // Determine doctype and apply it:
