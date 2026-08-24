@@ -576,7 +576,7 @@ $config = [
                     'accessPermission' => 'access.EPFModule',
                     'backendId' => 'EPF',
                 ],
-                // Record, Collection:
+                // Record, Collection (Default backend):
                 [
                     'routes' => [
                         'collection',
