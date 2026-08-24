@@ -31,7 +31,6 @@
 
 namespace VuFind\Action\EdsRecord;
 
-use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Action\Record\AbstractRecordAction;
@@ -64,14 +63,13 @@ abstract class AbstractRedirectToEBookAction extends AbstractRecordAction
     /**
      * Constructor.
      *
-     * @param SearchMemory         $searchMemory         Search memory
-     * @param TabManager           $tabManager           Tab manager
-     * @param AuthManager          $authManager          Authentication manager
-     * @param RecordLoader         $recordLoader         Record loader
-     * @param RecordRouter         $recordRouter         Record router
-     * @param ResultScroller       $resultScroller       Result scroller
-     * @param array                $config               VuFind configuration
-     * @param AuthorizationService $authorizationService Authorization service
+     * @param SearchMemory   $searchMemory   Search memory
+     * @param TabManager     $tabManager     Tab manager
+     * @param AuthManager    $authManager    Authentication manager
+     * @param RecordLoader   $recordLoader   Record loader
+     * @param RecordRouter   $recordRouter   Record router
+     * @param ResultScroller $resultScroller Result scroller
+     * @param array          $config         VuFind configuration
      */
     public function __construct(
         SearchMemory $searchMemory,
@@ -82,7 +80,6 @@ abstract class AbstractRedirectToEBookAction extends AbstractRecordAction
         ResultScroller $resultScroller,
         #[Autowire(config: 'config')]
         array $config,
-        protected AuthorizationService $authorizationService,
     ) {
         parent::__construct(
             $searchMemory,
