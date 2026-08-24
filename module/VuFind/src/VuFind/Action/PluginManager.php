@@ -123,8 +123,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
 
-        'pazpar2record/home' => Pazpar2Record\HomeAction::class,
-
         'primorecord/addcomment' => Record\AddComentAction::class,
         'primorecord/addtag' => Record\AddTagAction::class,
         'primorecord/ajaxtab' => Record\AjaxTabAction::class,

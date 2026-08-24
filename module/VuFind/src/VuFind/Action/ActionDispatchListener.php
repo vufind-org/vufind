@@ -130,14 +130,6 @@ class ActionDispatchListener
             'backendId' => DEFAULT_SEARCH_BACKEND,
             'fallbackDefaultTab' => '',
         ],
-        // Pazpar2:
-        [
-            'routes' => [
-                'pazpar2record',
-                'pazpar2record-home',
-            ],
-            'backendId' => 'Pazpar2',
-        ],
         // Primo:
         [
             'routes' => [
