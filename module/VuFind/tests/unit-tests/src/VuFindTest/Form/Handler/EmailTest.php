@@ -30,6 +30,8 @@
 namespace VuFindTest\Form\Handler;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use Symfony\Component\Mime\Address;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Email;
 
@@ -139,18 +141,59 @@ class EmailTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test success with a user.
+     *
+     * @return void
+     */
+    public function testSuccessWithUser(): void
+    {
+        $handler = $this->getHandler(
+            expectedSendCount: 1,
+            expectedSendParams: [
+                new Address('foo@example.com', 'Foo Tester'),
+                new Address('noreply@vufind.org', 'VuFind Feedback'),
+                'Subject',
+                'message body',
+                null,
+                null,
+                false,
+            ]
+        );
+        $form = $this->createMock(Form::class);
+        $form->expects($this->once())->method('getRecipient')
+            ->willReturn([
+                ['name' => 'Foo Tester', 'email' => 'foo@example.com'],
+            ]);
+        $form->expects($this->once())->method('getEmailSubject')
+            ->willReturn('Subject');
+        $user = $this->createMock(UserEntityInterface::class);
+        $request = (new ServerRequest('POST', 'http://localhost'))->withParsedBody([]);
+        $this->assertTrue($handler->handle($form, $request, $user));
+    }
+
+    /**
      * Get a handler configured for testing.
      *
-     * @param array $config Configuration array
+     * @param array $config             Configuration array
+     * @param int   $expectedSendCount  Expected number of calls to send an email
+     * @param array $expectedSendParams Expected email send params
      *
      * @return Email
      */
-    protected function getHandler(array $config = []): Email
+    protected function getHandler(array $config = [], int $expectedSendCount = 0, array $expectedSendParams = []): Email
     {
+        $renderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
+        $renderer->method('render')
+            ->willReturn('message body');
+        $mailer = $this->createMock(\VuFind\Mailer\Mailer::class);
+        $mailer->expects($expectedSendCount ? $this->exactly($expectedSendCount) : $this->never())
+            ->method('send')
+            ->with(...$expectedSendParams);
+
         return new Email(
-            $this->createMock(\Laminas\View\Renderer\RendererInterface::class),
+            $renderer,
             new \VuFind\Config\Config($config),
-            $this->createMock(\VuFind\Mailer\Mailer::class)
+            $mailer
         );
     }
 }
