@@ -372,6 +372,17 @@ abstract class Results
     }
 
     /**
+     * Get last available page.
+     *
+     * @return int
+     */
+    public function getLastAvailablePage(): int
+    {
+        $limit = $this->getParams()->getLimit();
+        return ($limit > 0) ? ceil($this->getResultTotal() / $limit) : 1;
+    }
+
+    /**
      * Manually override the start record number.
      *
      * @param ?int $rec Record number to use.
