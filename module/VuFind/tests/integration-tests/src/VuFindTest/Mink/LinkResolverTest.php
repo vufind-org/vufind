@@ -225,10 +225,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
     public function testLinkOnRecordPageWithLinkInHoldingsAndAjaxTabLoading()
     {
         // By default, no OpenURL on record page:
-        $page = $this->setupRecordPage(
-            ['show_in_holdings' => true],
-            ['Site' => ['loadInitialTabWithAjax' => true]]
-        );
+        $page = $this->setupRecordPage(['show_in_holdings' => true]);
         $this->assertOpenUrl($page);
     }
 }

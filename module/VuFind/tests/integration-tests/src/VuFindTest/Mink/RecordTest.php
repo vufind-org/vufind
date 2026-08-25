@@ -141,15 +141,12 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that tabs work correctly with loadInitialTabWithAjax turned on.
+     * Test that tabs work correctly.
      *
      * @return void
      */
-    public function testLoadInitialTabWithAjax(): void
+    public function testLoadInitialTab(): void
     {
-        $this->changeConfigs(
-            ['config' => ['Site' => ['loadInitialTabWithAjax' => 1]]]
-        );
         $this->tryRecordTabsOnId('testsample1');
         $this->tryLoadingTabHashAndReturningToDefault('testsample2');
     }
