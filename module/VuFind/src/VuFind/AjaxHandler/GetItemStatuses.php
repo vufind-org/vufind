@@ -452,18 +452,16 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Support method for getItemStatuses() -- process a failed record.
      *
-     * @param array  $record Information on items linked to a single bib record
-     * @param string $msg    Availability message
+     * @param array $record Information on items linked to a single bib record
      *
      * @return array Summarized availability information
      */
-    protected function getItemStatusError($record, $msg = '')
+    protected function getItemStatusError($record)
     {
         return [
             'id' => $record[0]['id'],
             'error' => $this->translate($record[0]['error']),
             'availability' => false,
-            'availability_message' => $msg,
             'location' => false,
             'locationList' => [],
             'reserve' => false,
@@ -628,11 +626,11 @@ class GetItemStatuses extends AbstractBase implements
             $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
                 AvailabilityStatusInterface::STATUS_UNKNOWN
             );
-            $current = $this
-                ->getItemStatusError(
-                    $record,
-                    $this->renderAvailabilityMessage($request, $unknownStatus)
-                );
+            $current = $this->getItemStatusError($record);
+            $current['availability_message'] = $this->renderAvailabilityMessage(
+                $request,
+                $unknownStatus
+            );
         } elseif ($locationSetting === 'group') {
             $current = $this->getItemStatusGroup(
                 $request,
@@ -650,7 +648,6 @@ class GetItemStatuses extends AbstractBase implements
                 $callnumberSetting,
                 $current['callNumber']
             );
-            // 'availability_message' => $availabilityMessage,
             if (!empty($current['services'])) {
                 $current['availability_message'] = $this->renderer->renderTemplateAsString(
                     $request,
