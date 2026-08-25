@@ -98,6 +98,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Setup Java
+        if: ${{ inputs.phing_task_phpunit }}
+        uses: actions/setup-java@v4
+        with:
+          # Solr 10 requires Java 21 or later.
+          distribution: temurin
+          java-version: '21'
+
       - name: Configure Apache for PHP ${{ matrix.php-version }}
         if: ${{ inputs.phing_task_phpunit }}
         run: |
