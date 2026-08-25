@@ -77,14 +77,14 @@ class Facebook extends AbstractBase implements
     protected function validateConfig()
     {
         // Throw an exception if the required username setting is missing.
-        $fb = $this->config->Facebook;
-        if (!isset($fb->appId) || empty($fb->appId)) {
+        $fb = $this->config['Facebook'];
+        if (!isset($fb['appId']) || empty($fb['appId'])) {
             throw new AuthException(
                 'Facebook app ID is missing in your configuration file.'
             );
         }
 
-        if (!isset($fb->secret) || empty($fb->secret)) {
+        if (!isset($fb['secret']) || empty($fb['secret'])) {
             throw new AuthException(
                 'Facebook app secret is missing in your configuration file.'
             );
@@ -151,7 +151,7 @@ class Facebook extends AbstractBase implements
             . 'auth_method=Facebook';
         $this->session->lastUri = $target;
         return $base . '?client_id='
-            . urlencode($this->getConfig()->Facebook->appId)
+            . urlencode($this->getConfig()['Facebook']['appId'])
             . '&redirect_uri=' . urlencode($target)
             . '&scope=public_profile,email';
     }
@@ -166,9 +166,9 @@ class Facebook extends AbstractBase implements
     protected function getAccessTokenFromCode($code)
     {
         $requestUrl = 'https://graph.facebook.com/oauth/access_token?'
-            . 'client_id=' . urlencode($this->getConfig()->Facebook->appId)
+            . 'client_id=' . urlencode($this->getConfig()['Facebook']['appId'])
             . '&redirect_uri=' . urlencode($this->session->lastUri)
-            . '&client_secret=' . urlencode($this->getConfig()->Facebook->secret)
+            . '&client_secret=' . urlencode($this->getConfig()['Facebook']['secret'])
             . '&code=' . urlencode($code);
         $response = $this->httpService->get($requestUrl);
         $parts = explode('&', $response->getBody(), 2);

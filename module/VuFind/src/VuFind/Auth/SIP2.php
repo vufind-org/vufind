@@ -74,9 +74,9 @@ class SIP2 extends AbstractBase
         // Attempt SIP2 Authentication
         $mysip = new \sip2();
         $config = $this->getConfig();
-        if (isset($config->SIP2)) {
-            $mysip->hostname = $config->SIP2->host;
-            $mysip->port = $config->SIP2->port;
+        if (isset($config['SIP2'])) {
+            $mysip->hostname = $config['SIP2']['host'];
+            $mysip->port = $config['SIP2']['port'];
         }
 
         if (!$mysip->connect()) {

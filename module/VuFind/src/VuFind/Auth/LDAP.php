@@ -68,9 +68,9 @@ class LDAP extends AbstractBase
     {
         // Check for missing parameters:
         if (
-            empty($this->config->LDAP->basedn ?? '')
-            || empty($this->config->LDAP->username ?? '')
-            || empty($this->config->LDAP->uri ?? '')
+            empty($this->config['LDAP']['basedn'] ?? '')
+            || empty($this->config['LDAP']['username'] ?? '')
+            || empty($this->config['LDAP']['uri'] ?? '')
         ) {
             throw new AuthException(
                 'One or more LDAP parameters are missing. Check your config.ini!'
@@ -88,7 +88,7 @@ class LDAP extends AbstractBase
     protected function getSetting($name)
     {
         $config = $this->getConfig();
-        $value = $config->LDAP->$name ?? '';
+        $value = $config['LDAP'][$name] ?? '';
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
@@ -173,8 +173,8 @@ class LDAP extends AbstractBase
         // if the uri parameter is not specified as ldaps://
         // then (unless TLS is disabled) we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
-        $disableTls = isset($this->config->LDAP->disable_tls)
-            && $this->config->LDAP->disable_tls;
+        $disableTls = isset($this->config['LDAP']['disable_tls'])
+            && $this->config['LDAP']['disable_tls'];
         if (!str_starts_with($uri, 'ldaps://') && !$disableTls) {
             $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {

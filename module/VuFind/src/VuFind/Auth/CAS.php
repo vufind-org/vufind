@@ -79,44 +79,44 @@ class CAS extends AbstractBase
      */
     protected function validateConfig()
     {
-        $cas = $this->config->CAS;
+        $cas = $this->config['CAS'];
         // Throw an exception if the required server setting is missing.
-        if (!isset($cas->server)) {
+        if (!isset($cas['server'])) {
             throw new AuthException(
                 'CAS server configuration parameter is not set.'
             );
         }
 
         // Throw an exception if the required port setting is missing.
-        if (!isset($cas->port)) {
+        if (!isset($cas['port'])) {
             throw new AuthException(
                 'CAS port configuration parameter is not set.'
             );
         }
 
         // Throw an exception if the required context setting is missing.
-        if (!isset($cas->context)) {
+        if (!isset($cas['context'])) {
             throw new AuthException(
                 'CAS context configuration parameter is not set.'
             );
         }
 
         // Throw an exception if the required CACert setting is missing.
-        if (!isset($cas->CACert)) {
+        if (!isset($cas['CACert'])) {
             throw new AuthException(
                 'CAS CACert configuration parameter is not set.'
             );
         }
 
         // Throw an exception if the required login setting is missing.
-        if (!isset($cas->login)) {
+        if (!isset($cas['login'])) {
             throw new AuthException(
                 'CAS login configuration parameter is not set.'
             );
         }
 
         // Throw an exception if the required logout setting is missing.
-        if (!isset($cas->logout)) {
+        if (!isset($cas['logout'])) {
             throw new AuthException(
                 'CAS logout configuration parameter is not set.'
             );
@@ -135,13 +135,13 @@ class CAS extends AbstractBase
     public function authenticate($request)
     {
         // Configure phpCAS
-        $cas = $this->getConfig()->CAS;
+        $cas = $this->getConfig()['CAS'];
         $casauth = $this->setupCAS();
         $casauth->forceAuthentication();
 
         // Check if username is set.
-        if (isset($cas->username) && !empty($cas->username)) {
-            $username = $casauth->getAttribute($cas->username);
+        if (isset($cas['username']) && !empty($cas['username'])) {
+            $username = $casauth->getAttribute($cas['username']);
         } else {
             $username = $casauth->getUser();
         }
@@ -160,8 +160,8 @@ class CAS extends AbstractBase
         ];
         $catPassword = null;
         foreach ($attribsToCheck as $attribute) {
-            if (isset($cas->$attribute)) {
-                $value = $casauth->getAttribute($cas->$attribute);
+            if (isset($cas['$attribute'])) {
+                $value = $casauth->getAttribute($cas['$attribute']);
                 if ($attribute == 'email') {
                     $userService->updateUserEmail($user, $value);
                 } elseif ($attribute != 'cat_password') {
@@ -189,9 +189,9 @@ class CAS extends AbstractBase
     public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
-        $casTarget = $config->CAS->target ?? $target;
+        $casTarget = $config['CAS']['target'] ?? $target;
         $append = (str_contains($casTarget, '?')) ? '&' : '?';
-        $sessionInitiator = $config->CAS->login
+        $sessionInitiator = $config['CAS']['login']
             . '?service=' . urlencode($casTarget)
             . urlencode($append . 'auth_method=CAS');
 
@@ -207,8 +207,8 @@ class CAS extends AbstractBase
     {
         $config = $this->getConfig();
         if (
-            isset($config->CAS->username)
-            && isset($config->CAS->logout)
+            isset($config['CAS']['username'])
+            && isset($config['CAS']['logout'])
         ) {
             $casauth = $this->setupCAS();
             if ($casauth->checkAuthentication() === false) {
@@ -229,8 +229,8 @@ class CAS extends AbstractBase
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (!empty($config->CAS->logout)) {
-            $url = $config->CAS->logout . '?service=' . urlencode($url);
+        if (!empty($config['CAS']['logout'])) {
+            $url = $config['CAS']['logout'] . '?service=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):
@@ -248,11 +248,11 @@ class CAS extends AbstractBase
         $sortedUserAttributes = [];
 
         // Now extract user attribute values:
-        $cas = $this->getConfig()->CAS;
+        $cas = $this->getConfig()['CAS'];
         foreach ($cas as $key => $value) {
             if (preg_match('/userattribute_[0-9]{1,}/', $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
-                $sortedUserAttributes[$value] = $cas->$valueKey ?? null;
+                $sortedUserAttributes[$value] = $cas[$valueKey] ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
@@ -275,12 +275,12 @@ class CAS extends AbstractBase
     protected function getServiceBaseUrl(): array
     {
         $config = $this->getConfig();
-        $cas = $config->CAS;
-        if (isset($cas->service_base_url)) {
-            return $cas->service_base_url->toArray();
-        } elseif (isset($config->Site->url)) {
+        $cas = $config['CAS'];
+        if (isset($cas['service_base_url'])) {
+            return $cas['service_base_url']->toArray();
+        } elseif (isset($config['Site']['url'])) {
             // fallback method
-            $siteUrl = parse_url($config->Site->url);
+            $siteUrl = parse_url($config['Site']['url']);
             if (isset($siteUrl['scheme']) && isset($siteUrl['host'])) {
                 return [
                     $siteUrl['scheme'] . '://' . $siteUrl['host'] .
@@ -308,11 +308,11 @@ class CAS extends AbstractBase
         // Check to see if phpCAS has already been setup. If it has, than skip as
         // client can only be called once.
         if (!$this->phpCASSetup) {
-            $cas = $this->getConfig()->CAS;
+            $cas = $this->getConfig()['CAS'];
 
             $casauth->setLogger($this->logger);
 
-            if ($cas->debug ?? false) {
+            if ($cas['debug'] ?? false) {
                 $casauth->setVerbose(true);
             }
 
@@ -320,15 +320,15 @@ class CAS extends AbstractBase
 
             $casauth->client(
                 $protocol,
-                $cas->server,
-                (int)$cas->port,
-                $cas->context,
+                $cas['server'],
+                (int)$cas['port'],
+                $cas['context'],
                 $this->getServiceBaseUrl(),
                 false
             );
 
-            if (isset($cas->CACert) && !empty($cas->CACert)) {
-                $casauth->setCasServerCACert($cas->CACert);
+            if (isset($cas['CACert']) && !empty($cas['CACert'])) {
+                $casauth->setCasServerCACert($cas['CACert']);
             } else {
                 $casauth->setNoCasServerValidation();
             }
