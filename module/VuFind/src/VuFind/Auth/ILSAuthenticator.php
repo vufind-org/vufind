@@ -178,7 +178,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
             return null;
         }
 
-        $configAuth = $this->config['Authentication'] ?? new [];
+        $configAuth = $this->config['Authentication'] ?? [];
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
