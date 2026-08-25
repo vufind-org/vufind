@@ -373,13 +373,12 @@ class GetItemStatuses extends AbstractBase implements
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for "group" location setting.
      *
-     * @param ServerRequestInterface $request           Request,
-     * @param array                  $record            Information on items linked to a single bib record
-     * @param string                 $callnumberSetting The callnumber mode setting used for pickValue()
+     * @param array  $record            Information on items linked to a single bib record
+     * @param string $callnumberSetting The callnumber mode setting used for pickValue()
      *
      * @return array                    Summarized availability information
      */
-    protected function getItemStatusGroup(ServerRequestInterface $request, $record, $callnumberSetting)
+    protected function getItemStatusGroup($record, $callnumberSetting): array
     {
         // Summarize call number, location and availability info across all items:
         $locations = [];
@@ -421,8 +420,7 @@ class GetItemStatuses extends AbstractBase implements
             $locationInfo = [
                 'availability' => $locationStatus['availability'],
                 'location' => $this->translateWithPrefix('location_', $location),
-                'callnumberHtml' =>
-                    $this->renderCallnumbers($request, $callnumberSetting, $locationCallnumbers),
+                'locationCallnumbers' => $locationCallnumbers,
                 'getThisURL' => $getThisURL,
             ];
             $locationList[] = $locationInfo;
@@ -438,10 +436,9 @@ class GetItemStatuses extends AbstractBase implements
         return [
             'id' => $record[0]['id'],
             'availability' => $combinedAvailability->availabilityAsString(),
-            'availability_message' => $this->renderAvailabilityMessage($request, $combinedAvailability),
+            'combinedAvailability' => $combinedAvailability,
             'location' => false,
-            'locationList' => $this->renderer
-                ->renderTemplateAsString($request, 'ajax/itemLocationList', ['locationList' => $locationList]),
+            'locationList' => $locationList,
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
@@ -633,9 +630,24 @@ class GetItemStatuses extends AbstractBase implements
             );
         } elseif ($locationSetting === 'group') {
             $current = $this->getItemStatusGroup(
-                $request,
                 $record,
                 $callnumberSetting
+            );
+            $current['availability_message'] = $this->renderAvailabilityMessage(
+                $request,
+                $current['combinedAvailability']
+            );
+            foreach ($current['locationList'] as $location => $value) {
+                $current['locationList'][$location]['callnumberHtml'] = $this->renderCallnumbers(
+                    $request,
+                    $callnumberSetting,
+                    $current['locationList'][$location]['locationCallnumbers']
+                );
+            }
+            $current['locationList'] = $this->renderer->renderTemplateAsString(
+                $request,
+                'ajax/itemLocationList',
+                ['locationList' => $current['locationList']]
             );
         } else {
             $current = $this->getItemStatus(
