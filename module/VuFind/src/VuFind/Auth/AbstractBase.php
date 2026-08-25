@@ -70,7 +70,7 @@ abstract class AbstractBase implements
     /**
      * Configuration settings.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $config = null;
 
@@ -101,7 +101,7 @@ abstract class AbstractBase implements
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \VuFind\Config\Config
+     * @return array
      */
     public function getConfig()
     {
@@ -450,8 +450,8 @@ abstract class AbstractBase implements
     {
         $policy = [];
         $config = $this->getConfig();
-        $authConfig = isset($config->Authentication)
-            ? $config->Authentication->toArray()
+        $authConfig = isset($config['Authentication'])
+            ? $config['Authentication']
             : [];
         /* Map settings to the policy array, e.g.:
          *

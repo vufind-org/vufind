@@ -43,16 +43,16 @@ abstract class AbstractBase implements SMSInterface
     /**
      * SMS configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $smsConfig;
 
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config SMS configuration
+     * @param array $config SMS configuration
      */
-    public function __construct(\VuFind\Config\Config $config)
+    public function __construct(protected array $config)
     {
         $this->smsConfig = $config;
     }
@@ -66,7 +66,7 @@ abstract class AbstractBase implements SMSInterface
      */
     protected function filterPhoneNumber($num)
     {
-        $filter = $this->smsConfig->General->filter ?? '-.() ';
+        $filter = $this->smsConfig['General']['filter'] ?? '-.() ';
         return str_replace(str_split($filter), '', $num);
     }
 
@@ -78,6 +78,6 @@ abstract class AbstractBase implements SMSInterface
     public function getValidationType()
     {
         // Load setting from config; at present, only US is implemented in templates
-        return $this->smsConfig->General->validation ?? 'US';
+        return $this->smsConfig['General']['validation'] ?? 'US';
     }
 }
