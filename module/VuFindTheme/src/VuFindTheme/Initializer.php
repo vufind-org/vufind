@@ -49,13 +49,6 @@ use VuFind\View\GlobalsContainer;
 class Initializer
 {
     /**
-     * Theme configuration object.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Map of theme aliases to theme names (null if uninitialized).
      *
      * @var ?array
@@ -126,11 +119,8 @@ class Initializer
      * @param MvcEvent|ContainerInterface $eventOrContainer Laminas MVC Event object
      * OR service container object
      */
-    public function __construct(array $config, $eventOrContainer)
+    public function __construct(protected array $config, $eventOrContainer)
     {
-        // Store parameters:
-        $this->config = $config;
-
         if ($eventOrContainer instanceof MvcEvent) {
             $this->event = $eventOrContainer;
             $this->serviceManager = $this->event->getApplication()
