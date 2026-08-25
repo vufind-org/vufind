@@ -450,9 +450,8 @@ abstract class AbstractBase implements
     {
         $policy = [];
         $config = $this->getConfig();
-        $authConfig = isset($config['Authentication'])
-            ? $config['Authentication']
-            : [];
+        $authConfig = $config['Authentication']
+            ?? [];
         /* Map settings to the policy array, e.g.:
          *
          * password_minimum_length or username_minimum_length => minLength
