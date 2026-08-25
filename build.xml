@@ -52,7 +52,7 @@
   <property name="phpmd_cache_params" value="--cache" />
   <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" />
   <property name="phpunit_extra_params" value="" />
-  <property name="composer_version" value="2.7.7" />
+  <property name="composer_version" value="2.9.8" />
   <property name="composer_extra_params" value="" />
   <property name="mink_driver" value="selenium" />
   <property name="screenshot_dir" value="" /><!-- set to a directory name to capture screenshots of failed tests -->
