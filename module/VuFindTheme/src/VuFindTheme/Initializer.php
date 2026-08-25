@@ -126,7 +126,7 @@ class Initializer
      * @param MvcEvent|ContainerInterface $eventOrContainer Laminas MVC Event object
      * OR service container object
      */
-    public function __construct(Config $config, $eventOrContainer)
+    public function __construct(array $config, $eventOrContainer)
     {
         // Store parameters:
         $this->config = $config;
