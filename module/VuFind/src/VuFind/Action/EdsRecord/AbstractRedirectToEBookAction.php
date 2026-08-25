@@ -38,14 +38,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\PermissionHelper;
 use VuFind\ActionHelper\RedirectHelper;
-use VuFind\Auth\Manager as AuthManager;
 use VuFind\Exception\Forbidden as ForbiddenException;
-use VuFind\Record\Loader as RecordLoader;
-use VuFind\Record\Router as RecordRouter;
-use VuFind\RecordTab\TabManager;
-use VuFind\Search\Memory as SearchMemory;
-use VuFind\Search\ResultScroller;
-use VuFind\ServiceManager\Factory\Autowire;
 use VuFindSearch\ParamBag;
 
 /**
