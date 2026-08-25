@@ -97,7 +97,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @param Closure             $cipherFactory       BlockCipher object factory (takes algorithm as argument)
      * @param ILSConnection       $catalog             ILS connection
      * @param ?EmailAuthenticator $emailAuthenticator  Email authenticator
-     * @param array               $config              Configuration from config.ini
+     * @param ?array              $config              Configuration from config.ini
      */
     public function __construct(
         protected Closure $authManagerCallback,
@@ -178,7 +178,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
             return null;
         }
 
-        $configAuth = $this->config['Authentication'] ?? new Config([]);
+        $configAuth = $this->config['Authentication'] ?? new [];
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
