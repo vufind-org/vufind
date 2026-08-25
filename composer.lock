@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "49408cf46930c774a99bed71b4f6ffac",
+    "content-hash": "470bc959681e63196a399a7d781044bc",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -9517,16 +9517,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v21.0.0",
+            "version": "v21.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "0498d20d0c33490c38df956dd7cef49b3a2ad6f0"
+                "reference": "da798f6224c5ff6f89d8d78025044f418ee27db8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/0498d20d0c33490c38df956dd7cef49b3a2ad6f0",
-                "reference": "0498d20d0c33490c38df956dd7cef49b3a2ad6f0",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/da798f6224c5ff6f89d8d78025044f418ee27db8",
+                "reference": "da798f6224c5ff6f89d8d78025044f418ee27db8",
                 "shasum": ""
             },
             "require": {
@@ -9573,9 +9573,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v21.0.0"
+                "source": "https://github.com/stripe/stripe-php/tree/v21.2.1"
             },
-            "time": "2026-07-16T00:34:23+00:00"
+            "time": "2026-08-20T21:06:13+00:00"
         },
         {
             "name": "swagger-api/swagger-ui",
