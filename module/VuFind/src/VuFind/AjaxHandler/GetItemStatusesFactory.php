@@ -73,6 +73,9 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $getThisEnabled = ($config['Record']['getThisEnabled'] ?? null) == true;
         $getThis = $getThisEnabled ? $container->get(\VuFind\GetThis\GetThisLoader::class) : null;
+
+        $getStatusesSorting = ($this->config->Record->getStatusesSorting ?? 'false') !== 'false';
+
         $handler = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $config,
@@ -81,7 +84,8 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
             $container->get(\VuFind\ILS\Logic\Holds::class),
             $container->get(\VuFind\ILS\Logic\AvailabilityStatusManager::class),
             $getThis,
-            $container->get(\VuFind\Http\RouteHelper::class)
+            $container->get(\VuFind\Http\RouteHelper::class),
+            $getStatusesSorting ? $container->get(\VuFind\Search\Memory::class) : null
         );
         $handler->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $handler;
