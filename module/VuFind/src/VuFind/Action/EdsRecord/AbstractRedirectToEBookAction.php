@@ -61,38 +61,6 @@ use VuFindSearch\ParamBag;
 abstract class AbstractRedirectToEBookAction extends AbstractRecordAction
 {
     /**
-     * Constructor.
-     *
-     * @param SearchMemory   $searchMemory   Search memory
-     * @param TabManager     $tabManager     Tab manager
-     * @param AuthManager    $authManager    Authentication manager
-     * @param RecordLoader   $recordLoader   Record loader
-     * @param RecordRouter   $recordRouter   Record router
-     * @param ResultScroller $resultScroller Result scroller
-     * @param array          $config         VuFind configuration
-     */
-    public function __construct(
-        SearchMemory $searchMemory,
-        TabManager $tabManager,
-        AuthManager $authManager,
-        RecordLoader $recordLoader,
-        RecordRouter $recordRouter,
-        ResultScroller $resultScroller,
-        #[Autowire(config: 'config')]
-        array $config,
-    ) {
-        parent::__construct(
-            $searchMemory,
-            $tabManager,
-            $authManager,
-            $recordLoader,
-            $recordRouter,
-            $resultScroller,
-            $config
-        );
-    }
-
-    /**
      * Redirect to an eBook.
      *
      * @param ServerRequestInterface $request  Server request
