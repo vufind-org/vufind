@@ -116,7 +116,7 @@ class Shibboleth extends AbstractBase
     /**
      * Set configuration.
      *
-     * @param \VuFind\Config\Config $config Configuration to set
+     * @param array $config Configuration to set
      *
      * @return void
      */
@@ -239,17 +239,17 @@ class Shibboleth extends AbstractBase
     public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
-        $shibTarget = $config->Shibboleth->target ?? $target;
+        $shibTarget = $config['Shibboleth']['target'] ?? $target;
         $append = (str_contains($shibTarget, '?')) ? '&' : '?';
         // Adding the auth_method parameter makes it possible to handle logins when
         // using an auth method that proxies others.
-        $sessionInitiator = $config->Shibboleth->login
+        $sessionInitiator = $config['Shibboleth']['login']
             . '?target=' . urlencode($shibTarget)
             . urlencode($append . 'auth_method=Shibboleth');
 
-        if (isset($config->Shibboleth->provider_id)) {
+        if (isset($config['Shibboleth']['provider_id'])) {
             $sessionInitiator = $sessionInitiator . '&entityID=' .
-                urlencode($config->Shibboleth->provider_id);
+                urlencode($config['Shibboleth']['provider_id']);
         }
 
         return $sessionInitiator;
@@ -265,7 +265,7 @@ class Shibboleth extends AbstractBase
         $config = $this->getConfig();
         if (
             !isset($this->shibSessionId)
-            || !($config->Shibboleth->checkExpiredSession ?? true)
+            || !($config['Shibboleth']['checkExpiredSession'] ?? true)
         ) {
             return false;
         }
@@ -284,9 +284,9 @@ class Shibboleth extends AbstractBase
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (!empty($config->Shibboleth->logout)) {
-            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&' : '?';
-            $url = $config->Shibboleth->logout . $append . 'return=' . urlencode($url);
+        if (!empty($config['Shibboleth']['logout'])) {
+            $append = (str_contains($config['Shibboleth']['logout'], '?')) ? '&' : '?';
+            $url = $config['Shibboleth']['logout'] . $append . 'return=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):
