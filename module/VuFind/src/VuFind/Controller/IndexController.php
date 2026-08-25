@@ -44,13 +44,6 @@ use VuFind\Auth\Manager as AuthManager;
 class IndexController extends AbstractBase
 {
     /**
-     * VuFind configuration.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Auth manager.
      *
      * @var AuthManager
@@ -64,10 +57,9 @@ class IndexController extends AbstractBase
      * @param array                   $config      VuFind configuration
      * @param AuthManager             $authManager Auth manager
      */
-    public function __construct(ServiceLocatorInterface $sm, array $config, AuthManager $authManager)
+    public function __construct(ServiceLocatorInterface $sm, protected array $config, AuthManager $authManager)
     {
         parent::__construct($sm);
-        $this->config = $config;
         $this->authManager = $authManager;
     }
 
@@ -89,7 +81,7 @@ class IndexController extends AbstractBase
         }
         $action = $this->config['Site'][$actionConfig] ?? 'Home';
 
-        // Forward to the appropriate controller ands action:
+        // Forward to the appropriate controller and action:
         return $this->forwardTo($controller, $action);
     }
 }
