@@ -33,7 +33,6 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\View\GlobalsContainer;
 
