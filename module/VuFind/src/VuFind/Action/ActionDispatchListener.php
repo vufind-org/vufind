@@ -148,6 +148,10 @@ class ActionDispatchListener
             'routes' => [
                 'proquestfsgrecord',
                 'proquestfsgrecord-home',
+                [
+                    'type' => 'prefix',
+                    'prefix' => 'proquestfsgrecord-',
+                ],
             ],
             'backendId' => 'ProQuestFSG',
         ],
