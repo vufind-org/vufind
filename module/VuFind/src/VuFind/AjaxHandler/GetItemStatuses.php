@@ -33,7 +33,10 @@
 
 namespace VuFind\AjaxHandler;
 
+use Exception;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerAwareInterface;
+use Throwable;
 use VuFind\Config\Config;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\GetThis\GetThisLoader;
@@ -199,12 +202,11 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Reduce an array of service names to a human-readable string.
      *
-     * @param ServerRequestInterface $request     Request
      * @param array                  $rawServices Names of available services
      *
-     * @return string
+     * @return array
      */
-    protected function reduceServices(ServerRequestInterface $request, array $rawServices)
+    protected function reduceServices(array $rawServices): array
     {
         // Normalize, dedup and sort available services
         $normalize = function ($in) {
@@ -220,11 +222,7 @@ class GetItemStatuses extends AbstractBase implements
             $services = [$preferred];
         }
 
-        return $this->renderer->renderTemplateAsString(
-            $request,
-            'ajax/status-available-services.phtml',
-            ['services' => $services]
-        );
+        return $services;
     }
 
     /**
@@ -357,9 +355,13 @@ class GetItemStatuses extends AbstractBase implements
         $combinedAvailability = $combinedInfo['availability'];
 
         if (!empty($services)) {
-            $availabilityMessage = $this->reduceServices($request, $services);
+            $availabilityMessage = $this->renderer->renderTemplateAsString(
+                $request,
+                'ajax/status-available-services.phtml',
+                ['services' => $this->reduceServices($services)]
+            );
         } else {
-            $availabilityMessage = $this->getAvailabilityMessage($request, $combinedAvailability);
+            $availabilityMessage = $this->renderAvailabilityMessage($request, $combinedAvailability);
         }
 
         $reserve = ($record[0]['reserve'] ?? 'N') === 'Y';
@@ -448,7 +450,7 @@ class GetItemStatuses extends AbstractBase implements
         return [
             'id' => $record[0]['id'],
             'availability' => $combinedAvailability->availabilityAsString(),
-            'availability_message' => $this->getAvailabilityMessage($request, $combinedAvailability),
+            'availability_message' => $this->renderAvailabilityMessage($request, $combinedAvailability),
             'location' => false,
             'locationList' => $this->renderer
                 ->renderTemplateAsString($request, 'ajax/itemLocationList', ['locationList' => $locationList]),
@@ -490,7 +492,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return string
      */
-    protected function getAvailabilityMessage(
+    protected function renderAvailabilityMessage(
         ServerRequestInterface $request,
         AvailabilityStatusInterface $availability
     ): string {
@@ -502,16 +504,15 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Render full item status.
+     * Get full item status data to pass for rendering.
      *
-     * @param ServerRequestInterface $request      Request
      * @param array                  $record       Record
      * @param array                  $simpleStatus Simple status result
      * @param array                  $values       Additional values for the template
      *
-     * @return string
+     * @return array
      */
-    protected function renderFullStatus(ServerRequestInterface $request, $record, $simpleStatus, array $values = [])
+    protected function getFullStatusData($record, $simpleStatus, array $values = []): array
     {
         // Default case: no extra holdings fields are shown
         $holdingsTextFieldsToShow = [];
@@ -524,7 +525,7 @@ class GetItemStatuses extends AbstractBase implements
                 ?? $this->ils->getHoldingsTextFieldNames();
         }
 
-        $values = array_merge(
+        return array_merge(
             [
                 'getThisLoader' => $this->getThisLoader,
                 'statusItems' => $record,
@@ -534,8 +535,6 @@ class GetItemStatuses extends AbstractBase implements
             ],
             $values
         );
-
-        return $this->renderer->renderTemplateAsString($request, 'ajax/status-full.phtml', $values);
     }
 
     /**
@@ -569,9 +568,9 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Sort statuses according to given config (by default it come from config.ini).
      *
-     * @param array[] $holdings      The holdings to sort
-     * @param array[] $sortingFields Config on how to sort the fields (first values are prioritized for sorting)
-     * @param array   $filters       Filters from the user search
+     * @param array[]             $holdings      The holdings to sort
+     * @param array<string,mixed> $sortingFields Config on how to sort the fields (first values are prioritized for sorting)
+     * @param array               $filters       Filters from the user search
      *
      * @return void
      */
@@ -605,11 +604,146 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
+     * @param array                  $record            Record to parse
+     * @param ServerRequestInterface $request           Request
+     * @param mixed                  $locationSetting   Setting for location
+     * @param string                 $callnumberSetting Setting for callnumber
+     * @param false                  $showFullStatus    Whether to show full status
+     * @param array                  $ids               Request ids
+     * @param ?string                $searchId          Search id
+     *
+     * @return array
+     */
+    protected function parseRecordStatusFromIlsData(
+        array $record,
+        ServerRequestInterface $request,
+        string $locationSetting,
+        string $callnumberSetting,
+        bool $showFullStatus,
+        array $ids,
+        ?string $searchId
+    ): array {
+        // Check for errors
+        if (!empty($record[0]['error'])) {
+            $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
+                AvailabilityStatusInterface::STATUS_UNKNOWN
+            );
+            $current = $this
+                ->getItemStatusError(
+                    $record,
+                    $this->renderAvailabilityMessage($request, $unknownStatus)
+                );
+        } elseif ($locationSetting === 'group') {
+            $current = $this->getItemStatusGroup(
+                $request,
+                $record,
+                $callnumberSetting
+            );
+        } else {
+            $current = $this->getItemStatus(
+                $request,
+                $record,
+                $locationSetting,
+                $callnumberSetting
+            );
+        }
+        // If a full status display has been requested and no errors were
+        // encountered, append the HTML:
+        if ($showFullStatus && empty($record[0]['error'])) {
+            $fullStatusData = $this->getFullStatusData(
+                $record,
+                $current,
+                compact('searchId', 'current'),
+            );
+            $current['full_status'] = $this->renderer->renderTemplateAsString(
+                $request,
+                'ajax/status-full.phtml',
+                $fullStatusData
+            );
+        }
+        $current['record_number'] = array_search($current['id'], $ids);
+        return $current;
+    }
+
+    /**
+     * @param array                  $ids      Ids from the request
+     * @param array                  $results  Results from the ILS
+     * @param ServerRequestInterface $request  Request
+     * @param ?string                $searchId SearchId
+     *
+     * @return array
+     */
+    public function parseRecordsStatusesFromIlsData(
+        array $ids,
+        array $results,
+        ServerRequestInterface $request,
+        ?string $searchId
+    ): array {
+        // In order to detect IDs missing from the status response, create an
+        // array with a key for every requested ID. We will clear keys as we
+        // encounter IDs in the response -- anything left will be problems that
+        // need special handling.
+        $missingIds = array_flip($ids);
+
+        // Load callnumber and location settings:
+        $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
+        $locationSetting = $this->config->Item_Status->multiple_locations ?? 'msg';
+        $showFullStatus = $this->config->Item_Status->show_full_status ?? false;
+
+        // Loop through all the status information that came back
+        $statuses = [];
+        foreach ($results as $recordNumber => $record) {
+            // Filter out suppressed locations:
+            $record = $this->filterSuppressedLocations($record);
+
+            // Skip empty records:
+            if (empty($record)) {
+                continue;
+            }
+            $current = $this->parseRecordStatusFromIlsData(
+                $record,
+                $request,
+                $locationSetting,
+                $callnumberSetting,
+                $showFullStatus,
+                $ids,
+                $searchId
+            );
+            $statuses[] = $current;
+
+            // The current ID is not missing -- remove it from the missing list.
+            unset($missingIds[$current['id']]);
+        }
+
+        // If any IDs were missing, send back appropriate dummy data
+        foreach ($missingIds as $missingId => $recordNumber) {
+            $availabilityStatus = $this->availabilityStatusManager->createAvailabilityStatus(false);
+            $statuses[] = [
+                'id' => (string) $missingId, // array_flip may have converted to int
+                'availability' => 'false',
+                'availability_message' => $this->renderAvailabilityMessage(
+                    $request,
+                    $availabilityStatus
+                ),
+                'location' => $this->translate('Unknown'),
+                'locationList' => false,
+                'reserve' => 'false',
+                'reserve_message' => $this->translate('Not On Reserve'),
+                'callnumber' => '',
+                'missing_data' => true,
+                'record_number' => $recordNumber,
+            ];
+        }
+        return $statuses;
+    }
+
+    /**
      * Handle a request.
      *
      * @param ServerRequestInterface $request Request
      *
      * @return array [response data, HTTP status code]
+     * @throws Exception
      */
     public function handleRequest(ServerRequestInterface $request): array
     {
@@ -638,88 +772,7 @@ class GetItemStatuses extends AbstractBase implements
             // to avoid triggering a notice in the foreach loop below.
             $results = [];
         }
-
-        // In order to detect IDs missing from the status response, create an
-        // array with a key for every requested ID. We will clear keys as we
-        // encounter IDs in the response -- anything left will be problems that
-        // need special handling.
-        $missingIds = array_flip($ids);
-
-        // Load callnumber and location settings:
-        $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
-        $locationSetting = $this->config->Item_Status->multiple_locations ?? 'msg';
-        $showFullStatus = $this->config->Item_Status->show_full_status ?? false;
-
-        // Loop through all the status information that came back
-        $statuses = [];
-        foreach ($results as $recordNumber => $record) {
-            // Filter out suppressed locations:
-            $record = $this->filterSuppressedLocations($record);
-
-            // Skip empty records:
-            if (count($record)) {
-                if (($this->config->Record->getStatusesSorting ?? 'false') !== 'false') {
-                    $filters = $this->searchMemory->getCurrentSearch()->getParams()->getFilterList() ?? [];
-                    $this->sortStatuses($record, current($this->config->Record->getStatusesSorting), $filters);
-                }
-                // Check for errors
-                if (!empty($record[0]['error'])) {
-                    $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
-                        AvailabilityStatusInterface::STATUS_UNKNOWN
-                    );
-                    $current = $this
-                        ->getItemStatusError(
-                            $record,
-                            $this->getAvailabilityMessage($request, $unknownStatus)
-                        );
-                } elseif ($locationSetting === 'group') {
-                    $current = $this->getItemStatusGroup(
-                        $request,
-                        $record,
-                        $callnumberSetting
-                    );
-                } else {
-                    $current = $this->getItemStatus(
-                        $request,
-                        $record,
-                        $locationSetting,
-                        $callnumberSetting
-                    );
-                }
-                // If a full status display has been requested and no errors were
-                // encountered, append the HTML:
-                if ($showFullStatus && empty($record[0]['error'])) {
-                    $current['full_status'] = $this->renderFullStatus(
-                        $request,
-                        $record,
-                        $current,
-                        compact('searchId', 'current'),
-                    );
-                }
-                $current['record_number'] = array_search($current['id'], $ids);
-                $statuses[] = $current;
-
-                // The current ID is not missing -- remove it from the missing list.
-                unset($missingIds[$current['id']]);
-            }
-        }
-
-        // If any IDs were missing, send back appropriate dummy data
-        foreach ($missingIds as $missingId => $recordNumber) {
-            $availabilityStatus = $this->availabilityStatusManager->createAvailabilityStatus(false);
-            $statuses[] = [
-                'id'                   => (string)$missingId, // array_flip may have converted to int
-                'availability'         => 'false',
-                'availability_message' => $this->getAvailabilityMessage($request, $availabilityStatus),
-                'location'             => $this->translate('Unknown'),
-                'locationList'         => false,
-                'reserve'              => 'false',
-                'reserve_message'      => $this->translate('Not On Reserve'),
-                'callnumber'           => '',
-                'missing_data'         => true,
-                'record_number'        => $recordNumber,
-            ];
-        }
+        $statuses = $this->parseRecordsStatusesFromIlsData($ids, $results, $request, $searchId);
 
         // Done
         return $this->formatResponse(compact('statuses'));
