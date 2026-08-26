@@ -60,14 +60,14 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
     abstract protected function getTestClass(): string;
 
     /**
-     * Get search class id for the module
+     * Get search class id for the module.
      *
      * @return string
      */
     abstract protected function getExpectedSearchClassId(): string;
 
     /**
-     * Get the default heading for the module
+     * Get the default heading for the module.
      *
      * @return string
      */
