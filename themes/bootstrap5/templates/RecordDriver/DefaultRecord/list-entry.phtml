@@ -213,7 +213,7 @@
 
       <div class="result-links hidden-print">
         <?php if (count($this->driver->getCitationFormats('list_single')) > 0): ?>
-          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" data-lightbox rel="nofollow" class="icon-link">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" data-lightbox rel="nofollow" class="cite tool icon-link">
             <?=$this->icon('cite', 'icon-link__icon')?>
             <span class="icon-link__label"><?=$this->transEsc('Cite this')?></span>
           </a>

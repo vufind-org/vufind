@@ -580,15 +580,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return DocumentElement
      */
-    protected function setupBulkTest(): DocumentElement
+    protected function setupBulkTest($extraConfig = []): DocumentElement
     {
-        $this->changeConfigs(
-            ['config' =>
-                [
-                    'Mail' => ['testOnly' => 1],
-                ],
-            ]
-        );
+        $extraConfig['config']['Mail']['testOnly'] = 1;
+        $this->changeConfigs($extraConfig);
         return $this->gotoUserAccount();
     }
 
@@ -650,6 +645,61 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal .alert-success')
         );
+    }
+
+    /**
+     * Test that the single cite control works.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
+    public function testSingleCite(): void
+    {
+        $this->changeConfigs(['config' => ['Citation' => ['list_single' => true]]]);
+        $page = $this->gotoUserAccount();
+
+        // Click cite link
+        $this->clickCss($page, '.result-links .cite');
+        $this->waitForPageLoad($page);
+
+        // Check that citations are rendered
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->assertStringContainsString(
+                'Person, F',
+                $this->findCssAndGetText($page, '#modal #citation-'. $format)
+            );
+        }
+    }
+
+    /**
+     * Test that the bulk cite control works.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
+    public function testBulkCite(): void
+    {
+        $page = $this->setupBulkTest(['config' => ['Citation' => ['list_bulk' => true]]]);
+
+        // First try clicking without selecting anything:
+        $button = $this->findCss($page, '[name=bulkActionForm] [name=cite]');
+        $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get an cite option list:
+        $this->selectAllItemsInList($page);
+        $button->click();
+
+        // Check that citations are rendered
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->findCss($page, '#modal #tab-button-' . $format);
+            $this->assertStringContainsString(
+                'Person, F',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-0')
+            );
+        }
     }
 
     /**

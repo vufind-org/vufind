@@ -288,6 +288,74 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that the cite control works.
+     *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
+    public function testBulkCite(string $idPrefix): void
+    {
+        $page = $this->setUpGenericBulkTest();
+        $buttonSelector = '#' . $idPrefix . 'ribbon-cite';
+
+        // Check that the bulk option does not exist if it is disabled.
+        $this->unFindCss($page, $buttonSelector);
+
+        // Enable bulk citation with one available format
+        $page = $this->setUpGenericBulkTest(
+            ['config' => ['Citation' => ['search_bulk' => true, 'formats' => 'APA']]]
+        );
+
+        // First try clicking without selecting anything:
+        $this->openLightboxAndCheckForNonSelectedMessage($page, $buttonSelector);
+        $this->closeLightbox($page, true);
+
+        // Now do it for real -- we should get a lightbox prompt.
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+
+        // Check that citations are rendered
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'APA (7th ed.) Citation:',
+            $this->findCssAndGetText($page, '#modal h3')
+        );
+        $this->assertStringContainsString(
+            'Institute for Rational-Emotive Therapy',
+            $this->findCssAndGetText($page, '#modal #citation-APA-0')
+        );
+        $this->assertStringContainsString(
+            'Institute for Rational-Emotive Therapy',
+            $this->findCssAndGetText($page, '#modal #citation-APA-1')
+        );
+
+        // Enable bulk citation with multiple available formats
+        $page = $this->setUpGenericBulkTest(
+            ['config' => ['Citation' => ['search_bulk' => true, 'formats' => 'APA,Chicago,MLA']]]
+        );
+
+        // Check that citations are rendered in tabs
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->findCss($page, '#modal #tab-button-' . $format);
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-0')
+            );
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-1')
+            );
+        }
+    }
+
+    /**
      * Test that the export control works.
      *
      * @param string $idPrefix Prefix for bulk control IDs.
@@ -388,6 +456,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
                     'EndNote' => 'record,bulk',
                     'MARC' => 'record,bulk',
                 ],
+                'Citation' => [
+                    'search_bulk' => true
+                ]
             ],
             'export' => [
                 'EndNote' => [
@@ -404,6 +475,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // check email limit
         $this->clickCss($page, '#ribbon-email');
+        $this->waitForPageLoad($page);
+        $this->checkForLimitExceededMessage($page, 2, 1);
+        $this->closeLightbox($page, true);
+
+        // check cite limit
+        $this->clickCss($page, '#ribbon-cite');
         $this->waitForPageLoad($page);
         $this->checkForLimitExceededMessage($page, 2, 1);
         $this->closeLightbox($page, true);

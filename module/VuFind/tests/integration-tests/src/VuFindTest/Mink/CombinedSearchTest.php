@@ -134,6 +134,56 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that bulk cite options open in a lightbox.
+     *
+     * @return void
+     */
+    public function testCombinedSearchBulkCiteLightbox(): void
+    {
+        $this->changeConfigs(
+            [
+                'combined' => $this->getCombinedIniOverrides(),
+                'config' => [
+                    'Site' => ['showBulkOptions' => true],
+                    'Citation' => ['search_bulk' => true],
+                ],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->unFindCss($page, '.fa-spinner.icon--spin');
+        $this->assertResultsForDefaultQuery($page);
+
+        // Confirm that an appropriate message appears if no items are checked:
+        $buttonSelector = '#ribbon-cite';
+        $alert = $this->openLightboxAndFindCss($page, $buttonSelector, '.modal-body .alert-danger');
+        $this->assertSame(
+            'No items were selected. '
+            . 'Please click on a checkbox next to an item and try again.',
+            $alert->getText()
+        );
+
+        // Now do it for real -- we should get a lightbox prompt.
+        $page->find('css', '#addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
+
+        // Check that citations are rendered:
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->findCss($page, '#modal #tab-button-' . $format);
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-0')
+            );
+            $this->assertStringContainsString(
+                'Mathematibob',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-1')
+            );
+        }
+    }
+
+    /**
      * Test that bulk export options open in a lightbox.
      *
      * @return void

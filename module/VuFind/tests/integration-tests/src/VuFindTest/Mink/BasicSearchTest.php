@@ -324,4 +324,28 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
             'typeof VuFind.search !== "undefined" && VuFind.search.scrollToResults("instant")'
         );
     }
+
+    /**
+     * Test that the single cite control works.
+     *
+     * @return void
+     */
+    public function testSingleCite(): void
+    {
+        $this->changeConfigs(['config' => ['Citation' => ['search_single' => true]]]);
+        $page = $this->performSearch('Dewey');
+
+        // Click cite link
+        $this->clickCss($page, '.result-links .cite');
+        $this->waitForPageLoad($page);
+
+        // Check that citations are rendered
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->assertStringContainsString(
+                'Person, F',
+                $this->findCssAndGetText($page, '#modal #citation-'. $format)
+            );
+        }
+    }
 }

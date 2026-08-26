@@ -142,7 +142,7 @@
       <?php endif; ?>
 
       <?php if (count($this->driver->getCitationFormats('search_single')) > 0): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" data-lightbox rel="nofollow" class="icon-link">
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Cite'))?>" data-lightbox rel="nofollow" class="cite result-link icon-link">
           <?=$this->icon('cite', 'icon-link__icon')?>
           <span class="icon-link__label"><?=$this->transEsc('Cite this')?></span>
         </a>
