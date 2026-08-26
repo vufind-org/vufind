@@ -57,13 +57,6 @@
     </div>
   </div>
   <div class="media-body">
-    <?php if ($this->driver->isPlaceholder()): ?>
-      <p>
-        <?=$this->transEsc('This result is not displayed to guests')?>
-        <br>
-        <?=$this->render('error/loginForAccess.phtml')?>
-      </p>
-    <?php endif; ?>
     <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->driver->getTitle()?></h1>
 
     <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>
