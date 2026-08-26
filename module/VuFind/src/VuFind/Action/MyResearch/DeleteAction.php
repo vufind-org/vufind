@@ -47,6 +47,7 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\ServiceManager\Factory\Autowire;
 
 use function count;
+use function is_array;
 
 /**
  * Delete favorites action.
@@ -103,7 +104,7 @@ class DeleteAction extends AbstractTemplateRenderingAction
         $ids = $bulkActionHelper->getSelectedIds($request);
 
         $actionLimit = $bulkActionHelper->getBulkActionLimit('delete');
-        if (!$ids) {
+        if (!is_array($ids) || empty($ids)) {
             if ($redirect = $bulkActionHelper->redirectToSource($request, $response, 'error', 'bulk_noitems_advice')) {
                 return $redirect;
             }
