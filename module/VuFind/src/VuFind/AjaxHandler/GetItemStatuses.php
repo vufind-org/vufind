@@ -358,6 +358,7 @@ class GetItemStatuses extends AbstractBase implements
         return [
             'id' => $record[0]['id'] ?? '',
             'availability' => $combinedAvailability->availabilityAsString(),
+            'combinedAvailability' => $combinedAvailability,
             'services' => $services,
             'location' => implode(",\t", $location),
             'locationList' => false,
@@ -642,7 +643,7 @@ class GetItemStatuses extends AbstractBase implements
                 $template = 'ajax/status-available-services.phtml';
                 $availabilityMessageData = ['services' => $this->reduceServices($current['services'])];
             } else {
-                $availabilityMessageData =  ['availabilityStatus' => $current['services']];
+                $availabilityMessageData =  ['availabilityStatus' => $current['combinedAvailability']];
             }
         }
         $current['availability_message'] = $this->renderer->renderTemplateAsString(
