@@ -67,7 +67,7 @@ class Params extends \VuFind\Search\Solr\Params
      * @param ConfigManagerInterface      $configManager Config manager
      * @param HierarchicalFacetHelper     $facetHelper   Hierarchical facet helper
      * @param array                       $searchParams  Search params for backends
-     * @param \VuFind\Config\Config       $blenderConfig Blender configuration
+     * @param array                       $blenderConfig Blender configuration
      * @param array                       $mappings      Blender mappings
      */
     public function __construct(
@@ -75,7 +75,7 @@ class Params extends \VuFind\Search\Solr\Params
         ConfigManagerInterface $configManager,
         HierarchicalFacetHelper $facetHelper,
         protected array $searchParams,
-        protected \VuFind\Config\Config $blenderConfig,
+        protected array $blenderConfig,
         protected array $mappings
     ) {
         parent::__construct(
