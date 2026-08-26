@@ -632,18 +632,6 @@ class GetItemStatuses extends AbstractBase implements
                 $callnumberSetting
             );
             $availabilityMessageData = ['availabilityStatus' => $current['combinedAvailability']];
-            foreach ($current['locationList'] as $location => $value) {
-                $current['locationList'][$location]['callnumberHtml'] = $this->renderCallnumbers(
-                    $request,
-                    $callnumberSetting,
-                    $current['locationList'][$location]['locationCallnumbers']
-                );
-            }
-            $current['locationList'] = $this->renderer->renderTemplateAsString(
-                $request,
-                'ajax/itemLocationList',
-                ['locationList' => $current['locationList']]
-            );
         } else {
             $current = $this->getItemStatus(
                 $record,
@@ -730,6 +718,20 @@ class GetItemStatuses extends AbstractBase implements
                 $ids,
                 $searchId
             );
+            if (!empty($current['locationList'])) {
+                foreach ($current['locationList'] as $location => $value) {
+                    $current['locationList'][$location]['callnumberHtml'] = $this->renderCallnumbers(
+                        $request,
+                        $callnumberSetting,
+                        $current['locationList'][$location]['locationCallnumbers']
+                    );
+                }
+                $current['locationList'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/itemLocationList',
+                    ['locationList' => $current['locationList']]
+                );
+            }
             $statuses[] = $current;
 
             // The current ID is not missing -- remove it from the missing list.
