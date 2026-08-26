@@ -38,6 +38,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use VuFind\Config\Config;
+use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\Http\RouteHelper;
@@ -119,7 +120,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return array        Filtered version of $record
      */
-    protected function filterSuppressedLocations($record)
+    protected function filterSuppressedLocations(array $record): array
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
@@ -143,7 +144,7 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @return array
      */
-    protected function translateList($transPrefix, $list)
+    protected function translateList(string $transPrefix, array $list): array
     {
         $transList = [];
         foreach ($list as $current) {
@@ -157,15 +158,19 @@ class GetItemStatuses extends AbstractBase implements
      * Support method for getItemStatuses() -- when presented with multiple values,
      * pick which one(s) to send back via AJAX.
      *
-     * @param array  $rawList     Array of values to choose from.
-     * @param string $mode        config.ini setting -- first, all or msg
-     * @param string $msg         Message to display if $mode == "msg"
-     * @param string $transPrefix Translator prefix to apply to values (false to omit translation of values)
+     * @param array       $rawList     Array of values to choose from.
+     * @param string      $mode        config.ini setting -- first, all or msg
+     * @param string      $msg         Message to display if $mode == "msg"
+     * @param bool|string $transPrefix Translator prefix to apply to values (false to omit translation of values)
      *
      * @return array
      */
-    protected function pickValue($rawList, $mode, $msg, $transPrefix = false)
-    {
+    protected function pickValue(
+        array $rawList,
+        string $mode,
+        string $msg,
+        false | string $transPrefix = false
+    ): array {
         // Make sure array contains only unique values:
         // array unique for multidimensional arrays due to callnumber array,
         // can be slow for larger/more complex arrays
@@ -214,7 +219,15 @@ class GetItemStatuses extends AbstractBase implements
             return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
         };
         $services = array_map($normalize, array_unique($rawServices));
-        $this->getSorter()->sort($services);
+        try {
+            $this->getSorter()->sort($services);
+        } catch (BadConfig $e) {
+            $this->logError(
+                'Could not get sorter : '
+                . $e->getMessage() . ' line ' . $e->getLine() . ' of file ' . $e->getFile(),
+                $e->getTrace()
+            );
+        }
 
         // Do we need to deal with a preferred service?
         $preferred = isset($this->config->Item_Status->preferred_service)
@@ -287,9 +300,9 @@ class GetItemStatuses extends AbstractBase implements
      * Support method for getItemStatuses() -- process a single bibliographic record
      * for location settings other than "group".
      *
-     * @param array                  $record            Information on items linked to a single bib record
-     * @param string                 $locationSetting   The location mode setting used for pickValue()
-     * @param string                 $callnumberSetting The callnumber mode setting used for pickValue()
+     * @param array  $record            Information on items linked to a single bib record
+     * @param string $locationSetting   The location mode setting used for pickValue()
+     * @param string $callnumberSetting The callnumber mode setting used for pickValue()
      *
      * @return array{
      *     id: string,
@@ -306,8 +319,8 @@ class GetItemStatuses extends AbstractBase implements
      */
     protected function getItemStatus(
         $record,
-        $locationSetting,
-        $callnumberSetting
+        string $locationSetting,
+        string $callnumberSetting
     ): array {
         if (isset($this->getThisLoader)) {
             $itemIdParams = empty($record[0]['item_id']) ? [] : ['item_id' => $record[0]['item_id']];
@@ -390,7 +403,7 @@ class GetItemStatuses extends AbstractBase implements
      *      callnumber: bool,
      *  } Summarized availability information
      */
-    protected function getItemStatusGroup($record, $callnumberSetting): array
+    protected function getItemStatusGroup($record, string $callnumberSetting): array
     {
         // Summarize call number, location and availability info across all items:
         $locations = [];
@@ -442,7 +455,7 @@ class GetItemStatuses extends AbstractBase implements
      *       callnumber: bool,
      *   } Summarized availability information
      */
-    protected function getItemStatusError($record)
+    protected function getItemStatusError($record): array
     {
         return [
             'id' => $record[0]['id'],
@@ -454,25 +467,6 @@ class GetItemStatuses extends AbstractBase implements
             'reserve_message' => '',
             'callnumber' => false,
         ];
-    }
-
-    /**
-     * Get a message for availability status.
-     *
-     * @param ServerRequestInterface      $request      Request
-     * @param AvailabilityStatusInterface $availability Availability Status
-     *
-     * @return string
-     */
-    protected function renderAvailabilityMessage(
-        ServerRequestInterface $request,
-        AvailabilityStatusInterface $availability
-    ): string {
-        return $this->renderer->renderTemplateAsString(
-            $request,
-            'ajax/status.phtml',
-            ['availabilityStatus' => $availability]
-        );
     }
 
     /**
@@ -671,7 +665,7 @@ class GetItemStatuses extends AbstractBase implements
 
     /**
      * @param array  $ids               Ids from the request
-     * @param array  $results           Results from the ILS
+     * @param array  $records           Records from the ILS
      * @param mixed  $locationSetting   Setting for location
      * @param string $callnumberSetting Setting for callnumber
      * @param bool   $attachRecord      Whether to attach the record in the array
@@ -680,7 +674,7 @@ class GetItemStatuses extends AbstractBase implements
      */
     public function parseRecordsStatusesFromIlsData(
         array $ids,
-        array $results,
+        array $records,
         string $locationSetting,
         string $callnumberSetting,
         bool $attachRecord = false
@@ -693,7 +687,7 @@ class GetItemStatuses extends AbstractBase implements
 
         // Loop through all the status information that came back
         $statuses = [];
-        foreach ($results as $recordNumber => $record) {
+        foreach ($records as $record) {
             // Filter out suppressed locations:
             $record = $this->filterSuppressedLocations($record);
 
@@ -789,7 +783,7 @@ class GetItemStatuses extends AbstractBase implements
                 $fullStatusData = $this->getFullStatusData(
                     $status['record'],
                     $status,
-                    compact('searchId'), // TODO removing current/status => duplicated and current is not used in template
+                    compact('searchId'),
                 );
                 $statuses[$i]['full_status'] = $this->renderer->renderTemplateAsString(
                     $request,
