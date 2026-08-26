@@ -3,7 +3,7 @@
   $coreFields = $formatter->getData($formatter->getDefaults($this->defaults ?? 'core'));
   $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
 ?>
-<?php if ($searchOptions->showRestrictedViewWarning() && $this->driver->isRestrictedView()): ?>
+<?php if ($searchOptions->showRestrictedViewWarning('record_view') && $this->driver->isRestrictedView()): ?>
   <?=$this->render('error/restrictedViewWarning.phtml')?>
 <?php endif; ?>
 <?php if (!empty($coreFields)): ?>

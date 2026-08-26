@@ -5,7 +5,7 @@
   $restrictedView = $this->driver->isRestrictedView();
   $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
 ?>
-<?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>
+<?php if ($searchOptions->showRestrictedViewWarning('record_view') && $restrictedView): ?>
   <?=$this->render('error/restrictedViewWarning.phtml')?>
 <?php endif; ?>
 <?php if (!empty($coreFields)): ?>
