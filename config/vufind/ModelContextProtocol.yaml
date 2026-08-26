@@ -31,7 +31,7 @@ General:
 #   excludeDirs:
 
 # Resource Templates to register with the MCP server. Define / uncomment to enable.
-# The heading (i.e. 'getRecord') is used as the resourcde tempalte's name.
+# The heading (i.e. 'getRecord') is used as the resource template's name.
 # - class and function identify the implementation
 # - uriTemplate must match the implementing function's annotation
 # - title (optional) is a human-readable title for display.
