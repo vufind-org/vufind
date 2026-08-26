@@ -638,11 +638,6 @@ class GetItemStatuses extends AbstractBase implements
                 $locationSetting,
                 $callnumberSetting
             );
-            $current['callnumberHtml'] = $this->renderCallnumbers(
-                $request,
-                $callnumberSetting,
-                $current['callNumber']
-            );
             if (!empty($current['services'])) {
                 $template = 'ajax/status-available-services.phtml';
                 $availabilityMessageData = ['services' => $this->reduceServices($current['services'])];
@@ -730,6 +725,13 @@ class GetItemStatuses extends AbstractBase implements
                     $request,
                     'ajax/itemLocationList',
                     ['locationList' => $current['locationList']]
+                );
+            }
+            if (!empty($current['callnumber'])) {
+                $current['callnumberHtml'] = $this->renderCallnumbers(
+                    $request,
+                    $callnumberSetting,
+                    $current['callnumber']
                 );
             }
             $statuses[] = $current;
