@@ -689,7 +689,7 @@ class GetItemStatuses extends AbstractBase implements
         // need special handling.
         $missingIds = array_flip($ids);
 
-        // Load callnumber and location settings:
+        // Load callnumber and location settings: // TODO remove duplication
         $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
         $locationSetting = $this->config->Item_Status->multiple_locations ?? 'msg';
         $showFullStatus = $this->config->Item_Status->show_full_status ?? false;
@@ -724,48 +724,6 @@ class GetItemStatuses extends AbstractBase implements
                     $fullStatusData
                 );
             }
-            if (!empty($current['services'])) {
-                $current['availability_message'] = $this->renderer->renderTemplateAsString(
-                    $request,
-                    'ajax/status-available-services.phtml',
-                    ['services' => $this->reduceServices($current['services'])]
-                );
-            } else {
-                if (!empty($current['combinedAvailability'])) {
-                    $availabilityMessageData =  ['availabilityStatus' => $current['combinedAvailability']];
-                } else {
-                    $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
-                        AvailabilityStatusInterface::STATUS_UNKNOWN
-                    );
-                    $availabilityMessageData = ['availabilityStatus' => $unknownStatus];
-                }
-                $current['availability_message'] = $this->renderer->renderTemplateAsString(
-                    $request,
-                    'ajax/status.phtml',
-                    $availabilityMessageData
-                );
-            }
-            if (!empty($current['locationList'])) {
-                foreach ($current['locationList'] as $location => $value) {
-                    $current['locationList'][$location]['callnumberHtml'] = $this->renderCallnumbers(
-                        $request,
-                        $callnumberSetting,
-                        $current['locationList'][$location]['locationCallnumbers']
-                    );
-                }
-                $current['locationList'] = $this->renderer->renderTemplateAsString(
-                    $request,
-                    'ajax/itemLocationList',
-                    ['locationList' => $current['locationList']]
-                );
-            }
-            $current['callnumberHtml'] = empty($current['callnumber'])
-                ? false
-                : $this->renderCallnumbers(
-                    $request,
-                    $callnumberSetting,
-                    $current['callnumber']
-            );
             $statuses[] = $current;
 
             // The current ID is not missing -- remove it from the missing list.
@@ -778,7 +736,7 @@ class GetItemStatuses extends AbstractBase implements
             $statuses[] = [
                 'id' => (string) $missingId, // array_flip may have converted to int
                 'availability' => 'false',
-                'availability_message' => $this->renderAvailabilityMessage(
+                'availability_message' => $this->renderAvailabilityMessage( // TODO Overwritten by unknown which is more appropriate
                     $request,
                     $availabilityStatus
                 ),
@@ -829,7 +787,55 @@ class GetItemStatuses extends AbstractBase implements
             // to avoid triggering a notice in the foreach loop below.
             $results = [];
         }
+
+        $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
+
         $statuses = $this->parseRecordsStatusesFromIlsData($ids, $results, $request, $searchId);
+
+        foreach ($statuses as $i => $status) {
+            if (!empty($status['services'])) {
+                $statuses[$i]['availability_message'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/status-available-services.phtml',
+                    ['services' => $this->reduceServices($status['services'])]
+                );
+            } else {
+                if (!empty($status['combinedAvailability'])) {
+                    $availabilityMessageData =  ['availabilityStatus' => $status['combinedAvailability']];
+                } else {
+                    $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
+                        AvailabilityStatusInterface::STATUS_UNKNOWN
+                    );
+                    $availabilityMessageData = ['availabilityStatus' => $unknownStatus];
+                }
+                $statuses[$i]['availability_message'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/status.phtml',
+                    $availabilityMessageData
+                );
+            }
+            if (!empty($status['locationList'])) {
+                foreach ($status['locationList'] as $location => $value) {
+                    $statuses[$i]['locationList'][$location]['callnumberHtml'] = $this->renderCallnumbers(
+                        $request,
+                        $callnumberSetting,
+                        $status['locationList'][$location]['locationCallnumbers']
+                    );
+                }
+                $statuses[$i]['locationList'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/itemLocationList',
+                    ['locationList' => $status['locationList']]
+                );
+            }
+            $statuses[$i]['callnumberHtml'] = empty($status['callnumber'])
+                ? false
+                : $this->renderCallnumbers(
+                    $request,
+                    $callnumberSetting,
+                    $status['callnumber']
+                );
+        }
 
         // Done
         return $this->formatResponse(compact('statuses'));
