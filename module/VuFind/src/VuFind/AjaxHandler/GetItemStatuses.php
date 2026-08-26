@@ -589,23 +589,17 @@ class GetItemStatuses extends AbstractBase implements
 
     /**
      * @param array                  $record            Record to parse
-     * @param ServerRequestInterface $request           Request
      * @param mixed                  $locationSetting   Setting for location
      * @param string                 $callnumberSetting Setting for callnumber
-     * @param false                  $showFullStatus    Whether to show full status
      * @param array                  $ids               Request ids
-     * @param ?string                $searchId          Search id
      *
      * @return array
      */
     protected function parseRecordStatusFromIlsData(
         array $record,
-        ServerRequestInterface $request,
         string $locationSetting,
         string $callnumberSetting,
-        bool $showFullStatus,
         array $ids,
-        ?string $searchId
     ): array {
         if (
             isset($this->searchMemory)
@@ -635,20 +629,6 @@ class GetItemStatuses extends AbstractBase implements
             );
         }
 
-        // If a full status display has been requested and no errors were
-        // encountered, append the HTML:
-        if ($showFullStatus && empty($record[0]['error'])) {
-            $fullStatusData = $this->getFullStatusData(
-                $record,
-                $current,
-                compact('searchId', 'current'),
-            );
-            $current['full_status'] = $this->renderer->renderTemplateAsString(
-                $request,
-                'ajax/status-full.phtml',
-                $fullStatusData
-            );
-        }
         $current['record_number'] = array_search($current['id'], $ids);
         return $current;
     }
@@ -690,13 +670,24 @@ class GetItemStatuses extends AbstractBase implements
             }
             $current = $this->parseRecordStatusFromIlsData(
                 $record,
-                $request,
                 $locationSetting,
                 $callnumberSetting,
-                $showFullStatus,
-                $ids,
-                $searchId
+                $ids
             );
+            // If a full status display has been requested and no errors were
+            // encountered, append the HTML:
+            if ($showFullStatus && empty($record[0]['error'])) {
+                $fullStatusData = $this->getFullStatusData(
+                    $record,
+                    $current,
+                    compact('searchId', 'current'),
+                );
+                $current['full_status'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/status-full.phtml',
+                    $fullStatusData
+                );
+            }
             if (!empty($current['services'])) {
                 $current['availability_message'] = $this->renderer->renderTemplateAsString(
                     $request,
