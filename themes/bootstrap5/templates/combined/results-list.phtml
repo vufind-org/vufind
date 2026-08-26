@@ -4,6 +4,11 @@
   $params = $results->getParams();
   $lookfor = $results->getUrlQuery()->isQuerySuppressed() ? '' : $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
+  $sideRecommendations = $results->getRecommendations('side');
+  $topRecommendations = $results->getRecommendations('top');
+  $bottomRecommendations = $results->getRecommendations('bottom');
+  $noResultsRecommendations = $results->getRecommendations('noresults');
+  $noResultsSideRecommendations = $results->getRecommendations('noresults_side');
 
   // More link should use default limit, not custom limit:
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
@@ -103,10 +108,10 @@
 <div class="clearfix">
   <div class="float-start help-block">
     <?php if ($recordTotal > 0): ?>
-      <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
+      <?php foreach ($topRecommendations as $current): ?>
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
-      <?php foreach (($results->getRecommendations('side')) as $current):
+      <?php foreach ($sideRecommendations as $current):
         $recommendationClass = str_replace('\\', '_', $current::class);
         $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
         ?>
@@ -143,16 +148,14 @@
   <?php if (isset($templateParams['parseError'])): ?>
     <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
   <?php endif; ?>
-  <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
+  <?php
+    $recommendations = array_unique(array_merge($topRecommendations, $noResultsRecommendations, $bottomRecommendations));
+  ?>
+  <?php foreach ($recommendations as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
-  <?php foreach ($results->getRecommendations('noresults') as $current): ?>
-    <?php if (!in_array($current, $top)): ?>
-      <?=$this->recommend($current)?>
-    <?php endif; ?>
-  <?php endforeach; ?>
-  <?php foreach ($results->getRecommendations('noresults_side') as $current): ?>
-    <?php if (!in_array($current, $top)):
+  <?php foreach ($noResultsSideRecommendations as $current): ?>
+    <?php if (!in_array($current, $recommendations)):
       $recommendationClass = str_replace('\\', '_', $current::class);
       $recommendationJs = $generateMoveRecommendationToSidebarJavascript($recommendationClass);
       ?>
@@ -191,6 +194,9 @@
       </a>
     </p>
   <?php endif; ?>
+  <?php foreach ($bottomRecommendations as $current): ?>
+    <?=$this->recommend($current)?>
+  <?php endforeach; ?>
 <?php endif; ?>
 <?php
   $content = ob_get_contents();

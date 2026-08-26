@@ -90,6 +90,9 @@
       <div class="clearfix">
       </div>
     <?php endif; ?>
+    <?php foreach ($results->getRecommendations('bottom') as $current): ?>
+      <?=$this->recommend($current)?>
+    <?php endforeach; ?>
   </div>
 </div>
 
