@@ -670,29 +670,26 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * @param array                  $ids      Ids from the request
-     * @param array                  $results  Results from the ILS
-     * @param ServerRequestInterface $request  Request
-     * @param ?string                $searchId SearchId
+     * @param array  $ids               Ids from the request
+     * @param array  $results           Results from the ILS
+     * @param mixed  $locationSetting   Setting for location
+     * @param string $callnumberSetting Setting for callnumber
+     * @param bool   $attachRecord      Whether to attach the record in the array
      *
      * @return array
      */
     public function parseRecordsStatusesFromIlsData(
         array $ids,
         array $results,
-        ServerRequestInterface $request,
-        ?string $searchId
+        string $locationSetting,
+        string $callnumberSetting,
+        bool $attachRecord = false
     ): array {
         // In order to detect IDs missing from the status response, create an
         // array with a key for every requested ID. We will clear keys as we
         // encounter IDs in the response -- anything left will be problems that
         // need special handling.
         $missingIds = array_flip($ids);
-
-        // Load callnumber and location settings: // TODO remove duplication
-        $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
-        $locationSetting = $this->config->Item_Status->multiple_locations ?? 'msg';
-        $showFullStatus = $this->config->Item_Status->show_full_status ?? false;
 
         // Loop through all the status information that came back
         $statuses = [];
@@ -710,19 +707,8 @@ class GetItemStatuses extends AbstractBase implements
                 $callnumberSetting,
                 $ids
             );
-            // If a full status display has been requested and no errors were
-            // encountered, append the HTML:
-            if ($showFullStatus && empty($record[0]['error'])) {
-                $fullStatusData = $this->getFullStatusData(
-                    $record,
-                    $current,
-                    compact('searchId', 'current'),
-                );
-                $current['full_status'] = $this->renderer->renderTemplateAsString(
-                    $request,
-                    'ajax/status-full.phtml',
-                    $fullStatusData
-                );
+            if ($attachRecord) {
+                $current['record'] = $record;
             }
             $statuses[] = $current;
 
@@ -732,14 +718,9 @@ class GetItemStatuses extends AbstractBase implements
 
         // If any IDs were missing, send back appropriate dummy data
         foreach ($missingIds as $missingId => $recordNumber) {
-            $availabilityStatus = $this->availabilityStatusManager->createAvailabilityStatus(false);
             $statuses[] = [
                 'id' => (string) $missingId, // array_flip may have converted to int
                 'availability' => 'false',
-                'availability_message' => $this->renderAvailabilityMessage( // TODO Overwritten by unknown which is more appropriate
-                    $request,
-                    $availabilityStatus
-                ),
                 'location' => $this->translate('Unknown'),
                 'locationList' => false,
                 'reserve' => 'false',
@@ -788,11 +769,35 @@ class GetItemStatuses extends AbstractBase implements
             $results = [];
         }
 
+        // Load callnumber and location settings:
         $callnumberSetting = $this->config->Item_Status->multiple_call_nos ?? 'msg';
+        $locationSetting = $this->config->Item_Status->multiple_locations ?? 'msg';
+        $showFullStatus = $this->config->Item_Status->show_full_status ?? false;
 
-        $statuses = $this->parseRecordsStatusesFromIlsData($ids, $results, $request, $searchId);
+        $statuses = $this->parseRecordsStatusesFromIlsData(
+            $ids,
+            $results,
+            $callnumberSetting,
+            $locationSetting,
+            $showFullStatus
+        );
 
         foreach ($statuses as $i => $status) {
+            // If a full status display has been requested and no errors were
+            // encountered, append the HTML:
+            if ($showFullStatus && empty($status['record'][0]['error'])) {
+                $fullStatusData = $this->getFullStatusData(
+                    $status['record'],
+                    $status,
+                    compact('searchId'), // TODO removing current/status => duplicated and current is not used in template
+                );
+                $statuses[$i]['full_status'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/status-full.phtml',
+                    $fullStatusData
+                );
+                unset($statuses[$i]['record']);
+            }
             if (!empty($status['services'])) {
                 $statuses[$i]['availability_message'] = $this->renderer->renderTemplateAsString(
                     $request,
