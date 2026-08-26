@@ -117,6 +117,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
 
+        'oai/authserver' => Oai\AuthServerAction::class,
+
         'primorecord/addtag' => Record\AddTagAction::class,
         'primorecord/ajaxtab' => Record\AjaxTabAction::class,
         'primorecord/cite' => Record\CiteAction::class,

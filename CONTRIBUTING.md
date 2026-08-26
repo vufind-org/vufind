@@ -7,6 +7,7 @@
  - [Recommended Tools](https://vufind.org/wiki/development:recommended_tools) - Suggestions for successful VuFind® development.
  - [Making Pull Requests](https://vufind.org/wiki/development:making_pull_requests) - How to contribute code to the project.
  - [Reviewing Pull Requests](https://vufind.org/wiki/development:reviewing_pull_requests) - How to help review and improve others' contributions.
+ - [Artificial Intelligence (AI) Policy](https://vufind.org/wiki/ai_policy) - The project's stance on AI technology.
 
 ## About VuFind®
 
