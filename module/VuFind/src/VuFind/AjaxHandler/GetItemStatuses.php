@@ -619,38 +619,42 @@ class GetItemStatuses extends AbstractBase implements
             );
         }
 
-        $template = 'ajax/status.phtml';
         // Check for errors
         if (!empty($record[0]['error'])) {
-            $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
-                AvailabilityStatusInterface::STATUS_UNKNOWN
-            );
             $current = $this->getItemStatusError($record);
-            $availabilityMessageData = ['availabilityStatus' => $unknownStatus];
         } elseif ($locationSetting === 'group') {
             $current = $this->getItemStatusGroup(
                 $record,
                 $callnumberSetting
             );
-            $availabilityMessageData = ['availabilityStatus' => $current['combinedAvailability']];
         } else {
             $current = $this->getItemStatus(
                 $record,
                 $locationSetting,
                 $callnumberSetting
             );
-            if (!empty($current['services'])) {
-                $template = 'ajax/status-available-services.phtml';
-                $availabilityMessageData = ['services' => $this->reduceServices($current['services'])];
-            } else {
-                $availabilityMessageData =  ['availabilityStatus' => $current['combinedAvailability']];
-            }
         }
-        $current['availability_message'] = $this->renderer->renderTemplateAsString(
-            $request,
-            $template,
-            $availabilityMessageData
-        );
+        if (!empty($current['services'])) {
+            $current['availability_message'] = $this->renderer->renderTemplateAsString(
+                $request,
+                'ajax/status-available-services.phtml',
+                ['services' => $this->reduceServices($current['services'])]
+            );
+        } else {
+            if (!empty($current['combinedAvailability'])) {
+                $availabilityMessageData =  ['availabilityStatus' => $current['combinedAvailability']];
+            } else {
+                $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
+                    AvailabilityStatusInterface::STATUS_UNKNOWN
+                );
+                $availabilityMessageData = ['availabilityStatus' => $unknownStatus];
+            }
+            $current['availability_message'] = $this->renderer->renderTemplateAsString(
+                $request,
+                'ajax/status.phtml',
+                $availabilityMessageData
+            );
+        }
 
         // If a full status display has been requested and no errors were
         // encountered, append the HTML:
