@@ -46,26 +46,26 @@ trait BulkActionTrait
     /**
      * Config.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $bulkActionConfig;
 
     /**
      * Export Config.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $bulkActionExportConfig;
 
     /**
      * Get Config.
      *
-     * @return \VuFind\Config\Config
+     * @return array
      */
     protected function getBulkActionConfig()
     {
         if ($this->bulkActionConfig === null) {
-            $this->bulkActionConfig = $this->configManager->getConfigObject('config');
+            $this->bulkActionConfig = $this->configManager->getConfigArray('config');
         }
         return $this->bulkActionConfig;
     }
@@ -73,12 +73,12 @@ trait BulkActionTrait
     /**
      * Get Export Config.
      *
-     * @return \VuFind\Config\Config
+     * @return array
      */
     protected function getBulkActionExportConfig()
     {
         if ($this->bulkActionExportConfig === null) {
-            $this->bulkActionExportConfig = $this->configManager->getConfigObject('export');
+            $this->bulkActionExportConfig = $this->configManager->getConfigArray('export');
         }
         return $this->bulkActionExportConfig;
     }
