@@ -571,7 +571,7 @@ class Upgrade implements LoggerAwareInterface
                 = ['link' => $newConfig['Content']['GoogleOptions']];
         }
 
-        // Disable unused, obsolete settings:
+        // Remove unused, obsolete settings:
         unset($newConfig['Index']['local']);
         if (isset($newConfig['Cache']['umask'])) {
             unset($newConfig['Cache']['umask']);
@@ -580,6 +580,7 @@ class Upgrade implements LoggerAwareInterface
                 . 'if you need a custom umask, please configure it at the operating system level.'
             );
         }
+        unset($newConfig['Site']['loadInitialTabWithAjax']);
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'sandal5');

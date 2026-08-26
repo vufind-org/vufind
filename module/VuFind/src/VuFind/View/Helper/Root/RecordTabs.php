@@ -79,7 +79,6 @@ class RecordTabs
         string $activeTab
     ): array {
         $ajaxTabUrl = $this->recordLinker->getTabUrl($driver, 'AjaxTab');
-        $loadInitialTabWithAjax = (bool)($this->config['Site']['loadInitialTabWithAjax'] ?? false);
         $backgroundTabs = $this->tabManager->getBackgroundTabNames($driver);
         $tabArray = [];
         foreach ($tabs as $tab => $obj) {
@@ -90,7 +89,7 @@ class RecordTabs
             $tabItem['buttonAttributes'] = [
                 'class' => 'record-tab-button',
             ];
-            $loadContent = (($activeTab === $tab) && !$loadInitialTabWithAjax) || !$obj->supportsAjax();
+            $loadContent = !$obj->supportsAjax();
             $tabItem['content'] = $loadContent ? ($this->recordHelper)($driver)->getTab($obj) : '';
             $tabItem['paneAttributes'] = [
                 'class' => 'record-tab-pane',
