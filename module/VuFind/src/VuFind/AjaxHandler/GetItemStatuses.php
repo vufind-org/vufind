@@ -43,6 +43,7 @@ use VuFind\GetThis\GetThisLoader;
 use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\ILS\Logic\AvailabilityStatusManager;
 use VuFind\ILS\Logic\Holds;
@@ -293,12 +294,13 @@ class GetItemStatuses extends AbstractBase implements
      * @return array{
      *     id: string,
      *     availability: string,
-     *     availability_message: string,
+     *     combinedAvailability: AvailabilityStatus,
+     *     services: array,
      *     location: string,
      *     locationList: bool,
      *     reserve: string,
      *     reserve_message: string,
-     *     callnumberHtml: string,
+     *     callnumber: string,
      *     getThisURL: string,
      * } Summarized availability information
      */
@@ -377,7 +379,16 @@ class GetItemStatuses extends AbstractBase implements
      * @param array  $record            Information on items linked to a single bib record
      * @param string $callnumberSetting The callnumber mode setting used for pickValue()
      *
-     * @return array                    Summarized availability information
+     * @return array{
+     *      id: string,
+     *      availability: string,
+     *      combinedAvailability: AvailabilityStatus,
+     *      location: string,
+     *      locationList: bool,
+     *      reserve: string,
+     *      reserve_message: string,
+     *      callnumber: bool,
+     *  } Summarized availability information
      */
     protected function getItemStatusGroup($record, $callnumberSetting): array
     {
@@ -443,7 +454,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
                 => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
-            'callnumberHtml' => false,
+            'callnumber' => false,
         ];
     }
 
@@ -452,7 +463,16 @@ class GetItemStatuses extends AbstractBase implements
      *
      * @param array $record Information on items linked to a single bib record
      *
-     * @return array Summarized availability information
+     * @return array{
+     *       id: string,
+     *       error: string,
+     *       availability: string,
+     *       location: string,
+     *       locationList: bool,
+     *       reserve: string,
+     *       reserve_message: string,
+     *       callnumber: bool,
+     *   } Summarized availability information
      */
     protected function getItemStatusError($record)
     {
@@ -723,13 +743,13 @@ class GetItemStatuses extends AbstractBase implements
                     ['locationList' => $current['locationList']]
                 );
             }
-            if (!empty($current['callnumber'])) {
-                $current['callnumberHtml'] = $this->renderCallnumbers(
+            $current['callnumberHtml'] = empty($current['callnumber'])
+                ? false
+                : $this->renderCallnumbers(
                     $request,
                     $callnumberSetting,
                     $current['callnumber']
-                );
-            }
+            );
             $statuses[] = $current;
 
             // The current ID is not missing -- remove it from the missing list.
