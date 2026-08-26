@@ -634,27 +634,6 @@ class GetItemStatuses extends AbstractBase implements
                 $callnumberSetting
             );
         }
-        if (!empty($current['services'])) {
-            $current['availability_message'] = $this->renderer->renderTemplateAsString(
-                $request,
-                'ajax/status-available-services.phtml',
-                ['services' => $this->reduceServices($current['services'])]
-            );
-        } else {
-            if (!empty($current['combinedAvailability'])) {
-                $availabilityMessageData =  ['availabilityStatus' => $current['combinedAvailability']];
-            } else {
-                $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
-                    AvailabilityStatusInterface::STATUS_UNKNOWN
-                );
-                $availabilityMessageData = ['availabilityStatus' => $unknownStatus];
-            }
-            $current['availability_message'] = $this->renderer->renderTemplateAsString(
-                $request,
-                'ajax/status.phtml',
-                $availabilityMessageData
-            );
-        }
 
         // If a full status display has been requested and no errors were
         // encountered, append the HTML:
@@ -718,6 +697,27 @@ class GetItemStatuses extends AbstractBase implements
                 $ids,
                 $searchId
             );
+            if (!empty($current['services'])) {
+                $current['availability_message'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/status-available-services.phtml',
+                    ['services' => $this->reduceServices($current['services'])]
+                );
+            } else {
+                if (!empty($current['combinedAvailability'])) {
+                    $availabilityMessageData =  ['availabilityStatus' => $current['combinedAvailability']];
+                } else {
+                    $unknownStatus = $this->availabilityStatusManager->createAvailabilityStatus(
+                        AvailabilityStatusInterface::STATUS_UNKNOWN
+                    );
+                    $availabilityMessageData = ['availabilityStatus' => $unknownStatus];
+                }
+                $current['availability_message'] = $this->renderer->renderTemplateAsString(
+                    $request,
+                    'ajax/status.phtml',
+                    $availabilityMessageData
+                );
+            }
             if (!empty($current['locationList'])) {
                 foreach ($current['locationList'] as $location => $value) {
                     $current['locationList'][$location]['callnumberHtml'] = $this->renderCallnumbers(
