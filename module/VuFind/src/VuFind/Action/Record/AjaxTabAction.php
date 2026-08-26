@@ -106,6 +106,6 @@ class AjaxTabAction extends AbstractRecordAction
         $this->request = $request = $request->withParsedBody($request->getParsedBody() + ['layout' => 'lightbox']);
         // Set context for analytics tracking code:
         $this->globalsContainer['layoutContext'] = 'tabs';
-        return $this->showTab($this->getPostParam('tab') ?? $this->getDefaultTab(), true);
+        return $this->showTab($this->getPostParam('tab') ?? $this->getDefaultTab() ?? '', true);
     }
 }
