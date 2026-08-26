@@ -87,8 +87,8 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
     ): AbstractSearchObject {
         $class = $this->getTestClass();
         return new $class(
-            $runner ?? $this->createMock(SearchRunner::class),
-            $configManager ?? $this->createMock(ConfigManagerInterface::class)
+            $runner ?? $this->createStub(SearchRunner::class),
+            $configManager ?? $this->createStub(ConfigManagerInterface::class)
         );
     }
 
@@ -127,7 +127,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
         $mockResults = $this->createMock(Results::class);
         $runner = $this->createMock(SearchRunner::class);
         $runner->expects($this->once())->method('run')
-            ->with([], $this->getExpectedSearchClassId(), $this->isType('callable'))
+            ->with([], $this->getExpectedSearchClassId(), $this->isCallable())
             ->willReturn($mockResults);
 
         $recommend = $this->getRecommend($runner);
