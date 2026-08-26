@@ -216,16 +216,4 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setupRecordPage(['show_in_holdings' => true]);
         $this->assertOpenUrl($page);
     }
-
-    /**
-     * Test a link on the record page (in holdings tab w/ AJAX loading).
-     *
-     * @return void
-     */
-    public function testLinkOnRecordPageWithLinkInHoldingsAndAjaxTabLoading()
-    {
-        // By default, no OpenURL on record page:
-        $page = $this->setupRecordPage(['show_in_holdings' => true]);
-        $this->assertOpenUrl($page);
-    }
 }

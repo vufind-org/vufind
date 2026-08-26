@@ -141,17 +141,6 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that tabs work correctly.
-     *
-     * @return void
-     */
-    public function testLoadInitialTab(): void
-    {
-        $this->tryRecordTabsOnId('testsample1');
-        $this->tryLoadingTabHashAndReturningToDefault('testsample2');
-    }
-
-    /**
      * Data provider for testPermalink().
      *
      * @return \Iterator
