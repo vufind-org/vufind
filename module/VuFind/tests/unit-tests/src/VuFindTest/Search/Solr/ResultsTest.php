@@ -465,8 +465,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): Results {
         return new Results(
             $params ?? $this->getParams(),
-            $searchService ?? $this->createMock(SearchService::class),
-            $loader ?? $this->createMock(Loader::class)
+            $searchService ?? $this->createStub(SearchService::class),
+            $loader ?? $this->createStub(Loader::class)
         );
     }
 

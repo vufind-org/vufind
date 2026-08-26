@@ -38,14 +38,14 @@
     "clean-css": "^5.3.3",
     "commander": "^15.0.0",
     "nodemon": "^3.1.10",
-    "sass": "^1.102.0"
+    "sass": "^1.103.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "all-iso-language-codes": "^1.0.13",
-    "eslint": "^10.8.0",
-    "eslint-plugin-jsdoc": "^63.3.3",
+    "eslint": "^10.8.1",
+    "eslint-plugin-jsdoc": "^64.2.1",
     "eslint-plugin-no-jquery": "^6.0.0",
-    "globals": "^17.9.0"
+    "globals": "^17.11.0"
   }
 }

@@ -36,6 +36,7 @@ use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\RateLimiter\RateLimiterManager;
+use VuFind\View\GlobalsContainer;
 
 /**
  * VuFind Bootstrapper.
@@ -185,11 +186,9 @@ class Bootstrapper
                 $children = $viewModel->getChildren();
                 if (!empty($children)) {
                     $parts = explode('/', $children[0]->getTemplate());
-                    $viewModel->setVariable('templateDir', $parts[0]);
-                    $viewModel->setVariable(
-                        'templateName',
-                        $parts[1] ?? null
-                    );
+                    $globals = $this->container->get(GlobalsContainer::class);
+                    $globals['templateDir'] = $parts[0];
+                    $globals['templateName'] = $parts[1] ?? null;
                 }
             }
         };
@@ -197,18 +196,18 @@ class Bootstrapper
     }
 
     /**
-     * Set up the initial view model.
+     * Set up the initial globals.
      *
      * @return void
      */
-    protected function initViewModel(): void
+    protected function initGlobals(): void
     {
         $settings = $this->container->get(LocaleSettings::class);
         $locale = $settings->getUserLocale();
-        $viewModel = $this->container->get('HttpViewManager')->getViewModel();
-        $viewModel->setVariable('userLang', $locale);
-        $viewModel->setVariable('allLangs', $settings->getEnabledLocales());
-        $viewModel->setVariable('rtl', $settings->isRightToLeftLocale($locale));
+        $globals = $this->container->get(GlobalsContainer::class);
+        $globals['userLang'] = $locale;
+        $globals['allLangs'] = $settings->getEnabledLocales();
+        $globals['rtl'] = $settings->isRightToLeftLocale($locale);
     }
 
     /**
@@ -244,7 +243,7 @@ class Bootstrapper
     {
         // Attach remaining theme configuration to the dispatch event at high priority:
         $siteConfig = $this->config->Site;
-        $callback = function ($event) use ($siteConfig): void {
+        $callback = function (MvcEvent $event) use ($siteConfig): void {
             $theme = new \VuFindTheme\Initializer($siteConfig, $event);
             try {
                 $theme->init();
@@ -253,7 +252,8 @@ class Bootstrapper
                 $appConfig = $this->container->get('config');
                 $model = $event->getViewModel();
                 $model->setTemplate('error/index');
-                $model->display_exceptions = $appConfig['view_manager']['display_exceptions'] ?? false;
+                // Note: display_exceptions is also used by Laminas, so we need to use the view model for it!
+                $model->setVariable('display_exceptions', $appConfig['view_manager']['display_exceptions'] ?? false);
                 $model->exception = $e;
             }
         };
@@ -357,12 +357,11 @@ class Bootstrapper
     protected function initRenderErrorEvent(): void
     {
         // When a render.error is triggered, as a high priority, set a flag in the
-        // layout that can be used to suppress actions in the layout templates that
+        // globals that can be used to suppress actions in the layout templates that
         // might trigger exceptions -- this will greatly increase the odds of showing
         // a user-friendly message instead of a fatal error.
         $callback = function (/*$event*/): void {
-            $viewModel = $this->container->get('ViewManager')->getViewModel();
-            $viewModel->renderingError = true;
+            $this->container->get(GlobalsContainer::class)['renderingError'] = true;
         };
         $this->events->attach('render.error', $callback, 10000);
     }
@@ -383,6 +382,7 @@ class Bootstrapper
                 if ($viewModel->getTemplate() === 'layout/layout') {
                     $viewModel->setTemplate('layout/redirect');
                     $location = $response->getHeaders()->get('Location');
+                    // Note: redirectUrl is used as a view variable, not a global!
                     $viewModel->setVariable('redirectUrl', $location instanceof Location ? $location->getUri() : null);
                 }
             }

@@ -163,6 +163,31 @@ class ConfigWritingTest extends ConfigTestCase
     }
 
     /**
+     * Test writing when the base and destination locations are identical.
+     *
+     * @return void
+     */
+    public function testWritingWithIdenticalBaseAndDestination(): void
+    {
+        $this->setUpLocalConfigDir('write/ini');
+        $container = $this->getContainerWithConfigRelatedServices(
+            baseDir: $this->getFixtureDir() . 'configs/write/ini',
+            baseSubDir: ''
+        );
+        $pathResolver = $container->get(PathResolver::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+
+        $configLocation = $pathResolver->getForcedLocalConfigLocation('config');
+        $config = $configManager->loadConfigFromLocation($configLocation);
+        $config['Section1']['key1'] = 'newval';
+
+        $configManager->writeConfig($configLocation, $config, $configLocation);
+
+        $result = $this->readConfig('config');
+        $this->assertSame('newval', $result['Section1']['key1']);
+    }
+
+    /**
      * Assert that two configuration dirs are equal.
      *
      * @param string $expected Expected directory
