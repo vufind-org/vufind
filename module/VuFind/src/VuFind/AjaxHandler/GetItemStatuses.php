@@ -403,40 +403,8 @@ class GetItemStatuses extends AbstractBase implements
         if (isset($this->getThisLoader)) {
             $this->getThisLoader->setItems($record);
         }
-        // Build list split out by location:
-        $locationList = [];
-        foreach ($locations as $location => $details) {
-            // Determine call number string based on findings:
-            $locationCallnumbers = $this->pickValue(
-                $details['callnumbers'],
-                $callnumberSetting,
-                'Multiple Call Numbers'
-            );
 
-            // Get combined availability for location
-            $locationStatus = $this->availabilityStatusManager->combine($details['items']);
-            if (
-                isset($this->getThisLoader)
-                && !$this->getThisLoader->isOnlineResource($locationStatus['item_id'] ?? null)
-            ) {
-                $itemIdParams = empty($locationStatus['item_id']) ? [] : ['item_id' => $locationStatus['item_id']];
-                $getThisURL = $this->routeHelper->getUrlFromRoute(
-                    'record-getthis',
-                    ['id' => $record[0]['id'] ?? null],
-                    $itemIdParams
-                );
-            } else {
-                $getThisURL = '';
-            }
-
-            $locationInfo = [
-                'availability' => $locationStatus['availability'],
-                'location' => $this->translateWithPrefix('location_', $location),
-                'locationCallnumbers' => $locationCallnumbers,
-                'getThisURL' => $getThisURL,
-            ];
-            $locationList[] = $locationInfo;
-        }
+        $locationList = $this->getLocationList($locations, $callnumberSetting, $record[0]['id']);
 
         // Get combined availability
         $combinedInfo = $this->availabilityStatusManager->combine($record);
@@ -539,6 +507,54 @@ class GetItemStatuses extends AbstractBase implements
             ],
             $values
         );
+    }
+
+    /**
+     * Build list split out by location
+     *
+     * @param array   $locations         Available locations
+     * @param string  $callnumberSetting Callnumber setting
+     * @param ?string $id                Holding id
+     *
+     * @return array
+     */
+    public function getLocationList(array $locations, string $callnumberSetting, ?string $id): array
+    {
+        $locationList = [];
+        foreach ($locations as $location => $details) {
+            // Determine call number string based on findings:
+            $locationCallnumbers = $this->pickValue(
+                $details['callnumbers'],
+                $callnumberSetting,
+                'Multiple Call Numbers'
+            );
+
+            // Get combined availability for location
+            $locationStatus = $this->availabilityStatusManager->combine($details['items']);
+            if (
+                isset($this->getThisLoader)
+                && !$this->getThisLoader->isOnlineResource($locationStatus['item_id'] ?? null)
+            ) {
+                $itemIdParams = empty($locationStatus['item_id']) ? []
+                    : ['item_id' => $locationStatus['item_id']];
+                $getThisURL = $this->routeHelper->getUrlFromRoute(
+                    'record-getthis',
+                    ['id' => $id ?? null],
+                    $itemIdParams
+                );
+            } else {
+                $getThisURL = '';
+            }
+
+            $locationInfo = [
+                'availability' => $locationStatus['availability'],
+                'location' => $this->translateWithPrefix('location_', $location),
+                'locationCallnumbers' => $locationCallnumbers,
+                'getThisURL' => $getThisURL,
+            ];
+            $locationList[] = $locationInfo;
+        }
+        return $locationList;
     }
 
     /**
