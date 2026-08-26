@@ -344,7 +344,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         foreach (['APA', 'Chicago', 'MLA'] as $format) {
             $this->assertStringContainsString(
                 'Person, F',
-                $this->findCssAndGetText($page, '#modal #citation-'. $format)
+                $this->findCssAndGetText($page, '#modal #citation-' . $format)
             );
         }
     }

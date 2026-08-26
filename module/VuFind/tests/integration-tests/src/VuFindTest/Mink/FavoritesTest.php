@@ -578,6 +578,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Adjust configs for bulk testing, then go to user account.
      *
+     * @param array $extraConfig Extra config settings
+     *
      * @return DocumentElement
      */
     protected function setupBulkTest($extraConfig = []): DocumentElement
@@ -667,7 +669,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         foreach (['APA', 'Chicago', 'MLA'] as $format) {
             $this->assertStringContainsString(
                 'Person, F',
-                $this->findCssAndGetText($page, '#modal #citation-'. $format)
+                $this->findCssAndGetText($page, '#modal #citation-' . $format)
             );
         }
     }
@@ -697,7 +699,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#modal #tab-button-' . $format);
             $this->assertStringContainsString(
                 'Person, F',
-                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-0')
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-0')
             );
         }
     }

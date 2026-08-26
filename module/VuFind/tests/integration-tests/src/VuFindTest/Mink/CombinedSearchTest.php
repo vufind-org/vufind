@@ -174,11 +174,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#modal #tab-button-' . $format);
             $this->assertStringContainsString(
                 'Institute for Rational-Emotive Therapy',
-                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-0')
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-0')
             );
             $this->assertStringContainsString(
                 'Mathematibob',
-                $this->findCssAndGetText($page, '#modal .tab-pane #citation-'. $format . '-1')
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-1')
             );
         }
     }
