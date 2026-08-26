@@ -51,7 +51,7 @@ class ContentCafeTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidCoverLoading(): void
     {
-        $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
+        $loader = new ContentCafe(['pw' => 'fakepw']);
         $this->assertEquals(
             'http://contentcafe2.btol.com/ContentCafe/Jacket.aspx?UserID=mykey'
             . '&Password=fakepw&Return=1&Type=S&Value=9780739313121&erroroverride=1',
@@ -70,7 +70,7 @@ class ContentCafeTest extends \PHPUnit\Framework\TestCase
      */
     public function testMissingIsbn(): void
     {
-        $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
+        $loader = new ContentCafe(['pw' => 'fakepw']);
         $this->assertFalse($loader->getUrl('mykey', 'small', []));
     }
 }
