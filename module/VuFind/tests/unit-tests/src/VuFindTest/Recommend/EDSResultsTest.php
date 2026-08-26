@@ -1,11 +1,11 @@
 <?php
 
 /**
- * SummonResults Test Class.
+ * EDSResults Test Class.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2022.
+ * Copyright (C) Villanova University 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,6 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Emmanuel Afuadajo <afuadajoe@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
@@ -30,19 +29,18 @@
 
 namespace VuFindTest\Recommend;
 
-use VuFind\Recommend\SummonResults;
+use VuFind\Recommend\EDSResults;
 
 /**
- * SummonResults Test Class.
+ * EDSResults Test Class.
  *
  * @category VuFind
  * @package  Tests
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Emmanuel Afuadajo <afuadajoe@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SummonResultsTest extends AbstractSearchObjectTestCase
+class EDSResultsTest extends AbstractSearchObjectTestCase
 {
     /**
      * Get the class name of the module.
@@ -51,7 +49,7 @@ class SummonResultsTest extends AbstractSearchObjectTestCase
      */
     protected function getTestClass(): string
     {
-        return SummonResults::class;
+        return EDSResults::class;
     }
 
     /**
@@ -61,7 +59,7 @@ class SummonResultsTest extends AbstractSearchObjectTestCase
      */
     protected function getExpectedSearchClassId(): string
     {
-        return 'Summon';
+        return 'EDS';
     }
 
     /**
@@ -71,6 +69,6 @@ class SummonResultsTest extends AbstractSearchObjectTestCase
      */
     protected function getExpectedDefaultHeading(): string
     {
-        return 'Summon Results';
+        return 'EDS Results';
     }
 }
