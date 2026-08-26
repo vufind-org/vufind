@@ -35,6 +35,7 @@ use GuzzleHttp\Psr7\Message;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Http\HttpStatus;
 
 /**
  * External payment notification handler for online payment.
@@ -67,13 +68,13 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
                 . var_export($request->getQueryParams(), true)
                 . ', post parameters: ' . var_export($request->getParsedBody(), true)
             );
-            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::STATUS_HTTP_BAD_REQUEST);
         }
         if (!($payment = $this->paymentService->getPaymentByLocalIdentifier($localIdentifier))) {
             $this->logError(
                 "Error processing payment: payment $localIdentifier not found"
             );
-            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::STATUS_HTTP_BAD_REQUEST);
         }
 
         $this->addPaymentEvent($payment, AuditEventSubtype::PaymentNotifyHandler, 'Handler called');
@@ -98,7 +99,7 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
                 'Exception processing request',
                 ['error' => $e->getMessage()]
             );
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::STATUS_HTTP_ERROR);
         }
 
         return $this->formatResponse('');

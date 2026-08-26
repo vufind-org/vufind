@@ -31,6 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Stdlib\Parameters;
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Recommend\PluginManager as RecommendManager;
 use VuFind\Search\Solr\Results;
@@ -86,7 +87,7 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
         if (!($moduleName = $this->getQueryParam($request, 'mod'))) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::STATUS_HTTP_BAD_REQUEST
             );
         }
         $module = $this->recommendPluginManager->get($moduleName);

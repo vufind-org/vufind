@@ -31,6 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Tags\TagsService;
@@ -77,7 +78,7 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::STATUS_HTTP_NEED_AUTH
             );
         }
 

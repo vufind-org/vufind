@@ -1,11 +1,11 @@
 <?php
 
 /**
- * AJAX handler interface.
+ * HTTP status constants.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,33 +21,29 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Http
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development
  */
 
-namespace VuFind\AjaxHandler;
-
-use Psr\Http\Message\ServerRequestInterface;
+namespace VuFind\Http;
 
 /**
- * AJAX handler interface.
+ * HTTP status constants.
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Http
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development
+ * @todo     Merge with PSR-18 HTTP Client Service when implemented
  */
-interface AjaxHandlerInterface
+class HttpStatus
 {
-    /**
-     * Handle a request.
-     *
-     * @param ServerRequestInterface $request Request
-     *
-     * @return array [response data, HTTP status code]
-     */
-    public function handleRequest(ServerRequestInterface $request): array;
+    public const STATUS_HTTP_BAD_REQUEST = 400; // bad request
+    public const STATUS_HTTP_NEED_AUTH = 401;   // must login first
+    public const STATUS_HTTP_FORBIDDEN = 403;   // method is unavailable
+    public const STATUS_HTTP_ERROR = 500;       // an error occurred
+    public const STATUS_HTTP_UNAVAILABLE = 503; // temporarily unavailable
 }

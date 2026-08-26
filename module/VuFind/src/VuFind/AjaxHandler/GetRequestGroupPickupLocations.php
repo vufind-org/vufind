@@ -30,6 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * "Get Request Group Pickup Locations" AJAX handler.
@@ -59,14 +60,14 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
         if (null === $id || null === $requestGroupId) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::STATUS_HTTP_BAD_REQUEST
             );
         }
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -93,7 +94,7 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
 
         return $this->formatResponse(
             $this->translate('An error has occurred'),
-            self::STATUS_HTTP_ERROR
+            HttpStatus::STATUS_HTTP_ERROR
         );
     }
 }

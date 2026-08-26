@@ -37,6 +37,7 @@ use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use VuFind\Account\UserAccountService;
 use VuFind\Action\AbstractAction;
+use VuFind\ActionHelper\ResponseHelper;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -123,7 +124,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
             try {
                 $this->checkMessageSignature($request);
             } catch (\VuFind\Exception\Forbidden $ex) {
-                return $this->createJsonResponse(
+                return $this->createAlmaJsonResponse(
                     'Access to Alma Webhook is forbidden. The message signature is not correct.',
                     403
                 );
@@ -144,7 +145,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
                 try {
                     $this->checkPermission($accessPermission);
                 } catch (\VuFind\Exception\Forbidden $ex) {
-                    return $this->createJsonResponse(
+                    return $this->createAlmaJsonResponse(
                         'Access to Alma Webhook \'' . $webhookAction .
                         '\' forbidden. Set permission \'' . $accessPermission .
                         '\' in \'permissions.ini\'.',
@@ -165,7 +166,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
                 try {
                     $this->checkPermission($accessPermission);
                 } catch (\VuFind\Exception\Forbidden $ex) {
-                    return $this->createJsonResponse(
+                    return $this->createAlmaJsonResponse(
                         'Access to Alma Webhook challenge forbidden. Set ' .
                         'permission \'' . $accessPermission .
                         '\' in \'permissions.ini\'.',
@@ -250,14 +251,14 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
                     if ($method == 'CREATE') {
                         $this->sendSetPasswordEmail($user);
                     }
-                    $jsonResponse = $this->createJsonResponse(
+                    $jsonResponse = $this->createAlmaJsonResponse(
                         'Successfully ' . strtolower($method) .
                         'd user with primary ID \'' . $primaryId .
                         '\' | username \'' . $username . '\'.',
                         200
                     );
                 } catch (\Exception $ex) {
-                    $jsonResponse = $this->createJsonResponse(
+                    $jsonResponse = $this->createAlmaJsonResponse(
                         'Error when saving new user with primary ID \'' .
                         $primaryId . '\' | username \'' . $username .
                         '\' to VuFind database and sending the welcome email: ' .
@@ -266,7 +267,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
                     );
                 }
             } else {
-                $jsonResponse = $this->createJsonResponse(
+                $jsonResponse = $this->createAlmaJsonResponse(
                     'User with primary ID \'' . $primaryId . '\' | username \'' .
                     $username . '\' was not found in VuFind database and ' .
                     'therefore could not be ' . strtolower($method) . 'd.',
@@ -278,13 +279,13 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
             if ($user) {
                 try {
                     $this->userAccountService->purgeUserData($user);
-                    $jsonResponse = $this->createJsonResponse(
+                    $jsonResponse = $this->createAlmaJsonResponse(
                         'Successfully deleted user with primary ID \'' . $primaryId .
                         '\' in VuFind.',
                         200
                     );
                 } catch (Throwable) {
-                    $jsonResponse = $this->createJsonResponse(
+                    $jsonResponse = $this->createAlmaJsonResponse(
                         'Problem when deleting user with \'' . $primaryId .
                         '\' in VuFind. Please check the status ' .
                         'of the user in the VuFind database.',
@@ -292,7 +293,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
                     );
                 }
             } else {
-                $jsonResponse = $this->createJsonResponse(
+                $jsonResponse = $this->createAlmaJsonResponse(
                     'User with primary ID \'' . $primaryId . '\' was not found in ' .
                     'VuFind database and therefore could not be deleted.',
                     404
@@ -330,13 +331,13 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
         // Remove null from array
         $returnArray = array_filter($returnArray);
 
-        // Create return JSON value and set it to the response
-        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
-        $response = $this->response->withHeader('Content-type', 'application/json')
-            ->withStatus($statusCode);
-        $response->getBody()->write($returnJson);
-
-        return $response;
+        // Return JSON
+        return $this->getHelper(ResponseHelper::class)->getJsonResponse(
+            $this->response,
+            $returnArray,
+            $statusCode,
+            JSON_PRETTY_PRINT
+        );
     }
 
     /**
@@ -403,8 +404,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
     }
 
     /**
-     * Create a HTTP response with JSON content and HTTP status codes that Alma takes
-     * as "answer" to its webhook calls.
+     * Create a HTTP response with JSON content and HTTP status codes that Alma takes as "answer" to its webhook calls.
      *
      * @param string $text           The text that should be sent back to Alma
      * @param int    $httpStatusCode The HTTP status code that should be sent back
@@ -412,15 +412,14 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
      *
      * @return ResponseInterface
      */
-    protected function createJsonResponse($text, $httpStatusCode): ResponseInterface
+    protected function createAlmaJsonResponse(string $text, int $httpStatusCode): ResponseInterface
     {
-        $returnArray = [];
-        $returnArray[] = $text;
-        $returnJson = json_encode($returnArray, JSON_PRETTY_PRINT);
-        $response = $this->response->withHeader('Content-type', 'application/json')
-            ->withStatus($httpStatusCode);
-        $response->getBody()->write($returnJson);
-        return $response;
+        return $this->getHelper(ResponseHelper::class)->getJsonResponse(
+            $this->response,
+            [$text],
+            $httpStatusCode,
+            jsonFlags: JSON_PRETTY_PRINT
+        );
     }
 
     /**
@@ -433,7 +432,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
      */
     protected function webhookNotImplemented(string $webhookType): ResponseInterface
     {
-        return $this->createJsonResponse(
+        return $this->createAlmaJsonResponse(
             $webhookType . ' Alma Webhook is not (yet) implemented in VuFind.',
             400
         );

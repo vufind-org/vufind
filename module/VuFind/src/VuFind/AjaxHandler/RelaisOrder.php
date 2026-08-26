@@ -30,6 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 
 /**
  * Relais: Order an item.
@@ -61,7 +62,7 @@ class RelaisOrder extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                self::STATUS_HTTP_FORBIDDEN
+                HttpStatus::STATUS_HTTP_FORBIDDEN
             );
         }
 
@@ -69,7 +70,7 @@ class RelaisOrder extends AbstractRelaisAction
         $result = $this->relais
             ->placeRequest($oclcNumber, $authorizationId, $lin);
         if (str_contains($result, 'error')) {
-            return $this->formatResponse($result, self::STATUS_HTTP_ERROR);
+            return $this->formatResponse($result, HttpStatus::STATUS_HTTP_ERROR);
         }
         return $this->formatResponse(compact('result'));
     }

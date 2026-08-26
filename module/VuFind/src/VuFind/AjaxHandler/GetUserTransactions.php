@@ -31,6 +31,7 @@ namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Account\AccountStatusLevelType;
+use VuFind\Http\HttpStatus;
 
 /**
  * "Get User Transactions" AJAX handler.
@@ -64,10 +65,10 @@ class GetUserTransactions extends AbstractIlsUserAndRendererAction
         $this->disableSessionWrites();  // avoid session write timing bug
         $patron = $this->ilsAuthenticator->storedCatalogLogin();
         if (!$patron) {
-            return $this->formatResponse('', self::STATUS_HTTP_NEED_AUTH);
+            return $this->formatResponse('', HttpStatus::STATUS_HTTP_NEED_AUTH);
         }
         if (!$this->ils->checkCapability('getMyTransactions')) {
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::STATUS_HTTP_ERROR);
         }
 
         $result = [];

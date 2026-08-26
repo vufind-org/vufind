@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\Http\RouteHelper;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
@@ -128,7 +129,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                self::STATUS_HTTP_NEED_AUTH
+                HttpStatus::STATUS_HTTP_NEED_AUTH
             );
         }
 
@@ -138,7 +139,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         if (!is_array($ids) || !is_array($sources)) {
             return $this->formatResponse(
                 $this->translate('Argument must be array.'),
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::STATUS_HTTP_BAD_REQUEST
             );
         }
         $statuses = $this->getDataFromUser($ids, $sources);

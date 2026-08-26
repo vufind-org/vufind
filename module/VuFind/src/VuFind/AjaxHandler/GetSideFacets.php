@@ -31,6 +31,7 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\SideFacets;
 use VuFind\Search\Base\Results;
@@ -89,7 +90,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
         $results = $this->getFacetResults($request, $configIndex, $configLocation);
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $this->logError('Faceting request failed');
-            return $this->formatResponse('', self::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::STATUS_HTTP_ERROR);
         }
 
         // Set appropriate query suppression / extra field behavior:
@@ -106,7 +107,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
         if (null === $recommend) {
             return $this->formatResponse(
                 'Invalid config requested',
-                self::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::STATUS_HTTP_BAD_REQUEST
             );
         }
 
