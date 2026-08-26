@@ -43,7 +43,7 @@ class Preview extends AbstractBase
     /**
      * Configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $config = null;
 
