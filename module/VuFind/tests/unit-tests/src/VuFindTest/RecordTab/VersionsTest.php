@@ -29,7 +29,6 @@
 
 namespace VuFindTest\RecordTab;
 
-use VuFind\Config\Config;
 use VuFind\RecordTab\Versions;
 
 /**
@@ -54,7 +53,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     {
         $count = 5;
         $som = $this->getMockPluginManager();
-        $config = $this->getMockConfig();
+        $config = [];
         $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->method('tryMethod')
             ->with('getOtherVersionCount')
@@ -99,7 +98,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     public function testisActive(?string $versionAction, int $versionCount, bool $expectedResult): void
     {
         $som = $this->getMockPluginManager();
-        $config = $this->getMockConfig();
+        $config = [];
         $optionsMock = $this->createMock(\VuFind\Search\Base\Options::class);
         $som->method('get')->with('foo')->willReturn($optionsMock);
         $optionsMock->expects($this->once())->method('getVersionsAction')
@@ -123,15 +122,5 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     protected function getMockPluginManager()
     {
         return $this->createMock(\VuFind\Search\Options\PluginManager::class);
-    }
-
-    /**
-     * Build a mock Config.
-     *
-     * @return Config
-     */
-    protected function getMockConfig()
-    {
-        return $this->createMock(\VuFind\Config\Config::class);
     }
 }
