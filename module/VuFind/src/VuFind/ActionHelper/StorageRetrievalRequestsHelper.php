@@ -116,32 +116,29 @@ class StorageRetrievalRequestsHelper extends AbstractRequestBase
             if (($postParams['confirm'] ?? null) === '0') {
                 $targetUrl = $this->routeHelper->getUrlFromRoute('myresearch-storageretrievalrequests');
                 if ($all !== null) {
-                    return $this->forwardHelper->forwardToConfirm(
-                        $request,
-                        $response,
-                        'storage_retrieval_request_cancel_all',
-                        $targetUrl,
-                        $targetUrl,
-                        'confirm_storage_retrieval_request_cancel_all_text',
-                        [
-                            'cancelAll' => 1,
-                            'cancelAllIDS' => $details,
-                        ]
-                    );
+                    $confirmTitle = 'storage_retrieval_request_cancel_all';
+                    $confirmMessage = 'confirm_storage_retrieval_request_cancel_all_text';
+                    $confirmExtras = [
+                        'cancelAll' => 1,
+                        'cancelAllIDS' => $details,
+                    ];
                 } else {
-                    return $this->forwardHelper->forwardToConfirm(
-                        $request,
-                        $response,
-                        'storage_retrieval_request_cancel_selected',
-                        $targetUrl,
-                        $targetUrl,
-                        'confirm_storage_retrieval_request_cancel_selected_text',
-                        [
-                            'cancelSelected' => 1,
-                            'cancelSelectedIDS' => $details,
-                        ]
-                    );
+                    $confirmTitle = 'storage_retrieval_request_cancel_selected';
+                    $confirmMessage = 'confirm_storage_retrieval_request_cancel_selected_text';
+                    $confirmExtras = [
+                        'cancelSelected' => 1,
+                        'cancelSelectedIDS' => $details,
+                    ];
                 }
+                return $this->forwardHelper->forwardToConfirm(
+                    $request,
+                    $response,
+                    $confirmTitle,
+                    $targetUrl,
+                    $targetUrl,
+                    $confirmMessage,
+                    $confirmExtras
+                );
             }
 
             foreach ($details as $info) {

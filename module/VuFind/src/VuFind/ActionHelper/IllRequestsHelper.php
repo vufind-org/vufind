@@ -119,32 +119,29 @@ class IllRequestsHelper extends AbstractRequestBase
             if (($postParams['confirm'] ?? null) === '0') {
                 $targetUrl = $this->routeHelper->getUrlFromRoute('myresearch-illrequests');
                 if ($all !== null) {
-                    return $this->forwardHelper->forwardToConfirm(
-                        $request,
-                        $response,
-                        'ill_request_cancel_all',
-                        $targetUrl,
-                        $targetUrl,
-                        'confirm_ill_request_cancel_all_text',
-                        [
-                            'cancelAll' => 1,
-                            'cancelAllIDS' => $postParams['cancelAllIDS'] ?? null,
-                        ]
-                    );
+                    $confirmTitle = 'ill_request_cancel_all';
+                    $confirmMessage = 'confirm_ill_request_cancel_all_text';
+                    $confirmExtras = [
+                        'cancelAll' => 1,
+                        'cancelAllIDS' => $details,
+                    ];
                 } else {
-                    return $this->forwardHelper->forwardToConfirm(
-                        $request,
-                        $response,
-                        'ill_request_cancel_selected',
-                        $targetUrl,
-                        $targetUrl,
-                        'confirm_ill_request_cancel_selected_text',
-                        [
-                            'cancelSelected' => 1,
-                            'cancelSelectedIDS' => $postParams['cancelSelectedIDS'] ?? null,
-                        ]
-                    );
+                    $confirmTitle = 'ill_request_cancel_selected';
+                    $confirmMessage = 'confirm_ill_request_cancel_selected_text';
+                    $confirmExtras = [
+                        'cancelSelected' => 1,
+                        'cancelSelectedIDS' => $details,
+                    ];
                 }
+                return $this->forwardHelper->forwardToConfirm(
+                    $request,
+                    $response,
+                    $confirmTitle,
+                    $targetUrl,
+                    $targetUrl,
+                    $confirmMessage,
+                    $confirmExtras
+                );
             }
 
             foreach ($details as $info) {
