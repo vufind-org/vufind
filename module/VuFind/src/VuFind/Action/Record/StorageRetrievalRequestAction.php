@@ -201,7 +201,7 @@ class StorageRetrievalRequestAction extends AbstractRecordAction implements Tran
                 $results = $this->ilsConnection->$function($details);
 
                 // Success: Go to Display Storage Retrieval Requests
-                if (isset($results['success']) && $results['success'] == true) {
+                if ($results['success'] ?? false) {
                     $msg = [
                         'html' => true,
                         'msg' => 'storage_retrieval_request_place_success_html',

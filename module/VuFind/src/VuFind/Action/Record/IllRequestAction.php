@@ -182,7 +182,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
             $results = $this->ilsConnection->$function($details);
 
             // Success: Go to Display ILL Requests
-            if (isset($results['success']) && $results['success'] == true) {
+            if ($results['success'] ?? false) {
                 $msg = [
                     'html' => true,
                     'msg' => 'ill_request_place_success_html',
