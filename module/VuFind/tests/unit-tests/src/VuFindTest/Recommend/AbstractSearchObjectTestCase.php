@@ -215,6 +215,7 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
     {
         $recommend = $this->getRecommend();
         $this->expectException(\Exception::class);
+        $this->expectExceptionMessage($this->getTestClass() . '::getResults() called before init().');
         $recommend->getResults();
     }
 }
