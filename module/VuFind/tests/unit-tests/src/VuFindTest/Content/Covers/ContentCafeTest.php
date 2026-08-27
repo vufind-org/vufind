@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Content\Covers;
 
-use VuFind\Config\Config;
 use VuFind\Content\Covers\ContentCafe;
 use VuFindCode\ISBN;
 
