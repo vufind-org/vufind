@@ -49,7 +49,6 @@ use VuFind\Search\SearchRunner;
  */
 abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\SearchObjectsTrait;
     use \VuFindTest\Feature\WithConsecutiveTrait;
 
     /**
@@ -185,14 +184,37 @@ abstract class AbstractSearchObjectTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test process() does not touch the results.
+     * Test that process() does not replace the results already set by init().
      *
      * @return void
      */
     public function testProcessDoesNotAlterResults(): void
     {
-        $recommend = $this->getRecommend();
+        $mockResults = $this->createMock(Results::class);
+        $runner = $this->createStub(SearchRunner::class);
+        $runner->method('run')->willReturn($mockResults);
+
+        $recommend = $this->getRecommend($runner);
+        $recommend->setConfig('');
+        $recommend->init(
+            $this->createStub(Params::class),
+            new Parameters(['lookfor' => 'test query'])
+        );
+
         $recommend->process($this->createMock(Results::class));
-        $this->assertNull($recommend->getResults());
+
+        $this->assertSame($mockResults, $recommend->getResults());
+    }
+
+    /**
+     * Test that getResults() throws an exception if called before init().
+     *
+     * @return void
+     */
+    public function testGetResultsWithoutInitialization(): void
+    {
+        $recommend = $this->getRecommend();
+        $this->expectException(\Exception::class);
+        $recommend->getResults();
     }
 }
