@@ -55,8 +55,7 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
     /**
      * Constructor.
      *
-     * @param \VuFind\Search\Options\PluginManager $som Search options plugin
-     *                                                  manager
+     * @param \VuFind\Search\Options\PluginManager $som Search options plugin manager
      */
     public function __construct(
         \VuFind\Search\Options\PluginManager $som
