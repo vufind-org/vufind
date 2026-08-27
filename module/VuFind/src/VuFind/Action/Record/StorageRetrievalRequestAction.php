@@ -228,8 +228,7 @@ class StorageRetrievalRequestAction extends AbstractRecordAction implements Tran
                         $this->getHelper(ContextHelper::class)->inLightbox($request) ? '?layout=lightbox' : ''
                     );
                 } else {
-                    // Failure: use flash messenger to display messages, stay on
-                    // the current form.
+                    // Failure: use flash messenger to display messages, stay on the current form.
                     if (isset($results['status'])) {
                         $flashMessagesHelper->addErrorMessage($results['status']);
                     }
