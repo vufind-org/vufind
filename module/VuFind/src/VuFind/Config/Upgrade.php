@@ -689,6 +689,7 @@ class Upgrade implements LoggerAwareInterface
                 'truncateTopToggle' => 30,
                 'truncateElement' => '.subject-line',
             ];
+            $this->saveModifiedConfig('RecordDataFormatter/DefaultRecord', true);
         }
 
         // Translate obsolete permission settings:
