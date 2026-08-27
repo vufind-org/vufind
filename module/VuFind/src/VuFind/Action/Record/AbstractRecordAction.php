@@ -384,7 +384,7 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
         }
 
         $tabs = $this->getAllTabs();
-        $viewParams = $this->getTemplateParams([
+        $templateParams = $this->getTemplateParams([
             'tabs' => $tabs,
             'activeTab' => strtolower($tab),
             'defaultTab' => strtolower($this->getDefaultTab()),
@@ -395,15 +395,15 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
         // Set up next/previous record links (if appropriate)
         if ($this->searchMemory->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
-            $viewParams['scrollData'] = $this->resultScroller->getScrollData($driver);
+            $templateParams['scrollData'] = $this->resultScroller->getScrollData($driver);
         }
 
-        $viewParams['callnumberHandler'] = $this->config['Item_Status']['callnumber_handler'] ?? false;
+        $templateParams['callnumberHandler'] = $this->config['Item_Status']['callnumber_handler'] ?? false;
 
         return $this->renderTemplate(
             $this->request,
             $this->response,
-            $viewParams,
+            $templateParams,
             $this->getTabTemplate($ajax)
         );
     }
