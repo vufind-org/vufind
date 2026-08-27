@@ -243,8 +243,7 @@ class StorageRetrievalRequestAction extends AbstractRecordAction implements Tran
         $defaultRequiredDate = $storageRetrievalRequestsHelper->getDefaultRequiredDate($checkRequests);
         $defaultRequiredDate = $this->dateConverter->convertToDisplayDate('U', $defaultRequiredDate);
         try {
-            $defaultPickup
-                = $this->ilsConnection->getDefaultPickUpLocation($patron, $gatheredDetails);
+            $defaultPickup = $this->ilsConnection->getDefaultPickUpLocation($patron, $gatheredDetails);
         } catch (\Exception $e) {
             $defaultPickup = false;
         }
