@@ -576,6 +576,30 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test record view cite.
+     *
+     * @return void
+     */
+    public function testCite(): void
+    {
+        // Go to a record view
+        $page = $this->gotoRecord();
+
+        // Click Cite
+        $this->clickCss($page, '.cite-record');
+        $this->waitForPageLoad($page);
+
+        // Check that citations are rendered
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->assertStringContainsString(
+                'Person, F',
+                $this->findCssAndGetText($page, '#modal #citation-' . $format)
+            );
+        }
+    }
+
+    /**
      * Test record view email.
      *
      * @return void

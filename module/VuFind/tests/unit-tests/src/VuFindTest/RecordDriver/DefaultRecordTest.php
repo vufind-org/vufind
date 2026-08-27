@@ -470,7 +470,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         // By default, all supported formats should be enabled:
         $this->assertEquals($supported, $driver->getCitationFormats());
 
-        // Data table (citation_formats config, expected result):
+        // Data table (citation formats config, expected result):
         $tests = [
             // No results:
             [false, []],
@@ -484,7 +484,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         ];
         foreach ($tests as $current) {
             [$input, $output] = $current;
-            $cfg = new Config(['Record' => ['citation_formats' => $input]]);
+            $cfg = new Config(['Citation' => ['formats' => $input]]);
             $this->assertEquals(
                 $output,
                 array_values($this->getDriver([], $cfg)->getCitationFormats())

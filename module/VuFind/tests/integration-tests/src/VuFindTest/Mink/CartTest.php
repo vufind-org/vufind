@@ -662,6 +662,39 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that the cite control works.
+     *
+     * @return void
+     */
+    public function testCartCite(): void
+    {
+        $page = $this->setUpGenericCartTest(['config' => ['Citation' => ['cart' => true]]]);
+        $button = $this->findCss($page, '.cart-controls button[name=cite]');
+
+        // First try clicking without selecting anything:
+        $button->click();
+        $this->checkForNonSelectedMessage($page);
+
+        // Now do it for real -- we should get rendered citations:
+        $this->selectAllItemsInCart($page);
+        $button->click();
+
+        // Check that citations are rendered:
+        $this->waitForPageLoad($page);
+        foreach (['APA', 'Chicago', 'MLA'] as $format) {
+            $this->findCss($page, '#modal #tab-button-' . $format);
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-0')
+            );
+            $this->assertStringContainsString(
+                'Institute for Rational-Emotive Therapy',
+                $this->findCssAndGetText($page, '#modal .tab-pane #citation-' . $format . '-1')
+            );
+        }
+    }
+
+    /**
      * Test that the export control works.
      *
      * @return void
