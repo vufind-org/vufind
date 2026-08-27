@@ -137,32 +137,29 @@ class HoldsHelper extends AbstractRequestBase
             if (($postParams['confirm'] ?? null) === '0') {
                 $targetUrl = $this->routeHelper->getUrlFromRoute('holds-list');
                 if ($all !== null) {
-                    return $this->forwardHelper->forwardToConfirm(
-                        $request,
-                        $response,
-                        'hold_cancel_all',
-                        $targetUrl,
-                        $targetUrl,
-                        'confirm_hold_cancel_all_text',
-                        [
-                            'cancelAll' => 1,
-                            'cancelAllIDS' => $details,
-                        ]
-                    );
+                    $confirmTitle = 'hold_cancel_all';
+                    $confirmMessage = 'confirm_hold_cancel_all_text';
+                    $confirmExtras = [
+                        'cancelAll' => 1,
+                        'cancelAllIDS' => $details,
+                    ];
                 } else {
-                    return $this->forwardHelper->forwardToConfirm(
-                        $request,
-                        $response,
-                        'hold_cancel_selected',
-                        $targetUrl,
-                        $targetUrl,
-                        'confirm_hold_cancel_selected_text',
-                        [
-                            'cancelSelected' => 1,
-                            'cancelSelectedIDS' => $details,
-                        ]
-                    );
+                    $confirmTitle = 'hold_cancel_selected';
+                    $confirmMessage = 'confirm_hold_cancel_selected_text';
+                    $confirmExtras = [
+                        'cancelSelected' => 1,
+                        'cancelSelectedIDS' => $details,
+                    ];
                 }
+                return $this->forwardHelper->forwardToConfirm(
+                    $request,
+                    $response,
+                    $confirmTitle,
+                    $targetUrl,
+                    $targetUrl,
+                    $confirmMessage,
+                    $confirmExtras
+                );
             }
 
             foreach ($details as $info) {
