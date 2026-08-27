@@ -202,7 +202,8 @@ class HierarchyTree extends AbstractBase
      */
     public function hidePreviewInNarrowDisplays(): bool
     {
-        return (bool)$this->config['Hierarchy']['hide_preview_in_narrow_displays'];
+        $config = $this->getConfig();
+        return (bool)($config['Hierarchy']['hide_preview_in_narrow_displays'] ?? false);
     }
 
     /**
