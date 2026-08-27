@@ -59,7 +59,7 @@ class ContentCafe extends \VuFind\Content\AbstractCover
      *
      * @param array $config Configuration
      */
-    public function __construct(protected array $config)
+    public function __construct(array $config)
     {
         $this->password = $config['pw'];
         $this->baseURL = $config['url'] ?? 'http://contentcafe2.btol.com';
