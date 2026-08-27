@@ -101,7 +101,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
     }
 
     /**
-     * Provider for testStatusesSorting
+     * Provider for testStatusesSorting.
      *
      * @return Generator
      */
