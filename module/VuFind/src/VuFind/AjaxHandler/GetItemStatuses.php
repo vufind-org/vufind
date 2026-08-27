@@ -562,7 +562,7 @@ class GetItemStatuses extends AbstractBase implements
      */
     protected function compareLocationFilters(array $a, array $b, array $extras): int
     {
-        foreach ($extras['filters']['Location'] as $locationFilter) {
+        foreach ($extras['filters']['Location'] ?? [] as $locationFilter) {
             $locations = explode('/', $locationFilter['displayText']);
             $aLocation = true;
             $bLocation = true;
@@ -618,18 +618,22 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
+     * Parse a single record
+     *
+     * @param array $ids Request ids
      * @param array                  $record            Record to parse
      * @param mixed                  $locationSetting   Setting for location
      * @param string                 $callnumberSetting Setting for callnumber
-     * @param array                  $ids               Request ids
+     * @param bool                   $attachRecord      Whether to attach the record in the array
      *
      * @return array
      */
     protected function parseRecordStatusFromIlsData(
+        array $ids,
         array $record,
         string $locationSetting,
         string $callnumberSetting,
-        array $ids,
+        bool $attachRecord = false
     ): array {
         if (
             isset($this->searchMemory)
@@ -660,10 +664,17 @@ class GetItemStatuses extends AbstractBase implements
         }
 
         $current['record_number'] = array_search($current['id'], $ids);
+
+        if ($attachRecord) {
+            $current['record'] = $record;
+        }
+
         return $current;
     }
 
     /**
+     * Parse the data returned by the ILS
+     *
      * @param array  $ids               Ids from the request
      * @param array  $records           Records from the ILS
      * @param mixed  $locationSetting   Setting for location
@@ -696,14 +707,12 @@ class GetItemStatuses extends AbstractBase implements
                 continue;
             }
             $current = $this->parseRecordStatusFromIlsData(
+                $ids,
                 $record,
                 $locationSetting,
                 $callnumberSetting,
-                $ids
+                $attachRecord
             );
-            if ($attachRecord) {
-                $current['record'] = $record;
-            }
             $statuses[] = $current;
 
             // The current ID is not missing -- remove it from the missing list.
@@ -712,7 +721,7 @@ class GetItemStatuses extends AbstractBase implements
 
         // If any IDs were missing, send back appropriate dummy data
         foreach ($missingIds as $missingId => $recordNumber) {
-            $statuses[] = [
+            $status = [
                 'id' => (string) $missingId, // array_flip may have converted to int
                 'availability' => 'false',
                 'location' => $this->translate('Unknown'),
@@ -723,6 +732,11 @@ class GetItemStatuses extends AbstractBase implements
                 'missing_data' => true,
                 'record_number' => $recordNumber,
             ];
+            if ($attachRecord) {
+                $status['record'] = [];
+            }
+
+            $statuses[] = $status;
         }
         return $statuses;
     }
