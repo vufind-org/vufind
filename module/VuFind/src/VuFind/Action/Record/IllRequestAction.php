@@ -229,8 +229,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         );
 
         // Get pickup locations. Note that these are independent of pickup library,
-        // and library specific locations must be retrieved when a library is
-        // selected.
+        // and library specific locations must be retrieved when a library is selected.
         $pickupLocations = $this->ilsConnection->getPickUpLocations($patron, $gatheredDetails);
 
         // Check that there are pick up locations to choose from if the field is
