@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Config;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\SearchServiceInterface;
 
@@ -82,7 +83,7 @@ class NotifyCommandFactory implements FactoryInterface
             $container->get('ViewRenderer'),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $scheduleOptions,
-            $mainConfig,
+            new Config($mainConfig),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(SearchServiceInterface::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
