@@ -240,8 +240,7 @@ class StorageRetrievalRequestAction extends AbstractRecordAction implements Tran
         }
 
         // Find and format the default required date:
-        $defaultRequiredDate = $storageRetrievalRequestsHelper
-            ->getDefaultRequiredDate($checkRequests);
+        $defaultRequiredDate = $storageRetrievalRequestsHelper->getDefaultRequiredDate($checkRequests);
         $defaultRequiredDate = $this->dateConverter->convertToDisplayDate('U', $defaultRequiredDate);
         try {
             $defaultPickup
