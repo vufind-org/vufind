@@ -38,6 +38,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\ActionHelper\StorageRetrievalRequestsHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\Db\Type\AuditEventSubtype;
@@ -68,6 +69,7 @@ use function is_array;
  */
 class StorageRetrievalRequestAction extends AbstractRecordAction implements TranslatorAwareInterface
 {
+    use ExplodeSettingTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -170,7 +172,7 @@ class StorageRetrievalRequestAction extends AbstractRecordAction implements Tran
 
         // Send various values to the view so we can build the form:
         $pickup = $this->ilsConnection->getPickUpLocations($patron, $gatheredDetails);
-        $extraFields = isset($checkRequests['extraFields']) ? explode(':', $checkRequests['extraFields']) : [];
+        $extraFields = $this->explodeSetting($checkRequests['extraFields'] ?? '');
 
         // Check that there are pick up locations to choose from if the field is
         // required:

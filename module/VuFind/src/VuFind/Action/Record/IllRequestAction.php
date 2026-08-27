@@ -38,6 +38,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\IllRequestsHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\Db\Type\AuditEventSubtype;
@@ -68,6 +69,7 @@ use function is_array;
  */
 class IllRequestAction extends AbstractRecordAction implements TranslatorAwareInterface
 {
+    use ExplodeSettingTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -166,8 +168,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
 
         // Send various values to the view so we can build the form:
 
-        $extraFields = isset($checkRequests['extraFields'])
-            ? explode(':', $checkRequests['extraFields']) : [];
+        $extraFields = $this->explodeSetting($checkRequests['extraFields'] ?? '');
 
         // Process form submissions if necessary:
         if (null !== $this->getPostParam('placeILLRequest')) {

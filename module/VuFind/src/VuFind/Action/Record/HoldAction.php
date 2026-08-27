@@ -38,6 +38,7 @@ use VuFind\ActionHelper\FlashMessagesHelper;
 use VuFind\ActionHelper\HoldsHelper;
 use VuFind\ActionHelper\LoginHelper;
 use VuFind\Auth\Manager as AuthManager;
+use VuFind\Config\Feature\ExplodeSettingTrait;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Service\AuditEventService;
 use VuFind\Db\Type\AuditEventSubtype;
@@ -69,6 +70,7 @@ use function is_array;
  */
 class HoldAction extends AbstractRecordAction implements TranslatorAwareInterface
 {
+    use ExplodeSettingTrait;
     use TranslatorAwareTrait;
 
     /**
@@ -178,7 +180,7 @@ class HoldAction extends AbstractRecordAction implements TranslatorAwareInterfac
             }
         }
 
-        $extraHoldFields = isset($checkHolds['extraHoldFields']) ? explode(':', $checkHolds['extraHoldFields']) : [];
+        $extraHoldFields = $this->explodeSetting($checkHolds['extraHoldFields'] ?? '');
 
         // Send various values to the view so we can build the form:
         $requestGroups = [];
