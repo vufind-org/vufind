@@ -122,7 +122,7 @@ class Config
      */
     public function getRecordSubjectLimit()
     {
-        $limit = $this->get('config')['Record']['subjectLimit'];
+        $limit = $this->get('config')['Record']['subjectLimit'] ?? null;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
@@ -134,8 +134,7 @@ class Config
      */
     public function alwaysDisplayIndexRecordInStaffView(): bool
     {
-        return (bool)($this->get('config')['Record']
-            ['alwaysDisplayIndexRecordInStaffView'] ?? false);
+        return (bool)($this->get('config')['Record']['alwaysDisplayIndexRecordInStaffView'] ?? false);
     }
 
     /**
@@ -201,8 +200,7 @@ class Config
      */
     public function displayLoanType(): bool
     {
-        return (bool)($this->get('config')['Catalog']
-            ['display_loan_type_in_holdings'] ?? false);
+        return (bool)($this->get('config')['Catalog']['display_loan_type_in_holdings'] ?? false);
     }
 
     /**
