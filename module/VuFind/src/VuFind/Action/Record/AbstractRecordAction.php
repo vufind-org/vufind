@@ -293,7 +293,6 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction
             'defaultTab' => strtolower($this->getDefaultTab()),
             'backgroundTabs' => $this->getBackgroundTabs(),
             'tabsExtraScripts' => $this->getTabsExtraScripts($tabs),
-            'loadInitialTabWithAjax' => (bool)($this->config['Site']['loadInitialTabWithAjax'] ?? false),
         ]);
 
         // Set up next/previous record links (if appropriate)

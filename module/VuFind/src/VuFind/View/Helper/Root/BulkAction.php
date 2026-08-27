@@ -62,7 +62,7 @@ class BulkAction
      * @param ConfigManagerInterface $configManager Configuration manager
      * @param RendererInterface      $view          View renderer
      */
-    #[Autowire()]
+    #[Autowire]
     public function __construct(
         protected Export $export,
         protected ConfigManagerInterface $configManager,

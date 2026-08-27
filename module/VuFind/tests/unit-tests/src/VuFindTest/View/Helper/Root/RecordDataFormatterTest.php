@@ -41,6 +41,7 @@ use VuFind\Escaper\Escaper;
 use VuFind\RecordDataFormatter\Specs\DefaultRecord as DefaultRecordSpec;
 use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\Tags\TagsService;
+use VuFind\View\GlobalsContainer;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\SchemaOrg;
 use VuFind\View\Helper\Root\Url;
@@ -141,8 +142,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
 
-        $layout = $this->createMock(\Laminas\View\Helper\Layout::class);
-
         $highlight = new \VuFind\View\Helper\Root\Highlight();
         $addEllipsis = new \VuFind\View\Helper\Root\AddEllipsis();
         $escapeOrCleanHtml = $this->createMock(\VuFind\View\Helper\Root\EscapeOrCleanHtml::class);
@@ -162,7 +161,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $auth,
             $url,
             $serverUrl,
-            $layout,
+            new GlobalsContainer(),
             $configEntity
         );
 
@@ -362,7 +361,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $contextSpec = $specs->getDefaults($context);
             $specs->setDefaults($context, array_merge($additionalContextSpec, $contextSpec));
         }
-        $specManager->method('get')->with($this->isType('string'))->willReturn($specs);
+        $specManager->method('get')->with($this->isString())->willReturn($specs);
         $container->set(
             \VuFind\RecordDataFormatter\Specs\PluginManager::class,
             $specManager

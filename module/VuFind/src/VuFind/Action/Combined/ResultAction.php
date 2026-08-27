@@ -103,6 +103,7 @@ class ResultAction extends AbstractCombinedSearchAndResultsAction implements
             $html = '';
         } else {
             $templateParams = [
+                'ajax' => true,
                 'searchClassId' => $searchClassId,
                 'currentSearch' => $currentSearch,
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),

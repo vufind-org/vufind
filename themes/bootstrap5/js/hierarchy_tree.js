@@ -197,6 +197,14 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
   }
 
   /**
+   * Display full hierarchy of current path.
+   * @param {HTMLElement} treeEl The hierarchy tree element. 
+   */
+  function showCurrentPathFullHierarchy(treeEl) {
+    treeEl.querySelectorAll('li').forEach(el => el.classList.remove('hidden'));
+  }
+
+  /**
    * Scroll the tree to the selected record.
    * @param {HTMLElement} treeEl The hierarchy tree element.
    */
@@ -243,6 +251,17 @@ VuFind.register('hierarchyTree', function HierarchyTree() {
             }
             scrollToSelected(treeEl);
           });
+          const selectedElement = containerEl.querySelector('li.hierarchy-tree__selected');
+          if (selectedElement) {
+            const selectedElementToggle = selectedElement.querySelector('button.js-toggle-expanded');
+            if (selectedElementToggle) {
+              selectedElementToggle.addEventListener('click', () => {
+                if (!showEl.checked) {
+                  showCurrentPathFullHierarchy(selectedElement);
+                }
+              });
+            }
+          }
         }
       }
     }

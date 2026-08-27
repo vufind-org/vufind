@@ -3,8 +3,9 @@
   $this->headTitle($this->translate('Search Home'));
 
   // Disable top search box and notices -- this page has a special layout.
-  $this->layout()->searchbox = false;
-  $this->layout()->disableDefaultNotices = true;
+  $globals = $this->globals();
+  $globals['searchbox'] = false;
+  $globals['disableDefaultNotices'] = true;
 
   // Set default value if necessary:
   if (!isset($this->searchClassId)) {

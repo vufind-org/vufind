@@ -66,9 +66,9 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
         array $config = []
     ): TitleHolds {
         return new TitleHolds(
-            $ilsAuth ?? $this->createMock(ILSAuthenticator::class),
-            $catalog ?? $this->createMock(Connection::class),
-            $hmac ?? $this->createMock(HMAC::class),
+            $ilsAuth ?? $this->createStub(ILSAuthenticator::class),
+            $catalog ?? $this->createStub(Connection::class),
+            $hmac ?? $this->createStub(HMAC::class),
             new Config($config)
         );
     }

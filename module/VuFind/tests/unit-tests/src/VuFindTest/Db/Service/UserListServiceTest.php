@@ -66,7 +66,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     ): UserListServiceInterface {
         $service = $this->getMockBuilder(UserListService::class)->onlyMethods($onlyMethods)
             ->setConstructorArgs([
-                $entityManager ?? $this->createMock(EntityManager::class),
+                $entityManager ?? $this->createStub(EntityManager::class),
                 $this->createMock(PluginManager::class),
                 $this->createMock(PersistenceManager::class),
             ])->getMock();

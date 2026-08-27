@@ -31,6 +31,7 @@ namespace VuFindAdmin\Controller;
 
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\View\GlobalsContainer;
 
 /**
  * VuFind Admin Controller Base.
@@ -64,7 +65,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
     public function validateAccessPermission(MvcEvent $e)
     {
         // Disable search box in Admin module:
-        $this->layout()->searchbox = false;
+        $this->getService(GlobalsContainer::class)['searchbox'] = false;
 
         // If we're using the "disabled" action, we don't need to do any further
         // checking to see if we are disabled!!

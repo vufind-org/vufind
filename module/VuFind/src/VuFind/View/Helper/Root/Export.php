@@ -50,7 +50,6 @@ class Export
     #[Autowire]
     public function __construct(protected \VuFind\Export $export)
     {
-        $this->export = $export;
     }
 
     /**

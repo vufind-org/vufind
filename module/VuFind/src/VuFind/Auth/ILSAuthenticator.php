@@ -97,14 +97,14 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @param Closure             $cipherFactory       BlockCipher object factory (takes algorithm as argument)
      * @param ILSConnection       $catalog             ILS connection
      * @param ?EmailAuthenticator $emailAuthenticator  Email authenticator
-     * @param ?Config             $config              Configuration from config.ini
+     * @param ?array              $config              Configuration from config.ini
      */
     public function __construct(
         protected Closure $authManagerCallback,
         protected Closure $cipherFactory,
         protected ILSConnection $catalog,
         protected ?EmailAuthenticator $emailAuthenticator = null,
-        protected ?Config $config = null
+        protected ?array $config = null
     ) {
     }
 
@@ -117,7 +117,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
     {
         if (null === $this->encryptionEnabled) {
             $this->encryptionEnabled
-                = $this->config->Authentication->encrypt_ils_password ?? false;
+                = $this->config['Authentication']['encrypt_ils_password'] ?? false;
         }
         return $this->encryptionEnabled;
     }
@@ -178,21 +178,21 @@ class ILSAuthenticator implements DbServiceAwareInterface
             return null;
         }
 
-        $configAuth = $this->config->Authentication ?? new Config([]);
+        $configAuth = $this->config['Authentication'] ?? [];
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
-            if (empty($configAuth->ils_encryption_key)) {
+            if (empty($configAuth['ils_encryption_key'])) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'ILS password encryption on, but no key set.'
                 );
             }
 
-            $this->encryptionKey = $configAuth->ils_encryption_key;
+            $this->encryptionKey = $configAuth['ils_encryption_key'];
         }
 
         // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
+        $algo = $configAuth['ils_encryption_algo'] ?? 'blowfish';
 
         // Check if OpenSSL error is caused by blowfish support
         try {

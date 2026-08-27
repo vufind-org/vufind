@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\Element;
 use Throwable;
 use VuFind\Db\Service\NoticeService;
 use VuFindTest\Feature\CacheManagementTrait;
@@ -562,6 +563,267 @@ final class NoticesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         $this->unFindCss($page, '#content > .notices');
+    }
+
+    /**
+     * Test notices with date or time restriction in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testDeletingNoticesInAdminModule')]
+    public function testNoticesWithDateOrTimeRestrictionsInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // add notices without time restriction
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            'Test'
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->assertSame(
+            'Test',
+            $this->findCssAndGetText($page, '#content > .notices .alert-success')
+        );
+        $this->unFindCss($page, '.notice-row .text-danger');
+        $this->unFindCss($page, '.notice-row .text-success');
+
+        // Add date time start restriction
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date_time',
+            '2000-01-01T00:00',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'Start Date and Time: 01-01-2000 00:00');
+
+        // Add date time end restriction
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#end_date_time',
+            '2000-01-01T00:00',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction(
+            $page,
+            'Start Date and Time: 01-01-2000 00:00 End Date and Time: 01-01-2000 00:00',
+            false
+        );
+
+        // Remove date time start restriction
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date_time',
+            '',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction(
+            $page,
+            'End Date and Time: 01-01-2000 00:00',
+            false
+        );
+
+        // Change date time type to date
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'fieldset[name="date_time_type_fieldset"] input[value="date"]');
+
+        $this->findCssAndSetValue(
+            $page,
+            '#end_date',
+            '2000-01-01',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'End Date: 01-01-2000', false);
+
+        // Change date time type to time
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'fieldset[name="date_time_type_fieldset"] input[value="time"]');
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_time',
+            '00:00',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'Start Time: 00:00');
+
+        // Delete notice
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notice-row');
+    }
+
+    /**
+     * Test notices date or time restriction are disabled for contexts with date or time conditions in admin module.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testNoticesWithDateOrTimeRestrictionsInAdminModule')]
+    public function testNoticesWithDateOrTimeContextsInAdminModule(): void
+    {
+        $this->changeConfigs(['config' => ['Site' => ['admin_enabled' => 1]]]);
+        $this->changeYamlConfigs(
+            [
+                'Notices' => [
+                    'styles' => ['success' => []],
+                    'adminForm' => [
+                        'contexts' => [
+                            'global' => [],
+                            'timed' => [
+                                'conditions' => [
+                                    [
+                                        'type' => 'time',
+                                        'comparator' => '>=',
+                                        'checkedValues' => '00:00:00',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'dateTimeTypes' => [
+                            'date',
+                        ],
+                    ],
+                ],
+            ],
+            ['Notices']
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Admin/Notices');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+
+        // check date input does not work with time related context
+        $this->clickCss($page, 'a[href*="Notices/Add"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date',
+            '2000-01-01',
+        );
+
+        $this->unFindCss($page, '.context_fieldset-timed.hidden');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="timed"]');
+        $this->findCss($page, '.context_fieldset-timed.hidden');
+
+        $this->findCssAndSetValue(
+            $page,
+            'textarea[name="translations[en]"]',
+            'Test'
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->assertSame(
+            'Test',
+            $this->findCssAndGetText($page, '#content > .notices .alert-success')
+        );
+        $this->unFindCss($page, '.notice-row .text-danger');
+        $this->unFindCss($page, '.notice-row .text-success');
+
+        // create date restriction with global context
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->findCss($page, '.context_fieldset-timed.hidden');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="global"]');
+        $this->unFindCss($page, '.context_fieldset-timed.hidden');
+
+        $this->findCssAndSetValue(
+            $page,
+            '#start_date',
+            '2000-01-01',
+        );
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+        $this->checkTimeRestriction($page, 'Start Date: 01-01-2000');
+
+        // switch to date related context
+        $this->clickCss($page, '.notice-list a[title="Edit"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '.context_fieldset-timed.hidden');
+        $this->clickCss($page, 'fieldset[name="context_fieldset"] input[value="timed"]');
+        $this->findCss($page, '.context_fieldset-timed.hidden');
+
+        $this->clickCss($page, 'button[name="submit"]');
+        $this->waitForPageLoad($page);
+
+        $this->unFindCss($page, '.notice-row .text-danger');
+        $this->unFindCss($page, '.notice-row .text-success');
+
+        // Delete notice
+        $this->clickCss($page, '.notice-list a[title="Delete"]');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'button[name="confirm"]');
+        $this->waitForPageLoad($page);
+        $this->unFindCss($page, '.notice-row');
+    }
+
+    /**
+     * Check if time restriction hint matches text and activity status.
+     *
+     * @param Element $page   Page element
+     * @param string  $text   Text of restriction hint
+     * @param bool    $active If time window should be shown active
+     *
+     * @return void
+     */
+    protected function checkTimeRestriction(Element $page, string $text, bool $active = true): void
+    {
+        $inactiveStatus = $active ? 'danger' : 'success';
+        $activeStatus = $active ? 'success' : 'danger';
+        $this->unFindCss($page, '.notice-row .text-' . $inactiveStatus);
+        $this->assertSame(
+            $text,
+            $this->findCssAndGetText($page, '.notice-row .text-' . $activeStatus)
+        );
+        if ($active) {
+            $this->assertSame(
+                'Test',
+                $this->findCssAndGetText($page, '#content > .notices .alert-success')
+            );
+        } else {
+            $this->unfindCss($page, '#content > .notices .alert-success');
+        }
     }
 
     /**

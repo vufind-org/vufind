@@ -35,6 +35,7 @@ use Laminas\View\Resolver\TemplatePathStack;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
+use VuFind\View\GlobalsContainer;
 
 /**
  * VuFind Theme Initializer.
@@ -291,12 +292,10 @@ class Initializer
      */
     protected function sendThemeOptionsToView(string $selectedUI, string $currentTheme): void
     {
-        // Get access to the view model:
         if (PHP_SAPI !== 'cli') {
-            $viewModel = $this->serviceManager->get('ViewManager')->getViewModel();
-
-            // Send down the view options:
-            $viewModel->setVariable('themeOptions', $this->getThemeOptions($selectedUI, $currentTheme));
+            // Store view options in globals:
+            $this->serviceManager->get(GlobalsContainer::class)['themeOptions']
+                = $this->getThemeOptions($selectedUI, $currentTheme);
         }
     }
 

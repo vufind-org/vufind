@@ -96,7 +96,6 @@ class Section
      * @param RendererInterface       $viewRenderer   View renderer
      * @param ResolverInterface       $viewResolver   View resolver
      */
-    #[Autowire()]
     public function __construct(
         protected SectionServiceInterface $sectionService,
         #[Autowire(container: 'ViewHelperManager')]
