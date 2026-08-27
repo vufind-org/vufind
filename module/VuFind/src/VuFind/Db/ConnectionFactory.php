@@ -70,8 +70,9 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     /**
      * Constructor.
      *
-     * @param ?array             $config    VuFind configuration (provided when used
-     * as service; omitted when used as factory)
+     * @param ?array              $config    VuFind configuration (provided when used
+     *                                       as service; omitted when used as
+     *                                       factory)
      * @param ?ContainerInterface $container Service container (provided when used
      * as service; omitted when used as factory)
      */
