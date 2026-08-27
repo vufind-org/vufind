@@ -53,12 +53,11 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     {
         $count = 5;
         $som = $this->getMockPluginManager();
-        $config = [];
         $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->method('tryMethod')
             ->with('getOtherVersionCount')
             ->willReturn($count);
-        $obj = new Versions($config, $som);
+        $obj = new Versions($som);
         $obj->setRecordDriver($recordDriver);
         $translator = $this->getMockTranslator(
             [
@@ -98,7 +97,6 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     public function testisActive(?string $versionAction, int $versionCount, bool $expectedResult): void
     {
         $som = $this->getMockPluginManager();
-        $config = [];
         $optionsMock = $this->createMock(\VuFind\Search\Base\Options::class);
         $som->method('get')->with('foo')->willReturn($optionsMock);
         $optionsMock->expects($this->once())->method('getVersionsAction')
@@ -109,7 +107,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $recordDriver->method('tryMethod')
             ->with('getOtherVersionCount')
             ->willReturn($versionCount);
-        $obj = new Versions($config, $som);
+        $obj = new Versions($som);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());
     }
