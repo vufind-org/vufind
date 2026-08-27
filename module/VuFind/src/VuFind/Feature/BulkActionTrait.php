@@ -111,7 +111,7 @@ trait BulkActionTrait
      */
     public function getExportActionLimit($format)
     {
-        $bulkActionConfig = $this->getBulkActionConfig()['BulkActions'];
+        $bulkActionConfig = $this->getBulkActionConfig()['BulkActions'] ?? [];
         return $this->getBulkActionExportConfig()['$format']['limit']
             ?? $bulkActionConfig['limits']['export']
             ?? $bulkActionConfig['limits']['default']
