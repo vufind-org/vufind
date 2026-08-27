@@ -87,8 +87,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         }
         $blenderConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigArray($this->blenderIni);
-        $backendConfig = $blenderConfig['Backends']
-            ? $blenderConfig['Backends'] : [];
+        $backendConfig = $blenderConfig['Backends'] ?? [];
         if (!$backendConfig) {
             throw new \Exception('No backends enabled in ' . $this->blenderIni . '.ini');
         }
