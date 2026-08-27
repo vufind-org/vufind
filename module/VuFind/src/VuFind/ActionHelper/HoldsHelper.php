@@ -172,7 +172,7 @@ class HoldsHelper extends AbstractRequestBase
             }
 
             // Add Patron Data to Submitted Data
-            $cancelResults = $catalog->cancelHolds(['details' => $details, 'patron' => $patron]);
+            $cancelResults = $catalog->cancelHolds(compact('details', 'patron'));
             if ($cancelResults == false) {
                 $this->flashMessenger->addErrorMessage('hold_cancel_fail');
             } else {
