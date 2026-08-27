@@ -232,8 +232,7 @@ class IllRequestAction extends AbstractRecordAction implements TranslatorAwareIn
         // and library specific locations must be retrieved when a library is selected.
         $pickupLocations = $this->ilsConnection->getPickUpLocations($patron, $gatheredDetails);
 
-        // Check that there are pick up locations to choose from if the field is
-        // required:
+        // Check that there are pick up locations to choose from if the field is required:
         if (in_array('pickUpLocation', $extraFields) && !$pickupLocations) {
             $flashMessagesHelper->addErrorMessage('No pickup locations available');
             return $this->redirectToRecord('#top');
