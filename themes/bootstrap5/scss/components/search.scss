@@ -452,11 +452,6 @@ header .container.navbar {
   .author sup {
     display: none;
   }
-
-  // Prevent weird spacing on alerts in search results (e.g. EDS placeholder record warning)
-  .resultItemLine1 .alert {
-    margin-top: 0;
-  }
 }
 
 .result-body,
