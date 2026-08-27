@@ -89,7 +89,7 @@ class ObalkyKnihService implements
      *
      * @param array $config Configuration for service
      */
-    public function __construct(protected array $config)
+    public function __construct(array $config)
     {
         if (
             !isset($config['base_url']) || count($config['base_url']) < 1
