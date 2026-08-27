@@ -50,7 +50,7 @@ class Mailer extends AbstractBase
      *
      * @var array
      */
-    protected $carriers = [
+    protected array $carriers = [
         'virgin' => ['name' => 'Virgin Mobile', 'domain' => 'vmobl.com'],
         'verizon' => ['name' => 'Verizon', 'domain' => 'vtext.com'],
         'tmobile' => ['name' => 'T Mobile', 'domain' => 'tmomail.net'],
@@ -62,14 +62,14 @@ class Mailer extends AbstractBase
      *
      * @var string
      */
-    protected $defaultFrom;
+    protected string $defaultFrom;
 
     /**
      * VuFind Mailer object.
      *
      * @var \VuFind\Mailer\Mailer
      */
-    protected $mailer;
+    protected \VuFind\Mailer\Mailer $mailer;
 
     /**
      * Constructor.
@@ -94,8 +94,7 @@ class Mailer extends AbstractBase
         }
 
         // Load default "from" address:
-        $this->defaultFrom
-            = $options['defaultFrom'] ?? '';
+        $this->defaultFrom = $options['defaultFrom'] ?? '';
 
         // Make sure mailer dependency has been injected:
         if (

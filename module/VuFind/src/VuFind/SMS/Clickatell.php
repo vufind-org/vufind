@@ -49,16 +49,15 @@ class Clickatell extends AbstractBase
      *
      * @var \Laminas\Http\Client
      */
-    protected $client;
+    protected \Laminas\Http\Client $client;
 
     /**
      * Constructor.
      *
      * @param \VuFind\Config\Config $config  SMS configuration
-     * @param array                 $options Additional options (client may be an
-     *                                       HTTP client object)
+     * @param array                 $options Additional options (client may be an HTTP client object)
      */
-    public function __construct(\VuFind\Config\Config $config, $options = [])
+    public function __construct(\VuFind\Config\Config $config, array $options = [])
     {
         parent::__construct($config);
         $this->client = $options['client'] ?? new \Laminas\Http\Client();
