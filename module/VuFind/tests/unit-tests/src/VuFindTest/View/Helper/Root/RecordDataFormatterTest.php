@@ -103,7 +103,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $configHelper = new \VuFind\View\Helper\Root\Config($configManager, $this->createMock(LoginHelper::class));
-        $configEntity = $configManager->getConfigObject('config');
+        $configEntity = $configManager->getConfigArray('config');
 
         $translate = new \VuFind\View\Helper\Root\Translate();
 

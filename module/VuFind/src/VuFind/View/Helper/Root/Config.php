@@ -77,11 +77,11 @@ class Config
      *
      * @param string $config Name of configuration
      *
-     * @return \VuFind\Config\Config
+     * @return array
      */
     public function get($config)
     {
-        return $this->configManager->getConfigObject($config);
+        return $this->configManager->getConfigArray($config);
     }
 
     /**
@@ -91,7 +91,7 @@ class Config
      */
     public function nonJavascriptSupportEnabled()
     {
-        return $this->get('config')->Site->nonJavascriptSupportEnabled ?? false;
+        return $this->get('config')['Site']['nonJavascriptSupportEnabled'] ?? false;
     }
 
     /**
@@ -101,7 +101,7 @@ class Config
      */
     public function ajaxCoversEnabled()
     {
-        return $this->get('config')->Content->ajaxcovers ?? false;
+        return $this->get('config')['Content']['ajaxcovers'] ?? false;
     }
 
     /**
@@ -111,7 +111,7 @@ class Config
      */
     public function getHoldingsItemLimit()
     {
-        $limit = $this->get('config')->Record->holdingsItemLimit;
+        $limit = $this->get('config')['Record']['holdingsItemLimit'];
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
@@ -122,7 +122,7 @@ class Config
      */
     public function getRecordSubjectLimit()
     {
-        $limit = $this->get('config')->Record->subjectLimit;
+        $limit = $this->get('config')['Record']['subjectLimit'];
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
@@ -134,8 +134,8 @@ class Config
      */
     public function alwaysDisplayIndexRecordInStaffView(): bool
     {
-        return (bool)($this->get('config')->Record
-            ->alwaysDisplayIndexRecordInStaffView ?? false);
+        return (bool)($this->get('config')['Record']
+            ['alwaysDisplayIndexRecordInStaffView'] ?? false);
     }
 
     /**
@@ -146,10 +146,10 @@ class Config
     public function offcanvasSide(): ?string
     {
         $config = $this->get('config');
-        if (!($config->Site->offcanvas ?? false)) {
+        if (!($config['Site']['offcanvas'] ?? false)) {
             return null;
         }
-        return ($config->Site->sidebarOnLeft ?? false)
+        return ($config['Site']['sidebarOnLeft'] ?? false)
             ? 'left'
             : 'right';
     }
@@ -163,7 +163,7 @@ class Config
     {
         if (null === $this->displayDateFormat) {
             $config = $this->get('config');
-            $this->displayDateFormat = $config->Site->displayDateFormat ?? 'm-d-Y';
+            $this->displayDateFormat = $config['Site']['displayDateFormat'] ?? 'm-d-Y';
         }
         return $this->displayDateFormat;
     }
@@ -177,7 +177,7 @@ class Config
     {
         if (null === $this->displayTimeFormat) {
             $config = $this->get('config');
-            $this->displayTimeFormat = $config->Site->displayTimeFormat ?? 'H:i';
+            $this->displayTimeFormat = $config['Site']['displayTimeFormat'] ?? 'H:i';
         }
         return $this->displayTimeFormat;
     }
@@ -201,8 +201,8 @@ class Config
      */
     public function displayLoanType(): bool
     {
-        return (bool)($this->get('config')->Catalog
-            ->display_loan_type_in_holdings ?? false);
+        return (bool)($this->get('config')['Catalog']
+            ['display_loan_type_in_holdings'] ?? false);
     }
 
     /**
