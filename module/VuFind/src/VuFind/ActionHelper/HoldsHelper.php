@@ -261,8 +261,7 @@ class HoldsHelper extends AbstractRequestBase
                 if ($requiredBy) {
                     $requiredByDateTime = \DateTime::createFromFormat(
                         'U',
-                        $this->dateConverter
-                            ->convertFromDisplayDate('U', $requiredBy)
+                        $this->dateConverter->convertFromDisplayDate('U', $requiredBy)
                     );
                     $result['requiredByTS'] = $requiredByDateTime
                         ->setTime(23, 59, 59)
