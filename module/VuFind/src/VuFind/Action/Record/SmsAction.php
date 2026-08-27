@@ -121,7 +121,7 @@ class SmsAction extends AbstractRecordAction
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
-        // Load the SMS carrier list:
+        // Set up template parameters, including loading the SMS carrier list:
         $templateParams = $this->getTemplateParams(
             [
                 'carriers' => $this->smsService->getCarriers(),
