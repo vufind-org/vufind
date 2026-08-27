@@ -47,6 +47,8 @@ use VuFind\Session\Settings;
 use VuFind\View\Renderer\TemplateRendererInterface;
 use VuFindTest\Unit\AjaxHandlerTestCase;
 
+use function count;
+
 /**
  * SystemStatus test class.
  *
@@ -61,9 +63,18 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
     /**
      * Get GetItemStatuses Ajax handler.
      *
-     * @param array $config Config
+     * @param array                      $config                    Config
+     * @param ?Settings                  $settings                  Settings
+     * @param ?Connection                $ils                       Ils
+     * @param ?TemplateRendererInterface $templateRenderer          TemplateRenderer
+     * @param ?Holds                     $holdLogic                 HoldLogic
+     * @param ?AvailabilityStatusManager $availabilityStatusManager AvailabilityStatusManager
+     * @param ?GetThisLoader             $getThis                   GetThisLoader
+     * @param ?RouteHelper               $routeHelper               RouteHelper
+     * @param ?Memory                    $searchMemory              SearchMemory
      *
      * @return GetItemStatuses
+     * @throws Exception
      */
     protected function getHandler(
         array $config = [],
@@ -77,15 +88,15 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         ?Memory $searchMemory = null,
     ): GetItemStatuses {
         return new GetItemStatuses(
-            $settings ?? $this->createMock(Settings::class),
+            $settings ?? $this->createStub(Settings::class),
             new Config($config),
-            $ils ?? $this->createMock(Connection::class),
-            $templateRenderer ?? $this->createMock(TemplateRendererInterface::class),
-            $holdLogic ?? $this->createMock(Holds::class),
-            $availabilityStatusManager ?? $this->createMock(AvailabilityStatusManager::class),
+            $ils ?? $this->createStub(Connection::class),
+            $templateRenderer ?? $this->createStub(TemplateRendererInterface::class),
+            $holdLogic ?? $this->createStub(Holds::class),
+            $availabilityStatusManager ?? $this->createStub(AvailabilityStatusManager::class),
             $getThis,
-            $routeHelper ?? $this->createMock(RouteHelper::class),
-            $searchMemory ?? $this->createMock(Memory::class)
+            $routeHelper ?? $this->createStub(RouteHelper::class),
+            $searchMemory ?? $this->createStub(Memory::class)
         );
     }
 
@@ -153,12 +164,11 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
                 ],
             ],
         ];
-        // return;
 
         yield 'simple reversed sorting on location' => [
             'records' => $records,
             'expected' => [
-                4, 3, 5, 1, 2
+                4, 3, 5, 1, 2,
             ],
             'filters' => [
             ],
@@ -191,7 +201,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         yield 'sorting on location (first) + availability' => [
             'records' => $records,
             'expected' => [
-                2, 1, 5, 3, 4
+                2, 1, 5, 3, 4,
             ],
             'filters' => [
             ],
@@ -227,7 +237,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         yield 'sorting on multi location filter + availability' => [
             'records' => $records,
             'expected' => [
-                5, 3, 2, 1, 4
+                5, 3, 2, 1, 4,
             ],
             'filters' => [
                 'Location' => [
@@ -275,7 +285,7 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         $holdLogic->method('getSuppressedLocations')->willReturn([]);
         $availabilityStatusManager = $this->createMock(AvailabilityStatusManager::class);
         $availabilityStatusManager->method('combine')->willReturnCallback(
-            function ($record) {
+            function (array $record): array {
                 return $record[0];
             }
         );
@@ -302,11 +312,10 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
         $holdings = current($recordsStatuses)['record'];
 
         $ids = [];
-        foreach ($holdings as $i => $holding) {
+        foreach ($holdings as $holding) {
             $ids[] = $holding['id'];
         }
 
         $this->assertEquals($expected, $ids);
     }
-
 }

@@ -208,7 +208,7 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Reduce an array of service names to a human-readable string.
      *
-     * @param array                  $rawServices Names of available services
+     * @param array $rawServices Names of available services
      *
      * @return array
      */
@@ -472,9 +472,9 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Get full item status data to pass for rendering.
      *
-     * @param array                  $record       Record
-     * @param array                  $simpleStatus Simple status result
-     * @param array                  $values       Additional values for the template
+     * @param array $record       Record
+     * @param array $simpleStatus Simple status result
+     * @param array $values       Additional values for the template
      *
      * @return array
      */
@@ -504,7 +504,7 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Build list split out by location
+     * Build list split out by location.
      *
      * @param array   $locations         Available locations
      * @param string  $callnumberSetting Callnumber setting
@@ -583,7 +583,8 @@ class GetItemStatuses extends AbstractBase implements
      * Sort statuses according to given config (by default it come from config.ini).
      *
      * @param array[]             $holdings      The holdings to sort
-     * @param array<string,mixed> $sortingFields Config on how to sort the fields (first values are prioritized for sorting)
+     * @param array<string,mixed> $sortingFields Config on how to sort the fields
+     *                                           (first values are prioritized for sorting)
      * @param array               $filters       Filters from the user search
      *
      * @return void
@@ -618,13 +619,13 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Parse a single record
+     * Parse a single record.
      *
-     * @param array $ids Request ids
-     * @param array                  $record            Record to parse
-     * @param mixed                  $locationSetting   Setting for location
-     * @param string                 $callnumberSetting Setting for callnumber
-     * @param bool                   $attachRecord      Whether to attach the record in the array
+     * @param array  $ids               Request ids
+     * @param array  $record            Record to parse
+     * @param mixed  $locationSetting   Setting for location
+     * @param string $callnumberSetting Setting for callnumber
+     * @param bool   $attachRecord      Whether to attach the record in the array
      *
      * @return array
      */
@@ -673,7 +674,7 @@ class GetItemStatuses extends AbstractBase implements
     }
 
     /**
-     * Parse the data returned by the ILS
+     * Parse the data returned by the ILS.
      *
      * @param array  $ids               Ids from the request
      * @param array  $records           Records from the ILS
@@ -722,7 +723,7 @@ class GetItemStatuses extends AbstractBase implements
         // If any IDs were missing, send back appropriate dummy data
         foreach ($missingIds as $missingId => $recordNumber) {
             $status = [
-                'id' => (string) $missingId, // array_flip may have converted to int
+                'id' => (string)$missingId, // array_flip may have converted to int
                 'availability' => 'false',
                 'location' => $this->translate('Unknown'),
                 'locationList' => false,
