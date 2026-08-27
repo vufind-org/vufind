@@ -74,7 +74,6 @@ abstract class AbstractRequestBase implements HelperInterface
      * @param ForwardHelper           $forwardHelper  Forward helper
      * @param FlashMessengerInterface $flashMessenger Flash messenger
      */
-    #[Autowire]
     public function __construct(
         protected HMAC $hmac,
         protected SessionManager $sessionManager,
