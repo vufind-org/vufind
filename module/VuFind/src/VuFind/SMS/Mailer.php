@@ -116,7 +116,7 @@ class Mailer extends AbstractBase
      *
      * @return array
      */
-    public function getCarriers()
+    public function getCarriers(): array
     {
         return $this->carriers;
     }
@@ -124,15 +124,15 @@ class Mailer extends AbstractBase
     /**
      * Send a text message to the specified provider.
      *
-     * @param string $provider The provider ID to send to
-     * @param string $to       The phone number at the provider
-     * @param string $from     The email address to use as sender
-     * @param string $message  The message to send
+     * @param string  $provider The provider ID to send to
+     * @param string  $to       The phone number at the provider
+     * @param ?string $from     The email address to use as sender (null for default)
+     * @param string  $message  The message to send
      *
      * @throws \VuFind\Exception\SMS
      * @return void
      */
-    public function text($provider, $to, $from, $message)
+    public function text(string $provider, string $to, ?string $from, string $message): void
     {
         $knownCarriers = array_keys($this->carriers);
         if (empty($provider) || !in_array($provider, $knownCarriers)) {
@@ -146,6 +146,6 @@ class Mailer extends AbstractBase
             . '@' . $this->carriers[$provider]['domain'];
         $from = empty($from) ? $this->defaultFrom : $from;
         $subject = '';
-        return $this->mailer->send($to, $from, $subject, $message);
+        $this->mailer->send($to, $from, $subject, $message);
     }
 }
