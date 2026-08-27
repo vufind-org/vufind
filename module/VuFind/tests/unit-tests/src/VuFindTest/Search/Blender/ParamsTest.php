@@ -1050,7 +1050,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'Base' => $baseParams,
             ],
-            $this->config,
             $this->mappings
         );
 
@@ -1106,7 +1105,6 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $mockConfigManager,
             new HierarchicalFacetHelper(),
             $this->getParamsClassesArray(),
-            $config ?? $this->config,
             $mappings ?? $this->mappings
         );
     }

@@ -90,7 +90,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             new HierarchicalFacetHelper(),
             $paramsClasses,
             [],
-            []
         );
         $searchService = $this->createMock(\VuFindSearch\Service::class);
         $searchService->expects($this->once())
