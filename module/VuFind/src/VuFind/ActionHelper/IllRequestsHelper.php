@@ -157,7 +157,7 @@ class IllRequestsHelper extends AbstractRequestBase
             }
 
             // Add Patron Data to Submitted Data
-            $cancelResults = $catalog->cancelILLRequests(['details' => $details, 'patron' => $patron]);
+            $cancelResults = $catalog->cancelILLRequests(compact('details', 'patron'));
             if ($cancelResults == false) {
                 $this->flashMessenger->addErrorMessage('ill_request_cancel_fail');
             } else {
