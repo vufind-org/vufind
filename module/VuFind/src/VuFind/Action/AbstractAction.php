@@ -220,13 +220,14 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
         $this->response = $response;
 
         try {
-            if ($preResponse = $this->checkPrerequisites($request, $response)) {
-                return $preResponse;
+            if ($actionConfigResponse = $this->validateActionConfig($request, $response)) {
+                return $actionConfigResponse;
             }
 
             if ($accessDeniedResponse = $this->validateAccessPermission()) {
                 return $accessDeniedResponse;
             }
+
             return $this->action($request, $response);
         } catch (Throwable $exception) {
             return $this->handleException($exception);
@@ -246,14 +247,16 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
     /**
      * Check that everything is in order for the action to be executed.
      *
-     * May return a response or throw an exception if there are issues.
+     * This method is executed in the very beginning of the action invokation before any permission checks etc.
+     * It is meant for technical checks such as route-based configuration being correctly applied.
+     * It may return a suitable response or throw an exception if there are issues.
      *
      * @param ServerRequestInterface $request  Request
      * @param ResponseInterface      $response Response
      *
      * @return ?ResponseInterface
      */
-    protected function checkPrerequisites(
+    protected function validateActionConfig(
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ?ResponseInterface {

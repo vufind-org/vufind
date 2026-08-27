@@ -223,18 +223,20 @@ abstract class AbstractRecordAction extends AbstractTemplateRenderingAction impl
     /**
      * Check that everything is in order for the action to be executed.
      *
-     * May return a response or throw an exception if there are issues.
+     * This method is executed in the very beginning of the action invokation before any permission checks etc.
+     * It is meant for technical checks such as route-based configuration being correctly applied.
+     * It may return a suitable response or throw an exception if there are issues.
      *
      * @param ServerRequestInterface $request  Request
      * @param ResponseInterface      $response Response
      *
      * @return ?ResponseInterface
      */
-    protected function checkPrerequisites(
+    protected function validateActionConfig(
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ?ResponseInterface {
-        if ($result = parent::checkPrerequisites($request, $response)) {
+        if ($result = parent::validateActionConfig($request, $response)) {
             return $result;
         }
 
