@@ -137,9 +137,7 @@ class SmsAction extends AbstractRecordAction
         ) {
             // Do CSRF check
             if (!$this->sessionCsrf->isValid($this->getPostParam('csrf'))) {
-                throw new \VuFind\Exception\BadRequest(
-                    'error_inconsistent_parameters'
-                );
+                throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             }
 
             // Attempt to send the email and show an appropriate flash message:
