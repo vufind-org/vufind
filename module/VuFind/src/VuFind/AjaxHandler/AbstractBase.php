@@ -65,7 +65,7 @@ abstract class AbstractBase implements AjaxHandlerInterface
      * VUFIND-716 for more details).
      *
      * @return void
-     * 
+     *
      * @throws \Exception
      */
     protected function disableSessionWrites()
