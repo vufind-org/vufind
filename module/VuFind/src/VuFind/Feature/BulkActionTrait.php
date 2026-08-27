@@ -97,7 +97,7 @@ trait BulkActionTrait
             return max(array_map([$this, 'getExportActionLimit'], $formats));
         }
         $bulkActionConfig = $this->getBulkActionConfig()['BulkActions'] ?? [];
-        return $bulkActionConfig['limits']['?$action']
+        return $bulkActionConfig['limits'][$action]
             ?? $bulkActionConfig['limits']['default']
             ?? 100;
     }
