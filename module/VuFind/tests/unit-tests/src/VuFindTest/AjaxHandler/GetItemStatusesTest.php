@@ -101,6 +101,8 @@ class GetItemStatusesTest extends AjaxHandlerTestCase
     }
 
     /**
+     * Provider for testStatusesSorting
+     *
      * @return Generator
      */
     public static function provideDataStatusesSorting(): Generator
