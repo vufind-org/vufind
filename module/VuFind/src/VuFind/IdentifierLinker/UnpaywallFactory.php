@@ -70,7 +70,7 @@ class UnpaywallFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
             throw new \Exception('Unexpected options passed to factory.');
         }
         $fullConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? null;
+        $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
         return new $requestedName($config);
     }
 }
