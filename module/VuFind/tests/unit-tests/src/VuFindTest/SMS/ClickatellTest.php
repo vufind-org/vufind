@@ -271,10 +271,10 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock HTTP client.
      *
-     * @return \Laminas\Http\Client&MockObject
+     * @return Client&MockObject
      */
-    protected function getMockClient(): \Laminas\Http\Client&MockObject
+    protected function getMockClient(): Client&MockObject
     {
-        return $this->createMock(\Laminas\Http\Client::class);
+        return $this->createMock(Client::class);
     }
 }
