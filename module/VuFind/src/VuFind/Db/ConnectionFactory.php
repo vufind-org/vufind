@@ -120,7 +120,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
 
         $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->configName);
+            ->getConfigArray($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }
@@ -142,14 +142,14 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
 
         // Parse details from connection string if available, otherwise use
         // more granular config settings.
-        if (isset($this->config->Database->database)) {
+        if (isset($this->config['Database']['database'])) {
             $options = $this->getOptionsFromConnectionString(
-                $this->config->Database->database,
+                $this->config['Database']['database'],
                 $overrideUser,
                 $overridePass
             );
         } else {
-            $dbConfig = $this->config->Database ?? new Config([]);
+            $dbConfig = $this->config['Database'] ?? new Config([]);
             $options = [
                 'driver' => $this->getDriverName($dbConfig->database_driver ?? ''),
                 'host' => $dbConfig->database_host ?? null,
