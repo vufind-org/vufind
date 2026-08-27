@@ -197,12 +197,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
             }
         }
 
-        $viewParams = $this->getTemplateParams(
-            [
-                'containingLists' => $containingLists,
-                'nonContainingLists' => $nonContainingLists,
-            ]
-        );
+        $viewParams = $this->getTemplateParams(compact('containingLists', 'nonContainingLists'));
 
         return $this->renderTemplate($request, $response, $viewParams, 'record/save');
     }
