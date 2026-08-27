@@ -74,7 +74,7 @@ class LoaderFactory implements FactoryInterface
             ->getCache('cover')->getOptions();
         $cacheDir = is_callable([$cacheOptions, 'getCacheDir'])
             ? $cacheOptions->getCacheDir() : null;
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $loader = new $requestedName(
             $config,
             $container->get(\VuFind\Content\Covers\PluginManager::class),
@@ -83,7 +83,7 @@ class LoaderFactory implements FactoryInterface
             $cacheDir
         );
         // Add cover generator if enabled:
-        if ($config->Content->makeDynamicCovers ?? false) {
+        if ($config['Content']['makeDynamicCovers'] ?? false) {
             $loader->setCoverGenerator(
                 $container->get(\VuFind\Cover\Generator::class)
             );
