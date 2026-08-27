@@ -226,7 +226,7 @@ class SaveAction extends AbstractRecordAction implements TranslatorAwareInterfac
         $message = [
             'html' => true,
             'msg' => $this->translate('bulk_save_success') . '. '
-                . '<a href="' . $listUrl . '" class="gotolist">'
+                . '<a href="' . htmlspecialchars($listUrl) . '" class="gotolist">'
                 . $this->translate('go_to_list') . '</a>.',
         ];
         $this->getHelper(FlashMessagesHelper::class)->addSuccessMessage($message);
