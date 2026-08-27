@@ -213,8 +213,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function getCoverGeneratorSettings()
     {
-        $settings = isset($this->config['DynamicCovers'])
-            ? $this->config['DynamicCovers'] : [];
+        $settings = $this->config['DynamicCovers'] ?? [];
         if (
             !isset($settings['backgroundMode'])
             && isset($this->config['Content']['makeDynamicCovers'])
