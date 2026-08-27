@@ -55,6 +55,11 @@
 </ul>
 
 <div class="<?=implode(' ', $tabContentClasses)?>">
+  <noscript>
+    <div class="alert alert-danger">
+      <?=$this->transEsc('Please enable JavaScript.')?>
+    </div>
+  </noscript>
   <?php foreach ($this->tabs as $tabName => $tab): ?>
     <?php
       $tabPaneAttributes = $this->htmlAttributes([
