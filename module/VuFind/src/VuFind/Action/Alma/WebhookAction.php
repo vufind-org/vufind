@@ -336,7 +336,7 @@ class WebhookAction extends AbstractAction implements LoggerAwareInterface, Tran
             $this->response,
             $returnArray,
             $statusCode,
-            JSON_PRETTY_PRINT
+            jsonFlags: JSON_PRETTY_PRINT
         );
     }
 
