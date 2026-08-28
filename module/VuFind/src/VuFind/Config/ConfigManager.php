@@ -191,11 +191,12 @@ class ConfigManager implements ConfigManagerInterface
         // load configuration if it was not cached yet.
         if ($config === null) {
             $config = $this->configLoader->loadConfigFromLocation($configLocation, $handleParentConfig, $forceReload);
+
+            if ($useAdvancedCache) {
+                $advancedCache->setItem($cacheKey, $config);
+            }
         }
 
-        if ($useAdvancedCache) {
-            $advancedCache->setItem($cacheKey, $config);
-        }
         return $config;
     }
 
