@@ -52,7 +52,7 @@ class Bootstrapper
     /**
      * Main VuFind configuration.
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $config;
 
@@ -88,7 +88,7 @@ class Bootstrapper
         $app = $event->getApplication();
         $this->events = $app->getEventManager();
         $this->container = $app->getServiceManager();
-        $this->config = $this->container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $this->config = $this->container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
     }
 
     /**
@@ -132,7 +132,7 @@ class Bootstrapper
         // by the build.xml startup process), set a cookie so the front-end code can
         // act accordingly. (This is needed to work around a problem where opening
         // print dialogs during testing stalls the automated test process).
-        if ($this->config->System->runningTestSuite ?? false) {
+        if ($this->config['System']['runningTestSuite'] ?? false) {
             $cm = $this->container->get(\VuFind\Cookie\CookieManager::class);
             $cm->set('VuFindTestSuiteRunning', '1', 0, false);
         }
@@ -147,7 +147,7 @@ class Bootstrapper
     {
         // If the system is unavailable and we're not in the console, forward to the
         // unavailable page.
-        if (PHP_SAPI !== 'cli' && !($this->config->System->available ?? true)) {
+        if (PHP_SAPI !== 'cli' && !($this->config['System']['available'] ?? true)) {
             $callback = function ($e): void {
                 $routeMatch = new RouteMatch(
                     ['controller' => 'Error', 'action' => 'Unavailable'],
@@ -167,7 +167,7 @@ class Bootstrapper
      */
     protected function initTimeZone(): void
     {
-        date_default_timezone_set($this->config->Site->timezone);
+        date_default_timezone_set($this->config['Site']['timezone']);
     }
 
     /**
@@ -242,7 +242,7 @@ class Bootstrapper
     protected function initTheme(): void
     {
         // Attach remaining theme configuration to the dispatch event at high priority:
-        $siteConfig = $this->config->Site;
+        $siteConfig = $this->config['Site'];
         $callback = function (MvcEvent $event) use ($siteConfig): void {
             $theme = new \VuFindTheme\Initializer($siteConfig, $event);
             try {

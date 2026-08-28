@@ -39,11 +39,7 @@
       ?>
       <?php if ($this->driver->isPlaceholder()): ?>
         <div class="resultItemLine1">
-          <p>
-            <?=$this->transEsc('This result is not displayed to guests')?>
-            <br>
-            <?=$this->render('error/loginForAccess.phtml')?>
-          </p>
+          <?=$this->render('error/guestRestriction.phtml')?>
         </div>
       <?php endif; ?>
       <?php

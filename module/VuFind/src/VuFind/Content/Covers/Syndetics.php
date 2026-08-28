@@ -54,11 +54,11 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
     /**
      * Constructor.
      *
-     * @param ?\VuFind\Config\Config $config Syndetics configuration
+     * @param ?array $config Syndetics configuration
      */
-    public function __construct(?\VuFind\Config\Config $config = null)
+    public function __construct(?array $config = null)
     {
-        $this->useSyndeticsCoverImageFallback = $config->use_syndetics_cover_image_fallback ?? false;
+        $this->useSyndeticsCoverImageFallback = $config['use_syndetics_cover_image_fallback'] ?? false;
         $this->supportsIsbn = $this->supportsIssn = $this->supportsOclc
             = $this->supportsUpc = $this->cacheAllowed = true;
     }

@@ -37,7 +37,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use PDO;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\Config;
 use VuFind\Config\Feature\SecretTrait;
 
 /**
@@ -53,13 +52,6 @@ use VuFind\Config\Feature\SecretTrait;
 class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     use SecretTrait;
-
-    /**
-     * VuFind configuration.
-     *
-     * @var Config
-     */
-    protected $config;
 
     /**
      * Configuration file name when used as a factory.
@@ -78,16 +70,16 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     /**
      * Constructor.
      *
-     * @param ?Config             $config    VuFind configuration (provided when used
+     * @param ?array              $config    VuFind configuration (provided when used
      * as service; omitted when used as factory)
      * @param ?ContainerInterface $container Service container (provided when used
      * as service; omitted when used as factory)
      */
     public function __construct(
-        ?Config $config = null,
+        protected ?array $config = null,
         protected ?ContainerInterface $container = null
     ) {
-        $this->config = $config ?: new Config([]);
+        $this->config = $config ?: [];
     }
 
     /**
@@ -120,7 +112,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
 
         $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->configName);
+            ->getConfigArray($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }
@@ -142,23 +134,23 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
 
         // Parse details from connection string if available, otherwise use
         // more granular config settings.
-        if (isset($this->config->Database->database)) {
+        if (isset($this->config['Database']['database'])) {
             $options = $this->getOptionsFromConnectionString(
-                $this->config->Database->database,
+                $this->config['Database']['database'],
                 $overrideUser,
                 $overridePass
             );
         } else {
-            $dbConfig = $this->config->Database ?? new Config([]);
+            $dbConfig = $this->config['Database'] ?? [];
             $options = [
-                'driver' => $this->getDriverName($dbConfig->database_driver ?? ''),
-                'host' => $dbConfig->database_host ?? null,
-                'user' => $overrideUser ?? $dbConfig->database_username ?? null,
+                'driver' => $this->getDriverName($dbConfig['database_driver'] ?? ''),
+                'host' => $dbConfig['database_host'] ?? null,
+                'user' => $overrideUser ?? $dbConfig['database_username'] ?? null,
                 'password' => $overridePass ?? $this->getSecretFromConfig($dbConfig, 'database_password'),
-                'dbname' => $dbConfig->database_name ?? null,
+                'dbname' => $dbConfig['database_name'] ?? null,
             ];
-            if (!empty($dbConfig->database_port)) {
-                $options['port'] = $dbConfig->database_port;
+            if (!empty($dbConfig['database_port'])) {
+                $options['port'] = $dbConfig['database_port'];
             }
         }
 
@@ -196,14 +188,14 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     protected function getDriverOptions($driver)
     {
         // Load options from the configuration:
-        $driverOptions = $this->config?->Database?->extra_options?->toArray() ?? [];
+        $driverOptions = $this->config['Database']['extra_options'] ?? [];
 
         // Apply MySQL-specific adjustments:
         if ($driver == 'pdo_mysql') {
             if (PHP_VERSION_ID >= 80400) {
                 // @phpstan-ignore-next-line
                 $driverOptions[Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT]
-                    = $this->config->Database->verify_server_certificate ?? false;
+                    = $this->config['Database']['verify_server_certificate'] ?? false;
                 $sslKeyMap = [
                     // @phpstan-ignore-next-line
                     'client_key' => Pdo\Mysql::ATTR_SSL_KEY,
@@ -216,7 +208,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
                 ];
             } else {
                 $driverOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT]
-                    = $this->config->Database->verify_server_certificate ?? false;
+                    = $this->config['Database']['verify_server_certificate'] ?? false;
                 $sslKeyMap = [
                     'client_key' => PDO::MYSQL_ATTR_SSL_KEY,
                     'client_cert' => PDO::MYSQL_ATTR_SSL_CERT,
@@ -232,7 +224,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
                 }
                 $sslConfigured = $sslConfigured || isset($driverOptions[$newKey]);
             }
-            $useSsl = $this->config->Database->use_ssl ?? false;
+            $useSsl = $this->config['Database']['use_ssl'] ?? false;
             if ($useSsl && !$sslConfigured) {
                 throw new \Exception(
                     'To use SSL with MySQL, please configure appropriate extra_options in '
@@ -263,7 +255,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $driver = strtolower($options['driver']);
         switch ($driver) {
             case 'pdo_mysql':
-                $options['charset'] = $this->config->Database->charset ?? 'utf8mb4';
+                $options['charset'] = $this->config['Database']['charset'] ?? 'utf8mb4';
                 if (strtolower($options['charset']) === 'latin1') {
                     throw new \Exception(
                         'The latin1 encoding is no longer supported for MySQL databases in VuFind.'
