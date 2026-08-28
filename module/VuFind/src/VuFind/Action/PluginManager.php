@@ -74,6 +74,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'developersettings/generateapikey' => DeveloperSettings\GenerateApiKeyAction::class,
         'externalauth/ezproxylogin' => ExternalAuth\EzproxyLoginAction::class,
         'myresearch/cataloglogin' => MyResearch\CatalogLoginAction::class,
+        'oai/authserver' => Oai\AuthServerAction::class,
         'ratings/deleteratings' => Ratings\DeleteRatingsAction::class,
         'ratings/userlist' => Ratings\UserListAction::class,
         'tag/deletetags' => Tag\DeleteTagsAction::class,

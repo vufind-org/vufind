@@ -957,7 +957,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         ?\VuFindHttp\HttpService $httpService = null,
         array|bool $mock = false
     ): Loader {
-        $config = new Config($config);
         if (null === $manager) {
             $manager = $this->createMock(\VuFind\Content\Covers\PluginManager::class);
         }
