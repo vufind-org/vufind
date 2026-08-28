@@ -99,10 +99,11 @@ abstract class AbstractAjaxAction extends AbstractAction implements TranslatorAw
         }
 
         // If we got this far, we can't handle the requested method:
+        $data = $this->translate('Invalid Method');
         return $responseHelper->getAjaxResponse(
             $response,
             $type,
-            ['data' => $this->translate('Invalid Method')],
+            'application/json' === $type ? compact('data') : $data,
             HttpStatus::STATUS_HTTP_BAD_REQUEST
         );
     }
