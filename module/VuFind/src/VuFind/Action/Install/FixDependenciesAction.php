@@ -67,7 +67,7 @@ class FixDependenciesAction extends AbstractInstallAction
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = 'VuFind requires PHP version ' . $this->getMinimalPhpVersion()
+            $msg = 'VuFind® requires PHP version ' . $this->getMinimalPhpVersion()
                 . ' or newer; you are running ' . phpversion() . '. Please upgrade.';
             $this->getHelper(FlashMessagesHelper::class)->addErrorMessage($msg);
             $problems++;
