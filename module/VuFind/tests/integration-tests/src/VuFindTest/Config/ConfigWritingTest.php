@@ -133,7 +133,7 @@ class ConfigWritingTest extends ConfigTestCase
     }
 
     /**
-     * Test writing.
+     * Test writing without existing destination.
      *
      * @param string $fixture    Fixture
      * @param string $configName Config name
@@ -163,7 +163,7 @@ class ConfigWritingTest extends ConfigTestCase
     }
 
     /**
-     * Test writing.
+     * Test writing with existing destination.
      *
      * @param string $fixture    Fixture
      * @param string $configName Config name
