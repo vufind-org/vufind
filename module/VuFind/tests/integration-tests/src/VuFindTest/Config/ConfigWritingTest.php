@@ -133,7 +133,7 @@ class ConfigWritingTest extends ConfigTestCase
     }
 
     /**
-     * Test writing.
+     * Test writing without existing destination.
      *
      * @param string $fixture    Fixture
      * @param string $configName Config name
@@ -141,10 +141,10 @@ class ConfigWritingTest extends ConfigTestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('writeTestProvider')]
-    public function testWriting(string $fixture, string $configName): void
+    public function testWritingWithoutExistingDestination(string $fixture, string $configName): void
     {
         $container = $this->getContainerWithConfigRelatedServices(
-            baseDir: $this->getFixtureDir() . 'configs/write/' . $fixture,
+            baseDir: $this->getFixtureDir() . 'configs/write/' . $fixture . '/base',
             baseSubDir: ''
         );
         $pathResolver = $container->get(PathResolver::class);
@@ -157,9 +157,51 @@ class ConfigWritingTest extends ConfigTestCase
         $destinationLocation->setBasePath($this->localDirPath);
 
         $config = $configManager->loadConfigFromLocation($baseConfigLocation);
+
+        $this->assertFileDoesNotExist($destinationLocation->getPath());
         $configManager->writeConfig($destinationLocation, $config, $baseConfigLocation);
 
         $this->assertDirsEqual($baseDirPath, $this->localDirPath);
+    }
+
+    /**
+     * Test writing with existing destination.
+     *
+     * @param string $fixture    Fixture
+     * @param string $configName Config name
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('writeTestProvider')]
+    public function testWritingWithExistingDestination(string $fixture, string $configName): void
+    {
+        $fixtureDir = $this->getFixtureDir() . 'configs/write/' . $fixture;
+        $container = $this->getContainerWithConfigRelatedServices(
+            baseDir: $fixtureDir . '/base',
+            baseSubDir: ''
+        );
+        $pathResolver = $container->get(PathResolver::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+
+        $baseDirPath = $pathResolver->getBaseConfigDirPath();
+        $baseConfigLocation = $pathResolver->getMatchingConfigLocation($baseDirPath, $configName);
+
+        $destinationLocation = clone $baseConfigLocation;
+        $destinationLocation->setBasePath($this->localDirPath);
+
+        $this->cpDir(
+            $baseConfigLocation->getBasePath(),
+            $destinationLocation->getBasePath()
+        );
+
+        $newConfigDir = $fixtureDir . '/new';
+        $newConfigLocation = $pathResolver->getMatchingConfigLocation($newConfigDir, $configName);
+        $config = $configManager->loadConfigFromLocation($newConfigLocation);
+        $configManager->writeConfig($destinationLocation, $config, $baseConfigLocation);
+
+        $expectedConfigDir = $fixtureDir . '/expected';
+
+        $this->assertDirsEqual($expectedConfigDir, $this->localDirPath, ignoreBackups: true);
     }
 
     /**
@@ -169,9 +211,9 @@ class ConfigWritingTest extends ConfigTestCase
      */
     public function testWritingWithIdenticalBaseAndDestination(): void
     {
-        $this->setUpLocalConfigDir('write/ini');
+        $this->setUpLocalConfigDir('write/ini/base');
         $container = $this->getContainerWithConfigRelatedServices(
-            baseDir: $this->getFixtureDir() . 'configs/write/ini',
+            baseDir: $this->getFixtureDir() . 'configs/write/ini/base',
             baseSubDir: ''
         );
         $pathResolver = $container->get(PathResolver::class);
@@ -190,18 +232,28 @@ class ConfigWritingTest extends ConfigTestCase
     /**
      * Assert that two configuration dirs are equal.
      *
-     * @param string $expected Expected directory
-     * @param string $actual   Actual directory
+     * @param string $expected      Expected directory
+     * @param string $actual        Actual directory
+     * @param bool   $ignoreBackups If backup files should be ignored
      *
      * @return void
      */
-    protected function assertDirsEqual(string $expected, string $actual): void
+    protected function assertDirsEqual(string $expected, string $actual, bool $ignoreBackups = false): void
     {
         $this->assertDirectoryExists($expected);
         $this->assertDirectoryExists($actual);
 
         $expectedContent = scandir($expected);
         $actualContent = scandir($actual);
+
+        // Filter backups
+        if ($ignoreBackups) {
+            $actualContent = array_values(array_filter(
+                $actualContent,
+                fn ($item) => !preg_match('/\.bak\.\d+/', $item)
+            ));
+        }
+
         $this->assertEquals($expectedContent, $actualContent);
 
         foreach ($expectedContent as $item) {
@@ -209,7 +261,7 @@ class ConfigWritingTest extends ConfigTestCase
                 continue;
             }
             if (is_dir($expected . '/' . $item)) {
-                $this->assertDirsEqual($expected . '/' . $item, $actual . '/' . $item);
+                $this->assertDirsEqual($expected . '/' . $item, $actual . '/' . $item, $ignoreBackups);
             } else {
                 $expectedFileContent = $this->readFileAndNormalizeWhitespace($expected . '/' . $item);
                 $actualFileContent = $this->readFileAndNormalizeWhitespace($actual . '/' . $item);
