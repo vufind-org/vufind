@@ -37,7 +37,6 @@ namespace VuFind\Http;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
- * @todo     Merge with PSR-18 HTTP Client Service when implemented
  */
 class HttpStatus
 {
