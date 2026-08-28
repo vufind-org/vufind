@@ -267,8 +267,7 @@ abstract class AbstractInstallAction extends AbstractTemplateRenderingAction
      */
     protected function phpVersionIsNewEnough(): bool
     {
-        // PHP_VERSION_ID was introduced in 5.2.7; if it's missing, we have a
-        // problem.
+        // PHP_VERSION_ID was introduced in 5.2.7; if it's missing, we have a problem.
         if (!defined('PHP_VERSION_ID')) {
             return false;
         }
