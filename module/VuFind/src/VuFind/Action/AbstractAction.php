@@ -247,7 +247,7 @@ abstract class AbstractAction implements ActionInterface, AccessPermissionInterf
     /**
      * Check that everything is in order for the action to be executed.
      *
-     * This method is executed in the very beginning of the action invokation before any permission checks etc.
+     * This method is executed in the very beginning of the action invocation before any permission checks etc.
      * It is meant for technical checks such as route-based configuration being correctly applied.
      * It may return a suitable response or throw an exception if there are issues.
      *
