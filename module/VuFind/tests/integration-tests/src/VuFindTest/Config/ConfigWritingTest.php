@@ -157,6 +157,8 @@ class ConfigWritingTest extends ConfigTestCase
         $destinationLocation->setBasePath($this->localDirPath);
 
         $config = $configManager->loadConfigFromLocation($baseConfigLocation);
+
+        $this->assertFileDoesNotExist($destinationLocation->getPath());
         $configManager->writeConfig($destinationLocation, $config, $baseConfigLocation);
 
         $this->assertDirsEqual($baseDirPath, $this->localDirPath);
