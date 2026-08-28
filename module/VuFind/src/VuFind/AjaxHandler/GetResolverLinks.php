@@ -90,7 +90,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         if (!$this->pluginManager->has($resolverType)) {
             return $this->formatResponse(
                 $this->translate("Could not load driver for $resolverType"),
-                HttpStatus::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
         $resolver = new Connection($this->pluginManager->get($resolverType));

@@ -90,7 +90,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
         $results = $this->getFacetResults($request, $configIndex, $configLocation);
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $this->logError('Faceting request failed');
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
 
         // Set appropriate query suppression / extra field behavior:
@@ -107,7 +107,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
         if (null === $recommend) {
             return $this->formatResponse(
                 'Invalid config requested',
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
 

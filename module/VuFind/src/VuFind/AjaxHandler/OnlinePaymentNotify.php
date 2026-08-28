@@ -68,13 +68,13 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
                 . var_export($request->getQueryParams(), true)
                 . ', post parameters: ' . var_export($request->getParsedBody(), true)
             );
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
         if (!($payment = $this->paymentService->getPaymentByLocalIdentifier($localIdentifier))) {
             $this->logError(
                 "Error processing payment: payment $localIdentifier not found"
             );
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
 
         $this->addPaymentEvent($payment, AuditEventSubtype::PaymentNotifyHandler, 'Handler called');
@@ -99,7 +99,7 @@ class OnlinePaymentNotify extends AbstractOnlinePaymentAction
                 'Exception processing request',
                 ['error' => $e->getMessage()]
             );
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
 
         return $this->formatResponse('');

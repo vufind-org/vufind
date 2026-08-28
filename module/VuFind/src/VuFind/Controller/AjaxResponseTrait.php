@@ -120,7 +120,7 @@ trait AjaxResponseTrait
         return $this->getAjaxResponse(
             $type,
             $this->translate('An error has occurred') . $debugMsg,
-            HttpStatus::STATUS_HTTP_ERROR
+            HttpStatus::ERROR
         );
     }
 
@@ -154,7 +154,7 @@ trait AjaxResponseTrait
         return $this->getAjaxResponse(
             $type,
             $this->translate('Invalid Method'),
-            HttpStatus::STATUS_HTTP_BAD_REQUEST
+            HttpStatus::BAD_REQUEST
         );
     }
 }

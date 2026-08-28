@@ -56,11 +56,11 @@ class OnlinePaymentRegister extends AbstractOnlinePaymentAction
     {
         $localIdentifier = $this->getPostOrQueryParam($request, 'localIdentifier');
         if (!$localIdentifier) {
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
         $payment = $this->paymentService->getPaymentByLocalIdentifier($localIdentifier);
         if (!$payment) {
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
         if ($payment->isRegistered()) {
             // Already registered, return success:
@@ -68,14 +68,14 @@ class OnlinePaymentRegister extends AbstractOnlinePaymentAction
         }
         if (!$payment->isRegistrationNeeded()) {
             // Bad status, return error:
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
         if ($payment->isRegistrationInProgress()) {
             // Registration already in progress, return error:
-            return $this->formatResponse('', HttpStatus::STATUS_HTTP_ERROR);
+            return $this->formatResponse('', HttpStatus::ERROR);
         }
 
         $result = $this->onlinePaymentManager->registerPaymentWithILS($payment);
-        return $this->formatResponse('', $result ? null : HttpStatus::STATUS_HTTP_ERROR);
+        return $this->formatResponse('', $result ? null : HttpStatus::ERROR);
     }
 }

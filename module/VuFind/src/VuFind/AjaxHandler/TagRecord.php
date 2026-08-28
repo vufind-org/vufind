@@ -78,7 +78,7 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                HttpStatus::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 

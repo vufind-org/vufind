@@ -60,7 +60,7 @@ class RelaisAvailability extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                HttpStatus::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 

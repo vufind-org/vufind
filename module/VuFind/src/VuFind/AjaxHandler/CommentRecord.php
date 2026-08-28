@@ -110,14 +110,14 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Comments disabled'),
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
 
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                HttpStatus::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -127,7 +127,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (empty($id) || empty($comment)) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         $driver = $this->recordLoader->load($id, $source, false);
@@ -135,7 +135,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         if (!$this->checkCaptcha($request)) {
             return $this->formatResponse(
                 $this->translate('captcha_not_passed'),
-                HttpStatus::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 

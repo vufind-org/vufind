@@ -98,7 +98,7 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
         if (empty($id) || empty($jsonData) || !($data = json_decode($jsonData, true))) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
 
@@ -106,7 +106,7 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                HttpStatus::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -146,7 +146,7 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
 
         return $this->formatResponse(
             $this->translate('An error has occurred'),
-            HttpStatus::STATUS_HTTP_ERROR
+            HttpStatus::ERROR
         );
     }
 }

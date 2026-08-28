@@ -62,7 +62,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                HttpStatus::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
@@ -70,7 +70,7 @@ class RelaisInfo extends AbstractRelaisAction
         if ($allowLoan == false) {
             return $this->formatResponse(
                 'AllowLoan was false',
-                HttpStatus::STATUS_HTTP_ERROR
+                HttpStatus::ERROR
             );
         }
 

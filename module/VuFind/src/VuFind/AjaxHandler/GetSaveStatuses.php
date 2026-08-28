@@ -129,7 +129,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                HttpStatus::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -139,7 +139,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         if (!is_array($ids) || !is_array($sources)) {
             return $this->formatResponse(
                 $this->translate('Argument must be array.'),
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         $statuses = $this->getDataFromUser($ids, $sources);

@@ -62,7 +62,7 @@ class RelaisOrder extends AbstractRelaisAction
         if ($authorizationId === null) {
             return $this->formatResponse(
                 $this->translate('Failed'),
-                HttpStatus::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
@@ -70,7 +70,7 @@ class RelaisOrder extends AbstractRelaisAction
         $result = $this->relais
             ->placeRequest($oclcNumber, $authorizationId, $lin);
         if (str_contains($result, 'error')) {
-            return $this->formatResponse($result, HttpStatus::STATUS_HTTP_ERROR);
+            return $this->formatResponse($result, HttpStatus::ERROR);
         }
         return $this->formatResponse(compact('result'));
     }

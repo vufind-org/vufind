@@ -87,7 +87,7 @@ class Recommend extends AbstractBase implements TranslatorAwareInterface
         if (!($moduleName = $this->getQueryParam($request, 'mod'))) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         $module = $this->recommendPluginManager->get($moduleName);

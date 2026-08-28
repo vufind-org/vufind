@@ -60,14 +60,14 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
         if (null === $id || null === $requestGroupId) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                HttpStatus::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -94,7 +94,7 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
 
         return $this->formatResponse(
             $this->translate('An error has occurred'),
-            HttpStatus::STATUS_HTTP_ERROR
+            HttpStatus::ERROR
         );
     }
 }

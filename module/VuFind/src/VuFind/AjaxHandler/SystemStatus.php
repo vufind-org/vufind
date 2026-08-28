@@ -95,7 +95,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         ) {
             return $this->formatResponse(
                 'Health check file exists',
-                HttpStatus::STATUS_HTTP_UNAVAILABLE
+                HttpStatus::UNAVAILABLE
             );
         }
 
@@ -112,7 +112,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             } catch (\Exception $e) {
                 return $this->formatResponse(
                     'Search index error: ' . $e->getMessage(),
-                    HttpStatus::STATUS_HTTP_ERROR
+                    HttpStatus::ERROR
                 );
             }
         }
@@ -124,7 +124,7 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
             } catch (\Exception $e) {
                 return $this->formatResponse(
                     'Database error: ' . $e->getMessage(),
-                    HttpStatus::STATUS_HTTP_ERROR
+                    HttpStatus::ERROR
                 );
             }
         }

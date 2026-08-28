@@ -129,7 +129,7 @@ class ResponseHelper implements HelperInterface, TranslatorAwareInterface
             $response,
             $type,
             $errorMsg . $debugMsg,
-            HttpStatus::STATUS_HTTP_ERROR
+            HttpStatus::ERROR
         );
     }
 

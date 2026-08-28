@@ -104,7 +104,7 @@ abstract class AbstractAjaxAction extends AbstractAction implements TranslatorAw
             $response,
             $type,
             'application/json' === $type ? compact('data') : $data,
-            HttpStatus::STATUS_HTTP_BAD_REQUEST
+            HttpStatus::BAD_REQUEST
         );
     }
 }

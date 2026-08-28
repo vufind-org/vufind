@@ -76,14 +76,14 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
         if (!$this->enabled) {
             return $this->formatResponse(
                 $this->translate('Comments disabled'),
-                HttpStatus::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
         if (!$this->user) {
             return $this->formatResponse(
                 $this->translate('You must be logged in first'),
-                HttpStatus::STATUS_HTTP_NEED_AUTH
+                HttpStatus::NEED_AUTH
             );
         }
 
@@ -91,14 +91,14 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
         if (empty($id)) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
-                HttpStatus::STATUS_HTTP_BAD_REQUEST
+                HttpStatus::BAD_REQUEST
             );
         }
 
         if (!$this->commentsService->deleteIfOwnedByUser($id, $this->user)) {
             return $this->formatResponse(
                 $this->translate('edit_list_fail'),
-                HttpStatus::STATUS_HTTP_FORBIDDEN
+                HttpStatus::FORBIDDEN
             );
         }
 
