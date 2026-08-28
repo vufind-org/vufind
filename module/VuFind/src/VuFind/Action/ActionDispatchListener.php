@@ -332,7 +332,7 @@ class ActionDispatchListener
         ?RouteMatch $routeMatch,
         ActionInterface $action
     ): void {
-        if (!$routeMatch) {
+        if (!$routeMatch || !($action instanceof ActionConfigInterface)) {
             return;
         }
 

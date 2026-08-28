@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Default tab Interface -- provides getters and setters for default tab.
+ * A marker interface for action configuration interfaces.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Action;
 
 /**
- * Default tab Interface -- provides getters and setters for default tab.
+ * A marker interface for action configuration interfaces.
  *
  * @category VuFind
  * @package  Action
@@ -38,37 +38,6 @@ namespace VuFind\Action;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-interface DefaultTabInterface extends ActionConfigInterface
+interface ActionConfigInterface
 {
-    /**
-     * Get default tab.
-     *
-     * @return ?string
-     */
-    public function getDefaultTab(): ?string;
-
-    /**
-     * Set default tab.
-     *
-     * @param ?string $tab Default tab
-     *
-     * @return static
-     */
-    public function setDefaultTab(?string $tab): static;
-
-    /**
-     * Get fallback default tab.
-     *
-     * @return ?string
-     */
-    public function getFallbackDefaultTab(): ?string;
-
-    /**
-     * Set fallback default tab.
-     *
-     * @param ?string $tab Fallback default tab
-     *
-     * @return static
-     */
-    public function setFallbackDefaultTab(?string $tab): static;
 }

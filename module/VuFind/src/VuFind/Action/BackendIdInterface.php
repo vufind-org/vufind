@@ -38,7 +38,7 @@ namespace VuFind\Action;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-interface BackendIdInterface
+interface BackendIdInterface extends ActionConfigInterface
 {
     /**
      * Get backend identifier.
