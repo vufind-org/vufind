@@ -83,7 +83,7 @@ class Mailer extends AbstractBase
 
         // If found, use carriers from SMS configuration; otherwise, fall back to the
         // default list of US carriers.
-        if (isset($config['Carriers']) && count($config['Carriers']) > 0) {
+        if ($carrierConfig = $config['Carriers'] ?? []) {
             $this->carriers = [];
             foreach ($config['Carriers'] as $id => $settings) {
                 [$domain, $name] = explode(':', $settings, 2);
