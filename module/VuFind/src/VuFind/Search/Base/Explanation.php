@@ -48,6 +48,13 @@ use VuFindSearch\Service as SearchService;
 abstract class Explanation
 {
     /**
+     * Configuration.
+     *
+     * @var array
+     */
+    protected array $config;
+
+    /**
      * Configuration file to read search settings from.
      *
      * @var string
@@ -77,10 +84,10 @@ abstract class Explanation
      */
     public function __construct(
         protected \VuFind\Search\Base\Params $params,
-        protected array $config,
         protected SearchService $searchService,
         ConfigManagerInterface $configManager
     ) {
+        $this->config = $configManager->getConfigArray($this->searchIni);
     }
 
     /**
