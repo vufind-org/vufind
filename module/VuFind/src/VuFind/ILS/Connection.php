@@ -146,23 +146,26 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config                 $config        Configuration
-     * representing the [Catalog] section of config.ini
+     * @param array                                 $config        Configuration
+     *                                                             representing
+     *                                                             the [Catalog]
+     *                                                             section of
+     *                                                             config.ini
      * @param \VuFind\ILS\Driver\PluginManager      $driverManager Driver plugin manager
      * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      * @param ?\Laminas\Http\Request                $request       Request object
      */
     public function __construct(
-        protected \VuFind\Config\Config $config,
+        protected array $config,
         protected \VuFind\ILS\Driver\PluginManager $driverManager,
         protected \VuFind\Config\ConfigManagerInterface $configManager,
         protected ?\Laminas\Http\Request $request = null
     ) {
-        if (!isset($config->driver)) {
+        if (!isset($config['driver'])) {
             throw new \Exception('ILS driver setting missing.');
         }
-        if (!$driverManager->has($config->driver)) {
-            throw new \Exception('ILS driver missing: ' . $config->driver);
+        if (!$driverManager->has($config['driver'])) {
+            throw new \Exception('ILS driver missing: ' . $config['driver']);
         }
     }
 
@@ -243,8 +246,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected function hasNoILSFailover()
     {
         // If we're configured to fail over to the NoILS driver, do so now:
-        return isset($this->config->loadNoILSOnFailure)
-            && $this->config->loadNoILSOnFailure;
+        return isset($this->config['loadNoILSOnFailure'])
+            && $this->config['loadNoILSOnFailure'];
     }
 
     /**
@@ -292,7 +295,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function getDriver($init = true)
     {
         if (null === $this->driver) {
-            $this->setDriver($this->driverManager->get($this->config->driver));
+            $this->setDriver($this->driverManager->get($this->config['driver']));
         }
         if (!$this->driverInitialized && $init) {
             try {
@@ -453,14 +456,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // context, so we'll just pass along $params as the best available
         // approximation.
         if (
-            isset($this->config->cancel_holds_enabled)
-            && $this->config->cancel_holds_enabled == true
+            isset($this->config['cancel_holds_enabled'])
+            && $this->config['cancel_holds_enabled'] == true
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
             $response = ['function' => 'cancelHolds'];
         } elseif (
-            isset($this->config->cancel_holds_enabled)
-            && $this->config->cancel_holds_enabled == true
+            isset($this->config['cancel_holds_enabled'])
+            && $this->config['cancel_holds_enabled'] == true
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
             $response = ['function' => 'getCancelHoldLink'];
@@ -489,14 +492,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // context, so we'll just pass along $params as the best available
         // approximation.
         if (
-            isset($this->config->renewals_enabled)
-            && $this->config->renewals_enabled == true
+            isset($this->config['renewals_enabled'])
+            && $this->config['renewals_enabled'] == true
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItems'];
         } elseif (
-            isset($this->config->renewals_enabled)
-            && $this->config->renewals_enabled == true
+            isset($this->config['renewals_enabled'])
+            && $this->config['renewals_enabled'] == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItemsLink'];
@@ -559,8 +562,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $response = [];
 
         if (
-            isset($this->config->cancel_storage_retrieval_requests_enabled)
-            && $this->config->cancel_storage_retrieval_requests_enabled
+            isset($this->config['cancel_storage_retrieval_requests_enabled'])
+            && $this->config['cancel_storage_retrieval_requests_enabled']
         ) {
             $check = $this->checkCapability(
                 'cancelStorageRetrievalRequests',
@@ -643,8 +646,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $response = [];
 
         if (
-            isset($this->config->cancel_ill_requests_enabled)
-            && $this->config->cancel_ill_requests_enabled
+            isset($this->config['cancel_ill_requests_enabled'])
+            && $this->config['cancel_ill_requests_enabled']
         ) {
             $check = $this->checkCapability(
                 'cancelILLRequests',
@@ -1123,9 +1126,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function getHoldingsTextFieldNames()
     {
-        return isset($this->config->holdings_text_fields)
-            ? $this->config->holdings_text_fields->toArray()
-            : ['holdings_notes', 'summary', 'supplements', 'indexes'];
+        return $this->config['holdings_text_fields']
+            ?? ['holdings_notes', 'summary', 'supplements', 'indexes'];
     }
 
     /**
