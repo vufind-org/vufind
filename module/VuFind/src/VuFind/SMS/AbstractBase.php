@@ -40,6 +40,11 @@ namespace VuFind\SMS;
  */
 abstract class AbstractBase implements SMSInterface
 {
+    /**
+     * Constructor.
+     *
+     * @param array $smsConfig SMS configuration
+     */
     public function __construct(protected array $smsConfig)
     {
     }
