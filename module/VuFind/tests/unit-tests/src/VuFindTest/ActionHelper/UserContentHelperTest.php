@@ -107,22 +107,26 @@ class UserContentHelperTest extends TestCase
         $sortList = ['title' => [], 'author' => []];
         $defaultResult = ['page' => 1, 'limit' => 20, 'sort' => 'title'];
         yield 'defaults' => [[], $sortList, $defaultResult];
-        
+
         yield 'normal query' => [
             ['page' => '3', 'sort' => 'author'],
             $sortList,
             ['page' => 3, 'limit' => 20, 'sort' => 'author'],
         ];
-        
+
         yield 'invalid sort' => [['sort' => 'nothing'], $sortList, $defaultResult];
-        
+
         yield 'page clamped' => [['page' => '0'], $sortList, $defaultResult];
-        
+
         yield 'empty sort list' => [[], [], ['page' => 1, 'limit' => 20, 'sort' => '']];
     }
 
     /**
      * Test getPagingParams() query-string handling.
+     *
+     * @param array $queryParams Query parameters on the request
+     * @param array $sortList    Allowed sort options
+     * @param array $expected    Expected result
      *
      * @return void
      */
