@@ -29,7 +29,6 @@
 
 namespace VuFindTest\ILS;
 
-use VuFind\Config\Config;
 use VuFind\ILS\Connection;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
