@@ -78,7 +78,7 @@ class GetItemStatuses extends AbstractBase implements
      * Constructor.
      *
      * @param SessionSettings           $ss                        Session settings
-     * @param array                    $config                    Top-level configuration
+     * @param array                     $config                    Top-level configuration
      * @param Connection                $ils                       ILS connection
      * @param TemplateRendererInterface $renderer                  Template renderer
      * @param Holds                     $holdLogic                 Holds logic
