@@ -85,7 +85,7 @@ class Mailer extends AbstractBase
         // default list of US carriers.
         if ($carrierConfig = $config['Carriers'] ?? []) {
             $this->carriers = [];
-            foreach ($config['Carriers'] as $id => $settings) {
+            foreach ($carrierConfig as $id => $settings) {
                 [$domain, $name] = explode(':', $settings, 2);
                 $this->carriers[$id] = ['name' => $name, 'domain' => $domain];
             }
