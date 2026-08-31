@@ -14,7 +14,15 @@
 	body {
 		margin: 0;
 		padding: 0;
-		-webkit-text-size-adjust: none;
+
+		/* text rendering */
+		font-optical-sizing: auto;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+
+		font-kerning: normal;
+		font-variant-ligatures: common-ligatures;
 	}
 
 	:first-child {
@@ -72,6 +80,7 @@
 	[type="submit"],
 	label,
 	summary {
+		font: inherit;
 		cursor: pointer;
 	}
 

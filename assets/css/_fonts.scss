@@ -1,0 +1,26 @@
+$system: system-ui, sans-serif;
+$monospace: "JetBrains Mono", monospace, m;
+$serif: Charter, "Sitka Text", Cambria, serif;
+
+@font-face {
+	font-family: "Lexend";
+	src: url("/assets/fonts/lexend/Lexend-VariableFont_wght.ttf");
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "JetBrains Mono";
+	src: url("/assets/fonts/jetbrains-mono/JetBrainsMono[wght].ttf");
+	font-weight: 100 800;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	src: url("/assets/fonts/jetbrains-mono/JetBrainsMono-Italic[wght].ttf");
+	font-weight: 100 800;
+	font-style: italic;
+	font-display: swap;
+}

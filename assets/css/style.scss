@@ -1,14 +1,16 @@
 ---
 ---
 
-// ^ required by Jekyll
+/* ^ required by Jekyll */
+
+@use "normalize";
 
 @use "radix";
 @use "colors";
 @use "breakpoints";
+@use "fonts";
 @use "variables";
 
-@use "normalize";
 @use "carousel";
 
 /**
@@ -33,29 +35,55 @@
 	}
 
 	body {
-		font-family: variables.$font-body;
 		font-size: 1rem;
 		color: colors.$text;
 		background-color: colors.$back;
+		accent-color: colors.$vibrant-mute;
 
 		@media (min-width: 1200px) {
 			font-size: 19px;
 		}
 	}
 
+	p,
+	li,
+	blockquote {
+		text-wrap: pretty;
+	}
+
+	a,
+	abbr[title] {
+		text-decoration-thickness: from-font;
+		text-underline-offset: 0.15em;
+
+		&:hover,
+		&:focus {
+			color: inherit;
+			text-decoration-thickness: 0.1em;
+		}
+	}
+
+	#content {
+		:link {
+			color: radix.$blue-11;
+		}
+
+		:visited {
+			color: radix.$purple-11;
+		}
+	}
+
 	h1,
 	h2,
 	h3,
-	h4 {
+	h4,
+	h5,
+	h6 {
 		margin-block: 1lh 1rem;
-		font-family: variables.$heading-font;
+		font-family: fonts.$serif;
 		line-height: 1.1;
 		text-wrap: balance;
-		color: colors.$vibrant-mute;
-
-		&+& {
-			margin-block-start: 0;
-		}
+		color: colors.$bold;
 	}
 
 	h1 {
@@ -82,21 +110,9 @@
 		font-size: variables.$heading-size-6;
 	}
 
-	a,
-	abbr[title] {
-		text-decoration-thickness: from-font;
-		text-underline-offset: 0.15em;
-
-		&:hover,
-		&:focus {
-			color: colors.$bold;
-			background-color: colors.$ui-hover;
-			text-decoration-thickness: 0.1em;
-		}
-	}
-
 	li {
-		margin-block: 0.5em;
+		margin: 0;
+		padding-block: 0.2em;
 		line-height: normal;
 	}
 
@@ -111,15 +127,46 @@
 		border-color: colors.$vibrant-edge;
 	}
 
-	blockquote {
+	code,
+	pre {
+		font-family: fonts.$monospace;
+	}
+
+	blockquote,
+	pre:has(code) {
 		margin-inline: 0;
 		margin-block: 1em;
 		padding: 1em;
-		font-family: monospace, m;
 		line-height: normal;
-		white-space: pre-line;
 		background-color: colors.$soft;
 		border: 1px solid colors.$edge;
+		overflow-x: auto;
+	}
+}
+
+@layer theme {
+	[for="site-font-system"],
+	.font-system {
+		font-family: fonts.$system;
+
+		.quote_text {
+			font-family: fonts.$serif;
+		}
+	}
+
+	[for="site-font-serif"],
+	.font-serif {
+		font-family: fonts.$serif;
+	}
+
+	[for="site-font-monospace"],
+	.font-monospace {
+		font-family: "JetBrains Mono", fonts.$monospace;
+	}
+
+	[for="site-font-lexend"],
+	.font-lexend {
+		font-family: "Lexend", fonts.$system;
 	}
 }
 
@@ -142,7 +189,6 @@
 	}
 
 	.header {
-		font-size: 1rem;
 		text-align: center;
 		border-block-start: 0.5em solid colors.$ui-hover;
 		background-color: colors.$soft;
@@ -162,7 +208,7 @@
 			padding-block: 1em;
 
 			// first two .header_link
-			&.js-menu-open> :not(.header_logo):nth-child(-n + 3) {
+			&.js-menu-open > :not(.header_logo):nth-child(-n + 3) {
 				margin-block-start: 1em;
 			}
 
@@ -251,13 +297,12 @@
 		line-height: normal;
 		color: colors.$bold;
 		border: 1px solid transparent;
-		text-decoration-color: colors.$vibrant-edge;
+		text-decoration-color: colors.$vibrant-mute;
 
 		&:hover,
 		&:focus {
 			background-color: colors.$ui;
 			border-color: colors.$vibrant-edge;
-			text-decoration-color: inherit;
 		}
 
 		// mobile menu
@@ -301,7 +346,7 @@
 
 	.header-announcement {
 		padding-block: 0.5em;
-		font-size: 14px;
+		font-size: smaller;
 		font-weight: 500;
 		line-height: normal;
 		text-align: center;
@@ -317,7 +362,7 @@
 
 			&:hover,
 			&:focus {
-				background-color: colors.$soft;
+				color: colors.$vibrant-text;
 			}
 		}
 	}
@@ -371,7 +416,7 @@
 		width: fit-content;
 		margin-block: max(2rem, 2vw);
 
-		@media (max-width: breakpoints.$md - 1) {
+		@media (max-width: (breakpoints.$md - 1)) {
 			margin-inline: auto;
 		}
 	}
@@ -387,7 +432,9 @@
 		background-image: linear-gradient(radix.$amber-09, radix.$amber-10);
 		border: 0.1em solid radix.$amber-11;
 		border-radius: 0.2em;
-		box-shadow: 0 4px 16px -2px #0003, inset 0 1px 1px white;
+		box-shadow:
+			0 4px 16px -2px #0003,
+			inset 0 1px 1px white;
 		cursor: pointer;
 
 		&:hover,
@@ -444,6 +491,31 @@
 		}
 	}
 
+	details {
+		margin-block: 2em;
+		background-color: colors.$soft;
+		border: 1px solid colors.$vibrant-edge;
+
+		blockquote {
+			background-color: colors.$back;
+		}
+
+		@media (min-width: 768px) {
+			margin-inline: -1rem;
+		}
+	}
+	summary,
+	[open]::details-content {
+		padding: 1rem;
+	}
+	summary {
+		font-weight: 700;
+		background-color: colors.$ui;
+	}
+	summary + * {
+		margin-block-start: 0;
+	}
+
 	.quote {
 		display: block;
 		max-width: 600px;
@@ -458,7 +530,6 @@
 	.quote_text {
 		display: block;
 		margin-bottom: 1em;
-		font-family: variables.$font-serif;
 		font-style: italic;
 		font-weight: 500;
 		text-wrap: pretty;
@@ -522,6 +593,67 @@
 			margin-block: 1em;
 		}
 	}
+
+	#theme-picker {
+		position: fixed;
+		inset-inline-end: 1em;
+		inset-block-end: 1em;
+		padding-inline: 1em;
+		padding-block: 0.5em;
+		font: inherit;
+		color: colors.$text;
+		background-color: colors.$ui;
+		border: 1px solid colors.$text;
+
+		&:hover,
+		&:focus {
+			background-color: colors.$ui-hover;
+		}
+	}
+
+	#theme-menu {
+		&:not(.is-shown) {
+			@extend .visually-hidden-focusable;
+		}
+
+		position: fixed;
+		z-index: 40;
+		inset-inline-end: 1em;
+		inset-block-end: 4em;
+		padding: 1em;
+		padding-block-end: 0;
+		color: colors.$text;
+		background-color: colors.$soft;
+		border: 1px solid;
+		box-shadow: 0 4px 8px -2px #0003;
+
+		fieldset {
+			margin: 0;
+			padding: 0;
+		}
+
+		label {
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 1ch;
+			width: 100%;
+			padding-inline: 1ch;
+			padding-block: 0.3em;
+
+			&:hover,
+			&:focus {
+				background-color: colors.$ui;
+			}
+		}
+
+		[type="submit"] {
+			display: block;
+			width: 100%;
+			margin-block: 1em;
+			padding-inline: 1ch;
+			padding-block: 0.3em;
+		}
+	}
 }
 
 @layer utilities {
@@ -541,12 +673,11 @@
 		flex: 1 1 0%;
 	}
 
-	/**
-	 * Modern visually hidden
-	 * <https://bsky.app/profile/sarasoueidan.com/post/3menacenuck27>
-	 */
-	.visually-hidden:not(:focus-visible, :active) {
+	.visually-hidden {
 		position: absolute;
 		transform: scale(0);
+	}
+	.visually-hidden-focusable:not(:focus):not(:focus-within) {
+		@extend .visually-hidden;
 	}
 }
