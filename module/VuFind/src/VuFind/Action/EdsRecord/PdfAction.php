@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Missing Record Controller.
+ * EDS record PDF action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,33 +22,42 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\EdsRecord;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Missing Record Controller.
+ * EDS record PDF action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class MissingrecordController extends AbstractBase
+class PdfAction extends AbstractRedirectToEBookAction
 {
     /**
-     * Display simple message.
+     * Redirect to PDF.
      *
-     * @return mixed
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function homeAction()
-    {
-        $this->getFlashMessenger()->addErrorMessage('Cannot find record');
-        return $this->createViewModel();
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        return $this->redirectToEbook($request, $response, 'ebook-pdf', 'getPdfLink');
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Pazpar2 Record Controller.
+ * Backend Id Interface -- provides getters and setters for backend identifier.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,40 +21,38 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller;
-
-use Laminas\ServiceManager\ServiceLocatorInterface;
+namespace VuFind\Action;
 
 /**
- * Pazpar2 Record Controller.
+ * Backend Id Interface -- provides getters and setters for backend identifier.
  *
  * @category VuFind
- * @package  Controller
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
-class Pazpar2recordController extends AbstractRecord
+interface BackendIdInterface extends ActionConfigInterface
 {
     /**
-     * Constructor.
+     * Get backend identifier.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @return string
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        throw new \Exception('Pazpar2 record view not supported.');
+    public function getBackendId(): string;
 
-        // Override some defaults:
-        $this->sourceId = 'Pazpar2';
-
-        // Call standard record controller initialization:
-        parent::__construct($sm);
-    }
+    /**
+     * Set backend identifier.
+     *
+     * @param string $id Backend identifier
+     *
+     * @return static
+     */
+    public function setBackendId(string $id): static;
 }

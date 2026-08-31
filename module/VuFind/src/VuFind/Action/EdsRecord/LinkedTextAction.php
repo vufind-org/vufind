@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Primo Central Record Controller.
+ * EDS record linked text action.
  *
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,40 +22,42 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\EdsRecord;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Primo Central Record Controller.
+ * EDS record linked text action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class PrimorecordController extends AbstractRecord
+class LinkedTextAction extends AbstractRedirectToEBookAction
 {
     /**
-     * Constructor.
+     * Redirect to linked text.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        // Override some defaults:
-        $this->accessPermission = 'access.PrimoModule';
-        $this->sourceId = 'Primo';
-        $this->fallbackDefaultTab = 'Description';
-
-        // Call standard record controller initialization:
-        parent::__construct($sm);
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        return $this->redirectToEbook($request, $response, null, 'getLinkedFullTextLink');
     }
 }

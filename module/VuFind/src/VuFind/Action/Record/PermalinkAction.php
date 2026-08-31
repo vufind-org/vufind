@@ -1,11 +1,12 @@
 <?php
 
 /**
- * WorldCat v2 Record Controller.
+ * Record permalink action.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) Villanova University 2010-2024.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,38 +22,42 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Action\Record;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * WorldCat v2 Record Controller.
+ * Record permalink action.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Action
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Worldcat2recordController extends AbstractRecord
+class PermalinkAction extends AbstractRecordAction
 {
     /**
-     * Constructor.
+     * Show permanent link for a record.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param ServerRequestInterface $request  Server request
+     * @param ResponseInterface      $response Response
+     *
+     * @return ResponseInterface
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        // Override some defaults:
-        $this->sourceId = 'WorldCat2';
-
-        // Call standard record controller initialization:
-        parent::__construct($sm);
+    public function action(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        return $this->renderTemplate($request, $response, $this->getTemplateParams(), 'record/permalink');
     }
 }
