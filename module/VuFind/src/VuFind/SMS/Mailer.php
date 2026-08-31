@@ -31,7 +31,6 @@ namespace VuFind\SMS;
 
 use VuFind\Exception\SMS as SMSException;
 
-use function count;
 use function in_array;
 
 /**
@@ -82,7 +81,7 @@ class Mailer extends AbstractBase
     {
         // Set up parent object first:
         parent::__construct($config);
-        
+
         // If found, use carriers from SMS configuration; otherwise, fall back to the
         // default list of US carriers.
         if ($carrierConfig = $config['Carriers'] ?? []) {
