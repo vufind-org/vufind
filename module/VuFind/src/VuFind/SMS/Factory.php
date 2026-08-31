@@ -67,7 +67,7 @@ class Factory implements FactoryInterface
         $smsConfig = $configManager->getConfigArray('sms');
 
         // Determine SMS type:
-        $type = $smsConfig->General->smsType ?? 'Mailer';
+        $type = $smsConfig['General']['smsType'] ?? 'Mailer';
 
         // Initialize object based on requested type:
         switch (strtolower($type)) {
