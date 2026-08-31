@@ -1123,9 +1123,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function getHoldingsTextFieldNames()
     {
-        return isset($this->config['holdings_text_fields'])
-            ? $this->config['holdings_text_fields']
-            : ['holdings_notes', 'summary', 'supplements', 'indexes'];
+        return $this->config['holdings_text_fields']
+            ?? ['holdings_notes', 'summary', 'supplements', 'indexes'];
     }
 
     /**

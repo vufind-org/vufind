@@ -30,7 +30,6 @@
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Config\Config;
 use VuFind\Crypt\HMAC;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
