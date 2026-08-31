@@ -55,8 +55,8 @@ class Clickatell extends AbstractBase
      * Constructor.
      *
      * @param array $config  SMS configuration
-     * @param array                 $options Additional options (client may be an
-     *                                       HTTP client object)
+     * @param array $options Additional options (client may be an
+     *                       HTTP client object)
      */
     public function __construct(array $config, $options = [])
     {
