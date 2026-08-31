@@ -80,7 +80,9 @@ class Mailer extends AbstractBase
      */
     public function __construct(array $config, $options = [])
     {
-
+        // Set up parent object first:
+        parent::__construct($config);
+        
         // If found, use carriers from SMS configuration; otherwise, fall back to the
         // default list of US carriers.
         if ($carrierConfig = $config['Carriers'] ?? []) {
