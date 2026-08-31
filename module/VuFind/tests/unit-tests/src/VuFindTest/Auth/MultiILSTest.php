@@ -322,7 +322,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ],
         );
         $connection = new \VuFind\ILS\Connection(
-            new \VuFind\Config\Config(['driver' => 'MultiBackend']),
+            ['driver' => 'MultiBackend'],
             $driverManager,
             $mockConfigManager
         );
