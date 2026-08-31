@@ -594,6 +594,6 @@ class Holds
      */
     public function getSuppressedLocations()
     {
-        return (array)($this->config['->Record']['->hide_holdings'] ?? []);
+        return (array)($this->config['Record']['hide_holdings'] ?? []);
     }
 }
