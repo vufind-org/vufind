@@ -144,7 +144,8 @@ class UserContentHelperTest extends TestCase
     }
 
     /**
-     * Test that getUserContentRecordTitles() composes record ids correctly and delegates to the record loader.
+     * Test that getUserContentRecordTitles() composes record ids correctly, delegates to the record loader, and
+     * adds the loaded titles back onto the content items.
      *
      * @return void
      */
@@ -166,7 +167,14 @@ class UserContentHelperTest extends TestCase
             ->willReturn([$driver1, $driver2]);
 
         $result = $this->getHelper($recordLoader)->getUserContentRecordTitles($contents);
+
         $this->assertSame($contents, $result);
+
+        $titles = [];
+        foreach ($result as $item) {
+            $titles[] = $item['recordTitle'] ?? null;
+        }
+        $this->assertSame(['First title', 'Second title'], $titles);
     }
 
     /**
