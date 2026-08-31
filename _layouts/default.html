@@ -7,15 +7,34 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VuFind® - Search. Discover. Share.</title>
+
+  <!-- apply site theme -->
+  <script>
+		const THEME_KEY = "vf-site-theme";
+		const FONT_KEY = "vf-site-font";
+
+	 	(function applySiteTheme() {
+			const theme = localStorage.getItem(THEME_KEY) ?? "light dark";
+
+			// apply to meta tag -> CSS light-dark
+			document
+				.querySelector('[name="color-scheme"]')
+				.setAttribute("content", theme);
+
+			// select correct option in form
+			document.addEventListener("DOMContentLoaded", () => {
+				document.body.classList.add(`font-${font}`);
+			});
+	  })();
+  </script>
+
   <link href="{{ site.baseurl }}/assets/images/vufind-favicon.ico" rel="shortcut icon" type="image/x-icon">
   <link href="{{ site.baseurl }}/assets/css/style.css" rel="stylesheet" type="text/css">
-  <script src="{{ site.baseurl }}/assets/js/jquery.min.js" type="text/javascript"></script>
-  <script src="{{ site.baseurl }}/assets/js/bootstrap.min.js" type="text/javascript"></script>
 </head>
 
 <body>
   {% include header.html %}
-  <div class="container page--{{ page.slug | default: "index" }}">
+  <div id="content" class="container page--{{ page.slug | default: "index" }}">
     {{ content }}
   </div>
   {% include footer.html %}

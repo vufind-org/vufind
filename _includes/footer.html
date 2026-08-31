@@ -1,13 +1,13 @@
 <div class="footer">
   <div class="container">
-  	<nav>
+    <nav>
       <a href="https://vufind.org/wiki/changelog">Release Schedule</a> &bull;
       <a href="https://github.com/vufind-org/vufind">GitHub</a> &bull;
       <a href="https://www.linkedin.com/company/vufind">LinkedIn</a>
     </nav>
 
     <p class="footer__statement">
-      VuFind® is developed and maintained by an <a href="https://vufind.org/wiki/community">international community of contributors</a> with support from the <a href="https://openlibraryfoundation.org/">Open Library Foundation</a> and the generous <a href="https://vufind.org/wiki/community:membership_levels_and_benefits">sponsors</a> below.
+      VuFind® is developed and maintained by an <a href="https://vufind.org/wiki/community"> international community of contributors</a> with support from the <a href="https://openlibraryfoundation.org/">Open Library Foundation</a> and the generous <a href="https://vufind.org/wiki/community:membership_levels_and_benefits">sponsors</a> below.
     </p>
 
     <div class="footer__sponsors">
@@ -17,7 +17,7 @@
             class="footer__sponsor-img"
             src="{{ site.baseurl }}/assets/images/sponsors/VU508Black.webp"
             alt="Falvey Library, Villanova University"
-          >
+          />
         </a>
       </div>
 
@@ -27,7 +27,7 @@
             class="footer__sponsor-img"
             src="{{ site.baseurl }}/assets/images/sponsors/hebis-de.svg"
             alt="hebis.de"
-          >
+          />
         </a>
       </div>
 
@@ -37,7 +37,7 @@
             class="footer__sponsor-img"
             src="{{ site.baseurl }}/assets/images/sponsors/lehigh-lts.svg"
             alt="Lehigh University Library"
-          >
+          />
         </a>
       </div>
     </div>
@@ -46,16 +46,73 @@
 
 <!-- Matomo -->
 <script type="text/javascript">
-  var _paq = window._paq = window._paq || [];
+  var _paq = (window._paq = window._paq || []);
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="https://morpheus.library.villanova.edu/piwik/";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '12']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+  (function () {
+    var u = "https://morpheus.library.villanova.edu/piwik/";
+    _paq.push(["setTrackerUrl", u + "matomo.php"]);
+    _paq.push(["setSiteId", "12"]);
+    var d = document,
+      g = d.createElement("script"),
+      s = d.getElementsByTagName("script")[0];
+    g.type = "text/javascript";
+    g.async = true;
+    g.src = u + "matomo.js";
+    s.parentNode.insertBefore(g, s);
   })();
 </script>
 <!-- End Matomo Code -->
+
+<dialog id="theme-menu">
+  <form method="dialog" id="theme-form">
+    <fieldset>
+      <legend>Theme</legend>
+
+      <label for="site-theme-system">
+        <input type="radio" id="site-theme-system" name="site-theme" value="light dark" />
+        System
+      </label>
+
+      <label for="site-theme-light">
+        <input type="radio" id="site-theme-light" name="site-theme" value="light" />
+        Light
+      </label>
+
+      <label for="site-theme-dark">
+        <input type="radio" id="site-theme-dark" name="site-theme" value="dark" />
+        Dark
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Font</legend>
+
+      <label for="site-font-system">
+        <input type="radio" id="site-font-system" name="site-font" value="system" />
+        System
+      </label>
+
+      <label for="site-font-serif">
+        <input type="radio" id="site-font-serif" name="site-font" value="serif" />
+        Serif
+      </label>
+
+      <label for="site-font-monospace">
+        <input type="radio" id="site-font-monospace" name="site-font" value="monospace" />Monospace
+      </label>
+
+      <label for="site-font-lexend">
+        <input type="radio" id="site-font-lexend" name="site-font" value="lexend" />
+        Lexend
+      </label>
+    </fieldset>
+
+    <input type="submit" value="Save" />
+  </form>
+</dialog>
+
+<button id="theme-picker" commandfor="theme-menu" command="show-modal">Site Appearance</button>
+
+<script type="module" src="{{ site.baseurl }}/assets/js/site-preferences.js"></script>
