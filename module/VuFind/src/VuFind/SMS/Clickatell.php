@@ -123,7 +123,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiPassword()
     {
-        return $this->smsConfig['-Clickatell']['password'] ?? '';
+        return $this->smsConfig['Clickatell']['password'] ?? '';
     }
 
     /**
