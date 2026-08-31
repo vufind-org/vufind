@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\Config;
 use VuFind\Search\Solr\SpellingProcessor;
 
 /**
