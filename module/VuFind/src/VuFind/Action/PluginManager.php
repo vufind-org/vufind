@@ -121,6 +121,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         'oai/authserver' => Oai\AuthServerAction::class,
 
+        'oauth2/userinfo' => OAuth2\UserInfoAction::class,
+        'oauth2/wellknownconfiguration' => OAuth2\WellKnownConfigurationAction::class,
+
         'primorecord/addtag' => Record\AddTagAction::class,
         'primorecord/deletetag' => Record\DeleteTagAction::class,
         'primorecord/ajaxtab' => Record\AjaxTabAction::class,
@@ -234,6 +237,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'Authorityrecord' => 'AuthorityRecord',
         'Browzine' => 'BrowZine',
         'Myresearch' => 'MyResearch',
+        'Oauth2' => 'OAuth2',
         'Shortlink' => 'ShortLink',
     ];
 

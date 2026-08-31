@@ -151,6 +151,47 @@ class ResponseHelper implements HelperInterface, TranslatorAwareInterface
     }
 
     /**
+     * Add CORS headers to a response.
+     *
+     * @param ResponseInterface $response         Response
+     * @param array             $allowedMethods   Allowed HTTP methods
+     * @param array             $allowedHeaders   Allowed HTTP headers
+     * @param string            $allowedOrigin    Allowed origin (see
+     *                                            https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+     *                                            for details)
+     * @param bool              $allowCredentials Whether credentials are allowed
+     * @param int               $maxAge           Maximum time in seconds the information
+     *                                            from a preflight request can be cached
+     *
+     * @return ResponseInterface
+     */
+    public function addCorsHeaders(
+        ResponseInterface $response,
+        array $allowedMethods = ['GET', 'POST', 'OPTIONS'],
+        array $allowedHeaders = [],
+        string $allowedOrigin = '*',
+        bool $allowCredentials = false,
+        int $maxAge = 86400
+    ): ResponseInterface {
+        $response = $response
+            ->withHeader('Access-Control-Allow-Methods', implode(', ', $allowedMethods))
+            ->withHeader('Access-Control-Allow-Origin', $allowedOrigin)
+            ->withHeader('Access-Control-Max-Age', $maxAge);
+
+        if ($allowedHeaders) {
+            $response = $response->withHeader('Access-Control-Allow-Headers', implode(', ', $allowedHeaders));
+        }
+        if ('*' !== $allowedOrigin) {
+            $response = $response->withHeader('Vary', 'Origin');
+        }
+        if ($allowCredentials) {
+            // Note: true is the only valid value; false must not be used.
+            $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        }
+        return $response;
+    }
+
+    /**
      * Format the content of a response based on the response type.
      *
      * @param string $type      Content-type of output
