@@ -54,13 +54,13 @@ class Holds
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \VuFind\Config\Config         $config  VuFind configuration
+     * @param array                         $config  VuFind configuration
      */
     public function __construct(
         protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
         protected ILSConnection $catalog,
         protected \VuFind\Crypt\HMAC $hmac,
-        protected \VuFind\Config\Config $config
+        protected array $config
     ) {
     }
 
@@ -594,6 +594,6 @@ class Holds
      */
     public function getSuppressedLocations()
     {
-        return (array)($this->config?->Record?->hide_holdings?->toArray() ?? []);
+        return (array)($this->config['->Record']['->hide_holdings'] ?? []);
     }
 }

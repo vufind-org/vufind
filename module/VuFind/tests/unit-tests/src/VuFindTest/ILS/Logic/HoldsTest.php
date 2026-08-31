@@ -70,7 +70,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             $ilsAuth ?? $this->createStub(ILSAuthenticator::class),
             $catalog ?? $this->createStub(Connection::class),
             $hmac ?? $this->createStub(HMAC::class),
-            new Config($config)
+            $config
         );
     }
 

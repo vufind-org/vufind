@@ -69,10 +69,10 @@ class ConnectionFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $config = $configManager->getConfigObject('config');
+        $config = $configManager->getConfigArray('config');
         $request = $container->get('Request');
         $catalog = new $requestedName(
-            $config->Catalog,
+            $config['Catalog'],
             $container->get(\VuFind\ILS\Driver\PluginManager::class),
             $configManager,
             $request instanceof \Laminas\Http\Request ? $request : null
@@ -83,7 +83,7 @@ class ConnectionFactory implements FactoryInterface
         $catalog->setCacheStorage($container->get(\VuFind\Cache\Manager::class)->getCache('object'));
         $manager = $container->get(\Laminas\Session\SessionManager::class);
         $catalog->setSessionCache(new \Laminas\Session\Container('ILS', $manager));
-        if ($cacheLifeTime = $config->Catalog?->cacheLifeTime?->toArray()) {
+        if ($cacheLifeTime = $config['Catalog']['cacheLifeTime']) {
             $catalog->setCacheLifeTime($cacheLifeTime);
         }
         return $catalog;
