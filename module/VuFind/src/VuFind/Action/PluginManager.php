@@ -83,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'developersettings/generateapikey' => DeveloperSettings\GenerateApiKeyAction::class,
 
         'edsrecord/addtag' => Record\AddTagAction::class,
+        'edsrecord/deletetag' => Record\DeleteTagAction::class,
         'edsrecord/ajaxtab' => Record\AjaxTabAction::class,
         'edsrecord/cite' => Record\CiteAction::class,
         'edsrecord/email' => Record\EmailAction::class,
@@ -99,6 +100,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'edsrecord/sms' => Record\SmsAction::class,
 
         'eitrecord/addtag' => Record\AddTagAction::class,
+        'eitrecord/deletetag' => Record\DeleteTagAction::class,
         'eitrecord/ajaxtab' => Record\AjaxTabAction::class,
         'eitrecord/cite' => Record\CiteAction::class,
         'eitrecord/email' => Record\EmailAction::class,
@@ -120,6 +122,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'oai/authserver' => Oai\AuthServerAction::class,
 
         'primorecord/addtag' => Record\AddTagAction::class,
+        'primorecord/deletetag' => Record\DeleteTagAction::class,
         'primorecord/ajaxtab' => Record\AjaxTabAction::class,
         'primorecord/cite' => Record\CiteAction::class,
         'primorecord/email' => Record\EmailAction::class,
@@ -133,6 +136,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'primorecord/sms' => Record\SmsAction::class,
 
         'proquestfsgrecord/addtag' => Record\AddTagAction::class,
+        'proquestfsgrecord/deletetag' => Record\DeleteTagAction::class,
         'proquestfsgrecord/ajaxtab' => Record\AjaxTabAction::class,
         'proquestfsgrecord/cite' => Record\CiteAction::class,
         'proquestfsgrecord/email' => Record\EmailAction::class,
@@ -149,6 +153,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'ratings/userlist' => Ratings\UserListAction::class,
 
         'record/addtag' => Record\AddTagAction::class,
+        'record/deletetag' => Record\DeleteTagAction::class,
         'record/ajaxtab' => Record\AjaxTabAction::class,
         'record/getthis' => Record\GetThisAction::class,
         'record/illrequest' => Record\IllRequestAction::class,
@@ -158,6 +163,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2collection/ajaxtab' => Record\AjaxTabAction::class,
 
         'search2record/addtag' => Record\AddTagAction::class,
+        'search2record/deletetag' => Record\DeleteTagAction::class,
         'search2record/ajaxtab' => Record\AjaxTabAction::class,
         'search2record/cite' => Record\CiteAction::class,
         'search2record/email' => Record\EmailAction::class,
@@ -171,6 +177,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search2record/sms' => Record\SmsAction::class,
 
         'summonrecord/addtag' => Record\AddTagAction::class,
+        'summonrecord/deletetag' => Record\DeleteTagAction::class,
         'summonrecord/ajaxtab' => Record\AjaxTabAction::class,
         'summonrecord/cite' => Record\CiteAction::class,
         'summonrecord/email' => Record\EmailAction::class,
@@ -185,6 +192,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         // Legacy WorldcatRecord actions:
         'worldcatrecord/addtag' => Record\AddTagAction::class,
+        'worldcatrecord/deletetag' => Record\DeleteTagAction::class,
         'worldcatrecord/ajaxtab' => Record\AjaxTabAction::class,
         'worldcatrecord/cite' => Record\CiteAction::class,
         'worldcatrecord/email' => Record\EmailAction::class,
@@ -198,6 +206,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'worldcatrecord/sms' => Record\SmsAction::class,
 
         'worldcat2record/addtag' => Record\AddTagAction::class,
+        'worldcat2record/deletetag' => Record\DeleteTagAction::class,
         'worldcat2record/ajaxtab' => Record\AjaxTabAction::class,
         'worldcat2record/cite' => Record\CiteAction::class,
         'worldcat2record/email' => Record\EmailAction::class,

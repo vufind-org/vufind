@@ -561,6 +561,7 @@ $nonTabRecordActions = [
     'AddTag',
     'AjaxTab',
     'Cite',
+    'DeleteTag',
     'Email',
     'Epub',
     'Explain',
