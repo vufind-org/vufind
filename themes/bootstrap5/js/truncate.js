@@ -165,14 +165,29 @@ VuFind.register('truncate', function Truncate() {
           btnWrapperTop.find('.less-btn').click(onClickLessBtnHandler);
         }
 
+        // For accessibility, we need to move focus to the first element newly revealed
+        // after hitting the "more" button (the one with '.truncate-start').
+        // Otherwise, screen reader users would have to navigate backwards
+        // from the button to reach the new content, which is counter-intuitive.
+        var focusTruncateStart = function focusFirstRevealedElement() {
+          var truncateStart = $(toggleElements[0] || []);
+
+          if (truncateStart.length === 0) {
+            (btnWrapperTop || btnWrapperBtm).find('.less-btn').focus();
+            return;
+          }
+          // Use tabindex:-1 to make element focusable without adding it to tab order
+          if (typeof truncateStart.attr('tabindex') === 'undefined') {
+            truncateStart.attr('tabindex', -1);
+          }
+          truncateStart.focus();
+        };
+
         btnWrapperBtm.find('.more-btn').click(function onClickMoreBtn(/*event*/) {
           $(this).hide();
           btnWrapperBtm.find('.less-btn').show();
           if (btnWrapperTop) {
             btnWrapperTop.show();
-            btnWrapperTop.find('.less-btn').focus();
-          } else {
-            btnWrapperBtm.find('.less-btn').focus();
           }
           if (element) {
             toggleElements.forEach(function showToggles(toggleElement) {
@@ -183,6 +198,8 @@ VuFind.register('truncate', function Truncate() {
           } else {
             container.css('height', 'auto');
           }
+          // Must be run _after_ the new elements are shown (hidden elements cannot receive focus)
+          focusTruncateStart();
         });
       }
 
