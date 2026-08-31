@@ -74,20 +74,19 @@ class Mailer extends AbstractBase
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config  SMS configuration
-     * @param array                 $options Additional options: defaultFrom
-     * (optional) and mailer (must be a \VuFind\Mailer\Mailer object)
+     * @param array $config  SMS configuration
+     * @param array $options Additional options: defaultFrom
+     *                       (optional) and mailer (must be
+     *                       a \VuFind\Mailer\Mailer object)
      */
-    public function __construct(\VuFind\Config\Config $config, $options = [])
+    public function __construct(array $config, $options = [])
     {
-        // Set up parent object first:
-        parent::__construct($config);
 
         // If found, use carriers from SMS configuration; otherwise, fall back to the
         // default list of US carriers.
-        if (isset($config->Carriers) && count($config->Carriers) > 0) {
+        if (isset($config['Carriers']) && count($config['Carriers']) > 0) {
             $this->carriers = [];
-            foreach ($config->Carriers as $id => $settings) {
+            foreach ($config['Carriers'] as $id => $settings) {
                 [$domain, $name] = explode(':', $settings, 2);
                 $this->carriers[$id] = ['name' => $name, 'domain' => $domain];
             }
