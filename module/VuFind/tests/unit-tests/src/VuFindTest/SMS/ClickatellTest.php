@@ -246,7 +246,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
             $client = $this->getMockClient();
         }
         return new Clickatell(
-            new \VuFind\Config\Config($config),
+            $config,
             ['client' => $client]
         );
     }
