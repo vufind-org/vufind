@@ -66,7 +66,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      */
     public function testNonDefaultConfigs()
     {
-        $config = new Config(['limit' => 5, 'skip_numeric' => false]);
+        $config = ['limit' => 5, 'skip_numeric' => false];
         $sp = new SpellingProcessor($config);
         $this->assertEquals(false, $sp->shouldSkipNumericSpelling());
         $this->assertSame(5, $sp->getSpellingLimit());
@@ -95,7 +95,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuggestionProcessingWithNonDefaultLimit()
     {
-        $config = new Config(['limit' => 5]);
+        $config = ['limit' => 5];
         $sp = new SpellingProcessor($config);
         $spelling = $this->unserializeFixture('spell1');
         $query = $this->unserializeFixture('query1');
@@ -262,7 +262,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $query = $this->unserializeFixture('query1');
         $params = $this->getSolrParams();
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $config = new Config(['expand' => false, 'phrase' => true]);
+        $config = ['expand' => false, 'phrase' => true];
         $sp = new SpellingProcessor($config);
         $this->assertSame(
             [
@@ -478,7 +478,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
 
-        $sp = new SpellingProcessor(new Config([]));
+        $sp = new SpellingProcessor([]);
         $spelling = $this->unserializeFixture('spell5');
         $query = $this->unserializeFixture('query5');
         $sp->getSuggestions($spelling, $query);
@@ -499,7 +499,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $query = $this->unserializeFixture('query' . $testNum);
         $params = $this->getSolrParams();
         $this->setProperty($params, 'query', $query);
-        $sp = new SpellingProcessor(new Config($config));
+        $sp = new SpellingProcessor($config);
         $suggestions = $sp->getSuggestions($spelling, $query);
         $this->assertEquals(
             $expected,
