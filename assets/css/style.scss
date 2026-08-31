@@ -385,22 +385,22 @@ quote {
 }
 
 .header-announcement {
-  padding: 1px;
+  padding-inline: 1px;
+  padding-block: 1px 4px;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 1px;
-  color: #212e0e;
+  color: black;
   background-color: $green;
 }
 
 .header-announcement p {
   margin: 0;
-  margin-bottom: 4px;
   text-align: center;
 }
 
 .header-announcement a {
-  color: #212e0e;
+  color: inherit;
   text-decoration: underline;
 }
 

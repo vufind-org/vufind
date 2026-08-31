@@ -26,28 +26,48 @@
     <!--
     <div class="header-announcement">
       <p>
-        Love VuFind®? Consider becoming a <a href="https://vufind.org/donate">financial supporter</a>. Your support helps build a better VuFind®!
+        Love VuFind&reg;? Consider becoming a <a href="https://vufind.org/donate">financial supporter</a>. Your support helps build a better VuFind!
       </p>
     </div>
     -->
     <div class="header-announcement">
       <p>
-        Join us September 1-2 at <a href="https://openlibraryfoundation.org/about/wolfcon/upcoming/">WOLFcon</a> for <a href="https://vufind.org/wiki/community:conferences:summit_2026">VuFind® Summit 2026!</a>
-        (free stream access info and schedule details at link)
+        Join us at <a href="https://openlibraryfoundation.org/about/wolfcon/upcoming/">WOLFcon</a> for VuFind Summit 2026! <a href="https://vufind.org/wiki/community:conferences:summit_2026">Free stream access info and schedule details</a>.
+      </p>
+      <p>
+        <span data-hide-after="2026-09-01">
+          <span data-gmt-range="2026-09-01 12:20 GMT/2026-09-01 14:20 GMT">September 1st, 12:20 GMT&ndash;14:20 GMT</span>
+          and
+        </span>
+        <span data-gmt-range="2026-09-02 11:00 GMT/2026-09-02 13:30 GMT">September 2nd, 11:00 GMT&ndash;13:30 GMT</span>.
       </p>
     </div>
-    <!--
+
     <script>
-      const startTime = new Date(Date.UTC(2023, 8-1, 22, 14, 0, 0));
-      const endTime = new Date(Date.UTC(2023, 8-1, 22, 17, 0, 0));
+			// format date and time ranges
+			const rangeFormatter = new Intl.DateTimeFormat("default", {
+			  month: "long",
+			  day: "numeric",
+			  hour: "numeric",
+			  minute: "numeric",
+				timeZoneName: "short",
+			});
+			for (const el of document.querySelectorAll("[data-gmt-range]")) {
+				const parts = el.dataset.gmtRange.split("/");
+				const startDate = Date.parse(parts[0]);
+				const endDate = Date.parse(parts[1]);
+				el.textContent = rangeFormatter.formatRange(startDate, endDate);
+			}
 
-      const formatter = new Intl.DateTimeFormat('default', { dateStyle: 'short', timeStyle: 'short' });
-      const localStartTime = formatter.format(startTime);
-      const localEndTime = formatter.format(endTime);
-
-      document.getElementById("gmt-time")
-        .setAttribute("title", `Local Time: ${localStartTime} to ${localEndTime}`);
+			// hide after
+			const now = new Date().toISOString();
+			for (const el of document.querySelectorAll("[data-hide-after]")) {
+				const after = new Date(Date.parse(el.dataset.hideAfter)).toISOString();
+				if (after < now) {
+					el.classList.add("hidden");
+				}
+			}
     </script>
-    -->
+
     <div class="body">
       <div class="container">
