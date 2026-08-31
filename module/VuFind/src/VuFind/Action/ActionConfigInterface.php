@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Search2 Record Controller.
+ * A marker interface for action configuration interfaces.
  *
  * PHP version 8
  *
- * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
+ * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -13,7 +13,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -21,36 +21,23 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller;
-
-use Laminas\ServiceManager\ServiceLocatorInterface;
+namespace VuFind\Action;
 
 /**
- * Search2 Record Controller.
+ * A marker interface for action configuration interfaces.
  *
  * @category VuFind
- * @package  Controller
- * @author   Hajo Seng <hajo.seng@sub.uni-hamburg.de>
+ * @package  Action
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org Main Page
  */
-class Search2recordController extends AbstractRecord
+interface ActionConfigInterface
 {
-    /**
-     * Constructor.
-     *
-     * @param ServiceLocatorInterface $sm Service locator
-     */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->sourceId = 'Search2';
-        $this->fallbackDefaultTab = 'Description';
-        parent::__construct($sm);
-    }
 }

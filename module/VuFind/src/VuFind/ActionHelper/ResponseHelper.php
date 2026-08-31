@@ -1,11 +1,10 @@
 <?php
 
 /**
- * Action helper for creating responses.
+ * Action helper for generating responses.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
  * Copyright (C) The National Library of Finland 2026.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,7 +22,6 @@
  *
  * @category VuFind
  * @package  Action_Helper
- * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
@@ -37,11 +35,10 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 /**
- * Action helper for creating responses.
+ * Action helper for generating responses.
  *
  * @category VuFind
  * @package  Action_Helper
- * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
@@ -49,6 +46,26 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 class ResponseHelper implements HelperInterface, TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
+
+    /**
+     * Construct an HTTP 205 (refresh) response. Useful for reporting success in the lightbox without actually rendering
+     * content.
+     *
+     * @param ResponseInterface $response Response
+     * @param bool              $forceGet If true, sends a custom header indicating that the page should be reloaded
+     * with a GET request. This can be useful when it is known that the current page only receives transient params in
+     * a POST request (such as canceling of holds).
+     *
+     * @return ResponseInterface
+     */
+    public function getRefreshResponse(ResponseInterface $response, bool $forceGet = false): ResponseInterface
+    {
+        $response = $response->withStatus(205);
+        if ($forceGet) {
+            $response = $response->withHeader('X-VuFind-Refresh-Method', 'GET');
+        }
+        return $response;
+    }
 
     /**
      * Get a response with the AJAX output data.

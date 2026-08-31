@@ -57,7 +57,7 @@ VuFind.register('record', function Record() {
       method: 'POST',
       headers: {'Accept': 'application/json'},
       body: new URLSearchParams({
-        tag: '"' + tag.replace(/\+/g, ' ') + '"',
+        tag: '"' + String(tag).replace(/\+/g, ' ') + '"',
         id: recordId.value,
         source: recordSource.value,
         remove: remove
