@@ -30,6 +30,7 @@
 namespace VuFind\AjaxHandler;
 
 use Psr\Http\Message\ServerRequestInterface;
+use VuFind\Http\HttpStatus;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\View\Helper\Root\Record as RecordHelper;
@@ -72,7 +73,7 @@ class GetRecordRating extends AbstractBase
         $id = $this->getQueryParam($request, 'id');
         $source = $this->getQueryParam($request, 'source', DEFAULT_SEARCH_BACKEND);
         if (empty($id)) {
-            return $this->formatResponse('', self::STATUS_HTTP_BAD_REQUEST);
+            return $this->formatResponse('', HttpStatus::BAD_REQUEST);
         }
         $driver = $this->recordLoader->load($id, $source, false);
         $html = ($this->recordHelper)($driver)->renderTemplate('rating.phtml');

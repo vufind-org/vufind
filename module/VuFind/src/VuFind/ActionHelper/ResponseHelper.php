@@ -30,6 +30,9 @@
 namespace VuFind\ActionHelper;
 
 use Psr\Http\Message\ResponseInterface;
+use VuFind\Http\HttpStatus;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 
 /**
  * Action helper for generating responses.
@@ -40,8 +43,10 @@ use Psr\Http\Message\ResponseInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class ResponseHelper implements HelperInterface
+class ResponseHelper implements HelperInterface, TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
+
     /**
      * Construct an HTTP 205 (refresh) response. Useful for reporting success in the lightbox without actually rendering
      * content.
@@ -60,5 +65,118 @@ class ResponseHelper implements HelperInterface
             $response = $response->withHeader('X-VuFind-Refresh-Method', 'GET');
         }
         return $response;
+    }
+
+    /**
+     * Get a response with the AJAX output data.
+     *
+     * @param ResponseInterface $response     Response
+     * @param string            $type         Content type to output
+     * @param mixed             $data         The response data
+     * @param ?int              $httpCode     A custom HTTP Status Code or null for default (200)
+     * @param bool              $allowCaching Allow the response to be cached (defaults to false)?
+     * @param int               $jsonFlags    Additional flags for json_encode
+     *
+     * @return ResponseInterface
+     * @throws \Exception
+     */
+    public function getAjaxResponse(
+        ResponseInterface $response,
+        string $type,
+        mixed $data,
+        ?int $httpCode = null,
+        bool $allowCaching = false,
+        int $jsonFlags = 0
+    ): ResponseInterface {
+        $response = $response->withHeader('Content-Type', $type);
+        if (!$allowCaching) {
+            $response = $response->withHeader('Cache-Control', 'no-cache, must-revalidate')
+                ->withHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+        }
+        if ($httpCode !== null) {
+            $response = $response->withStatus($httpCode);
+        }
+        $response->getBody()->write($this->formatContent($type, $data, $httpCode, $jsonFlags));
+        return $response;
+    }
+
+    /**
+     * Get a response with JSON output data.
+     *
+     * @param ResponseInterface $response     Response
+     * @param mixed             $data         The response data
+     * @param ?int              $httpCode     A custom HTTP Status Code or null for default (200)
+     * @param bool              $allowCaching Allow the response to be cached (defaults to false)?
+     * @param int               $jsonFlags    Additional flags for json_encode
+     *
+     * @return ResponseInterface
+     * @throws \Exception
+     */
+    public function getJsonResponse(
+        ResponseInterface $response,
+        mixed $data,
+        ?int $httpCode = null,
+        bool $allowCaching = false,
+        int $jsonFlags = 0
+    ): ResponseInterface {
+        return $this->getAjaxResponse(
+            $response,
+            'application/json',
+            $data,
+            $httpCode,
+            $allowCaching,
+            $jsonFlags
+        );
+    }
+
+    /**
+     * Turn an exception into error response.
+     *
+     * @param ResponseInterface $response Response
+     * @param string            $type     Content type to output
+     * @param \Exception        $e        Exception to output
+     *
+     * @return ResponseInterface
+     */
+    public function getExceptionResponse(ResponseInterface $response, string $type, \Exception $e): ResponseInterface
+    {
+        $errorMsg = $this->translate('An error has occurred');
+        $debugMsg = ('development' == APPLICATION_ENV) ? ': ' . (string)$e : '';
+        return $this->getAjaxResponse(
+            $response,
+            $type,
+            $errorMsg . $debugMsg,
+            HttpStatus::ERROR
+        );
+    }
+
+    /**
+     * Format the content of a response based on the response type.
+     *
+     * @param string $type      Content-type of output
+     * @param mixed  $data      The response data
+     * @param ?int   $httpCode  A custom HTTP Status Code
+     * @param int    $jsonFlags Additional flags for json_encode
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function formatContent(
+        string $type,
+        mixed $data,
+        ?int $httpCode,
+        int $jsonFlags = 0
+    ): string {
+        switch ($type) {
+            case 'application/javascript':
+            case 'application/json':
+                return json_encode($data, $jsonFlags);
+            case 'text/plain':
+                return ((null !== $httpCode && $httpCode >= 400) ? 'ERROR ' : 'OK ') . $data;
+            case 'text/html':
+                return $data ?: '';
+            default:
+                throw new \Exception("Unsupported content type: $type");
+        }
     }
 }
