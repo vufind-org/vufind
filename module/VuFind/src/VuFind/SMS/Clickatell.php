@@ -113,7 +113,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiUsername()
     {
-        return $this->smsConfig['Clickatell']['user'] ?? [];
+        return $this->smsConfig['Clickatell']['user'] ?? '';
     }
 
     /**
