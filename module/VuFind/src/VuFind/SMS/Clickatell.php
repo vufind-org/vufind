@@ -133,7 +133,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiId()
     {
-        return $this->smsConfig['Clickatell']['api_id'] ?? [];
+        return $this->smsConfig['Clickatell']['api_id'] ?? '';
     }
 
     /**
