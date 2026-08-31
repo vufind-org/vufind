@@ -34,9 +34,9 @@ use Laminas\Session\SessionManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use Psr\Http\Message\ServerRequestInterface;
-use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Exception\Forbidden;
+use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -55,18 +55,32 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
     use AuthorizationServiceAwareTrait;
 
     /**
+     * Default status check config.
+     *
+     * @var array
+     */
+    protected array $defaultStatusCheckConfig = [
+        'index' => 'default_enabled',
+        'eds' => 'default_disabled',
+        'database' => 'default_enabled',
+        'ils' => 'default_disabled',
+    ];
+
+    /**
      * Constructor.
      *
      * @param SessionManager          $sessionManager Session manager
      * @param ResultsManager          $resultsManager Results manager
-     * @param Config                  $config         Top-level VuFind configuration (config.ini)
+     * @param array                   $config         Top-level VuFind configuration (config.ini)
      * @param SessionServiceInterface $sessionService Session database service
+     * @param Connection              $ils            ILS connection
      */
     public function __construct(
         protected SessionManager $sessionManager,
         protected ResultsManager $resultsManager,
-        protected Config $config,
-        protected SessionServiceInterface $sessionService
+        protected array $config,
+        protected SessionServiceInterface $sessionService,
+        protected Connection $ils
     ) {
         parent::__construct(null);
     }
@@ -88,9 +102,10 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         }
 
         // Check system status
+        $healthCheckFile = $this->config['System']['healthCheckFile'] ?? null;
         if (
-            !empty($this->config->System->healthCheckFile)
-            && file_exists($this->config->System->healthCheckFile)
+            ($healthCheckFile !== null)
+            && file_exists($healthCheckFile)
         ) {
             return $this->formatResponse(
                 'Health check file exists',
@@ -101,30 +116,20 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         // Test logging (note that the message doesn't need to get written for the log writers to initialize):
         $this->log('info', 'SystemStatus log check', [], true);
 
-        // Test search index
-        if ($this->getPostOrQueryParam($request, 'index', 1)) {
-            try {
-                $results = $this->resultsManager->get(DEFAULT_SEARCH_BACKEND);
-                $paramsObj = $results->getParams();
-                $paramsObj->setQueryIDs(['healthcheck' . date('His')]);
-                $results->performAndProcessSearch();
-            } catch (\Exception $e) {
-                return $this->formatResponse(
-                    'Search index error: ' . $e->getMessage(),
-                    self::STATUS_HTTP_ERROR
-                );
+        foreach (get_class_methods($this) as $checkMethod) {
+            if (!str_ends_with($checkMethod, 'Check')) {
+                continue;
             }
-        }
-
-        // Test database connection
-        if ($this->getPostOrQueryParam($request, 'database', 1)) {
-            try {
-                $this->sessionService->getSessionById('healthcheck', false);
-            } catch (\Exception $e) {
-                return $this->formatResponse(
-                    'Database error: ' . $e->getMessage(),
-                    self::STATUS_HTTP_ERROR
-                );
+            $component = substr($checkMethod, 0, -5);
+            $setting = $this->config['System']['statusChecks'][$component]
+                ?? $this->defaultStatusCheckConfig[$component]
+                ?? 'always_disabled';
+            if (
+                ($setting !== 'always_disabled')
+                && $this->getPostOrQueryParam($request, $component, ($setting === 'default_enabled'))
+                && $errorResponse = $this->$checkMethod()
+            ) {
+                return $errorResponse;
             }
         }
 
@@ -132,5 +137,84 @@ class SystemStatus extends AbstractBase implements \Psr\Log\LoggerAwareInterface
         $this->sessionManager->destroy();
 
         return $this->formatResponse('');
+    }
+
+    /**
+     * Check the index connection.
+     *
+     * @return array
+     */
+    protected function indexCheck(): array
+    {
+        try {
+            $results = $this->resultsManager->get(DEFAULT_SEARCH_BACKEND);
+            $paramsObj = $results->getParams();
+            $paramsObj->setQueryIDs(['healthcheck' . date('His')]);
+            $results->performAndProcessSearch();
+        } catch (\Exception $e) {
+            return $this->formatResponse(
+                'Search index error: ' . $e->getMessage(),
+                self::STATUS_HTTP_ERROR
+            );
+        }
+        return [];
+    }
+
+    /**
+     * Check the EDS connection.
+     *
+     * @return array
+     */
+    protected function edsCheck(): array
+    {
+        try {
+            $results = $this->resultsManager->get('EDS');
+            $results->getParams()->setBasicSearch('*');
+            $results->performAndProcessSearch();
+        } catch (\Exception $e) {
+            return $this->formatResponse(
+                'EDS connection error: ' . $e->getMessage(),
+                self::STATUS_HTTP_ERROR
+            );
+        }
+        return [];
+    }
+
+    /**
+     * Check the database connection.
+     *
+     * @return array
+     */
+    protected function databaseCheck(): array
+    {
+        try {
+            $this->sessionService->getSessionById('healthcheck', false);
+        } catch (\Exception $e) {
+            return $this->formatResponse(
+                'Database error: ' . $e->getMessage(),
+                self::STATUS_HTTP_ERROR
+            );
+        }
+        return [];
+    }
+
+    /**
+     * Check the ils connection.
+     *
+     * @return array
+     */
+    protected function ilsCheck(): array
+    {
+        try {
+            if ($this->ils->getOfflineMode(true) == 'ils-offline') {
+                throw new \Exception('ILS offline');
+            }
+        } catch (\Exception $e) {
+            return $this->formatResponse(
+                'ILS connection error: ' . $e->getMessage(),
+                self::STATUS_HTTP_ERROR
+            );
+        }
+        return [];
     }
 }

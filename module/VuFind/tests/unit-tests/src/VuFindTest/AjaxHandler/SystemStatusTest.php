@@ -34,6 +34,7 @@ use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use VuFind\AjaxHandler\SystemStatus;
 use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
+use VuFind\ILS\Connection;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindTest\Unit\AjaxHandlerTestCase;
 
@@ -55,6 +56,7 @@ class SystemStatusTest extends AjaxHandlerTestCase
      * @param ?ResultsManager          $resultsManager Results plugin manager
      * @param array                    $config         Config
      * @param ?SessionServiceInterface $sessionService Session service
+     * @param ?Connection              $ilsConnection  ILS connection
      * @param bool                     $accessGranted  If access is granted
      *
      * @return SystemStatus
@@ -64,12 +66,20 @@ class SystemStatusTest extends AjaxHandlerTestCase
         ?ResultsManager $resultsManager = null,
         array $config = [],
         ?SessionServiceInterface $sessionService = null,
+        ?Connection $ilsConnection = null,
         bool $accessGranted = true
     ): SystemStatus {
         $sessionManager ??= $this->createMock(SessionManager::class);
         $resultsManager ??= $this->createMock(ResultsManager::class);
         $sessionService ??= $this->createMock(SessionServiceInterface::class);
-        $handler = new SystemStatus($sessionManager, $resultsManager, new Config($config), $sessionService);
+        $ilsConnection ??= $this->createMock(Connection::class);
+        $handler = new SystemStatus(
+            $sessionManager,
+            $resultsManager,
+            $config,
+            $sessionService,
+            $ilsConnection
+        );
         $mockAuth = $this->createMock(AuthorizationService::class);
         $mockAuth->method('isGranted')
             ->with('access.SystemStatus')
@@ -127,6 +137,28 @@ class SystemStatusTest extends AjaxHandlerTestCase
     }
 
     /**
+     * Test the AJAX handler's EDS failure response.
+     *
+     * @return void
+     */
+    public function testEDSFailure(): void
+    {
+        $resultsManager = $this->createMock(ResultsManager::class);
+        $results = $this->createMock(\VuFind\Search\EDS\Results::class);
+        $e = new \Exception('kaboom');
+        $results->expects($this->once())->method('performAndProcessSearch')->willThrowException($e);
+        $resultsManager->expects($this->once())->method('get')->with('EDS')->willReturn($results);
+        $params = $this->createMock(\VuFind\Search\EDS\Params::class);
+        $results->expects($this->once())->method('getParams')->willReturn($params);
+        $handler = $this->getHandler(resultsManager: $resultsManager);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame([''], $response);
+        // Enable EDS check:
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'eds' => '1']));
+        $this->assertSame(['EDS connection error: kaboom', 500], $response);
+    }
+
+    /**
      * Test the AJAX handler's database failure response.
      *
      * @return void
@@ -145,6 +177,24 @@ class SystemStatusTest extends AjaxHandlerTestCase
     }
 
     /**
+     * Test the AJAX handler's ILS failure response.
+     *
+     * @return void
+     */
+    public function testILSFailure(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $e = new \Exception('kaboom');
+        $connection->expects($this->once())->method('getOfflineMode')->willThrowException($e);
+        $handler = $this->getHandler(ilsConnection: $connection);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame([''], $response);
+        // Enable ILS check:
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'ils' => '1']));
+        $this->assertSame(['ILS connection error: kaboom', 500], $response);
+    }
+
+    /**
      * Test the AJAX handler's successful response.
      *
      * @return void
@@ -152,23 +202,62 @@ class SystemStatusTest extends AjaxHandlerTestCase
     public function testSuccessfulResponse(): void
     {
         $sessionManager = $this->createMock(SessionManager::class);
-        $sessionManager->expects($this->once())->method('destroy');
+        $sessionManager->expects($this->exactly(2))->method('destroy');
         $resultsManager = $this->createMock(ResultsManager::class);
 
-        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
-        $results->expects($this->once())->method('performAndProcessSearch');
-        $resultsManager->expects($this->once())->method('get')->with('Solr')->willReturn($results);
-        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
-        $results->expects($this->once())->method('getParams')->willReturn($params);
+        $solrResults = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $solrResults->expects($this->exactly(2))->method('performAndProcessSearch');
+        $solrParams = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $solrResults->expects($this->exactly(2))->method('getParams')->willReturn($solrParams);
+
+        $edsResults = $this->createMock(\VuFind\Search\EDS\Results::class);
+        $edsResults->expects($this->once())->method('performAndProcessSearch');
+        $edsParams = $this->createMock(\VuFind\Search\EDS\Params::class);
+        $edsResults->expects($this->once())->method('getParams')->willReturn($edsParams);
+
+        $resultsManager->expects($this->exactly(3))
+            ->method('get')
+            ->willReturnCallback(
+                fn (string $type) => match ($type) {
+                    'Solr' => $solrResults,
+                    'EDS' => $edsResults,
+                }
+            );
 
         $sessionService = $this->createMock(SessionServiceInterface::class);
-        $sessionService->expects($this->once())->method('getSessionById');
+        $sessionService->expects($this->exactly(2))->method('getSessionById');
         $handler = $this->getHandler(
             sessionManager: $sessionManager,
             resultsManager: $resultsManager,
             sessionService: $sessionService
         );
         $response = $handler->handleRequest($this->getRequest());
+        $this->assertSame([''], $response);
+        // Enable EDS and ILS check:
+        $response = $handler->handleRequest($this->getRequest(['eds' => '1', 'ils' => '1']));
+        $this->assertSame([''], $response);
+    }
+
+    /**
+     * Test the AJAX handler's does not check a component if disabled.
+     *
+     * @return void
+     */
+    public function testDisabledSettings(): void
+    {
+        $sessionService = $this->createMock(SessionServiceInterface::class);
+        $sessionService->expects($this->never())->method('getSessionById');
+
+        $handler = $this->getHandler(
+            config: ['System' => ['statusChecks' => ['database' => 'always_disabled']]],
+            sessionService: $sessionService
+        );
+
+        $response = $handler->handleRequest($this->getRequest(['index' => '0']));
+        $this->assertSame([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '0']));
+        $this->assertSame([''], $response);
+        $response = $handler->handleRequest($this->getRequest(['index' => '0', 'database' => '1']));
         $this->assertSame([''], $response);
     }
 }
