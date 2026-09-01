@@ -32,28 +32,14 @@ class MultiIdPConfigurationLoader implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Configured IdPs with entityId and overridden attribute mapping.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Configured IdPs with entityId and overridden attribute mapping.
-     *
-     * @var array
-     */
-    protected $shibConfig;
-
-    /**
      * Constructor.
      *
      * @param array $config     Configuration
      * @param array $shibConfig Shibboleth configuration for IdPs
      */
     public function __construct(
-        array $config,
-        array $shibConfig
+        protected array $config,
+        protected array $shibConfig
     ) {
     }
 
