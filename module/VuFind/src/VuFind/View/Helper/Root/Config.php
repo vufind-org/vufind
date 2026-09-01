@@ -125,7 +125,7 @@ class Config
      */
     public function getHoldingsItemLimit()
     {
-        $limit = $this->getArray('config')['Record']['holdingsItemLimit'];
+        $limit = $this->getArray('config')['Record']['holdingsItemLimit'] ?? null;
         return $limit ? (int)$limit : PHP_INT_MAX;
     }
 
