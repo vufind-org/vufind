@@ -54,10 +54,10 @@ class Clickatell extends AbstractBase
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config  SMS configuration
-     * @param array                 $options Additional options (client may be an HTTP client object)
+     * @param array $config  SMS configuration
+     * @param array $options Additional options (client may be an HTTP client object)
      */
-    public function __construct(\VuFind\Config\Config $config, array $options = [])
+    public function __construct(array $config, array $options = [])
     {
         parent::__construct($config);
         $this->client = $options['client'] ?? new \Laminas\Http\Client();
@@ -112,7 +112,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiUsername(): string
     {
-        return $this->smsConfig->Clickatell->user ?? '';
+        return $this->smsConfig['Clickatell']['user'] ?? '';
     }
 
     /**
@@ -122,7 +122,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiPassword(): string
     {
-        return $this->smsConfig->Clickatell->password ?? '';
+        return $this->smsConfig['Clickatell']['password'] ?? '';
     }
 
     /**
@@ -132,7 +132,7 @@ class Clickatell extends AbstractBase
      */
     protected function getApiId(): string
     {
-        return $this->smsConfig->Clickatell->api_id ?? '';
+        return $this->smsConfig['Clickatell']['api_id'] ?? '';
     }
 
     /**
@@ -146,8 +146,8 @@ class Clickatell extends AbstractBase
     protected function getApiUrl(string $to, string $message): string
     {
         // Get base URL:
-        $url = isset($this->smsConfig->Clickatell->url)
-            ? trim($this->smsConfig->Clickatell->url, '?')
+        $url = isset($this->smsConfig['Clickatell']['url'])
+            ? trim($this->smsConfig['Clickatell']['url'], '?')
             : 'https://api.clickatell.com/http/sendmsg';
 
         // Add parameters to URL:
