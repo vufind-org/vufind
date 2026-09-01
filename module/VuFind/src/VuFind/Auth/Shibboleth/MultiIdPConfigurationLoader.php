@@ -48,15 +48,13 @@ class MultiIdPConfigurationLoader implements
     /**
      * Constructor.
      *
-     * @param \VuFind\Config\Config $config     Configuration
-     * @param \VuFind\Config\Config $shibConfig Shibboleth configuration for IdPs
+     * @param array                 $config     Configuration
+     * @param array                 $shibConfig Shibboleth configuration for IdPs
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        \VuFind\Config\Config $shibConfig
+        array $config,
+        array $shibConfig
     ) {
-        $this->config = $config->toArray();
-        $this->shibConfig = $shibConfig->toArray();
     }
 
     /**
