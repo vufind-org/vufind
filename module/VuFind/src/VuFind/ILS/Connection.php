@@ -452,8 +452,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // context, so we'll just pass along $params as the best available
         // approximation.
         if (
-            isset($this->config['cancel_holds_enabled'])
-            && $this->config['cancel_holds_enabled'] == true
+            ($this->config['cancel_holds_enabled'] ?? false)
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
             $response = ['function' => 'cancelHolds'];
