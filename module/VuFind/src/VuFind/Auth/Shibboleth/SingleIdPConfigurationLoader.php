@@ -44,6 +44,6 @@ class SingleIdPConfigurationLoader implements ConfigurationLoaderInterface
      */
     public function getConfiguration($entityId)
     {
-        return $this->config['Shibboleth'];
+        return $this->config['Shibboleth'] ?? [];
     }
 }
