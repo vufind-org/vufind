@@ -477,7 +477,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Unexpected suggestion format; spellcheck.extendedResults must be set to true.');
 
-        $sp = new SpellingProcessor([]);
+        $sp = new SpellingProcessor();
         $spelling = $this->unserializeFixture('spell5');
         $query = $this->unserializeFixture('query5');
         $sp->getSuggestions($spelling, $query);
