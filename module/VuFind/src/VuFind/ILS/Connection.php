@@ -554,7 +554,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $response = [];
 
         if (
-            ($this->config['cancel_storage_retrieval_requests_enabled']?? false)
+            ($this->config['cancel_storage_retrieval_requests_enabled'] ?? false)
         ) {
             $check = $this->checkCapability(
                 'cancelStorageRetrievalRequests',
