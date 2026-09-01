@@ -176,6 +176,15 @@ VuFind.register('truncate', function Truncate() {
             (btnWrapperTop || btnWrapperBtm).find('.less-btn').focus();
             return;
           }
+          // Set focus on first focusable descendant of the <li> with '.truncate-start'
+          // to prevent screen readers from reading <li> contents as a whole and
+          // then again, individually, when navigating into the element.
+          var focusable = getFocusableNodes(truncateStart[0]);
+          if (focusable.length > 0) {
+            focusable[0].focus();
+            return;
+          }
+
           // Use tabindex:-1 to make element focusable without adding it to tab order
           if (typeof truncateStart.attr('tabindex') === 'undefined') {
             truncateStart.attr('tabindex', -1);
