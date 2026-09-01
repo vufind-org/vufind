@@ -166,16 +166,15 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
         foreach ($options['extraLineOptions'] ?? [] as $lineOptionSection) {
             $extraLineOption = $this->config[$lineOptionSection] ?? [];
             $lineIdentifierKey = $extraLineOption['lineIdentifierKey'] ?? 'label';
-            $lineIdentifierValue = $extraLineOption['lineIdentifierValue'] ?? null;
+            $lineIdentifierValues = (array)($extraLineOption['lineIdentifierValue'] ?? []);
             unset($extraLineOption['lineIdentifierKey']);
             unset($extraLineOption['lineIdentifierValue']);
-            if ($lineIdentifierValue === null) {
-                continue;
+            foreach ($lineIdentifierValues as $lineIdentifierValue) {
+                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] = array_merge(
+                    $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] ?? [],
+                    $extraLineOption,
+                );
             }
-            $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] = array_merge(
-                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] ?? [],
-                $extraLineOption,
-            );
         }
         unset($options['extraLineOptions']);
 

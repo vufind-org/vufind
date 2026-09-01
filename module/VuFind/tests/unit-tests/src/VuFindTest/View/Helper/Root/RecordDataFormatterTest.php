@@ -402,7 +402,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $specManager,
             $helpers['record'],
             $helpers['transEsc'],
-            $helpers['escapeHtml']
+            $helpers['escapeHtml'],
         );
 
         return $formatter;

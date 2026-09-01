@@ -116,17 +116,6 @@ class Config
     }
 
     /**
-     * Should we limit the number of subjects displayed on the full record?
-     *
-     * @return int
-     */
-    public function getRecordSubjectLimit()
-    {
-        $limit = $this->get('config')->Record->subjectLimit;
-        return $limit ? (int)$limit : PHP_INT_MAX;
-    }
-
-    /**
      * Check if index record should always be displayed (i.e. also when a
      * format-specific template is available).
      *
