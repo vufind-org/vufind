@@ -16,7 +16,7 @@
   </h2>
   <?php if ($odHelpLink = $this->config()->getArray('Overdrive')['Overdrive']['ODHelpLink'] ?? false): ?>
     <p class="od_help"><?=$this->icon('overdrive-help')?>
-      <?=$this->translate('od_mycontent_help', ['%%url%%' => $this->config()->getArray('Overdrive')['Overdrive']['ODHelpLink']])?></p>
+      <?=$this->translate('od_mycontent_help', ['%%url%%' => $odHelpLink])?></p>
   <?php endif;?>
 
   <?=$this->flashmessages()?>
