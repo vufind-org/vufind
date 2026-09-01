@@ -54,13 +54,13 @@ class Holds
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
      * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
-     * @param \VuFind\Config\Config         $config  VuFind configuration
+     * @param array                         $config  VuFind configuration
      */
     public function __construct(
         protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
         protected ILSConnection $catalog,
         protected \VuFind\Crypt\HMAC $hmac,
-        protected \VuFind\Config\Config $config
+        protected array $config
     ) {
     }
 
@@ -299,7 +299,7 @@ class Holds
         $holdings = [];
         $any_available = false;
 
-        $holds_override = $this->config->Catalog->allow_holds_override ?? false;
+        $holds_override = $this->config['Catalog']['allow_holds_override'] ?? false;
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
@@ -552,7 +552,7 @@ class Holds
     protected function getHoldingsGroupKey($copy)
     {
         // Group by holdings id and location unless configured otherwise
-        $grouping = $this->config->Catalog->holdings_grouping
+        $grouping = $this->config['Catalog']['holdings_grouping']
             ?? 'holdings_id,location';
 
         $groupKey = '';
@@ -594,6 +594,6 @@ class Holds
      */
     public function getSuppressedLocations()
     {
-        return (array)($this->config?->Record?->hide_holdings?->toArray() ?? []);
+        return (array)($this->config['Record']['hide_holdings'] ?? []);
     }
 }
