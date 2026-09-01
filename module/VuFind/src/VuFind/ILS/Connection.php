@@ -486,14 +486,12 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // context, so we'll just pass along $params as the best available
         // approximation.
         if (
-            isset($this->config['renewals_enabled'])
-            && $this->config['renewals_enabled'] == true
+            ($this->config['renewals_enabled'] ?? false) == true
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItems'];
         } elseif (
-            isset($this->config['renewals_enabled'])
-            && $this->config['renewals_enabled'] == true
+            ($this->config['renewals_enabled'] ?? false) == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItemsLink'];
@@ -556,8 +554,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $response = [];
 
         if (
-            isset($this->config['cancel_storage_retrieval_requests_enabled'])
-            && $this->config['cancel_storage_retrieval_requests_enabled']
+            ($this->config['cancel_storage_retrieval_requests_enabled']?? false)
         ) {
             $check = $this->checkCapability(
                 'cancelStorageRetrievalRequests',
@@ -640,8 +637,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $response = [];
 
         if (
-            isset($this->config['cancel_ill_requests_enabled'])
-            && $this->config['cancel_ill_requests_enabled']
+            ($this->config['cancel_ill_requests_enabled'] ?? false)
         ) {
             $check = $this->checkCapability(
                 'cancelILLRequests',
