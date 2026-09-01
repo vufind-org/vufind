@@ -29,15 +29,15 @@
 
     <?php
       // Format the page title using the translation system:
-      $siteConfig = $this->config()->get('config')->Site;
+      $siteConfig = $this->config()->getArray('config')['Site'];
       // Disabled escaping of title temporarily so that we get it unescaped first:
       $this->headTitle()->setAutoEscape(false);
       $fullTitle = $this->translate(
           'title_wrapper',
           [
             '%%pageTitle%%' => $this->headTitle()->renderTitle(),
-            '%%siteTitle%%' => $siteConfig->title,
-            '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::',
+            '%%siteTitle%%' => $siteConfig['title'],
+            '%%titleSeparator%%' => $siteConfig['titleSeparator'] ?? '::',
           ]
       );
       // Enable escaping again for proper output:

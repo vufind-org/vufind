@@ -85,7 +85,7 @@
       <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier(), 'inToolbar' => true]); ?>
     <?php endif; ?>
 
-    <?php if ($this->config()->get('config')->Record->permanent_link ?? true): ?>
+    <?php if ($this->config()->getArray('config')['Record']['permanent_link'] ?? true): ?>
       <li>
         <a class="permalink-record toolbar-btn icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Permalink'))?>" rel="nofollow">
           <?=$this->icon('external-link', 'icon-link__icon') ?>
