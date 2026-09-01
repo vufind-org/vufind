@@ -141,7 +141,7 @@ class TitleHolds
     protected function checkOverrideMode($id, $mode)
     {
         if (
-            ($this->config['Catalog']['allow_holds_override'] ?? false)
+            $this->config['Catalog']['allow_holds_override'] ?? false
         ) {
             $holdings = $this->getHoldings($id);
 
