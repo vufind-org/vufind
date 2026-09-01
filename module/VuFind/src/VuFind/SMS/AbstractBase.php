@@ -64,7 +64,7 @@ abstract class AbstractBase implements SMSInterface
      *
      * @return string
      */
-    protected function filterPhoneNumber($num)
+    protected function filterPhoneNumber(string $num): string
     {
         $filter = $this->smsConfig->General->filter ?? '-.() ';
         return str_replace(str_split($filter), '', $num);
@@ -75,7 +75,7 @@ abstract class AbstractBase implements SMSInterface
      *
      * @return string
      */
-    public function getValidationType()
+    public function getValidationType(): string
     {
         // Load setting from config; at present, only US is implemented in templates
         return $this->smsConfig->General->validation ?? 'US';
