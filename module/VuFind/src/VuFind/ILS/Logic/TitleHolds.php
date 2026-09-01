@@ -70,7 +70,7 @@ class TitleHolds
         protected \VuFind\Crypt\HMAC $hmac,
         protected array $config
     ) {
-        $this->hideHoldings = ($this->config['Record']['hide_holdings'] ?? []);
+        $this->hideHoldings = $this->config['Record']['hide_holdings'] ?? [];
     }
 
     /**
