@@ -74,12 +74,12 @@ class Config
 
     /**
      * Get the specified configuration.
-     * 
-     * @deprecated Use getArray().
      *
      * @param string $config Name of configuration
      *
      * @return array
+     *
+     * @deprecated Use getArray().
      */
     public function get($config)
     {
