@@ -487,8 +487,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // context, so we'll just pass along $params as the best available
         // approximation.
         if (
-            isset($this->config['renewals_enabled'])
-            && $this->config['renewals_enabled'] == true
+            ($this->config['renewals_enabled'] ?? false)
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItems'];
