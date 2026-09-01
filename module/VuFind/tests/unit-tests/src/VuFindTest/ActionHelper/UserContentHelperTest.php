@@ -151,15 +151,22 @@ class UserContentHelperTest extends TestCase
      */
     public function testGetUserContentRecordTitles(): void
     {
-        $contents = new Paginator(new ArrayAdapter([
+        $inputArray = [
             ['source' => 'Solr', 'record_id' => 'record1'],
             ['source' => 'Summon', 'record_id' => 'record2'],
-        ]));
+        ];
+        $contents = new Paginator(new ArrayAdapter($inputArray));
 
+        // Set up expectation: the output will be like the input, but with titles added:
+        $expectedOutputArray = $inputArray;
+        $expectedOutputArray[0]['recordTitle'] = 'First title';
+        $expectedOutputArray[1]['recordTitle'] = 'Second title';
+
+        // Create fake record drivers using the expected titles set above:
         $driver1 = $this->createMock(RecordDriver::class);
-        $driver1->method('getTitle')->willReturn('First title');
+        $driver1->method('getTitle')->willReturn($expectedOutputArray[0]['recordTitle']);
         $driver2 = $this->createMock(RecordDriver::class);
-        $driver2->method('getTitle')->willReturn('Second title');
+        $driver2->method('getTitle')->willReturn($expectedOutputArray[1]['recordTitle']);
 
         $recordLoader = $this->createMock(RecordLoader::class);
         $recordLoader->expects($this->once())->method('loadBatch')
@@ -168,13 +175,9 @@ class UserContentHelperTest extends TestCase
 
         $result = $this->getHelper($recordLoader)->getUserContentRecordTitles($contents);
 
-        $this->assertSame($contents, $result);
-
-        $titles = [];
-        foreach ($result as $item) {
-            $titles[] = $item['recordTitle'] ?? null;
-        }
-        $this->assertSame(['First title', 'Second title'], $titles);
+        // Make sure the output is not a reference to the input and that it contains expected values:
+        $this->assertNotSame($contents, $result);
+        $this->assertSame($expectedOutputArray, iterator_to_array($result));
     }
 
     /**
