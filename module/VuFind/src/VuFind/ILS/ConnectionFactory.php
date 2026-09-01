@@ -83,7 +83,7 @@ class ConnectionFactory implements FactoryInterface
         $catalog->setCacheStorage($container->get(\VuFind\Cache\Manager::class)->getCache('object'));
         $manager = $container->get(\Laminas\Session\SessionManager::class);
         $catalog->setSessionCache(new \Laminas\Session\Container('ILS', $manager));
-        if ($cacheLifeTime = $config['Catalog']['cacheLifeTime']) {
+        if ($cacheLifeTime = $config['Catalog']['cacheLifeTime'] ?? []) {
             $catalog->setCacheLifeTime($cacheLifeTime);
         }
         return $catalog;
