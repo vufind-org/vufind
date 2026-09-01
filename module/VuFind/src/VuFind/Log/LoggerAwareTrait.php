@@ -34,6 +34,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 use function get_class;
+use function is_array;
 
 /**
  * Implementation of PSR-3 \Psr\Log\LoggerAwareTrait with some additional convenience methods.
@@ -97,6 +98,9 @@ trait LoggerAwareTrait
     public function logException(\Exception $exception, $server = null, $level = null): void
     {
         if ($this->logger instanceof ExtendedLoggerInterface) {
+            if (is_array($server)) {
+                $server = new \Laminas\Stdlib\Parameters($server);
+            }
             $this->logger->logException($exception, $server ?? new \Laminas\Stdlib\Parameters(), $level);
         }
     }

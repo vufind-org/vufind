@@ -34,6 +34,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use VuFind\Net\UserIpReader;
 
+use function array_key_exists;
 use function in_array;
 use function is_array;
 use function is_bool;
@@ -279,13 +280,13 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * (for each verbosity), use data from the next lower index, if that index is missing,
      * instead use the next higher index. Leave blank as a last resort.
      *
-     * @param mixed[]            $context Additional context data
+     * @param mixed[] $context Additional context data
      *
      * @return mixed[]
      */
     protected function fillInMissingDetails(array $context = []): array
     {
-        if (!array_key_exists('details', $context) || !is_array($context['details'])){
+        if (!array_key_exists('details', $context) || !is_array($context['details'])) {
             return $context;
         }
         $details = $context['details'];
@@ -363,8 +364,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
      * if provided, and convert it into an array with keys for each of
      * the 5 verbosity levels.
      *
-     * @param \Exception                 $error    Exception to log
-     * @param \Laminas\Stdlib\Parameters $server   Server metadata
+     * @param \Exception                 $error  Exception to log
+     * @param \Laminas\Stdlib\Parameters $server Server metadata
      *
      * @return array
      */

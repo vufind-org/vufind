@@ -165,26 +165,10 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                             $rules["VuFind:$target|$key"] = $val;
                         }
                     } catch (\Exception $e) {
-                        // TODO START
-                        $this->logException();
-                        // TODO END
                         // Log a warning and ignore when we can't add the autocomplete rules for
                         // any of the handlers
-                        $baseMsg = "Could not determine autocomplete formatting rules for {$target}.";
-                        $shortDetails = $e->getMessage();
-                        $fullDetails = (string)$e;
-                        $this->logWarning(
-                            $baseMsg,
-                            [
-                                'details' => [
-                                    1 => "$baseMsg $shortDetails",
-                                    2 => "$baseMsg $shortDetails",
-                                    3 => "$baseMsg $shortDetails",
-                                    4 => "$baseMsg $fullDetails",
-                                    5 => "$baseMsg $fullDetails",
-                                ],
-                            ]
-                        );
+                        $this->logWarning("Could not determine autocomplete formatting rules for {$target}.");
+                        $this->logException($e, level: 'warn');
                     }
                 }
             }
@@ -523,21 +507,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                 } catch (\Exception $e) {
                     // If we can't get the options or basic handlers for the search
                     // target, then log it and don't add it to the search box
-                    $baseMsg = "Missing required data for {$target}. Could not add to search box.";
-                    $shortDetails = $e->getMessage();
-                    $fullDetails = (string)$e;
-                    $this->logError(
-                        $baseMsg,
-                        [
-                            'details' => [
-                                1 => "$baseMsg $shortDetails",
-                                2 => "$baseMsg $shortDetails",
-                                3 => "$baseMsg $shortDetails",
-                                4 => "$baseMsg $fullDetails",
-                                5 => "$baseMsg $fullDetails",
-                            ],
-                        ]
-                    );
+                    $this->logError("Missing required data for {$target}. Could not add to search box.");
+                    $this->logException($e);
                     continue;
                 }
                 if (empty($basic)) {

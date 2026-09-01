@@ -157,8 +157,8 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                 2 => 'med',
                 // 3 is missing
                 4 => 'high',
-                5 => 'ultra'
-            ]
+                5 => 'ultra',
+            ],
         ];
 
         $method = new \ReflectionMethod($logger, 'fillInMissingDetails');
@@ -181,6 +181,10 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
         // Test 4: No index to backfill or frontfill from
         $context4 = ['details' => [1 => 'data']];
         $result4 = $method->invoke($logger, $context4);
-        $this->assertEquals('', $result4['details'][3], 'Index 3-5 should be empty string since no near indexes to fill from');
+        $this->assertEquals(
+            '',
+            $result4['details'][3],
+            'Index 3-5 should be empty string since no near indexes to fill from'
+        );
     }
 }
