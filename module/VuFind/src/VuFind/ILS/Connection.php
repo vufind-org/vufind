@@ -243,8 +243,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected function hasNoILSFailover()
     {
         // If we're configured to fail over to the NoILS driver, do so now:
-        return isset($this->config['loadNoILSOnFailure'])
-            && $this->config['loadNoILSOnFailure'];
+        return $this->config['loadNoILSOnFailure'] ?? false;
     }
 
     /**
