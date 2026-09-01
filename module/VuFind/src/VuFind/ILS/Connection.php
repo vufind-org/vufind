@@ -996,7 +996,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // If we need to perform a health check, try to do a random item lookup
         // before proceeding.
         if ($healthCheck) {
-            $this->getStatus($this->config->healthCheckId ?? '1');
+            $this->getStatus($this->config['healthCheckId'] ?? '1');
         }
 
         // If we're encountering failures, let's go into ils-offline mode if
