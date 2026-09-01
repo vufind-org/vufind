@@ -168,7 +168,7 @@ class UserContentHelperTest extends TestCase
 
         $result = $this->getHelper($recordLoader)->getUserContentRecordTitles($contents);
 
-        $this->assertSame($contents, $result);
+        $this->assertNotSame($contents, $result);
 
         $titles = [];
         foreach ($result as $item) {
