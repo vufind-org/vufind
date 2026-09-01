@@ -175,7 +175,7 @@ class UserContentHelperTest extends TestCase
 
         $result = $this->getHelper($recordLoader)->getUserContentRecordTitles($contents);
 
-        // Make sure the output is not a reference to the input:
+        // Make sure the output is not a reference to the input and that it contains expected values:
         $this->assertNotSame($contents, $result);
         $this->assertSame($expectedOutputArray, iterator_to_array($result));
     }
