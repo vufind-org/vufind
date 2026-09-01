@@ -232,7 +232,7 @@ class LoginHelper implements HelperInterface
         }
 
         // Send either null or patron array back to caller:
-        return $patron ?? null;
+        return $patron ?: null;
     }
 
     /**
