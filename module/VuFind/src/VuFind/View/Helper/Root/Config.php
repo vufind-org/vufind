@@ -77,7 +77,7 @@ class Config
      *
      * @param string $config Name of configuration
      *
-     * @return array
+     * @return \VuFind\Config\Config
      *
      * @deprecated Use getArray().
      */
