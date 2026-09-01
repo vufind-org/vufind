@@ -14,7 +14,7 @@
     </div>
     <?=$this->transEsc('od_content')?>
   </h2>
-  <?php if ($this->config()->getArray('Overdrive')['Overdrive']['ODHelpLink']): ?>
+  <?php if ($odHelpLink = $this->config()->getArray('Overdrive')['Overdrive']['ODHelpLink'] ?? false): ?>
     <p class="od_help"><?=$this->icon('overdrive-help')?>
       <?=$this->translate('od_mycontent_help', ['%%url%%' => $this->config()->getArray('Overdrive')['Overdrive']['ODHelpLink']])?></p>
   <?php endif;?>
