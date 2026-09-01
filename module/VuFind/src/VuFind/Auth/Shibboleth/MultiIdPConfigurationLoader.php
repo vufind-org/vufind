@@ -48,8 +48,8 @@ class MultiIdPConfigurationLoader implements
     /**
      * Constructor.
      *
-     * @param array                 $config     Configuration
-     * @param array                 $shibConfig Shibboleth configuration for IdPs
+     * @param array $config     Configuration
+     * @param array $shibConfig Shibboleth configuration for IdPs
      */
     public function __construct(
         array $config,
