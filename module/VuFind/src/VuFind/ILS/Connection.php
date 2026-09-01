@@ -457,8 +457,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         ) {
             $response = ['function' => 'cancelHolds'];
         } elseif (
-            isset($this->config['cancel_holds_enabled'])
-            && $this->config['cancel_holds_enabled'] == true
+            ($this->config['cancel_holds_enabled'] ?? false)
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
             $response = ['function' => 'getCancelHoldLink'];
