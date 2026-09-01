@@ -492,8 +492,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         ) {
             $response = ['function' => 'renewMyItems'];
         } elseif (
-            isset($this->config['renewals_enabled'])
-            && $this->config['renewals_enabled'] == true
+            ($this->config['renewals_enabled'] ?? false)
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
             $response = ['function' => 'renewMyItemsLink'];
