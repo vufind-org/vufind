@@ -151,7 +151,7 @@ class UserContentHelperTest extends TestCase
      */
     public function testGetUserContentRecordTitles(): void
     {
-        $inputArray  = [
+        $inputArray = [
             ['source' => 'Solr', 'record_id' => 'record1'],
             ['source' => 'Summon', 'record_id' => 'record2'],
         ];
