@@ -92,7 +92,7 @@ class SpellingProcessor
      * @param ?array    $config     Spelling configuration (optional)
      * @param ?callable $normalizer Callback for normalization of text (optional).
      */
-    public function __construct(array $config = null, ?callable $normalizer = null)
+    public function __construct(?array $config = null, ?callable $normalizer = null)
     {
         $this->spellingLimit = $config['limit'] ?? 3;
         $this->spellSkipNumeric = $config['skip_numeric'] ?? true;
